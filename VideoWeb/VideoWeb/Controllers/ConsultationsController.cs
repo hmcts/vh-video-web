@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using BookingsApi.Client;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -32,15 +31,13 @@ namespace VideoWeb.Controllers
         private readonly IDistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IBookingsApiClient _bookingApi;
 
         public ConsultationsController(
             IVideoApiClient videoApiClient,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
             IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker,
-            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache,
-            IBookingsApiClient bookingApi)
+            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
@@ -49,7 +46,6 @@ namespace VideoWeb.Controllers
             _consultationNotifier = consultationNotifier;
             _consultationInvitationTracker = consultationInvitationTracker;
             _distributedJohConsultationRoomLockCache = distributedJohConsultationRoomLockCache;
-            _bookingApi = bookingApi;
         }
 
         [HttpPost("leave")]
@@ -178,8 +174,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var username = User.Identity?.Name?.ToLower().Trim();
-                var user = await _bookingApi.GetPersonByUsernameAsync(username);
+                var username = User.Identity.Name?.ToLower().Trim();
                 var conference = await GetConference(request.ConferenceId);
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
@@ -203,9 +198,7 @@ namespace VideoWeb.Controllers
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase) || 
-                                    x.DefenceAdvocateUsername.Equals(user?.ContactEmail, StringComparison.OrdinalIgnoreCase));
-                    
+                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
                     foreach (var endpoint in validSelectedEndpoints)
                     {
                         try
@@ -230,7 +223,9 @@ namespace VideoWeb.Controllers
                 else
                 {
                     if (!CanStartJohConsultation())
+                    {
                         return Forbid();
+                    }
 
                     var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
                     var isLocked =

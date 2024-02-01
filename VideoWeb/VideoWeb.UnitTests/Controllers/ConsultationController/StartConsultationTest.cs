@@ -25,8 +25,6 @@ using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 using System.Security.Claims;
-using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -41,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudicialOfficeHolderRole).Build();
-            var user = claimsPrincipal.Identity.Name;
+
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
@@ -51,14 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     User = claimsPrincipal
                 }
             };
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetPersonByUsernameAsync(user))
-                .ReturnsAsync(new PersonResponse()
-                {
-                    ContactEmail = user,
-                    Username = user
-                });
-            
+
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<StartPrivateConsultationRequest, StartConsultationRequest>())
                 .Returns(_mocker.Create<StartPrivateConsultationRequestMapper>());
@@ -330,6 +321,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
                 .Verify(x => x.UpdateJohConsultationRoomLockStatus(true, expectedKeyName), Times.Never);
         }
+
 
         private ConsultationsController GetControllerWithContextForRole(string role)
         {
