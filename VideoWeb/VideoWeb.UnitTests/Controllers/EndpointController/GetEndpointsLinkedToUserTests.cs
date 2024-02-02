@@ -93,5 +93,14 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             var allowedEndpoints = typedResult.Value as List<AllowedEndpointResponse>;
             allowedEndpoints.Count.Should().Be(expectedCount);
         }
+        
+        [Test]
+        public async Task Should_throw_not_authorized_if_user_claims_null()
+        {
+            var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
+            _controller.ControllerContext = context;
+            Func<Task> action = async () => await _controller.GetEndpointsLinkedToUser(Guid.NewGuid());
+            await action.Should().ThrowAsync<UnauthorizedAccessException>();
+        }
     }
 }
