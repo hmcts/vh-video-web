@@ -22,9 +22,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
-using System.Security.Claims;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
