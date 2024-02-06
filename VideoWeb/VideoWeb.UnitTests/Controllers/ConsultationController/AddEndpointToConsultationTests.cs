@@ -2,8 +2,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +17,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
@@ -159,9 +158,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _sut.ControllerContext = context;
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetPersonByUsernameAsync(username))
-                .ReturnsAsync(new PersonResponse { Username = username, ContactEmail = username });
         }
     }
 }

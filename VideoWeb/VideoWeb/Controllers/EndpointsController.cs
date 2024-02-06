@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,7 +11,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
@@ -26,20 +24,17 @@ namespace VideoWeb.Controllers
         private readonly ILogger<EndpointsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IBookingsApiClient _bookingApi;
 
         public EndpointsController(
             IVideoApiClient videoApiClient,
             ILogger<EndpointsController> logger,
             IMapperFactory mapperFactory,
-            IConferenceCache conferenceCache,
-            IBookingsApiClient bookingApi)
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _conferenceCache = conferenceCache;
-            _bookingApi = bookingApi;
         }
 
         [HttpGet("{conferenceId}/participants")]
@@ -69,28 +64,21 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId)
         {
-            var username = User?.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
-            var user = await _bookingApi.GetPersonByUsernameAsync(username);
+            var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
             var conference = await GetConference(conferenceId);
             var isHostOrJoh = conference.Participants.Any(x => (x.IsHost() || x.IsJudicialOfficeHolder()) &&
-                            x.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
+                            x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
 
             var usersEndpoints = conference.Endpoints;
             if(!isHostOrJoh)
-                usersEndpoints = GetUsersEndpoints(usersEndpoints, user);
-            
+            {
+                usersEndpoints = usersEndpoints.Where(ep => ep.DefenceAdvocateUsername != null && 
+                                                            ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+                                            .ToList();
+            }
             var allowedEndpointResponseMapper = _mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
             var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
             return Ok(response);
-        }
-
-        private static List<Endpoint> GetUsersEndpoints(List<Endpoint> usersEndpoints, PersonResponse user)
-        {
-            return usersEndpoints
-                .Where(ep => ep.DefenceAdvocateUsername != null && 
-                             (ep.DefenceAdvocateUsername.Equals(user.Username, StringComparison.CurrentCultureIgnoreCase) ||
-                              ep.DefenceAdvocateUsername.Equals(user.ContactEmail, StringComparison.CurrentCultureIgnoreCase)))
-                .ToList();
         }
 
         private Task<Conference> GetConference(Guid conferenceId)

@@ -22,11 +22,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
-using System.Security.Claims;
-using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -41,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudicialOfficeHolderRole).Build();
-            var user = claimsPrincipal.Identity.Name;
+
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
@@ -51,14 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     User = claimsPrincipal
                 }
             };
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetPersonByUsernameAsync(user))
-                .ReturnsAsync(new PersonResponse()
-                {
-                    ContactEmail = user,
-                    Username = user
-                });
-            
+
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<StartPrivateConsultationRequest, StartConsultationRequest>())
                 .Returns(_mocker.Create<StartPrivateConsultationRequestMapper>());
@@ -330,7 +319,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
                 .Verify(x => x.UpdateJohConsultationRoomLockStatus(true, expectedKeyName), Times.Never);
         }
-
+        
+        [Test]
+        public async Task Should_throw_not_authorized_if_user_claims_null()
+        {
+            var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
+            var controller = _mocker.Create<ConsultationsController>();
+            controller.ControllerContext = context;
+            Func<Task> action = async () => await _controller.StartConsultationAsync(ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+            await action.Should().ThrowAsync<UnauthorizedAccessException>();
+        }
+        
         private ConsultationsController GetControllerWithContextForRole(string role)
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(role).Build();
