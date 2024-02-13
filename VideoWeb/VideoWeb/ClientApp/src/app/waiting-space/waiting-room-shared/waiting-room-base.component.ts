@@ -123,6 +123,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     hasTriedToLeaveConsultation: boolean;
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
+    selectedLanguageToListen: string;
 
     private readonly loggerPrefix = '[WR] -';
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
@@ -885,7 +886,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.errorCount = 0;
         this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
-        this.callStream = callConnected.stream;
+        this.callStream = callConnected.stream as MediaStream;
+        const otherThanSelectedLanguageAudio = this.callStream
+            .getAudioTracks()
+            .filter(x => x.contentHint !== this.selectedLanguageToListen);
+        otherThanSelectedLanguageAudio.forEach(x => this.reduceVolume(x));
 
         if (this.callStream) {
             this.updateShowVideo();
@@ -893,6 +898,18 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
             await this.hearingControls.toggleVideoMute();
         }
+    }
+
+    reduceVolume(audioTrack: MediaStreamTrack) {
+        const audioContext = new AudioContext();
+        const gainNode = audioContext.createGain();
+        const newStream = new MediaStream([audioTrack]);
+        const audioSource = audioContext.createMediaStreamSource(newStream);
+        audioSource.connect(audioContext.destination);
+        const audioDestination = audioContext.createMediaStreamDestination();
+        audioSource.connect(gainNode);
+        gainNode.connect(audioDestination);
+        gainNode.gain.value = 0.2;
     }
 
     handleCallError(error: CallError): void {

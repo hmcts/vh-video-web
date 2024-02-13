@@ -254,6 +254,17 @@
       >
         {{ 'participant-waiting-room.private-consultation.join' | translate }}
       </button>
+      <input type="checkbox" id="interpreter" [checked]="interpreterUser"
+      (click)="onInterprterUserToggle()" />
+
+      <select name="language"
+      [(ngModel)]="selectedLanguageToListen"
+      class="govuk-select govuk-!-width-two-thirds" id="languageToListen">
+      <option value="All">All</option>
+      <option value="English">English</option>
+      <option value="Welsh">Welsh</option>
+    </select>
+
     </div>
     <div *ngIf="!connected" class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
