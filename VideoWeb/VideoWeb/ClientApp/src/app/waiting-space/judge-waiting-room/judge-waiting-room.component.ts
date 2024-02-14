@@ -66,6 +66,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     onConferenceStatusChangedSubscription: Subscription;
     wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
+    wowzaPolling: boolean;
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
@@ -141,6 +142,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
             this.isMuteMicrophoneEnabled = value;
+        });
+        this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.wowzaPolling, true).subscribe(flag => {
+            this.wowzaPolling = flag;
         });
     }
 
@@ -385,7 +389,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
-            await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
+            await this.retrieveAudioStreamInfo();
         }, this.audioStreamIntervalSeconds * 1000);
     }
 
@@ -394,7 +398,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioErrorRetryToast = null;
     }
 
-    async retrieveAudioStreamInfo(hearingId): Promise<void> {
+    async retrieveAudioStreamInfo(): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
             this.logger.debug(`${this.loggerPrefixJudge} Recording Session Seconds: ${this.recordingSessionSeconds}`);
             this.recordingSessionSeconds += this.audioStreamIntervalSeconds;
@@ -404,10 +408,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
 
         if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo && !this.audioErrorRetryToast) {
-            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${this.conference.hearing_ref_id}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                let audioStreamWorking = true;
+                if (this.wowzaPolling) {
+                    audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(this.conference.audio_stream);
+                    this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                }
+
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} mot recording when expected, show alert`, {

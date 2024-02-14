@@ -26,25 +26,24 @@ namespace VideoWeb.Controllers
 
         }
 
-        [HttpGet("audiostreams/{hearingId}")]
+        [HttpGet("audiostreams/{audioStream}")]
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [Authorize("Host")]
-        public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
+        public async Task<IActionResult> GetAudioStreamInfoAsync(string audioStream)
         {
             try
             {
-                var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
+                var response = await _videoApiClient.GetAudioStreamInfoAsync(audioStream);
                 return Ok(response.IsRecording);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get audio recording stream info for hearingId: {hearingId}");
+                _logger.LogError(e, $"Unable to get audio recording stream info: {audioStream}");
                 
-                if (e.StatusCode.Equals((int)HttpStatusCode.NotFound))
-                    return Ok(false);
-                
-                return StatusCode(e.StatusCode, e.Response);
+                return e.StatusCode.Equals((int)HttpStatusCode.NotFound) 
+                    ? Ok(false) 
+                    : StatusCode(e.StatusCode, e.Response);
             }
         }
 

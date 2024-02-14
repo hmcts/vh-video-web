@@ -31,9 +31,9 @@ namespace VideoWeb.UnitTests.Controllers
         {
 
             _videoApiClientMock.Setup(x 
-                => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ReturnsAsync(new AudioStreamInfoResponse());
+                => x.GetAudioStreamInfoAsync(It.IsAny<string>())).ReturnsAsync(new AudioStreamInfoResponse());
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
+            var result      = await _controller.GetAudioStreamInfoAsync("AudioStream");
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(200);
@@ -45,9 +45,9 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var videoException = new VideoApiException("Not Found", (int)HttpStatusCode.NotFound, "Error", null, null);
 
-            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ThrowsAsync(videoException);
+            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<string>())).ThrowsAsync(videoException);
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
+            var result      = await _controller.GetAudioStreamInfoAsync("AudioStream");
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(200);
@@ -59,9 +59,9 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var videoException = new VideoApiException("Bad request", (int)HttpStatusCode.BadRequest, "Error", null, null);
 
-            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ThrowsAsync(videoException);
+            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<string>())).ThrowsAsync(videoException);
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
+            var result      = await _controller.GetAudioStreamInfoAsync("AudioStream");
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(400);

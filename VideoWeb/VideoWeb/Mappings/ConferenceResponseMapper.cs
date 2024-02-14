@@ -37,7 +37,8 @@ namespace VideoWeb.Mappings
                 HearingRefId = conference.HearingId,
                 Endpoints = MapEndpoints(conference),
                 HearingVenueIsScottish = conference.HearingVenueIsScottish,
-                IngestUrl = conference.IngestUrl
+                IngestUrl = conference.IngestUrl,
+                AudioStream = conference.IngestUrl.GetAudioStreamFileName() ?? conference.HearingId.ToString()
             };
 
             if (conference.MeetingRoom != null)

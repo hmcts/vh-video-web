@@ -7,7 +7,7 @@ import { ApiClient } from 'src/app/services/clients/api-client';
 export class AudioRecordingService {
     constructor(private apiClient: ApiClient) {}
 
-    getAudioStreamInfo(hearingId: string): Promise<boolean> {
-        return this.apiClient.getAudioStreamInfo(hearingId).toPromise();
+    getAudioStreamInfo(audioStream: string): Promise<boolean> {
+        return this.apiClient.getAudioStreamInfo(audioStream).toPromise();
     }
 }

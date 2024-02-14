@@ -39,10 +39,10 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return Success
      */
-    getAudioStreamInfo(hearingId: string): Observable<boolean> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
-        if (hearingId === undefined || hearingId === null) throw new Error("The parameter 'hearingId' must be defined.");
-        url_ = url_.replace('{hearingId}', encodeURIComponent('' + hearingId));
+    getAudioStreamInfo(audioStream: string): Observable<boolean> {
+        let url_ = this.baseUrl + '/conferences/audiostreams/{audioStream}';
+        if (audioStream === undefined || audioStream === null) throw new Error("The parameter 'audioStream' must be defined.");
+        url_ = url_.replace('{audioStream}', encodeURIComponent('' + audioStream));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -9671,6 +9671,8 @@ export class ConferenceResponse implements IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
+    /** AudioStream file name for wowza */
+    audio_stream?: string | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -9706,6 +9708,7 @@ export class ConferenceResponse implements IConferenceResponse {
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
             this.ingest_url = _data['ingest_url'];
+            this.audio_stream = _data['audio_stream'];
         }
     }
 
@@ -9742,6 +9745,7 @@ export class ConferenceResponse implements IConferenceResponse {
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
         data['ingest_url'] = this.ingest_url;
+        data['audio_stream'] = this.audio_stream;
         return data;
     }
 }
@@ -9783,6 +9787,8 @@ export interface IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
+    /** AudioStream file name for wowza */
+    audio_stream?: string | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */

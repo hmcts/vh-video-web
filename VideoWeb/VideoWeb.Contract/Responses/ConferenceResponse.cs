@@ -97,5 +97,10 @@ namespace VideoWeb.Contract.Responses
         /// Property to indicate whether wowza recording is via single app setup or bespoke hearing setup
         /// </summary>
         public string IngestUrl { get; set; }
+        
+        /// <summary>
+        /// AudioStream file name for wowza
+        /// </summary>
+        public string AudioStream { get; set; }
     }
 }
