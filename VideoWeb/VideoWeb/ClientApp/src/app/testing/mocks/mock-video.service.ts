@@ -120,7 +120,11 @@ export class MockVideoWebService implements IVideoWebApiService {
         throw new Error('Method not implemented.');
     }
 
-    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantDisplayNameRequest) {
+    updateParticipantDisplayName(
+        conferenceId: string,
+        participantId: string,
+        updateParticipantRequest: UpdateParticipantDisplayNameRequest
+    ) {
         return Promise.resolve();
     }
 }

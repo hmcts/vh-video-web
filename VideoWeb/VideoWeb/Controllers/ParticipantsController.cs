@@ -137,14 +137,13 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId,
-            [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
         {
             try
             {
-                var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()
-                    .Map(participantRequest);
-                await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest);
+                var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
+                _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest).Wait(); //wait for update to complete before fetching participants to notify
+                await PublishUpdateToOtherParticipants(conferenceId);
             }
             catch (VideoApiException ex)
             {
@@ -153,8 +152,23 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
-
             return NoContent();
+        }
+
+        private async Task PublishUpdateToOtherParticipants(Guid conferenceId)
+        {
+            var participants = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
+            var participantResponseMapper = _mapperFactory.Get<ParticipantSummaryResponse, ParticipantResponse>();
+            var mappedParticipants = participants.Select(participantResponseMapper.Map).ToList();
+            await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
+            {
+                Participants = mappedParticipants,
+                ParticipantsToNotify = mappedParticipants,
+                ConferenceId = conferenceId,
+                EventType = EventHub.Enums.EventType.ParticipantsUpdated,
+                Reason = "Participant display name updated",
+                TimeStampUtc = DateTime.UtcNow
+            });
         }
 
         /// <summary>
@@ -164,6 +178,7 @@ namespace VideoWeb.Controllers
         /// <returns>the participant details, if permitted</returns>
         [HttpGet("{conferenceId}/vhofficer/participants")]
         [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]

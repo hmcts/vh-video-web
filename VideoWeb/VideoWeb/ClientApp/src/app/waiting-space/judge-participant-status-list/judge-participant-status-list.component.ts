@@ -168,7 +168,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
                 judge: this.judge.id,
                 displayName: this.judge.display_name
             });
-            await this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest);
+            await this.videoWebService.updateParticipantDisplayName(this.conference.id, this.judge.id, updateParticipantRequest);
         } catch (error) {
             this.logger.error(`[JudgeParticipantStatusList] - There was an error update judge display name ${this.judge.id}`, error);
         }
@@ -188,7 +188,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
                 staffMember: staffMember.id,
                 displayName: staffMember.display_name
             });
-            await this.videoWebService.updateParticipantDetails(this.conference.id, staffMember.id, updateParticipantRequest);
+            await this.videoWebService.updateParticipantDisplayName(this.conference.id, staffMember.id, updateParticipantRequest);
         } catch (error) {
             this.logger.error(
                 `[JudgeParticipantStatusList] - There was an error updating staff member display name ${staffMember.id}`,

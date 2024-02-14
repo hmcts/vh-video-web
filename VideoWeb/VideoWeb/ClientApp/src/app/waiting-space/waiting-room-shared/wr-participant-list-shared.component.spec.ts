@@ -65,7 +65,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDisplayName', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
     });
 
@@ -267,7 +267,10 @@ describe('WaitingRoom ParticipantList Base', () => {
         beforeAll(() => {
             consultationService = consultationServiceSpyFactory();
             userInfo = { userName: judgeProfile.username, authenticated: true };
-            videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+            videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+                'updateParticipantDisplayName',
+                'getObfuscatedName'
+            ]);
             videoWebService.getObfuscatedName.and.returnValue('test username');
         });
 

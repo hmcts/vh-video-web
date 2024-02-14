@@ -410,7 +410,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.audioErrorRetryToast) {
-                    this.logger.warn(`${this.loggerPrefixJudge} mot recording when expected, show alert`, {
+                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         showVideo: this.showVideo,
                         continueWithNoRecording: this.continueWithNoRecording,
                         audioErrorRetryToast: this.audioErrorRetryToast
