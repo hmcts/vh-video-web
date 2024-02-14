@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
@@ -40,7 +40,7 @@ import {
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';``
 import { Guid } from 'guid-typescript';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -251,6 +251,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaPolling, true).and.returnValue(of(true));
 
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
@@ -292,6 +293,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.conference = conference;
         component.participant = participant;
         component.connected = true; // assume connected to pexip
+        component.wowzaPolling = true;
         videoWebService.getConferenceById.calls.reset();
     });
 
@@ -576,7 +578,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should accumulate when conference is in session', async () => {
             component.conference.status = ConferenceStatus.InSession;
-            await component.retrieveAudioStreamInfo(globalConference.id);
+            await component.retrieveAudioStreamInfo();
             expect(component.recordingSessionSeconds).toBe(
                 currentConferenceRecordingInSessionForSeconds + currentAudioRecordingStreamCheckIntervalSeconds
             );
@@ -584,21 +586,21 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should reset when conference is not in session', async () => {
             component.conference.status = ConferenceStatus.Paused;
-            await component.retrieveAudioStreamInfo(globalConference.id);
+            await component.retrieveAudioStreamInfo();
             expect(component.recordingSessionSeconds).toBe(0);
         });
 
         it('should switch the continueWithNoRecording flag to false when conference is not in session', async () => {
             component.conference.status = ConferenceStatus.Paused;
             component.continueWithNoRecording = true;
-            await component.retrieveAudioStreamInfo(globalConference.id);
+            await component.retrieveAudioStreamInfo();
             expect(component.continueWithNoRecording).toBe(false);
         });
 
         it('should not switch the continueWithNoRecording flag when conference is in session', async () => {
             component.conference.status = ConferenceStatus.InSession;
             component.continueWithNoRecording = true;
-            await component.retrieveAudioStreamInfo(globalConference.id);
+            await component.retrieveAudioStreamInfo();
             expect(component.continueWithNoRecording).toBe(true);
         });
     });
@@ -944,7 +946,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
 
                 component.audioRestartCallback(true);
 
@@ -957,7 +959,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
 
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
 
                 expect(component.audioErrorRetryToast).toBeTruthy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
@@ -967,7 +969,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeTruthy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
                 expect(audioRecordingService.getAudioStreamInfo).toHaveBeenCalled();
@@ -977,7 +979,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingService.getAudioStreamInfo.calls.reset();
                 component.recordingSessionSeconds = 0;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeFalsy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
                 expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
@@ -988,7 +990,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 component.recordingSessionSeconds = 100;
                 component.conference.status = ConferenceStatus.InSession;
                 component.continueWithNoRecording = true;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeFalsy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
                 expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
@@ -998,7 +1000,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingService.getAudioStreamInfo.calls.reset();
                 component.recordingSessionSeconds = 100;
                 component.conference.status = ConferenceStatus.Paused;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeFalsy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
                 expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
@@ -1009,7 +1011,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 component.recordingSessionSeconds = 100;
                 component.conference.status = ConferenceStatus.Paused;
                 component.continueWithNoRecording = true;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.continueWithNoRecording).toBeFalsy();
                 expect(component.audioErrorRetryToast).toBeFalsy();
                 expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
@@ -1020,7 +1022,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 component.continueWithNoRecording = false;
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeFalsy();
             });
 
@@ -1028,7 +1030,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(component.audioErrorRetryToast).toBeFalsy();
             });
 
@@ -1049,7 +1051,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.retrieveAudioStreamInfo();
                 expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
             });
@@ -1064,7 +1066,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
-                    await component.retrieveAudioStreamInfo(globalConference.id);
+                    await component.retrieveAudioStreamInfo();
                     await component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
@@ -1077,7 +1079,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
-                    await component.retrieveAudioStreamInfo(globalConference.id);
+                    await component.retrieveAudioStreamInfo();
                     await component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
@@ -1095,7 +1097,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
-                    await component.retrieveAudioStreamInfo(globalConference.id);
+                    await component.retrieveAudioStreamInfo();
                     await component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalledTimes(0);
@@ -1108,7 +1110,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
-                    await component.retrieveAudioStreamInfo(globalConference.id);
+                    await component.retrieveAudioStreamInfo();
                     await component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalledTimes(0);
@@ -1125,7 +1127,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     // Act
-                    await component.retrieveAudioStreamInfo(globalConference.id);
+                    await component.retrieveAudioStreamInfo();
                     // Assert
                     expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
                     expect(component.audioErrorRetryToast).toBeTruthy();
