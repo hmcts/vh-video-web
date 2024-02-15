@@ -143,7 +143,7 @@ namespace VideoWeb.Controllers
             {
                 var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
                 await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest);
-                await PublishUpdateToOtherParticipants(conferenceId);
+                await UpdateCacheAndPublishUpdate(conferenceId);
             }
             catch (VideoApiException ex)
             {
@@ -155,11 +155,12 @@ namespace VideoWeb.Controllers
             return NoContent();
         }
 
-        private async Task PublishUpdateToOtherParticipants(Guid conferenceId)
+        private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
-            var participants = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
-            var participantResponseMapper = _mapperFactory.Get<ParticipantSummaryResponse, ParticipantResponse>();
-            var mappedParticipants = participants.Select(participantResponseMapper.Map).ToList();
+            var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            await _conferenceCache.UpdateConferenceAsync(ConferenceCacheMapper.MapConferenceToCacheModel(conference));
+            var participantResponseMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantResponse>();
+            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
             await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
                 Participants = mappedParticipants,
