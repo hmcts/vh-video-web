@@ -22,9 +22,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
-using System.Security.Claims;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -321,8 +319,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
                 .Verify(x => x.UpdateJohConsultationRoomLockStatus(true, expectedKeyName), Times.Never);
         }
-
-
+        
+        [Test]
+        public async Task Should_throw_not_authorized_if_user_claims_null()
+        {
+            var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
+            var controller = _mocker.Create<ConsultationsController>();
+            controller.ControllerContext = context;
+            Func<Task> action = async () => await _controller.StartConsultationAsync(ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+            await action.Should().ThrowAsync<UnauthorizedAccessException>();
+        }
+        
         private ConsultationsController GetControllerWithContextForRole(string role)
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(role).Build();

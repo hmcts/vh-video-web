@@ -19,6 +19,7 @@ using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostR
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 using VideoApi.Contract.Enums;
@@ -30,6 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private AutoMock _mocker;
         private ConferencesController _controller;
+        private Mock<ILogger<ConferencesController>> _logger;
 
         [SetUp]
         public void Setup()
@@ -59,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
-
+            _logger = _mocker.Mock<ILogger<ConferencesController>>().SetupAllProperties();
             _controller = _mocker.Create<ConferencesController>();
             _controller.ControllerContext = context;
         }
@@ -107,6 +109,61 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
 
+            var conferencesForUser = (List<ConferenceForHostResponse>) typedResult.Value;
+            conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser!.Count.Should().Be(conferences.Count);
+            
+            for (var i = 0; i < conferencesForUser.Count; i++)
+            {
+                var position = i + 1;
+                conferencesForUser[i].CaseName.Should().Be($"CaseName{position}");
+            }
+        }
+        
+        
+        [Test]
+        public async Task Should_return_ok_with_list_of_conferences_where_hearings_and_conferences_match_and_log_error_for_difference()
+        {
+            var bookings = Builder<ConfirmedHearingsTodayResponse>.CreateListOfSize(10).All()
+                .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Endpoints = Builder<EndpointResponse>.CreateListOfSize(1).Build().ToList())
+                .Build().ToList();
+            
+            var participants = new List<Participant>
+            {
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Judge).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.StaffMember).Build()
+
+            };
+            var conferences = Builder<Conference>.CreateListOfSize(5).All()
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.Participants = participants)
+                .Build().ToList();
+
+            for (var i = 0; i < bookings.Count; i++)
+                if(i < conferences.Count)
+                    conferences[i].HearingId = bookings[i].Id;
+            
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .ReturnsAsync(conferences);
+
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ReturnsAsync(bookings);
+
+            var result = await _controller.GetConferencesForHostAsync();
+
+            var typedResult = (OkObjectResult) result.Result;
+            typedResult.Should().NotBeNull();
+            _logger.Verify(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Exactly(1));
             var conferencesForUser = (List<ConferenceForHostResponse>) typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
             conferencesForUser!.Count.Should().Be(conferences.Count);

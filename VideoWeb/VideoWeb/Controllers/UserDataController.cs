@@ -54,8 +54,14 @@ namespace VideoWeb.Controllers
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
             var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
             var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-
+    
+            if(conferences.Count != allocatedHearings.Count)
+                _logger.LogError(@"Allocated hearings count {HearingCount} does not match conferences count {ConferenceCount}", allocatedHearings.Count, conferences.Count);
+            if (conferences.Any(c => c.Participants.TrueForAll(p => p.HearingRole != "Judge")))
+                _logger.LogError("Conferences exist without a judge )");
+            
             var responses = conferences
+                .Where(c => c.Participants.Exists(p => p.HearingRole == "Judge") && allocatedHearings.Any(x => x.HearingId == c.HearingRefId))
                 .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                 .ApplyCsoFilter(query)
                 .ToList();

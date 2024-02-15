@@ -64,7 +64,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId)
         {
-            var username = User.Identity.Name?.ToLower().Trim();
+            var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
             var conference = await GetConference(conferenceId);
             var isHostOrJoh = conference.Participants.Any(x => (x.IsHost() || x.IsJudicialOfficeHolder()) &&
                             x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase));

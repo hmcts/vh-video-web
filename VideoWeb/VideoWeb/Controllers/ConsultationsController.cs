@@ -174,7 +174,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var username = User.Identity.Name?.ToLower().Trim();
+                var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
                 var conference = await GetConference(request.ConferenceId);
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
