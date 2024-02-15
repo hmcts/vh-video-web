@@ -302,7 +302,7 @@
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
     <app-individual-participant-status-list
       [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
-      [conference]="hearing.getConference()"
+      [conference]="conference"
     >
     </app-individual-participant-status-list>
   </div>
