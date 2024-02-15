@@ -21,7 +21,6 @@ using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
-using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

@@ -142,7 +142,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
-                _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest).Wait(); //wait for update to complete before fetching participants to notify
+                //wait for update to complete before fetching participants to notify
+                _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest).Wait(); 
                 await PublishUpdateToOtherParticipants(conferenceId);
             }
             catch (VideoApiException ex)
@@ -178,7 +179,6 @@ namespace VideoWeb.Controllers
         /// <returns>the participant details, if permitted</returns>
         [HttpGet("{conferenceId}/vhofficer/participants")]
         [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
