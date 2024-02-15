@@ -39,8 +39,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get audio recording stream info: {audioStream}");
-                
+                _logger.LogError(e, $"Unable to get audio recording stream info");
                 return e.StatusCode.Equals((int)HttpStatusCode.NotFound) 
                     ? Ok(false) 
                     : StatusCode(e.StatusCode, e.Response);
