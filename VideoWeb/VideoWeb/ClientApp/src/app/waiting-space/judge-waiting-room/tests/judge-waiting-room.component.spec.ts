@@ -40,7 +40,7 @@ import {
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component'; '';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { Guid } from 'guid-typescript';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
