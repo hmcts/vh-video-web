@@ -48,7 +48,7 @@
                          [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
                         <app-private-consultation-participants
                             *ngIf="isPrivateConsultation"
-                            [conference]="hearing.getConference()"
+                            [conference]="conference"
                             [participantEndpoints]="participantEndpoints"
                             [roomLabel]="this.participant.current_room?.label"
                         >

@@ -51,7 +51,7 @@
   </div>
   <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
-      [conference]="hearing.getConference()"
+      [conference]="conference"
       [participantEndpoints]="participantEndpoints"
       [roomLabel]="this.participant.current_room?.label"
     >
