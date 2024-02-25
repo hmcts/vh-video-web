@@ -30,7 +30,11 @@ export interface IVideoWebApiService {
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
     getConferenceChatHistory(conferenceId: string, participantId: string): Promise<ChatResponse[]>;
-    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantDisplayNameRequest);
+    updateParticipantDisplayName(
+        conferenceId: string,
+        participantId: string,
+        updateParticipantRequest: UpdateParticipantDisplayNameRequest
+    );
     getVenues(): Observable<HearingVenueResponse[]>;
     getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]>;
     getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]>;

@@ -155,7 +155,7 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
     }
 
-    updateParticipantDetails(
+    updateParticipantDisplayName(
         conferenceId: string,
         participantId: string,
         updateParticipantRequest: UpdateParticipantDisplayNameRequest

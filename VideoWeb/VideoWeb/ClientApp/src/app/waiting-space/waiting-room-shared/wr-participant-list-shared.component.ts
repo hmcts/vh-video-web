@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import { Directive, Input, OnChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -24,7 +24,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
 
 @Directive()
-export abstract class WRParticipantStatusListDirective {
+export abstract class WRParticipantStatusListDirective implements OnChanges {
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
     nonJudgeParticipants: ParticipantResponse[];
@@ -81,6 +81,10 @@ export abstract class WRParticipantStatusListDirective {
 
     @Input() set conference(conference: ConferenceResponse) {
         this._conference = conference;
+        this.initParticipants();
+    }
+
+    ngOnChanges() {
         this.initParticipants();
     }
 
