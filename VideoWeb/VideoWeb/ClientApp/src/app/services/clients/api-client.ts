@@ -37,194 +37,6 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
-     */
-    getAudioStreamInfo(audioStream: string): Observable<boolean> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{audioStream}';
-        if (audioStream === undefined || audioStream === null) throw new Error("The parameter 'audioStream' must be defined.");
-        url_ = url_.replace('{audioStream}', encodeURIComponent('' + audioStream));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetAudioStreamInfo(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetAudioStreamInfo(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<boolean>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<boolean>;
-                })
-            );
-    }
-
-    protected processGetAudioStreamInfo(response: HttpResponseBase): Observable<boolean> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                ? (response as any).error
-                : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = resultData200 !== undefined ? resultData200 : <any>null;
-
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<boolean>(null as any);
-    }
-
-    /**
-     * @return Success
-     * @deprecated
-     */
-    stopAudioRecording(hearingId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
-        if (hearingId === undefined || hearingId === null) throw new Error("The parameter 'hearingId' must be defined.");
-        url_ = url_.replace('{hearingId}', encodeURIComponent('' + hearingId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('delete', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processStopAudioRecording(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processStopAudioRecording(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<void>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<void>;
-                })
-            );
-    }
-
-    protected processStopAudioRecording(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                ? (response as any).error
-                : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
      * Start or resume a video hearing
      * @param conferenceId conference id
      * @param body (optional) start hearing request details
@@ -9671,8 +9483,6 @@ export class ConferenceResponse implements IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
-    /** AudioStream file name for wowza */
-    audio_stream?: string | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -9708,7 +9518,6 @@ export class ConferenceResponse implements IConferenceResponse {
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
             this.ingest_url = _data['ingest_url'];
-            this.audio_stream = _data['audio_stream'];
         }
     }
 
@@ -9745,7 +9554,6 @@ export class ConferenceResponse implements IConferenceResponse {
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
         data['ingest_url'] = this.ingest_url;
-        data['audio_stream'] = this.audio_stream;
         return data;
     }
 }
@@ -9787,8 +9595,6 @@ export interface IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
-    /** AudioStream file name for wowza */
-    audio_stream?: string | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */

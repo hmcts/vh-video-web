@@ -103,7 +103,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
             response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
-            response.AudioStream.Should().Be(conference.HearingId.ToString());
         }
     }
 }
