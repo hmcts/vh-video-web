@@ -289,7 +289,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.conference = conference;
         component.participant = participant;
         component.connected = true; // assume connected to pexip
-        component.wowzaPolling = true;
         videoWebService.getConferenceById.calls.reset();
     });
 
@@ -1048,19 +1047,20 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             describe('should display audio recording restart alert, then success toastr', () => {
                 beforeEach(() => {
-                    videoCallServiceSpy.connectWowzaAgent.and.callFake((ingestUrl, callback) => callback({ status: 'success' }));
+                    videoCallServiceSpy.connectWowzaAgent.and.callFake((ingestUrl, callback) =>
+                        callback({ status: 'success', result: ['newWowzaUUID'] })
+                    );
                 });
 
-                it('when audio info returns false and hearing must be recorded', async () => {
+                it('when audio fails, will attempt to restart', () => {
                     component.wowzaAgent.isAudioOnlyCall = false;
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     component.verifyAudioRecordingStream();
-                    await component.reconnectToWowza();
+                    component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
-                    expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
                 });
 
                 it('when wowza listener missing', async () => {
@@ -1072,7 +1072,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     await component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
-                    expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
                 });
             });
 
@@ -1081,25 +1080,25 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     videoCallServiceSpy.connectWowzaAgent.and.callFake((ingestUrl, callback) => callback({ status: 'failed' }));
                 });
 
-                it('when audio info returns false and hearing must be recorded', async () => {
+                it('when audio info returns false and hearing must be recorded', () => {
                     component.wowzaAgent.isAudioOnlyCall = false;
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     component.verifyAudioRecordingStream();
-                    await component.reconnectToWowza();
+                    component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalledTimes(0);
                     expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
                 });
 
-                it('when audio info returns true but wowza listener missing', async () => {
+                it('when audio info returns true but wowza listener missing', () => {
                     component.wowzaAgent = null;
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     component.verifyAudioRecordingStream();
-                    await component.reconnectToWowza();
+                    component.reconnectToWowza();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     expect(eventsService.sendAudioRestartActioned).toHaveBeenCalledTimes(0);
                     expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
@@ -1107,7 +1106,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             describe('Multiple Hosts Audio Alert', () => {
-                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user', async () => {
+                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user', () => {
                     // Arrange
                     component.wowzaAgent.isAudioOnlyCall = false;
                     component.continueWithNoRecording = false;
@@ -1120,8 +1119,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
                     expect(component.audioErrorRetryToast).toBeTruthy();
                     // Act
-                    await eventsService.getAudioRestartActioned.and.returnValue(of(globalConference.id));
-                    await component.ngOnInit();
+                    eventsService.getAudioRestartActioned.and.returnValue(of(globalConference.id));
+                    component.ngOnInit();
                     // Assert
                     expect(component.audioErrorRetryToast).toBeFalsy();
                 });

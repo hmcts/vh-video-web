@@ -48,7 +48,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
-    audioStreamIntervalSeconds = 20;
+    audioStreamIntervalSeconds = 10;
     recordingSessionSeconds = 0;
     expanedPanel = true;
     hostWantsToJoinHearing = false;
@@ -65,10 +65,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     onConferenceStatusChangedSubscription: Subscription;
     wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
-    wowzaPolling: boolean;
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
+    private restartActioned: boolean;
+    private dialOutUUID = [];
 
     constructor(
         protected route: ActivatedRoute,
@@ -322,7 +323,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     async startHearing() {
         const action = this.isNotStarted() ? 'start' : 'resume';
-
+        this.restartActioned = false;
         this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
             conference: this.conferenceId,
             status: this.conference.status
@@ -402,7 +403,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.continueWithNoRecording = false;
         }
 
-        // If the recording session is greater than 20 seconds and the audio is not recording, show the alert
+        // If the recording session is greater than 20 seconds,
+        // has not been set to continue without recording,
+        // conference is in-session,
+        // the alert isn't open already,
+        // and the audio streaming agent cannot be validated, then show the alert
         if (
             this.recordingSessionSeconds > 20 &&
             !this.continueWithNoRecording &&
@@ -453,10 +458,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     reconnectToWowza() {
+        this.restartActioned = true;
+        this.cleanupDialOutConnections();
         this.videoCallService.connectWowzaAgent(this.conference.ingest_url, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
+                this.dialOutUUID.push(dialOutToWowzaResponse.result[0]);
                 await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
-                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
                 this.initAudioRecordingInterval();
             } else {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
@@ -466,7 +473,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     private init() {
         this.destroyedSubject = new Subject();
-
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
@@ -483,22 +489,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 tap(createdParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
                         pexipId: createdParticipant.uuid,
-                        dispayName: createdParticipant.pexipDisplayName
+                        displayName: createdParticipant.pexipDisplayName
                     });
                 })
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (
-                    createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName) &&
-                    createdParticipant.isAudioOnlyCall
-                ) {
-                    this.continueWithNoRecording = false;
-                    this.wowzaAgent = createdParticipant;
-                    this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
-                        pexipId: createdParticipant.uuid,
-                        dispayName: createdParticipant.pexipDisplayName
-                    });
+                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
+                    this.assignWowzaAgent(createdParticipant);
                 }
             });
 
@@ -519,7 +517,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.wowzaAgent = updatedParticipant;
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener updated`, {
                         pexipId: updatedParticipant.uuid,
-                        dispayName: updatedParticipant.pexipDisplayName
+                        displayName: updatedParticipant.pexipDisplayName
                     });
                 }
             });
@@ -632,7 +630,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
-
+        this.cleanupDialOutConnections();
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
     }
@@ -653,13 +651,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.conference.status === ConferenceStatus.InSession &&
             deletedParticipant.uuid === this.wowzaAgent.uuid
         ) {
-            this.logger.warn(
-                `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
-                {
-                    pexipId: this.wowzaAgent?.uuid,
-                    displayName: this.wowzaAgent?.pexipDisplayName
-                }
-            );
+            this.logWowzaAlert();
             this.wowzaAgent = null;
             this.showAudioRecordingRestartAlert();
         }
@@ -669,11 +661,35 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.warn(
             `${this.loggerPrefixJudge} not recording when expected, streaming agent could not establish connection: show alert`,
             {
+                agent: this.wowzaAgent,
                 showVideo: this.showVideo,
                 continueWithNoRecording: this.continueWithNoRecording,
-                audioErrorRetryToast: this.audioErrorRetryToast,
-                agent: this.wowzaAgent
+                audioErrorRetryToast: this.audioErrorRetryToast
             }
         );
+    }
+
+    private assignWowzaAgent(createdParticipant: ParticipantUpdated) {
+        if (createdParticipant.isAudioOnlyCall) {
+            if (this.restartActioned) {
+                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
+            }
+
+            this.continueWithNoRecording = false;
+            this.wowzaAgent = createdParticipant;
+            this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
+                pexipId: createdParticipant.uuid,
+                displayName: createdParticipant.pexipDisplayName
+            });
+        } else if (this.restartActioned) {
+            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+        }
+    }
+
+    private cleanupDialOutConnections() {
+        this.dialOutUUID?.forEach(uuid => {
+            this.videoCallService.disconnectWowzaAgent(uuid);
+        });
+        this.dialOutUUID = [];
     }
 }
