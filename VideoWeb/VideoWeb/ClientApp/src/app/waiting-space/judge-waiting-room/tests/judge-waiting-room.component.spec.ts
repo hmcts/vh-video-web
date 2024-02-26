@@ -135,7 +135,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         linked_participants: []
     });
 
-    const wowzaParticipant = {
+    const wowzaParticipant: PexipParticipant = {
         buzz_time: 0,
         call_tag: null,
         display_name: 'vh-wowza-dev',
@@ -347,12 +347,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
     });
 
+
     it('should update wowza participant if update is for Wowza Listener', () => {
-        const updatedWowzaParticipant = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
-        updatedWowzaParticipant.isAudioOnlyCall = false;
-        videoCallService.onParticipantUpdated.and.returnValue(of(updatedWowzaParticipant));
-        component.ngOnInit();
-        expect(component.wowzaAgent).toBe(updatedWowzaParticipant);
+        const wowzaParticipant = {uuid: 'wowzaId', isAudioOnlyCall: true} as ParticipantUpdated;
+        component.wowzaAgent = { uuid: wowzaParticipant.uuid } as ParticipantUpdated;
+        component.updateWowzaParticipant(wowzaParticipant);
+        expect(component.wowzaAgent).toBe(wowzaParticipant);
     });
 
     it('should create', () => {

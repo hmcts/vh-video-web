@@ -471,6 +471,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
+    updateWowzaParticipant(updatedParticipant: ParticipantUpdated) {
+        if (updatedParticipant.uuid == this.wowzaAgent?.uuid) {
+            this.wowzaAgent = updatedParticipant;
+            this.logger.debug(`${this.loggerPrefixJudge} WowzaListener updated`, {
+                pexipId: updatedParticipant.uuid,
+                displayName: updatedParticipant.pexipDisplayName
+            });
+        }
+    }
     private init() {
         this.destroyedSubject = new Subject();
         this.errorCount = 0;
@@ -513,13 +522,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(updatedParticipant => {
                 this.assignPexipIdToRemoteStore(updatedParticipant);
-                if (updatedParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
-                    this.wowzaAgent = updatedParticipant;
-                    this.logger.debug(`${this.loggerPrefixJudge} WowzaListener updated`, {
-                        pexipId: updatedParticipant.uuid,
-                        displayName: updatedParticipant.pexipDisplayName
-                    });
-                }
+                this.updateWowzaParticipant(updatedParticipant);
             });
 
         this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {

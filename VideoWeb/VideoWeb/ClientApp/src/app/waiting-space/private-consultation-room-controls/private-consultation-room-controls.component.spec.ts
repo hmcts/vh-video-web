@@ -77,8 +77,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const logger: Logger = new MockLogger();
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
     const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['storeFocus', 'restoreFocus']);
-
-    const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
@@ -343,7 +341,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 0;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
@@ -353,7 +351,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should show remote muted when muted by host', () => {
-        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.is_muted = 'Yes';
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
@@ -362,7 +360,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 0;
         pexipParticipant.spotlight = 0;
@@ -377,7 +375,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
@@ -388,7 +386,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
@@ -401,7 +399,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     it('should mute locally if remote muted and not muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.is_muted = 'Yes';
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         component.audioMuted = false;
@@ -413,7 +411,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     it('should skip mute locally if remote muted and already muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.is_muted = 'Yes';
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         component.audioMuted = true;
