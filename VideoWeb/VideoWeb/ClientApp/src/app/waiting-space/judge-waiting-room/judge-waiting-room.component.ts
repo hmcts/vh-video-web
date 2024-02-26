@@ -384,8 +384,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     initAudioRecordingInterval() {
-        this.audioRecordingInterval = setInterval(() => {
-            this.verifyAudioRecordingStream();
+        this.audioRecordingInterval = setInterval(async () => {
+            await this.verifyAudioRecordingStream();
         }, this.audioStreamIntervalSeconds * 1000);
     }
 
@@ -394,7 +394,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioErrorRetryToast = null;
     }
 
-    verifyAudioRecordingStream() {
+    async verifyAudioRecordingStream(): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
             this.logger.debug(`${this.loggerPrefixJudge} Recording Session Seconds: ${this.recordingSessionSeconds}`);
             this.recordingSessionSeconds += this.audioStreamIntervalSeconds;
