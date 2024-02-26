@@ -348,6 +348,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
     });
 
+    it('should update wowza participant if update is for Wowza Listener', () => {
+        const updatedWowzaParticipant = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
+        updatedWowzaParticipant.isAudioOnlyCall = false;
+        videoCallService.onParticipantUpdated.and.returnValue(of(updatedWowzaParticipant));
+        component.ngOnInit();
+        expect(component.wowzaAgent).toBe(updatedWowzaParticipant);
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
