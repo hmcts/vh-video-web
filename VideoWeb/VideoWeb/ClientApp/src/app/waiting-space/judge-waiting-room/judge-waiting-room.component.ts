@@ -65,10 +65,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     onConferenceStatusChangedSubscription: Subscription;
     wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
+    restartActioned: boolean;
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
-    private restartActioned: boolean;
     private dialOutUUID = [];
 
     constructor(
