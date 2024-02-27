@@ -347,12 +347,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
     });
 
-
     it('should update wowza participant if update is for Wowza Listener', () => {
-        const wowzaParticipant = {uuid: 'wowzaId', isAudioOnlyCall: true} as ParticipantUpdated;
-        component.wowzaAgent = { uuid: wowzaParticipant.uuid } as ParticipantUpdated;
-        component.updateWowzaParticipant(wowzaParticipant);
-        expect(component.wowzaAgent).toBe(wowzaParticipant);
+        const wowzaParticipantUpdate = { uuid: 'wowzaId', isAudioOnlyCall: true } as ParticipantUpdated;
+        component.wowzaAgent = { uuid: wowzaParticipantUpdate.uuid } as ParticipantUpdated;
+        component.updateWowzaParticipant(wowzaParticipantUpdate);
+        expect(component.wowzaAgent).toBe(wowzaParticipantUpdate);
     });
 
     it('should create', () => {

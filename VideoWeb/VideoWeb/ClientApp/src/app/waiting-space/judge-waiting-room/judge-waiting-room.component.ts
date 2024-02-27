@@ -472,7 +472,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     updateWowzaParticipant(updatedParticipant: ParticipantUpdated) {
-        if (updatedParticipant.uuid == this.wowzaAgent?.uuid) {
+        if (updatedParticipant.uuid === this.wowzaAgent?.uuid) {
             this.wowzaAgent = updatedParticipant;
             this.logger.debug(`${this.loggerPrefixJudge} WowzaListener updated`, {
                 pexipId: updatedParticipant.uuid,

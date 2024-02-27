@@ -17,7 +17,7 @@ export class VideoCallTestData {
             uuid: Guid.create().toString(),
             spotlight: 0,
             external_node_uuid: null,
-            protocol: 'webrtc',
+            protocol: 'webrtc'
         } as PexipParticipant;
     }
 }
