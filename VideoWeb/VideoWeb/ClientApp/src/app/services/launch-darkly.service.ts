@@ -10,8 +10,7 @@ export const FEATURE_FLAGS = {
     dom1SignIn: 'dom1',
     multiIdpSelection: 'multi-idp-selection',
     wowzaKillButton: 'wowza-listener-kill-switch',
-    hostMuteMicrophone: 'host-mute-microphone',
-    wowzaPolling: 'audio-alert-recorder-check'
+    hostMuteMicrophone: 'host-mute-microphone'
 };
 
 @Injectable({
