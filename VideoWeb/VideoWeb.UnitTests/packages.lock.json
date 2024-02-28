@@ -111,9 +111,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[1.48.7, )",
-        "resolved": "1.48.7",
-        "contentHash": "t9Pjl9aNjZ8A775W5lsXGnfdNUj35t9SqtiZKs51D50/NHwNk9qfH9JnICc+jXTTL3Os7nXtpfJVC8pe2VU9Pg==",
+        "requested": "[1.51.2, )",
+        "resolved": "1.51.2",
+        "contentHash": "8NLq4sOtms5js5o24VCGiF+o8/TweY4iSFux84owc9PebyErH1bQ4hTpT8C0zD6s0XsK9U/N4BT/tRHspGPYjA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -176,8 +176,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.47.32",
-        "contentHash": "XhyiSEp1E8hK0xR8lPgp7xnuBfTXB6KEtiHiuP6SMvnjW/+d4+Ol1Y5Z9A8cVyYpBpif4mO2wspt5tWuUDzE3g==",
+        "resolved": "1.51.12",
+        "contentHash": "UXzOXlrW/KJ+iN9yMT1xqIyO35cRa1FBR8ph8DNRgd7dR8OjYRi1/GOiNIDIz4s+h21mfeJteaO/PDGG0reMLg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -1919,7 +1919,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[6.0.4, )",
           "AspNetCore.HealthChecks.Uris": "[6.0.3, )",
-          "BookingsApi.Client": "[1.47.32, )",
+          "BookingsApi.Client": "[1.51.12, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[10.4.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[5.7.0, )",
@@ -1942,7 +1942,7 @@
           "Swashbuckle.AspNetCore.Annotations": "[6.5.0, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.5.0, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "VideoApi.Client": "[1.48.7, )",
+          "VideoApi.Client": "[1.51.2, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"
@@ -1951,7 +1951,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[1.47.32, )",
+          "BookingsApi.Client": "[1.51.12, )",
           "Microsoft.ApplicationInsights": "[2.16.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
           "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
@@ -1960,7 +1960,7 @@
           "Microsoft.Identity.Client": "[4.53.0, )",
           "StackExchange.Redis": "[2.6.111, )",
           "System.IdentityModel.Tokens.Jwt": "[5.6.0, )",
-          "VideoApi.Client": "[1.48.7, )"
+          "VideoApi.Client": "[1.51.2, )"
         }
       },
       "videoweb.contract": {
