@@ -86,7 +86,6 @@ describe('ParticipantsPanelComponent', () => {
     let participants = testData.getListOfParticipants();
     participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
-    const videoCallTestData = new VideoCallTestData();
     const videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
         'getParticipantsByConferenceId',
         'getEndpointsForConference',
@@ -617,7 +616,7 @@ describe('ParticipantsPanelComponent', () => {
         let updatedParticipant: ParticipantUpdated;
         beforeEach(() => {
             pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-            pexipParticipant = videoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
+            pexipParticipant = VideoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
             updatedParticipant = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         });
 
@@ -646,7 +645,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should process video call participant updates', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const pexipParticipant = videoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 1;
         pexipParticipant.spotlight = 1;
@@ -664,7 +663,7 @@ describe('ParticipantsPanelComponent', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
         const displayName = `I1;${pat.pexipDisplayName};${pat.id}`;
-        const pexipParticipant = videoCallTestData.getExamplePexipParticipant(displayName);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(displayName);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 0;
         pexipParticipant.spotlight = 0;
@@ -683,7 +682,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
-        const pexipParticipant = videoCallTestData.getExamplePexipParticipant();
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant();
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 1;
         pexipParticipant.spotlight = 1;
