@@ -38,6 +38,7 @@ import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -66,10 +67,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
     restartActioned: boolean;
+    dialOutUUID = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
-    private dialOutUUID = [];
 
     constructor(
         protected route: ActivatedRoute,
@@ -138,7 +139,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
-
         this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
             this.isMuteMicrophoneEnabled = value;
         });
@@ -480,6 +480,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
         }
     }
+
+    handleHearingStatusMessage(message: ConferenceStatusMessage) {
+        if (message.conferenceId === this.conference.id) {
+            this.logger.debug(`${this.loggerPrefixJudge} Hearing status message received`, {
+                message: message
+            });
+            if (message.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended) {
+                this.cleanupDialOutConnections();
+            }
+        }
+    }
+
     private init() {
         this.destroyedSubject = new Subject();
         this.errorCount = 0;
@@ -568,6 +580,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
                 }
             });
+
+        this.eventService.getHearingStatusMessage().subscribe(message => {
+            this.handleHearingStatusMessage(message);
+        });
     }
 
     private onShouldReload(): void {
@@ -633,9 +649,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
-        this.cleanupDialOutConnections();
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    private cleanupDialOutConnections() {
+        this.logger.debug(`${this.loggerPrefixJudge} Cleaning up dial out connections, if any {dialOutUUID: ${this.dialOutUUID}}`);
+        this.dialOutUUID?.forEach(uuid => {
+            this.videoCallService.disconnectWowzaAgent(uuid);
+        });
+        this.dialOutUUID = [];
     }
 
     private showAudioRecordingRestartAlert() {
@@ -677,7 +700,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             if (this.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
             }
-
             this.continueWithNoRecording = false;
             this.wowzaAgent = createdParticipant;
             this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
@@ -687,12 +709,5 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else if (this.restartActioned) {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         }
-    }
-
-    private cleanupDialOutConnections() {
-        this.dialOutUUID?.forEach(uuid => {
-            this.videoCallService.disconnectWowzaAgent(uuid);
-        });
-        this.dialOutUUID = [];
     }
 }
