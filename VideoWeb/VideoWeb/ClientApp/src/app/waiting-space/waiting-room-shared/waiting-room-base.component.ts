@@ -1376,6 +1376,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             return participant;
         });
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
+        this.hearing.getConference().participants = updatedParticipantsList;
         this.participant = this.getLoggedParticipant();
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
