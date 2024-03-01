@@ -127,6 +127,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
+
     get isChatVisible() {
         return this.panelStates['Chat'];
     }
@@ -138,7 +139,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
-
         this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
             this.isMuteMicrophoneEnabled = value;
         });
@@ -568,6 +568,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
                 }
             });
+
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                if (message.conferenceId === this.conference.id) {
+                    this.logger.debug(`${this.loggerPrefixJudge} Hearing status message received`, {
+                        message: message
+                    });
+                    if (message.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended)
+                        this.cleanupDialOutConnections();
+                }
+            })
+        );
     }
 
     private onShouldReload(): void {
@@ -633,7 +645,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
-        this.cleanupDialOutConnections();
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
     }
@@ -677,7 +688,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             if (this.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
             }
-
+            if(createdParticipant.pexipDisplayName !== this.videoCallService.wowzaAgentName)
             this.continueWithNoRecording = false;
             this.wowzaAgent = createdParticipant;
             this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
@@ -690,6 +701,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private cleanupDialOutConnections() {
+        this.logger.debug(`${this.loggerPrefixJudge} Cleaning up dial out connections, if any {dialOutUUID: ${this.dialOutUUID}}`);
         this.dialOutUUID?.forEach(uuid => {
             this.videoCallService.disconnectWowzaAgent(uuid);
         });
