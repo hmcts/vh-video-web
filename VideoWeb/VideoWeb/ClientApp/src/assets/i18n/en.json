@@ -842,7 +842,12 @@
     "crime-crown-court": "Crime Crown Court",
     "family-private-law": "Family Private Law",
     "food-safety": "Food Safety",
-    "specified-money-claims": "Specified Money Claims"
+    "specified-money-claims": "Specified Money Claims",
+    "community-right-to-bid": "Community Right to Bid",
+    "electronic-communications,-postal-services-&-network-information-systems": "Electronic Communications, Postal Services & Network Information Systems",
+    "gangmasters-licensing-appeals": "Gangmasters Licensing Appeals",
+    "reserve-forces-appeal-tribunal": "Reserve Forces Appeal Tribunal",
+    "residential-property": "Residential Property"
   },
   "case-type-group": {
     "state": "State",
