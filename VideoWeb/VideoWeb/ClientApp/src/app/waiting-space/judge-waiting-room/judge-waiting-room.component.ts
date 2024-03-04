@@ -541,6 +541,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.handleWowzaAgentDisconnect(deletedParticipant);
         });
 
+        this.videoCallService
+            .onConferenceAdjourned()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => this.cleanupDialOutConnections());
+
         this.eventService
             .getParticipantMediaStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
