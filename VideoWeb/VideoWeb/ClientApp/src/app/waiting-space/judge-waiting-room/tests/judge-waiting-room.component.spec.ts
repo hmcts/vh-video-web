@@ -58,6 +58,7 @@ import { PexipDisplayNameModel } from '../../../services/conference/models/pexip
 import { WaitingRoomBaseDirective } from '../../waiting-room-shared/waiting-room-base.component';
 import { videoCallServiceSpy } from '../../../testing/mocks/mock-video-call.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { ConferenceStatusMessage } from '../../../services/models/conference-status-message';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -962,7 +963,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(vmr.id, false);
         });
 
-        describe('Audio Alert tests', () => {
+        describe('Audio Alert Restart and Toaster tests', () => {
             const toast = jasmine.createSpyObj<VhToastComponent>(
                 'VhToastComponent',
                 { actioned: true },
@@ -1338,5 +1339,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(videoCallService.joinHearingInSession).toHaveBeenCalledTimes(0);
             expect(component.displayJoinHearingPopup).toBeFalsy();
         });
+    });
+
+    it('if hearing is paused or suspended, should clean up any dialed out wowza connections', () => {
+        component.dialOutUUID = ['uuid'];
+        component.handleHearingStatusMessage(new ConferenceStatusMessage(component.conference.id, ConferenceStatus.Paused));
+        expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('uuid');
+        expect(component.dialOutUUID.length).toBe(0);
     });
 });

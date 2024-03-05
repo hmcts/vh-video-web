@@ -631,7 +631,7 @@ describe('VideoCallService', () => {
             service.pexipAPI = pexipSpy;
             const ingestUrl = 'ingestUrl';
             service.connectWowzaAgent(ingestUrl, null);
-            expect(pexipSpy.dialOut).toHaveBeenCalledOnceWith(ingestUrl, 'auto', '', null, jasmine.any(Object));
+            expect(pexipSpy.dialOut).toHaveBeenCalledOnceWith(ingestUrl, 'auto', 'GUEST', null, jasmine.any(Object));
         });
 
         it('Disconnect wowza agent via pexip Participant Delete function', () => {
