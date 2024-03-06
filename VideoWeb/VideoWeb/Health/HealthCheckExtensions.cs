@@ -24,7 +24,7 @@ public static class HealthCheckExtensions
         var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddRedis(connectionStrings.RedisCache, tags: new[] {"startup", "readiness"})
+            //.AddRedis(connectionStrings.RedisCache, tags: new[] {"startup", "readiness"})
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.VideoApiUrl),

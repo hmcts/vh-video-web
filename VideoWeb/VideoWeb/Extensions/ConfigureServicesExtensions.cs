@@ -32,6 +32,7 @@ using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using StackExchange.Redis;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
@@ -170,7 +171,14 @@ namespace VideoWeb.Extensions
                     options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
                 });
 
-            services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
+            services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = connectionStrings.RedisCache; 
+                    options.ConfigurationOptions = new ConfigurationOptions
+                    {
+                        BacklogPolicy = BacklogPolicy.FailFast
+                    };
+                });
             return services;
         }
 
