@@ -119,6 +119,7 @@ declare interface PexipClient {
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;
     getMediaStatistics(): any;
+    setParticipantText(uuid: string, text: string);
 
     /**
      * Activate or stop screen capture sharing.

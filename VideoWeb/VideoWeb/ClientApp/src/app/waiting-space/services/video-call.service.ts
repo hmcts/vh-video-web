@@ -510,6 +510,10 @@ export class VideoCallService {
         this.pexipAPI.disconnectParticipant(wowzaUUID);
     }
 
+    setParticipantOverlayText(uuid: string, text: string) {
+        this.pexipAPI.setParticipantText(uuid, text);
+    }
+
     private handleSetup(stream: MediaStream | URL) {
         this.onSetupSubject.next(new CallSetup(stream));
     }

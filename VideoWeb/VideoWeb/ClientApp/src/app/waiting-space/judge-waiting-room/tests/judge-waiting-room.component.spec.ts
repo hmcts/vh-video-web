@@ -1347,4 +1347,46 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('uuid');
         expect(component.dialOutUUID.length).toBe(0);
     });
+
+    describe('syncDisplayName', () => {
+        beforeEach(() => {
+            videoCallService.setParticipantOverlayText.calls.reset();
+        });
+
+        it('Should call setParticipantOverlayText when is current participant and display name is differnt from update', () => {
+            const participant = new ParticipantResponse();
+            participant.id = '123';
+            participant.display_name = 'CorrectName';
+            participant.status = ParticipantStatus.Available;
+            component.participant = participant;
+            const participantUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+            participantUpdate.pexipDisplayName = 'JUDGE;HEARTBEAT;WrongName;123';
+            component.syncDisplayName(participantUpdate);
+            expect(videoCallService.setParticipantOverlayText).toHaveBeenCalledWith(participantUpdate.uuid, participant.display_name);
+        });
+
+        it('Should not call setParticipantOverlayText when is current participant but display name is not differnt from update', () => {
+            const participant = new ParticipantResponse();
+            participant.id = '123';
+            participant.display_name = 'CorrectName';
+            participant.status = ParticipantStatus.Available;
+            component.participant = participant;
+            const participantUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+            participantUpdate.pexipDisplayName = 'JUDGE;HEARTBEAT;CorrectName;123';
+            component.syncDisplayName(participantUpdate);
+            expect(videoCallService.setParticipantOverlayText).toHaveBeenCalledTimes(0);
+        });
+
+        it('Should not call setParticipantOverlayText when is current participant is not the one being updated', () => {
+            const participant = new ParticipantResponse();
+            participant.id = '123';
+            participant.display_name = 'CorrectName';
+            participant.status = ParticipantStatus.Available;
+            component.participant = participant;
+            const participantUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+            participantUpdate.pexipDisplayName = 'JUDGE;HEARTBEAT;CorrectName;ABC';
+            component.syncDisplayName(participantUpdate);
+            expect(videoCallService.setParticipantOverlayText).toHaveBeenCalledTimes(0);
+        });
+    });
 });

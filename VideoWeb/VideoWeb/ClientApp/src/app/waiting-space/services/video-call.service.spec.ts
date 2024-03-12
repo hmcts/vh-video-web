@@ -105,7 +105,8 @@ describe('VideoCallService', () => {
             'stopPresentation',
             'renegotiate',
             'dialOut',
-            'disconnectParticipant'
+            'disconnectParticipant',
+            'setParticipantText'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -639,6 +640,16 @@ describe('VideoCallService', () => {
             const uuid = 'uuid';
             service.disconnectWowzaAgent(uuid);
             expect(pexipSpy.disconnectParticipant).toHaveBeenCalledOnceWith(uuid);
+        });
+    });
+
+    describe('setParticipantOverlayText', () => {
+        it('should call pexip setParticipantOverlayText', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const text = 'text';
+            service.setParticipantOverlayText(uuid, text);
+            expect(pexipSpy.setParticipantText).toHaveBeenCalledWith(uuid, text);
         });
     });
 });
