@@ -137,14 +137,13 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId,
-            [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
         {
             try
             {
-                var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()
-                    .Map(participantRequest);
+                var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
                 await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest);
+                await UpdateCacheAndPublishUpdate(conferenceId);
             }
             catch (VideoApiException ex)
             {
@@ -153,8 +152,24 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
-
             return NoContent();
+        }
+
+        private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
+        {
+            var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            await _conferenceCache.UpdateConferenceAsync(ConferenceCacheMapper.MapConferenceToCacheModel(conference));
+            var participantResponseMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantResponse>();
+            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
+            await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
+            {
+                Participants = mappedParticipants,
+                ParticipantsToNotify = mappedParticipants,
+                ConferenceId = conferenceId,
+                EventType = EventHub.Enums.EventType.ParticipantsUpdated,
+                Reason = "Participant display name updated",
+                TimeStampUtc = DateTime.UtcNow
+            });
         }
 
         /// <summary>

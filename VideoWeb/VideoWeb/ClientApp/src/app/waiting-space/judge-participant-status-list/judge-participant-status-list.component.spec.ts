@@ -39,7 +39,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     beforeAll(() => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         consultationService = consultationServiceSpyFactory();
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDisplayName', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
             participant_id: '1111-1111',
             display_name: 'Some name',
@@ -166,7 +166,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         await component.saveJudgeDisplayName();
         expect(component.judge.display_name).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
-        expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+        expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
@@ -185,7 +185,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         const error = { error: 'test failure' };
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
-        videoWebService.updateParticipantDetails.and.rejectWith(error);
+        videoWebService.updateParticipantDisplayName.and.rejectWith(error);
         spyOn(logger, 'error');
 
         await component.saveJudgeDisplayName();
@@ -200,13 +200,13 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should updateParticipantDetails when save staff member new display name', async () => {
-        videoWebService.updateParticipantDetails.calls.reset();
+        videoWebService.updateParticipantDisplayName.calls.reset();
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);
         await component.saveStaffMemberDisplayName(editedStaffMember.id);
         expect(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
-        expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+        expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
@@ -214,7 +214,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         const error = { error: 'test failure' };
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);
-        videoWebService.updateParticipantDetails.and.rejectWith(error);
+        videoWebService.updateParticipantDisplayName.and.rejectWith(error);
         spyOn(logger, 'error');
 
         await component.saveStaffMemberDisplayName(editedStaffMember.id);

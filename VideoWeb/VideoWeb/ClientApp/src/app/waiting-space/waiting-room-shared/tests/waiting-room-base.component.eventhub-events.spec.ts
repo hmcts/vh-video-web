@@ -1542,6 +1542,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
+                assertParticipantsUpdated();
             });
 
             it('should show toast for in consultation', () => {
@@ -1553,6 +1554,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
+                assertParticipantsUpdated();
             });
 
             it('should show toast for not in hearing or consultation', () => {
@@ -1564,6 +1566,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
+                assertParticipantsUpdated();
             });
 
             describe('when message participant already exists', () => {
@@ -1588,6 +1591,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.current_room).toBe(existingRoom);
+                    assertParticipantsUpdated();
                 });
 
                 it('should keep current status', () => {
@@ -1602,6 +1606,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.status).toBe(existingStatus);
+                    assertParticipantsUpdated();
                 });
             });
 
@@ -1620,6 +1625,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.current_room).toBeNull();
+                    assertParticipantsUpdated();
                 });
 
                 it('should set status to NotSignedIn if NOT already in in hearing', () => {
@@ -1634,8 +1640,16 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
+                    assertParticipantsUpdated();
                 });
             });
+
+            function assertParticipantsUpdated() {
+                const participants = component.hearing.getConference().participants;
+                expect(participants).not.toBeUndefined();
+                expect(participants.length).toBe(testParticipantMessage.participants.length);
+                expect(participants).toEqual(jasmine.arrayContaining(testParticipantMessage.participants));
+            }
         });
     });
 

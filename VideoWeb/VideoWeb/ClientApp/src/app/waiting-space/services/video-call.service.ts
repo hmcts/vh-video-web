@@ -51,6 +51,7 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
     private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
+    private conferenceAdjournedSubject = new Subject<void>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -264,6 +265,10 @@ export class VideoCallService {
         return this.onVideoEvidenceStoppedSubject.asObservable();
     }
 
+    onConferenceAdjourned(): Observable<void> {
+        return this.conferenceAdjournedSubject.asObservable();
+    }
+
     toggleMute(conferenceId: string, participantId: string): boolean {
         this.logger.info(`${this.loggerPrefix} Toggling mute`, {
             currentAudioMuteStatus: this.pexipAPI.mutedAudio,
@@ -346,11 +351,13 @@ export class VideoCallService {
     }
 
     pauseHearing(conferenceId: string): Promise<void> {
+        this.conferenceAdjournedSubject.next();
         this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId });
         return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
     suspendHearing(conferenceId: string): Promise<void> {
+        this.conferenceAdjournedSubject.next();
         this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
         return this.apiClient.suspendVideoHearing(conferenceId).toPromise();
     }
@@ -493,11 +500,11 @@ export class VideoCallService {
             call_type: 'audio',
             remote_display_name: this.wowzaAgentName
         };
-        this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
+        this.pexipAPI.dialOut(ingestUrl, 'auto', 'GUEST', callbackFn, params);
     }
 
     /**
-     * Disconnects the audio recording agent for wowza. Should only be used for testing
+     * Disconnects the audio recording agent for wowza.
      * @param wowzaUUID string - pexip id of the wowza participant **/
     disconnectWowzaAgent(wowzaUUID: string) {
         this.pexipAPI.disconnectParticipant(wowzaUUID);

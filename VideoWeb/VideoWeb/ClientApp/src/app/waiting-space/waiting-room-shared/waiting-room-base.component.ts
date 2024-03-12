@@ -1389,11 +1389,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
             participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+            participant.display_name ??= currentParticipant.display_name;
             return participant;
         });
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.hearing.getConference().participants = updatedParticipantsList;
-
         this.participant = this.getLoggedParticipant();
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
