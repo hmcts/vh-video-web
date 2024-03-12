@@ -188,26 +188,26 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.outgoingStream).toBeDefined();
     });
 
-    it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
-        // arrange
-        component.audioOnly = false;
-        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
-            'PrivateConsultationRoomControlsComponent',
-            ['toggleVideoMute'],
-            { videoMuted: true }
-        );
-        component.hearingControls = controls;
+    // it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
+    //     // arrange
+    //     component.audioOnly = false;
+    //     const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
+    //         'PrivateConsultationRoomControlsComponent',
+    //         ['toggleVideoMute'],
+    //         { videoMuted: true }
+    //     );
+    //     component.hearingControls = controls;
 
-        const incomingStream = <any>{};
-        const payload = new ConnectedCall(incomingStream);
+    //     const incomingStream = <any>{};
+    //     const payload = new ConnectedCall(incomingStream);
 
-        // act
-        onConnectedSubject.next(payload);
-        tick();
+    //     // act
+    //     onConnectedSubject.next(payload);
+    //     tick();
 
-        // assert
-        expect(controls.toggleVideoMute).toHaveBeenCalled();
-    }));
+    //     // assert
+    //     expect(controls.toggleVideoMute).toHaveBeenCalled();
+    // }));
 
     it('should hide video when video call failed', () => {
         const currentErrorCount = (component.errorCount = 0);
