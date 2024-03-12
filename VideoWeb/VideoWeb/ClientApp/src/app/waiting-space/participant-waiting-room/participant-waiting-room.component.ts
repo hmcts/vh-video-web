@@ -324,8 +324,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     onInterprterUserToggle() {
         this.interpreterUser = !this.interpreterUser;
-        const stream = this.videoCallService.pexipAPI.user_media_stream;
-        stream.getAudioTracks().forEach(track => (track.contentHint = 'interpreter'));
+        if (this.interpreterUser) {
+            const stream = this.videoCallService.pexipAPI.user_media_stream;
+            stream.getAudioTracks().forEach(track => (track.contentHint = 'interpreter'));
+        }
     }
 
     private onShouldReload(): void {
