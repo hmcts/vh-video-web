@@ -492,6 +492,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
     }
 
+    syncDisplayName(pexipParticipant: ParticipantUpdated) {
+        const pexipDisplayModel = PexipDisplayNameModel.fromString(pexipParticipant.pexipDisplayName);
+        if (
+            pexipParticipant.pexipDisplayName.includes(this.participant.id) &&
+            this.participant.display_name !== pexipDisplayModel.displayName
+        ) {
+            this.videoCallService.setParticipantOverlayText(pexipParticipant.uuid, this.participant.display_name);
+        }
+    }
+
     private init() {
         this.destroyedSubject = new Subject();
         this.errorCount = 0;
@@ -535,6 +545,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(updatedParticipant => {
                 this.assignPexipIdToRemoteStore(updatedParticipant);
                 this.updateWowzaParticipant(updatedParticipant);
+                this.syncDisplayName(updatedParticipant);
             });
 
         this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {

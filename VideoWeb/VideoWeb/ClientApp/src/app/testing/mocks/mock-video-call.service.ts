@@ -88,7 +88,8 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'onParticipantDeleted',
         'connectWowzaAgent',
         'disconnectWowzaAgent',
-        'onConferenceAdjourned'
+        'onConferenceAdjourned',
+        'setParticipantOverlayText'
     ],
     {
         pexipAPI: pexipApiMock,
