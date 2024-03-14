@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/base';
 
 .participant-name {
   float: right;
@@ -7,7 +7,7 @@
 
 .chat-window {
   height: calc(50vh - 50px);
-  border: 1px solid govuk-colour('light-grey');
+  border: 1px solid $govuk-border-colour;
   clear: both;
   margin-right: 0px !important;
   margin-left: -5px !important;

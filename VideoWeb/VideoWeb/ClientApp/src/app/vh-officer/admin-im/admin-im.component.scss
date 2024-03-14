@@ -1,5 +1,4 @@
-@import 'govuk-frontend/govuk/all';
-
+@import "govuk-frontend/govuk/base";
 .im-participant-list {
   @include govuk-grid-column(one-third);
   overflow-y: auto;

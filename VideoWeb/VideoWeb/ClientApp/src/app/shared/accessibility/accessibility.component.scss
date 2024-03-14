@@ -1,3 +1,5 @@
+@import 'govuk-frontend/govuk/base';
+
 #contents div {
     margin: 0;
     float: left;
@@ -43,20 +45,12 @@
     line-height: 1.5;
 }
 
-a {
-    color: #005798;
+a,a:hover {
+    color: govuk-colour('blue') !important;
 }
 
-a:focus:link {
-    color: #005798 !important;
-}
-
-a:hover {
-    color: #2b8cc4 !important;
-}
-
-a:link {
-    color: #005ea5 !important;
+a:link, a:focus:link {
+    color: govuk-colour('light-blue') !important;
 }
 
 .vh-text {

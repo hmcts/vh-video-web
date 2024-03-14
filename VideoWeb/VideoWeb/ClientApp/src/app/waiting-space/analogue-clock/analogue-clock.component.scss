@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/base';
 
 .outer_face {
   display: block;
@@ -11,7 +11,7 @@
   /* height of clock */
   border-radius: 200px;
   /* clock round corner radius */
-  border: 0 solid govuk-colour('mid-grey');
+  border: 0 solid $govuk-border-colour;
   /* thickness of outer border */
 
   &.ontime {

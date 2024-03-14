@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/base';
 
 .im-list {
   display: grid;
@@ -11,7 +11,7 @@
 .im-list-top {
   /* margin-top: 12px; */
   clear: both;
-  border-top: 1px solid govuk-colour('mid-grey');
+  border-top: 1px solid $govuk-border-colour;
   padding-top: 12px;
 }
 
