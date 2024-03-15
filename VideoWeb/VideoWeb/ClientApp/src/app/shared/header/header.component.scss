@@ -1,7 +1,11 @@
 .govuk-header__logo {
-  width: 70%;
+  width: 90%;
+  margin-bottom: 0px;
 }
 
+.govuk-header__logotype-crown {
+  margin-right: 10px;
+}
 .vh-ml15 {
   margin-right: 15px;
   margin-bottom: 10px;
@@ -11,4 +15,8 @@
   .govuk-header__logo {
     width: 100%;
   }
+}
+
+.header-item {
+  padding: 5px;
 }
