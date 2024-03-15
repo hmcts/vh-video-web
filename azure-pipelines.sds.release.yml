@@ -2,7 +2,7 @@ name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
 trigger: 
   - release/*
-  -feature/*
+  - feature/*
 
 pr: none
 
