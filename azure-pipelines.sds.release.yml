@@ -1,8 +1,10 @@
 name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
-trigger: 
-  - release/*
-  - feature/*
+trigger:
+  branches:
+    include:
+      - release/*
+      - feature/*
 
 pr: none
 
