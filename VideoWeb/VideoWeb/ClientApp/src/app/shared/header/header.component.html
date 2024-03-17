@@ -5,7 +5,12 @@
               <span class="govuk-header__logotype-crown">
                   <ng-container *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest"></ng-container>
                   <ng-template #sctsCrest>
-                      <app-header-scottish-logo-svg></app-header-scottish-logo-svg>
+                      <img role="presentation"
+                           id="header-logo-scot"
+                           class="govuk-header__logotype-crest"
+                           src="/assets/images/scot-crest-white.png"
+                           height="40"
+                           [attr.alt]="'participants-panel.scottish-crest' | translate"/>
                   </ng-template>
                   <ng-template #hmctsCrest>
                       <app-header-logo-svg></app-header-logo-svg>

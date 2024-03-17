@@ -42,7 +42,6 @@ import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
 import { HeaderLogoSvgComponent } from './header/header-logo-svg/header-logo-svg.component';
-import { HeaderScottishLogoSvgComponent } from './header/header-scottish-logo-svg/header-scottish-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
@@ -160,8 +159,7 @@ export function getSettings(configService: ConfigService) {
         RoomNamePipe,
         HookElementDirective,
         RandomPipe,
-        TruncatableTextComponent,
-        HeaderScottishLogoSvgComponent
+        TruncatableTextComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
