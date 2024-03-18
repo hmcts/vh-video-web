@@ -21,7 +21,6 @@
 }
 
 .tooltip-wrapper {
-  /*position: relative;*/
   display: inline-block;
   text-decoration: underline;
   color: $govuk-link-colour !important;
@@ -72,8 +71,6 @@
   /* At the bottom of the tooltip */
   left: 5%;
   margin-left: -5px;
-  // border-width: 5px;
-  // border-style: solid;
   border-left: solid transparent 10px;
   border-right: solid transparent 10px;
   border-bottom: solid gray 10px;
