@@ -41,7 +41,7 @@ import { ConfigService } from '../services/api/config.service';
 import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
-import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
+import { HeaderLogoSvgComponent } from './header/header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
