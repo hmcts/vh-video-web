@@ -72,7 +72,10 @@ namespace VideoWeb.Controllers
                 var conferenceForHostResponseMapper = _mapperFactory.Get<ConfirmedHearingsTodayResponse, List<HostConference>, ConferenceForHostResponse>();
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                var conferencesForHost = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(new GetConferencesByHearingIdsRequest
+                {
+                    HearingRefIds = hearings.Select(x => x.Id).ToArray()
+                });
                 
                 if(conferencesForHost.Count != hearings.Count)
                     _logger.LogError(@"Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}", 
