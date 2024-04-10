@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 @Component({
     selector: 'app-admin-hearing',
@@ -10,9 +11,13 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export class AdminHearingComponent implements OnInit {
     @Input() hearing: Hearing;
     adminIframeUrl: SafeResourceUrl;
-    constructor(public sanitizer: DomSanitizer) {}
+    vhoVodafoneFeatureFlag: boolean;
+    constructor(public sanitizer: DomSanitizer, private ldService: LaunchDarklyService) {}
 
     ngOnInit() {
+        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vodafone, false).subscribe(value => {
+            this.vhoVodafoneFeatureFlag = value;
+        });
         this.sanitiseAndLoadIframe();
     }
 
