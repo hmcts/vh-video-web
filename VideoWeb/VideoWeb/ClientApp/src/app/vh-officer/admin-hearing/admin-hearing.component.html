@@ -6,7 +6,7 @@
     <div id="participant-status-table" class="govuk-grid-column-one-quarter govuk-!-padding-0">
       <app-participant-status [conferenceId]="hearing.id"></app-participant-status>
     </div>
-    <div id="vho-admin-view" class="govuk-grid-column-three-quarters govuk-!-padding-0">
+    <div *ngIf="!vhoVodafoneFeatureFlag" id="vho-admin-view" class="govuk-grid-column-three-quarters govuk-!-padding-0">
       <iframe
         id="admin-frame"
         [src]="adminIframeUrl"
