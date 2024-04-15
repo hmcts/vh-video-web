@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SupplierClientService } from './supplier-client.service';
-import { Renderer2, RendererFactory2 } from '@angular/core';
+import { RendererFactory2 } from '@angular/core';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
 import { of } from 'rxjs';
 
