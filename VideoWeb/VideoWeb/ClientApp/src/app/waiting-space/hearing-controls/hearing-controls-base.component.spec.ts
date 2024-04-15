@@ -4,7 +4,8 @@ import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import {
     ClientSettingsResponse,
     ConferenceResponse,
-    ParticipantForUserResponse, ParticipantResponse,
+    ParticipantForUserResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
