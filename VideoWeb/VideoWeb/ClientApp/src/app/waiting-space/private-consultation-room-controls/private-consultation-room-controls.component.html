@@ -7,7 +7,6 @@
       colour="grey"
       [class]="{ 'dropdown-opaque': showContextMenu }"
       (click)="showContextMenu = !showContextMenu"
-      tabindex="0"
     >
       <fa-icon icon="ellipsis-h"></fa-icon>
       <div class="dropdown-content" [class]="{ show: showContextMenu }">
@@ -18,7 +17,6 @@
           *ngIf="isHost && !isPrivateConsultation"
           colour="grey"
           (click)="togglePanelStatus('Chat')"
-          tabindex="0"
           (keyup.enter)="togglePanelStatus('Chat')"
           (keyup.space)="togglePanelStatus('Chat')"
         >
@@ -242,7 +240,6 @@
           data-module="govuk-button"
           (click)="leavePrivateConsultation()"
           [hidden]="!canLeaveConsultation()"
-          tabindex="0"
         >
           <span>
             <fa-icon icon="sign-out-alt" flip="horizontal"></fa-icon>
@@ -260,7 +257,6 @@
       [text]="'private-consultation-room-controls.participants-panel' | translate"
       colour="grey"
       (click)="togglePanelStatus('Participants')"
-      tabindex="0"
       (keyup.enter)="togglePanelStatus('Participants')"
       (keyup.space)="togglePanelStatus('Participants')"
     >
@@ -341,7 +337,6 @@
         colour="grey"
         disableChildTooltip
         (click)="togglePanelStatus('Chat')"
-        tabindex="0"
         (keyup.enter)="togglePanelStatus('Chat')"
         (keyup.space)="togglePanelStatus('Chat')"
       >
@@ -357,7 +352,6 @@
         [text]="'private-consultation-room-controls.share-my-screen' | translate"
         colour="grey"
         (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
-        tabindex="0"
         (keyup.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"
         (keyup.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
       >
@@ -389,7 +383,6 @@
             appTooltip
             [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
             colour="red"
-            tabindex="0"
           >
             <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0">
               <fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
@@ -419,7 +412,6 @@
         [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
         colour="red"
         (click)="stopScreenShare()"
-        tabindex="0"
       >
         <fa-icon icon="share-square" class="yellow" rotate="180" (keyup.enter)="stopScreenShare()"></fa-icon>
       </div>
@@ -433,7 +425,6 @@
         [text]="'private-consultation-room-controls.change-camera-mic' | translate"
         colour="grey"
         (click)="changeDeviceSelected()"
-        tabindex="0"
         (keyup.enter)="changeDeviceSelected()"
         (keyup.space)="changeDeviceSelected()"
       >
@@ -453,7 +444,6 @@
         "
         colour="grey"
         (click)="toggleView()"
-        tabindex="0"
         (keyup.enter)="toggleView()"
         (keyup.space)="toggleView()"
       >
@@ -473,7 +463,6 @@
         "
         colour="grey"
         (click)="toggleVideoMute()"
-        tabindex="0"
         (keyup.enter)="toggleVideoMute()"
         (keyup.space)="toggleVideoMute()"
       >
@@ -493,7 +482,6 @@
         "
         colour="grey"
         (click)="toggleMute()"
-        tabindex="0"
         (keyup.enter)="toggleMute()"
         (keyup.space)="toggleMute()"
       >
@@ -524,7 +512,6 @@
         "
         colour="grey"
         (click)="toggleHandRaised()"
-        tabindex="0"
         (keyup.enter)="toggleHandRaised()"
         (keyup.space)="toggleHandRaised()"
       >
@@ -539,7 +526,6 @@
           class="icon-button"
           appTooltip
           colour="grey"
-          tabindex="0"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
           (keypress)="displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
