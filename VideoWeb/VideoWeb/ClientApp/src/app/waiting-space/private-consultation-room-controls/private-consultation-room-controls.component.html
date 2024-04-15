@@ -251,7 +251,7 @@
         </div>
       </div>
     </div>
-    <div class="flexBar"></div>
+    <div *ngIf="!isObserver" class="flexBar"></div>
     <div
       class="icon-button"
       id="toggle-participants-panel"

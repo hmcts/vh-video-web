@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import {
     ClientSettingsResponse,
     ConferenceResponse,
-    ParticipantForUserResponse,
+    ParticipantForUserResponse, ParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
@@ -1120,6 +1120,23 @@ describe('HearingControlsBaseComponent', () => {
             // Assert
             expect(videoCallServiceSpy.toggleMute).toHaveBeenCalledTimes(0);
             expect(eventsServiceSpy.sendMediaStatus).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    describe('isObserver', () => {
+        it('should return true when participant role is QuickLinkObserver', () => {
+            component.participant = { role: Role.QuickLinkObserver } as ParticipantResponse;
+            expect(component.isObserver).toBeTrue();
+        });
+
+        it('should return false when participant role is not QuickLinkObserver', () => {
+            component.participant = { role: Role.Judge } as ParticipantResponse;
+            expect(component.isObserver).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.isObserver).toBeFalse();
         });
     });
 });
