@@ -388,7 +388,7 @@ describe('UserMediaService', () => {
             localStorageServiceSpy.load.and.returnValue(null);
             userMediaService.updateStartWithAudioMuted(conferenceId, true);
             expect(localStorageServiceSpy.save).toHaveBeenCalledWith(
-                userMediaService.CONFERENCES_KEY, 
+                userMediaService.CONFERENCES_KEY,
                 jasmine.arrayContaining([
                     jasmine.objectContaining({
                         conferenceId: conferenceId,
