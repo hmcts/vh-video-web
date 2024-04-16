@@ -6,7 +6,7 @@ import { DOCUMENT } from '@angular/common';
     providedIn: 'root'
 })
 export class SupplierClientService {
-    isVodafoneToggledOn: boolean;
+    private isVodafoneToggledOn: boolean;
     private readonly vodafone = 'scripts/vodafone/pexrtc.js';
     private readonly kinly = 'scripts/kinly/pexrtc.js';
     private readonly renderer: Renderer2;
