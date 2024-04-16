@@ -25,7 +25,6 @@ import {
     StoppedScreenshare
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
-import { SupplierClientService } from '../../services/api/supplier-client.service';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 declare let PexRTC: any;
@@ -77,8 +76,7 @@ export class VideoCallService {
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
-        private streamMixerService: StreamMixerService,
-        private supplierClientService: SupplierClientService
+        private streamMixerService: StreamMixerService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -92,7 +90,6 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient(): Promise<void> {
-        await this.supplierClientService.loadSupplierScript();
         this.logger.debug(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
 

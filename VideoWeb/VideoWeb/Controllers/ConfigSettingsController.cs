@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using CacheControlHeaderValue = System.Net.Http.Headers.CacheControlHeaderValue;
 
 namespace VideoWeb.Controllers
 {

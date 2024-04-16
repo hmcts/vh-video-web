@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
@@ -30,6 +31,10 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var envName = Configuration["AzureAd:RedirectUri"]; // resource ID is a GUID, 
+            var sdkKey = Configuration["FeatureToggle:SdkKey"];
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
+
             services.AddSwagger();
             services.AddHsts(options =>
             {
@@ -57,16 +62,13 @@ namespace VideoWeb
         {
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
-
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
-
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-
             services.Configure<EJudAdConfiguration>(options =>
             {
                 Configuration.Bind("EJudAd", options);

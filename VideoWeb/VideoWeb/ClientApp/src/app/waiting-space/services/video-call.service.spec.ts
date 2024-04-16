@@ -122,8 +122,7 @@ describe('VideoCallService', () => {
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy,
-            supplierClientServiceSpy
+            streamMixerServiceSpy
         );
 
         currentStreamSubject.next(mockCamStream);
@@ -397,7 +396,6 @@ describe('VideoCallService', () => {
     describe('SetupClient', () => {
         it('should init pexip and set pexip client', async () => {
             await service.setupClient();
-            expect(supplierClientServiceSpy.loadSupplierScript).toHaveBeenCalled();
             expect(service.pexipAPI).toBeDefined();
             expect(service.onCallSetup()).toBeDefined();
             expect(service.onCallConnected()).toBeDefined();

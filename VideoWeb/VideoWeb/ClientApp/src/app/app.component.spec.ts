@@ -40,6 +40,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
+import {SupplierClientService} from "./services/api/supplier-client.service";
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -59,6 +60,7 @@ describe('AppComponent', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+    let supplierClientServiceSpy: jasmine.SpyObj<SupplierClientService>;
 
     let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
@@ -104,6 +106,7 @@ describe('AppComponent', () => {
             'logoffAndRevokeTokens',
             'isAuthenticated'
         ]);
+        supplierClientServiceSpy = jasmine.createSpyObj<SupplierClientService>('SupplierClientService', ['loadSupplierScript']);
     });
 
     afterAll(() => {
@@ -146,7 +149,8 @@ describe('AppComponent', () => {
                     provide: ActivatedRoute,
                     useValue: activatedRouteMock
                 },
-                { provide: NoSleepService, useValue: noSleepServiceSpy }
+                { provide: NoSleepService, useValue: noSleepServiceSpy },
+                { provide: SupplierClientService, useValue: supplierClientServiceSpy }
             ],
             declarations: [
                 AppComponent,

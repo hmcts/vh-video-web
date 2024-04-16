@@ -84,5 +84,10 @@ namespace VideoWeb.Contract.Responses
         /// Launch Darkly Client for feature toggling
         /// </summary>
         public string LaunchDarklyClientId { get; set; }
+        
+        /// <summary>
+        /// Supplier
+        /// </summary>
+        public string Supplier { get; set; }
     }
 }

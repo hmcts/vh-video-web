@@ -1,3 +1,4 @@
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
@@ -9,10 +10,12 @@ namespace VideoWeb.Mappings
         HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
     {
         private readonly IMapperFactory _mapperFactory;
+        private readonly IFeatureToggles _featureToggles;
 
-        public ClientSettingsResponseMapper(IMapperFactory mapperFactory)
+        public ClientSettingsResponseMapper(IMapperFactory mapperFactory, IFeatureToggles featureToggles)
         {
             _mapperFactory = mapperFactory;
+            _featureToggles = featureToggles;
         }
 
         public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration,
@@ -40,7 +43,8 @@ namespace VideoWeb.Mappings
                 EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
                 EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
                 BlurRadius = servicesConfiguration.BlurRadius,
-                LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId
+                LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId,
+                Supplier = _featureToggles.Vodafone() ? "vodafone" : "kinly"
             };
         }
 
