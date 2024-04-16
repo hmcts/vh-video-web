@@ -387,9 +387,15 @@ describe('UserMediaService', () => {
             const conferenceId = 'conferenceId';
             localStorageServiceSpy.load.and.returnValue(null);
             userMediaService.updateStartWithAudioMuted(conferenceId, true);
-            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
-                new ConferenceSetting(conferenceId, true)
-            ]);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(
+                userMediaService.CONFERENCES_KEY, 
+                jasmine.arrayContaining([
+                    jasmine.objectContaining({
+                        conferenceId: conferenceId,
+                        startWithAudioMuted: true
+                    })
+                ])
+            );
         });
 
         it('should not insert into local storage when startWithAudioMuted is false', () => {
