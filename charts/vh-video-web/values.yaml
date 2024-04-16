@@ -38,6 +38,7 @@ java:
         - azuread--clientsecret
         - customtoken--secret
         - customtoken--thirdpartysecret
+        #kinly configuration
         - kinlyconfiguration--apisecret
         - kinlyconfiguration--callbacksecret
         - kinlyconfiguration--conferencephonenumber
@@ -47,6 +48,23 @@ java:
         - kinlyconfiguration--turnserver
         - kinlyconfiguration--turnservercredential
         - kinlyconfiguration--turnserveruser
+        #vodafone configuration
+        - vodafoneconfiguration--apisecret
+        - name: kinlyconfiguration--callbacksecret
+          alias: vodafoneconfiguration--callbacksecret
+        - name: kinlyconfiguration--conferencephonenumber
+          alias: vodafoneconfiguration--conferencephonenumber
+        - vodafoneconfiguration--heartbeaturlbase
+        - name: kinlyconfiguration--joinbyphonefromdate
+          alias: vodafoneconfiguration--joinbyphonefromdate
+        - vodafoneconfiguration--selftestapisecret
+        - name: kinlyconfiguration--turnserver
+          alias: vodafoneconfiguration--turnserver
+        - name: kinlyconfiguration--turnservercredential
+          alias: vodafoneconfiguration--turnservercredential
+        - name: kinlyconfiguration--turnserveruser
+          alias: vodafoneconfiguration--turnserveruser
+        
         - quicklinks--issuer
         - quicklinks--rsapublickey
         - quicklinks--validaudience

@@ -7,7 +7,7 @@ using VideoWeb.Mappings.Interfaces;
 namespace VideoWeb.Mappings
 {
     public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration,
-        HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
+        HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>
     {
         private readonly IMapperFactory _mapperFactory;
         private readonly IFeatureToggles _featureToggles;
@@ -20,7 +20,7 @@ namespace VideoWeb.Mappings
 
         public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration,
             EJudAdConfiguration eJudAdConfiguration, Dom1AdConfiguration dom1AdConfiguration,
-            HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
+            HearingServicesConfiguration servicesConfiguration, SupplierConfiguration supplierConfiguration)
         {
             var mapper = _mapperFactory.Get<IdpConfiguration, IdpSettingsResponse>();
             var ejudSettings = mapper.Map(eJudAdConfiguration);
@@ -30,10 +30,11 @@ namespace VideoWeb.Mappings
             {
                 AppInsightsConnectionString = azureAdConfiguration.ApplicationInsights.ConnectionString,
                 EventHubPath = servicesConfiguration.EventHubPath,
-                JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
-                KinlyTurnServer = kinlyConfiguration.TurnServer,
-                KinlyTurnServerUser = kinlyConfiguration.TurnServerUser,
-                KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential,
+                JoinByPhoneFromDate = supplierConfiguration.JoinByPhoneFromDate,
+                SupplierTurnServer = supplierConfiguration.TurnServer,
+                SupplierTurnServerUser = supplierConfiguration.TurnServerUser,
+                SupplierTurnServerCredential = supplierConfiguration.TurnServerCredential,
+                Supplier = _featureToggles.Vodafone() ? "vodafone" : "kinly",
                 EJudIdpSettings = ejudSettings,
                 Dom1IdpSettings = dom1Settings,
                 VHIdpSettings = vhAdSettings,
@@ -43,8 +44,7 @@ namespace VideoWeb.Mappings
                 EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
                 EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
                 BlurRadius = servicesConfiguration.BlurRadius,
-                LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId,
-                Supplier = _featureToggles.Vodafone() ? "vodafone" : "kinly"
+                LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId
             };
         }
 

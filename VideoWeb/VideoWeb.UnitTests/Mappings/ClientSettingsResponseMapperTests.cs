@@ -39,9 +39,9 @@ namespace VideoWeb.UnitTests.Mappings
 
             response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
-            response.KinlyTurnServer.Should().Be(kinlyConfiguration.TurnServer);
-            response.KinlyTurnServerUser.Should().Be(kinlyConfiguration.TurnServerUser);
-            response.KinlyTurnServerCredential.Should().Be(kinlyConfiguration.TurnServerCredential);
+            response.SupplierTurnServer.Should().Be(kinlyConfiguration.TurnServer);
+            response.SupplierTurnServerUser.Should().Be(kinlyConfiguration.TurnServerUser);
+            response.SupplierTurnServerCredential.Should().Be(kinlyConfiguration.TurnServerCredential);
             response.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
             response.Supplier.Should().Be(supplier);
         }

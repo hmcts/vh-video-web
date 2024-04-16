@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 using VideoWeb.Health;
@@ -84,9 +85,15 @@ namespace VideoWeb
                 Configuration.Bind("QuickLinks", options);
             });
             
-            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
-            services.AddSingleton(customTokenSettings);
+            services.AddSingleton(kinlyTokenSettings);
+            
+            var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
+            services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
+            services.AddSingleton(vodafoneTokenSettings);
+            
+            services.AddScoped<ISupplierLocator, SupplierLocator>();
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
