@@ -3,7 +3,9 @@
     <h1 class="govuk-heading-m">{{'venue-list.title' | translate}}</h1>
   </div>
     <div class="govuk-grid-column-three-quarters">
+        <label class="govuk-label" for="venueListTest"> {{ 'venue-list.selection-default-text' | translate }}</label>
         <ng-select id="venue-allocation-list" class="selection-list"
+                   [labelForId]="'venueListTest'"
                    [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
                    bindLabel="name" bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues" [closeOnSelect]="false"
                    (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
@@ -18,7 +20,8 @@
             <p>OR</p>
         </div>
         <div class="govuk-grid-column-three-quarters">
-            <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
+            <label class="govuk-label" for="venue-allocation-list-Test"> {{ 'venue-list.cso-selection-default-text' | translate }}</label>
+            <ng-select id="cso-allocation-list" class="selection-list" [labelForId]="'venue-allocation-list-Test'" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
                        bindLabel="full_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
                        (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
                 <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
