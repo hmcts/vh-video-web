@@ -18,9 +18,8 @@
   <div class="self-view-container">
     <div>
       <video
-        appForcePlayVideo
+        #selfViewVideo
         [muted]="true"
-        *ngIf="streamsActive"
         id="outgoingStream"
         [srcObject]="this.outgoingStream"
         width="100%"
@@ -35,7 +34,7 @@
       <app-mic-visualiser
         *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
         [stream]="preferredMicrophoneStream"
-        [incomingStream]="incomingStream"
+        [incomingStream]="preferredMicrophoneStream"
       ></app-mic-visualiser>
     </div>
   </div>
