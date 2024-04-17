@@ -32,7 +32,8 @@ java:
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - FeatureToggles--SDK-Key
+        - name: FeatureToggles--SDKKey
+          alias: launchdarkly--sdkkey
         - azuread--clientid
         - azuread--clientsecret
         - customtoken--secret
