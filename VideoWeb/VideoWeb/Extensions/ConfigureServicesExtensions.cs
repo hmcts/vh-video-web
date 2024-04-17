@@ -32,6 +32,7 @@ using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using VideoApi.Client;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.Tokens;
 using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
@@ -123,6 +124,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IParticipantService, ParticipantService>();
             services.AddScoped<IDistributedJOHConsultationRoomLockCache, DistributedJOHConsultationRoomLockCache>();
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
+            services.AddScoped<ISupplierLocator, SupplierLocator>();
             
             RegisterMappers(services);
 

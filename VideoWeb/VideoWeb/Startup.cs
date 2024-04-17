@@ -92,8 +92,6 @@ namespace VideoWeb
             var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
             services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
             services.AddSingleton(vodafoneTokenSettings);
-            
-            services.AddScoped<ISupplierLocator, SupplierLocator>();
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
