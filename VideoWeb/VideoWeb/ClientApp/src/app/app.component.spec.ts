@@ -40,7 +40,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
-import {SupplierClientService} from "./services/api/supplier-client.service";
+import { SupplierClientService } from './services/api/supplier-client.service';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;

@@ -11,9 +11,7 @@ describe('SupplierClientService', () => {
         renderer.createElement.and.returnValue(document.createElement('script'));
         rendererFactory.createRenderer.and.returnValue(renderer);
         TestBed.configureTestingModule({
-            providers: [
-                SupplierClientService,  { provide: RendererFactory2, useValue: rendererFactory }
-            ]
+            providers: [SupplierClientService, { provide: RendererFactory2, useValue: rendererFactory }]
         });
         service = TestBed.inject(SupplierClientService);
     });
