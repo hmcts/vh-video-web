@@ -27,13 +27,12 @@ java:
           alias: DOM1--TenantId
         - name: dom1--videoweb--clientid
           alias: DOM1--ClientId
-        - name: FeatureToggles--SDK-Key
-          alias: FeatureToggle--SDKKey
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
+        - FeatureToggles--SDK-Key
         - azuread--clientid
         - azuread--clientsecret
         - customtoken--secret

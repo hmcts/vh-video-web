@@ -32,8 +32,8 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var envName = Configuration["AzureAd:RedirectUri"]; // resource ID is a GUID, 
-            var sdkKey = Configuration["FeatureToggle:SdkKey"];
+            var envName = Configuration["AzureAd:RedirectUri"]; 
+            var sdkKey = Configuration["FeatureToggle:Sdk-Key"];
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
 
             services.AddSwagger();
