@@ -9037,6 +9037,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
+    /** Supplier */
+    supplier?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -9066,6 +9068,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
             this.launch_darkly_client_id = _data['launch_darkly_client_id'];
+            this.supplier = _data['supplier'];
         }
     }
 
@@ -9094,6 +9097,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         data['launch_darkly_client_id'] = this.launch_darkly_client_id;
+        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -9129,6 +9133,8 @@ export interface IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
+    /** Supplier */
+    supplier?: string | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {

@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using CacheControlHeaderValue = System.Net.Http.Headers.CacheControlHeaderValue;
 
 namespace VideoWeb.Controllers
 {
@@ -25,13 +24,13 @@ namespace VideoWeb.Controllers
         private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly KinlyConfiguration _kinlyConfiguration;
+        private readonly SupplierConfiguration _supplierConfiguration;
 
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
             IOptions<EJudAdConfiguration> ejudAdConfiguration,
             IOptions<HearingServicesConfiguration> servicesConfiguration,
             IOptions<Dom1AdConfiguration> dom1AdConfiguration,
-            KinlyConfiguration kinlyConfiguration,
+            ISupplierLocator supplierLocator,
             ILogger<ConfigSettingsController> logger,
             IMapperFactory mapperFactory)
         {
@@ -41,7 +40,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _dom1AdConfiguration = dom1AdConfiguration.Value;
-            _kinlyConfiguration = kinlyConfiguration;
+            _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
         }
 
 
@@ -59,10 +58,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var clientSettingsResponseMapper = _mapperFactory
-                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration,
-                        KinlyConfiguration, ClientSettingsResponse>();
-                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration,
-                    _dom1AdConfiguration, _servicesConfiguration, _kinlyConfiguration);
+                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>();
+                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, _supplierConfiguration);
                 return Ok(response);
             }
             catch (Exception e)

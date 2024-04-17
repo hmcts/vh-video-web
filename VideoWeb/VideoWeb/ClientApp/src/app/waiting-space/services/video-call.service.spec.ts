@@ -21,6 +21,7 @@ import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-mod
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
+import { SupplierClientService } from '../../services/api/supplier-client.service';
 
 const config = new ClientSettingsResponse({
     kinly_turn_server: 'turnserver',
@@ -45,6 +46,7 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
+    let supplierClientServiceSpy: jasmine.SpyObj<SupplierClientService>;
 
     beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -85,6 +87,7 @@ describe('VideoCallService', () => {
         configServiceSpy.getConfig.and.returnValue(config);
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
+        supplierClientServiceSpy = jasmine.createSpyObj<SupplierClientService>(['loadSupplierScript']);
 
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',

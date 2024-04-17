@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 using VideoWeb.Health;
@@ -30,6 +32,10 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var envName = Configuration["AzureAd:RedirectUri"]; // resource ID is a GUID, 
+            var sdkKey = Configuration["FeatureToggle:SdkKey"];
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
+
             services.AddSwagger();
             services.AddHsts(options =>
             {
@@ -57,16 +63,13 @@ namespace VideoWeb
         {
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
-
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
-
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-
             services.Configure<EJudAdConfiguration>(options =>
             {
                 Configuration.Bind("EJudAd", options);
@@ -82,9 +85,15 @@ namespace VideoWeb
                 Configuration.Bind("QuickLinks", options);
             });
             
-            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
-            services.AddSingleton(customTokenSettings);
+            services.AddSingleton(kinlyTokenSettings);
+            
+            var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
+            services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
+            services.AddSingleton(vodafoneTokenSettings);
+            
+            services.AddScoped<ISupplierLocator, SupplierLocator>();
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
