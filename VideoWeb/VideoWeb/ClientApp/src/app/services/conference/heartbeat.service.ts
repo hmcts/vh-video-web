@@ -17,7 +17,7 @@ declare let HeartbeatFactory: any;
 @Injectable({
     providedIn: 'root'
 })
-export class KinlyHeartbeatService {
+export class HeartbeatService {
     heartbeat: HeartbeatClient;
     private loggerPrefix = '[KinlyHeartbeatService] -';
     private currentParticipant: ParticipantModel;
