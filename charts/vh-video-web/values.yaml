@@ -95,3 +95,4 @@ java:
     VHSERVICES__ENABLEVIDEOFILTERS: true
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net/
+    
