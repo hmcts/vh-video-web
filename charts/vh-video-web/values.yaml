@@ -50,8 +50,7 @@ java:
         - kinlyconfiguration--turnserveruser
         #vodafone configuration
         - vodafoneconfiguration--apisecret
-        - name: kinlyconfiguration--callbacksecret
-          alias: vodafoneconfiguration--callbacksecret
+        - vodafoneconfiguration--callbacksecret
         - name: kinlyconfiguration--conferencephonenumber
           alias: vodafoneconfiguration--conferencephonenumber
         - vodafoneconfiguration--heartbeaturlbase
