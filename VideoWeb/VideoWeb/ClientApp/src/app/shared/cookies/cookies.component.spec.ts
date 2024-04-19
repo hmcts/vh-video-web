@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookiesComponent } from './cookies.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
-fdescribe('CookiesComponent', () => {
+describe('CookiesComponent', () => {
     let component: CookiesComponent;
     let fixture: ComponentFixture<CookiesComponent>;
 
