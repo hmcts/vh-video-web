@@ -98,6 +98,7 @@ import { ProfileService } from '../services/api/profile.service';
 import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
+import { CookiesComponent } from './cookies/cookies.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -159,7 +160,8 @@ export function getSettings(configService: ConfigService) {
         RoomNamePipe,
         HookElementDirective,
         RandomPipe,
-        TruncatableTextComponent
+        TruncatableTextComponent,
+        CookiesComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },

@@ -258,6 +258,7 @@
   "footer": {
     "privacy-policy": "Polisi preifatrwydd",
     "accessibility": "Hygyrchedd",
+    "cookies": "Cwcis",
     "translate-to": "View this service in English",
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
@@ -1388,5 +1389,70 @@
   "false": "Naddo",
   "allocations-toastr": {
     "header": "Gwrandawiad newydd wedi'i ddyrannu"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "intro": "A cookie is a small piece of data that’s stored on your computer, tablet, or phone when you visit a website. Most websites need cookies to work properly.",
+    "uses": "This service uses them to:",
+    "usesList": {
+      "item1": "measure how you use the service so it can be improved",
+      "item2": "temporily store preferences you choose"
+    },
+    "essentialCookiesTitle": "Essential Cookies",
+    "essentialCookiesDesc": "Essential cookies keep your information secure while you use Video Hearings. We do not need to ask permission to use them.",
+    "manageCookiesStart": "Find out more about ",
+    "manageCookiesEnd": "how to manage cookies.",
+    "usageTitle": "How cookies are used in this service",
+    "usageMeasureTitle": "To measure website usage",
+    "usageMeasureDesc": "We use third party services to perform visitor analytics",
+    "usageTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "row1": {
+        "purpose": "Generated session ID for usage tracking (Application Insights)",
+        "expires": "Usage"
+      }
+    },
+    "identifyTitle": "To identify you when you come back to the service",
+    "identifyDesc": "We use authentication cookies to identify you when you return to the service.",
+    "identifyTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "row1": {
+        "name": "__userid__",
+        "purpose": "Your user ID",
+        "expires": "When you close your browser"
+      }
+    },
+    "securityTitle": "To make the service more secure",
+    "securityDesc": "We set cookies which prevent unauthorised access to the service. This makes the service more secure and protects your personal",
+    "securityTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "rows1": {
+        "name": "vhaad",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      },
+      "row2": {
+        "name": "ejud",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      },
+      "row3": {
+        "name": "dom1",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      }
+    }
   }
 }
