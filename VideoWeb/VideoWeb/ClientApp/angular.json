@@ -48,6 +48,13 @@
                             "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
                             "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
                         ],
+                        "allowedCommonJsDependencies": [
+                            "guid-typescript",
+                            "sdp",
+                            "@mediapipe/camera_utils",
+                            "@mediapipe/selfie_segmentation",
+                            "moment"
+                        ],
                         "vendorChunk": true,
                         "extractLicenses": false,
                         "buildOptimizer": false,
@@ -79,14 +86,14 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "publicHost": "0.0.0.0:0",
-                        "browserTarget": "VideoWeb:build"
+                        "buildTarget": "VideoWeb:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "VideoWeb:build:production"
+                          "buildTarget": "VideoWeb:build:production"
                         },
                         "development": {
-                            "browserTarget": "VideoWeb:build:development"
+                          "buildTarget": "VideoWeb:build:development"
                         },
                         "defaultConfiguration": "development"
                     }
@@ -94,7 +101,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "VideoWeb:build"
+                      "buildTarget": "VideoWeb:build"
                     }
                 },
                 "test": {
