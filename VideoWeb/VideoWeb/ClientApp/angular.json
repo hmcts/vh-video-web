@@ -42,7 +42,7 @@
                             "src/scripts/IEPF.js",
                             "src/scripts/Heartbeat.js",
                             "node_modules/govuk-frontend/govuk/all.js",
-                            "node_modules/chart.js/dist/chart.min.js",
+                            "node_modules/chart.js/dist/chart.umd.js",
                             "node_modules/@mediapipe/camera_utils/camera_utils.js",
                             "node_modules/@mediapipe/control_utils/control_utils.js",
                             "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
