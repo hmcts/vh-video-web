@@ -1,5 +1,5 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
-import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
+import { APP_ID, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -38,7 +38,7 @@ export function getLocale() {
 @NgModule({
     declarations: [AppComponent, HomeComponent, NavigatorComponent],
     imports: [
-        BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+        BrowserModule,
         FormsModule,
         SharedModule,
         SecurityModule,
@@ -58,6 +58,7 @@ export function getLocale() {
     providers: [
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },
+        { provide: APP_ID, useValue: 'moj-vh' },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         { provide: Navigator, useValue: window.navigator },
         { provide: Document, useValue: window.document },
