@@ -4,7 +4,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
-import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
+import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
@@ -74,7 +74,7 @@ export class VideoCallService {
         private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService,
-        private kinlyHeartbeatService: KinlyHeartbeatService,
+        private heartbeatService: HeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
         private streamMixerService: StreamMixerService
     ) {
@@ -166,9 +166,9 @@ export class VideoCallService {
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
-            urls: `turn:${config.kinly_turn_server}`,
-            username: config.kinly_turn_server_user,
-            credential: config.kinly_turn_server_credential
+            urls: `turn:${config.supplier_turn_server}`,
+            username: config.supplier_turn_server_user,
+            credential: config.supplier_turn_server_credential
         };
         this.pexipAPI.turn_server = turnServerObj;
     }
@@ -525,7 +525,7 @@ export class VideoCallService {
             );
             this.justRenegotiated = false;
         } else {
-            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+            this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
 
             if (!this.streamModifiedSubscription) {
                 this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
@@ -572,7 +572,7 @@ export class VideoCallService {
         this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
         this.hasDisconnected$.next();
         this.hasDisconnected$.complete();
-        this.kinlyHeartbeatService.stopHeartbeat();
+        this.heartbeatService.stopHeartbeat();
         this.setupClient();
     }
 }

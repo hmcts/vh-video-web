@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using VideoWeb.Common.Configuration;
 
-namespace VideoWeb.Common.Security
+namespace VideoWeb.Common.Security.Tokens
 {
     public interface ITokenProvider
     {

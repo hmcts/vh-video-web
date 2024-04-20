@@ -1,8 +1,9 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.Tokens.Base;
 
-namespace VideoWeb.Common.Security
+namespace VideoWeb.Common.Security.Tokens
 {
     public class VideoApiTokenHandler : BaseServiceTokenHandler
     {

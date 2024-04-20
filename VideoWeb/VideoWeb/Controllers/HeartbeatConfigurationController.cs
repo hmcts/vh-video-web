@@ -1,12 +1,10 @@
 using System;
-using System.Globalization;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Common.Security.Tokens.Base;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Controllers
@@ -16,14 +14,13 @@ namespace VideoWeb.Controllers
     [Route("heartbeat")]
     public class HeartbeatConfigurationController : ControllerBase
     {
-        private readonly IKinlyJwtTokenProvider _customJwtTokenProvider;
-        private readonly KinlyConfiguration _kinlyConfiguration;
+        private readonly IJwtTokenProvider _customJwtTokenProvider;
+        private readonly SupplierConfiguration _supplierConfiguration;
         
-        public HeartbeatConfigurationController(IKinlyJwtTokenProvider customJwtTokenProvider,
-            IOptions<KinlyConfiguration> kinlyConfiguration)
+        public HeartbeatConfigurationController(ISupplierLocator supplierLocator)
         {
-            _customJwtTokenProvider = customJwtTokenProvider;
-            _kinlyConfiguration = kinlyConfiguration.Value;
+            _customJwtTokenProvider = supplierLocator.GetTokenProvider();
+            _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
         }
         
         [HttpGet("GetHeartbeatConfigForParticipant/{participantId}")]
@@ -38,10 +35,10 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
             
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
-            var heartbeatConfig = new HeartbeatConfigurationResponse()
+            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _supplierConfiguration.ExpiresInMinutes);
+            var heartbeatConfig = new HeartbeatConfigurationResponse
             {
-                HeartbeatUrlBase = _kinlyConfiguration.HeartbeatUrlBase,
+                HeartbeatUrlBase = _supplierConfiguration.HeartbeatUrlBase,
                 HeartbeatJwt = token
             };
             
