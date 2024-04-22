@@ -34,7 +34,11 @@ export class VideoFilterService {
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     private filterOnSubject = new ReplaySubject<boolean>(1);
 
-    constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
+    constructor(
+        private logger: Logger,
+        private configService: ConfigService,
+        private deviceTypeService: DeviceTypeService
+    ) {
         this.configService.getClientSettings().subscribe(settings => {
             this._enableVideoFilters = settings.enable_video_filters;
             if (settings.blur_radius) {

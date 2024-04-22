@@ -9,7 +9,10 @@ import { SecurityServiceProvider } from '../authentication/security-provider.ser
     providedIn: 'root'
 })
 export class AlreadyAuthenticatedGuard implements CanActivate {
-    constructor(private securityServiceProvider: SecurityServiceProvider, private router: Router) {}
+    constructor(
+        private securityServiceProvider: SecurityServiceProvider,
+        private router: Router
+    ) {}
 
     canActivate(): Observable<boolean> {
         const securityService = this.securityServiceProvider.getSecurityService();

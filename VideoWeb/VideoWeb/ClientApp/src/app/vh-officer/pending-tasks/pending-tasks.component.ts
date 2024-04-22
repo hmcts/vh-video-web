@@ -17,7 +17,11 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     taskSubscription$: Subscription;
     tasks: TaskResponse[];
 
-    constructor(private queryService: VhoQueryService, private eventbus: EventBusService, private logger: Logger) {}
+    constructor(
+        private queryService: VhoQueryService,
+        private eventbus: EventBusService,
+        private logger: Logger
+    ) {}
 
     get pendingTasks(): number {
         if (this.tasks) {

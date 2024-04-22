@@ -22,7 +22,11 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     taskSubscription$: Subscription;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
-    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
+    constructor(
+        private vhoQueryService: VhoQueryService,
+        private logger: Logger,
+        private eventbus: EventBusService
+    ) {}
 
     ngOnInit() {
         this.loading = true;

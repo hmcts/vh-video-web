@@ -8,7 +8,11 @@ import { Logger } from '../services/logging/logger-base';
     providedIn: 'root'
 })
 export class StaffMemberGuard implements CanActivate {
-    constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
+    constructor(
+        private userProfileService: ProfileService,
+        private router: Router,
+        private logger: Logger
+    ) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         this.logger.debug('[StaffMemberGuard] Checking if user is a Staff Member');

@@ -14,6 +14,7 @@ import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mock
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { BetaBannerComponent } from './beta-banner.component';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {}
@@ -40,7 +41,7 @@ describe('BetaBannerComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
+            declarations: [BetaBannerComponent, Mock1Component, Mock2Component, TranslatePipeMock],
             imports: [RouterTestingModule.withRoutes(routes)],
             providers: [
                 { provide: ProfileService, useValue: profileServiceSpy },

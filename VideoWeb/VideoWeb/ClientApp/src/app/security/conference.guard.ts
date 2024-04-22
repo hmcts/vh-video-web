@@ -9,7 +9,11 @@ import { pageUrls } from '../shared/page-url.constants';
     providedIn: 'root'
 })
 export class ConferenceGuard implements CanActivate {
-    constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
+    constructor(
+        private videoWebService: VideoWebService,
+        private router: Router,
+        private logger: Logger
+    ) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
         const conferenceId = next.paramMap.get('conferenceId');

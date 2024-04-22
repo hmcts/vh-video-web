@@ -8,7 +8,10 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export abstract class UnreadMessagesComponentBase {
     messagesSubscription$: Subscription = new Subscription();
 
-    protected constructor(protected eventsService: EventsService, protected logger: Logger) {}
+    protected constructor(
+        protected eventsService: EventsService,
+        protected logger: Logger
+    ) {}
 
     abstract get unreadCount(): number;
 
