@@ -8,7 +8,11 @@ import { Logger } from '../services/logging/logger-base';
     providedIn: 'root'
 })
 export class AdminGuard {
-    constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
+    constructor(
+        private userProfileService: ProfileService,
+        private router: Router,
+        private logger: Logger
+    ) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         this.logger.debug('[AdminGuard] Checking if user is an admin');

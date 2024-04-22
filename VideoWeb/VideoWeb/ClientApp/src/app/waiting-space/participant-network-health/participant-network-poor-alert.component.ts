@@ -12,7 +12,10 @@ import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-
 export class ParticipantNetworkPoorAlertComponent extends ParticipantNetworkHealthBaseDirective {
     @Input() participant: ParticipantResponse;
 
-    constructor(protected eventsService: EventsService, private notificationToastrService: NotificationToastrService) {
+    constructor(
+        protected eventsService: EventsService,
+        private notificationToastrService: NotificationToastrService
+    ) {
         super(eventsService);
     }
 

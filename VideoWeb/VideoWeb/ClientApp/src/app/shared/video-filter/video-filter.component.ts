@@ -20,7 +20,10 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
 
     private readonly loggerPrefix = '[VideoFilter] -';
 
-    constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
+    constructor(
+        private videoFilterService: VideoFilterService,
+        private logger: Logger
+    ) {}
 
     ngOnInit(): void {
         this.browserSupportsFilters = this.videoFilterService.doesSupportVideoFiltering();

@@ -12,7 +12,10 @@ export class AdminHearingComponent implements OnInit {
     @Input() hearing: Hearing;
     adminIframeUrl: SafeResourceUrl;
     vhoVodafoneFeatureFlag: boolean;
-    constructor(public sanitizer: DomSanitizer, private ldService: LaunchDarklyService) {}
+    constructor(
+        public sanitizer: DomSanitizer,
+        private ldService: LaunchDarklyService
+    ) {}
 
     ngOnInit() {
         this.ldService.getFlag<boolean>(FEATURE_FLAGS.vodafone, false).subscribe(value => {

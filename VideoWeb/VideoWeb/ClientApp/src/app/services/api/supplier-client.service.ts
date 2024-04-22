@@ -9,7 +9,10 @@ export class SupplierClientService {
     private readonly kinly = 'scripts/kinly/pexrtc.js';
     private readonly renderer: Renderer2;
 
-    constructor(rendererFactory: RendererFactory2, @Inject(DOCUMENT) private document) {
+    constructor(
+        rendererFactory: RendererFactory2,
+        @Inject(DOCUMENT) private document
+    ) {
         this.renderer = rendererFactory.createRenderer(null, null);
     }
 

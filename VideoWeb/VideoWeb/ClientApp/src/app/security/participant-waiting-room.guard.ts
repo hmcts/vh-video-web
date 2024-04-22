@@ -10,7 +10,11 @@ import { Hearing } from '../shared/models/hearing';
 })
 export class ParticipantWaitingRoomGuard {
     hearing: Hearing;
-    constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
+    constructor(
+        private videoWebService: VideoWebService,
+        private router: Router,
+        private logger: Logger
+    ) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
         const conferenceId = next.paramMap.get('conferenceId');

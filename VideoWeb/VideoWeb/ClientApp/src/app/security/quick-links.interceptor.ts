@@ -12,7 +12,10 @@ export class QuickLinksInterceptor implements HttpInterceptor {
     private currentIdp: string;
     private securityService: ISecurityService;
 
-    constructor(private securityServiceProviderService: SecurityServiceProvider, private injector: Injector) {
+    constructor(
+        private securityServiceProviderService: SecurityServiceProvider,
+        private injector: Injector
+    ) {
         combineLatest([
             this.securityServiceProviderService.currentSecurityService$,
             this.securityServiceProviderService.currentIdp$
