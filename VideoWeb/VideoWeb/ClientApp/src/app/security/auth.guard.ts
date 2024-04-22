@@ -7,7 +7,7 @@ import { SecurityServiceProvider } from './authentication/security-provider.serv
 import { LaunchDarklyService } from '../services/launch-darkly.service';
 
 @Injectable()
-export class AuthGuard extends AuthBaseGuard  {
+export class AuthGuard extends AuthBaseGuard {
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected router: Router,

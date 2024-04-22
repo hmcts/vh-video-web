@@ -8,7 +8,7 @@ import { pageUrls } from '../shared/page-url.constants';
 @Injectable({
     providedIn: 'root'
 })
-export class ConferenceGuard  {
+export class ConferenceGuard {
     constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {

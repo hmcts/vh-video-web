@@ -8,7 +8,7 @@ import { Hearing } from '../shared/models/hearing';
 @Injectable({
     providedIn: 'root'
 })
-export class ParticipantWaitingRoomGuard  {
+export class ParticipantWaitingRoomGuard {
     hearing: Hearing;
     constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
 

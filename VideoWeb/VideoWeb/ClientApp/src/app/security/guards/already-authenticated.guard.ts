@@ -8,7 +8,7 @@ import { SecurityServiceProvider } from '../authentication/security-provider.ser
 @Injectable({
     providedIn: 'root'
 })
-export class AlreadyAuthenticatedGuard  {
+export class AlreadyAuthenticatedGuard {
     constructor(private securityServiceProvider: SecurityServiceProvider, private router: Router) {}
 
     canActivate(): Observable<boolean> {

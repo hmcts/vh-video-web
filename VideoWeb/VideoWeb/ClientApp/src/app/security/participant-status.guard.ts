@@ -10,7 +10,7 @@ import { PARTICIPANT_AND_JUDICIAL_ROLES } from '../shared/user-roles';
 @Injectable({
     providedIn: 'root'
 })
-export class ParticipantStatusGuard  {
+export class ParticipantStatusGuard {
     constructor(
         private userProfileService: ProfileService,
         private router: Router,

@@ -5,7 +5,7 @@ import { from, Observable } from 'rxjs';
 import { LoggedParticipantResponse } from '../../services/clients/api-client';
 
 @Injectable()
-export class LoggedUserResolveService  {
+export class LoggedUserResolveService {
     constructor(private videoWebService: VideoWebService) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<LoggedParticipantResponse> {

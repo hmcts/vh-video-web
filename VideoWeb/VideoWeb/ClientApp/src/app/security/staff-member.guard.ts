@@ -7,7 +7,7 @@ import { Logger } from '../services/logging/logger-base';
 @Injectable({
     providedIn: 'root'
 })
-export class StaffMemberGuard  {
+export class StaffMemberGuard {
     constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {

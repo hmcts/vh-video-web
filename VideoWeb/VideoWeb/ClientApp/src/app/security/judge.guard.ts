@@ -11,7 +11,7 @@ import { LaunchDarklyService } from '../services/launch-darkly.service';
 @Injectable({
     providedIn: 'root'
 })
-export class JudgeGuard extends AuthBaseGuard  {
+export class JudgeGuard extends AuthBaseGuard {
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected userProfileService: ProfileService,
