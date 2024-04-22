@@ -35,6 +35,8 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
 
+    displayParticipantList = false;
+
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
@@ -86,6 +88,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     ngOnChanges() {
         this.initParticipants();
+        this.displayParticipantList = this.participantCount > 0;
     }
 
     initParticipants() {
