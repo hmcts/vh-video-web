@@ -104,8 +104,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
 
     getParticipantDisabled(participant: ParticipantResponse): boolean {
         const someLinkedParticipantsUnavailable =
-            participant.linked_participants &&
-            participant.linked_participants.some(lp => {
+            participant.linked_participants?.some(lp => {
                 const p = this.getParticipantFromLinkedParticipant(lp);
                 return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
             });
