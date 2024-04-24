@@ -9,5 +9,7 @@ java:
         AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
         EJUDAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
+        EJUDAD__TENANTID: c6223f2a-8b3c-41c3-a944-1f08d648ed9c
+        EJUDAD__CLIENTID: 0e4a7fb5-684a-44f5-a924-16bb079354de
         DOM1__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         DOM1__REDIRECTURI: https://${SERVICE_FQDN}/home
