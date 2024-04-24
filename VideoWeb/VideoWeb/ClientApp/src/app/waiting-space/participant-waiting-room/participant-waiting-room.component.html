@@ -317,7 +317,7 @@
 
 <app-start-private-consultation
   *ngIf="displayStartPrivateConsultationModal"
-  [currentParticipant]="loggedInUser"
+  [loggedInUser]="loggedInUser"
   [participants]="getPrivateConsultationParticipants()"
   [endpoints]="hearing.getEndpoints()"
   [allowedEndpoints]="participantEndpoints"
