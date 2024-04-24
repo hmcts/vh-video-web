@@ -1,0 +1,32 @@
+<div class="govuk-width-container">
+  <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6 modal-title">
+    {{ 'terms-of-service-consultation.header' | translate }}
+  </h2>
+  <div class="vh-scroll-wrap">
+    <p class="govuk-body">
+      {{ 'terms-of-service-consultation.para1' | translate }}
+    </p>
+    <p class="govuk-body">
+      {{ 'terms-of-service-consultation.para2' | translate }}
+    </p>
+    <p class="govuk-body">
+      {{ 'terms-of-service-consultation.para3' | translate }}
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>{{ 'terms-of-service-consultation.bp1' | translate }}</li>
+      <li>{{ 'terms-of-service-consultation.bp2' | translate }}</li>
+      <li>{{ 'terms-of-service-consultation.bp3' | translate }}</li>
+      <li>{{ 'terms-of-service-consultation.bp4' | translate }}</li>
+      <li>{{ 'terms-of-service-consultation.bp5' | translate }}</li>
+      <li>{{ 'terms-of-service-consultation.bp6' | translate }}</li>
+    </ul>
+  </div>
+  <div class="govuk-button-group govuk-button-group govuk-!-margin-top-9">
+    <button type="submit" class="govuk-button" data-module="govuk-button" (click)="onAcknowledge()">
+      {{ 'terms-of-service-consultation.btn-acknowledge' | translate }}
+    </button>
+    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="onCancel()">
+      {{ 'terms-of-service-consultation.btn-cancel' | translate }}
+    </button>
+  </div>
+</div>

@@ -7,7 +7,7 @@
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
         <div class="room-title">
-            <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
+          <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
         </div>
         <div class="room-status">
           <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{
@@ -24,7 +24,15 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false tabindex="0">
+          <div
+            *ngIf="hasCaseNameOverflowed"
+            class="room-title-show-more"
+            appTooltip
+            [text]="getCaseNameAndNumber()"
+            colour="grey"
+            [isDesktopOnly]="false"
+            tabindex="0"
+          >
             (show more)
           </div>
         </div>
@@ -57,10 +65,7 @@
     >
     </app-private-consultation-participants>
   </div>
-  <div class="video-wrapper"
-       appHookElement
-       [readyElm] = "'videoContainer'"
-       (readyEvent)="setTrapFocus()">
+  <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="setTrapFocus()">
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"
@@ -115,22 +120,14 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl">
-        {{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
-        <button
-          id="changeCameraButton"
-          class="govuk-button"
-          data-module="govuk-button"
-          type="button"
-          (click)="showChooseCameraDialog()"
-        >
+        <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
           {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
         </button>
       </div>
@@ -154,11 +151,12 @@
             <strong><app-truncatable-text [text]="hearing.caseName" [maxLimit]="40"></app-truncatable-text></strong>
             ({{ 'case-type.' + stringToTranslateId(conference.case_type) | translate }})
             <br />
-            <span>{{ 'participant-waiting-room.case-number' | translate }}</span>:
+            <span>{{ 'participant-waiting-room.case-number' | translate }}</span
+            >:
             <strong><app-truncatable-text [text]="hearing.caseNumber" [maxLimit]="40"></app-truncatable-text></strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | translateDate  : 'dd MMMM yyyy'  }}
+            {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'participant-waiting-room.to' | translate }}
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -294,7 +292,7 @@
 
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body">
-        <strong>{{ 'participant-waiting-room.vh-team'  | translate: { phone: (phoneNumber$ | async)  } }}</strong>
+        <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: (phoneNumber$ | async) } }}</strong>
       </p>
     </div>
   </div>
@@ -319,6 +317,7 @@
 
 <app-start-private-consultation
   *ngIf="displayStartPrivateConsultationModal"
+  [currentParticipant]="loggedInUser"
   [participants]="getPrivateConsultationParticipants()"
   [endpoints]="hearing.getEndpoints()"
   [allowedEndpoints]="participantEndpoints"
