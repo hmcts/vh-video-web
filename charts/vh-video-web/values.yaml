@@ -69,8 +69,6 @@ java:
         - quicklinks--validaudience
         - vhservices--emailreformdomain
         - vhservices--internaleventsecret
-        - ejudad--clientid
-        - ejudad--tenantid
         - name: azuread--identifieruri
           alias: azuread--resourceid
     vh-bookings-api:
