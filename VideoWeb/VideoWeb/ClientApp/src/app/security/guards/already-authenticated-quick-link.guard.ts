@@ -9,7 +9,10 @@ import { IdpProviders } from '../idp-providers';
 @Injectable({ providedIn: 'root' })
 export class AlreadyAuthenticatedQuickLinkGuard {
     currentIdp: IdpProviders = IdpProviders.quickLink;
-    constructor(private securityServiceProvider: SecurityServiceProvider, private router: Router) {}
+    constructor(
+        private securityServiceProvider: SecurityServiceProvider,
+        private router: Router
+    ) {}
 
     canActivate(): Observable<boolean> {
         return this.securityServiceProvider

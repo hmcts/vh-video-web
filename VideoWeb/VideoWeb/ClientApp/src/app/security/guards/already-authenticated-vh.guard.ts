@@ -9,7 +9,10 @@ import { IdpProviders } from '../idp-providers';
 @Injectable({ providedIn: 'root' })
 export class AlreadyAuthenticatedVhGuard {
     currentIdp: IdpProviders = IdpProviders.vhaad;
-    constructor(private securityServiceProvider: SecurityServiceProvider, private router: Router) {}
+    constructor(
+        private securityServiceProvider: SecurityServiceProvider,
+        private router: Router
+    ) {}
 
     canActivate(): Observable<boolean> {
         return this.securityServiceProvider
