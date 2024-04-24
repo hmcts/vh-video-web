@@ -8,7 +8,10 @@ import { Component } from '@angular/core';
 @Component({})
 class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective {
     conferenceId = '123456789';
-    constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {
+    constructor(
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected logger: Logger
+    ) {
         super(participantStatusUpdateService, logger);
     }
 }

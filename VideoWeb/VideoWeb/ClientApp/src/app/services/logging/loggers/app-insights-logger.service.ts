@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveEnd, Router } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
@@ -162,9 +162,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private trackNavigation() {
-        this.router.events
-            .pipe(filter((event: RouterEvent) => event instanceof ResolveEnd))
-            .subscribe((event: ResolveEnd) => this.logPageResolved(event));
+        this.router.events.pipe(filter(event => event instanceof ResolveEnd)).subscribe((event: ResolveEnd) => this.logPageResolved(event));
     }
 
     private logPageResolved(event: ResolveEnd): void {

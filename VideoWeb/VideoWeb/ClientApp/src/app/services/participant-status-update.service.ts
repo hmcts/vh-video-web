@@ -20,7 +20,11 @@ export const participantPages: string[] = [
     providedIn: 'root'
 })
 export class ParticipantStatusUpdateService {
-    constructor(private apiClient: ApiClient, private logger: Logger, private router: Router) {}
+    constructor(
+        private apiClient: ApiClient,
+        private logger: Logger,
+        private router: Router
+    ) {}
     async postParticipantStatus(eventType: EventType, conferenceId: string = null) {
         try {
             const forEventConferenceId = conferenceId || this.checkRouter();
