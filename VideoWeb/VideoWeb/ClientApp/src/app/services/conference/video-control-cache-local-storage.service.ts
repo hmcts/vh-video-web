@@ -14,7 +14,10 @@ import {
 export class VideoControlCacheLocalStorageService implements IVideoControlCacheStorageService {
     private loggerPrefix = '[VideoControlCacheLocalStorageService] -';
 
-    constructor(private localStorageService: LocalStorageService, private logger: LoggerService) {}
+    constructor(
+        private localStorageService: LocalStorageService,
+        private logger: LoggerService
+    ) {}
 
     get localStorageKey() {
         return 'conferenceControlStates';

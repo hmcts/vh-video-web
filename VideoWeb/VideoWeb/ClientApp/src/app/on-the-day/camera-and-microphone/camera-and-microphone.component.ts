@@ -9,7 +9,10 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 export class CameraAndMicrophoneComponent implements OnInit {
     conferenceId: string;
 
-    constructor(private router: Router, private route: ActivatedRoute) {}
+    constructor(
+        private router: Router,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');

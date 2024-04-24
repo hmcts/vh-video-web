@@ -34,7 +34,11 @@ export class JudgeContextMenuComponent implements OnInit {
     private readonly loggerPrefix = '[JudgeContextMenu] -';
     private readonly initialPrefix = 'judge-context-menu';
 
-    constructor(private logger: Logger, private elementRef: ElementRef, protected translateService: TranslateService) {}
+    constructor(
+        private logger: Logger,
+        private elementRef: ElementRef,
+        protected translateService: TranslateService
+    ) {}
 
     get isJudge(): boolean {
         return this.participant.hearingRole === HearingRole.JUDGE;

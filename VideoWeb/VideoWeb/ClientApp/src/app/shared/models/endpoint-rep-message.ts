@@ -1,3 +1,6 @@
 export class EndpointRepMessage {
-    constructor(public conferenceId: string, public endpoint: string) {}
+    constructor(
+        public conferenceId: string,
+        public endpoint: string
+    ) {}
 }

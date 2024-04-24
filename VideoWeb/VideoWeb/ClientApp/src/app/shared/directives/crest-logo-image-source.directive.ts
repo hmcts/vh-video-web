@@ -17,7 +17,11 @@ export class CrestLogoImageSourceDirective implements OnInit, OnChanges, OnDestr
 
     private inputChanged$ = new ReplaySubject<any>(1);
 
-    constructor(private hearingVenueFlagsService: HearingVenueFlagsService, private element: ElementRef, private renderer2: Renderer2) {}
+    constructor(
+        private hearingVenueFlagsService: HearingVenueFlagsService,
+        private element: ElementRef,
+        private renderer2: Renderer2
+    ) {}
 
     ngOnChanges(): void {
         this.inputChanged$.next();

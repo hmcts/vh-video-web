@@ -19,7 +19,7 @@ describe('MediaStreamService', () => {
                 width: { ideal: 1280 },
                 height: { ideal: 720 }
             }
-        } as MediaStreamConstraints);
+        }) as MediaStreamConstraints;
 
     const microphoneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
     const microphoneConstraintBuilder = (device: UserMediaDevice) =>
@@ -29,7 +29,7 @@ describe('MediaStreamService', () => {
                     exact: device.deviceId
                 }
             }
-        } as MediaStreamConstraints);
+        }) as MediaStreamConstraints;
 
     let sut: MediaStreamService;
 

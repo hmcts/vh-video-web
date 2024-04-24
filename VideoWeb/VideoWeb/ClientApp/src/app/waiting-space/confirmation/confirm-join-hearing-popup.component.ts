@@ -15,7 +15,10 @@ export class ConfirmJoinHearingPopupComponent extends YesNoPopupBaseDirective {
 
     isMuteMicrophoneEnabled = false;
 
-    constructor(launchDarklyService: LaunchDarklyService, protected focusService: FocusService) {
+    constructor(
+        launchDarklyService: LaunchDarklyService,
+        protected focusService: FocusService
+    ) {
         super(focusService);
         this.modalDivId = 'confirmationDialog';
 

@@ -17,7 +17,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
 
-    constructor(private hearingLayoutService: HearingLayoutService, protected translateService: TranslateService) {}
+    constructor(
+        private hearingLayoutService: HearingLayoutService,
+        protected translateService: TranslateService
+    ) {}
 
     get currentLayout$(): Observable<HearingLayout> {
         return this.hearingLayoutService.currentLayout$;
