@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { Logger } from '../services/logging/logger-base';
 import { pageUrls } from '../shared/page-url.constants';
@@ -8,7 +8,7 @@ import { Hearing } from '../shared/models/hearing';
 @Injectable({
     providedIn: 'root'
 })
-export class ParticipantWaitingRoomGuard implements CanActivate {
+export class ParticipantWaitingRoomGuard {
     hearing: Hearing;
     constructor(
         private videoWebService: VideoWebService,
