@@ -5,7 +5,6 @@
         <ng-container *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest"></ng-container>
         <ng-template #sctsCrest>
           <img
-            role="img"
             id="header-logo-scot"
             class="govuk-header__logotype-crest"
             src="/assets/images/scot-crest-white.png"

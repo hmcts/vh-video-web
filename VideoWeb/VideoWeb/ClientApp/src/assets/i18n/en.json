@@ -131,7 +131,7 @@
     "hm-courts": "HM Courts",
     "tribunals-service": "Tribunals Service",
     "sign-out": "Sign out",
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "account-navigation-label": "Account navigation"
   },
   "not-found": {
@@ -1022,7 +1022,7 @@
     "cso-selection-default-text": "Choose an officer or officers"
   },
   "accessibility": {
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "content": "",
     "menu": {
       "heading": "Contents",
@@ -1158,7 +1158,7 @@
     "contents": "Contents"
   },
   "privacy-policy": {
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "heading": "Our privacy policy for the video hearings service",
     "print-button": "Print",
     "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",

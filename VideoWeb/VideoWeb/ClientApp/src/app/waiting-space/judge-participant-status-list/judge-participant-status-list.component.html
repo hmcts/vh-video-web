@@ -7,14 +7,15 @@
         [sctsAltText]="'judge-participant-status-list.scottish-crest' | translate"
         [hmctsImageSource]="'/assets/images/govuk-crest.png'"
         [hmctsAltText]="'judge-participant-status-list.crest-alt' | translate"
+        src=""
         alt=""
         class="govuk-header__logotype-crest"
         height="50"
       />
     </div>
 
-    <dl class="govuk-grid-column-two-thirds participant-details" role="presentation">
-      <dt class="govuk-heading-m govuk-!-margin-bottom-0">
+    <span class="govuk-grid-column-two-thirds participant-details" role="presentation">
+      <span class="govuk-heading-m govuk-!-margin-bottom-0">
         <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
         <span *ngIf="isUserJudge"
           ><a id="edit-judge-link" href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10"
@@ -24,12 +25,12 @@
             ></a
           ></span
         >
-      </dt>
-      <dd class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
+      </span>
+      <span class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
         <strong>{{ judge.display_name }}</strong>
-      </dd>
+      </span>
 
-      <dd *ngIf="showChangeJudgeDisplayName">
+      <span *ngIf="showChangeJudgeDisplayName">
         <div class="govuk-form-group vh-mt10">
           <input
             type="text"
@@ -60,15 +61,15 @@
             />
           </span>
         </div>
-      </dd>
-    </dl>
+      </span>
+    </span>
   </div>
 
   <div *ngIf="!isUserJudge" class="govuk-grid-column-full govuk-!-margin-top-3">
     <div class="govuk-body-s govuk-!-margin-bottom-3">
-      <label id="p-{{ judge.id }}-status-participant" class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(judge) }}">
+      <span id="p-{{ judge.id }}-status-participant" class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(judge) }}">
         {{ getParticipantStatus(judge) }}
-      </label>
+      </span>
     </div>
   </div>
 </div>
@@ -97,12 +98,12 @@
           </dt>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ participant.id }}-status-winger"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
@@ -128,12 +129,12 @@
             {{ participant.name }}
           </dt>
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ participant.id }}-status-panel-member"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
@@ -202,12 +203,12 @@
             </div>
           </dd>
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ participant.id }}-status-staff-member"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
@@ -252,12 +253,12 @@
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
@@ -284,12 +285,12 @@
           </dt>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ endpoint.id }}-status-endpoint"
               class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
             >
               {{ getEndpointStatus(endpoint) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
@@ -317,12 +318,12 @@
           </dt>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
+            <span
               id="p-{{ participant.id }}-status-observer"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
-            </label>
+            </span>
           </dd>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
