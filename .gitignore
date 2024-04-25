@@ -349,3 +349,4 @@ TESTS.xml
 Coverage/
 **/SpecFlow/userid
 .angular/
+.nx/
