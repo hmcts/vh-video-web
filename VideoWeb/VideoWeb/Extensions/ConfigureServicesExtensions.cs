@@ -31,6 +31,7 @@ using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using StackExchange.Redis;
 using VideoApi.Client;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.Tokens;
@@ -90,15 +91,11 @@ namespace VideoWeb.Extensions
         {
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
             services.AddControllers().AddControllersAsServices();
-
             services.AddMemoryCache();
-
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
-
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
-
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
@@ -175,7 +172,20 @@ namespace VideoWeb.Extensions
                     options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
                 });
 
-            services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
+            var redisConfig = container.GetService<RedisConfiguration>();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConfigurationOptions = new ConfigurationOptions
+                {
+                    EndPoints = { redisConfig.Endpoint },
+                    Password = redisConfig.Password,
+                    ConnectRetry = 1,
+                    BacklogPolicy = BacklogPolicy.FailFast,
+                    AbortOnConnectFail = false,
+                    ConnectTimeout = 3000,
+                    Ssl = true
+                };
+            });
             return services;
         }
 

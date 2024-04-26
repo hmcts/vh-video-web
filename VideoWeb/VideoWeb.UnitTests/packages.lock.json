@@ -176,8 +176,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.51.12",
-        "contentHash": "UXzOXlrW/KJ+iN9yMT1xqIyO35cRa1FBR8ph8DNRgd7dR8OjYRi1/GOiNIDIz4s+h21mfeJteaO/PDGG0reMLg==",
+        "resolved": "2.0.5-pr-0847-0004",
+        "contentHash": "S4JvtsBZNIrpRKJxpuUSZjzgMSa/fTIfyHsD2v8GmR7Ccb3csuPczFaNqvZKnah4lxnju10ZuvOOQkzvXQZDqw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -220,27 +220,26 @@
       },
       "LaunchDarkly.CommonSdk": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "ClMmkVmge8oGABr4ZTfhrmioyy6+EVkp03OVrwYTiizdbtTw6NCFT1A85zI+7EejJ8qcauXUw4+OD4sodaa5Mg==",
+        "resolved": "6.0.0",
+        "contentHash": "YYYq+41gZRMQ8dIoMC6HOq/dI+4RY3HsexLLAaE9T1+1tVMeQkbCqak7sVeKX4QcE7xlXx23lWgipYUkRoRUyw==",
         "dependencies": {
-          "LaunchDarkly.Logging": "2.0.0",
           "System.Collections.Immutable": "1.7.1"
         }
       },
       "LaunchDarkly.EventSource": {
         "type": "Transitive",
-        "resolved": "5.1.0",
-        "contentHash": "PztDWiMvPWODx+kfBnCroZ8Lpya4nPc7ZO4TZysOogODbVXDDPDYrdcgVivCMgf4davhGrp61ekvZc+Uy1NYMA==",
+        "resolved": "5.0.1",
+        "contentHash": "DN44Ry5M4lyrjiF7LEu0Ijco7Wm8R7mJopN+giYsYjkQlszsXdFvm3POoehIDAOtL1HHl5bZvF9k9xK034u3IA==",
         "dependencies": {
-          "LaunchDarkly.Logging": "[2.0.0, 3.0.0)"
+          "LaunchDarkly.Logging": "[1.0.1, 3.0.0)"
         }
       },
       "LaunchDarkly.InternalSdk": {
         "type": "Transitive",
-        "resolved": "3.4.0",
-        "contentHash": "fYmAb0D6pLOvVcfgdq0WQIvScKXH8nZndrvCSINtJEhn5XjWqi5K/0u67nWpByDTnTxW/cAc4j0+hnIJoAkrxg==",
+        "resolved": "3.1.0",
+        "contentHash": "jW8VEfFciuCcJUEuvSzmrbMVYYXwGL/ZWHUZLiA4aDOQ1LcEXp32uK405NQW/izEypUfWB+9TaSjPpFIC+5Wzw==",
         "dependencies": {
-          "LaunchDarkly.CommonSdk": "7.0.0",
+          "LaunchDarkly.CommonSdk": "6.0.0",
           "LaunchDarkly.Logging": "[2.0.0, 3.0.0)",
           "System.Collections.Immutable": "1.7.1"
         }
@@ -255,13 +254,13 @@
       },
       "LaunchDarkly.ServerSdk": {
         "type": "Transitive",
-        "resolved": "8.3.0",
-        "contentHash": "jKf0tJRc3d+5qnxTukRxdw/LQSgjNJtUGXaYLhLcQRxDromh6zRUNlkBKValryy84ekJLBOsv7LZzLpXHD9taQ==",
+        "resolved": "7.0.0",
+        "contentHash": "gkTWb+f5QlsXIqFAciBef3qKZU2y0Hy3Fpt4pvZoxNcnBKg2PNTDSnbpbYEKPeQ1yk1avNaI/tKprnahfrmJFg==",
         "dependencies": {
           "LaunchDarkly.Cache": "1.0.2",
-          "LaunchDarkly.CommonSdk": "7.0.0",
-          "LaunchDarkly.EventSource": "5.1.0",
-          "LaunchDarkly.InternalSdk": "3.4.0",
+          "LaunchDarkly.CommonSdk": "6.0.0",
+          "LaunchDarkly.EventSource": "5.0.1",
+          "LaunchDarkly.InternalSdk": "3.1.0",
           "LaunchDarkly.Logging": "2.0.0",
           "System.Collections.Immutable": "1.7.1"
         }
@@ -1977,7 +1976,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[6.0.4, )",
           "AspNetCore.HealthChecks.Uris": "[6.0.3, )",
-          "BookingsApi.Client": "[1.51.12, )",
+          "BookingsApi.Client": "[2.0.5-pr-0847-0004, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[10.4.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[5.7.0, )",
@@ -2009,8 +2008,8 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[1.51.12, )",
-          "LaunchDarkly.ServerSdk": "[8.3.0, )",
+          "BookingsApi.Client": "[2.0.5-pr-0847-0004, )",
+          "LaunchDarkly.ServerSdk": "[7.0.0, )",
           "Microsoft.ApplicationInsights": "[2.16.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
           "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
