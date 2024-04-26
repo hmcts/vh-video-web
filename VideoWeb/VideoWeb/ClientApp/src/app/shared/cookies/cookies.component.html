@@ -22,9 +22,9 @@
 
     <h2 id="how-cookies-are-used-in-this-service" class="govuk-heading-l">{{ 'cookies.usageTitle' | translate }}</h2>
     <h3 class="govuk-heading-m">{{ 'cookies.usageMeasureTitle' | translate }}</h3>
-    <p class="govuk-body">{{ 'cookies.usageMeasureDesc' | translate }}</p>
+    <p id="usage-description" class="govuk-body">{{ 'cookies.usageMeasureDesc' | translate }}</p>
 
-    <table id="essential-uses-table" class="govuk-table">
+    <table id="essential-uses-table" class="govuk-table" aria-describedby="usage-description">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">{{ 'cookies.usageTable.headers.name' | translate }}</th>
@@ -42,8 +42,8 @@
     </table>
 
     <h3 class="govuk-heading-m">{{ 'cookies.identifyTitle' | translate }}</h3>
-    <p>{{ 'cookies.identifyDesc' | translate }}</p>
-    <table id="authentication-uses-table" class="govuk-table">
+    <p id="identify-desc">{{ 'cookies.identifyDesc' | translate }}</p>
+    <table id="authentication-uses-table" class="govuk-table" aria-describedby="identify-desc">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">{{ 'cookies.identifyTable.headers.name' | translate }}</th>
@@ -61,10 +61,10 @@
     </table>
 
     <h3 class="govuk-heading-m">{{ 'cookies.securityTitle' | translate }}</h3>
-    <p>
+    <p id="security-desc">
       {{ 'cookies.securityDesc' | translate }}
     </p>
-    <table id="security-table" class="govuk-table">
+    <table id="security-table" class="govuk-table" aria-describedby="security-desc">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">{{ 'cookies.securityTable.headers.name' | translate }}</th>
