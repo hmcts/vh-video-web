@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="2.0.5-pr-0847-0004" />
+    <PackageReference Include="BookingsApi.Client" Version="2.0.4" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
