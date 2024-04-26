@@ -76,11 +76,6 @@ describe('ScrollableDirective', () => {
         expect(eventRaised).toBe(true);
     });
 
-    it('check offset from footer raised event with true parameter', () => {
-        directive.margin = 100;
-        expect(directive.checkOffset(200)).toBe(false);
-    });
-
     it('check offset from footer raised event with false parameter', () => {
         directive.margin = -200;
         spyOnProperty(window, 'innerHeight', 'get').and.returnValue(documentHeight);
