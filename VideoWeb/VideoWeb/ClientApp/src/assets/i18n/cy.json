@@ -1391,67 +1391,67 @@
     "header": "Gwrandawiad newydd wedi'i ddyrannu"
   },
   "cookies": {
-    "title": "Cookies",
-    "intro": "A cookie is a small piece of data that’s stored on your computer, tablet, or phone when you visit a website. Most websites need cookies to work properly.",
-    "uses": "This service uses them to:",
+    "title": "Cwcis",
+    "intro": "Darn bach o ddata sy'n cael ei storio ar eich cyfrifiadur, eich tabled neu eich ffôn symudol pan fyddwch yn ymweld â gwefan yw cwci. Mae angen cwcis ar y rhan fwyaf o wefannau i weithio'n iawn.",
+    "uses": "Mae’r gwasanaeth hwn yn eu defnyddio i:",
     "usesList": {
-      "item1": "measure how you use the service so it can be improved",
-      "item2": "temporily store preferences you choose"
+      "item1": "fesur sut ydych yn defnyddio’r gwasanaeth fel y gallwn ei wella",
+      "item2": "storio eich dewisiadau cwcis dros dro"
     },
-    "essentialCookiesTitle": "Essential Cookies",
-    "essentialCookiesDesc": "Essential cookies keep your information secure while you use Video Hearings. We do not need to ask permission to use them.",
-    "manageCookiesStart": "Find out more about ",
-    "manageCookiesEnd": "how to manage cookies.",
-    "usageTitle": "How cookies are used in this service",
-    "usageMeasureTitle": "To measure website usage",
-    "usageMeasureDesc": "We use third party services to perform visitor analytics",
+    "essentialCookiesTitle": "Cwcis hanfodol",
+    "essentialCookiesDesc": "Mae cwcis hanfodol yn cadw eich gwybodaeth yn ddiogel tra rydych yn cymryd rhan mewn Gwrandawiadau Fideo. Nid oes rhaid inni ofyn am ganiatâd i’w defnyddio.",
+    "manageCookiesStart": "Darganfyddwch fwy am ",
+    "manageCookiesEnd": "sut i reoli cwcis.",
+    "usageTitle": "Sut defnyddir cwcis yn y gwasanaeth hwn",
+    "usageMeasureTitle": "I fesur faint o bobl sy’n defnyddio ein gwefan",
+    "usageMeasureDesc": "Rydym yn defnyddio gwasanaethau trydydd parti i ddadansoddi ymweliadau â’r wefan",
     "usageTable": {
       "headers": {
-        "name": "Name",
-        "purpose": "Purpose",
-        "expires": "Expires"
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
       },
       "row1": {
-        "purpose": "Generated session ID for usage tracking (Application Insights)",
-        "expires": "Usage"
+        "purpose": "ID defnyddiwr a gynhyrchwyd ar gyfer tracio defnydd (Application Insights)",
+        "expires": "Defnydd"
       }
     },
-    "identifyTitle": "To identify you when you come back to the service",
-    "identifyDesc": "We use authentication cookies to identify you when you return to the service.",
+    "identifyTitle": "Eich adnabod pan fyddwch yn dod yn ôl at y gwasanaeth",
+    "identifyDesc": "Rydym yn defnyddio cwcis dilysu i’ch adnabod pan fyddwch yn dod yn ôl i’r gwasanaeth.",
     "identifyTable": {
       "headers": {
-        "name": "Name",
-        "purpose": "Purpose",
-        "expires": "Expires"
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
       },
       "row1": {
         "name": "__userid__",
-        "purpose": "Your user ID",
-        "expires": "When you close your browser"
+        "purpose": "Eich ID defnyddiwr",
+        "expires": "Pan fyddwch yn cau eich porwr"
       }
     },
-    "securityTitle": "To make the service more secure",
-    "securityDesc": "We set cookies which prevent unauthorised access to the service. This makes the service more secure and protects your personal",
+    "securityTitle": "Gwneud y gwasanaeth yn fwy diogel",
+    "securityDesc": "Rydym yn gosod cwcis sy'n atal mynediad heb awdurdod i'r gwasanaeth. Mae hyn yn gwneud y gwasanaeth yn fwy diogel ac yn diogelu eich gwybodaeth bersonol.",
     "securityTable": {
       "headers": {
-        "name": "Name",
-        "purpose": "Purpose",
-        "expires": "Expires"
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
       },
       "rows1": {
         "name": "vhaad",
-        "purpose": "Used to secure communications with HMCTS data services",
-        "expires": "When you close your browser"
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
       },
       "row2": {
         "name": "ejud",
-        "purpose": "Used to secure communications with HMCTS data services",
-        "expires": "When you close your browser"
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
       },
       "row3": {
         "name": "dom1",
-        "purpose": "Used to secure communications with HMCTS data services",
-        "expires": "When you close your browser"
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
       }
     }
   }
