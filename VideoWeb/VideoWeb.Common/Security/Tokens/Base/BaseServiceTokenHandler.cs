@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
 
-namespace VideoWeb.Common.Security
+namespace VideoWeb.Common.Security.Tokens.Base
 {
     public abstract class BaseServiceTokenHandler : DelegatingHandler
     {

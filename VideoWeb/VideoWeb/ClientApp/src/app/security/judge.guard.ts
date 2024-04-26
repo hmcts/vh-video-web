@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { ProfileService } from '../services/api/profile.service';
 import { Role } from '../services/clients/api-client';
@@ -11,7 +11,7 @@ import { LaunchDarklyService } from '../services/launch-darkly.service';
 @Injectable({
     providedIn: 'root'
 })
-export class JudgeGuard extends AuthBaseGuard implements CanActivate {
+export class JudgeGuard extends AuthBaseGuard {
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected userProfileService: ProfileService,

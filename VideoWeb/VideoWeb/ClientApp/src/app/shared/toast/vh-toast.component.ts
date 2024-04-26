@@ -28,7 +28,10 @@ export class VhToastComponent extends Toast {
     actioned = false;
     declinedByThirdParty = false;
 
-    constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage) {
+    constructor(
+        protected toastrService: ToastrService,
+        public toastPackage: ToastPackage
+    ) {
         super(toastrService, toastPackage);
     }
 

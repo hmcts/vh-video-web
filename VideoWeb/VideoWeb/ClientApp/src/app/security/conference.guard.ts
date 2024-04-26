@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { Logger } from '../services/logging/logger-base';
 import { Hearing } from '../shared/models/hearing';
@@ -8,8 +8,12 @@ import { pageUrls } from '../shared/page-url.constants';
 @Injectable({
     providedIn: 'root'
 })
-export class ConferenceGuard implements CanActivate {
-    constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
+export class ConferenceGuard {
+    constructor(
+        private videoWebService: VideoWebService,
+        private router: Router,
+        private logger: Logger
+    ) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
         const conferenceId = next.paramMap.get('conferenceId');

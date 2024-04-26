@@ -1259,8 +1259,12 @@
     "electronic-communications,-postal-services-&-network-information-systems": "Cyfathrebiadau Electronig, Gwasanaethau Post a Systemau Gwybodaeth Rhwydwaith",
     "gangmasters-licensing-appeals": "Apeliadau Trwyddedu Meistri Gangiau",
     "reserve-forces-appeal-tribunal": "Tribiwnlys Apeliadau y Lluoedd Wrth Gefn",
-    "residential-property": "Eiddo Preswyl"
-
+    "residential-property": "Eiddo Preswyl",
+    "family-public-law": "Cyfraith Deulu Gyhoeddus",
+    "court-of-protections": "Y Llys Gwarchod",
+    "remo": "REMO",
+    "maintenance-enforcement": "Gorfodi Cynhaliaeth",
+    "probate": "Profiant"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
@@ -1295,7 +1299,8 @@
     "selection-default-text": "Dewis rhestr",
     "selection-button-text": "Gweld gwrandawiadau",
     "label": "Enw'r lleoliad {{name}}",
-    "allocation-list-label": "Rhestr lleoliadau"
+    "allocation-list-label": "Rhestr lleoliadau",
+    "cso-selection-default-text": "Dewiswch swyddog neu swyddogion"
   },
   "app": {
     "skip-to-main-content": "Ymlaen i'r prif gynnwys"

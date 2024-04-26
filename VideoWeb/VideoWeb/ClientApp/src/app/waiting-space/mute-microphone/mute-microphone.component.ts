@@ -13,7 +13,10 @@ export class MuteMicrophoneComponent implements OnInit {
         muteMicrophone: new FormControl(false)
     });
 
-    constructor(private formBuilder: FormBuilder, private userMediaService: UserMediaService) {}
+    constructor(
+        private formBuilder: FormBuilder,
+        private userMediaService: UserMediaService
+    ) {}
 
     ngOnInit() {
         this.userMediaService.removeExpiredConferenceSettings();

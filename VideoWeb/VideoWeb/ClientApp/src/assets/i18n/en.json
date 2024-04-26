@@ -847,7 +847,12 @@
     "electronic-communications,-postal-services-&-network-information-systems": "Electronic Communications, Postal Services & Network Information Systems",
     "gangmasters-licensing-appeals": "Gangmasters Licensing Appeals",
     "reserve-forces-appeal-tribunal": "Reserve Forces Appeal Tribunal",
-    "residential-property": "Residential Property"
+    "residential-property": "Residential Property",
+    "family-public-law": "Family Public Law",
+    "court-of-protections": "Court of Protections",
+    "remo": "REMO",
+    "maintenance-enforcement": "Maintenance Enforcement",
+    "probate": "Probate"
   },
   "case-type-group": {
     "state": "State",
@@ -1013,7 +1018,8 @@
     "selection-default-text": "Choose lists",
     "selection-button-text": "View hearings",
     "label": "Venue name {{name}}",
-    "allocation-list-label": "Venue allocation list"
+    "allocation-list-label": "Venue allocation list",
+    "cso-selection-default-text": "Choose an officer or officers"
   },
   "accessibility": {
     "crest-image-alt": "HMCTS logo crest image",
