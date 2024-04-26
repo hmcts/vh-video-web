@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BookingsApi.Client" Version="1.51.12" />
+    <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />

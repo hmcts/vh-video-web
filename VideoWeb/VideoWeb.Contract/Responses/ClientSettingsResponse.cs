@@ -22,17 +22,17 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The turn server
         /// </summary>
-        public string KinlyTurnServer { get; set; }
+        public string SupplierTurnServer { get; set; }
 
         /// <summary>
         /// The turn server username
         /// </summary>
-        public string KinlyTurnServerUser { get; set; }
+        public string SupplierTurnServerUser { get; set; }
 
         /// <summary>
         /// The turn server password
         /// </summary>
-        public string KinlyTurnServerCredential { get; set; }
+        public string SupplierTurnServerCredential { get; set; }
 
         /// <summary>
         /// The EJudiciary IDP Settings
@@ -68,8 +68,7 @@ namespace VideoWeb.Contract.Responses
         /// Enable iOS tablet support
         /// </summary>
         public bool EnableIOSTabletSupport { get; set; }
-
-
+        
         /// <summary>
         /// Enable dynamic evidence sharing button
         /// </summary>
@@ -84,5 +83,10 @@ namespace VideoWeb.Contract.Responses
         /// Launch Darkly Client for feature toggling
         /// </summary>
         public string LaunchDarklyClientId { get; set; }
+        
+        /// <summary>
+        /// Supplier
+        /// </summary>
+        public string Supplier { get; set; }
     }
 }

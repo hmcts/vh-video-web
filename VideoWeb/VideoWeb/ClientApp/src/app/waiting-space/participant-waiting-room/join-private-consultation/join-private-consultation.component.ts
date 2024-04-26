@@ -18,7 +18,10 @@ export class JoinPrivateConsultationComponent {
     private _participants: ParticipantResponse[] = [];
     private _endpoints: VideoEndpointResponse[] = [];
 
-    constructor(protected logger: Logger, protected translateService: TranslateService) {}
+    constructor(
+        protected logger: Logger,
+        protected translateService: TranslateService
+    ) {}
 
     @Input() set participants(val: ParticipantResponse[]) {
         this._participants = val;

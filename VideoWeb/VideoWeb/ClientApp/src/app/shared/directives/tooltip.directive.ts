@@ -18,7 +18,11 @@ export class TooltipDirective implements OnDestroy {
     tooltip: HTMLElement;
     tooltipKeyTab: HTMLElement;
 
-    constructor(private el: ElementRef, private renderer: Renderer2, private deviceTypeService: DeviceTypeService) {}
+    constructor(
+        private el: ElementRef,
+        private renderer: Renderer2,
+        private deviceTypeService: DeviceTypeService
+    ) {}
 
     @Input() set text(value: string) {
         this._text = value;

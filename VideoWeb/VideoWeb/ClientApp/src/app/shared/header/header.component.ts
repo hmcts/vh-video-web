@@ -17,7 +17,10 @@ export class HeaderComponent implements OnInit {
     logoutRoute = pageUrls.Logout;
     hearingVenueIsScottish$: Observable<boolean>;
 
-    constructor(private router: Router, private hearingVenueFlagsService: HearingVenueFlagsService) {}
+    constructor(
+        private router: Router,
+        private hearingVenueFlagsService: HearingVenueFlagsService
+    ) {}
 
     selectMenuItem(indexOfItem: number) {
         for (const item of this.topMenuItems) {

@@ -4794,3 +4794,8 @@ PexRTCStatistics.prototype.getStats = function () {
         incoming: { audio: self.audio_in.getStats(), video: self.video_in.getStats() }
     };
 };
+
+//for debug purposes
+currentPexrtc = function() {
+    return 'kinly';
+}

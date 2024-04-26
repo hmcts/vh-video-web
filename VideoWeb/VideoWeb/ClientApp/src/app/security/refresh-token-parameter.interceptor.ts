@@ -13,7 +13,10 @@ export class RefreshTokenParameterInterceptor implements HttpInterceptor {
     private securityService: ISecurityService;
     private idp: IdpProviders;
 
-    constructor(securityServiceProviderService: SecurityServiceProvider, private injector: Injector) {
+    constructor(
+        securityServiceProviderService: SecurityServiceProvider,
+        private injector: Injector
+    ) {
         securityServiceProviderService.currentIdp$
             .pipe(
                 tap(idp => (this.idp = idp)),

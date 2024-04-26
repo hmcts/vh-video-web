@@ -26,7 +26,7 @@ export class FooterComponent implements OnInit, OnDestroy {
         private hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.routerEventsSubscription$.add(
-            this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
+            (this.router.events as Observable<RouterEvent>).pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
                 this.hideContactUs();
             })
         );

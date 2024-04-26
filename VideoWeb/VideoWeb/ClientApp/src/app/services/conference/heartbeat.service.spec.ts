@@ -11,10 +11,10 @@ import { DeviceTypeService } from '../device-type.service';
 import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
-import { KinlyHeartbeatService } from './kinly-heartbeat.service';
+import { HeartbeatService } from './heartbeat.service';
 import { ParticipantService } from './participant.service';
 
-describe('KinlyHeartbeatService', () => {
+describe('HeartbeatService', () => {
     const participant = new ParticipantModel(
         Guid.create().toString(),
         null,
@@ -31,7 +31,7 @@ describe('KinlyHeartbeatService', () => {
     const conference = new ConferenceResponse({ id: Guid.create().toString() });
     const heartbeatConfig = new HeartbeatConfigurationResponse({ heartbeat_url_base: 'url', heartbeat_jwt: 'jwt' });
 
-    let sut: KinlyHeartbeatService;
+    let sut: HeartbeatService;
 
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let heartbeatConfigSubject: Subject<HeartbeatConfigurationResponse>;
@@ -68,7 +68,7 @@ describe('KinlyHeartbeatService', () => {
         eventServiceSpy = jasmine.createSpyObj<EventsService>(['sendHeartbeat'], []);
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error'], []);
 
-        sut = new KinlyHeartbeatService(
+        sut = new HeartbeatService(
             apiClientSpy,
             participantServiceSpy,
             conferenceServiceSpy,

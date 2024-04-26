@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Common.Security.Tokens;
+using VideoWeb.Common.Security.Tokens.Kinly;
 
 namespace VideoWeb.UnitTests.Builders
 {

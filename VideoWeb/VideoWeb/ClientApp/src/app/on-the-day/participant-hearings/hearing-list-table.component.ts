@@ -12,7 +12,10 @@ export class HearingListTableComponent implements OnInit {
     @Input() conferences: ConferenceForIndividualResponse[];
     @Output() selectedConference = new EventEmitter<ConferenceForIndividualResponse>();
 
-    constructor(private translate: TranslateService, private hearingVenueFlagsService: HearingVenueFlagsService) {}
+    constructor(
+        private translate: TranslateService,
+        private hearingVenueFlagsService: HearingVenueFlagsService
+    ) {}
 
     ngOnInit() {
         this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
