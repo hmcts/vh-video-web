@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Logger } from '../services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
@@ -10,7 +10,7 @@ import { PARTICIPANT_AND_JUDICIAL_ROLES } from '../shared/user-roles';
 @Injectable({
     providedIn: 'root'
 })
-export class ParticipantStatusGuard implements CanActivate {
+export class ParticipantStatusGuard {
     constructor(
         private userProfileService: ProfileService,
         private router: Router,
