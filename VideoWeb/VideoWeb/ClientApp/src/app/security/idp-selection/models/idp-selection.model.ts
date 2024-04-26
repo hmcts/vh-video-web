@@ -22,5 +22,8 @@ export class IdpSelector {
 }
 
 export class IdpDto {
-    constructor(public idpName: IdpProviders, public url: string) {}
+    constructor(
+        public idpName: IdpProviders,
+        public url: string
+    ) {}
 }

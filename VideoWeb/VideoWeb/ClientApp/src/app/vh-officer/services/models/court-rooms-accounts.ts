@@ -1,5 +1,8 @@
 export class CourtRoomFilter {
-    constructor(public courtRoom: string, public selected: boolean) {
+    constructor(
+        public courtRoom: string,
+        public selected: boolean
+    ) {
         this.courtRoom = courtRoom;
         this.selected = selected;
     }

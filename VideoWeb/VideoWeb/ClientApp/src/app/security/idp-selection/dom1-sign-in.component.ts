@@ -9,7 +9,10 @@ import { SecurityConfigSetupService } from '../security-config-setup.service';
     template: ''
 })
 export class Dom1SignInComponent implements OnInit {
-    constructor(private router: Router, private securityConfigSetupService: SecurityConfigSetupService) {}
+    constructor(
+        private router: Router,
+        private securityConfigSetupService: SecurityConfigSetupService
+    ) {}
 
     ngOnInit(): void {
         this.securityConfigSetupService.setIdp(IdpProviders.dom1);
