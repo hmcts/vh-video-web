@@ -1370,7 +1370,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         const preUpdateLinkCount = this.hearing
             .getParticipants()
-            .filter(p => p.linked_participants.some(lp => lp.linked_id === this.participant.id)).length;
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
 
         const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
@@ -1385,7 +1385,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         const postUpdateLinkCount = this.hearing
             .getParticipants()
-            .filter(p => p.linked_participants.some(lp => lp.linked_id === this.participant.id)).length;
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
 
         // if the participant now has a link or no longer has a link, call with new join details
         if (preUpdateLinkCount !== postUpdateLinkCount) {

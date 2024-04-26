@@ -1507,6 +1507,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const testHearing = new Hearing(testConference);
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
+        testParticipant.linked_participants = [];
         let getLoggedParticipantSpy: jasmine.Spy<() => ParticipantResponse>;
 
         beforeEach(() => {
@@ -1669,10 +1670,16 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 updatedParticipant.linked_participants = [
                     new LinkedParticipantResponse({
                         link_type: LinkType.Interpreter,
-                        linked_id: updatedParticipant.id.toString()
+                        linked_id: testParticipant.id.toString()
                     })
                 ];
                 getLoggedParticipantSpy.and.returnValue(updatedParticipant);
+                testParticipant.linked_participants = [
+                    new LinkedParticipantResponse({
+                        link_type: LinkType.Interpreter,
+                        linked_id: updatedParticipant.id.toString()
+                    })
+                ];
                 const testParticipantMessage = new ParticipantsUpdatedMessage(globalConference.id, [
                     testParticipant,
                     component.participant
