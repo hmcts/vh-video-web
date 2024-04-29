@@ -5,6 +5,7 @@ import {
     EndpointStatus,
     LinkedParticipantResponse,
     LinkType,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
@@ -18,6 +19,7 @@ import { ParticipantListItem } from '../participant-list-item';
     styleUrls: ['./start-private-consultation.component.scss']
 })
 export class StartPrivateConsultationComponent implements OnChanges {
+    @Input() loggedInUser: LoggedParticipantResponse;
     @Input() participants: ParticipantResponse[];
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
@@ -28,6 +30,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
     selectedEndpoints = Array<string>();
 
     filteredParticipants: ParticipantListItem[] = [];
+    displayTermsOfService = false;
 
     constructor(private translateService: TranslateService) {}
 
@@ -75,6 +78,15 @@ export class StartPrivateConsultationComponent implements OnChanges {
     }
 
     onContinue() {
+        if (this.loggedInUser.role === Role.Representative && this.selectedEndpoints?.length > 0) {
+            this.displayTermsOfService = true;
+            return;
+        }
+        this.continue.emit({ participants: this.selectedParticipants, endpoints: this.selectedEndpoints });
+    }
+
+    onTermsOfServiceAccepted() {
+        this.displayTermsOfService = false;
         this.continue.emit({ participants: this.selectedParticipants, endpoints: this.selectedEndpoints });
     }
 
@@ -91,12 +103,10 @@ export class StartPrivateConsultationComponent implements OnChanges {
     }
 
     getParticipantDisabled(participant: ParticipantResponse): boolean {
-        const someLinkedParticipantsUnavailable =
-            participant.linked_participants &&
-            participant.linked_participants.some(lp => {
-                const p = this.getParticipantFromLinkedParticipant(lp);
-                return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
-            });
+        const someLinkedParticipantsUnavailable = participant.linked_participants?.some(lp => {
+            const p = this.getParticipantFromLinkedParticipant(lp);
+            return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
+        });
 
         return (
             someLinkedParticipantsUnavailable ||

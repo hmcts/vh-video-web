@@ -19,7 +19,7 @@ describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;
     let conference: ConferenceResponse;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let logged: LoggedParticipantResponse;
+    let loggedInUser: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
@@ -34,13 +34,14 @@ describe('StartPrivateConsultationComponent', () => {
         });
         const judge = conference.participants.find(x => x.role === Role.Judge);
 
-        logged = new LoggedParticipantResponse({
+        loggedInUser = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.display_name,
             role: Role.Judge
         });
 
         component = new StartPrivateConsultationComponent(translateService);
+        component.loggedInUser = loggedInUser;
     });
 
     it('should create', () => {
@@ -201,6 +202,55 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.filteredParticipants[0].interpreter.id).toBe('1');
         expect(component.filteredParticipants[1].id).toBe('3');
         expect(component.filteredParticipants[2].id).toBe('4');
+    });
+
+    describe('onContinue - logged in as solicitor', () => {
+        beforeEach(() => {
+            component.loggedInUser.role = Role.Representative;
+        });
+
+        it('should emit continue event with selected participants and no endpoints', () => {
+            const emitSpy = spyOn(component.continue, 'emit');
+            const participants = ['1', '2', '3'];
+            component.selectedParticipants = participants;
+            component.onContinue();
+            expect(emitSpy).toHaveBeenCalledWith({ participants, endpoints: [] });
+            expect(component.displayTermsOfService).toBeFalse();
+        });
+
+        it('should display terms of service when endpoints are selected', () => {
+            const emitSpy = spyOn(component.continue, 'emit');
+            component.selectedEndpoints = ['1', '2', '3'];
+            component.onContinue();
+            expect(emitSpy).not.toHaveBeenCalled();
+            expect(component.displayTermsOfService).toBeTrue();
+        });
+    });
+
+    describe('onContinue - logged in as non-solicitor', () => {
+        beforeEach(() => {
+            component.loggedInUser.role = Role.Judge;
+        });
+
+        it('should emit continue event with selected participants and endpoints', () => {
+            const emitSpy = spyOn(component.continue, 'emit');
+            component.selectedParticipants = ['1', '2', '3'];
+            component.selectedEndpoints = ['4', '5', '6'];
+            component.onContinue();
+            expect(emitSpy).toHaveBeenCalledWith({ participants: ['1', '2', '3'], endpoints: ['4', '5', '6'] });
+            expect(component.displayTermsOfService).toBeFalse();
+        });
+    });
+
+    describe('onTermsOfServiceAccepted', () => {
+        it('should emit continue event with selected participants and endpoints', () => {
+            const emitSpy = spyOn(component.continue, 'emit');
+            component.selectedParticipants = ['1', '2', '3'];
+            component.selectedEndpoints = ['4', '5', '6'];
+            component.onTermsOfServiceAccepted();
+            expect(emitSpy).toHaveBeenCalledWith({ participants: ['1', '2', '3'], endpoints: ['4', '5', '6'] });
+            expect(component.displayTermsOfService).toBeFalse();
+        });
     });
 
     describe('participantIsInConsultationRoom', () => {
