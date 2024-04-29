@@ -66,9 +66,11 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
             if (isPlayingElem) {
                 return;
             }
-            this.videoElement.play().catch(error => {
-                this.logger.error(`${this.loggerPrefix} - error playing video.`, error);
-            });
+            this.videoElement.onloadedmetadata = () => {
+                this.videoElement.play().catch(error => {
+                    this.logger.error(`${this.loggerPrefix} - error playing video.`, error);
+                });
+            };
         }
     }
 

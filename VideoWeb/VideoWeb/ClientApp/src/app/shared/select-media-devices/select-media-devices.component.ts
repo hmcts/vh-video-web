@@ -63,7 +63,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
 
     ngAfterViewInit() {
         ModalTrapFocus.trap(this.SELECT_MEDIA_DEVICES_MODAL);
-        this.availableMicsList.nativeElement.focus();
+        this.availableMicsList?.nativeElement.focus();
     }
 
     ngOnInit() {
