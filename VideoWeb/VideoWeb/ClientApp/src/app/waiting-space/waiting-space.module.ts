@@ -39,9 +39,13 @@ import { PrivateConsultationParticipantDisplayNameComponent } from './participan
 import { FeedbackBannerComponent } from './waiting-room-shared/feedback-banner/feedback-banner.component';
 import { ConfirmJoinHearingPopupComponent } from './confirmation/confirm-join-hearing-popup.component';
 import { MuteMicrophoneComponent } from './mute-microphone/mute-microphone.component';
+import { StartPrivateConsultationComponent } from './participant-waiting-room/start-private-consultation/start-private-consultation.component';
+import { JoinPrivateConsultationComponent } from './participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { PrivateConsultationLegalRepTermsOfServiceComponent } from './participant-waiting-room/private-consultation-legal-rep-terms-of-service/private-consultation-legal-rep-terms-of-service.component';
+import { NgOptimizedImage } from '@angular/common';
 
 @NgModule({
-    imports: [SharedModule, WaitingSpaceRoutingModule],
+    imports: [SharedModule, WaitingSpaceRoutingModule, NgOptimizedImage],
     declarations: [
         JudgeParticipantStatusListComponent,
         IndividualParticipantStatusListComponent,
@@ -74,7 +78,10 @@ import { MuteMicrophoneComponent } from './mute-microphone/mute-microphone.compo
         PrivateConsultationParticipantDisplayNameComponent,
         FeedbackBannerComponent,
         ConfirmJoinHearingPopupComponent,
-        MuteMicrophoneComponent
+        MuteMicrophoneComponent,
+        StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
+        PrivateConsultationLegalRepTermsOfServiceComponent
     ],
     providers: [
         VideoCallService,

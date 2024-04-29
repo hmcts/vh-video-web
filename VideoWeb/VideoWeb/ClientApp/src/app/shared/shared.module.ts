@@ -29,8 +29,6 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
 import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
 import { RoomClosingToastComponent } from './toast/room-closing/room-closing-toast.component';
-import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
-import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TestLanguageService } from './test-language.service';
 import { MultilinePipe } from './pipes/multiline.pipe';
@@ -129,8 +127,6 @@ export function getSettings(configService: ConfigService) {
         ErrorComponent,
         NotFoundComponent,
         SelectMediaDevicesComponent,
-        StartPrivateConsultationComponent,
-        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         EquipmentProblemComponent,
         SelfTestComponent,
@@ -186,8 +182,6 @@ export function getSettings(configService: ConfigService) {
         ContactUsComponent,
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,
-        StartPrivateConsultationComponent,
-        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         SelfTestComponent,
         ModalComponent,

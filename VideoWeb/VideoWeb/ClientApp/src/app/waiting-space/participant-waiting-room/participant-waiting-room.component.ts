@@ -45,6 +45,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
 
+    emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
+
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
     private title = 'Participant waiting room';
