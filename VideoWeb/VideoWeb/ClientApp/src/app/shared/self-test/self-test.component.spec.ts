@@ -25,6 +25,7 @@ import { mockMicStream } from 'src/app/waiting-space/waiting-room-shared/tests/w
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelfTestComponent } from './self-test.component';
+import { ElementRef } from '@angular/core';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -36,6 +37,7 @@ describe('SelfTestComponent', () => {
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
     let activateMicrophoneSubject: Subject<MediaStream>;
+    let activeCameraStreamSubject: Subject<MediaStream>;
 
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
@@ -65,12 +67,14 @@ describe('SelfTestComponent', () => {
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
         activateMicrophoneSubject = new Subject<MediaStream>();
+        activeCameraStreamSubject = new Subject<MediaStream>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
 
-        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeMicrophoneStream$']);
+        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeMicrophoneStream$', 'activeCameraStream$']);
         getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeMicrophoneStream$').and.returnValue(
             activateMicrophoneSubject.asObservable()
         );
+        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeCameraStream$').and.returnValue(activeCameraStreamSubject.asObservable());
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>([
             'onCallConnected',
@@ -726,6 +730,15 @@ describe('SelfTestComponent', () => {
     });
 
     describe('on handleCallSetup', () => {
+        let videoElementRefMock: ElementRef;
+
+        beforeEach(() => {
+            videoElementRefMock = {
+                nativeElement: document.createElement('video')
+            };
+
+            component.videoElement = videoElementRefMock;
+        });
         it('should set the stream and connect the call', () => {
             // Arrange
             const expectedPin = '0000';
