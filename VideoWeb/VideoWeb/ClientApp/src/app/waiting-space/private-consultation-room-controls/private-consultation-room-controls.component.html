@@ -7,7 +7,10 @@
       colour="grey"
       [class]="{ 'dropdown-opaque': showContextMenu }"
       (click)="showContextMenu = !showContextMenu"
+      (keydown.enter)="showContextMenu = !showContextMenu"
+      (keydown.space)="showContextMenu = !showContextMenu"
       tabindex="0"
+      role="listbox"
     >
       <fa-icon icon="ellipsis-h"></fa-icon>
       <div class="dropdown-content" [class]="{ show: showContextMenu }">
@@ -19,8 +22,9 @@
           colour="grey"
           (click)="togglePanelStatus('Chat')"
           tabindex="0"
-          (keyup.enter)="togglePanelStatus('Chat')"
-          (keyup.space)="togglePanelStatus('Chat')"
+          role="listbox"
+          (keydown.enter)="togglePanelStatus('Chat')"
+          (keydown.space)="togglePanelStatus('Chat')"
         >
           <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
           <span class="context-item">
@@ -39,6 +43,9 @@
           *ngIf="!screenShareStream && canShowScreenShareButton"
           colour="grey"
           (click)="startScreenShare()"
+          (keydown.enter)="startScreenShare()"
+          tabindex="0"
+          role="listbox"
         >
           <fa-icon icon="share-square"></fa-icon>
           <span class="context-item">
@@ -51,19 +58,39 @@
           id="stop-screenshare-img"
           colour="red"
           (click)="stopScreenShare()"
+          (keydown.enter)="stopScreenShare()"
+          tabindex="0"
+          role="listbox"
         >
-          <fa-icon icon="share-square" rotate="180"></fa-icon>
+          <fa-icon icon="share-square" rotate="180.0"></fa-icon>
           <span class="context-item">
             {{ 'private-consultation-room-controls.stop-sharing-my-screen' | translate }}
           </span>
         </div>
-        <div class="icon-button-dark" id="toggle-media-device-img" colour="grey" (click)="changeDeviceSelected()">
+        <div
+          class="icon-button-dark"
+          id="toggle-media-device-img"
+          colour="grey"
+          (click)="changeDeviceSelected()"
+          (keydown.enter)="changeDeviceSelected()"
+          tabindex="0"
+          role="listbox"
+        >
           <span>
             <fa-icon icon="sliders-h" tabindex="0" (keyup.enter)="changeDeviceSelected()" (keyup.space)="changeDeviceSelected()"></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.change-camera-mic' | translate }}</span>
           </span>
         </div>
-        <div class="icon-button-dark" id="toggle-self-view-img" *ngIf="!audioOnly" colour="grey" (click)="toggleView()">
+        <div
+          class="icon-button-dark"
+          id="toggle-self-view-img"
+          *ngIf="!audioOnly"
+          colour="grey"
+          (click)="toggleView()"
+          (keydown.enter)="toggleView()"
+          tabindex="0"
+          role="listbox"
+        >
           <span>
             <fa-icon
               [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"
@@ -81,7 +108,16 @@
             </span>
           </span>
         </div>
-        <div class="icon-button-dark" id="toggle-video-mute-img" *ngIf="!isJudge && !audioOnly" colour="grey" (click)="toggleVideoMute()">
+        <div
+          class="icon-button-dark"
+          id="toggle-video-mute-img"
+          *ngIf="!isJudge && !audioOnly"
+          colour="grey"
+          (click)="toggleVideoMute()"
+          (keydown.enter)="toggleVideoMute()"
+          tabindex="0"
+          role="listbox"
+        >
           <span>
             <fa-icon
               [icon]="videoMuted ? 'video-slash' : 'video'"
@@ -100,7 +136,16 @@
           </span>
         </div>
 
-        <div class="icon-button-dark" id="toggle-audio-mute-img" *ngIf="!remoteMuted || isJudge" colour="grey" (click)="toggleMute()">
+        <div
+          class="icon-button-dark"
+          id="toggle-audio-mute-img"
+          *ngIf="!remoteMuted || isJudge"
+          colour="grey"
+          (click)="toggleMute()"
+          (keydown.enter)="toggleMute()"
+          tabindex="0"
+          role="listbox"
+        >
           <span>
             <fa-icon
               [icon]="audioMuted ? 'microphone-slash' : 'microphone'"
@@ -141,6 +186,9 @@
           *ngIf="!isPrivateConsultation && !isHost"
           colour="grey"
           (click)="toggleHandRaised()"
+          (keydown.enter)="toggleHandRaised()"
+          tabindex="0"
+          role="listbox"
         >
           <span>
             <fa-icon
@@ -165,6 +213,9 @@
           class="icon-button-dark hide-for-medium"
           data-module="govuk-button"
           (click)="displayConfirmationLeaveHearingDialog()"
+          (keydown.enter)="displayConfirmationLeaveHearingDialog()"
+          tabindex="0"
+          role="listbox"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal"></fa-icon
           ><span class="context-item">{{ 'private-consultation-room-controls.leave-hearing' | translate }}</span>
@@ -175,6 +226,9 @@
           class="icon-button-dark hide-for-medium"
           data-module="govuk-button"
           (click)="pause()"
+          (keydown.enter)="pause()"
+          tabindex="0"
+          role="listbox"
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
@@ -189,6 +243,9 @@
           class="icon-button-dark hide-for-medium"
           data-module="govuk-button"
           (click)="displayConfirmationDialog()"
+          (keydown.enter)="displayConfirmationDialog()"
+          tabindex="0"
+          role="listbox"
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
@@ -209,6 +266,9 @@
           [class]="roomLocked ? 'greygreen' : 'greyred'"
           data-module="govuk-button"
           (click)="lockPrivateConsultation(!roomLocked)"
+          (keydown.enter)="lockPrivateConsultation(!roomLocked)"
+          tabindex="0"
+          role="listbox"
         >
           <span>
             <fa-icon
@@ -227,6 +287,9 @@
           class="icon-button-dark hide-for-medium"
           data-module="govuk-button"
           (click)="joinHearingFromConsultation()"
+          (keydown.enter)="joinHearingFromConsultation()"
+          tabindex="0"
+          role="listbox"
         >
           <span>
             <fa-icon icon="sign-in-alt"></fa-icon>
@@ -243,6 +306,8 @@
           (click)="leavePrivateConsultation()"
           [hidden]="!canLeaveConsultation()"
           tabindex="0"
+          role="listbox"
+          (keydown.enter)="leavePrivateConsultation()"
         >
           <span>
             <fa-icon icon="sign-out-alt" flip="horizontal"></fa-icon>
@@ -251,7 +316,7 @@
         </div>
       </div>
     </div>
-    <div class="flexBar"></div>
+    <div *ngIf="!isObserver" class="flexBar"></div>
     <div
       class="icon-button"
       id="toggle-participants-panel"
@@ -260,9 +325,9 @@
       [text]="'private-consultation-room-controls.participants-panel' | translate"
       colour="grey"
       (click)="togglePanelStatus('Participants')"
+      (keydown.enter)="togglePanelStatus('Participants')"
       tabindex="0"
-      (keyup.enter)="togglePanelStatus('Participants')"
-      (keyup.space)="togglePanelStatus('Participants')"
+      role="listbox"
     >
       <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
     </div>
@@ -277,6 +342,9 @@
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
           (click)="displayConfirmationLeaveHearingDialog()"
+          (keydown.enter)="displayConfirmationLeaveHearingDialog()"
+          tabindex="0"
+          role="listbox"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </div>
@@ -339,11 +407,10 @@
         *ngIf="isHost && !isPrivateConsultation"
         [text]="'private-consultation-room-controls.chat-panel' | translate"
         colour="grey"
-        disableChildTooltip
         (click)="togglePanelStatus('Chat')"
+        (keydown.enter)="togglePanelStatus('Chat')"
         tabindex="0"
-        (keyup.enter)="togglePanelStatus('Chat')"
-        (keyup.space)="togglePanelStatus('Chat')"
+        role="listbox"
       >
         <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
@@ -357,9 +424,10 @@
         [text]="'private-consultation-room-controls.share-my-screen' | translate"
         colour="grey"
         (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        (keydown.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        (keydown.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
         tabindex="0"
-        (keyup.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"
-        (keyup.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        role="listbox"
       >
         <fa-icon icon="share-square"></fa-icon>
         <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
@@ -370,7 +438,10 @@
             disableChildTooltip
             appTooltip
             [text]="'private-consultation-room-controls.share-video-evidence' | translate"
-            colour="grey"
+            [colour]="'grey'"
+            (keydown.enter)="startScreenShareWithMicrophone()"
+            tabindex="0"
+            role="listbox"
           >
             <span class="action"
               ><fa-icon
@@ -389,7 +460,6 @@
             appTooltip
             [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
             colour="red"
-            tabindex="0"
           >
             <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0">
               <fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
@@ -399,12 +469,15 @@
           <div
             id="shareDropdown-startDocumentSharing"
             (click)="startScreenShare()"
+            (keydown.enter)="startScreenShare()"
             appTooltip
             [text]="'private-consultation-room-controls.share-document-evidence' | translate"
-            colour="grey"
+            [colour]="'grey'"
+            tabindex="0"
+            role="listbox"
           >
             <span class="action"
-              ><fa-icon icon="file-alt" tabindex="0" (keyup.enter)="startScreenShare()" (keyup.space)="startScreenShare()"></fa-icon>
+              ><fa-icon icon="file-alt" tabindex="0" (keydown.enter)="startScreenShare()" (keydown.space)="startScreenShare()"></fa-icon>
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
             </span>
           </div>
@@ -419,9 +492,11 @@
         [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
         colour="red"
         (click)="stopScreenShare()"
+        (keydown.enter)="stopScreenShare()"
         tabindex="0"
+        role="listbox"
       >
-        <fa-icon icon="share-square" class="yellow" rotate="180" (keyup.enter)="stopScreenShare()"></fa-icon>
+        <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </div>
 
       <div class="flexBar"></div>
@@ -433,9 +508,10 @@
         [text]="'private-consultation-room-controls.change-camera-mic' | translate"
         colour="grey"
         (click)="changeDeviceSelected()"
+        (keydown.enter)="changeDeviceSelected()"
+        (keydown.space)="changeDeviceSelected()"
         tabindex="0"
-        (keyup.enter)="changeDeviceSelected()"
-        (keyup.space)="changeDeviceSelected()"
+        role="listbox"
       >
         <fa-icon icon="sliders-h"></fa-icon>
       </div>
@@ -453,9 +529,10 @@
         "
         colour="grey"
         (click)="toggleView()"
+        (keydown.enter)="toggleView()"
+        (keydown.space)="toggleView()"
         tabindex="0"
-        (keyup.enter)="toggleView()"
-        (keyup.space)="toggleView()"
+        role="listbox"
       >
         <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
       </div>
@@ -473,9 +550,10 @@
         "
         colour="grey"
         (click)="toggleVideoMute()"
+        (keydown.enter)="toggleVideoMute()"
+        (keydown.space)="toggleVideoMute()"
         tabindex="0"
-        (keyup.enter)="toggleVideoMute()"
-        (keyup.space)="toggleVideoMute()"
+        role="listbox"
       >
         <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
       </div>
@@ -493,9 +571,10 @@
         "
         colour="grey"
         (click)="toggleMute()"
+        (keydown.enter)="toggleMute()"
+        (keydown.space)="toggleMute()"
         tabindex="0"
-        (keyup.enter)="toggleMute()"
-        (keyup.space)="toggleMute()"
+        role="listbox"
       >
         <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
       </div>
@@ -524,9 +603,11 @@
         "
         colour="grey"
         (click)="toggleHandRaised()"
-        tabindex="0"
         (keyup.enter)="toggleHandRaised()"
         (keyup.space)="toggleHandRaised()"
+        (keydown.enter)="toggleHandRaised()"
+        tabindex="0"
+        role="listbox"
       >
         <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
       </div>
@@ -539,10 +620,11 @@
           class="icon-button"
           appTooltip
           colour="grey"
-          tabindex="0"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
-          (keypress)="displayConfirmationLeaveHearingDialog()"
+          (keydown.enter)="displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
+          tabindex="0"
+          role="listbox"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </div>
