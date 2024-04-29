@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Subject, Subscription } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -34,6 +34,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
+
+    @ViewChild('selfViewVideo') videoElement: ElementRef;
 
     token: TokenResponse;
     incomingStream: MediaStream | URL;
@@ -177,6 +179,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
 
+        this.userMediaStreamService.activeCameraStream$
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(cameraStream => (this.outgoingStream = cameraStream));
+
         this.userMediaService
             .hasMultipleDevices()
             .pipe(takeUntil(this.destroyedSubject))
@@ -209,6 +215,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
+        this.videoElement.nativeElement.srcObject = this.outgoingStream;
+        this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
+            this.videoElement.nativeElement.play().catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
+        });
         this.videoCallService.connect('0000', null);
     }
 
