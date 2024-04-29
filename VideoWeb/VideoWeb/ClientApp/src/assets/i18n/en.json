@@ -508,7 +508,7 @@
     "browser-support": "Your browser does not support video",
     "lock-the-room": "Lock the room to prevent others joining",
     "invite-others": "Invite others by calling them or unlock the room for others to join",
-    "witness-transferring-warning-image": "Witness transferring warning image",
+    "witness-transferring-warning-img": "Witness transferring warning image",
     "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
     "your-video-hearing": "Your video hearing",
     "choose-camera-and-microphone": "Choose camera and microphone",
@@ -572,6 +572,21 @@
     "for": "for",
     "unavailable": "Unavailable",
     "in": "In"
+  },
+
+  "terms-of-service-consultation": {
+    "header": "Please acknowledge the Terms of Service below:",
+    "para1": "The Legal Representative must make sure that the private consultation with their client remains secure and private, and act in their client’s best interests.",
+    "para2": "The Legal Representative must conduct their private consultation in line with the principles of their profession, and uphold their duty to the court and to the administration of justice.",
+    "para3": "The Legal Representative must not:",
+    "bp1": "Invite other participants who have not been identified to HMCTS or HMPPS (i.e witnesses, observers etc) into the remote consultation",
+    "bp2": "Have unauthorised participants in the physical room from which they are carrying out the consultation",
+    "bp3": "Record this private consultation (by audio or video), take any images (by photo or screenshot), or publish any such recording",
+    "bp4": "Share their screen to show documents or webpages that are not appropriate for the consultation",
+    "bp5": "Be under the influence of alcohol or drugs during the consultation",
+    "bp6": "Be driving a vehicle during the consultation",
+    "btn-acknowledge": "Acknowledge",
+    "btn-cancel": "Cancel"
   },
   "private-consultation-participants": {
     "calling": "Calling...",
