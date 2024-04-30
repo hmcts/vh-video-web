@@ -258,6 +258,7 @@
   "footer": {
     "privacy-policy": "Polisi preifatrwydd",
     "accessibility": "Hygyrchedd",
+    "cookies": "Cwcis",
     "translate-to": "View this service in English",
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
@@ -1402,5 +1403,70 @@
   "false": "Naddo",
   "allocations-toastr": {
     "header": "Gwrandawiad newydd wedi'i ddyrannu"
+  },
+  "cookies": {
+    "title": "Cwcis",
+    "intro": "Darn bach o ddata sy'n cael ei storio ar eich cyfrifiadur, eich tabled neu eich ffôn symudol pan fyddwch yn ymweld â gwefan yw cwci. Mae angen cwcis ar y rhan fwyaf o wefannau i weithio'n iawn.",
+    "uses": "Mae’r gwasanaeth hwn yn eu defnyddio i:",
+    "usesList": {
+      "item1": "fesur sut ydych yn defnyddio’r gwasanaeth fel y gallwn ei wella",
+      "item2": "storio eich dewisiadau cwcis dros dro"
+    },
+    "essentialCookiesTitle": "Cwcis hanfodol",
+    "essentialCookiesDesc": "Mae cwcis hanfodol yn cadw eich gwybodaeth yn ddiogel tra rydych yn cymryd rhan mewn Gwrandawiadau Fideo. Nid oes rhaid inni ofyn am ganiatâd i’w defnyddio.",
+    "manageCookiesStart": "Darganfyddwch fwy am ",
+    "manageCookiesEnd": "sut i reoli cwcis.",
+    "usageTitle": "Sut defnyddir cwcis yn y gwasanaeth hwn",
+    "usageMeasureTitle": "I fesur faint o bobl sy’n defnyddio ein gwefan",
+    "usageMeasureDesc": "Rydym yn defnyddio gwasanaethau trydydd parti i ddadansoddi ymweliadau â’r wefan",
+    "usageTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "purpose": "ID defnyddiwr a gynhyrchwyd ar gyfer tracio defnydd (Application Insights)",
+        "expires": "Defnydd"
+      }
+    },
+    "identifyTitle": "Eich adnabod pan fyddwch yn dod yn ôl at y gwasanaeth",
+    "identifyDesc": "Rydym yn defnyddio cwcis dilysu i’ch adnabod pan fyddwch yn dod yn ôl i’r gwasanaeth.",
+    "identifyTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "name": "__userid__",
+        "purpose": "Eich ID defnyddiwr",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      }
+    },
+    "securityTitle": "Gwneud y gwasanaeth yn fwy diogel",
+    "securityDesc": "Rydym yn gosod cwcis sy'n atal mynediad heb awdurdod i'r gwasanaeth. Mae hyn yn gwneud y gwasanaeth yn fwy diogel ac yn diogelu eich gwybodaeth bersonol.",
+    "securityTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "name": "vhaad",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      },
+      "row2": {
+        "name": "ejud",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      },
+      "row3": {
+        "name": "dom1",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      }
+    }
   }
 }
