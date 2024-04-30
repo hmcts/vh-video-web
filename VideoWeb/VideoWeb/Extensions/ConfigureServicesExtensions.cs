@@ -39,6 +39,7 @@ using VideoWeb.Common.Security.Tokens.Vodafone;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Core;
 using VideoWeb.Services;
 
 namespace VideoWeb.Extensions
@@ -125,6 +126,10 @@ namespace VideoWeb.Extensions
             services.AddScoped<IDistributedJOHConsultationRoomLockCache, DistributedJOHConsultationRoomLockCache>();
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
             services.AddScoped<ISupplierLocator, SupplierLocator>();
+            
+            services.AddScoped<IInternalEventHandlerFactory, InternalEventHandlerFactory>();
+            
+            RegisterInternalEventHandlers(services);
             
             RegisterMappers(services);
 
@@ -230,16 +235,36 @@ namespace VideoWeb.Extensions
                 serviceCollection.AddScoped(serviceType, eventHandler);
             }
         }
-
+        
+        private static void RegisterInternalEventHandlers(IServiceCollection serviceCollection)
+        {
+            var internalEventHandlers = GetAllTypesOf(typeof(IInternalEventHandler<>)).ToList();
+            
+            foreach (var eventHandler in internalEventHandlers)
+            {
+                if (eventHandler.IsInterface || eventHandler.IsAbstract) continue;
+                var serviceType = eventHandler.GetInterfaces()[0];
+                serviceCollection.AddScoped(serviceType, eventHandler);
+            }
+        }
+        
         private static IEnumerable<Type> GetAllTypesOf<T>()
         {
             var platform = Environment.OSVersion.Platform.ToString();
             var runtimeAssemblyNames = DependencyContext.Default.GetRuntimeAssemblyNames(platform);
-
+            
             return runtimeAssemblyNames
                 .Select(Assembly.Load)
                 .SelectMany(a => a.ExportedTypes)
                 .Where(t => typeof(T).IsAssignableFrom(t));
+        }
+        
+        private static IEnumerable<Type> GetAllTypesOf(Type i)
+        {
+            return i.Assembly.GetTypes().Where(t =>
+                t.GetInterfaces().ToList().Exists(x =>
+                    x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == i));
         }
 
         public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
