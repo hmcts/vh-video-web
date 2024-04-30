@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" id="accessContent">
-    <img src="/assets/images/hmcts-logo.gif" [attr.alt]="'accessibility.crest-image-alt' | translate" />
+    <img src="/assets/images/hmcts-logo.gif" [attr.alt]="'accessibility.crest-img-alt' | translate" />
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-9">
@@ -40,17 +40,17 @@
               {{ 'accessibility.menu.non-accessible-content.heading' | translate }}
             </a>
           </li>
-            <li class="vh-text">
-                <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('improvingAccessibility')">
-                    {{ 'accessibility.menu.improving-accessibility.heading' | translate }}
-                </a>
-            </li>
+          <li class="vh-text">
+            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('improvingAccessibility')">
+              {{ 'accessibility.menu.improving-accessibility.heading' | translate }}
+            </a>
+          </li>
 
-            <li class="vh-text">
-                <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('preparation-of-statement')">
-                    {{ 'accessibility.menu.preparation-of-statement.heading' | translate }}
-                </a>
-            </li>
+          <li class="vh-text">
+            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('preparation-of-statement')">
+              {{ 'accessibility.menu.preparation-of-statement.heading' | translate }}
+            </a>
+          </li>
         </ol>
       </div>
     </nav>
@@ -70,7 +70,10 @@
           <li>{{ 'accessibility.menu.accessibility-statement.list.2' | translate }}</li>
         </ul>
         <p class="govuk-body">
-            <a class="govuk-link" rel="external" href="https://mcmw.abilitynet.org.uk/">{{ 'accessibility.menu.accessibility-statement.abilityNet' | translate }}</a> {{ 'accessibility.menu.accessibility-statement.paragraph3' | translate }}
+          <a class="govuk-link" rel="external" href="https://mcmw.abilitynet.org.uk/">{{
+            'accessibility.menu.accessibility-statement.abilityNet' | translate
+          }}</a>
+          {{ 'accessibility.menu.accessibility-statement.paragraph3' | translate }}
         </p>
       </div>
     </div>
@@ -83,80 +86,83 @@
       </p>
 
       <ul class="govuk-body">
-          <li>{{ 'accessibility.menu.how-accessible.list.1' | translate}} </li>
+        <li>{{ 'accessibility.menu.how-accessible.list.1' | translate }}</li>
 
-          <li>{{ 'accessibility.menu.how-accessible.list.2' | translate}} </li>
+        <li>{{ 'accessibility.menu.how-accessible.list.2' | translate }}</li>
 
-              <ul class="govuk-body">
-                  <li>{{ 'accessibility.menu.how-accessible.sub-list1.1' | translate}} </li>
-                  <li>{{ 'accessibility.menu.how-accessible.sub-list1.2' | translate}} </li>
-                  <li>{{ 'accessibility.menu.how-accessible.sub-list1.3' | translate}} </li>
-                  <li>{{ 'accessibility.menu.how-accessible.sub-list1.4' | translate}} </li>
-              </ul>
-          <li>{{ 'accessibility.menu.how-accessible.list.3' | translate}} </li>
-          <ul class="govuk-body">
-              <li>{{ 'accessibility.menu.how-accessible.sub-list2.1' | translate}} </li>
-              <li>{{ 'accessibility.menu.how-accessible.sub-list2.2' | translate}} </li>
-              <li>{{ 'accessibility.menu.how-accessible.sub-list2.3' | translate}} </li>
-          </ul>
-          <li>{{ 'accessibility.menu.how-accessible.list.4' | translate}} </li>
-          <li>{{ 'accessibility.menu.how-accessible.list.5' | translate}} </li>
-
+        <ul class="govuk-body">
+          <li>{{ 'accessibility.menu.how-accessible.sub-list1.1' | translate }}</li>
+          <li>{{ 'accessibility.menu.how-accessible.sub-list1.2' | translate }}</li>
+          <li>{{ 'accessibility.menu.how-accessible.sub-list1.3' | translate }}</li>
+          <li>{{ 'accessibility.menu.how-accessible.sub-list1.4' | translate }}</li>
+        </ul>
+        <li>{{ 'accessibility.menu.how-accessible.list.3' | translate }}</li>
+        <ul class="govuk-body">
+          <li>{{ 'accessibility.menu.how-accessible.sub-list2.1' | translate }}</li>
+          <li>{{ 'accessibility.menu.how-accessible.sub-list2.2' | translate }}</li>
+          <li>{{ 'accessibility.menu.how-accessible.sub-list2.3' | translate }}</li>
+        </ul>
+        <li>{{ 'accessibility.menu.how-accessible.list.4' | translate }}</li>
+        <li>{{ 'accessibility.menu.how-accessible.list.5' | translate }}</li>
       </ul>
       <p class="govuk-body">
         {{ 'accessibility.menu.how-accessible.paragraph2' | translate }}
       </p>
-
     </div>
     <div id="feedback-and-contact-information" class="vh-section">
       <h2 class="govuk-heading-m">{{ 'accessibility.menu.feedback.heading' | translate }}</h2>
       <p class="govuk-body">
         {{ 'accessibility.menu.feedback.paragraph1' | translate }}
       </p>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph2' | translate }}
-        </p>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph3' | translate }}
-            <a class="govuk-link" rel="external" href="{{ 'accessibility.menu.feedback.paragraph3.link' | translate }}"> {{ 'accessibility.menu.feedback.paragraph3.link' | translate }}</a>.
-        </p>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph4' | translate }}
-        </p>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph5' | translate }}
-        </p>
-          <ul class="govuk-body">
-              <li>{{ 'accessibility.menu.feedback.list.1' | translate: { phoneNumber: contactDetails.englandAndWales.phoneNumber } }}</li>
-              <li>{{ 'accessibility.menu.feedback.list.2' | translate }}
-                  <a href="mailto:{{contactDetails.englandAndWales.email}}" target="_top">{{contactDetails.englandAndWales.email}}</a>
-              </li>
-          </ul>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph6' | translate }}
-        </p>
-        <ul class="govuk-body">
-            <li>{{ 'accessibility.menu.feedback.list-scotland.1' | translate: { phoneNumber: contactDetails.scotland.phoneNumber } }}</li>
-            <li>{{ 'accessibility.menu.feedback.list-scotland.2' | translate}}
-                <a href="mailto:{{contactDetails.scotland.email }}" target="_top">{{contactDetails.scotland.email}}</a>
-            </li>
-        </ul>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph7' | translate }}
-        </p>
-        <p class="govuk-body">
-            {{ 'accessibility.menu.feedback.paragraph8' | translate }}
-        </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph2' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph3' | translate }}
+        <a class="govuk-link" rel="external" href="{{ 'accessibility.menu.feedback.paragraph3.link' | translate }}">
+          {{ 'accessibility.menu.feedback.paragraph3.link' | translate }}</a
+        >.
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph4' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph5' | translate }}
+      </p>
+      <ul class="govuk-body">
+        <li>{{ 'accessibility.menu.feedback.list.1' | translate: { phoneNumber: contactDetails.englandAndWales.phoneNumber } }}</li>
+        <li>
+          {{ 'accessibility.menu.feedback.list.2' | translate }}
+          <a href="mailto:{{ contactDetails.englandAndWales.email }}" target="_top">{{ contactDetails.englandAndWales.email }}</a>
+        </li>
+      </ul>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph6' | translate }}
+      </p>
+      <ul class="govuk-body">
+        <li>{{ 'accessibility.menu.feedback.list-scotland.1' | translate: { phoneNumber: contactDetails.scotland.phoneNumber } }}</li>
+        <li>
+          {{ 'accessibility.menu.feedback.list-scotland.2' | translate }}
+          <a href="mailto:{{ contactDetails.scotland.email }}" target="_top">{{ contactDetails.scotland.email }}</a>
+        </li>
+      </ul>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph7' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.feedback.paragraph8' | translate }}
+      </p>
     </div>
     <div id="reporting-accessibility-problems-with-this-website" class="vh-section">
-        <h2 class="govuk-heading-m">{{ 'accessibility.menu.reporting-accessibility.heading' | translate }}</h2>
+      <h2 class="govuk-heading-m">{{ 'accessibility.menu.reporting-accessibility.heading' | translate }}</h2>
       <p class="govuk-body">
         {{ 'accessibility.menu.reporting-accessibility.paragraph1' | translate }}
       </p>
       <ul class="govuk-body">
-          <li>{{'accessibility.menu.reporting-accessibility.list.1' | translate }}
-              <a href="mailto:video-hearings@justice.gov.uk" target="_top">video-hearings&#64;justice.gov.uk</a>
-          </li>
+        <li>
+          {{ 'accessibility.menu.reporting-accessibility.list.1' | translate }}
+          <a href="mailto:video-hearings@justice.gov.uk" target="_top">video-hearings&#64;justice.gov.uk</a>
+        </li>
         <li>{{ 'accessibility.menu.reporting-accessibility.list.2' | translate }}</li>
       </ul>
     </div>
@@ -164,75 +170,83 @@
       <h2 class="govuk-heading-m">{{ 'accessibility.menu.enforcement-procedure.heading' | translate }}</h2>
       <p class="govuk-body">
         {{ 'accessibility.menu.enforcement-procedure.paragraph1' | translate }}
-        <a class="govuk-link" rel="external" href="https://www.equalityadvisoryservice.com/"
-          >{{ 'accessibility.menu.enforcement-procedure.paragraph2' | translate }}</a
+        <a class="govuk-link" rel="external" href="https://www.equalityadvisoryservice.com/">{{
+          'accessibility.menu.enforcement-procedure.paragraph2' | translate
+        }}</a
         >.
       </p>
     </div>
-  <div id="contacting-us" class="vh-section">
+    <div id="contacting-us" class="vh-section">
       <h2 class="govuk-heading-m">{{ 'accessibility.menu.contacting-us.heading' | translate }}</h2>
       <p class="govuk-body">
-          {{ 'accessibility.menu.contacting-us.paragraph1' | translate }}
+        {{ 'accessibility.menu.contacting-us.paragraph1' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.contacting-us.paragraph2' | translate }}
+        {{ 'accessibility.menu.contacting-us.paragraph2' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.contacting-us.paragraph3' | translate }}
-          <a class="govuk-link" rel="external" href="https://www.gov.uk/find-court-tribunal"
-            >{{ 'accessibility.menu.contacting-us.paragraph3.link' | translate }}</a
-          >.
+        {{ 'accessibility.menu.contacting-us.paragraph3' | translate }}
+        <a class="govuk-link" rel="external" href="https://www.gov.uk/find-court-tribunal">{{
+          'accessibility.menu.contacting-us.paragraph3.link' | translate
+        }}</a
+        >.
       </p>
-  </div>
+    </div>
 
-  <div id="technicalInformation" class="vh-section">
-      <h1 class="govuk-heading-l" id="technical-information-about-this-websites-accessibility"> {{ 'accessibility.menu.technical-information.heading' | translate }} </h1>
+    <div id="technicalInformation" class="vh-section">
+      <h1 class="govuk-heading-l" id="technical-information-about-this-websites-accessibility">
+        {{ 'accessibility.menu.technical-information.heading' | translate }}
+      </h1>
       <p class="govuk-body">
         {{ 'accessibility.menu.technical-information.paragraph1' | translate }}
       </p>
-  </div>
+    </div>
 
-  <div id="complianceStatus" class="vh-section">
+    <div id="complianceStatus" class="vh-section">
       <h2 class="govuk-heading-m" id="compliance-status">{{ 'accessibility.menu.compliance-status.heading' | translate }}</h2>
       <p class="govuk-body">
-          {{ 'accessibility.menu.compliance-status.paragraph1.1' | translate }}
-          <a class="govuk-link" rel="external" href="https://www.w3.org/TR/WCAG21/">{{ 'accessibility.menu.compliance-status.link' | translate }}</a>
-          {{ 'accessibility.menu.compliance-status.paragraph1.2' | translate }}
+        {{ 'accessibility.menu.compliance-status.paragraph1.1' | translate }}
+        <a class="govuk-link" rel="external" href="https://www.w3.org/TR/WCAG21/">{{
+          'accessibility.menu.compliance-status.link' | translate
+        }}</a>
+        {{ 'accessibility.menu.compliance-status.paragraph1.2' | translate }}
       </p>
-  </div>
+    </div>
 
-  <div id="nonAccessibleContent" class="vh-section">
+    <div id="nonAccessibleContent" class="vh-section">
       <h2 class="govuk-heading-m" id="non-accessible-content">{{ 'accessibility.menu.non-accessible-content.heading' | translate }}</h2>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph1' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph1' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph2' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph2' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph3' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph3' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph4' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph4' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph5' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph5' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph6' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph6' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph7' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph7' | translate }}
       </p>
       <p class="govuk-body">
-          {{ 'accessibility.menu.non-accessible-content.paragraph8' | translate }}
+        {{ 'accessibility.menu.non-accessible-content.paragraph8' | translate }}
       </p>
-  </div>
+    </div>
 
     <div id="improvingAccessibility" class="vh-section">
       <h2 class="govuk-heading-m">{{ 'accessibility.menu.improving-accessibility.heading' | translate }}</h2>
       <p class="govuk-body">
         {{ 'accessibility.menu.improving-accessibility.paragraph1' | translate }}
+      </p>
+
       <p class="govuk-body">
         {{ 'accessibility.menu.improving-accessibility.paragraph2' | translate }}
       </p>
@@ -242,42 +256,45 @@
       <p class="govuk-body">
         {{ 'accessibility.menu.improving-accessibility.paragraph4' | translate }}
       </p>
-      <p class="govuk-body"> {{ 'accessibility.menu.improving-accessibility.paragraph5.1' | translate }}
-         <a class="govuk-link" rel="external" href="">{{ 'accessibility.menu.improving-accessibility.paragraph5.link' | translate }}</a>
-      {{ 'accessibility.menu.improving-accessibility.paragraph5.2' | translate }}
+      <p class="govuk-body">
+        {{ 'accessibility.menu.improving-accessibility.paragraph5.1' | translate }}
+        <a class="govuk-link" rel="external" href="">{{ 'accessibility.menu.improving-accessibility.paragraph5.link' | translate }}</a>
+        {{ 'accessibility.menu.improving-accessibility.paragraph5.2' | translate }}
       </p>
     </div>
 
+    <div id="preparation-of-statement" class="vh-section">
+      <h2 class="govuk-heading-m">{{ 'accessibility.menu.preparation-of-statement.heading' | translate }}</h2>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph1' | translate }}
+      </p>
 
-      <div id="preparation-of-statement" class="vh-section">
-          <h2 class="govuk-heading-m">{{ 'accessibility.menu.preparation-of-statement.heading' | translate }}</h2>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph1' | translate }}
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph2' | translate }}
-          </p>
-          <p class="govuk-body"> {{ 'accessibility.menu.preparation-of-statement.paragraph3' | translate }}
-              <a class="govuk-link" rel="external" href="">{{ 'accessibility.menu.preparation-of-statement.paragraph3.link' | translate }}</a>
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph4' | translate }}
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph5' | translate }}
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph6' | translate }}
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph7' | translate }}
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph8' | translate }}
-          </p>
-          <p class="govuk-body">
-              {{ 'accessibility.menu.preparation-of-statement.paragraph9' | translate }}
-          </p>
-      </div>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph2' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph3' | translate }}
+        <a class="govuk-link" rel="external" href="">{{ 'accessibility.menu.preparation-of-statement.paragraph3.link' | translate }}</a>
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph4' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph5' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph6' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph7' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph8' | translate }}
+      </p>
+      <p class="govuk-body">
+        {{ 'accessibility.menu.preparation-of-statement.paragraph9' | translate }}
+      </p>
+    </div>
   </div>
 </div>
 
