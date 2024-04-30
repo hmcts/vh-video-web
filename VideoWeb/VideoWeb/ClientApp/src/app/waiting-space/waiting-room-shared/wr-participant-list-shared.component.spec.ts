@@ -115,6 +115,11 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.endpoints.length).toBe(2);
     });
 
+    it('should display participant list when non-judge participants are present', () => {
+        component.ngOnChanges();
+        expect(component.displayParticipantList).toBeTrue();
+    });
+
     it('should return true when participant has no case type group', () => {
         const pat = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',

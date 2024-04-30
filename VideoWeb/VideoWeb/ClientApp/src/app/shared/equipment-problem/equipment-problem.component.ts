@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 
 @Component({
@@ -6,8 +6,6 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
     templateUrl: './equipment-problem.component.html',
     styleUrls: []
 })
-export class EquipmentProblemComponent implements OnInit {
+export class EquipmentProblemComponent {
     contactDetails = vhContactDetails;
-
-    ngOnInit() {}
 }

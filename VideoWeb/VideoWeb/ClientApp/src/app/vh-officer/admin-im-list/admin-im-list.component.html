@@ -1,6 +1,7 @@
 <div id="list-pat">
   <div
     *ngFor="let participant of participants"
+    (keydown)="selectParticipant(participant)"
     (click)="selectParticipant(participant)"
     class="im-list"
     [ngClass]="{
