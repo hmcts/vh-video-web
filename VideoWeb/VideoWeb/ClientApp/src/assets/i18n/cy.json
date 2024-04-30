@@ -1452,7 +1452,7 @@
         "purpose": "Pwrpas",
         "expires": "Dyddiad dod i ben"
       },
-      "rows1": {
+      "row1": {
         "name": "vhaad",
         "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
         "expires": "Pan fyddwch yn cau eich porwr"

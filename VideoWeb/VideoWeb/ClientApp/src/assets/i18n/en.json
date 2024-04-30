@@ -1453,7 +1453,7 @@
         "purpose": "Purpose",
         "expires": "Expires"
       },
-      "rows1": {
+      "row1": {
         "name": "vhaad",
         "purpose": "Used to secure communications with HMCTS data services",
         "expires": "When you close your browser"
