@@ -9,6 +9,7 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
+import { CookiesComponent } from './cookies/cookies.component';
 
 export const routes: Routes = [
     { path: `${pageUrls.ContactUs}`, component: ContactUsComponent, canActivate: [AuthGuard] },
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: `${pageUrls.NotFound}`, component: NotFoundComponent },
     { path: `${pageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent },
     { path: `${pageUrls.PrivacyPolicy}`, component: PrivacyPolicyComponent },
+    { path: `${pageUrls.Cookies}`, component: CookiesComponent, data: { title: 'Cookies' } },
     { path: `${pageUrls.Accessibility}`, component: AccessibilityComponent },
     { path: `${pageUrls.ErrorCameraMicrophone}`, component: ErrorCameraMicrophoneComponent }
 ];

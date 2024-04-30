@@ -15,6 +15,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     hideContactUsLink = false;
     privacyPolicyUri = pageUrls.PrivacyPolicy;
     accessibilityUri = pageUrls.Accessibility;
+    cookiesUri = pageUrls.Cookies;
     routerEventsSubscription$: Subscription = new Subscription();
     hearingVenueIsInScotland$: Observable<boolean>;
 
