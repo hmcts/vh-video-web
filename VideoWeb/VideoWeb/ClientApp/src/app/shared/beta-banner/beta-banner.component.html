@@ -1,12 +1,9 @@
-<div class="govuk-phase-banner" *ngIf="isRepresentativeOrIndividual">
-    <p class="govuk-phase-banner__content">
-        <strong class="govuk-tag govuk-phase-banner__content__tag">
-            {{'beta-banner.beta' | translate}}
-        </strong>
-        <span class="govuk-phase-banner__text">
-            {{'beta-banner.this-new-service' | translate}}
-            <a class="govuk-link" href="{{ pageUrl }}"> {{'beta-banner.feedback' | translate}} </a>
-            {{'beta-banner.help-improve' | translate}}
-        </span>
-    </p>
+<div class="govuk-phase-banner">
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag"> {{ 'beta-banner.beta' | translate }} </strong>
+    <span class="govuk-phase-banner__text">
+      {{ 'beta-banner.this-new-service' | translate }} <a class="govuk-link" href="#">{{ 'beta-banner.feedback' | translate }}</a>
+      {{ 'beta-banner.help-improve' | translate }}
+    </span>
+  </p>
 </div>

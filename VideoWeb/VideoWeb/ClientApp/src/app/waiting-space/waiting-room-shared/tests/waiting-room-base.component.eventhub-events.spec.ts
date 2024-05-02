@@ -12,7 +12,9 @@ import {
     RoomSummaryResponse,
     HearingLayout,
     Role,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    LinkedParticipantResponse,
+    LinkType
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -1505,11 +1507,13 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const testHearing = new Hearing(testConference);
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
+        testParticipant.linked_participants = [];
+        let getLoggedParticipantSpy: jasmine.Spy<() => ParticipantResponse>;
 
         beforeEach(() => {
             component.hearing = testHearing;
             component.conference.participants = [];
-            spyOn(component, 'getLoggedParticipant');
+            getLoggedParticipantSpy = spyOn(component, 'getLoggedParticipant');
         });
 
         describe('when is not correct conference', () => {
@@ -1650,6 +1654,40 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(participants.length).toBe(testParticipantMessage.participants.length);
                 expect(participants).toEqual(jasmine.arrayContaining(testParticipantMessage.participants));
             }
+        });
+
+        describe('when participant is now linked', () => {
+            it('should re-join when participant is now linked', () => {
+                const conference = new ConferenceResponse(Object.assign({}, globalConference));
+                const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
+                spyOn(component, 'callAndUpdateShowVideo');
+                component.hearing = new Hearing(conference);
+                component.conference = conference;
+                component.participant = participant;
+
+                const updatedParticipant = new ParticipantResponse(Object.assign({}, globalParticipant));
+
+                updatedParticipant.linked_participants = [
+                    new LinkedParticipantResponse({
+                        link_type: LinkType.Interpreter,
+                        linked_id: testParticipant.id.toString()
+                    })
+                ];
+                getLoggedParticipantSpy.and.returnValue(updatedParticipant);
+                testParticipant.linked_participants = [
+                    new LinkedParticipantResponse({
+                        link_type: LinkType.Interpreter,
+                        linked_id: updatedParticipant.id.toString()
+                    })
+                ];
+                const testParticipantMessage = new ParticipantsUpdatedMessage(globalConference.id, [
+                    testParticipant,
+                    component.participant
+                ]);
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                expect(component.callAndUpdateShowVideo).toHaveBeenCalled();
+            });
         });
     });
 

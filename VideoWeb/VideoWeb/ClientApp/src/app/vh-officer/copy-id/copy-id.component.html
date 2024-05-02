@@ -4,6 +4,7 @@
     [id]="propertyIdName"
     (tooltipShown)="resetText()"
     [attr.alt]="'copy-id.alt' | translate"
+    (keydown)="copyToClipboard(conference); $event.stopPropagation()"
     (click)="copyToClipboard(conference); $event.stopPropagation()">
   <fa-icon [icon]="['far', 'address-card']" aria-hidden="true"></fa-icon>
   <a class="copy-link-text" [routerLink]="[]">{{'copy-id.display-text' | translate}}</a>

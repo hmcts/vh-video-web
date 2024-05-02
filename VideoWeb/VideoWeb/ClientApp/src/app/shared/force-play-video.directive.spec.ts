@@ -17,10 +17,14 @@ describe('ForcePlayVideoDirective', () => {
     let onPlayingCallback: (event: any) => void = null;
     let onPauseCallback: (event: any) => void = null;
     let onErrorCallback: (event: any) => void = null;
+    let onLoadedMetadaCallback: (event: any) => void = null;
 
     beforeEach(() => {
         elementRefSpy = jasmine.createSpyObj<ElementRef>([], ['nativeElement']);
-        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'pause'], ['oncanplay', 'onerror', 'onplaying', 'onpause']);
+        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(
+            ['play', 'pause'],
+            ['oncanplay', 'onerror', 'onplaying', 'onpause', 'onloadedmetadata']
+        );
         nativeElementSpy.play.and.callFake(() => Promise.resolve());
         getSpiedPropertyGetter(elementRefSpy, 'nativeElement').and.returnValue(nativeElementSpy);
         getSpiedPropertySetter(nativeElementSpy, 'oncanplay').and.callFake((callback: (event: any) => void) => {
@@ -37,6 +41,10 @@ describe('ForcePlayVideoDirective', () => {
 
         getSpiedPropertySetter(nativeElementSpy, 'onerror').and.callFake((callback: (event: any) => void) => {
             onErrorCallback = callback;
+        });
+
+        getSpiedPropertySetter(nativeElementSpy, 'onloadedmetadata').and.callFake((callback: (event: any) => void) => {
+            onLoadedMetadaCallback = callback;
         });
 
         renderer2FactorySpy = jasmine.createSpyObj<RendererFactory2>(['createRenderer']);
@@ -135,6 +143,7 @@ describe('ForcePlayVideoDirective', () => {
 
             // Act
             onCanPlayCallback(null);
+            onLoadedMetadaCallback(null);
 
             // Assert
             expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
@@ -160,6 +169,7 @@ describe('ForcePlayVideoDirective', () => {
 
             // Act
             onCanPlayCallback(null);
+            onLoadedMetadaCallback(null);
             tick();
 
             // Assert
@@ -213,6 +223,7 @@ describe('ForcePlayVideoDirective', () => {
 
             // Act
             mouseDownCallback(null);
+            onLoadedMetadaCallback(null);
 
             // Assert
             expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
@@ -291,6 +302,7 @@ describe('ForcePlayVideoDirective', () => {
 
             // Act
             mouseDownCallback(null);
+            onLoadedMetadaCallback(null);
             tick();
 
             // Assert
@@ -332,6 +344,7 @@ describe('ForcePlayVideoDirective', () => {
 
             // Act
             touchStartCallback(null);
+            onLoadedMetadaCallback(null);
 
             // Assert
             expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
