@@ -73,6 +73,8 @@ java:
         - ejudad--tenantid
         - name: azuread--identifieruri
           alias: azuread--resourceid
+        - redisconfiguration--endpoint
+        - redisconfiguration--password
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}

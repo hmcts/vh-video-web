@@ -84,7 +84,12 @@ namespace VideoWeb
             {
                 Configuration.Bind("QuickLinks", options);
             });
-            
+
+            services.Configure<RedisConfiguration>(options =>
+            {
+                Configuration.Bind("RedisConfiguration", options);
+            });
+
             var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(kinlyTokenSettings);
@@ -93,9 +98,12 @@ namespace VideoWeb
             services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
             services.AddSingleton(vodafoneTokenSettings);
 
+            var redis = Configuration.GetSection("RedisConfiguration").Get<RedisConfiguration>();
+            services.AddSingleton(redis);
+
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
-            
+  
             services.AddVhHealthChecks();
         }
 
