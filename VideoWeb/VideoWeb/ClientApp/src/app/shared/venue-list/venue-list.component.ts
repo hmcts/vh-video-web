@@ -23,10 +23,12 @@ export abstract class VenueListComponentDirective implements OnInit {
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
     errorMessage: string | null;
     vhoWorkAllocationFeatureFlag: boolean;
+    activeSessions: boolean;
 
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
+    protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -42,6 +44,7 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
+        this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
     }
 
     get venuesSelected(): boolean {
@@ -62,12 +65,26 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
         this.csoAllocationStorage.clear();
+        this.activeSessionsStorage.clear();
     }
 
     async updateCsoSelection() {
         this.selectedVenues = [];
         this.csoAllocationStorage.set(await this.getCsoFilter());
         this.judgeAllocationStorage.clear();
+        this.activeSessionsStorage.clear();
+    }
+
+    updateActiveSessionSelection() {
+        this.activeSessions = !this.activeSessions;
+        if (this.activeSessions) {
+            this.selectedVenues = [];
+            this.selectedCsos = [];
+            this.csoAllocationStorage.clear();
+            this.judgeAllocationStorage.clear();
+        } else {
+            this.activeSessionsStorage.set(true);
+        }
     }
 
     async getCsoFilter(): Promise<CsoFilter> {

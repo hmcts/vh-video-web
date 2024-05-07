@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
@@ -38,7 +40,8 @@ namespace VideoWeb.Common.Caching
 
         public async Task<List<Claim>> GetAsync(string key)
         {
-            return await ReadFromCache(key);
+            var claims = await ReadFromCache<List<CustomClaim>>(key);
+            return claims?.Select(x => x.ToClaim()).ToList();
         }
 
         public async Task ClearFromCache(string key)

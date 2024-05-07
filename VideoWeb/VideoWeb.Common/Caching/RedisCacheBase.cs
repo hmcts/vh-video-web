@@ -58,6 +58,27 @@ namespace VideoWeb.Common.Caching
                 return default(TEntry);
             }
         }
+        
+        public virtual async Task<TResult> ReadFromCache<TResult>(TKey key)
+        {
+            try
+            {
+                var data = await _distributedCache.GetAsync(GetKey(key));
+                var profileSerialised = Encoding.UTF8.GetString(data);
+                var layout =
+                    JsonConvert.DeserializeObject<TResult>(profileSerialised,
+                        new JsonSerializerSettings
+                        {
+                            TypeNameHandling = TypeNameHandling.None, Formatting = Formatting.None
+                        });
+                return layout;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error reading from cache for key {key}", key);
+                return default(TResult);
+            }
+        }
 
         protected virtual async Task RemoveFromCache(TKey key)
         {

@@ -15,6 +15,7 @@ export class VhoQueryService {
     venueNames: string[];
     allocatedCsoIds: string[];
     includeUnallocated = false;
+    activeSessionsOnly = false;
 
     private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
     private vhoConferences: ConferenceForVhOfficerResponse[] = [];
@@ -23,10 +24,11 @@ export class VhoQueryService {
         this.vhoConferencesSubject = new BehaviorSubject(this.vhoConferences);
     }
 
-    startQuery(venueNames: string[], allocatedCsoIds: string[], includeUnallocated: boolean) {
+    startQuery(venueNames: string[], allocatedCsoIds: string[], includeUnallocated: boolean, activeSessionsOnly: boolean) {
         this.venueNames = venueNames ?? [];
         this.allocatedCsoIds = allocatedCsoIds ?? [];
         this.includeUnallocated = includeUnallocated;
+        this.activeSessionsOnly = activeSessionsOnly;
         this.runQuery();
         this.interval = setInterval(async () => {
             this.runQuery();
@@ -38,6 +40,12 @@ export class VhoQueryService {
     }
 
     async runQuery() {
+        if(this.activeSessionsOnly) {
+            const activeConferences = await this.getActiveConferences();
+            this.vhoConferences = activeConferences;
+            this.vhoConferencesSubject.next(this.vhoConferences);
+            return;
+        }
         const conferences = await this.apiClient
             .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
@@ -72,5 +80,9 @@ export class VhoQueryService {
         includeUnallocated: boolean = false
     ): Promise<CourtRoomsAccountResponse[]> {
         return this.apiClient.getCourtRoomAccounts(venueAllocation ?? [], allocatedCsosIds ?? [], includeUnallocated).toPromise();
+    }
+
+    getActiveConferences() {
+        return this.apiClient.getActiveConferences().toPromise();
     }
 }
