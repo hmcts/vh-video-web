@@ -1279,7 +1279,21 @@
     "court-of-protections": "Y Llys Gwarchod",
     "remo": "REMO",
     "maintenance-enforcement": "Gorfodi Cynhaliaeth",
-    "probate": "Profiant"
+    "probate": "",
+    "transport": "",
+    "pensions": "",
+    "social-security-and-child-support": "",
+    "civil-enforcement": "",
+    "insolvency": "",
+    "mortgage-and-landlord-possession-claims": "",
+    "non-money-claims": "",
+    "return-of-goods-claims": "",
+    "examination-boards": "",
+    "individual-electoral-registration": "",
+    "licensing-and-standards": "",
+    "primary-health-lists": "",
+    "mp-s-expenses": "",
+    "agricultural-land-and-drainage": ""
   },
   "case-role": {
     "state": "Y Wladwriaeth",

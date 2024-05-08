@@ -225,7 +225,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return str.replace(/[\s’']/g, '-').toLowerCase();
     }
 
     togglePanel(panelName: string) {
