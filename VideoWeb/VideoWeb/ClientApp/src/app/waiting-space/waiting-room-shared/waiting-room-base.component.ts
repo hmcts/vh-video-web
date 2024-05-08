@@ -1406,7 +1406,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
             this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
-            this.hearing.addEndpoint(endpoint);
         });
 
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {

@@ -94,11 +94,6 @@ export class Hearing extends HearingBase {
         this.updateParticipantList(participants);
     }
 
-    addEndpoint(ver: VideoEndpointResponse) {
-        const conference = this.conference as ConferenceResponse;
-        conference.endpoints.push(ver);
-    }
-
     updateEndpoint(ver: VideoEndpointResponse) {
         const conference = this.conference as ConferenceResponse;
         const index = conference.endpoints.findIndex(x => x.id === ver.id);
