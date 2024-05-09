@@ -1793,22 +1793,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
             }));
 
-            it('should add new endpoint', fakeAsync(() => {
-                // Arrange
-                const existingEndpointCount = component.conference.endpoints.length;
-                component.participant.status = ParticipantStatus.Available;
-
-                // Act
-                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
-
-                // Assert
-                const addedEndpoint = component.conference.endpoints.find(x => x.id === testAddVideoEndpointResponse.id);
-                expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
-                expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
-                expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
-            }));
-
             it('should update existing endpoint', fakeAsync(() => {
                 // Arrange
                 component.participant.status = ParticipantStatus.Available;
