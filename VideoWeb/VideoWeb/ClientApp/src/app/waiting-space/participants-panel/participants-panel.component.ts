@@ -248,7 +248,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const newlyAddedParticipants = mappedList.filter(
                         ({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId)
                     );
-                    newlyAddedParticipants.forEach(np => this.nonEndpointParticipants.push(np));
+                    newlyAddedParticipants.forEach(np => {
+                        if (
+                            np.role === Role.JudicialOfficeHolder &&
+                            this.nonEndpointParticipants.some(x => x.role === Role.JudicialOfficeHolder)
+                        ) {
+                            return;
+                        }
+                        this.nonEndpointParticipants.push(np);
+                    });
 
                     const nonEndpointParticipantsLinkedParticipantPanelIndex = this.nonEndpointParticipants.findIndex(
                         x => x.role === Role.JudicialOfficeHolder
