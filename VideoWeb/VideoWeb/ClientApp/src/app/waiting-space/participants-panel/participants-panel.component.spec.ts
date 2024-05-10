@@ -1174,7 +1174,8 @@ describe('ParticipantsPanelComponent', () => {
             first_name: 'Panel',
             role: Role.JudicialOfficeHolder,
             hearing_role: 'Panel Member',
-            user_name: 'panel.member@hmcts.net'
+            user_name: 'panel.member@hmcts.net',
+            id: '6666-1234-2345-3456'
         });
 
         const panelMember2 = new ParticipantForUserResponse({
@@ -1182,9 +1183,11 @@ describe('ParticipantsPanelComponent', () => {
             first_name: 'Panel',
             role: Role.JudicialOfficeHolder,
             hearing_role: 'Panel Member',
-            user_name: 'panel.member.2@hmcts.net'
+            user_name: 'panel.member.2@hmcts.net',
+            id: '6666-1234-2345-3457'
         });
 
+        participants = participants.filter(x => x.role !== Role.JudicialOfficeHolder);
         participants.push(panelMember1);
 
         component.nonEndpointParticipants = [];
@@ -1196,6 +1199,7 @@ describe('ParticipantsPanelComponent', () => {
         let message = new ParticipantsUpdatedMessage(conferenceId, participants);
         getParticipantsUpdatedSubjectMock.next(message);
 
+        panelMember1.interpreter_room = new RoomSummaryResponse({ id: '14682', label: 'Panel Member1', locked: false });
         participants.push(panelMember2);
         mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
         participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
@@ -1204,6 +1208,7 @@ describe('ParticipantsPanelComponent', () => {
 
         const linkedParticipantPanelModel = component.nonEndpointParticipants.filter(x => x.role === Role.JudicialOfficeHolder);
 
+        expect(linkedParticipantPanelModel.length).toBe(1);
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember1DisplayName);
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
     });
