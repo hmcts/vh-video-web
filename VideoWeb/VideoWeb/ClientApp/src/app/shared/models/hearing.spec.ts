@@ -5,11 +5,6 @@ import { ConferenceStatus, ParticipantResponseVho, Role } from 'src/app/services
 describe('Hearing', () => {
     const testData = new ConferenceTestData();
 
-    it('should throw an error if passing an invlid type', () => {
-        const c = testData.getConferenceFuture();
-        expect(() => new Hearing(c)).toThrowError();
-    });
-
     it('should map hearing info', () => {
         const c = testData.getConferenceDetailFuture();
         const hearing = new Hearing(c);

@@ -17,13 +17,6 @@ export class Hearing extends HearingBase {
 
     constructor(conference: ConferenceResponseVho) {
         super();
-        const isVhResponse = conference instanceof ConferenceResponseVho;
-        const isParticipantResponse = conference instanceof ConferenceResponse;
-
-        if (!(isVhResponse || isParticipantResponse)) {
-            throw new Error('Object not a ConferenceResponse or ConferenceResponseVHO');
-        }
-
         this.conference = conference;
         if (conference.participants) {
             this._participants = this.conference.participants.map(p => new Participant(p));
