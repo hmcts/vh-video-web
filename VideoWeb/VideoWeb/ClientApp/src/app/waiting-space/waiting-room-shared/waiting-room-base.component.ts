@@ -63,6 +63,7 @@ import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -225,7 +226,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return convertStringToTranslationId(str);
     }
 
     togglePanel(panelName: string) {
