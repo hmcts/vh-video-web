@@ -1279,7 +1279,21 @@
     "court-of-protections": "Y Llys Gwarchod",
     "remo": "REMO",
     "maintenance-enforcement": "Gorfodi Cynhaliaeth",
-    "probate": "Profiant"
+    "probate": "Profiant",
+    "transport": "Trafnidiaeth",
+    "pensions": "Pensiynau",
+    "social-security-and-child-support": "Nawdd Cymdeithasol a Chynnal Plant",
+    "civil-enforcement": "Gorfodaeth Sifil",
+    "insolvency": "Ansolfedd",
+    "mortgage-and-landlord-possession-claims": "Hawliadau Morgais a Meddiannaeth Landlord",
+    "non-money-claims": "Hawliadau Anariannol",
+    "return-of-goods-claims": "Hawliadau Dychwelyd Nwyddau",
+    "examination-boards": "Byrddau Arholi",
+    "individual-electoral-registration": "Cofrestru Etholiadol Unigol",
+    "licensing-and-standards": "Trwyddedu a Safonau",
+    "primary-health-lists": "Rhestrau Iechyd Sylfaenol",
+    "mp-s-expenses": "Treuliau ASau",
+    "agricultural-land-and-drainage": "Tir Amaethyddol a Draenio"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
