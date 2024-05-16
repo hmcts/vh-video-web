@@ -1,0 +1,5 @@
+variables:
+  - name: env
+    value: "demo"
+  - name: subDirectory
+    value: "/demo"
