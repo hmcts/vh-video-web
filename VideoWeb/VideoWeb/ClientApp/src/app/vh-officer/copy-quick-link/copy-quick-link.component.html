@@ -4,8 +4,9 @@ appTooltip
 [text]="tooltip"
 [id]="propertyIdName"
 (tooltipShown)="resetTooltipText()"
+(keydown)="copyToClipboard(); $event.stopPropagation()"
 (click)="copyToClipboard(); $event.stopPropagation()"
 >
-  <fa-icon icon="link"></fa-icon> 
-  <a class="copy-link-text" [routerLink]="[]">{{'copy-quick-link.display-text' | translate}}</a> 
+  <fa-icon icon="link"></fa-icon>
+  <a class="copy-link-text" [routerLink]="[]">{{'copy-quick-link.display-text' | translate}}</a>
 </span>

@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/base';
 
 .vh-popup-overlay {
   cursor: pointer;
@@ -20,9 +20,9 @@
 
 .vh-popup-overlay > div {
   background-color: govuk-colour('white');
-  -moz-box-shadow: 7px 11px 30px govuk-colour('light-grey');
-  -webkit-box-shadow: 7px 11px 30px govuk-colour('light-grey');
-  box-shadow: 11px 5px 30px govuk-colour('light-grey');
+  -moz-box-shadow: 7px 11px 30px $govuk-border-colour;
+  -webkit-box-shadow: 7px 11px 30px $govuk-border-colour;
+  box-shadow: 11px 5px 30px $govuk-border-colour;
   display: inline-block;
   height: auto;
   max-width: 40%;

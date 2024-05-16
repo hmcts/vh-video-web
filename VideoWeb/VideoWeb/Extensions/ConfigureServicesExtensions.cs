@@ -19,7 +19,6 @@ using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Helpers;
-using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
@@ -32,7 +31,12 @@ using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using StackExchange.Redis;
 using VideoApi.Client;
+using VideoWeb.Common.Security;
+using VideoWeb.Common.Security.Tokens;
+using VideoWeb.Common.Security.Tokens.Kinly;
+using VideoWeb.Common.Security.Tokens.Vodafone;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
@@ -87,18 +91,15 @@ namespace VideoWeb.Extensions
         {
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
             services.AddControllers().AddControllersAsServices();
-
             services.AddMemoryCache();
-
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
-
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
-
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
+            services.AddScoped<IVodafoneJwtTokenProvider, VodafoneJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<IAppRoleService, AppRoleService>();
             services.AddScoped<IUserProfileService, UserProfileService>();
@@ -120,6 +121,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IParticipantService, ParticipantService>();
             services.AddScoped<IDistributedJOHConsultationRoomLockCache, DistributedJOHConsultationRoomLockCache>();
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
+            services.AddScoped<ISupplierLocator, SupplierLocator>();
             
             RegisterMappers(services);
 
@@ -170,7 +172,20 @@ namespace VideoWeb.Extensions
                     options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
                 });
 
-            services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
+            var redisConfig = container.GetService<RedisConfiguration>();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConfigurationOptions = new ConfigurationOptions
+                {
+                    EndPoints = { redisConfig.Endpoint },
+                    Password = redisConfig.Password,
+                    ConnectRetry = 1,
+                    BacklogPolicy = BacklogPolicy.FailFast,
+                    AbortOnConnectFail = false,
+                    ConnectTimeout = 3000,
+                    Ssl = true
+                };
+            });
             return services;
         }
 

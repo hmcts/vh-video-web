@@ -106,6 +106,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return this.participant.role === Role.JudicialOfficeHolder || this.isJudge;
     }
 
+    get isObserver(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver;
+    }
+
     get isJOHRoom(): boolean {
         return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
@@ -137,7 +141,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit(): void {
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio || this.startWithAudioMuted;
+        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
         this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {

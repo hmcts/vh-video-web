@@ -106,6 +106,23 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('stringToTranslateId', () => {
+        it('should return the correct string to translate id', () => {
+            const result = component.stringToTranslateId('Insolvency');
+            expect(result).toBe('insolvency');
+        });
+
+        it('should return the correct string to translate id with spaces', () => {
+            const result = component.stringToTranslateId('Primary Health Lists');
+            expect(result).toBe('primary-health-lists');
+        });
+
+        it('should return the correct string to translate id with spaces and special characters', () => {
+            const result = component.stringToTranslateId('MP’s Expenses');
+            expect(result).toBe('mp-s-expenses');
+        });
+    });
+
     describe('handleParticipantStatusChange', () => {
         it('sets isTransferringIn to true when the judge is in hearing', () => {
             const judge = component.conference.participants.find(x => x.role === Role.Judge);

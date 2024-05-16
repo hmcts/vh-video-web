@@ -50,5 +50,6 @@ export const pageUrls = {
     UnsupportedBrowser: 'unsupported-browser',
     PrivacyPolicy: 'privacy-policy',
     Accessibility: 'accessibility',
+    Cookies: 'cookies',
     ErrorCameraMicrophone: 'error-camera-microphone'
 };

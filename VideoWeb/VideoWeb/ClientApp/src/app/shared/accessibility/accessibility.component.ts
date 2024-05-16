@@ -5,7 +5,7 @@ import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 @Component({
     selector: 'app-accessibility',
     templateUrl: './accessibility.component.html',
-    styleUrls: ['./accessibility.component.css']
+    styleUrls: ['./accessibility.component.scss']
 })
 export class AccessibilityComponent {
     isVisibleContents = true;

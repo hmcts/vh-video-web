@@ -13,7 +13,10 @@ export class CopyIdComponent implements OnInit {
 
     tooltip: string;
     propertyIdName = 'copy-conference-id';
-    constructor(private clipboardService: ClipboardService, private translateService: TranslateService) {}
+    constructor(
+        private clipboardService: ClipboardService,
+        private translateService: TranslateService
+    ) {}
 
     ngOnInit(): void {
         this.propertyIdName = this.propertyIdName + '-' + this.conference.id;

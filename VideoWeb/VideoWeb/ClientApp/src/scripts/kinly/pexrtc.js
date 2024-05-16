@@ -4116,3 +4116,8 @@ PexRTCStatistics.prototype.getStats = function() {
                          'video': self.video_in.getStats(),
                          'presentation': self.preso_in.getStats()}};
 };
+
+//for debug purposes
+currentPexrtc = function() {
+    return 'kinly';
+}

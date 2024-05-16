@@ -14,7 +14,11 @@ export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
     currentConferenceId: string | null = null;
     private higherLevelLogsOnly = false;
-    constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[], router: Router, activatedRoute: ActivatedRoute) {
+    constructor(
+        @Inject(LOG_ADAPTER) private adapters: LogAdapter[],
+        router: Router,
+        activatedRoute: ActivatedRoute
+    ) {
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),

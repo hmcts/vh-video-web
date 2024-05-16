@@ -23,7 +23,7 @@ export class CopyQuickLinkComponent implements OnInit {
         this.propertyIdName = this.propertyIdName + '-' + this.conferenceId;
         this.tooltip = this.translateService.instant('copy-quick-link.display-text');
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
-        this.hearingId = response && response.hearing_id;
+        this.hearingId = response?.hearing_id;
     }
 
     copyToClipboard() {

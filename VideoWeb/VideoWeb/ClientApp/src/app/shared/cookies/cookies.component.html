@@ -1,0 +1,94 @@
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{ 'cookies.title' | translate }}</h1>
+    <p class="govuk-body">
+      {{ 'cookies.intro' | translate }}
+    </p>
+    <p class="govuk-body">{{ 'cookies.uses' | translate }}</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>{{ 'cookies.usesList.item1' | translate }}</li>
+      <li>{{ 'cookies.usesList.item2' | translate }}</li>
+    </ul>
+
+    <h2 class="govuk-heading-m">{{ 'cookies.essentialCookiesTitle' | translate }}</h2>
+    <p class="govuk-body">
+      {{ 'cookies.essentialCookiesDesc' | translate }}
+    </p>
+    <p class="govuk-body">
+      {{ 'cookies.manageCookiesStart' | translate }}
+      <a target="_blank" href="http://www.aboutcookies.org/" rel="noopener noreferrer">{{ 'cookies.manageCookiesEnd' | translate }}</a
+      >.
+    </p>
+
+    <h2 id="how-cookies-are-used-in-this-service" class="govuk-heading-l">{{ 'cookies.usageTitle' | translate }}</h2>
+    <h3 class="govuk-heading-m">{{ 'cookies.usageMeasureTitle' | translate }}</h3>
+    <p id="usage-description" class="govuk-body">{{ 'cookies.usageMeasureDesc' | translate }}</p>
+
+    <table id="essential-uses-table" class="govuk-table" aria-describedby="usage-description">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">{{ 'cookies.usageTable.headers.name' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.usageTable.headers.purpose' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.usageTable.headers.expires' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr scope="col" class="govuk-table__row">
+          <td class="govuk-table__cell">ai_session</td>
+          <td class="govuk-table__cell">{{ 'cookies.usageTable.row1.purpose' | translate }}</td>
+          <td class="govuk-table__cell">{{ 'cookies.usageTable.row1.expires' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="govuk-heading-m">{{ 'cookies.identifyTitle' | translate }}</h3>
+    <p id="identify-desc">{{ 'cookies.identifyDesc' | translate }}</p>
+    <table id="authentication-uses-table" class="govuk-table" aria-describedby="identify-desc">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">{{ 'cookies.identifyTable.headers.name' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.identifyTable.headers.purpose' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.identifyTable.headers.expires' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">__userid__</td>
+          <td class="govuk-table__cell">{{ 'cookies.identifyTable.row1.purpose' | translate }}</td>
+          <td class="govuk-table__cell">{{ 'cookies.identifyTable.row1.expires' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="govuk-heading-m">{{ 'cookies.securityTitle' | translate }}</h3>
+    <p id="security-desc">
+      {{ 'cookies.securityDesc' | translate }}
+    </p>
+    <table id="security-table" class="govuk-table" aria-describedby="security-desc">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">{{ 'cookies.securityTable.headers.name' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.securityTable.headers.purpose' | translate }}</th>
+          <th scope="col" class="govuk-table__header">{{ 'cookies.securityTable.headers.expires' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">vhaad</td>
+          <td class="govuk-table__cell">{{ 'cookies.securityTable.row1.purpose' | translate }}</td>
+          <td class="govuk-table__cell">{{ 'cookies.securityTable.row1.expires' | translate }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">ejud</td>
+            <td class="govuk-table__cell">{{ 'cookies.securityTable.row2.purpose' | translate }}</td>
+            <td class="govuk-table__cell">{{ 'cookies.securityTable.row2.expires' | translate }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">dom1</td>
+            <td class="govuk-table__cell">{{ 'cookies.securityTable.row3.purpose' | translate }}</td>
+            <td class="govuk-table__cell">{{ 'cookies.securityTable.row3.expires' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

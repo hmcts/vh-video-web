@@ -1,107 +1,120 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds"><img [attr.alt]="'privacy-policy.crest-image-alt' | translate" src="/assets/images/hmcts-logo.gif" /></div>
+  <div class="govuk-grid-column-two-thirds">
+    <img [attr.alt]="'privacy-policy.crest-img-alt' | translate" src="/assets/images/hmcts-logo.gif" />
+  </div>
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-l">{{'privacy-policy.heading' | translate}}</h2>
+    <h2 class="govuk-heading-l">{{ 'privacy-policy.heading' | translate }}</h2>
 
-    <button class="govuk-button govuk-!-display-none-print" (click)="printPage()" type="button">{{'privacy-policy.print-button' | translate}}</button>
+    <button class="govuk-button govuk-!-display-none-print" (click)="printPage()" type="button">
+      {{ 'privacy-policy.print-button' | translate }}
+    </button>
 
-    <p class="govuk-body">{{'privacy-policy.paragraph1' | translate}}</p>
-    <p class="govuk-body">{{'privacy-policy.paragraph2' | translate}}</p>
+    <p class="govuk-body">{{ 'privacy-policy.paragraph1' | translate }}</p>
+    <p class="govuk-body">{{ 'privacy-policy.paragraph2' | translate }}</p>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.why-we-collect.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.why-we-collect.paragraph' | translate}}
-    </p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.why-we-collect.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.why-we-collect.paragraph' | translate }}</p>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.what-we-do.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.what-we-do.paragraph1' | translate}}</p>
-    <p class="govuk-body">{{'privacy-policy.what-we-do.paragraph2' | translate}}</p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.what-we-do.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.what-we-do.paragraph1' | translate }}</p>
+    <p class="govuk-body">{{ 'privacy-policy.what-we-do.paragraph2' | translate }}</p>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.what-we-collect.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.what-we-collect.paragraph' | translate}}</p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.what-we-collect.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.what-we-collect.paragraph' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{'privacy-policy.what-we-collect.list.1' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.2' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.3' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.4' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.5' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.6' | translate}}</li>
-      <li>{{'privacy-policy.what-we-collect.list.7' | translate}}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.1' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.2' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.3' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.4' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.5' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.6' | translate }}</li>
+      <li>{{ 'privacy-policy.what-we-collect.list.7' | translate }}</li>
       <li>
-        {{'privacy-policy.what-we-collect.list.8' | translate}} <a href="http://www.aboutcookies.org.uk/managing-cookies" rel="noopener noreferrer" target="_blank">{{'privacy-policy.what-we-collect.list.8-cookies' | translate}}</a>.
+        {{ 'privacy-policy.what-we-collect.list.8' | translate }}
+        <a href="http://www.aboutcookies.org.uk/managing-cookies" rel="noopener noreferrer" target="_blank">{{
+          'privacy-policy.what-we-collect.list.8-cookies' | translate
+        }}</a
+        >.
       </li>
     </ul>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.how-long.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.how-long.paragraph' | translate}}</p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.how-long.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.how-long.paragraph' | translate }}</p>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.shoring-and-sharing.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.shoring-and-sharing.paragraph' | translate}} </p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.shoring-and-sharing.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.shoring-and-sharing.paragraph' | translate }}</p>
 
-    <h3 class="govuk-heading-m">{{'privacy-policy.your-rights.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph1' | translate}}</p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.your-rights.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.your-rights.paragraph1' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{'privacy-policy.your-rights.list-ask.1' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-ask.2' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-ask.3' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-ask.4' | translate}}</li>
+      <li>{{ 'privacy-policy.your-rights.list-ask.1' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-ask.2' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-ask.3' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-ask.4' | translate }}</li>
     </ul>
-    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph2' | translate}}</p>
+    <p class="govuk-body">{{ 'privacy-policy.your-rights.paragraph2' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
       <li>
-        {{'privacy-policy.your-rights.list-see.1-1' | translate}}
+        {{ 'privacy-policy.your-rights.list-see.1-1' | translate }}
         <a target="_blank" href="https://www.gov.uk/government/publications/request-your-personal-data-from-moj" rel="noopener noreferrer">
-          {{'privacy-policy.your-rights.list-see.1-link' | translate}}</a>
-          {{'privacy-policy.your-rights.list-see.1-2' | translate}}
+          {{ 'privacy-policy.your-rights.list-see.1-link' | translate }}</a
+        >
+        {{ 'privacy-policy.your-rights.list-see.1-2' | translate }}
       </li>
-      <li>{{'privacy-policy.your-rights.list-see.2' | translate}}</li>
+      <li>{{ 'privacy-policy.your-rights.list-see.2' | translate }}</li>
     </ul>
-    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph3' | translate}}</p>
+    <p class="govuk-body">{{ 'privacy-policy.your-rights.paragraph3' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{'privacy-policy.your-rights.list-more.1' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-more.2' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-more.3' | translate}}</li>
-      <li>{{'privacy-policy.your-rights.list-more.4' | translate}}</li>
+      <li>{{ 'privacy-policy.your-rights.list-more.1' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-more.2' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-more.3' | translate }}</li>
+      <li>{{ 'privacy-policy.your-rights.list-more.4' | translate }}</li>
     </ul>
-    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph4' | translate}}</p>
+    <p class="govuk-body">{{ 'privacy-policy.your-rights.paragraph4' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{'privacy-policy.your-rights.list-contact.1' | translate}}</li>
+      <li>{{ 'privacy-policy.your-rights.list-contact.1' | translate }}</li>
       <li>
-        {{'privacy-policy.your-rights.list-contact.2' | translate}}
-        <a href="mailto:data.compliance@justice.gov.uk">data.compliance@justice.gov.uk</a>
+        {{ 'privacy-policy.your-rights.list-contact.2' | translate }}
+        <a href="mailto:data.compliance@justice.gov.uk">data.compliance&#64;justice.gov.uk</a>
       </li>
     </ul>
-    <h3 class="govuk-heading-m">{{'privacy-policy.how-to-complain.heading' | translate}}</h3>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.how-to-complain.heading' | translate }}</h3>
     <p class="govuk-body">
-      {{'privacy-policy.how-to-complain.paragraph1-1' | translate}}
+      {{ 'privacy-policy.how-to-complain.paragraph1-1' | translate }}
       <a href="https://www.gov.uk/government/organisations/hm-courts-and-tribunals-service/about/complaints-procedure">
-        {{'privacy-policy.how-to-complain.paragraph1-link' | translate}}
+        {{ 'privacy-policy.how-to-complain.paragraph1-link' | translate }}
       </a>
-      {{'privacy-policy.how-to-complain.paragraph1-2' | translate}}
+      {{ 'privacy-policy.how-to-complain.paragraph1-2' | translate }}
     </p>
     <p class="govuk-body">
-      {{'privacy-policy.how-to-complain.paragraph2-1' | translate}}<br />
-      {{'privacy-policy.how-to-complain.paragraph2-2' | translate}}
-      <a href="mailto:data.compliance@justice.gov.uk">data.compliance@justice.gov.uk</a>
+      {{ 'privacy-policy.how-to-complain.paragraph2-1' | translate }}<br />
+      {{ 'privacy-policy.how-to-complain.paragraph2-2' | translate }}
+      <a href="mailto:data.compliance@justice.gov.uk">data.compliance&#64;justice.gov.uk</a>
     </p>
     <p class="govuk-body">
-      {{'privacy-policy.how-to-complain.paragraph3-1' | translate}}
-      <a href="https://ico.org.uk/global/contact-us">{{'privacy-policy.how-to-complain.paragraph3-link' | translate}}</a>
-      {{'privacy-policy.how-to-complain.paragraph3-2' | translate}}
+      {{ 'privacy-policy.how-to-complain.paragraph3-1' | translate }}
+      <a href="https://ico.org.uk/global/contact-us">{{ 'privacy-policy.how-to-complain.paragraph3-link' | translate }}</a>
+      {{ 'privacy-policy.how-to-complain.paragraph3-2' | translate }}
     </p>
-    <h3 class="govuk-heading-m">{{'privacy-policy.hearings-recorded.heading' | translate}}</h3>
-    <p class="govuk-body">{{'privacy-policy.hearings-recorded.paragraph1' | translate}}</p>
+    <h3 class="govuk-heading-m">{{ 'privacy-policy.hearings-recorded.heading' | translate }}</h3>
+    <p class="govuk-body">{{ 'privacy-policy.hearings-recorded.paragraph1' | translate }}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>{{'privacy-policy.hearings-recorded.list.1' | translate}}</li>
+      <li>{{ 'privacy-policy.hearings-recorded.list.1' | translate }}</li>
       <li>
-        {{'privacy-policy.hearings-recorded.list.2-1' | translate}}<a href="https://www.gov.uk/find-court-tribunal">{{'privacy-policy.hearings-recorded.list.2-link' | translate}}</a> {{'privacy-policy.hearings-recorded.list.2-2' | translate}}
+        {{ 'privacy-policy.hearings-recorded.list.2-1' | translate
+        }}<a href="https://www.gov.uk/find-court-tribunal">{{ 'privacy-policy.hearings-recorded.list.2-link' | translate }}</a>
+        {{ 'privacy-policy.hearings-recorded.list.2-2' | translate }}
       </li>
-      <li>{{'privacy-policy.hearings-recorded.list.3' | translate}}</li>
+      <li>{{ 'privacy-policy.hearings-recorded.list.3' | translate }}</li>
     </ul>
     <p class="govuk-body">
-      {{'privacy-policy.hearings-recorded.paragraph2-1' | translate}}<a href="https://www.gov.uk/apply-transcript-court-tribunal-hearing">{{'privacy-policy.hearings-recorded.paragraph2-link' | translate}}</a>
+      {{ 'privacy-policy.hearings-recorded.paragraph2-1' | translate
+      }}<a href="https://www.gov.uk/apply-transcript-court-tribunal-hearing">{{
+        'privacy-policy.hearings-recorded.paragraph2-link' | translate
+      }}</a>
     </p>
-    <p class="govuk-body">{{'privacy-policy.hearings-recorded.paragraph3' | translate}}</p>
+    <p class="govuk-body">{{ 'privacy-policy.hearings-recorded.paragraph3' | translate }}</p>
   </div>
 </div>

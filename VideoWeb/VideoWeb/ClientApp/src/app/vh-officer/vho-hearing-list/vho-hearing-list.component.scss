@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/base';
 
 .vh-width-main {
   width: 85% !important;
@@ -48,7 +48,6 @@
 }
 
 .tooltip-wrapper {
-  /*position: relative;*/
   color: $govuk-link-colour;
   white-space: nowrap;
   padding: 4px !important;
@@ -146,8 +145,8 @@
   cursor: pointer;
 }
 .selected {
-  background-color: #f8f8f8;
-  border-left: 8px solid #0b0c0d;
+  background-color: govuk-colour('light-grey');
+  border-left: 8px solid govuk-colour('black');
 }
 .icons {
   width: 24px;
@@ -289,7 +288,7 @@
 /* Tooltip container */
 .copyTooltip {
   position: relative;
-  border-bottom: 1px solid #1d70b8;
+  border-bottom: 1px solid govuk-colour('blue');
 }
 
 /* Tooltip text */

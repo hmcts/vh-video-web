@@ -293,7 +293,10 @@ export class EventsService {
         }
     };
 
-    constructor(private logger: Logger, private eventsHubService: EventsHubService) {
+    constructor(
+        private logger: Logger,
+        private eventsHubService: EventsHubService
+    ) {
         eventsHubService.onEventsHubReady.subscribe(() => this.start());
     }
 

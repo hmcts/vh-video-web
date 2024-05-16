@@ -19,7 +19,10 @@ export class ConnectionStatusService {
 
     private _onUserTriggeredReconnect = new Subject<boolean>();
 
-    constructor(private logger: Logger, private http: HttpClient) {
+    constructor(
+        private logger: Logger,
+        private http: HttpClient
+    ) {
         this.pings.every(x => (x = true));
     }
 

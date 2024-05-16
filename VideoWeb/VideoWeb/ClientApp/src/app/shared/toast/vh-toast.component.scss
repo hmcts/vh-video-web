@@ -13,7 +13,7 @@
   font-family: 'GDS Transport', arial, sans-serif;
 
   &.black {
-    background: #1e1e1e;
+    background: #1e1e1e; //slightly lighter than gov black
     color: govuk-colour('white');
   }
 
@@ -47,7 +47,7 @@
   pointer-events: auto;
 
   &.grey {
-    color: #ffffff;
+    color: govuk-colour('white');
     background: rgba(80, 90, 95, 1);
     &:hover {
       background: rgba(80, 90, 95, 0.7);
@@ -55,11 +55,11 @@
   }
 
   &.join-hearing-button {
-    color: #ffffff;
-    background: #00703c;
+    color: govuk-colour('white');
+    background: govuk-colour('green');
     box-shadow: rgb(146 145 145) 0px 2px 0px;
     &:hover {
-      background: #005a30;
+      background: #005a30; // slightly darker than gov green
     }
   }
   &.hearing-started-dismiss-button {

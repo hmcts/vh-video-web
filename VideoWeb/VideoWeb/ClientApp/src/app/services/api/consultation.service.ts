@@ -22,8 +22,8 @@ import { ModalService } from '../modal.service';
     providedIn: 'root'
 })
 export class ConsultationService {
-    static ERROR_PC_MODAL = 'pc-error-modal';
-    static LEAVE_PC_MODAL = 'pc-leave-modal';
+    static readonly ERROR_PC_MODAL = 'pc-error-modal';
+    static readonly LEAVE_PC_MODAL = 'pc-leave-modal';
 
     constructor(
         private apiClient: ApiClient,

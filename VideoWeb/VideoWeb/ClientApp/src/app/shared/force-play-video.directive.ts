@@ -13,7 +13,11 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
     private destroyed = false;
     private isPlaying = false;
 
-    constructor(private elementRef: ElementRef, renderer2Factory: RendererFactory2, private logger: Logger) {
+    constructor(
+        private elementRef: ElementRef,
+        renderer2Factory: RendererFactory2,
+        private logger: Logger
+    ) {
         this.renderer = renderer2Factory.createRenderer(null, null);
     }
 
@@ -62,9 +66,11 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
             if (isPlayingElem) {
                 return;
             }
-            this.videoElement.play().catch(error => {
-                this.logger.error(`${this.loggerPrefix} - error playing video.`, error);
-            });
+            this.videoElement.onloadedmetadata = () => {
+                this.videoElement.play().catch(error => {
+                    this.logger.error(`${this.loggerPrefix} - error playing video.`, error);
+                });
+            };
         }
     }
 

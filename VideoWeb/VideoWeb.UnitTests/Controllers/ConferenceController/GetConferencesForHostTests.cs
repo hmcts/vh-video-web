@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using EndpointResponse = BookingsApi.Contract.V1.Responses.EndpointResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -64,6 +65,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _logger = _mocker.Mock<ILogger<ConferencesController>>().SetupAllProperties();
             _controller = _mocker.Create<ConferencesController>();
             _controller.ControllerContext = context;
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<ConfirmedHearingsTodayResponse>());
+
         }
 
         [Test]
@@ -97,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -152,7 +157,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -181,7 +186,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conferences = new List<Conference>();
             var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
@@ -202,7 +207,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid email", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForHostAsync();
@@ -218,7 +223,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForHostAsync();
@@ -230,11 +235,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_forward_error_when_video_api_returns_error()
         {
+            
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForHostAsync();

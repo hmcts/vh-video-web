@@ -1,10 +1,7 @@
 $govuk-global-styles: true;
 
-@import 'govuk-frontend/govuk/base';
 @import 'govuk-frontend/govuk/all';
-@import '@hmcts/frontend/all';
 @import '@ng-select/ng-select/themes/default.theme.css';
-@import '@ministryofjustice/frontend/moj/all';
 @import 'main';
 
 .grey-btn {
@@ -63,11 +60,11 @@ $govuk-global-styles: true;
 /* Modal Content/Box */
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: govuk-colour('white');
   margin: 5% auto;
   /* 15% from the top and centered */
   padding: 20px;
-  border: 1px solid #888;
+  border: 1px solid $govuk-border-colour;
   width: 90%;
   @media only screen and (min-width: $breakpoint-medium) {
     width: 680px;
@@ -75,9 +72,9 @@ $govuk-global-styles: true;
 }
 
 .modal-content.negative {
-  color: #ffffff;
+  color: govuk-colour('white');
   background-color: #1e1e1e;
-  border: 1px solid #888;
+  border: 1px solid $govuk-border-colour
 }
 
 .shadow {
@@ -126,14 +123,14 @@ $govuk-global-styles: true;
 }
 
 .vh-border {
-  border: 1px solid govuk-colour('mid-grey');
+  border: 1px solid $govuk-border-colour;
   padding: 8px;
   border-radius: 3px 4px;
   margin-bottom: 15px;
 }
 
 .vh-line {
-  border-bottom: 1px solid govuk-colour('mid-grey');
+  border-bottom: 1px solid $govuk-border-colour;
 }
 
 .vh-fade-out {
@@ -161,7 +158,7 @@ $govuk-global-styles: true;
   z-index: 999;
   box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
   background: govuk-colour('blue');
-  border: 1px solidgovuk-colour('blue');
+  border: 1px solid govuk-colour('blue');
   border-radius: 2px;
   position: absolute;
   top: 127px;
@@ -179,27 +176,27 @@ $govuk-global-styles: true;
 
 .vh-tooltip-blue {
   background: govuk-colour('blue');
-  border: 1px solidgovuk-colour('blue');
+  border: 1px solid govuk-colour('blue');
 }
 
 .vh-tooltip-red {
   background: govuk-colour('red');
-  border: 1px solidgovuk-colour('red');
+  border: 1px solid govuk-colour('red');
 }
 
 .vh-tooltip-grey {
   background: govuk-colour('dark-grey');
-  border: 1px solidgovuk-colour('dark-grey');
+  border: 1px solid govuk-colour('dark-grey');
 }
 
 .vh-tooltip-green {
   background: govuk-colour('green');
-  border: 1px solidgovuk-colour('green');
+  border: 1px solid govuk-colour('green');
 }
 
 .vh-tooltip-yellow {
   background: govuk-colour('yellow');
-  border: 1px solidgovuk-colour('yellow') !important;
+  border: 1px solid govuk-colour('yellow') !important;
   color: govuk-colour('black');
 }
 
@@ -238,4 +235,14 @@ video {
 .horizontal-spacer {
   padding-bottom: rem(10px);
   border-bottom: 2px solid govuk-colour('mid-grey');
+}
+
+.toast-top-right {
+    top: 122px !important;
+    right: 20px !important;
+}
+
+.toast-content {
+    display: block;
+    word-wrap: break-word;
 }

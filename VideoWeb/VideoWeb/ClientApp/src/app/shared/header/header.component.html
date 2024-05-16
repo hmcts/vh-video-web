@@ -1,42 +1,31 @@
-<div class="moj-header" data-module="header">
-
-  <div class="moj-header__container">
-
-    <div class="moj-header__logo">
-
-      <ng-container
-       *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest">
-      </ng-container>
-
-    <ng-template #sctsCrest>
-      <img role="presentation" id="header-logo-scot" class="moj-header__logotype-crest" src="/assets/images/scot-crest-white.png" height="40" [attr.alt]="'participants-panel.scottish-crest' | translate"/>
-    </ng-template>
-
-    <ng-template #hmctsCrest>
-      <app-header-logo-svg></app-header-logo-svg>
-    </ng-template>
-
-      <span class="moj-header__link moj-header__link--organisation-name" id="header-logo">
-            {{'header.hm-courts' | translate}} &amp; {{'header.tribunals-service' | translate}}          
-          
-  </span>
-
+<div class="govuk-header__container">
+  <div class="govuk-width-container">
+    <div class="govuk-header__logo">
+      <span class="govuk-header__logotype-crown">
+        <ng-container *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest"></ng-container>
+        <ng-template #sctsCrest>
+          <img
+            id="header-logo-scot"
+            class="govuk-header__logotype-crest"
+            src="/assets/images/scot-crest-white.png"
+            height="40"
+            [attr.alt]="'participants-panel.scottish-crest' | translate"
+          />
+        </ng-template>
+        <ng-template #hmctsCrest>
+          <app-header-logo-svg></app-header-logo-svg>
+        </ng-template>
+        <span class="govuk-header__service-name header-item">
+          {{ 'header.hm-courts' | translate }} &amp; {{ 'header.tribunals-service' | translate }}</span
+        >
+      </span>
     </div>
-    <div class="moj-header__content">
-
-      <nav class="moj-header__navigation" [attr.aria-label]="'account-navigation-label' | translate">
-
-        <ul class="moj-header__navigation-list">
-
-          <li *ngIf="loggedIn" class="moj-header__navigation-item">
-            <a id="logout-link" class="moj-header__navigation-link"  [routerLink]="logoutRoute">
-              {{'header.sign-out' | translate}}</a>
-          </li>
-        </ul>
-
-      </nav>
-
-    </div>
+    <nav class="govuk-header__navigation" [attr.aria-label]="'account-navigation-label' | translate">
+      <ul class="govuk-header__navigation-list">
+        <li *ngIf="loggedIn" class="govuk-header__navigation-item header-item">
+          <a id="logout-link" class="govuk-header__link" [routerLink]="logoutRoute">{{ 'header.sign-out' | translate }}</a>
+        </li>
+      </ul>
+    </nav>
   </div>
-
 </div>

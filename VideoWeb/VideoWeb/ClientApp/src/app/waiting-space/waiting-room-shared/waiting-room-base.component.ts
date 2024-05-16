@@ -63,6 +63,7 @@ import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -225,7 +226,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return convertStringToTranslationId(str);
     }
 
     togglePanel(panelName: string) {
@@ -1346,7 +1347,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+    private async handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
         this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
 
         if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
@@ -1368,6 +1369,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             );
         });
 
+        const preUpdateLinkCount = this.hearing
+            .getParticipants()
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
+
         const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
@@ -1378,6 +1383,16 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.hearing.getConference().participants = updatedParticipantsList;
         this.participant = this.getLoggedParticipant();
+
+        const postUpdateLinkCount = this.hearing
+            .getParticipants()
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
+
+        // if the participant now has a link or no longer has a link, call with new join details
+        if (preUpdateLinkCount !== postUpdateLinkCount) {
+            this.logger.debug('[WR] - Participant has new link (or removed link), calling with new join details');
+            await this.callAndUpdateShowVideo();
+        }
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
         this.logger.debug('[WR] - Endpoints updated message received', {
@@ -1392,7 +1407,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
             this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
-            this.hearing.addEndpoint(endpoint);
         });
 
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {

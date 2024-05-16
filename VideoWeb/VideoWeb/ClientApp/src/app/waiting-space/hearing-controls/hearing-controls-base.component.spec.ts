@@ -5,6 +5,7 @@ import {
     ClientSettingsResponse,
     ConferenceResponse,
     ParticipantForUserResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
@@ -1081,53 +1082,62 @@ describe('HearingControlsBaseComponent', () => {
         });
     });
 
-    describe('ngOnInit', () => {
+    describe('handleHearingCountdownComplete for host', () => {
         let conferenceSetting: ConferenceSetting;
 
         beforeEach(() => {
             conferenceSetting = new ConferenceSetting('conferenceId', true);
+            component.participant = globalConference.participants.find(x => x.role === Role.Judge);
+            component.isPrivateConsultation = false;
+            videoCallServiceSpy.toggleMute.calls.reset();
+            eventsServiceSpy.sendMediaStatus.calls.reset();
         });
 
-        it('should mute audio when starting with audio muted', () => {
+        it('should not unmute audio when host requests to start with audio muted', async () => {
             // Arrange
             conferenceSetting.startWithAudioMuted = true;
             userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
+            videoCallServiceSpy.toggleMute.and.returnValue(true);
             // Act
             component.ngOnInit();
+            await component.handleHearingCountdownComplete(component.conferenceId);
             // Assert
-            expect(component.audioMuted).toBeTrue();
+            expect(videoCallServiceSpy.toggleMute).toHaveBeenCalledTimes(1);
+            expect(eventsServiceSpy.sendMediaStatus).toHaveBeenCalledWith(
+                jasmine.any(String),
+                jasmine.any(String),
+                jasmine.objectContaining({ is_local_audio_muted: true })
+            );
         });
 
-        it('should not mute audio when not starting with audio muted', () => {
+        it('should unmute audio when host requests to start without audio muted', async () => {
             // Arrange
             conferenceSetting.startWithAudioMuted = false;
             userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
+            component.isPrivateConsultation = false;
             // Act
             component.ngOnInit();
+            await component.handleHearingCountdownComplete(component.conferenceId);
             // Assert
-            expect(component.audioMuted).toBeFalse();
+            expect(videoCallServiceSpy.toggleMute).toHaveBeenCalledTimes(0);
+            expect(eventsServiceSpy.sendMediaStatus).toHaveBeenCalledTimes(0);
         });
     });
 
-    describe('handleHearingCountdownComplete', () => {
-        let conferenceSetting: ConferenceSetting;
-
-        beforeEach(() => {
-            conferenceSetting = new ConferenceSetting('conferenceId', true);
-            videoCallService.toggleMute.calls.reset();
+    describe('isObserver', () => {
+        it('should return true when participant role is QuickLinkObserver', () => {
+            component.participant = { role: Role.QuickLinkObserver } as ParticipantResponse;
+            expect(component.isObserver).toBeTrue();
         });
 
-        it('should not unmute audio when host is starting with audio muted', async () => {
-            // Arrange
-            component.participant = globalConference.participants.find(x => x.role === Role.Judge);
-            conferenceSetting.startWithAudioMuted = true;
-            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
-            component.isPrivateConsultation = false;
-            component.audioMuted = true;
-            // Act
-            await component.handleHearingCountdownComplete(component.conferenceId);
-            // Assert
-            expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+        it('should return false when participant role is not QuickLinkObserver', () => {
+            component.participant = { role: Role.Judge } as ParticipantResponse;
+            expect(component.isObserver).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.isObserver).toBeFalse();
         });
     });
 });
