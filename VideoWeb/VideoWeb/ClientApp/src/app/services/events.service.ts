@@ -35,6 +35,9 @@ import { NewAllocationMessage } from './models/new-allocation-message';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 import { ParticipantToggleLocalMuteMessage } from '../shared/models/participant-toggle-local-mute-message';
 import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
+import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -75,6 +78,7 @@ export class EventsService {
         ParticipantStatusMessage: (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
             const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
             this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
+            this.store.dispatch(ConferenceActions.updateParticipantStatus({ conferenceId, participantId, status }));
             this.participantStatusSubject.next(message);
         },
 
@@ -99,6 +103,7 @@ export class EventsService {
         ConferenceStatusMessage: (conferenceId: string, status: ConferenceStatus) => {
             const message = new ConferenceStatusMessage(conferenceId, status);
             this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
+            this.store.dispatch(ConferenceActions.updateActiveConferenceStatus({ conferenceId, status }));
             this.hearingStatusSubject.next(message);
         },
 
@@ -295,7 +300,8 @@ export class EventsService {
 
     constructor(
         private logger: Logger,
-        private eventsHubService: EventsHubService
+        private eventsHubService: EventsHubService,
+        private store: Store<ConferenceState>
     ) {
         eventsHubService.onEventsHubReady.subscribe(() => this.start());
     }

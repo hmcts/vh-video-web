@@ -30,6 +30,10 @@ import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
 import { catchError, map } from 'rxjs/operators';
 
+import { Store } from '@ngrx/store';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { ConferenceActions } from 'src/app/waiting-space/store/actions/conference.actions';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -38,7 +42,10 @@ export class VideoWebService implements IVideoWebApiService {
     private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
     private readonly venueAllocationStorage: SessionStorage<string[]>;
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private store: Store<ConferenceState>
+    ) {
         this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
         this.venueAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
@@ -57,7 +64,40 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
-        return this.apiClient.getConferenceById(conferenceId).toPromise();
+        return this.apiClient
+            .getConferenceById(conferenceId)
+            .toPromise()
+            .then(conference => {
+                this.store.dispatch(
+                    ConferenceActions.loadConferencesSuccess({
+                        data: {
+                            id: conference.id,
+                            caseName: conference.case_name,
+                            caseNumber: conference.case_number,
+                            scheduledDateTime: conference.scheduled_date_time,
+                            duration: conference.scheduled_duration,
+                            participants: conference.participants.map(p => {
+                                return {
+                                    id: p.id,
+                                    name: p.display_name,
+                                    username: p.user_name,
+                                    status: p.status,
+                                    tiledDisplayName: p.tiled_display_name
+                                };
+                            }),
+                            endpoints: conference.endpoints.map(e => {
+                                return {
+                                    id: e.id,
+                                    displayName: e.display_name,
+                                    status: e.status,
+                                    defence_advocate: e.defence_advocate_username
+                                };
+                            })
+                        }
+                    })
+                );
+                return conference;
+            });
     }
 
     sendEvent(request: ConferenceEventRequest): Promise<void> {
