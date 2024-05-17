@@ -1,4 +1,4 @@
-import { EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export interface VHConference {
     id: string;
@@ -6,6 +6,7 @@ export interface VHConference {
     duration: number;
     caseNumber: string;
     caseName: string;
+    status: ConferenceStatus;
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
 }

@@ -76,6 +76,7 @@ export class VideoWebService implements IVideoWebApiService {
                             caseNumber: conference.case_number,
                             scheduledDateTime: conference.scheduled_date_time,
                             duration: conference.scheduled_duration,
+                            status: conference.status,
                             participants: conference.participants.map(p => {
                                 return {
                                     id: p.id,
