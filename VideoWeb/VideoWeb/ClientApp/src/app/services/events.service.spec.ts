@@ -12,6 +12,8 @@ import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
+import { MockStore, createMockStore } from '@ngrx/store/testing';
+import { initialState as initialConferenceState, ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -22,8 +24,12 @@ describe('EventsService', () => {
     let loggerMock: Logger;
     let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
     let subscription$: Subscription;
+    let mockStore: MockStore<ConferenceState>;
 
     beforeEach(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
+
         loggerMock = new MockLogger();
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>(
             'EventsHubService',
@@ -33,7 +39,7 @@ describe('EventsService', () => {
         eventsHubServiceSpy.getServiceConnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
         spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
-        serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
+        serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy, mockStore);
         subscription$ = new Subscription();
     });
 
@@ -80,7 +86,7 @@ describe('EventsService', () => {
             spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(observable);
 
             // Act
-            const _serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
+            const _serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy, mockStore);
 
             // Assert
             expect(_serviceUnderTest).toBeTruthy();

@@ -22,6 +22,8 @@ import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiti
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
 import { SupplierClientService } from '../../services/api/supplier-client.service';
+import { MockStore, createMockStore } from '@ngrx/store/testing';
+import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 
 const config = new ClientSettingsResponse({
     supplier_turn_server: 'turnserver',
@@ -47,8 +49,11 @@ describe('VideoCallService', () => {
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
     let supplierClientServiceSpy: jasmine.SpyObj<SupplierClientService>;
+    let mockStore: MockStore<ConferenceState>;
 
     beforeEach(fakeAsync(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -122,7 +127,8 @@ describe('VideoCallService', () => {
             configServiceSpy,
             heartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy
+            streamMixerServiceSpy,
+            mockStore
         );
 
         currentStreamSubject.next(mockCamStream);
