@@ -96,7 +96,7 @@ export class EventsService {
         EndpointStatusMessage: (endpointId: string, conferenceId: string, status: EndpointStatus) => {
             const message = new EndpointStatusMessage(endpointId, conferenceId, status);
             this.logger.debug('[EventsService] - EndpointStatusMessage received', message);
-
+            this.store.dispatch(ConferenceActions.updateEndpointStatus({ conferenceId, endpointId, status }));
             this.endpointStatusSubject.next(message);
         },
 
@@ -110,12 +110,47 @@ export class EventsService {
         ParticipantsUpdatedMessage: (conferenceId: string, participants: ParticipantResponse[]) => {
             const message = new ParticipantsUpdatedMessage(conferenceId, participants);
             this.logger.debug('[EventsService] - ParticipantsUpdatedMessage received', message);
+            const vhParticipants = participants.map(p => {
+                return {
+                    id: p.id,
+                    name: p.display_name,
+                    username: p.user_name,
+                    status: p.status,
+                    tiledDisplayName: p.tiled_display_name
+                };
+            });
+            this.store.dispatch(ConferenceActions.updateParticipantList({ conferenceId, participants: vhParticipants }));
             this.participantsUpdatedSubject.next(message);
         },
 
         EndpointsUpdated: (conferenceId: string, endpoints: UpdateEndpointsDto) => {
             const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
+            const existingEndpoints = endpoints.existing_endpoints.map(e => {
+                return {
+                    id: e.id,
+                    displayName: e.display_name,
+                    status: e.status,
+                    defence_advocate: e.defence_advocate_username
+                };
+            });
+
+            const newEndpoints = endpoints.new_endpoints.map(e => {
+                return {
+                    id: e.id,
+                    displayName: e.display_name,
+                    status: e.status,
+                    defence_advocate: e.defence_advocate_username
+                };
+            });
+            this.store.dispatch(ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints: existingEndpoints }));
+            this.store.dispatch(ConferenceActions.addNewEndpoints({ conferenceId, endpoints: newEndpoints }));
+            this.store.dispatch(
+                ConferenceActions.removeExistingEndpoints({
+                    conferenceId,
+                    removedEndpointIds: endpoints.removed_endpoints.map(e => e.toString())
+                })
+            );
             this.endpointsUpdatedSubject.next(message);
         },
 

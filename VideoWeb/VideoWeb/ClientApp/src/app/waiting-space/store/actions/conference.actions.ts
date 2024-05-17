@@ -1,6 +1,12 @@
 import { createActionGroup, props } from '@ngrx/store';
 import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
-import { ConferenceStatus, ConsultationAnswer, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
+import {
+    ConferenceStatus,
+    ConsultationAnswer,
+    EndpointStatus,
+    HearingLayout,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 
 export const ConferenceActions = createActionGroup({
@@ -12,9 +18,12 @@ export const ConferenceActions = createActionGroup({
 
         'Update Active Conference Status': props<{ conferenceId: string; status: ConferenceStatus }>(),
         'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus }>(),
+        'Update Endpoint Status': props<{ conferenceId: string; endpointId: string; status: EndpointStatus }>(),
 
         'Update Participant List': props<{ conferenceId: string; participants: VHParticipant[] }>(),
-        'Update Endpoint List': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
+        'Add New Endpoints': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
+        'Update Existing Endpoints': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
+        'Remove Existing Endpoints': props<{ conferenceId: string; removedEndpointIds: string[] }>(),
 
         'Upsert Pexip Participant': props<{ participant: VHPexipParticipant }>(),
 
