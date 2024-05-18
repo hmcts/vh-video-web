@@ -33,6 +33,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
 import { ConferenceActions } from 'src/app/waiting-space/store/actions/conference.actions';
+import { VHEndpoint, VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
 
 @Injectable({
     providedIn: 'root'
@@ -83,16 +84,21 @@ export class VideoWebService implements IVideoWebApiService {
                                     name: p.display_name,
                                     username: p.user_name,
                                     status: p.status,
-                                    tiledDisplayName: p.tiled_display_name
-                                };
+                                    tiledDisplayName: p.tiled_display_name,
+                                    room: { id: p.current_room?.id, label: p.current_room?.label, locked: p.current_room?.locked }
+                                } as VHParticipant;
                             }),
                             endpoints: conference.endpoints.map(e => {
                                 return {
                                     id: e.id,
                                     displayName: e.display_name,
                                     status: e.status,
-                                    defence_advocate: e.defence_advocate_username
-                                };
+                                    defence_advocate: e.defence_advocate_username,
+                                    room: {
+                                        label: e.current_room.label,
+                                        locked: e.current_room.locked
+                                    }
+                                } as VHEndpoint;
                             })
                         }
                     })

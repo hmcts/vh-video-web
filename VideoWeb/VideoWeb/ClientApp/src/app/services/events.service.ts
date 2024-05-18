@@ -38,6 +38,7 @@ import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
+import { VHEndpoint } from '../waiting-space/store/models/vh-conference';
 
 @Injectable({
     providedIn: 'root'
@@ -131,8 +132,13 @@ export class EventsService {
                     id: e.id,
                     displayName: e.display_name,
                     status: e.status,
-                    defence_advocate: e.defence_advocate_username
-                };
+                    defence_advocate: e.defence_advocate_username,
+                    room: {
+                        id: e.current_room?.id,
+                        label: e.current_room?.label,
+                        locked: e.current_room?.locked
+                    }
+                } as VHEndpoint;
             });
 
             const newEndpoints = endpoints.new_endpoints.map(e => {
@@ -140,8 +146,13 @@ export class EventsService {
                     id: e.id,
                     displayName: e.display_name,
                     status: e.status,
-                    defence_advocate: e.defence_advocate_username
-                };
+                    defence_advocate: e.defence_advocate_username,
+                    room: {
+                        id: e.current_room?.id,
+                        label: e.current_room?.label,
+                        locked: e.current_room?.locked
+                    }
+                } as VHEndpoint;
             });
             this.store.dispatch(ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints: existingEndpoints }));
             this.store.dispatch(ConferenceActions.addNewEndpoints({ conferenceId, endpoints: newEndpoints }));

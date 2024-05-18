@@ -26,6 +26,7 @@ export interface VHEndpoint {
     displayName: string | undefined;
     status: EndpointStatus;
     defence_advocate: string | undefined;
+    room: VHRoom;
 }
 
 export interface VHPexipParticipant {
@@ -40,6 +41,7 @@ export interface VHPexipParticipant {
 }
 
 export interface VHRoom {
+    id?: string;
     label: string;
     locked: boolean;
 }

@@ -68,12 +68,14 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedList: VHParticipant[] = [];
-
+        // create a list of rooms based on the participants
+        const rooms: VHRoom[] = state.availableRooms;
         participants.forEach(p => {
-            updatedList.push({ ...p, room: conference.participants.find(cp => cp.id === p.id).room });
+            if (p.room && !rooms.some(r => r.label === p.room.label)) {
+                rooms.push(p.room);
+            }
         });
-        const updatedConference = { ...conference, participants: participants };
+        const updatedConference = { ...conference, participants: participants, rooms };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateExistingEndpoints, (state, { conferenceId, endpoints }) => {
@@ -84,12 +86,21 @@ export const conferenceReducer = createReducer(
 
         const updatedList: VHEndpoint[] = [];
 
-        endpoints.forEach(e => {
-            if (conference.endpoints.some(ce => ce.id === e.id)) {
-                updatedList.push({ ...e, defence_advocate: conference.endpoints.find(ce => ce.id === e.id).defence_advocate });
+        conference.endpoints.forEach(e => {
+            if (endpoints.some(ep => ep.id === e.id)) {
+                const updatedEndpoint = endpoints.find(ep => ep.id === e.id);
+                updatedList.push(updatedEndpoint);
+            } else {
+                updatedList.push(e);
             }
         });
-        const updatedConference = { ...conference, endpoints: endpoints };
+        const rooms: VHRoom[] = state.availableRooms;
+        updatedList.forEach(e => {
+            if (e.room && !rooms.some(r => r.label === e.room.label)) {
+                rooms.push(e.room);
+            }
+        });
+        const updatedConference = { ...conference, endpoints: updatedList };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.removeExistingEndpoints, (state, { conferenceId, removedEndpointIds }) => {
@@ -108,7 +119,9 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedList = conference.endpoints.concat(endpoints);
+        // filter out any endpoints that already exist
+        const newOnly = endpoints.filter(e => !conference.endpoints.some(ep => ep.id === e.id));
+        const updatedList = conference.endpoints.concat(newOnly);
         const updatedConference = { ...conference, endpoints: updatedList };
         return { ...state, currentConference: updatedConference };
     }),
