@@ -43,6 +43,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         const sectionHeadingElement = document.getElementsByClassName('govuk-accordion__section-button').item(0) as HTMLButtonElement;
         sectionHeadingElement.onclick = e => this.setAccordionText(e);
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
+        this.accordionOpenAllElement.addEventListener('click', e => this.setAccordionText(e));
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
 

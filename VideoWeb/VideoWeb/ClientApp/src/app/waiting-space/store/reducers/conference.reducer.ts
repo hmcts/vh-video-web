@@ -1,4 +1,4 @@
-import { createReducer, on } from '@ngrx/store';
+import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
 import { VHConference, VHEndpoint, VHRoom } from '../models/vh-conference';
 
@@ -180,3 +180,5 @@ export const conferenceReducer = createReducer(
         return state;
     })
 );
+
+export const activeConferenceFeature = createFeatureSelector<ConferenceState>(conferenceFeatureKey);

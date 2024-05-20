@@ -38,7 +38,7 @@ import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
-import { VHEndpoint } from '../waiting-space/store/models/vh-conference';
+import { VHEndpoint, VHParticipant } from '../waiting-space/store/models/vh-conference';
 
 @Injectable({
     providedIn: 'root'
@@ -117,8 +117,13 @@ export class EventsService {
                     name: p.display_name,
                     username: p.user_name,
                     status: p.status,
-                    tiledDisplayName: p.tiled_display_name
-                };
+                    tiledDisplayName: p.tiled_display_name,
+                    displayName: p.display_name,
+                    caseTypeGroup: p.case_type_group,
+                    linkedParticipants: p.linked_participants.map(lp => {
+                        return { linkedId: lp.linked_id, linkedType: lp.link_type };
+                    })
+                } as VHParticipant;
             });
             this.store.dispatch(ConferenceActions.updateParticipantList({ conferenceId, participants: vhParticipants }));
             this.participantsUpdatedSubject.next(message);

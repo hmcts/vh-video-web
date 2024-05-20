@@ -19,6 +19,9 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -37,9 +40,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
         protected translateService: TranslateService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService, store);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
     }
 
@@ -124,9 +128,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getConsultationParticipants(): ParticipantListItem[] {
-        let participants = this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.INTERPRETER);
+        let participants = this.nonJudgeParticipants.filter(x => x.hearingRole !== HearingRole.INTERPRETER);
         if (this.isPrivateConsultation()) {
-            participants = participants.filter(x => x.hearing_role !== HearingRole.WITNESS);
+            participants = participants.filter(x => x.hearingRole !== HearingRole.WITNESS);
         }
 
         return participants.map(c => this.mapResponseToListItem(c));
@@ -213,16 +217,16 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return false;
     }
 
-    private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
+    private mapResponseToListItem(participantResponse: VHParticipant): ParticipantListItem {
         const participant: ParticipantListItem = { ...participantResponse };
-        const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
+        const interpreterLink = participantResponse.linkedParticipants?.find(x => x.linkedType === LinkType.Interpreter);
         if (interpreterLink) {
-            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linked_id);
+            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linkedType);
         }
         return participant;
     }
 
-    private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
+    private sortAndMapToListItem(participantResponses: Array<VHParticipant>): Array<ParticipantListItem> {
         return participantResponses.map(c => this.mapResponseToListItem(c));
     }
 }

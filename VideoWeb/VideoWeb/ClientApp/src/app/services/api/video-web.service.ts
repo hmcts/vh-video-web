@@ -83,9 +83,19 @@ export class VideoWebService implements IVideoWebApiService {
                                     id: p.id,
                                     name: p.display_name,
                                     username: p.user_name,
+                                    firstName: p.first_name,
+                                    lastName: p.last_name,
                                     status: p.status,
                                     tiledDisplayName: p.tiled_display_name,
-                                    room: { id: p.current_room?.id, label: p.current_room?.label, locked: p.current_room?.locked }
+                                    displayName: p.display_name,
+                                    caseTypeGroup: p.case_type_group,
+                                    role: p.role,
+                                    hearingRole: p.hearing_role,
+                                    representee: p.representee,
+                                    room: { id: p.current_room?.id, label: p.current_room?.label, locked: p.current_room?.locked },
+                                    linkedParticipants: p.linked_participants.map(lp => {
+                                        return { linkedId: lp.linked_id, linkedType: lp.link_type };
+                                    })
                                 } as VHParticipant;
                             }),
                             endpoints: conference.endpoints.map(e => {
