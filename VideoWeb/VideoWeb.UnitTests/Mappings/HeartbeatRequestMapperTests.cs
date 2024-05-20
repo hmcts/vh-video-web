@@ -96,7 +96,7 @@ namespace VideoWeb.UnitTests.Mappings
                 OutgoingAudioPercentageLostRecent = 3m,
                 OutgoingVideoPercentageLostRecent = 4m
             })
-            .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
+            .Should().NotBe(null)
             .And.Be(HeartbeatHealth.Good);
             
             // Bad if greater than 15 (include)
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Mappings
                     OutgoingAudioPercentageLostRecent = 16m,
                     OutgoingVideoPercentageLostRecent = 4m
                 })
-                .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
+                .Should().NotBe(null)
                 .And.Be(HeartbeatHealth.Bad);
 
             // Poor between 10(inculde) and 15
@@ -118,7 +118,7 @@ namespace VideoWeb.UnitTests.Mappings
                     OutgoingAudioPercentageLostRecent = 3m,
                     OutgoingVideoPercentageLostRecent = 14m
                 })
-                .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
+                .Should().NotBe(null)
                 .And.Be(HeartbeatHealth.Poor);
         }
     }

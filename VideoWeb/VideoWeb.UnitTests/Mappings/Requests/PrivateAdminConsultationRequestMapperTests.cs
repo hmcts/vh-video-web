@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
             result.RequestedBy.Should().Be(request.RequestedById);
             result.RequestedFor.Should().Be(request.RequestedForId);
             result.RoomLabel.Should().Be(request.RoomLabel);
-            result.Answer.Should().Be(answer);
+            result.Answer.Should().Be((ApiConsultationRequestAnswer)answer);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -43,7 +42,7 @@ namespace VideoWeb.Services
         }
 
         public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
-            string staffMemberEmail, ClaimsPrincipal user)
+            string staffMemberEmail)
         {
             return new AddStaffMemberRequest()
             {

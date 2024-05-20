@@ -332,7 +332,7 @@ namespace VideoWeb.Controllers
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
-                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username, User));
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
 
                 await _participantService.AddStaffMemberToConferenceCache(response);
                 

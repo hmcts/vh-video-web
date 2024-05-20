@@ -60,8 +60,8 @@ public class ConferenceManagementServiceTests
         const bool handRaised = true;
 
 
-        Func<Task> action = async () => await _sut.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised);
-        action.Should().Throw<ParticipantNotFoundException>();
+        var action = async () => await _sut.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised);
+        action.Should().ThrowAsync<ParticipantNotFoundException>();
         
         EventHubClientMock.Verify(
             x => x

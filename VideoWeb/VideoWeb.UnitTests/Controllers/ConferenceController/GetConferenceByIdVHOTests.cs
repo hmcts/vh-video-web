@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
             var response = (ConferenceResponseVho)typedResult.Value;
             response.CaseNumber.Should().Be(conference.CaseNumber);
-            response.Participants[0].Role.Should().Be(UserRole.Individual);
+            response.Participants[0].Role.Should().Be((Role)UserRole.Individual);
         }
 
         [Test]
