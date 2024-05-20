@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -113,7 +114,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var response = (await _sut.GetConferenceByIdVHOAsync(conferenceId)).Result as NoContentResult;
 
-            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
+            ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
