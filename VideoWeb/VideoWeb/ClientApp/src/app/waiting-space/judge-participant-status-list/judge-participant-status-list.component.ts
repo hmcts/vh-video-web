@@ -10,11 +10,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceState } from '../store/reducers/conference.reducer';
-import { Store } from '@ngrx/store';
 import { VHEndpoint, VHParticipant } from '../store/models/vh-conference';
-import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -40,24 +36,15 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
         protected translateService: TranslateService,
-        protected focusService: FocusService,
-        protected store: Store<ConferenceState>
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService, focusService, store);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {
-        this.store
-            .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(conf => {
-                this.vhConference = conf;
-                this.initParticipants();
-                this.hearing = new Hearing(this.vhConference as any);
-            });
-
+        this.hearing = new Hearing(this.conference as any); // TODO: create a new Hearing ctor that accepts VHConference
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        // this.initParticipants();
+        this.initParticipants();
         this.addSharedEventHubSubcribers();
     }
 
@@ -153,11 +140,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     private filterRepresentatives(): void {
-        this.representativeParticipants = this.vhConference.participants.filter(
+        this.representativeParticipants = this.conference.participants.filter(
             x => x.role === Role.Representative && x.hearingRole !== HearingRole.OBSERVER
         );
         this.litigantInPerson = this.representativeParticipants.length === 0;
-        this.individualParticipants = this.vhConference.participants.filter(
+        this.individualParticipants = this.conference.participants.filter(
             x => x.role === Role.Individual && x.hearingRole !== HearingRole.OBSERVER
         );
     }

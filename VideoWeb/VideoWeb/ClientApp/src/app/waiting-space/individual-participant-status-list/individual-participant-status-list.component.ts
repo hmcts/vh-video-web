@@ -9,10 +9,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceState } from '../store/reducers/conference.reducer';
-import { Store } from '@ngrx/store';
-import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { takeUntil } from 'rxjs/operators';
 import { VHParticipant } from '../store/models/vh-conference';
 
 @Component({
@@ -32,23 +28,15 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
         protected translateService: TranslateService,
-        protected focusService: FocusService,
-        protected store: Store<ConferenceState>
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService, focusService, store);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
         this.addSharedEventHubSubcribers();
-        this.store
-            .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(conf => {
-                this.vhConference = conf;
-                this.initParticipants();
-            });
     }
 
     ngOnDestroy(): void {

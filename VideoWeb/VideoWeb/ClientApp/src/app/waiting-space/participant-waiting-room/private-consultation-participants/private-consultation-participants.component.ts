@@ -19,8 +19,6 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceState } from '../../store/reducers/conference.reducer';
-import { Store } from '@ngrx/store';
 import { VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
@@ -40,10 +38,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
         protected translateService: TranslateService,
-        protected focusService: FocusService,
-        protected store: Store<ConferenceState>
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService, focusService, store);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
     }
 

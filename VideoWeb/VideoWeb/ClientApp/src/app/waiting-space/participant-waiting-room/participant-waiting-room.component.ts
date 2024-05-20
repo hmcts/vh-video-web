@@ -31,6 +31,8 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import {ConferenceState} from "../store/reducers/conference.reducer";
+import {Store} from "@ngrx/store";
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -74,7 +76,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected userMediaService: UserMediaService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -96,7 +99,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             hearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            store
         );
     }
 

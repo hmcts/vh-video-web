@@ -1,11 +1,10 @@
 import { Directive, Input, OnChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AllowedEndpointResponse,
-    ConferenceResponse,
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
@@ -21,15 +20,12 @@ import { CaseTypeGroup } from '../models/case-type-group';
 
 import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceState } from '../store/reducers/conference.reducer';
-import { Store } from '@ngrx/store';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
-    vhConference: VHConference;
     nonJudgeParticipants: VHParticipant[] = [];
     judge: VHParticipant;
     staffMembers: VHParticipant[] = [];
@@ -44,8 +40,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
-    // private _conference: ConferenceResponse;
-    protected onDestroy$ = new Subject<void>();
+    private _conference: VHConference;
 
     protected constructor(
         protected consultationService: ConsultationService,
@@ -54,7 +49,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         protected logger: Logger,
         protected translateService: TranslateService,
         protected focusService: FocusService,
-        protected store: Store<ConferenceState>
     ) {}
 
     get canInvite(): boolean {
@@ -64,7 +58,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         if (isJudicialUser || isStaffMember) {
             return true;
         } else {
-            const loggedInParticipant = this.vhConference.participants.find(x => x.id === this.loggedInUser.participant_id);
+            const loggedInParticipant = this._conference.participants.find(x => x.id === this.loggedInUser.participant_id);
             const hasLinkedParticipants = loggedInParticipant.linkedParticipants.length;
             const currentRoomIsJudicial = loggedInParticipant.room?.label.startsWith('JudgeJOH');
 
@@ -72,9 +66,9 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         }
     }
 
-    // get conference(): ConferenceResponse {
-    //     return this._conference;
-    // }
+    get conference(): VHConference {
+        return this._conference;
+    }
 
     get participantCount(): number {
         return (
@@ -86,13 +80,13 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         );
     }
 
-    @Input() set conference(conference: ConferenceResponse) {
-        // this._conference = conference;
-        // this.initParticipants();
+    @Input() set conference(conference: VHConference) {
+        this._conference = conference;
+        this.initParticipants();
     }
 
     ngOnChanges() {
-        if (!this.vhConference) {
+        if (!this._conference) {
             return;
         }
         this.initParticipants();
@@ -114,8 +108,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     executeTeardown(): void {
-        this.onDestroy$.next();
-        this.onDestroy$.complete();
         this.eventHubSubscriptions$.unsubscribe();
     }
 
@@ -182,7 +174,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterNonJudgeParticipants(): void {
-        let nonJudgeParts = this.vhConference.participants
+        let nonJudgeParts = this._conference.participants
             .filter(
                 x =>
                     x.role !== Role.Judge &&
@@ -199,7 +191,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
         nonJudgeParts = [
             ...nonJudgeParts,
-            ...this.vhConference.participants
+            ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkParticipant)
                 .sort((a, b) => a.displayName.localeCompare(b.displayName))
         ];
@@ -219,7 +211,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterObservers(): void {
-        let observers = this.vhConference.participants
+        let observers = this._conference.participants
             .filter(
                 x =>
                     x.caseTypeGroup === CaseTypeGroup.OBSERVER ||
@@ -229,7 +221,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
         observers = [
             ...observers,
-            ...this.vhConference.participants
+            ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkObserver)
                 .sort((a, b) => a.displayName.localeCompare(b.displayName))
         ];
@@ -238,7 +230,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.vhConference.participants
+        this.panelMembers = this._conference.participants
             .filter(x => this.isParticipantPanelMember(x.hearingRole))
             .sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
@@ -247,11 +239,11 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterJudge(): void {
-        this.judge = this.vhConference.participants.find(x => x.role === Role.Judge);
+        this.judge = this._conference.participants.find(x => x.role === Role.Judge);
     }
 
     protected filterStaffMember(): void {
-        this.staffMembers = this.vhConference.participants
+        this.staffMembers = this._conference.participants
             .filter(x => x.role === Role.StaffMember)
             .sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
@@ -298,12 +290,12 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     private filterWingers(): void {
-        this.wingers = this.vhConference.participants
+        this.wingers = this._conference.participants
             .filter(x => x.hearingRole === HearingRole.WINGER)
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     private sortEndpoints(): void {
-        this.endpoints = [...this.vhConference.endpoints].sort((a, b) => a.displayName.localeCompare(b.displayName));
+        this.endpoints = [...this._conference.endpoints].sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
 }

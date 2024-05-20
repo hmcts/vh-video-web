@@ -1,8 +1,8 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {Observable, Subject, Subscription} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -64,6 +64,10 @@ import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
+import {ConferenceState} from "../store/reducers/conference.reducer";
+import {Store} from "@ngrx/store";
+import {VHConference} from "../store/models/vh-conference";
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -78,7 +82,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     errorCount: number;
     hearing: Hearing;
     participant: ParticipantResponse;
-    conference: ConferenceResponse;
+    conference: ConferenceResponse; // Will be removed when migrationg to ngrx store is complete
+    vhConference: VHConference;
     participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
 
@@ -125,6 +130,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
 
+    protected onDestroy$ = new Subject<void>();
+
     private readonly loggerPrefix = '[WR] -';
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
@@ -149,7 +156,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -241,6 +249,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     async getConference(): Promise<void> {
+        this.store
+            .select(ConferenceSelectors.getActiveConference)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(conf => {
+                this.vhConference = conf;
+                // create a new ctor that accepts VHConference
+                // this.hearing = new Hearing(this.vhConference as any);
+            });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
             this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);

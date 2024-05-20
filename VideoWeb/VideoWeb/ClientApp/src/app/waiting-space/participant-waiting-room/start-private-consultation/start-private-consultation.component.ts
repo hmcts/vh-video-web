@@ -156,7 +156,28 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
                 const participant: ParticipantListItem = { ...p };
                 if (p.linked_participants && interpreterLink) {
-                    participant.interpreter = participantResponses.find(x => x.id === interpreterLink.linked_id);
+                    const pat = this.getParticipantFromLinkedParticipant(interpreterLink);
+                    participant.interpreter = {
+                        id: pat.id,
+                        displayName: pat.display_name,
+                        firstName: pat.first_name,
+                        lastName: pat.last_name,
+                        tiledDisplayName: pat.tiled_display_name,
+                        name: pat.name,
+                        username: pat.user_name,
+                        status: pat.status,
+                        role: pat.role,
+                        caseTypeGroup: pat.case_type_group,
+                        hearingRole: pat.hearing_role,
+                        representee: pat.representee,
+                        linkedParticipants: pat.linked_participants.map(lp => {
+                            return {
+                                linkedId: lp.linked_id,
+                                linkType: lp.link_type
+                            };
+                        })
+
+                    };
                 }
                 return participant;
             });
