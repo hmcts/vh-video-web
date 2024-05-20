@@ -21,13 +21,13 @@ namespace VideoWeb.Services
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
-        private readonly ILogger<ParticipantsController> _logger;
+        private readonly ILogger<ParticipantService> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly int startingSoonMinutesThreshold = 30;
         private readonly int closedMinutesThreshold = 30;
 
-        public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, ILogger<ParticipantsController> logger,
+        public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, ILogger<ParticipantService> logger,
             IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
         {
             _videoApiClient = videoApiClient;
@@ -77,7 +77,7 @@ namespace VideoWeb.Services
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
-            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+            _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
             await _conferenceCache.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }

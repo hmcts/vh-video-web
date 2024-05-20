@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests.Services
         private AutoMock _mocker;
         private ConferenceDetailsResponse _testConference;
         private ParticipantDetailsResponse _participantDetailsResponse;
-        private IParticipantService _service;
+        private ParticipantService _service;
         private UserProfileResponse _staffMemberProfile;
         private const string ContactEmail = "staffMemberEmail@hmcts.net";
         

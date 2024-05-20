@@ -9,12 +9,7 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class HeartbeatRequestMapperTests
     {
-        private readonly IHeartbeatRequestMapper _mapper;
-
-        public HeartbeatRequestMapperTests()
-        {
-            _mapper = new HeartbeatRequestMapper();    
-        }
+        private readonly HeartbeatRequestMapper _mapper = new();
         
         [Test]
         public void Should_map_to_add_heartbeat_request()
