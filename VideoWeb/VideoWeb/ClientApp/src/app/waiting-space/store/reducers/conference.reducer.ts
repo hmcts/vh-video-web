@@ -109,9 +109,9 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedList = conference.endpoints.filter(e => !removedEndpointIds.some(ep => ep === e.id));
-        const updatedConference = { ...conference, endpoints: updatedList };
-        return { ...state, currentConference: updatedConference };
+        const updatedList = conference.endpoints.filter(e => !removedEndpointIds.includes(e.id));
+
+        return { ...state, currentConference: { ...conference, endpoints: updatedList } };
     }),
     on(ConferenceActions.addNewEndpoints, (state, { conferenceId, endpoints }) => {
         const conference = state.currentConference;
@@ -119,31 +119,23 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        // filter out any endpoints that already exist
         const newOnly = endpoints.filter(e => !conference.endpoints.some(ep => ep.id === e.id));
-        const updatedList = conference.endpoints.concat(newOnly);
-        const updatedConference = { ...conference, endpoints: updatedList };
-        return { ...state, currentConference: updatedConference };
+        const updatedList = [...conference.endpoints, ...newOnly];
+
+        return { ...state, currentConference: { ...conference, endpoints: updatedList } };
     }),
     on(ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
         const conference = state.currentConference;
-        const participants = conference.participants.map(p => {
-            if (participant.pexipDisplayName.includes(p.id)) {
-                // Update the participant with the pexip info
-                return { ...p, pexipInfo: participant };
-            } else {
-                return p;
-            }
-        });
+        const participants = conference.participants.map(p =>
+            participant.pexipDisplayName.includes(p.id) ? { ...p, pexipInfo: participant } : p
+        );
 
-        const updatedConference = { ...conference, participants: participants };
-        return { ...state, currentConference: updatedConference };
+        return { ...state, currentConference: { ...conference, participants } };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
-        // update room in the available rooms list
-        // else add the room to the available rooms list
         const updatedList = state.availableRooms;
         const roomIndex = updatedList.findIndex(r => r.label === room.label);
+
         if (roomIndex > -1) {
             updatedList[roomIndex] = room;
             state.currentConference.participants.forEach(p => {
@@ -159,16 +151,12 @@ export const conferenceReducer = createReducer(
         } else {
             updatedList.push(room);
         }
+
         return { ...state, availableRooms: updatedList };
     }),
-    on(ConferenceActions.updateParticipantRoom, (state, { participantId, fromRoom, toRoom }) => {
-        const conference = state.currentConference;
-        if (!conference) {
-            return state;
-        }
-
-        const participant = conference.participants.find(p => p.id === participantId);
-        const endpoint = conference.endpoints.find(e => e.id === participantId);
+    on(ConferenceActions.updateParticipantRoom, (state, { participantId, toRoom }) => {
+        const participant = state.currentConference?.participants.find(p => p.id === participantId);
+        const endpoint = state.currentConference?.endpoints.find(e => e.id === participantId);
 
         if (!participant && !endpoint) {
             return state;
@@ -176,39 +164,17 @@ export const conferenceReducer = createReducer(
 
         let room: VHRoom = null;
         if (toRoom.toLowerCase().startsWith('consultation')) {
-            room = state.availableRooms.find(r => r.label === toRoom);
-            if (!room) {
-                room = { label: toRoom, locked: false };
-            }
+            room = state.availableRooms.find(r => r.label === toRoom) || { label: toRoom, locked: false };
         }
 
-        // TODO: confirm if we should add the room to the available rooms list if new
         if (participant) {
-            const updatedParticipant = { ...participant, room: room };
-            const participants = conference.participants.map(p => {
-                if (p.id === participantId) {
-                    return updatedParticipant;
-                } else {
-                    return p;
-                }
-            });
-
-            const updatedConference = { ...conference, participants: participants };
-            return { ...state, currentConference: updatedConference };
+            const updatedParticipants = state.currentConference.participants.map(p => (p.id === participantId ? { ...p, room: room } : p));
+            return { ...state, currentConference: { ...state.currentConference, participants: updatedParticipants } };
         }
 
         if (endpoint) {
-            const updatedEndpoint = { ...endpoint, room: room };
-            const endpoints = conference.endpoints.map(e => {
-                if (e.id === participantId) {
-                    return updatedEndpoint;
-                } else {
-                    return e;
-                }
-            });
-
-            const updatedConference = { ...conference, endpoints: endpoints };
-            return { ...state, currentConference: updatedConference };
+            const updatedEndpoints = state.currentConference.endpoints.map(e => (e.id === participantId ? { ...e, room: room } : e));
+            return { ...state, currentConference: { ...state.currentConference, endpoints: updatedEndpoints } };
         }
 
         return state;
