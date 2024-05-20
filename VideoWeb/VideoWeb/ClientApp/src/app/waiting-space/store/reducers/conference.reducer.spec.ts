@@ -467,4 +467,44 @@ fdescribe('Conference Reducer', () => {
             expect(result.currentConference.endpoints[2].defence_advocate).toEqual('chris.green@test.com');
         });
     });
+
+    describe('upsertPexipParticipant action', () => {
+        it('should add pexip info to the participant', () => {
+            const pexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
+                uuid: '1922_John Doe',
+                isAudioOnlyCall: false,
+                isVideoCall: true,
+                protocol: 'sip'
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.upsertPexipParticipant({ participant: pexipParticipant })
+            );
+
+            expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
+        });
+
+        it('should ignore pexip info to if participant is not on the list', () => {
+            const pexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: `1922_John Doe_unknown`,
+                uuid: '1922_John Doe',
+                isAudioOnlyCall: false,
+                isVideoCall: true,
+                protocol: 'sip'
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.upsertPexipParticipant({ participant: pexipParticipant })
+            );
+
+            expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
+        });
+    });
 });
