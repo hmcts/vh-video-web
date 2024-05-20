@@ -17,7 +17,6 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using VideoWeb.Helpers;
 
 namespace VideoWeb.Controllers
 {
@@ -25,7 +24,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("callback")]
     [Authorize(AuthenticationSchemes = "Callback")]
-    public class VideoEventsController : Controller
+    public class VideoEventsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;

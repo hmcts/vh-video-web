@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class MediaEventController : Controller
+    public class MediaEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MediaEventController> _logger;

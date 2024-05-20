@@ -22,7 +22,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
-    public class ConsultationsController : Controller
+    public class ConsultationsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;

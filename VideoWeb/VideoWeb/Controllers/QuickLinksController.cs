@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 
@@ -27,7 +25,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
-    public class QuickLinksController : Controller
+    public class QuickLinksController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;

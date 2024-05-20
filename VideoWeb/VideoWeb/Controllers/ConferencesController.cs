@@ -32,7 +32,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class ConferencesController : Controller
+    public class ConferencesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferencesController> _logger;

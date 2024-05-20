@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("selftest")]
-    public class SelfTestController : Controller
+    public class SelfTestController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ITestCallCache _testCallCache;

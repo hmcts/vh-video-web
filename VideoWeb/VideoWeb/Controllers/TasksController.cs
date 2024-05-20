@@ -17,7 +17,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("conferences")]
     [Authorize(AppRoles.VhOfficerRole)]
-    public class TasksController : Controller
+    public class TasksController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<TasksController> _logger;
