@@ -95,8 +95,8 @@ export class VideoWebService implements IVideoWebApiService {
                                     status: e.status,
                                     defence_advocate: e.defence_advocate_username,
                                     room: {
-                                        label: e.current_room.label,
-                                        locked: e.current_room.locked
+                                        label: e.current_room?.label,
+                                        locked: e.current_room?.locked
                                     }
                                 } as VHEndpoint;
                             })

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHRoom } from '../models/vh-conference';
 
 export const conferenceFeatureKey = 'active-conference';
 
