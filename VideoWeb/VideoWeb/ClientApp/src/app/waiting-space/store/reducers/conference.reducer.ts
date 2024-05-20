@@ -142,14 +142,24 @@ export const conferenceReducer = createReducer(
     on(ConferenceActions.updateRoom, (state, { room }) => {
         // update room in the available rooms list
         // else add the room to the available rooms list
-        const availableRooms = state.availableRooms;
-        const roomIndex = availableRooms.findIndex(r => r.label === room.label);
+        const updatedList = state.availableRooms;
+        const roomIndex = updatedList.findIndex(r => r.label === room.label);
         if (roomIndex > -1) {
-            availableRooms[roomIndex] = room;
+            updatedList[roomIndex] = room;
+            state.currentConference.participants.forEach(p => {
+                if (p.room && p.room.label === room.label) {
+                    p.room = room;
+                }
+            });
+            state.currentConference.endpoints.forEach(e => {
+                if (e.room && e.room.label === room.label) {
+                    e.room = room;
+                }
+            });
         } else {
-            availableRooms.push(room);
+            updatedList.push(room);
         }
-        return { ...state, availableRooms: availableRooms };
+        return { ...state, availableRooms: updatedList };
     }),
     on(ConferenceActions.updateParticipantRoom, (state, { participantId, fromRoom, toRoom }) => {
         const conference = state.currentConference;
@@ -172,6 +182,7 @@ export const conferenceReducer = createReducer(
             }
         }
 
+        // TODO: confirm if we should add the room to the available rooms list if new
         if (participant) {
             const updatedParticipant = { ...participant, room: room };
             const participants = conference.participants.map(p => {
@@ -187,7 +198,7 @@ export const conferenceReducer = createReducer(
         }
 
         if (endpoint) {
-            const updatedEndpoint = { ...endpoint, defence_advocate: room.label };
+            const updatedEndpoint = { ...endpoint, room: room };
             const endpoints = conference.endpoints.map(e => {
                 if (e.id === participantId) {
                     return updatedEndpoint;

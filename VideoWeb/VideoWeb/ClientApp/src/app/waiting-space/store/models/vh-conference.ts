@@ -41,7 +41,6 @@ export interface VHPexipParticipant {
 }
 
 export interface VHRoom {
-    id?: string;
     label: string;
     locked: boolean;
 }

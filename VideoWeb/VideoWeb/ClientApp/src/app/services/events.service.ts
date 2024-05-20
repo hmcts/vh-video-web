@@ -304,11 +304,19 @@ export class EventsService {
 
         RoomUpdate: (payload: Room) => {
             this.logger.debug('[EventsService] - Room Update received: ', payload);
+            this.store.dispatch(ConferenceActions.updateRoom({ room: payload }));
             this.roomUpdateSubject.next(payload);
         },
 
         RoomTransfer: (payload: RoomTransfer) => {
             this.logger.debug('[EventsService] - Room Transfer received: ', payload);
+            this.store.dispatch(
+                ConferenceActions.updateParticipantRoom({
+                    participantId: payload.participant_id,
+                    fromRoom: payload.from_room,
+                    toRoom: payload.to_room
+                })
+            );
             this.roomTransferSubject.next(payload);
         },
 

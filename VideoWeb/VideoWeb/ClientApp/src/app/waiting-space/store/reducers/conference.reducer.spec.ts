@@ -1,13 +1,19 @@
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
+import * as exp from 'node:constants';
 
 fdescribe('Conference Reducer', () => {
     let conferenceTestData: VHConference;
     let existingInitialState: ConferenceState;
 
     beforeEach(() => {
+        const originalRoom: VHRoom = {
+            label: 'Room 999',
+            locked: false
+        };
+
         conferenceTestData = {
             id: '123',
             caseName: 'Test Case',
@@ -20,31 +26,33 @@ fdescribe('Conference Reducer', () => {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df7',
                     name: 'Mr John Doe',
                     username: 'john.doe@test.com',
-                    status: ParticipantStatus.NotSignedIn,
-                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7'
+                    status: ParticipantStatus.InConsultation,
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
+                    room: originalRoom
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
                     name: 'Judge Fudge',
                     username: 'judge.fudge@test.com',
-                    status: ParticipantStatus.NotSignedIn,
+                    status: ParticipantStatus.Available,
                     tiledDisplayName: 'JUDGE;HEARTBEAT;Judge Fudge;7b875df1-bf37-4f5a-9d23-d3493f319a08'
                 },
                 {
                     id: '729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
                     name: 'Mr Chris Green',
                     username: 'chris.green@test.com',
-                    status: ParticipantStatus.NotSignedIn,
-                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr Chris Green;729ae52a-f894-4680-af4b-4d9fcc6ffdaf'
+                    status: ParticipantStatus.InConsultation,
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr Chris Green;729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
+                    room: originalRoom
                 }
             ],
             endpoints: [
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5e',
                     displayName: 'Endpoint 1',
-                    status: EndpointStatus.NotYetJoined,
+                    status: EndpointStatus.InConsultation,
                     defence_advocate: 'john.doe@test.com',
-                    room: null
+                    room: originalRoom
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
@@ -57,13 +65,7 @@ fdescribe('Conference Reducer', () => {
         };
         existingInitialState = {
             currentConference: conferenceTestData,
-            availableRooms: [
-                {
-                    id: '999',
-                    label: 'Room 999',
-                    locked: false
-                }
-            ]
+            availableRooms: [originalRoom]
         };
     });
 
@@ -148,7 +150,7 @@ fdescribe('Conference Reducer', () => {
         });
 
         it('should return the previous state if the participant does not exist', () => {
-            const updatedStatus = ParticipantStatus.Available;
+            const updatedStatus = ParticipantStatus.InHearing; // no participant has this status in existing initial state
             const result = conferenceReducer(
                 existingInitialState,
                 ConferenceActions.updateParticipantStatus({
@@ -281,7 +283,7 @@ fdescribe('Conference Reducer', () => {
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
-                    room: { id: '1', label: 'Room 1', locked: false }
+                    room: { label: 'Room 1', locked: false }
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
@@ -506,5 +508,145 @@ fdescribe('Conference Reducer', () => {
 
             expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
         });
+    });
+
+    describe('updateRoom action', () => {
+        it('should update the room in the available rooms list', () => {
+            const updatedRoom = {
+                label: 'Room 999',
+                locked: true
+            };
+            const result = conferenceReducer(existingInitialState, ConferenceActions.updateRoom({ room: updatedRoom }));
+
+            expect(result.availableRooms.length).toEqual(1);
+            expect(result.availableRooms[0].label).toEqual('Room 999');
+            expect(result.availableRooms[0].locked).toBeTrue();
+
+            // John Doe
+            expect(result.currentConference.participants[0].room).toEqual(updatedRoom);
+            // Chris Green
+            expect(result.currentConference.participants[2].room).toEqual(updatedRoom);
+            // Endpoint 1
+            expect(result.currentConference.endpoints[0].room).toEqual(updatedRoom);
+        });
+
+        it('should add the room to the available rooms list', () => {
+            const newRoom: VHRoom = {
+                label: 'Room 998',
+                locked: false
+            };
+            const result = conferenceReducer(existingInitialState, ConferenceActions.updateRoom({ room: newRoom }));
+
+            expect(result.availableRooms.length).toEqual(2);
+            expect(result.availableRooms[1].label).toEqual('Room 998');
+        });
+    });
+
+    describe('updateParticipantRoom action', () => {
+        it('should return the previous state if the conference does not exist', () => {
+            const result = conferenceReducer(
+                initialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: conferenceTestData.participants[0].id,
+                    fromRoom: 'Room 999',
+                    toRoom: 'Room 998'
+                })
+            );
+
+            expect(result).toBe(initialState);
+        });
+
+        it('should return the previous state if the participant id does not match participant or an endpoint', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: 'unknown',
+                    fromRoom: 'Room 999',
+                    toRoom: 'Room 998'
+                })
+            );
+
+            expect(result).toBe(existingInitialState);
+        });
+
+        it('should update the participant room and set current room when room is a consultation room', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: conferenceTestData.participants[0].id,
+                    fromRoom: 'Room 999',
+                    toRoom: 'Consultation Room 1'
+                })
+            );
+
+            expect(result.currentConference.participants[0].room.label).toEqual('Consultation Room 1');
+            expect(result.currentConference.participants[0].room.locked).toBeFalse();
+        });
+
+        it('should update the participant room and set current room when room is a hearing room', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: conferenceTestData.participants[0].id,
+                    fromRoom: 'Room 999',
+                    toRoom: 'Hearing Room 1'
+                })
+            );
+
+            expect(result.currentConference.participants[0].room).toBeNull();
+        });
+
+        it('should update the endpoint room and set the current room when room is a consultation room', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: conferenceTestData.endpoints[0].id,
+                    fromRoom: 'Room 999',
+                    toRoom: 'Consultation Room 1'
+                })
+            );
+
+            expect(result.currentConference.endpoints[0].room.label).toEqual('Consultation Room 1');
+            expect(result.currentConference.endpoints[0].room.locked).toBeFalse();
+        });
+
+        it('should update the endpoint room and set the current room when room is a hearing room', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantRoom({
+                    participantId: conferenceTestData.endpoints[0].id,
+                    fromRoom: 'Room 999',
+                    toRoom: 'Hearing Room 1'
+                })
+            );
+
+            expect(result.currentConference.endpoints[0].room).toBeNull();
+        });
+
+        // it('should update the room of the participant', () => {
+        //     const result = conferenceReducer(
+        //         existingInitialState,
+        //         ConferenceActions.updateParticipantRoom({
+        //             participantId: conferenceTestData.participants[0].id,
+        //             fromRoom: 'Room 999',
+        //             toRoom: 'Room 998'
+        //         })
+        //     );
+
+        //     expect(result.currentConference.participants[0].room.label).toEqual('Room 998');
+        // });
+
+        // it('should update the room of the endpoint', () => {
+        //     const result = conferenceReducer(
+        //         existingInitialState,
+        //         ConferenceActions.updateParticipantRoom({
+        //             participantId: conferenceTestData.endpoints[0].id,
+        //             fromRoom: 'Room 999',
+        //             toRoom: 'Room 998'
+        //         })
+        //     );
+
+        //     expect(result.currentConference.endpoints[0].room.label).toEqual('Room 998');
+        // });
     });
 });
