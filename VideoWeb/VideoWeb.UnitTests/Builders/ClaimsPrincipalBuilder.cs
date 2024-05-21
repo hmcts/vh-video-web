@@ -5,8 +5,8 @@ namespace VideoWeb.UnitTests.Builders
 {
     public class ClaimsPrincipalBuilder
     {
-        public static readonly string Username = "john@hmcts.net";
-
+        public const string Username = "john@hmcts.net";
+        
         private readonly List<Claim> _claims = [];
         public ClaimsPrincipalBuilder(bool includeGivenName = true, bool includeSurname = true, bool includeDefaultClaims = true)
         {
