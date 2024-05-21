@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.Extensions
@@ -101,6 +103,7 @@ namespace VideoWeb.Extensions
 
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies(providerSchemes);
+            serviceCollection.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
         }
 
         public static AuthProvider GetProviderFromRequest(HttpRequest httpRequest, IList<IProviderSchemes> providerSchemes)
