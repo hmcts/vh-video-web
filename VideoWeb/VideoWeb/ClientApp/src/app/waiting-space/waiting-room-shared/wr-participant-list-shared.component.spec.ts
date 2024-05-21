@@ -3,7 +3,6 @@ import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    ConferenceResponse,
     LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
@@ -28,6 +27,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHConference } from '../store/models/vh-conference';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -59,7 +59,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     const eventsService = eventsServiceSpy;
     const judgeProfile = judgeTestProfile;
     const logger: Logger = new MockLogger();
-    let conference: ConferenceResponse;
+    let conference: VHConference;
     const participantStatusSubject = participantStatusSubjectMock;
     let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
@@ -77,7 +77,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         const loggedUser = conference.participants.find(x => x.role === Role.Judge);
         const userLogged = new LoggedParticipantResponse({
             participant_id: loggedUser.id,
-            display_name: loggedUser.display_name,
+            display_name: loggedUser.displayName,
             role: loggedUser.role
         });
 
