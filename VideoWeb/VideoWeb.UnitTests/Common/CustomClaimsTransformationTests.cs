@@ -22,13 +22,8 @@ namespace VideoWeb.UnitTests.Common
         public async Task Should_transform_claims(string oldName, string newName, string value)
         {
             // Arrange
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder(includeDefaultClaims: false).Build();
             var identity = (ClaimsIdentity)claimsPrincipal.Identity;
-            var existingClaims = identity.Claims.ToList();
-            foreach (var claim in existingClaims)
-            {
-                identity.RemoveClaim(claim);
-            }
             identity.AddClaim(new Claim(oldName, value));
             
             // Act
