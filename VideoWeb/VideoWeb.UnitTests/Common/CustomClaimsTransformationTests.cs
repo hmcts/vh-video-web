@@ -36,5 +36,18 @@ namespace VideoWeb.UnitTests.Common
             var oldClaim = transformedPrincipal.Claims.FirstOrDefault(c => c.Type == oldName);
             oldClaim.Should().BeNull();
         }
+        
+        [TestCase("name", ClaimTypes.Name)]
+        public async Task Should_not_transform_claims_when_claim_not_found(string oldName, string newName)
+        {
+            // Arrange
+            var claimsPrincipal = new ClaimsPrincipalBuilder(includeDefaultClaims: false).Build();
+            
+            // Act
+            var transformedPrincipal = await _customClaimsTransformation.TransformAsync(claimsPrincipal);
+            
+            var transformedClaim = transformedPrincipal.Claims.FirstOrDefault(c => c.Type == newName);
+            transformedClaim.Should().BeNull();
+        }
     }
 }

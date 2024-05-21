@@ -18,6 +18,8 @@ namespace VideoWeb.Common.Security
             void RenameClaim(string oldName, string newName)
             {
                 var claim = identity.FindFirst(oldName);
+                if (claim == null) return;
+                
                 identity.RemoveClaim(claim);
                 identity.AddClaim(new Claim(newName, claim.Value));
             }
