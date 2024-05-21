@@ -10,7 +10,7 @@ namespace VideoWeb.Common.Security
         {
             var identity = (ClaimsIdentity)principal.Identity;
  
-            // Rename the claim to a fixed value, to protect against changes in framework updates
+            // Rename the claim to a fixed name, to protect against changes in framework updates
             RenameClaim("name", ClaimTypes.Name);
             
             return Task.FromResult(principal);
