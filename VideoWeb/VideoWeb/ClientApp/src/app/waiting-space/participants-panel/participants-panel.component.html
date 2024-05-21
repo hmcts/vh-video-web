@@ -160,10 +160,7 @@
               </fa-icon>
             </ng-container>
           </div>
-          <div
-            *ngIf="participant.isCallable && !participant.isInHearing()"
-            [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'"
-          >
+          <div *ngIf="!participant.isInHearing()" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
             <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
               <fa-icon
                 *ngIf="!participant.transferringIn"
@@ -173,7 +170,7 @@
                   participant.isWitness
                     ? ('participants-panel.call-witness' | translate)
                     : ('participants-panel.admit-participant'
-                      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
+                      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
                 "
                 colour="green"
                 class="icon-button"
@@ -193,7 +190,7 @@
                 appTooltip
                 [text]="
                   'participants-panel.participant-unavailable'
-                    | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
+                    | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
                 "
                 colour="grey"
                 class="icon-button no-click"

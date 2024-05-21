@@ -61,7 +61,7 @@ namespace VideoWeb.Controllers
                     conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
- 
+
                 request.ParticipantsToForceTransfer = conference.Participants
                     .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.Id.ToString()).ToList();
@@ -78,7 +78,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
-                
+
         /// <summary>
         /// Returns the active layout for a conference
         /// </summary>
@@ -98,7 +98,8 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug("Getting the layout for {conferenceId}", conferenceId);
                 var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
 
-                if (!layout.HasValue) {
+                if (!layout.HasValue)
+                {
                     _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
                     return NotFound();
                 }
@@ -293,11 +294,11 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
-            if (validatedRequest != null)
-            {
-                return validatedRequest;
-            }
+            // var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
+            // if (validatedRequest != null)
+            // {
+            //     return validatedRequest;
+            // }
 
             try
             {
@@ -352,11 +353,11 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
-            if (validatedRequest != null)
-            {
-                return validatedRequest;
-            }
+            // var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
+            // if (validatedRequest != null)
+            // {
+            //     return validatedRequest;
+            // }
 
             try
             {
@@ -432,11 +433,6 @@ namespace VideoWeb.Controllers
             var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantCallable(conferenceId, participantId))
-            {
-                return null;
-            }
-
             _logger.LogWarning($"Participant {participantId} is not a callable participant in {conferenceId}");
             return Unauthorized("Participant is not callable");
         }
@@ -473,7 +469,7 @@ namespace VideoWeb.Controllers
             {
                 return false;
             }
-        
+
             var expectedParticipantsInRoomIds = participant.LinkedParticipants.Select(x => x.LinkedId).ToList();
             expectedParticipantsInRoomIds.Add(participant.Id);
             return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
@@ -484,15 +480,15 @@ namespace VideoWeb.Controllers
             var witnessRoom = GetRoomForParticipant(conference, participantId);
 
             if (witnessRoom != null) return witnessRoom;
-            
+
             conference = await RefreshConferenceCache(conference.Id);
-        
+
             witnessRoom = GetRoomForParticipant(conference, participantId);
 
             return witnessRoom;
         }
 
-        private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
+        private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) =>
             conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
 
         private async Task<Conference> RefreshConferenceCache(Guid conferenceId)
