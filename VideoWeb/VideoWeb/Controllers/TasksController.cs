@@ -41,7 +41,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get tasks for conference {conferenceId}");
+                _logger.LogError(e, "Unable to get tasks for conference {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -72,7 +72,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get complete tasks {taskId} in conference {conferenceId}");
+                _logger.LogError(e, "Unable to get complete tasks {TaskId} in conference {ConferenceId}", taskId, conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

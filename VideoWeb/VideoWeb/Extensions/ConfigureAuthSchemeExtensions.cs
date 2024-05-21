@@ -33,6 +33,8 @@ namespace VideoWeb.Extensions
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
+            const string callback = "Callback";
+            const string internalEvent = "InternalEvent";
 
             serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
             {
@@ -65,19 +67,19 @@ namespace VideoWeb.Extensions
                     {
                         if (context.Request.Path.StartsWithSegments("/callback"))
                         {
-                            return "Callback";
+                            return callback;
                         }
-                        else if (context.Request.Path.StartsWithSegments("/internalevent"))
+                        if (context.Request.Path.StartsWithSegments("/internalevent"))
                         {
-                            return "InternalEvent";
+                            return internalEvent;
                         }
-
+                        
                         var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
                         var provider = GetProviderFromRequest(context.Request, providerSchemes);
                         return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
                 })
-                .AddJwtBearer("Callback", options =>
+                .AddJwtBearer(callback, options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -86,7 +88,7 @@ namespace VideoWeb.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
                     };
                 })
-                .AddJwtBearer("InternalEvent", options =>
+                .AddJwtBearer(internalEvent, options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {

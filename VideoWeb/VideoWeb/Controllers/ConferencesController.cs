@@ -393,7 +393,7 @@ namespace VideoWeb.Controllers
             return StatusCode(e.StatusCode, e.Response);
         }
 
-        private ActionResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
+        private ObjectResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
         {
             _logger.LogError(e, "Unable to get conferences for user");
             return StatusCode(e.StatusCode, e.Response);

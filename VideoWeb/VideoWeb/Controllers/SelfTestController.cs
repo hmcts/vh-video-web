@@ -51,7 +51,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get Pexip configuration");
+                _logger.LogError(e, "Unable to get Pexip configuration");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

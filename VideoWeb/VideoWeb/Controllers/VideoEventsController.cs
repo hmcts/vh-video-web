@@ -194,9 +194,9 @@ namespace VideoWeb.Controllers
                 var vmrId = long.Parse(request.ParticipantRoomId);
                 var participantId = Guid.Parse(request.ParticipantId);
             
-                var vmr = conference.CivilianRooms.FirstOrDefault(room => room.Id == vmrId);
+                var vmr = conference.CivilianRooms.Find(room => room.Id == vmrId);
                 var linkedParticipantInConsultation = vmr?.Participants.Where(participantGuid => participantGuid != participantId)
-                    .Select(participantGuid => conference.Participants.FirstOrDefault(y => participantGuid == y.Id))
+                    .Select(participantGuid => conference.Participants.Find(y => participantGuid == y.Id))
                     .FirstOrDefault(participant => participant?.ParticipantStatus == ParticipantStatus.InConsultation);
                 if (linkedParticipantInConsultation != null)
                 {
