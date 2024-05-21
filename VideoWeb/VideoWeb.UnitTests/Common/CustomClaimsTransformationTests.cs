@@ -10,6 +10,14 @@ namespace VideoWeb.UnitTests.Common
 {
     public class CustomClaimsTransformationTests
     {
+        private CustomClaimsTransformation _customClaimsTransformation;
+        
+        [SetUp]
+        public void Setup()
+        {
+            _customClaimsTransformation = new CustomClaimsTransformation();
+        }
+        
         [TestCase("name", ClaimTypes.Name, "John Doe")]
         public async Task Should_transform_claims(string oldName, string newName, string value)
         {
@@ -24,8 +32,7 @@ namespace VideoWeb.UnitTests.Common
             identity.AddClaim(new Claim(oldName, value));
             
             // Act
-            var claimsTransformation = new CustomClaimsTransformation();
-            var transformedPrincipal = await claimsTransformation.TransformAsync(claimsPrincipal);
+            var transformedPrincipal = await _customClaimsTransformation.TransformAsync(claimsPrincipal);
             
             // Assert
             var transformedClaim = transformedPrincipal.Claims.FirstOrDefault(c => c.Type == newName);
