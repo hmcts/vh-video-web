@@ -8,13 +8,14 @@ import {
     ParticipantStatus
 } from 'src/app/services/clients/api-client';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { TransferDirection } from '../../../services/models/hearing-transfer';
 
 export const ConferenceActions = createActionGroup({
     source: 'Conference',
     events: {
-        // 'Load Conferences': props<{ conferenceId: string }>(), // TOOD: get components to use this action and create a side effect
-        'Load Conferences Success': props<{ data: VHConference }>(),
-        'Load Conferences Failure': props<{ error: Error }>(),
+        // 'Load Conference': props<{ conferenceId: string }>(), // TOOD: get components to use this action and create a side effect
+        'Load Conference Success': props<{ conference: VHConference }>(),
+        'Load Conference Failure': props<{ error: Error }>(),
 
         'Update Active Conference Status': props<{ conferenceId: string; status: ConferenceStatus }>(),
         'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus }>(),
@@ -31,6 +32,12 @@ export const ConferenceActions = createActionGroup({
         'Update Participant Remote Mute Status': props<{ participantId: string; conferenceId: string; isRemoteMuted: boolean }>(),
         'Update Participant Local Mute Status': props<{ participantId: string; conferenceId: string; isMuted: boolean }>(),
         'Update Participant Hand Raised': props<{ participantId: string; conferenceId: string; hasHandRaised: boolean }>(),
+
+        'Update Participant Hearing Transfer Status': props<{
+            participantId: string;
+            conferenceId: string;
+            transferDirection: TransferDirection;
+        }>(),
 
         'Update Room': props<{ room: VHRoom }>(),
         'Update Participant Room': props<{ participantId: string; fromRoom: string; toRoom: string }>(),

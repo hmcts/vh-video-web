@@ -5,14 +5,10 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     LoggedParticipantResponse,
     EndpointStatus,
-    ParticipantResponse,
     ParticipantStatus,
     VideoEndpointResponse,
     Role,
-    RoomSummaryResponse,
-    ParticipantForUserResponse,
-    LinkType,
-    LinkedParticipantResponse
+    LinkType
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -27,7 +23,12 @@ import { HearingRole } from '../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { FocusService } from 'src/app/services/focus.service';
-import { VHConference } from '../store/models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
+import {
+    mapConferenceToVHConference,
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../store/models/api-contract-to-state-model-mappers';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -71,8 +72,10 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     beforeEach(() => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
-        conference = new ConferenceTestData().getConferenceDetailNow();
-        const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
+        const participantObserverPanelMember = new ConferenceTestData()
+            .getListOfParticipantsObserverAndPanelMembers()
+            .map(x => mapParticipantToVHParticipant(x));
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         const loggedUser = conference.participants.find(x => x.role === Role.Judge);
         const userLogged = new LoggedParticipantResponse({
@@ -121,30 +124,20 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should return true when participant has no case type group', () => {
-        const pat = new ParticipantResponse({
-            id: '9F681318-4955-49AF-A887-DED64554429T',
-            name: 'Judge Fudge',
-            case_type_group: 'None'
-        });
+        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['caseTypeGroup']);
+        pat.caseTypeGroup = 'None';
         expect(component.isCaseTypeNone(pat)).toBeTruthy();
     });
 
     it('should return false when participant has a case type group', () => {
-        const pat = new ParticipantResponse({
-            id: '9F681318-4955-49AF-A887-DED64554429T',
-            name: 'Judge Fudge',
-            case_type_group: 'Judge'
-        });
+        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['caseTypeGroup']);
+        pat.caseTypeGroup = 'Judge';
         expect(component.isCaseTypeNone(pat)).toBeFalsy();
     });
 
     it('should return true when participant hearing role is Witness', () => {
-        const pat = new ParticipantResponse({
-            id: '9F681318-4955-49AF-A887-DED64554429Q',
-            name: 'John Witness',
-            case_type_group: 'Applicant',
-            hearing_role: HearingRole.WITNESS
-        });
+        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['hearingRole']);
+        pat.hearingRole = HearingRole.WITNESS;
         expect(component.isWitness(pat)).toBeTruthy();
     });
 
@@ -160,10 +153,8 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     participantAvailableTestCases.forEach(test => {
         it(`should return ${test.expected} for 'isParticipantAvailable' when participant status is ${test.status}`, () => {
-            const pat = new ParticipantResponse({
-                id: '9F681318-4955-49AF-A887-DED64554429T',
-                status: test.status
-            });
+            const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'name', 'caseTypeGroup', 'hearingRole']);
+            pat.status = test.status;
 
             expect(component.isParticipantAvailable(pat)).toBe(test.expected);
         });
@@ -178,10 +169,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     endpointAvailableTestCases.forEach(test => {
         it(`should return ${test.expected} for 'isEndpointAvailable' when video endpoint status is ${test.status}`, () => {
-            const pat = new VideoEndpointResponse({
-                id: '9F681318-4955-49AF-A887-DED64554429T',
-                status: test.status
-            });
+            const pat = jasmine.createSpyObj<VHEndpoint>('VHEndpoint', ['id', 'status']);
+            pat.id = '9F681318-4955-49AF-A887-DED64554429T';
+            pat.status = test.status;
 
             expect(component.isEndpointAvailable(pat)).toBe(test.expected);
         });
@@ -214,8 +204,8 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should be allowed to invite in consultation if the participant is in the participants room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
-        indivUser.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
-        indivUser.linked_participants = [];
+        indivUser.room = { label: 'ParticipantCourtRoom', locked: false };
+        indivUser.linkedParticipants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
         component.conference = conference;
@@ -223,8 +213,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
     it('should not be allowed to invite in consultation if the participant is in the JOH room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
-        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
-        indivUser.linked_participants = [];
+        indivUser.room = { label: 'JudgeJOHCourtRoom', locked: false };
+        indivUser.linkedParticipants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
         component.conference = conference;
@@ -232,8 +222,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
     it('should be allowed to invite in consultation if the participant is in a Judge or JOH ', () => {
         const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
-        indivUser.linked_participants = [];
-        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        indivUser.linkedParticipants = [];
+        indivUser.room = { label: 'JudgeJOHCourtRoom', locked: false };
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
         component.conference = conference;
@@ -241,8 +231,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
     it('should be allowed to invite if the logged in user is a Judge or JOH and has linked participants ', () => {
         const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
-        indivUser.linked_participants = [{} as any];
-        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        indivUser.linkedParticipants = [{} as any];
+        indivUser.room = { label: 'JudgeJOHCourtRoom', locked: false };
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
         component.conference = conference;
@@ -257,8 +247,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
     it('should not be allowed to invite if the logged in user is not a Judge or JOH and has linked participants ', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
-        indivUser.linked_participants = [{} as any];
-        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        indivUser.linkedParticipants = [{} as any];
+        indivUser.room = { label: 'JudgeJOHCourtRoom', locked: false };
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
         component.conference = conference;
@@ -280,17 +270,19 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         beforeEach(() => {
-            conference = testData.getConferenceDetailNow();
-            const firstLinkedParticipants = testData.getListOfLinkedParticipants();
+            conference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+            const firstLinkedParticipants = testData.getListOfLinkedParticipants().map(x => mapParticipantToVHParticipant(x));
             firstLinkedParticipants.forEach(x => conference.participants.push(x));
-            const secondLinkedParticipants = testData.getListOfExtraLinkedParticipants();
+            const secondLinkedParticipants = testData.getListOfExtraLinkedParticipants().map(x => mapParticipantToVHParticipant(x));
             secondLinkedParticipants.forEach(x => conference.participants.push(x));
-            const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
+            const participantObserverPanelMember = testData
+                .getListOfParticipantsObserverAndPanelMembers()
+                .map(x => mapParticipantToVHParticipant(x));
             participantObserverPanelMember.forEach(x => conference.participants.push(x));
             const loggedUser = conference.participants.find(x => x.role === Role.Judge);
             const userLogged = new LoggedParticipantResponse({
                 participant_id: loggedUser.id,
-                display_name: loggedUser.display_name,
+                display_name: loggedUser.displayName,
                 role: loggedUser.role
             });
 
@@ -338,10 +330,10 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
             const interpreter = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
             const interpretee = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee'
             );
             expect(component.hasInterpreterLink(interpreter)).toBeTrue();
             expect(component.hasInterpreterLink(interpretee)).toBeTrue();
@@ -349,10 +341,10 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('participant list should always have interpretee before interpreter', () => {
             const interpreteeIndex = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee'
             );
             const interpreterIndex = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
             expect(interpreterIndex).toEqual(interpreteeIndex + 1);
         });
@@ -360,72 +352,79 @@ describe('WaitingRoom ParticipantList Base', () => {
         it('participant list should not duplicate interpreter', () => {
             // setup
             component.conference.participants = [
-                new ParticipantForUserResponse({
+                {
                     id: '670d3f03-c406-485b-8d71-ea5e785bbf86',
                     name: 'Mrs Manual Individual 216',
                     status: ParticipantStatus.NotSignedIn,
-                    display_name: 'A',
+                    displayName: 'A',
                     role: Role.Individual,
-                    case_type_group: 'Applicant',
-                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
-                    hearing_role: HearingRole.LITIGANT_IN_PERSON,
-                    first_name: 'Manual',
-                    last_name: 'Individual 216',
-                    user_name: 'manual.individual_216@hearings.reform.hmcts.net',
-                    linked_participants: [
-                        new LinkedParticipantResponse({
-                            linked_id: '02778ddf-b472-4e5d-807e-da8248d1b91f',
-                            link_type: LinkType.Interpreter
-                        })
-                    ]
-                }),
-                new ParticipantForUserResponse({
+                    caseTypeGroup: 'Applicant',
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
+                    hearingRole: HearingRole.LITIGANT_IN_PERSON,
+                    firstName: 'Manual',
+                    lastName: 'Individual 216',
+                    username: 'manual.individual_216@hearings.reform.hmcts.net',
+                    linkedParticipants: [
+                        {
+                            linkedId: '02778ddf-b472-4e5d-807e-da8248d1b91f',
+                            linkedType: LinkType.Interpreter
+                        }
+                    ],
+                    representee: ''
+                },
+                {
                     id: '02778ddf-b472-4e5d-807e-da8248d1b91f',
                     name: 'Mrs Manual Interpreter 14',
                     status: ParticipantStatus.NotSignedIn,
-                    display_name: 'B',
+                    displayName: 'B',
                     role: Role.Individual,
-                    case_type_group: 'Applicant',
-                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B;02778ddf-b472-4e5d-807e-da8248d1b91f',
-                    hearing_role: HearingRole.INTERPRETER,
-                    first_name: 'Manual',
-                    last_name: 'Interpreter 14',
-                    user_name: 'manual.interpreter_14@hearings.reform.hmcts.net',
-                    linked_participants: [
-                        new LinkedParticipantResponse({
-                            linked_id: '670d3f03-c406-485b-8d71-ea5e785bbf86',
-                            link_type: LinkType.Interpreter
-                        })
-                    ]
-                }),
-                new ParticipantForUserResponse({
+                    caseTypeGroup: 'Applicant',
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;B;02778ddf-b472-4e5d-807e-da8248d1b91f',
+                    hearingRole: HearingRole.INTERPRETER,
+                    firstName: 'Manual',
+                    lastName: 'Interpreter 14',
+                    username: 'manual.interpreter_14@hearings.reform.hmcts.net',
+                    linkedParticipants: [
+                        {
+                            linkedId: '670d3f03-c406-485b-8d71-ea5e785bbf86',
+                            linkedType: LinkType.Interpreter
+                        }
+                    ],
+                    representee: ''
+                },
+                {
                     name: 'Mrs Manual Individual 27',
                     id: '55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
                     status: ParticipantStatus.NotSignedIn,
-                    display_name: 'C',
+                    displayName: 'C',
                     role: Role.Individual,
-                    case_type_group: 'Applicant',
-                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;C;55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
-                    hearing_role: HearingRole.APPELLANT,
-                    first_name: 'Manual',
-                    last_name: 'Individual 27',
-                    user_name: 'manual.individual_27@hearings.reform.hmcts.net',
-                    linked_participants: []
-                }),
-                new ParticipantForUserResponse({
+                    caseTypeGroup: 'Applicant',
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;C;55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
+                    hearingRole: HearingRole.APPELLANT,
+                    firstName: 'Manual',
+                    lastName: 'Individual 27',
+                    username: 'manual.individual_27@hearings.reform.hmcts.net',
+                    linkedParticipants: [],
+                    representee: ''
+                },
+                {
                     id: 'judge1',
                     status: ParticipantStatus.Disconnected,
-                    display_name: 'judge',
+                    displayName: 'judge',
+                    name: 'Judge',
+                    firstName: 'Judge',
+                    lastName: '',
+                    username: 'judge@test.com',
                     role: Role.Judge,
-                    case_type_group: 'Judge',
-                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
-                    hearing_role: HearingRole.JUDGE,
-                    linked_participants: []
-                })
+                    caseTypeGroup: 'Judge',
+                    tiledDisplayName: 'JUDGE;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
+                    hearingRole: HearingRole.JUDGE,
+                    linkedParticipants: []
+                }
             ];
             component.initParticipants();
-            const interpreteeIndex = component.nonJudgeParticipants.findIndex(x => x.display_name === 'A');
-            const interpreterIndex = component.nonJudgeParticipants.findIndex(x => x.display_name === 'B');
+            const interpreteeIndex = component.nonJudgeParticipants.findIndex(x => x.displayName === 'A');
+            const interpreterIndex = component.nonJudgeParticipants.findIndex(x => x.displayName === 'B');
             expect(interpreterIndex).toEqual(interpreteeIndex + 1);
 
             const hasDuplicates = arr => {
@@ -442,19 +441,19 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('participant list should always have interpretee before each interpreter when multiple interpreters exist', () => {
             const interpretee1Index = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee'
             );
 
             const interpreter1Index = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
 
             const interpretee2Index = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee 2'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee 2'
             );
 
             const interpreter2Index = component.nonJudgeParticipants.findIndex(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter 2'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter 2'
             );
 
             expect(interpreter1Index).toEqual(interpretee1Index + 1);
@@ -463,10 +462,10 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('getInterpreteeName should return the name of the interpretee given the interpreterId', () => {
             const interpreter = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
             const interpretee = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee'
             );
             const interpreteeName = component.getInterpreteeName(interpreter.id);
 
@@ -475,10 +474,10 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('getHearingRole should return contain Interpreter for when displaying an Interpreter', () => {
             const interpreter = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
             const interpretee = component.nonJudgeParticipants.find(
-                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+                x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON && x.displayName === 'Interpretee'
             );
             const hearingRoleText = component.getHearingRole(interpreter);
 
@@ -488,7 +487,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
-            const representative = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.REPRESENTATIVE);
+            const representative = component.nonJudgeParticipants.find(x => x.hearingRole === HearingRole.REPRESENTATIVE);
             const hearingRoleText = component.getHearingRole(representative);
 
             expect(hearingRoleText).toEqual(
@@ -497,23 +496,28 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('getHearingRole should return contain the hearing role when displaying a participant', () => {
-            const litigant = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+            const litigant = component.nonJudgeParticipants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
             const hearingRoleText = component.getHearingRole(litigant);
 
             expect(hearingRoleText).toEqual('hearing-role.litigant-in-person');
         });
 
         it('getHearingRole should return contain the hearing role when displaying a participant', () => {
-            const participant = new ParticipantResponse();
-            participant.hearing_role = 'Quick link participant';
+            // const participant = new ParticipantResponse();
+            // participant.hearingRole = 'Quick link participant';
+            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['hearingRole']);
+            participant.hearingRole = 'Quick link participant';
+
             const hearingRoleText = component.getHearingRole(participant);
 
             expect(hearingRoleText).toEqual('hearing-role.quick-link-participant');
         });
 
         it('getHearingRole should return contain the hearing role when displaying a participant', () => {
-            const participant = new ParticipantResponse();
-            participant.hearing_role = 'Quick link observer';
+            // const participant = new ParticipantResponse();
+            // participant.hearingRole = 'Quick link observer';
+            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['hearingRole']);
+            participant.hearingRole = 'Quick link observer';
             const hearingRoleText = component.getHearingRole(participant);
 
             expect(hearingRoleText).toEqual('hearing-role.quick-link-observer');
@@ -522,7 +526,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     describe('initParticipants', () => {
         it('should filter and sort non-judge participants correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            conference.participants = new ConferenceTestData()
+                .getFullListOfNonJudgeParticipants()
+                .map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
             const nonJudgeParticipants = component.nonJudgeParticipants;
 
@@ -546,7 +552,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('should filter and sort panel members correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfPanelMembers();
+            conference.participants = new ConferenceTestData().getFullListOfPanelMembers().map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
             const panelMembers = component.panelMembers;
 
@@ -558,7 +564,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('should filter and sort observers correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfObservers();
+            conference.participants = new ConferenceTestData().getFullListOfObservers().map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
             const observers = component.observers;
 
@@ -574,19 +580,19 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('should filter and sort endpoints correctly', () => {
-            conference.endpoints = new ConferenceTestData().getFullListOfEndpoints();
+            conference.endpoints = new ConferenceTestData().getFullListOfEndpoints().map(x => mapEndpointToVHEndpoint(x));
             component.initParticipants();
             const endpoints = component.endpoints;
 
-            const endpoint1Index = endpoints.findIndex(x => x.display_name === 'Endpoint A');
-            const endpoint2Index = endpoints.findIndex(x => x.display_name === 'Endpoint B');
+            const endpoint1Index = endpoints.findIndex(x => x.displayName === 'Endpoint A');
+            const endpoint2Index = endpoints.findIndex(x => x.displayName === 'Endpoint B');
 
             expect(endpoint1Index).toEqual(0);
             expect(endpoint2Index).toEqual(1);
         });
 
         it('should filter and sort staff members correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfStaffMembers();
+            conference.participants = new ConferenceTestData().getFullListOfStaffMembers().map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
             const staffMembers = component.staffMembers;
 
@@ -600,7 +606,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         it('should filter and sort wingers correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfWingers();
+            conference.participants = new ConferenceTestData().getFullListOfWingers().map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
             const wingers = component.wingers;
 

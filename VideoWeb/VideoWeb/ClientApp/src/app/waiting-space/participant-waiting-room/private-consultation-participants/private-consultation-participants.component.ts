@@ -3,14 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceStatus,
-    LinkType,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -19,7 +12,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { FocusService } from 'src/app/services/focus.service';
-import { VHParticipant } from '../../store/models/vh-conference';
+import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -95,7 +88,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
+    canCallEndpoint(endpoint: VHEndpoint): boolean {
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
             this.isEndpointAvailable(endpoint) &&
@@ -107,12 +100,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return this.isParticipantInCurrentRoom(participant) ? 'yellow' : '';
     }
 
-    isJohInCurrentRoom(participant: ParticipantResponse): boolean {
+    isJohInCurrentRoom(participant: VHParticipant): boolean {
         return (
             this.isParticipantInCurrentRoom(participant) &&
-            (this.isParticipantPanelMember(participant.hearing_role) ||
-                participant.hearing_role === HearingRole.WINGER ||
-                participant.hearing_role === HearingRole.JUDGE)
+            (this.isParticipantPanelMember(participant.hearingRole) ||
+                participant.hearingRole === HearingRole.WINGER ||
+                participant.hearingRole === HearingRole.JUDGE)
         );
     }
 
@@ -151,24 +144,24 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return [...observers];
     }
 
-    getParticipantStatus(participant: any): string {
+    getParticipantStatus(participant: VHParticipant | VHEndpoint): string {
         return this.participantCallStatuses[participant.id];
     }
 
-    isParticipantAvailable(participant: any): boolean {
+    isParticipantAvailable(participant: VHParticipant): boolean {
         const availableStatuses = ['Available', 'Connected', 'InConsultation'];
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
+    isEndpointAvailable(endpoint: VHEndpoint): boolean {
         // this is a workaround because the endpoint status when the hearing started is 'Connected'
         const isHearingOn = this.conference.status === ConferenceStatus.InSession;
         const availableStatuses = ['Available', 'Connected', 'InConsultation'];
         return availableStatuses.indexOf(endpoint.status) >= 0 && !isHearingOn;
     }
 
-    isParticipantInCurrentRoom(participant: any): boolean {
-        return participant.current_room?.label === this.roomLabel;
+    isParticipantInCurrentRoom(participant: VHParticipant | VHEndpoint): boolean {
+        return participant.room?.label === this.roomLabel;
     }
 
     setupSubscribers(): void {
@@ -186,7 +179,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.setJohGroupResult();
     }
 
-    canCallParticipant(participant: ParticipantResponse): boolean {
+    canCallParticipant(participant: VHParticipant): boolean {
         return !this.isParticipantInCurrentRoom(participant) && participant.status === ParticipantStatus.Available;
     }
 
@@ -199,7 +192,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             this.loggedInUser.role === Role.StaffMember ||
             this.loggedInUser.role === Role.JudicialOfficeHolder;
         if (!userIsJudicial) {
-            switch (participant.hearing_role) {
+            switch (participant.hearingRole) {
                 case HearingRole.WINGER:
                 case HearingRole.WITNESS:
                 case HearingRole.OBSERVER:
@@ -214,9 +207,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return false;
     }
 
-    private mapResponseToListItem(participantResponse: VHParticipant): ParticipantListItem {
-        const participant: ParticipantListItem = { ...participantResponse };
-        const interpreterLink = participantResponse.linkedParticipants?.find(x => x.linkedType === LinkType.Interpreter);
+    private mapResponseToListItem(vhParticipant: VHParticipant): ParticipantListItem {
+        const participant: ParticipantListItem = { ...vhParticipant };
+        const interpreterLink = vhParticipant.linkedParticipants?.find(x => x.linkedType === LinkType.Interpreter);
         if (interpreterLink) {
             participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linkedType);
         }

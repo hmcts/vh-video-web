@@ -27,6 +27,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -296,7 +297,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            mockConferenceStore
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

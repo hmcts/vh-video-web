@@ -9,8 +9,7 @@ import {
     LinkType,
     LoggedParticipantResponse,
     ParticipantStatus,
-    Role,
-    VideoEndpointResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -48,7 +47,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         protected videoWebService: VideoWebService,
         protected logger: Logger,
         protected translateService: TranslateService,
-        protected focusService: FocusService,
+        protected focusService: FocusService
     ) {}
 
     get canInvite(): boolean {
@@ -137,7 +136,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         return participant.status === ParticipantStatus.Available;
     }
 
-    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
+    isEndpointAvailable(endpoint: VHEndpoint): boolean {
         return endpoint.status === EndpointStatus.Connected;
     }
 

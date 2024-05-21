@@ -13,6 +13,8 @@ import {
 } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantListItem } from '../participant-list-item';
+import { mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
+import { map } from 'rxjs/operators';
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
@@ -20,7 +22,7 @@ import { ParticipantListItem } from '../participant-list-item';
 })
 export class StartPrivateConsultationComponent implements OnChanges {
     @Input() loggedInUser: LoggedParticipantResponse;
-    @Input() participants: ParticipantResponse[];
+    @Input() participants: ParticipantResponse[] = [];
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
@@ -154,30 +156,10 @@ export class StartPrivateConsultationComponent implements OnChanges {
             )
             .map(p => {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = { ...p };
+                const participant: ParticipantListItem = mapParticipantToVHParticipant(p);
                 if (p.linked_participants && interpreterLink) {
                     const pat = this.getParticipantFromLinkedParticipant(interpreterLink);
-                    participant.interpreter = {
-                        id: pat.id,
-                        displayName: pat.display_name,
-                        firstName: pat.first_name,
-                        lastName: pat.last_name,
-                        tiledDisplayName: pat.tiled_display_name,
-                        name: pat.name,
-                        username: pat.user_name,
-                        status: pat.status,
-                        role: pat.role,
-                        caseTypeGroup: pat.case_type_group,
-                        hearingRole: pat.hearing_role,
-                        representee: pat.representee,
-                        linkedParticipants: pat.linked_participants.map(lp => {
-                            return {
-                                linkedId: lp.linked_id,
-                                linkType: lp.link_type
-                            };
-                        })
-
-                    };
+                    participant.interpreter = pat ? mapParticipantToVHParticipant(pat) : null;
                 }
                 return participant;
             });

@@ -33,7 +33,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
 import { ConferenceActions } from 'src/app/waiting-space/store/actions/conference.actions';
-import { VHEndpoint, VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
+import { mapConferenceToVHConference } from '../../waiting-space/store/models/api-contract-to-state-model-mappers';
 
 @Injectable({
     providedIn: 'root'
@@ -70,47 +70,8 @@ export class VideoWebService implements IVideoWebApiService {
             .toPromise()
             .then(conference => {
                 this.store.dispatch(
-                    ConferenceActions.loadConferencesSuccess({
-                        data: {
-                            id: conference.id,
-                            caseName: conference.case_name,
-                            caseNumber: conference.case_number,
-                            scheduledDateTime: conference.scheduled_date_time,
-                            duration: conference.scheduled_duration,
-                            status: conference.status,
-                            participants: conference.participants.map(p => {
-                                return {
-                                    id: p.id,
-                                    name: p.display_name,
-                                    username: p.user_name,
-                                    firstName: p.first_name,
-                                    lastName: p.last_name,
-                                    status: p.status,
-                                    tiledDisplayName: p.tiled_display_name,
-                                    displayName: p.display_name,
-                                    caseTypeGroup: p.case_type_group,
-                                    role: p.role,
-                                    hearingRole: p.hearing_role,
-                                    representee: p.representee,
-                                    room: { id: p.current_room?.id, label: p.current_room?.label, locked: p.current_room?.locked },
-                                    linkedParticipants: p.linked_participants.map(lp => {
-                                        return { linkedId: lp.linked_id, linkedType: lp.link_type };
-                                    })
-                                } as VHParticipant;
-                            }),
-                            endpoints: conference.endpoints.map(e => {
-                                return {
-                                    id: e.id,
-                                    displayName: e.display_name,
-                                    status: e.status,
-                                    defence_advocate: e.defence_advocate_username,
-                                    room: {
-                                        label: e.current_room?.label,
-                                        locked: e.current_room?.locked
-                                    }
-                                } as VHEndpoint;
-                            })
-                        }
+                    ConferenceActions.loadConferenceSuccess({
+                        conference: mapConferenceToVHConference(conference)
                     })
                 );
                 return conference;

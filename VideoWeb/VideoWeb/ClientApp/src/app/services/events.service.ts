@@ -38,7 +38,7 @@ import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
-import { VHEndpoint, VHParticipant } from '../waiting-space/store/models/vh-conference';
+import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
 
 @Injectable({
     providedIn: 'root'
@@ -111,20 +111,7 @@ export class EventsService {
         ParticipantsUpdatedMessage: (conferenceId: string, participants: ParticipantResponse[]) => {
             const message = new ParticipantsUpdatedMessage(conferenceId, participants);
             this.logger.debug('[EventsService] - ParticipantsUpdatedMessage received', message);
-            const vhParticipants = participants.map(p => {
-                return {
-                    id: p.id,
-                    name: p.display_name,
-                    username: p.user_name,
-                    status: p.status,
-                    tiledDisplayName: p.tiled_display_name,
-                    displayName: p.display_name,
-                    caseTypeGroup: p.case_type_group,
-                    linkedParticipants: p.linked_participants.map(lp => {
-                        return { linkedId: lp.linked_id, linkedType: lp.link_type };
-                    })
-                } as VHParticipant;
-            });
+            const vhParticipants = participants.map(p => mapParticipantToVHParticipant(p));
             this.store.dispatch(ConferenceActions.updateParticipantList({ conferenceId, participants: vhParticipants }));
             this.participantsUpdatedSubject.next(message);
         },
@@ -132,35 +119,13 @@ export class EventsService {
         EndpointsUpdated: (conferenceId: string, endpoints: UpdateEndpointsDto) => {
             const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
-            const existingEndpoints = endpoints.existing_endpoints.map(e => {
-                return {
-                    id: e.id,
-                    displayName: e.display_name,
-                    status: e.status,
-                    defence_advocate: e.defence_advocate_username,
-                    room: {
-                        id: e.current_room?.id,
-                        label: e.current_room?.label,
-                        locked: e.current_room?.locked
-                    }
-                } as VHEndpoint;
-            });
 
-            const newEndpoints = endpoints.new_endpoints.map(e => {
-                return {
-                    id: e.id,
-                    displayName: e.display_name,
-                    status: e.status,
-                    defence_advocate: e.defence_advocate_username,
-                    room: {
-                        id: e.current_room?.id,
-                        label: e.current_room?.label,
-                        locked: e.current_room?.locked
-                    }
-                } as VHEndpoint;
-            });
+            const existingEndpoints = endpoints.existing_endpoints.map(e => mapEndpointToVHEndpoint(e));
             this.store.dispatch(ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints: existingEndpoints }));
+
+            const newEndpoints = endpoints.new_endpoints.map(e => mapEndpointToVHEndpoint(e));
             this.store.dispatch(ConferenceActions.addNewEndpoints({ conferenceId, endpoints: newEndpoints }));
+
             this.store.dispatch(
                 ConferenceActions.removeExistingEndpoints({
                     conferenceId,
@@ -173,18 +138,21 @@ export class EventsService {
         UnlinkedParticipantFromEndpoint: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
             this.logger.debug('[EventsService] - UnlinkedParticipantFromEndpoint received', message);
+            this.store.dispatch(ConferenceActions.unlinkParticipantFromEndpoint({ conferenceId, endpoint }));
             this.endpointUnlinkedSubject.next(message);
         },
 
         LinkedNewParticipantToEndpoint: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
             this.logger.debug('[EventsService] - LinkedParticipantFromEndpoint received', message);
+            this.store.dispatch(ConferenceActions.linkParticipantToEndpoint({ conferenceId, endpoint }));
             this.endpointLinkedSubject.next(message);
         },
 
         CloseConsultationBetweenEndpointAndParticipant: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
             this.logger.debug('[EventsService] - CloseConsultationBetweenEndpointAndParticipant received', message);
+            this.store.dispatch(ConferenceActions.closeConsultationBetweenEndpointAndParticipant({ conferenceId, endpoint }));
             this.endpointDisconnectSubject.next(message);
         },
 
@@ -208,6 +176,9 @@ export class EventsService {
         ) => {
             const message = new RequestedConsultationMessage(conferenceId, invitationId, roomLabel, requestedBy, requestedFor);
             this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
+            this.store.dispatch(
+                ConferenceActions.consultationRequested({ conferenceId, requestedFor, requestedBy, invitationId, roomLabel })
+            );
             this.requestedConsultationMessageSubject.next(message);
         },
 
@@ -228,6 +199,16 @@ export class EventsService {
                 responseInitiatorId
             );
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
+            this.store.dispatch(
+                ConferenceActions.consultationResponded({
+                    conferenceId,
+                    invitationId,
+                    answer,
+                    roomLabel,
+                    requestedFor,
+                    responseInitiatorId
+                })
+            );
             this.consultationRequestResponseMessageSubject.next(message);
         },
 
@@ -263,12 +244,20 @@ export class EventsService {
         HearingTransfer: (conferenceId: string, participantId: string, hearingPosition: TransferDirection) => {
             const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
             this.logger.debug('[EventsService] - HearingTransfer received: ', payload);
+            this.store.dispatch(
+                ConferenceActions.updateParticipantHearingTransferStatus({
+                    conferenceId,
+                    participantId,
+                    transferDirection: hearingPosition
+                })
+            );
             this.hearingTransferSubject.next(payload);
         },
 
         ParticipantMediaStatusMessage: (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {
             const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
             this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
+            this.store.dispatch(ConferenceActions.updateParticipantMediaStatus({ conferenceId, participantId, mediaStatus }));
             this.participantMediaStatusSubject.next(payload);
         },
 
@@ -279,6 +268,7 @@ export class EventsService {
                 isRemoteMuted
             });
             const payload = new ParticipantRemoteMuteMessage(conferenceId, participantId, isRemoteMuted);
+            this.store.dispatch(ConferenceActions.updateParticipantRemoteMuteStatus({ conferenceId, participantId, isRemoteMuted }));
             this.participantRemoteMuteStatusSubject.next(payload);
         },
 
@@ -289,6 +279,7 @@ export class EventsService {
                 hasHandRaised
             });
             const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
+            this.store.dispatch(ConferenceActions.updateParticipantHandRaised({ conferenceId, participantId, hasHandRaised }));
             this.participantHandRaisedStatusSubject.next(payload);
         },
 
@@ -304,6 +295,7 @@ export class EventsService {
                 isMuted
             });
             const payload = new ParticipantToggleLocalMuteMessage(conferenceId, participantId, isMuted);
+            this.store.dispatch(ConferenceActions.updateParticipantLocalMuteStatus({ conferenceId, participantId, isMuted }));
             this.participantToggleLocalMuteStatusSubject.next(payload);
         },
 
@@ -353,6 +345,7 @@ export class EventsService {
             oldHearingLayout?: HearingLayout
         ) => {
             const hearingLayoutChanged = new HearingLayoutChanged(conferenceId, changedById, newHearingLayout, oldHearingLayout);
+            this.store.dispatch(ConferenceActions.hearingLayoutChanged({ conferenceId, changedById, newHearingLayout, oldHearingLayout }));
             this.hearingLayoutChangedSubject.next(hearingLayoutChanged);
         }
     };

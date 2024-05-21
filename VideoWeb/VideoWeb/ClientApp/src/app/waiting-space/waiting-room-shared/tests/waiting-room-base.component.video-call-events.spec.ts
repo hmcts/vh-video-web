@@ -46,6 +46,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -106,7 +107,8 @@ describe('WaitingRoomComponent Video Call', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

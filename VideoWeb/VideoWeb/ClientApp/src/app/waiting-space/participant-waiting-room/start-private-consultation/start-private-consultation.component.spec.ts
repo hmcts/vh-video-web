@@ -196,6 +196,7 @@ describe('StartPrivateConsultationComponent', () => {
         ];
 
         const changes: any = { participants: { currentValue: participantResponses } };
+        component.participants = participantResponses;
         component.ngOnChanges(changes);
         expect(component.filteredParticipants.length).toBe(3);
         expect(component.filteredParticipants[0].id).toBe('2');

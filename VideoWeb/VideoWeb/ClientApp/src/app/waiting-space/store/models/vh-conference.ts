@@ -23,7 +23,7 @@ export interface VHParticipant {
     role: Role;
     hearingRole: string;
     caseTypeGroup: string;
-    representee: string;
+    representee?: string;
     pexipInfo?: VHPexipParticipant;
     room?: VHRoom;
     linkedParticipants: Array<VHLinkedParticipant>;
@@ -33,7 +33,7 @@ export interface VHEndpoint {
     id?: string;
     displayName: string | undefined;
     status: EndpointStatus;
-    defence_advocate: string | undefined;
+    defenceAdvocate: string | undefined;
     room: VHRoom;
 }
 

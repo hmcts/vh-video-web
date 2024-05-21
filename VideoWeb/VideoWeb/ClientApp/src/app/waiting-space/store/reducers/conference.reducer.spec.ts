@@ -1,10 +1,10 @@
-import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
-import * as exp from 'node:constants';
+import { HearingRole } from '../../models/hearing-role-model';
 
-fdescribe('Conference Reducer', () => {
+describe('Conference Reducer', () => {
     let conferenceTestData: VHConference;
     let existingInitialState: ConferenceState;
 
@@ -28,14 +28,29 @@ fdescribe('Conference Reducer', () => {
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
-                    room: originalRoom
+                    room: originalRoom,
+                    caseTypeGroup: 'Applicant',
+                    representee: '',
+                    displayName: 'John Doe',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    hearingRole: HearingRole.REPRESENTATIVE,
+                    role: Role.Representative,
+                    linkedParticipants: []
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
                     name: 'Judge Fudge',
                     username: 'judge.fudge@test.com',
                     status: ParticipantStatus.Available,
-                    tiledDisplayName: 'JUDGE;HEARTBEAT;Judge Fudge;7b875df1-bf37-4f5a-9d23-d3493f319a08'
+                    tiledDisplayName: 'JUDGE;HEARTBEAT;Judge Fudge;7b875df1-bf37-4f5a-9d23-d3493f319a08',
+                    caseTypeGroup: 'Judge',
+                    displayName: 'Judge Fudge',
+                    firstName: 'Judge',
+                    lastName: 'Fudge',
+                    hearingRole: HearingRole.JUDGE,
+                    role: Role.Judge,
+                    linkedParticipants: []
                 },
                 {
                     id: '729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
@@ -43,7 +58,15 @@ fdescribe('Conference Reducer', () => {
                     username: 'chris.green@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr Chris Green;729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
-                    room: originalRoom
+                    room: originalRoom,
+                    caseTypeGroup: 'Applicant',
+                    representee: '',
+                    displayName: 'Chris Green',
+                    firstName: 'Chris',
+                    lastName: 'Green',
+                    hearingRole: HearingRole.REPRESENTATIVE,
+                    role: Role.Representative,
+                    linkedParticipants: []
                 }
             ],
             endpoints: [
@@ -51,14 +74,14 @@ fdescribe('Conference Reducer', () => {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5e',
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
-                    defence_advocate: 'john.doe@test.com',
+                    defenceAdvocate: 'john.doe@test.com',
                     room: originalRoom
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
                     displayName: 'Endpoint 2',
                     status: EndpointStatus.NotYetJoined,
-                    defence_advocate: null,
+                    defenceAdvocate: null,
                     room: null
                 }
             ]
@@ -79,9 +102,9 @@ fdescribe('Conference Reducer', () => {
         });
     });
 
-    describe('loadConferencesSuccess action', () => {
+    describe('loadConferenceSuccess action', () => {
         it('should set the current conference', () => {
-            const result = conferenceReducer(initialState, ConferenceActions.loadConferencesSuccess({ data: conferenceTestData }));
+            const result = conferenceReducer(initialState, ConferenceActions.loadConferenceSuccess({ conference: conferenceTestData }));
 
             expect(result.currentConference).toBe(conferenceTestData);
         });
@@ -110,9 +133,8 @@ fdescribe('Conference Reducer', () => {
 
         it('should update the status of the current conference', () => {
             const updatedStatus = ConferenceStatus.InSession;
-            const result = conferenceReducer(existingInitialState, ConferenceActions.loadConferencesSuccess({ data: conferenceTestData }));
             const updatedResult = conferenceReducer(
-                result,
+                existingInitialState,
                 ConferenceActions.updateActiveConferenceStatus({ conferenceId: conferenceTestData.id, status: updatedStatus })
             );
 
@@ -165,9 +187,8 @@ fdescribe('Conference Reducer', () => {
 
         it('should update the status of the participant', () => {
             const updatedStatus = ParticipantStatus.Available;
-            const result = conferenceReducer(existingInitialState, ConferenceActions.loadConferencesSuccess({ data: conferenceTestData }));
             const updatedResult = conferenceReducer(
-                result,
+                existingInitialState,
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: conferenceTestData.id,
                     participantId: conferenceTestData.participants[0].id,
@@ -224,9 +245,8 @@ fdescribe('Conference Reducer', () => {
 
         it('should update the status of the endpoint', () => {
             const updatedStatus = EndpointStatus.Connected;
-            const result = conferenceReducer(existingInitialState, ConferenceActions.loadConferencesSuccess({ data: conferenceTestData }));
             const updatedResult = conferenceReducer(
-                result,
+                existingInitialState,
                 ConferenceActions.updateEndpointStatus({
                     conferenceId: conferenceTestData.id,
                     endpointId: conferenceTestData.endpoints[0].id,
@@ -283,14 +303,29 @@ fdescribe('Conference Reducer', () => {
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
-                    room: { label: 'Room 1', locked: false }
+                    room: { label: 'Room 1', locked: false },
+                    caseTypeGroup: 'Applicant',
+                    representee: '',
+                    displayName: 'John Doe',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    hearingRole: HearingRole.REPRESENTATIVE,
+                    role: Role.Representative,
+                    linkedParticipants: []
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
                     name: 'Judge New',
                     username: 'judge.new@test.com',
                     status: ParticipantStatus.NotSignedIn,
-                    tiledDisplayName: 'JUDGE;HEARTBEAT;Judge New;7b875df1-bf37-4f5a-9d23-d3493f319a08'
+                    tiledDisplayName: 'JUDGE;HEARTBEAT;Judge New;7b875df1-bf37-4f5a-9d23-d3493f319a08',
+                    caseTypeGroup: 'Judge',
+                    displayName: 'Judge Fudge',
+                    firstName: 'Judge',
+                    lastName: 'Fudge',
+                    hearingRole: HearingRole.JUDGE,
+                    role: Role.Judge,
+                    linkedParticipants: []
                 }
             ];
             const result = conferenceReducer(
@@ -345,7 +380,7 @@ fdescribe('Conference Reducer', () => {
                     id: conferenceTestData.endpoints[0].id,
                     displayName: 'Endpoint 1 Updated',
                     status: EndpointStatus.InConsultation,
-                    defence_advocate: null,
+                    defenceAdvocate: null,
                     room: { label: 'Room 1', locked: false }
                 } as VHEndpoint
             ];
@@ -360,7 +395,7 @@ fdescribe('Conference Reducer', () => {
             expect(result.currentConference.endpoints.length).toEqual(2);
             expect(result.currentConference.endpoints[0].displayName).toEqual('Endpoint 1 Updated');
             expect(result.currentConference.endpoints[0].status).toEqual(EndpointStatus.InConsultation);
-            expect(result.currentConference.endpoints[0].defence_advocate).toEqual(null);
+            expect(result.currentConference.endpoints[0].defenceAdvocate).toEqual(null);
             expect(result.currentConference.endpoints[0].room.label).toEqual('Room 1');
             expect(result.currentConference.endpoints[1]).toEqual(conferenceTestData.endpoints[1]);
 
@@ -439,14 +474,14 @@ fdescribe('Conference Reducer', () => {
                     id: conferenceTestData.endpoints[0].id,
                     displayName: 'Endpoint 1 Updated',
                     status: EndpointStatus.Connected,
-                    defence_advocate: null,
+                    defenceAdvocate: null,
                     room: null
                 },
                 {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df1',
                     displayName: 'Endpoint New',
                     status: EndpointStatus.Connected,
-                    defence_advocate: 'chris.green@test.com',
+                    defenceAdvocate: 'chris.green@test.com',
                     room: null
                 }
             ];
@@ -466,7 +501,7 @@ fdescribe('Conference Reducer', () => {
             // should add the new endpoint
             expect(result.currentConference.endpoints[2].displayName).toEqual('Endpoint New');
             expect(result.currentConference.endpoints[2].status).toEqual(EndpointStatus.Connected);
-            expect(result.currentConference.endpoints[2].defence_advocate).toEqual('chris.green@test.com');
+            expect(result.currentConference.endpoints[2].defenceAdvocate).toEqual('chris.green@test.com');
         });
     });
 
@@ -622,31 +657,5 @@ fdescribe('Conference Reducer', () => {
 
             expect(result.currentConference.endpoints[0].room).toBeNull();
         });
-
-        // it('should update the room of the participant', () => {
-        //     const result = conferenceReducer(
-        //         existingInitialState,
-        //         ConferenceActions.updateParticipantRoom({
-        //             participantId: conferenceTestData.participants[0].id,
-        //             fromRoom: 'Room 999',
-        //             toRoom: 'Room 998'
-        //         })
-        //     );
-
-        //     expect(result.currentConference.participants[0].room.label).toEqual('Room 998');
-        // });
-
-        // it('should update the room of the endpoint', () => {
-        //     const result = conferenceReducer(
-        //         existingInitialState,
-        //         ConferenceActions.updateParticipantRoom({
-        //             participantId: conferenceTestData.endpoints[0].id,
-        //             fromRoom: 'Room 999',
-        //             toRoom: 'Room 998'
-        //         })
-        //     );
-
-        //     expect(result.currentConference.endpoints[0].room.label).toEqual('Room 998');
-        // });
     });
 });

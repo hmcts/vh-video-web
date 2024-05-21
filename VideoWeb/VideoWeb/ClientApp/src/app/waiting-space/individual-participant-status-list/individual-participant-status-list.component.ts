@@ -35,7 +35,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     ngOnInit() {
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-
+        this.initParticipants();
         this.addSharedEventHubSubcribers();
     }
 

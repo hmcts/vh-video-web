@@ -232,6 +232,7 @@ describe('EventsService', () => {
                 const testParticipant = new ParticipantResponse();
                 testParticipant.id = 'TestParticipantId';
                 testParticipant.display_name = 'TestParticipantDisplayName';
+                testParticipant.linked_participants = [];
                 const testParticipantArr = [testParticipant];
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {

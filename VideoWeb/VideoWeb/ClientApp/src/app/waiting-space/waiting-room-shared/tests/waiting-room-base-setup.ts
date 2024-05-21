@@ -25,6 +25,9 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState, initialState as initialConferenceState } from '../../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -70,10 +73,15 @@ export const jwToken = new TokenResponse({
 export let titleService: jasmine.SpyObj<Title>;
 export let focusService: jasmine.SpyObj<FocusService>;
 
+export let mockConferenceStore: MockStore<ConferenceState>;
+
 export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {
+    const initialState = initialConferenceState;
+    mockConferenceStore = createMockStore({ initialState });
+
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
         'HearingVenueFlagsService',
         ['setHearingVenueIsScottish'],

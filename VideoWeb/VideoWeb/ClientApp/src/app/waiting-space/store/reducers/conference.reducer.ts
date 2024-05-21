@@ -16,8 +16,8 @@ export const initialState: ConferenceState = {
 
 export const conferenceReducer = createReducer(
     initialState,
-    on(ConferenceActions.loadConferencesSuccess, (state, { data }) => {
-        return { ...state, currentConference: data };
+    on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
+        return { ...state, currentConference: conference };
     }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = state.currentConference;
@@ -67,6 +67,7 @@ export const conferenceReducer = createReducer(
         if (!conference || conference.id !== conferenceId) {
             return state;
         }
+        // TODO: write a test to confirm the pexip info is retained for existing participants
 
         // create a list of rooms based on the participants
         const rooms: VHRoom[] = state.availableRooms;

@@ -15,6 +15,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -75,7 +76,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             userMediaServiceSpy,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
     });
 

@@ -73,9 +73,6 @@ export class JoinPrivateConsultationComponent {
                 this.roomDetails
                     .filter(rd => rd.label === r.label)
                     .forEach(rd => {
-                        console.log('update details');
-                        console.log(this._participants);
-                        console.log(this._endpoints);
                         const roomParticipants = this._participants
                             .filter(p => p.current_room?.label === r.label)
                             .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
