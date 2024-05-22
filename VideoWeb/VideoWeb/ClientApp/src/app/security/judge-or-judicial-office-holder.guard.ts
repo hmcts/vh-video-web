@@ -11,7 +11,7 @@ import { LaunchDarklyService } from '../services/launch-darkly.service';
 @Injectable({
     providedIn: 'root'
 })
-export class JudgeGuard extends AuthBaseGuard {
+export class JudgeOrJudicialOfficeHolderGuard extends AuthBaseGuard {
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected userProfileService: ProfileService,
@@ -32,19 +32,19 @@ export class JudgeGuard extends AuthBaseGuard {
                     return false;
                 }
 
-                this.logger.debug('[JudgeGuard] Checking if user is a judge');
+                this.logger.debug('[JudgeOrJudicialOfficeHolderGuard] Checking if user is a judge or JOH');
                 try {
                     const profile = await this.userProfileService.getUserProfile();
-                    if (profile.roles.includes(Role.Judge)) {
-                        this.logger.debug('[JudgeGuard] User is a judge');
+                    if (profile.roles.includes(Role.Judge) || profile.roles.includes(Role.JudicialOfficeHolder)) {
+                        this.logger.debug('[JudgeOrJudicialOfficeHolderGuard] User is a judge or JOH.');
                         return true;
                     } else {
-                        this.logger.debug('[JudgeGuard] User is not a judge. Going back home');
+                        this.logger.debug('[JudgeOrJudicialOfficeHolderGuard] User is not a judge or JOH. Going back home');
                         this.router.navigate(['/home']);
                         return false;
                     }
                 } catch (err) {
-                    this.logger.error('[JudgeGuard] Failed to get user profile. Logging out.', err);
+                    this.logger.error('[JudgeOrJudicialOfficeHolderGuard] Failed to get user profile. Logging out.', err);
                     this.router.navigate(['/logout']);
                     return false;
                 }
