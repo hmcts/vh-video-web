@@ -1,55 +1,26 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role } from '../services/clients/api-client';
-import { Logger } from '../services/logging/logger-base';
-import { AuthBaseGuard } from './auth-base.guard';
-import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { LaunchDarklyService } from '../services/launch-darkly.service';
+import { Logger } from '../services/logging/logger-base';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
+import { RoleGuard } from './role-guard';
 
 @Injectable({
     providedIn: 'root'
 })
-export class JudgeGuard extends AuthBaseGuard {
-    private _loggerPrefix = '[JudgeGuard]';
+export class JudgeGuard extends RoleGuard {
+    protected roles = [Role.Judge];
+    protected loggerPrefix = '[JudgeGuard]';
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
-        protected userProfileService: ProfileService,
-        protected router: Router,
-        protected logger: Logger,
-        protected ldService: LaunchDarklyService
+        userProfileService: ProfileService,
+        router: Router,
+        logger: Logger,
+        ldService: LaunchDarklyService
     ) {
-        super(securityServiceProviderService, router, logger, ldService);
-    }
-
-    async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        return this.isUserAuthorized(next, state)
-            .pipe(take(1))
-            .toPromise()
-            .then(async (auth: boolean) => {
-                if (!auth) {
-                    this.router.navigate(['/login']);
-                    return false;
-                }
-
-                this.logger.debug(`${this._loggerPrefix} Checking if user is a judge`);
-                try {
-                    const profile = await this.userProfileService.getUserProfile();
-                    if (profile.roles.includes(Role.Judge)) {
-                        this.logger.debug(`${this._loggerPrefix} User is a judge`);
-                        return true;
-                    } else {
-                        this.logger.debug(`${this._loggerPrefix} User is not a judge. Going back home`);
-                        this.router.navigate(['/home']);
-                        return false;
-                    }
-                } catch (err) {
-                    this.logger.error(`${this._loggerPrefix} Failed to get user profile. Logging out.`, err);
-                    this.router.navigate(['/logout']);
-                    return false;
-                }
-            });
+        super(securityServiceProviderService, userProfileService, router, logger, ldService);
     }
 }
