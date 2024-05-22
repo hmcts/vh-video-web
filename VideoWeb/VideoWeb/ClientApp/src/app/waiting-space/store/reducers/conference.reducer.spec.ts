@@ -4,6 +4,22 @@ import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-co
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
 
+function deepFreeze(object) {
+    if (Object.isFrozen(object)) {
+        return object;
+    }
+
+    const propNames = Object.getOwnPropertyNames(object);
+
+    for (const name of propNames) {
+        const value = object[name];
+
+        object[name] = value && typeof value === 'object' ? deepFreeze(value) : value;
+    }
+
+    return Object.freeze(object);
+}
+
 describe('Conference Reducer', () => {
     let conferenceTestData: VHConference;
     let existingInitialState: ConferenceState;
@@ -90,6 +106,7 @@ describe('Conference Reducer', () => {
             currentConference: conferenceTestData,
             availableRooms: [originalRoom]
         };
+        deepFreeze(existingInitialState);
     });
 
     describe('an unknown action', () => {

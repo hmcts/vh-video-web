@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer } from 'src/app/services/clients/api-client';
+import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 
 @Component({
     selector: 'app-private-consultation-participant-status',
@@ -7,7 +8,7 @@ import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from '
     styleUrls: ['./private-consultation-participant-status.component.scss']
 })
 export class PrivateConsultationParticipantStatusComponent {
-    @Input() entity: ParticipantResponse | VideoEndpointResponse;
+    @Input() entity: VHParticipant | VHEndpoint;
     @Input() status: string;
     @Input() roomLabel: string;
 
@@ -20,6 +21,6 @@ export class PrivateConsultationParticipantStatusComponent {
     }
 
     isInCurrentRoom(): boolean {
-        return this.entity?.current_room?.label === this.roomLabel;
+        return this.entity?.room?.label === this.roomLabel;
     }
 }

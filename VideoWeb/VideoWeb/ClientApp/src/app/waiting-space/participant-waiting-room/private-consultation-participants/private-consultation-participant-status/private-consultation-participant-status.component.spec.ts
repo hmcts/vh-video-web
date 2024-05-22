@@ -11,12 +11,13 @@ import {
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 import { PrivateConsultationParticipantStatusComponent } from './private-consultation-participant-status.component';
+import { VHEndpoint, VHParticipant, VHRoom } from 'src/app/waiting-space/store/models/vh-conference';
 
 describe('PrivateConsultationParticipantStatusComponent', () => {
     let component: PrivateConsultationParticipantStatusComponent;
     let fixture: ComponentFixture<PrivateConsultationParticipantStatusComponent>;
-    let testParticipant: ParticipantResponse;
-    let testEndpoint: VideoEndpointResponse;
+    let testParticipant: VHParticipant;
+    let testEndpoint: VHEndpoint;
     const availableStatusStrings = ['Available', 'Connected', 'InConsultation'];
 
     beforeEach(async () => {
@@ -42,7 +43,7 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
             allStatuses.forEach(status => {
                 const shouldBeAvailable = availableStatusStrings.includes(status);
                 it(`should return ${shouldBeAvailable} when status is ${status}`, () => {
-                    testParticipant = new ParticipantResponse();
+                    testParticipant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], { status: status });
                     testParticipant.status = status;
                     component.entity = testParticipant;
                     expect(component.isAvailable()).toBe(shouldBeAvailable);
@@ -56,7 +57,7 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
             allStatuses.forEach(status => {
                 const shouldBeAvailable = availableStatusStrings.includes(status);
                 it(`should return ${shouldBeAvailable} when status is ${status}`, () => {
-                    testEndpoint = new VideoEndpointResponse();
+                    testEndpoint = jasmine.createSpyObj<VHEndpoint>('VHEndpoint', [], { status: status });
                     testEndpoint.status = status;
                     component.entity = testEndpoint;
                     expect(component.isAvailable()).toBe(shouldBeAvailable);
@@ -66,14 +67,13 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
     });
 
     describe('isInCurrentRoom', () => {
-        let testRoom: RoomSummaryResponse;
+        let testRoom: VHRoom;
         const testRoomLabel = 'TestRoom';
         beforeEach(() => {
             component.roomLabel = testRoomLabel;
 
-            testRoom = new RoomSummaryResponse();
-            testParticipant = new ParticipantResponse();
-            testParticipant.current_room = testRoom;
+            testRoom = jasmine.createSpyObj<VHRoom>('VHRoom', [], { label: testRoomLabel });
+            testParticipant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], { room: testRoom });
             component.entity = testParticipant;
         });
 
@@ -83,7 +83,8 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
         });
 
         it('should return false when room label does not match', () => {
-            testRoom.label = 'Something else';
+            testParticipant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], { room: { label: 'Something else', locked: true } });
+            component.entity = testParticipant;
             expect(component.isInCurrentRoom()).toBeFalse();
         });
     });

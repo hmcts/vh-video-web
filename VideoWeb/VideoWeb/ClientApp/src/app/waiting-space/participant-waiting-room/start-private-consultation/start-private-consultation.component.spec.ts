@@ -6,18 +6,19 @@ import {
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role,
-    RoomSummaryResponse,
-    VideoEndpointResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { VHConference, VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;
     let conference: ConferenceResponse;
+    let vhConference: VHConference;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let loggedInUser: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
@@ -32,6 +33,7 @@ describe('StartPrivateConsultationComponent', () => {
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
         });
+        vhConference = mapConferenceToVHConference(conference);
         const judge = conference.participants.find(x => x.role === Role.Judge);
 
         loggedInUser = new LoggedParticipantResponse({
@@ -90,15 +92,15 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should return participant hearing role text', () => {
-        expect(component.participantHearingRoleText(conference.participants[0])).toEqual('hearing-role.litigant-in-person');
+        expect(component.participantHearingRoleText(vhConference.participants[0])).toEqual('hearing-role.litigant-in-person');
     });
 
     it('should return participant representee hearing role text', () => {
         const representive = 'Representative';
         const representee = 'representee';
-        const participant = conference.participants[0];
+        const participant = vhConference.participants[0];
         participant.representee = representee;
-        participant.hearing_role = representive;
+        participant.hearingRole = representive;
         translateService.instant.calls.reset();
         expect(component.participantHearingRoleText(participant)).toEqual(
             `hearing-role.representative start-private-consultation.for ${representee}`
@@ -106,37 +108,37 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should return unavailable status class for disconnected', () => {
-        const participant = conference.participants[0];
+        const participant = vhConference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
         expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
     });
 
     it('should return unavailable status class for in hearing', () => {
-        const participant = conference.participants[0];
+        const participant = vhConference.participants[0];
         participant.status = ParticipantStatus.InHearing;
         expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
     });
 
     it('should return in-consultation status class', () => {
-        const participant = conference.participants[0];
+        const participant = vhConference.participants[0];
         participant.status = ParticipantStatus.InConsultation;
         expect(component.getParticipantStatusCss(participant)).toEqual('in-consultation');
     });
 
     it('should return unavailable status class for disconnected endpoint', () => {
-        const endpoint = conference.endpoints[0];
+        const endpoint = vhConference.endpoints[0];
         endpoint.status = EndpointStatus.Disconnected;
         expect(component.getEndpointStatusCss(endpoint)).toEqual('unavailable');
     });
 
     it('should return unavailable status class for in not yet joined endpoint', () => {
-        const endpoint = conference.endpoints[0];
+        const endpoint = vhConference.endpoints[0];
         endpoint.status = EndpointStatus.NotYetJoined;
         expect(component.getEndpointStatusCss(endpoint)).toEqual('unavailable');
     });
 
     it('should return in-consultation status class endpoint', () => {
-        const endpoint = conference.endpoints[0];
+        const endpoint = vhConference.endpoints[0];
         endpoint.status = EndpointStatus.InConsultation;
         expect(component.getEndpointStatusCss(endpoint)).toEqual('in-consultation');
     });
@@ -154,7 +156,11 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should return disabled for participant with some linked participants unavailable', () => {
-        const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], {
+            id: '12345',
+            status: ParticipantStatus.NotSignedIn,
+            linkedParticipants: [{ linkedId: '12345' }]
+        });
         component.participants = [{ id: '12345', status: ParticipantStatus.NotSignedIn }] as any[];
         expect(component.getParticipantDisabled(participant as any)).toBe(true);
     });
@@ -255,22 +261,23 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     describe('participantIsInConsultationRoom', () => {
-        let participant: ParticipantResponse;
+        let participant: VHParticipant;
         const allStatuses = Object.values(ParticipantStatus);
         const validStatuses = [ParticipantStatus.InConsultation];
         beforeEach(() => {
-            participant = new ParticipantResponse();
+            participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['status', 'room']);
         });
 
         allStatuses.forEach(status => {
             it(`should return false when status is ${status} and room is null`, () => {
                 participant.status = status;
+                participant.room = null;
                 expect(component.participantIsInConsultationRoom(participant)).toBeFalse();
             });
 
             const expectedValue = validStatuses.includes(status);
             it(`should return ${expectedValue} when status is ${status} and room is NOT null`, () => {
-                participant.current_room = new RoomSummaryResponse();
+                participant.room = { label: 'Room1', locked: false };
                 participant.status = status;
                 expect(component.participantIsInConsultationRoom(participant)).toBe(expectedValue);
             });
@@ -278,22 +285,23 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     describe('endpointIsInConsultationRoom', () => {
-        let endpoint: VideoEndpointResponse;
+        let endpoint: VHEndpoint;
         const allStatuses = Object.values(EndpointStatus);
         const validStatuses = [EndpointStatus.InConsultation];
         beforeEach(() => {
-            endpoint = new VideoEndpointResponse();
+            endpoint = jasmine.createSpyObj<VHEndpoint>('VHEndpoint', ['status', 'room']);
         });
 
         allStatuses.forEach(status => {
             it(`should return false when status is ${status} and room is null`, () => {
                 endpoint.status = status;
+                endpoint.room = null;
                 expect(component.endpointIsInConsultationRoom(endpoint)).toBeFalse();
             });
 
             const expectedValue = validStatuses.includes(status);
             it(`should return ${expectedValue} when status is ${status} and room is NOT null`, () => {
-                endpoint.current_room = new RoomSummaryResponse();
+                endpoint.room = { label: 'Room1', locked: false };
                 endpoint.status = status;
                 expect(component.endpointIsInConsultationRoom(endpoint)).toBe(expectedValue);
             });

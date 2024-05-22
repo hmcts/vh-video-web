@@ -16,7 +16,10 @@ export const initialState: ConferenceState = {
 
 export const conferenceReducer = createReducer(
     initialState,
-    on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => ({ ...state, currentConference: conference })),
+    on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
+        const availeRooms = conference.participants.map(p => p.room).filter(r => r !== null);
+        return { ...state, currentConference: conference, availableRooms: availeRooms };
+    }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = state.currentConference;
         if (!conference || conference.id !== conferenceId) {
@@ -68,14 +71,14 @@ export const conferenceReducer = createReducer(
         // TODO: write a test to confirm the pexip info is retained for existing participants
 
         // create a list of rooms based on the participants
-        const rooms: VHRoom[] = state.availableRooms;
+        let updatedAvailableRooms: VHRoom[] = state.availableRooms;
         participants.forEach(p => {
-            if (p.room && !rooms.some(r => r.label === p.room.label)) {
-                rooms.push(p.room);
+            if (p.room && !updatedAvailableRooms.some(r => r.label === p.room.label)) {
+                updatedAvailableRooms = [...updatedAvailableRooms, p.room];
             }
         });
-        const updatedConference = { ...conference, participants: participants, rooms };
-        return { ...state, currentConference: updatedConference };
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
     on(ConferenceActions.updateExistingEndpoints, (state, { conferenceId, endpoints }) => {
         const conference = state.currentConference;
@@ -93,14 +96,14 @@ export const conferenceReducer = createReducer(
                 updatedList.push(e);
             }
         });
-        const rooms: VHRoom[] = state.availableRooms;
+        let updatedAvailableRooms: VHRoom[] = state.availableRooms;
         updatedList.forEach(e => {
-            if (e.room && !rooms.some(r => r.label === e.room.label)) {
-                rooms.push(e.room);
+            if (e.room && !updatedAvailableRooms.some(r => r.label === e.room.label)) {
+                updatedAvailableRooms = [...updatedAvailableRooms, e.room];
             }
         });
-        const updatedConference = { ...conference, endpoints: updatedList };
-        return { ...state, currentConference: updatedConference };
+        const updatedConference: VHConference = { ...conference, endpoints: updatedList };
+        return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
     on(ConferenceActions.removeExistingEndpoints, (state, { conferenceId, removedEndpointIds }) => {
         const conference = state.currentConference;
@@ -132,26 +135,41 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: { ...conference, participants } };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
-        const updatedList = state.availableRooms;
-        const roomIndex = updatedList.findIndex(r => r.label === room.label);
+        let updatedRoomList = state.availableRooms;
+        let updatedParticipantsList = state.currentConference.participants;
+        let updatedEndpointsList = state.currentConference.endpoints;
+        const roomIndex = updatedRoomList.findIndex(r => r.label === room.label);
 
         if (roomIndex > -1) {
-            updatedList[roomIndex] = room;
-            state.currentConference.participants.forEach(p => {
+            updatedRoomList = updatedRoomList.map((item, index) => {
+                if (index === roomIndex) {
+                    return room;
+                }
+                return item;
+            });
+            updatedParticipantsList = state.currentConference.participants.map(p => {
                 if (p.room && p.room.label === room.label) {
-                    p.room = room;
+                    return { ...p, room };
+                } else {
+                    return p;
                 }
             });
-            state.currentConference.endpoints.forEach(e => {
+            updatedEndpointsList = state.currentConference.endpoints.map(e => {
                 if (e.room && e.room.label === room.label) {
-                    e.room = room;
+                    return { ...e, room };
+                } else {
+                    return e;
                 }
             });
         } else {
-            updatedList.push(room);
+            updatedRoomList = [...updatedRoomList, room];
         }
 
-        return { ...state, availableRooms: updatedList };
+        return {
+            ...state,
+            availableRooms: updatedRoomList,
+            currentConference: { ...state.currentConference, participants: updatedParticipantsList, endpoints: updatedEndpointsList }
+        };
     }),
     on(ConferenceActions.updateParticipantRoom, (state, { participantId, toRoom }) => {
         const participant = state.currentConference?.participants.find(p => p.id === participantId);
@@ -162,7 +180,7 @@ export const conferenceReducer = createReducer(
         }
 
         let room: VHRoom = null;
-        if (toRoom.toLowerCase().startsWith('consultation')) {
+        if (toRoom.toLowerCase().includes('consultation')) {
             room = state.availableRooms.find(r => r.label === toRoom) || { label: toRoom, locked: false };
         }
 

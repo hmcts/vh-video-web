@@ -301,7 +301,7 @@ export class EventsService {
 
         RoomUpdate: (payload: Room) => {
             this.logger.debug('[EventsService] - Room Update received: ', payload);
-            this.store.dispatch(ConferenceActions.updateRoom({ room: payload }));
+            this.store.dispatch(ConferenceActions.updateRoom({ room: { label: payload.label, locked: payload.locked } }));
             this.roomUpdateSubject.next(payload);
         },
 
