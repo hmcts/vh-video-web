@@ -26,8 +26,8 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
-import {Store} from "@ngrx/store";
-import {ConferenceState} from "../store/reducers/conference.reducer";
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 
 @Component({
     selector: 'app-joh-waiting-room',

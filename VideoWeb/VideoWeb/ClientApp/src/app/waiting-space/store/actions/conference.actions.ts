@@ -10,6 +10,7 @@ import {
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { TransferDirection } from '../../../services/models/hearing-transfer';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export const ConferenceActions = createActionGroup({
     source: 'Conference',
     events: {

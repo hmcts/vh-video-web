@@ -12,7 +12,7 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         status: conference.status,
         participants: conference.participants.map(p => mapParticipantToVHParticipant(p)),
         endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e))
-    } as VHConference;
+    };
 }
 
 export function mapParticipantToVHParticipant(participant: ParticipantResponse): VHParticipant {
@@ -32,10 +32,11 @@ export function mapParticipantToVHParticipant(participant: ParticipantResponse):
         pexipInfo: null,
         room: participant.current_room ? mapRoomToVHRoom(participant.current_room) : null,
         linkedParticipants:
-            participant?.linked_participants.map(lp => {
-                return { linkedId: lp.linked_id, linkedType: lp.link_type };
-            }) ?? []
-    } as VHParticipant;
+            participant?.linked_participants.map(lp => ({
+                linkedId: lp.linked_id,
+                linkedType: lp.link_type
+            })) ?? []
+    };
 }
 
 export function mapEndpointToVHEndpoint(endpoint: VideoEndpointResponse): VHEndpoint {

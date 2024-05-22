@@ -16,9 +16,7 @@ export const initialState: ConferenceState = {
 
 export const conferenceReducer = createReducer(
     initialState,
-    on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
-        return { ...state, currentConference: conference };
-    }),
+    on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => ({ ...state, currentConference: conference })),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = state.currentConference;
         if (!conference || conference.id !== conferenceId) {

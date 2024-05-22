@@ -1,8 +1,8 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import {Observable, Subject, Subscription} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -64,9 +64,9 @@ import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
-import {ConferenceState} from "../store/reducers/conference.reducer";
-import {Store} from "@ngrx/store";
-import {VHConference} from "../store/models/vh-conference";
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { VHConference } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 
 @Directive()

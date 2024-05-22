@@ -530,7 +530,7 @@ describe('Conference Reducer', () => {
                 isRemoteMuted: false,
                 isSpotlighted: false,
                 handRaised: false,
-                pexipDisplayName: `1922_John Doe_unknown`,
+                pexipDisplayName: '1922_John Doe_unknown',
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,

@@ -521,9 +521,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     describe('johGroups', () => {
         it('should return correct participants mapped to ParticipantListItem', () => {
-            // const testPanelMember1Data = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
-            // testPanelMember1Data.id = 'TestPanelMember1Id';
-            // testPanelMember1Data.name = 'TestPanelMember1Name';
             const testPanelMember1 = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
             testPanelMember1.id = 'TestPanelMember1Id';
             testPanelMember1.name = 'TestPanelMember1Name';
