@@ -1,3 +1,5 @@
+/* tslint:disable */
+/* eslint-disable */
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';

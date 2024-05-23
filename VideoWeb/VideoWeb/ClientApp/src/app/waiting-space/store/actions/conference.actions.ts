@@ -14,7 +14,7 @@ import { TransferDirection } from '../../../services/models/hearing-transfer';
 export const ConferenceActions = createActionGroup({
     source: 'Conference',
     events: {
-        // 'Load Conference': props<{ conferenceId: string }>(), // TOOD: get components to use this action and create a side effect
+        'Load Conference': props<{ conferenceId: string }>(), // TOOD: get components to use this action and create a side effect
         'Load Conference Success': props<{ conference: VHConference }>(),
         'Load Conference Failure': props<{ error: Error }>(),
 

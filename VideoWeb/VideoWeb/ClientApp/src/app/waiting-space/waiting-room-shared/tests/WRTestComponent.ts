@@ -19,8 +19,8 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
-import { MockStore, createMockStore } from '@ngrx/store/testing';
-import { initialState as initialConferenceState, ConferenceState } from '../../store/reducers/conference.reducer';
+import { MockStore } from '@ngrx/store/testing';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
 
 @Component({
     selector: 'app-test-waiting-room',
