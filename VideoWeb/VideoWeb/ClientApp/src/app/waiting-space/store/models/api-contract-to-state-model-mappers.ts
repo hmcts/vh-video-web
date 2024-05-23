@@ -6,6 +6,7 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
     return {
         id: conference.id,
         scheduledDateTime: conference.scheduled_date_time,
+        endDateTime: conference.closed_date_time,
         duration: conference.scheduled_duration,
         caseNumber: conference.case_number,
         caseName: conference.case_name,

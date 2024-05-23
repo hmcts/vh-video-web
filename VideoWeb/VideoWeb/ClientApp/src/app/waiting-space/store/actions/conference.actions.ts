@@ -28,6 +28,7 @@ export const ConferenceActions = createActionGroup({
         'Remove Existing Endpoints': props<{ conferenceId: string; removedEndpointIds: string[] }>(),
 
         'Upsert Pexip Participant': props<{ participant: VHPexipParticipant }>(),
+        'Delete Pexip Participant': props<{ pexipUUID: string }>(),
 
         'Update Participant Media Status': props<{ participantId: string; conferenceId: string; mediaStatus: ParticipantMediaStatus }>(),
         'Update Participant Remote Mute Status': props<{ participantId: string; conferenceId: string; isRemoteMuted: boolean }>(),

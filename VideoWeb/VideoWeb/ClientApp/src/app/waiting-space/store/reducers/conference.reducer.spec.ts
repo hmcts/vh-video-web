@@ -23,9 +23,10 @@ function deepFreeze(object) {
 describe('Conference Reducer', () => {
     let conferenceTestData: VHConference;
     let existingInitialState: ConferenceState;
+    let originalRoom: VHRoom;
 
     beforeEach(() => {
-        const originalRoom: VHRoom = {
+        originalRoom = {
             label: 'Room 999',
             locked: false
         };
@@ -51,6 +52,7 @@ describe('Conference Reducer', () => {
                     firstName: 'John',
                     lastName: 'Doe',
                     hearingRole: HearingRole.REPRESENTATIVE,
+                    pexipInfo: undefined,
                     role: Role.Representative,
                     linkedParticipants: []
                 },
@@ -65,6 +67,7 @@ describe('Conference Reducer', () => {
                     firstName: 'Judge',
                     lastName: 'Fudge',
                     hearingRole: HearingRole.JUDGE,
+                    pexipInfo: undefined,
                     role: Role.Judge,
                     linkedParticipants: []
                 },
@@ -81,6 +84,7 @@ describe('Conference Reducer', () => {
                     firstName: 'Chris',
                     lastName: 'Green',
                     hearingRole: HearingRole.REPRESENTATIVE,
+                    pexipInfo: undefined,
                     role: Role.Representative,
                     linkedParticipants: []
                 }
@@ -123,7 +127,40 @@ describe('Conference Reducer', () => {
         it('should set the current conference', () => {
             const result = conferenceReducer(initialState, ConferenceActions.loadConferenceSuccess({ conference: conferenceTestData }));
 
-            expect(result.currentConference).toBe(conferenceTestData);
+            expect(result.currentConference).toEqual(conferenceTestData);
+        });
+
+        it('should replace the existing conference with the new conference and maintain pexip info', () => {
+            const conferenceWithPexipInfo: VHConference = {
+                ...conferenceTestData,
+                participants: [
+                    {
+                        ...conferenceTestData.participants[0],
+                        pexipInfo: {
+                            isRemoteMuted: false,
+                            isSpotlighted: false,
+                            handRaised: false,
+                            pexipDisplayName: '1922_John Doe',
+                            uuid: '1922_John Doe',
+                            isAudioOnlyCall: false,
+                            isVideoCall: true,
+                            protocol: 'sip'
+                        }
+                    },
+                    conferenceTestData.participants[1]
+                ]
+            };
+
+            const initialStateWithPexipInfo: ConferenceState = { ...initialState, currentConference: conferenceWithPexipInfo };
+
+            const conferenceWithoutPexipInfo: VHConference = { ...existingInitialState.currentConference, caseName: 'Updating conference' };
+            const result = conferenceReducer(
+                initialStateWithPexipInfo,
+                ConferenceActions.loadConferenceSuccess({ conference: conferenceWithoutPexipInfo })
+            );
+
+            expect(result.currentConference.caseName).toEqual('Updating conference');
+            expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
         });
     });
 
@@ -135,7 +172,7 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateActiveConferenceStatus({ conferenceId: conferenceTestData.id, status: updatedStatus })
             );
 
-            expect(result).toBe(initialState);
+            expect(result).toEqual(initialState);
         });
 
         it('should return the previous state if the conference id does not match', () => {
@@ -559,6 +596,65 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
+        });
+    });
+
+    describe('deletePexipParticipant action', () => {
+        it('should remove pexip info from the participant', () => {
+            const initialStateWithPexipInfo = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    participants: [
+                        {
+                            ...existingInitialState.currentConference.participants[0],
+                            pexipInfo: {
+                                isRemoteMuted: false,
+                                isSpotlighted: false,
+                                handRaised: false,
+                                pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
+                                uuid: '1922_John Doe',
+                                isAudioOnlyCall: false,
+                                isVideoCall: true,
+                                protocol: 'sip'
+                            }
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(
+                initialStateWithPexipInfo,
+                ConferenceActions.deletePexipParticipant({ pexipUUID: '1922_John Doe' })
+            );
+
+            expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
+        });
+
+        it('should ignore pexip info to if participant is not on the list', () => {
+            const initialStateWithPexipInfo = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    participants: [
+                        {
+                            ...existingInitialState.currentConference.participants[0],
+                            pexipInfo: {
+                                isRemoteMuted: false,
+                                isSpotlighted: false,
+                                handRaised: false,
+                                pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
+                                uuid: '1922_John Doe',
+                                isAudioOnlyCall: false,
+                                isVideoCall: true,
+                                protocol: 'sip'
+                            }
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(initialStateWithPexipInfo, ConferenceActions.deletePexipParticipant({ pexipUUID: 'unknown' }));
+
+            expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
         });
     });
 

@@ -3,6 +3,7 @@ import { ConferenceStatus, EndpointStatus, LinkType, ParticipantStatus, Role } f
 export interface VHConference {
     id: string;
     scheduledDateTime: Date;
+    endDateTime?: Date;
     duration: number;
     caseNumber: string;
     caseName: string;

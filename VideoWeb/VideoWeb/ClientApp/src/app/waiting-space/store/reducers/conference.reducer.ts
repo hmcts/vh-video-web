@@ -17,8 +17,14 @@ export const initialState: ConferenceState = {
 export const conferenceReducer = createReducer(
     initialState,
     on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
-        const availeRooms = conference.participants.map(p => p.room).filter(r => r !== null);
-        return { ...state, currentConference: conference, availableRooms: availeRooms };
+        // retain the pexip info for the participants (this does not come from the API)
+        const updatedParticipants = conference.participants.map(p => {
+            const existingParticipant = state.currentConference?.participants.find(cp => cp.id === p.id);
+            return { ...p, pexipInfo: existingParticipant?.pexipInfo };
+        });
+        const updatedConference: VHConference = { ...conference, participants: updatedParticipants };
+        const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
+        return { ...state, currentConference: updatedConference, availableRooms: availableRooms };
     }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = state.currentConference;
@@ -68,16 +74,19 @@ export const conferenceReducer = createReducer(
         if (!conference || conference.id !== conferenceId) {
             return state;
         }
-        // TODO: write a test to confirm the pexip info is retained for existing participants
+        // retain the pexip info for the participants (this does not come from the API)
+        const updatedParticipants = participants.map(p => {
+            const existingParticipant = conference.participants.find(cp => cp.id === p.id);
+            return { ...p, pexipInfo: existingParticipant?.pexipInfo };
+        });
 
-        // create a list of rooms based on the participants
         let updatedAvailableRooms: VHRoom[] = state.availableRooms;
-        participants.forEach(p => {
+        updatedParticipants.forEach(p => {
             if (p.room && !updatedAvailableRooms.some(r => r.label === p.room.label)) {
                 updatedAvailableRooms = [...updatedAvailableRooms, p.room];
             }
         });
-        const updatedConference: VHConference = { ...conference, participants: participants };
+        const updatedConference: VHConference = { ...conference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
     on(ConferenceActions.updateExistingEndpoints, (state, { conferenceId, endpoints }) => {
@@ -131,6 +140,12 @@ export const conferenceReducer = createReducer(
         const participants = conference.participants.map(p =>
             participant.pexipDisplayName.includes(p.id) ? { ...p, pexipInfo: participant } : p
         );
+
+        return { ...state, currentConference: { ...conference, participants } };
+    }),
+    on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
+        const conference = state.currentConference;
+        const participants = conference.participants.map(p => (p.pexipInfo?.uuid === pexipUUID ? { ...p, pexipInfo: null } : p));
 
         return { ...state, currentConference: { ...conference, participants } };
     }),
