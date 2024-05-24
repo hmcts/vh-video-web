@@ -46,6 +46,8 @@ import { NgOptimizedImage } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
 
 @NgModule({
     imports: [
@@ -53,7 +55,8 @@ import { conferenceFeatureKey, conferenceReducer } from './store/reducers/confer
         WaitingSpaceRoutingModule,
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
-        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forFeature([ConferenceEffectsEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
