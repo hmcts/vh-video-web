@@ -81,6 +81,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         preferences.audioOnly = false;
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {

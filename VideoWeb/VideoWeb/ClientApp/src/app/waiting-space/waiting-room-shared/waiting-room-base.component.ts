@@ -1,7 +1,7 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, of } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -254,6 +254,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(conf => {
                 this.vhConference = conf;
+                // this does not need to be an observable and we can move away from the flag service
+                this.phoneNumber$ = this.vhConference.isVenueScottish
+                    ? of(this.contactDetails.scotland.phoneNumber)
+                    : of(this.contactDetails.englandAndWales.phoneNumber);
+                // this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
+                //     map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
+                // );
                 // create a new ctor that accepts VHConference
                 // this.hearing = new Hearing(this.vhConference as any);
             });

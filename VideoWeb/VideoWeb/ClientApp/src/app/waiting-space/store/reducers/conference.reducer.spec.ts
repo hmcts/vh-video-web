@@ -38,6 +38,7 @@ describe('Conference Reducer', () => {
             duration: 60,
             scheduledDateTime: new Date('2021-01-01T12:00:00Z'),
             status: ConferenceStatus.NotStarted,
+            isVenueScottish: true,
             participants: [
                 {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df7',

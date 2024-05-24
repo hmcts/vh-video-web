@@ -48,6 +48,11 @@ describe('JohWaitingRoomComponent', () => {
     beforeAll(() => {
         initAllWRDependencies();
     });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     const logged = new LoggedParticipantResponse({
         participant_id: globalParticipant.id,
         display_name: globalParticipant.display_name,

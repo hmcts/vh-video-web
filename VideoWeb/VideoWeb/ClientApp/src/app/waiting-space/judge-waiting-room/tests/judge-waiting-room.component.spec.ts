@@ -193,6 +193,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         initAllWRDependencies();
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     beforeEach(async () => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',

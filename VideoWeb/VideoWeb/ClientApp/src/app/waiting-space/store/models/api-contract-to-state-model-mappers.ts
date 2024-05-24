@@ -11,6 +11,7 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         caseNumber: conference.case_number,
         caseName: conference.case_name,
         status: conference.status,
+        isVenueScottish: conference.hearing_venue_is_scottish,
         participants: conference.participants.map(p => mapParticipantToVHParticipant(p)),
         endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e))
     };

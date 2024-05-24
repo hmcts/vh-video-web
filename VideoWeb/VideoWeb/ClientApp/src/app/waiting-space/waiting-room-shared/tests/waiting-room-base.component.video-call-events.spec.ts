@@ -128,6 +128,8 @@ describe('WaitingRoomComponent Video Call', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
+
+        mockConferenceStore.resetSelectors();
     });
 
     it('should get token and connect to video call', fakeAsync(() => {

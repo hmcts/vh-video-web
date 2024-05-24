@@ -51,6 +51,10 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         initAllWRDependencies();
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     beforeEach(() => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);

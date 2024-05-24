@@ -62,7 +62,8 @@ import {
     router,
     videoWebService,
     videoCallService,
-    titleService
+    titleService,
+    mockConferenceStore
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -108,6 +109,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(async () => {

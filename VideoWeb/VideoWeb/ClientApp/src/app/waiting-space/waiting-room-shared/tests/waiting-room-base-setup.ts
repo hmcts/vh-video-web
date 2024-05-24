@@ -29,6 +29,8 @@ import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState, initialState as initialConferenceState } from '../../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
+import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
 
 const conferenceTestData = new ConferenceTestData();
 
@@ -81,8 +83,11 @@ export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {
-    const initialState = initialConferenceState;
-    mockConferenceStore = createMockStore({ initialState });
+    mockConferenceStore = createMockStore({
+        initialState: { currentConference: mapConferenceToVHConference(globalConference), availableRooms: [] }
+    });
+
+    mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
 
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
         'HearingVenueFlagsService',

@@ -97,6 +97,10 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         component.ngOnDestroy();
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     it('should play hearing starting sound when "in session" message received', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);

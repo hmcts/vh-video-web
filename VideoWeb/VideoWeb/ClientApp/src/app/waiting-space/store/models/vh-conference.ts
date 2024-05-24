@@ -8,6 +8,7 @@ export interface VHConference {
     caseNumber: string;
     caseName: string;
     status: ConferenceStatus;
+    isVenueScottish: boolean;
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
 }

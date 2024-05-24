@@ -71,6 +71,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
