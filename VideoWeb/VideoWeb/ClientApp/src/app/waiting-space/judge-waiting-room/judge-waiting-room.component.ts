@@ -417,7 +417,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
-            this.wowzaAgent?.isAudioOnlyCall
+            (!this.wowzaAgent || !this.wowzaAgent.isAudioOnlyCall)
         ) {
             this.logWowzaAlert();
             this.showAudioRecordingRestartAlert();
