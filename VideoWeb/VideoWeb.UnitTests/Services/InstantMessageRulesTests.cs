@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common;
@@ -111,7 +112,7 @@ public class InstantMessageRulesTests
             // Assert
             result.Should().NotBeNull();
             result.Conference.Should().Be(conference);
-            result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000);
+            result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000.Milliseconds());
             result.MessageUuid.Should().Be(messageUuid);
             result.Message.Should().Be(message);
             result.From.Should().Be(username);
@@ -138,7 +139,7 @@ public class InstantMessageRulesTests
             // Assert
             result.Should().NotBeNull();
             result.Conference.Should().Be(conference);
-            result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000);
+            result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000.Milliseconds());
             result.MessageUuid.Should().Be(messageUuid);
             result.Message.Should().Be(message);
             result.From.Should().Be(username);

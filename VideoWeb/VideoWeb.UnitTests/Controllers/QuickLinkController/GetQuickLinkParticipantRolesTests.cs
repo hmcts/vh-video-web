@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Autofac.Extras.Moq;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 
@@ -32,8 +33,8 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var result = _controller.GetQuickLinkParticipantRoles() as OkObjectResult;
 
             //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(expected, result.Value);
+            ClassicAssert.IsInstanceOf<OkObjectResult>(result);
+            ClassicAssert.AreEqual(expected, result.Value);
         }
     }
 }
