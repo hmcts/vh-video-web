@@ -5,7 +5,7 @@ resources:
         - repository: azTemplates
           type: github
           name: hmcts/azure-devops-templates
-          ref: master
+          ref: fix-vh-templates-for-dotnet-8
           endpoint: hmcts
 
 trigger: none
@@ -41,6 +41,7 @@ stages:
 
                 - template: templates/dotnet/build-test-analyse.yml@azTemplates
                   parameters:
+                      dotnetVersion: ${{ variables.dotnetVersion }}
                       nugetConfigPath: nuget.config 
                       appName: ${{ variables.appName }}
                       dockerComposeTestFile: docker-compose.tests.yml

@@ -52,8 +52,8 @@ namespace VideoWeb
                 {
                     opt.Filters.Add(typeof(LoggingMiddleware));
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
-                })
-                .AddFluentValidation();
+                });
+            services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddApplicationInsightsTelemetry();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });

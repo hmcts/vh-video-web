@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using VideoWeb.Middleware;
 using VideoWeb.Common;
 
@@ -50,7 +51,7 @@ namespace VideoWeb.UnitTests.Middleware
 
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
-            Assert.AreEqual((int)HttpStatusCode.BadRequest, _HttpContext.Response.StatusCode);
+            ClassicAssert.AreEqual((int)HttpStatusCode.BadRequest, _HttpContext.Response.StatusCode);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
@@ -65,8 +66,8 @@ namespace VideoWeb.UnitTests.Middleware
 
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
-
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
+            
+            ClassicAssert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
@@ -81,8 +82,8 @@ namespace VideoWeb.UnitTests.Middleware
             ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
-
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
+            
+            ClassicAssert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
             
             _HttpContext.Response.Body.Seek(0, SeekOrigin.Begin);
