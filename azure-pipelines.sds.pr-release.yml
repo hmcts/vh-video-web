@@ -41,6 +41,7 @@ stages:
 
                 - template: templates/dotnet/build-test-analyse.yml@azTemplates
                   parameters:
+                      dotnetVersion: '8.x'
                       nugetConfigPath: nuget.config 
                       appName: ${{ variables.appName }}
                       dockerComposeTestFile: docker-compose.tests.yml
