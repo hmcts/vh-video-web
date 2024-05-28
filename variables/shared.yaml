@@ -69,6 +69,3 @@ variables:
 
   - name: app_redirect_uri
     value: "/,/logout,/home"
-
-  - name: dotnetVersion
-    value: '8.x'
