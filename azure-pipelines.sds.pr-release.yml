@@ -41,7 +41,8 @@ stages:
 
           - template: templates/dotnet/build-test-analyse.yml@azTemplates
             parameters:
-              dotnetVersion: ${{ variables.dotnetVersion }}nugetConfigPath: nuget.config
+              dotnetVersion: ${{ variables.dotnetVersion }}
+              nugetConfigPath: nuget.config
               appName: ${{ variables.appName }}
               dockerComposeTestFile: docker-compose.tests.yml
               publishNodeTests: true
