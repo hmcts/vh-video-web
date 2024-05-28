@@ -141,8 +141,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit(): void {
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+        this.audioMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
+        this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
             this.audioOnly = audioOnly;
@@ -214,8 +214,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.eventService
             .getParticipantToggleLocalMuteMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
-                await this.handleParticipantToggleLocalMuteChange(message);
+            .subscribe(message => {
+                this.handleParticipantToggleLocalMuteChange(message).then();
             });
     }
 
