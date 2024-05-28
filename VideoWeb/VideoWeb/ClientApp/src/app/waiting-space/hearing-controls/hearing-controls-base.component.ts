@@ -193,8 +193,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.eventService
             .getHearingCountdownCompleteMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async conferenceId => {
-                await this.handleHearingCountdownComplete(conferenceId);
+            .subscribe(conferenceId => {
+                this.handleHearingCountdownComplete(conferenceId).then();
             });
 
         this.eventService
