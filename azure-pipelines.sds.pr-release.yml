@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: fix-vh-templates-for-dotnet-8
+      ref: master
       endpoint: hmcts
 
 trigger: none
