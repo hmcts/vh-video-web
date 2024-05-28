@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var actualLp = response.LinkedParticipants[0];
             actualLp.LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
-            actualLp.LinkType.Should().Be(participant.LinkedParticipants[0].Type);
+            actualLp.LinkType.Should().Be((LinkType)participant.LinkedParticipants[0].Type);
         }
     }
 }

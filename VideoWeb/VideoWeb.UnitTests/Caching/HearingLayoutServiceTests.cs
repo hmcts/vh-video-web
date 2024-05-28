@@ -110,7 +110,7 @@ namespace VideoWeb.UnitTests.Caching
 
             // Act && Assert
             Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
-            action.Should().Throw<VideoApiException>();
+            action.Should().ThrowAsync<VideoApiException>();
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace VideoWeb.UnitTests.Caching
 
             // Act && Assert
             Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
-            action.Should().Throw<Exception>();
+            action.Should().ThrowAsync<Exception>();
         }
 
         [Test]

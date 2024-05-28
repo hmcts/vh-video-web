@@ -22,7 +22,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
-    public class ConsultationsController : Controller
+    public class ConsultationsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
@@ -191,7 +191,7 @@ namespace VideoWeb.Controllers
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
                     await _consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
-                    foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Any(p => p.Id == participantId)))
+                    foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
                     {
                         await _consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
                     }

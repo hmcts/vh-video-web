@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Authors>HMCTS VH</Authors>
+        <Company>HMCTS</Company>
+        <RepositoryUrl>https://github.com/hmcts/vh-video-web</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/hmcts/vh-video-web</PackageProjectUrl>
+    </PropertyGroup>
+    <PropertyGroup>
+        <LangVersion>latestmajor</LangVersion>
+        <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+</Project>
