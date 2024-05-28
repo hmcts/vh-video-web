@@ -258,11 +258,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.phoneNumber$ = this.vhConference.isVenueScottish
                     ? of(this.contactDetails.scotland.phoneNumber)
                     : of(this.contactDetails.englandAndWales.phoneNumber);
-                // this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
-                //     map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
-                // );
-                // create a new ctor that accepts VHConference
-                // this.hearing = new Hearing(this.vhConference as any);
             });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
