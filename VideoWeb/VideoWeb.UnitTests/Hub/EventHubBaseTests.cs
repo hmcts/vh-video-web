@@ -19,6 +19,7 @@ using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Common;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Hub
 {

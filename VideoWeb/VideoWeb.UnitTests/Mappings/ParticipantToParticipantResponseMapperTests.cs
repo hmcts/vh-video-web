@@ -8,6 +8,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 using Moq;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {

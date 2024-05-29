@@ -6,6 +6,8 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {

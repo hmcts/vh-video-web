@@ -3,6 +3,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {

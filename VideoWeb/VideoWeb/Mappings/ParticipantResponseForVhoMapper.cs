@@ -5,6 +5,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {

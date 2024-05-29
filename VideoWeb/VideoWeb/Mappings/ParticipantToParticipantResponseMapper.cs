@@ -6,6 +6,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.Mappings
 {

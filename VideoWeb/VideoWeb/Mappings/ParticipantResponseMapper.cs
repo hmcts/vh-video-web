@@ -8,6 +8,7 @@ using VideoApi.Contract.Responses;
 using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 using VHLinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {

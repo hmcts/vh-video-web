@@ -7,6 +7,8 @@ using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 using VideoApi.Contract.Enums;
+using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
 
 namespace VideoWeb.Mappings
 {

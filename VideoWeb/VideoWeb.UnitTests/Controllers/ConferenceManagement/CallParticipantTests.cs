@@ -13,6 +13,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement

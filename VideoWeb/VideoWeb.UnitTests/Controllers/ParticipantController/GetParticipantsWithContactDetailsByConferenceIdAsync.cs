@@ -23,6 +23,9 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

@@ -6,6 +6,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
+using LinkedParticipantType = VideoApi.Contract.Enums.LinkedParticipantType;
 
 namespace VideoWeb.UnitTests.Mappings
 {

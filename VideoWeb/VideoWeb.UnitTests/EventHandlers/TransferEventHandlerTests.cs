@@ -7,6 +7,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {

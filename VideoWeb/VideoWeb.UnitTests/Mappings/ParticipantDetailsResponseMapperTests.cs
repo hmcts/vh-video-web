@@ -6,6 +6,10 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using LinkedParticipantType = VideoApi.Contract.Enums.LinkedParticipantType;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {

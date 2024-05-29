@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.Common.Caching
 {
@@ -43,7 +46,7 @@ namespace VideoWeb.Common.Caching
 
             return conference;
         }
-
+        
         protected override string GetKey(Guid key)
         {
             return key.ToString();

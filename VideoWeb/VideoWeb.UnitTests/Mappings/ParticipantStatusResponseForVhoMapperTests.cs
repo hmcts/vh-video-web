@@ -9,6 +9,8 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Enums;
+using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
 
 namespace VideoWeb.UnitTests.Mappings
 {

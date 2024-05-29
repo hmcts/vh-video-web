@@ -5,6 +5,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.Mappings
 {
