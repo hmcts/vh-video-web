@@ -36,6 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
     skipLinkDiv: ElementRef;
 
     loggedIn = false;
+    username = '';
     isRepresentativeOrIndividual: boolean;
     pageTitle = 'Video Hearings - ';
 
@@ -163,6 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
     async retrieveProfileRole(): Promise<void> {
         try {
             const profile = await this.profileService.getUserProfile();
+            this.username = profile.username;
             if (profile.roles.some(role => PARTICIPANT_ROLES.includes(role))) {
                 this.isRepresentativeOrIndividual = true;
             }

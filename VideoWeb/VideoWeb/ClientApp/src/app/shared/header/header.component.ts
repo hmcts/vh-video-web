@@ -12,6 +12,7 @@ import { topMenuItems } from './topMenuItems';
 })
 export class HeaderComponent implements OnInit {
     @Input() loggedIn: boolean;
+    @Input() username: string;
 
     topMenuItems = [];
     logoutRoute = pageUrls.Logout;
