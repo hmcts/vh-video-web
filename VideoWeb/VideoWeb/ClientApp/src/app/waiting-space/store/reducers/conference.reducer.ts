@@ -1,6 +1,7 @@
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
+import { EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -13,6 +14,14 @@ export const initialState: ConferenceState = {
     currentConference: undefined,
     availableRooms: []
 };
+
+function getCurrentConference(state: ConferenceState, conferenceId: string): VHConference {
+    const conference = state.currentConference;
+    if (!conference || conference.id !== conferenceId) {
+        return null;
+    }
+    return conference;
+}
 
 export const conferenceReducer = createReducer(
     initialState,
@@ -27,57 +36,61 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: updatedConference, availableRooms: availableRooms };
     }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
-        const updatedConference = { ...conference, status: status };
+        const updatedConference: VHConference = { ...conference, status: status };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateParticipantStatus, (state, { conferenceId, participantId, status }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
         const participants = conference.participants.map(participant => {
             if (participant.id === participantId) {
-                return { ...participant, status: status };
+                const updatedP: VHParticipant = {
+                    ...participant,
+                    status: status,
+                    room: status === ParticipantStatus.Disconnected ? null : participant.room
+                };
+                return updatedP;
             } else {
                 return participant;
             }
         });
 
-        const updatedConference = { ...conference, participants: participants };
+        const updatedConference: VHConference = { ...conference, participants: participants };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateEndpointStatus, (state, { conferenceId, endpointId, status }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
         const endpoints = conference.endpoints.map(endpoint => {
             if (endpoint.id === endpointId) {
-                return { ...endpoint, status: status };
+                const updatedEndpoint: VHEndpoint = {
+                    ...endpoint,
+                    status: status,
+                    room: status === EndpointStatus.Disconnected ? null : endpoint.room
+                };
+                return updatedEndpoint;
             } else {
                 return endpoint;
             }
         });
 
-        const updatedConference = { ...conference, endpoints: endpoints };
+        const updatedConference: VHConference = { ...conference, endpoints: endpoints };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateParticipantList, (state, { conferenceId, participants }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
+
         // retain the pexip info for the participants (this does not come from the API)
         const updatedParticipants = participants.map(p => {
-            const existingParticipant = conference.participants.find(cp => cp.id === p.id);
-            return { ...p, pexipInfo: existingParticipant?.pexipInfo };
+            const existingParticipant: VHParticipant = conference.participants.find(cp => cp.id === p.id);
+            const updatedParticipant: VHParticipant = { ...p, pexipInfo: existingParticipant?.pexipInfo };
+            return updatedParticipant;
         });
 
         let updatedAvailableRooms: VHRoom[] = state.availableRooms;
@@ -90,16 +103,14 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
     on(ConferenceActions.updateExistingEndpoints, (state, { conferenceId, endpoints }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
         const updatedList: VHEndpoint[] = [];
 
         conference.endpoints.forEach(e => {
             if (endpoints.some(ep => ep.id === e.id)) {
-                const updatedEndpoint = endpoints.find(ep => ep.id === e.id);
+                const updatedEndpoint: VHEndpoint = endpoints.find(ep => ep.id === e.id);
                 updatedList.push(updatedEndpoint);
             } else {
                 updatedList.push(e);
@@ -115,20 +126,16 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
     on(ConferenceActions.removeExistingEndpoints, (state, { conferenceId, removedEndpointIds }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
         const updatedList = conference.endpoints.filter(e => !removedEndpointIds.includes(e.id));
 
         return { ...state, currentConference: { ...conference, endpoints: updatedList } };
     }),
     on(ConferenceActions.addNewEndpoints, (state, { conferenceId, endpoints }) => {
-        const conference = state.currentConference;
-        if (!conference || conference.id !== conferenceId) {
-            return state;
-        }
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) return state;
 
         const newOnly = endpoints.filter(e => !conference.endpoints.some(ep => ep.id === e.id));
         const updatedList = [...conference.endpoints, ...newOnly];

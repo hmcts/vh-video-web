@@ -253,6 +253,21 @@ describe('Conference Reducer', () => {
 
             expect(updatedResult.currentConference.participants[0].status).toBe(updatedStatus);
         });
+
+        it('should update the room of the participant to null when status is Disconnected', () => {
+            const updatedStatus = ParticipantStatus.Disconnected;
+            const updatedResult = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.participants[0].id,
+                    status: updatedStatus
+                })
+            );
+
+            expect(updatedResult.currentConference.participants[0].status).toBe(updatedStatus);
+            expect(updatedResult.currentConference.participants[0].room).toBeNull();
+        });
     });
 
     describe('updateEndpointStatus action', () => {
@@ -310,6 +325,21 @@ describe('Conference Reducer', () => {
             );
 
             expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
+        });
+
+        it('should update the room of the endpoint to null when status is Disconnected', () => {
+            const updatedStatus = EndpointStatus.Disconnected;
+            const updatedResult = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateEndpointStatus({
+                    conferenceId: conferenceTestData.id,
+                    endpointId: conferenceTestData.endpoints[0].id,
+                    status: updatedStatus
+                })
+            );
+
+            expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
+            expect(updatedResult.currentConference.endpoints[0].room).toBeNull();
         });
     });
 
