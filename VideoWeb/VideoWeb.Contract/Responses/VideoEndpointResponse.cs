@@ -24,7 +24,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The current endpoint status
         /// </summary>
-        public List<EndpointParticipant> EndpointParticipants { get; set; }
+        public List<EndpointParticipantResponse> EndpointParticipants { get; set; }
         
         /// <summary>
         /// The display name when connected to the pexip node

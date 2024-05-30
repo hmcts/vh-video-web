@@ -13,13 +13,21 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_endpoint_to_cache_model()
         {
+            var defenceAdvocate = new EndpointParticipantResponse
+            {
+                ParticipantUsername = "DefenceAdvocate"
+            };
+            var endpointBuilder = new EndpointsResponseBuilder();
+            var endpoint = endpointBuilder.WithStatus(apiState).Build();
+            var endpointDetails = endpointBuilder.WithLinkedParticipant(defenceAdvocate).BuildEndpointDetailsResponse();
+            var result = _sut.Map(endpoint, endpointDetails.EndpointParticipants);
             var ep = Builder<EndpointResponse>.CreateNew().Build();
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
             cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate.ToLower());
+            cachedModel.EndpointParticipants.Should().Contain(ep.DefenceAdvocate.ToLower());
         }
 
         [Test]

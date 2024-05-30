@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
@@ -24,12 +23,9 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             };
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
-
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                // conference doesn't exist (null)
-                .ReturnsAsync((Conference)null);
+            
+            // conference doesn't exist (null)
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
 
             SetupActionExecutingContext(actionArguments, user);
 
@@ -57,26 +53,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             };
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
-
-            var conference = new Conference
-            {
-                // conference exists...
-                Id = ConferenceId,
-                Participants = new List<Participant>
-                {
-                    new Participant
-                    {
-                        // ...but user does not belong to it
-                        Username = "Username",
-                        Id = Guid.NewGuid()
-                    }
-                }
-            };
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
-
+            
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
             SetupActionExecutingContext(actionArguments, user);
 
             // act
@@ -118,12 +96,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     }
                 }
             };
-
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
-
+            
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
             SetupActionExecutingContext(actionArguments, user);
 
             // act

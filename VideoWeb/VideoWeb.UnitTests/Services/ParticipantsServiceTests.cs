@@ -10,6 +10,7 @@ using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -92,7 +93,7 @@ namespace VideoWeb.UnitTests.Services
             var conference = new Conference();
             var participantResponse = new Participant();
             var addStaffMemberResponse = new AddStaffMemberResponse();
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(conference));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
             _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
                .Returns(participantResponse);
@@ -115,8 +116,8 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var conference = new Conference();
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(conference));
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
                 .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
@@ -141,7 +142,7 @@ namespace VideoWeb.UnitTests.Services
         public void AddStaffMemberToConferenceCache_when_coference_is_NULL()
         {
             // Arrange
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(null as Conference));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(null as Conference));
             var addStaffMemberResponse = new AddStaffMemberResponse
             {
                 ConferenceId = Guid.NewGuid(),
@@ -158,10 +159,9 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var conference = new Conference();
             var participantResponse = new Participant();
-
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Returns(Task.FromResult(conference));
+            
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
 
             _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))

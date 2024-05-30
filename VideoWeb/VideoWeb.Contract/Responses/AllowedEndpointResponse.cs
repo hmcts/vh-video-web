@@ -7,6 +7,6 @@ namespace VideoWeb.Contract.Responses
     {
         public Guid Id { get; set; }
         public string DisplayName { get; set; }
-        public List<EndpointParticipant> EndpointParticipants { get; set; }
+        public List<EndpointParticipantResponse> EndpointParticipants { get; set; }
     }
 }

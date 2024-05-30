@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
@@ -6,9 +7,9 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class EndpointsMapper : IMapTo<EndpointResponse, Endpoint>
+    public class EndpointsMapper : IMapTo<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>
     {
-        public Endpoint Map(EndpointResponse endpoint, EndpointParticipantResponse[] linkedParticipants)
+        public Endpoint Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
         {
             return new Endpoint
             {
