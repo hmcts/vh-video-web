@@ -13,6 +13,7 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
@@ -22,32 +23,16 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
-    public class ConsultationsController : ControllerBase
+    public class ConsultationsController(
+        IVideoApiClient videoApiClient,
+        IConferenceService conferenceService,
+        ILogger<ConsultationsController> logger,
+        IMapperFactory mapperFactory,
+        IConsultationNotifier consultationNotifier,
+        IConsultationInvitationTracker consultationInvitationTracker,
+        IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
+        : ControllerBase
     {
-        private readonly IVideoApiClient _videoApiClient;
-        private readonly IConferenceCache _conferenceCache;
-        private readonly IConsultationNotifier _consultationNotifier;
-        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
-        private readonly IDistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
-        private readonly ILogger<ConsultationsController> _logger;
-        private readonly IMapperFactory _mapperFactory;
-
-        public ConsultationsController(
-            IVideoApiClient videoApiClient,
-            IConferenceCache conferenceCache,
-            ILogger<ConsultationsController> logger,
-            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker,
-            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
-        {
-            _videoApiClient = videoApiClient;
-            _conferenceCache = conferenceCache;
-            _logger = logger;
-            _mapperFactory = mapperFactory;
-            _consultationNotifier = consultationNotifier;
-            _consultationInvitationTracker = consultationInvitationTracker;
-            _distributedJohConsultationRoomLockCache = distributedJohConsultationRoomLockCache;
-        }
-
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeaveConsultation")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -58,16 +43,16 @@ namespace VideoWeb.Controllers
             var participant = new Participant();
             try
             {
-                var conference = await GetConference(request.ConferenceId);
+                var conference = await conferenceService.GetConference(request.ConferenceId);
                 participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
                 {
                     return NotFound();
                 }
 
-                var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
+                var leaveConsultationRequestMapper = mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
-                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
+                await videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return NoContent();
             }
@@ -75,11 +60,11 @@ namespace VideoWeb.Controllers
             {
                 if (participant != null)
                 {
-                    _logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
+                    logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
                 }
                 else
                 {
-                    _logger.LogError(e, "Invalid participant");
+                    logger.LogError(e, "Invalid participant");
                 }
 
                 return StatusCode(e.StatusCode, e.Response);
@@ -93,7 +78,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request)
         {
-            var conference = await GetConference(request.ConferenceId);
+            var conference = await conferenceService.GetConference(request.ConferenceId);
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
             if (participant == null && request.RequestedById != Guid.Empty)
             {
@@ -101,29 +86,29 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
-            var adminConsultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
+            var adminConsultationRequestMapper = mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
             var mappedRequest = adminConsultationRequestMapper.Map(request);
 
             try
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
-                var haveAllAccepted = await _consultationInvitationTracker.HaveAllParticipantsAccepted(request.InvitationId);
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
+                var haveAllAccepted = await consultationInvitationTracker.HaveAllParticipantsAccepted(request.InvitationId);
                 if (haveAllAccepted)
                 {
-                    await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
-                    await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                    await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                    await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 }
                 else if (request.Answer != ConsultationAnswer.Accepted)
                 {
-                    await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                    await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 }
 
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
-                _logger.LogError(e, "Consultation request could not be responded to");
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
+                logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -137,27 +122,27 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
+                logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
                     request.ConferenceId, request.ParticipantId, request.RoomLabel);
-                var authenticatedUsername = User.Identity.Name?.ToLower().Trim();
-                var conference = await GetConference(request.ConferenceId);
+                var authenticatedUsername = User.Identity?.Name?.ToLower().Trim();
+                var conference = await conferenceService.GetConference(request.ConferenceId);
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
 
                 if (participant == null)
                 {
-                    _logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                    logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
                     return NotFound("Couldn't find participant.");
                 }
 
-                var consultationRequestMapper = _mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
+                var consultationRequestMapper = mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
                 var mappedRequest = consultationRequestMapper.Map(request);
 
-                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                await _consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
+                await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                await consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
                 return StatusCode(e.StatusCode);
             }
 
@@ -175,48 +160,49 @@ namespace VideoWeb.Controllers
             try
             {
                 var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
-                var conference = await GetConference(request.ConferenceId);
+                var conference = await conferenceService.GetConference(request.ConferenceId);
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
                 if (requestedBy == null)
                 {
-                    _logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
+                    logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
                     return NotFound();
                 }
 
-                var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
+                var consultationRequestMapper = mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
 
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
-                    var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
-                    await _consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
+                    var room = await videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+                    await consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
                     {
-                        await _consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
+                        await consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
                     }
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
-                    foreach (var endpoint in validSelectedEndpoints)
+                        .Where(x => x != null && x.EndpointParticipants.Exists(ep => ep.ParticipantUsername.Equals(username, StringComparison.OrdinalIgnoreCase)));
+                    
+                    foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
                     {
                         try
                         {
-                            await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                            await videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                             {
                                 ConferenceId = request.ConferenceId,
-                                RequestedById = requestedBy.Id,
-                                EndpointId = endpoint.Id,
-                                RoomLabel = room.Label
+                                EndpointId = endpointId,
+                                RoomLabel = room.Label,
+                                
                             });
                             break;
                         }
                         catch (VideoApiException e)
                         {
                             // As endpoints cannot be linked participants just use and Empty GUID
-                            await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, room.Label, endpoint.Id, ConsultationAnswer.Failed);
-                            _logger.LogError(e, "Unable to add {EndpointId} to consultation", endpoint.Id);
+                            await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, room.Label, endpointId, ConsultationAnswer.Failed);
+                            logger.LogError(e, "Unable to add {EndpointId} to consultation",endpointId);
                         }
                     }
                 }
@@ -229,7 +215,7 @@ namespace VideoWeb.Controllers
 
                     var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
                     var isLocked =
-                        await _distributedJohConsultationRoomLockCache.IsJOHRoomLocked(johConsultationRoomLockedStatusKeyName);
+                        await distributedJohConsultationRoomLockCache.IsJOHRoomLocked(johConsultationRoomLockedStatusKeyName);
 
                     if (isLocked)
                     {
@@ -237,18 +223,18 @@ namespace VideoWeb.Controllers
                     }
                     else
                     {
-                        await _distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(true,
+                        await distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(true,
                             johConsultationRoomLockedStatusKeyName);
                     }
                     
-                    await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
+                    await videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 }
 
                 return Accepted();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Start consultation error Conference");
+                logger.LogError(e, "Start consultation error Conference");
                 return StatusCode(e.StatusCode);
             }
         }
@@ -262,20 +248,19 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await GetConference(request.ConferenceId);
-
-                var lockRequestMapper = _mapperFactory.Get<LockConsultationRoomRequest, LockRoomRequest>();
+                var conference = await conferenceService.GetConference(request.ConferenceId);
+                var lockRequestMapper = mapperFactory.Get<LockConsultationRoomRequest, LockRoomRequest>();
                 var mappedRequest = lockRequestMapper.Map(request);
-                await _videoApiClient.LockRoomAsync(mappedRequest);
+                await videoApiClient.LockRoomAsync(mappedRequest);
 
-                await _consultationNotifier.NotifyRoomUpdateAsync(conference,
+                await consultationNotifier.NotifyRoomUpdateAsync(conference,
                     new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
 
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Could not update the lock state of the consultation room");
+                logger.LogError(e, "Could not update the lock state of the consultation room");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -287,9 +272,8 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> InviteToConsultationAsync(InviteToConsultationRequest request)
         {
-            var conference = await GetConference(request.ConferenceId);
-
-            var username = User.Identity.Name?.ToLower().Trim();
+            var conference = await conferenceService.GetConference(request.ConferenceId);
+            var username = User.Identity?.Name?.ToLower().Trim();
             var requestedBy = conference.Participants.SingleOrDefault(x =>
                 x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
@@ -297,7 +281,7 @@ namespace VideoWeb.Controllers
                 return Unauthorized("You must be a VHO or a member of the conference");
             }
 
-            await _consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
+            await consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
 
             return Accepted();
         }
@@ -309,9 +293,8 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request)
         {
-            var conference = await GetConference(request.ConferenceId);
-
-            var username = User.Identity.Name?.ToLower().Trim();
+            var conference = await conferenceService.GetConference(request.ConferenceId);
+            var username = User.Identity?.Name?.ToLower().Trim();
             var requestedBy = conference.Participants.SingleOrDefault(x =>
                 x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null)
@@ -321,11 +304,10 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
-                await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+                await videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = request.ConferenceId,
-                    RequestedById = requestedBy.Id,
                     EndpointId = request.EndpointId,
                     RoomLabel = request.RoomLabel
                 });
@@ -333,18 +315,12 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 // As endpoints cannot be linked participants just use and Empty GUID
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
-                _logger.LogError(e, "Join endpoint to consultation error");
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+                logger.LogError(e, "Join endpoint to consultation error");
                 return StatusCode(e.StatusCode);
             }
 
             return Accepted();
-        }
-
-        private Task<Conference> GetConference(Guid conferenceId)
-        {
-            return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
         private bool CanStartJohConsultation()

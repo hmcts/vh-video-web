@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
 
@@ -8,7 +9,7 @@ namespace VideoWeb.Common.Caching
 {
     public static class ConferenceCacheMapper
     {
-        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse)
+        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
         {
             var participants = conferenceResponse
                 .Participants
@@ -18,6 +19,14 @@ namespace VideoWeb.Common.Caching
             var endpoints = conferenceResponse.Endpoints == null
                 ? new List<Endpoint>()
                 : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
+            
+            foreach (var endpoint in endpoints)
+            {
+                endpoint.EndpointParticipants = hearingDetailsResponse.Endpoints
+                    .Single(x => x.Id == endpoint.Id).EndpointParticipants
+                    .Select(x => EndpointParticipantCacheMapper.MapEndpointParticipantToCacheModel(x, participants))
+                    .ToList();
+            }
 
             var civilianRooms = conferenceResponse.CivilianRooms == null
                 ? new List<CivilianRoom>()

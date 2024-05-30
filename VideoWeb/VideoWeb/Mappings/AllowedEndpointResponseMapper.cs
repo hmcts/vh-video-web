@@ -1,6 +1,8 @@
+using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
+using EndpointParticipant = VideoWeb.Contract.Responses.EndpointParticipant;
 
 namespace VideoWeb.Mappings
 {
@@ -10,9 +12,13 @@ namespace VideoWeb.Mappings
         {
             return new AllowedEndpointResponse
             {
-                DefenceAdvocateUsername = input.DefenceAdvocateUsername,
                 DisplayName = input.DisplayName,
-                Id = input.Id
+                Id = input.Id,
+                EndpointParticipants = input.EndpointParticipants.Select(x => new EndpointParticipant
+                {
+                    ParticipantUsername = x.ParticipantUsername,
+                    LinkType = x.LinkedParticipantType
+                }).ToList()
             };
         }
     }

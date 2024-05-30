@@ -7,6 +7,7 @@ using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -19,19 +20,17 @@ namespace VideoWeb.Services
 {
     public class ParticipantService : IParticipantService
     {
-        private readonly IVideoApiClient _videoApiClient;
-        private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceService _conferenceService;
         private readonly ILogger<ParticipantService> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly int startingSoonMinutesThreshold = 30;
         private readonly int closedMinutesThreshold = 30;
 
-        public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, ILogger<ParticipantService> logger,
+        public ParticipantService(IConferenceService conferenceService ,ILogger<ParticipantService> logger,
             IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
         {
-            _videoApiClient = videoApiClient;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -66,8 +65,7 @@ namespace VideoWeb.Services
 
         public async Task AddStaffMemberToConferenceCache(AddStaffMemberResponse response)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
+            var conference = await _conferenceService.GetConference(response.ConferenceId);
 
             if (conference == null)
             {
@@ -78,7 +76,7 @@ namespace VideoWeb.Services
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
-            await _conferenceCache.UpdateConferenceAsync(conference);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }
     }

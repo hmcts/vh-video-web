@@ -17,6 +17,7 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 
 namespace VideoWeb.Controllers
 {
@@ -26,25 +27,25 @@ namespace VideoWeb.Controllers
     [Authorize(AuthenticationSchemes = "Callback")]
     public class VideoEventsController : ControllerBase
     {
+        private readonly IConferenceService _conferenceService;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
-        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly TelemetryClient _telemetryClient;
 
 
         public VideoEventsController(
+            IConferenceService conferenceService,
             IVideoApiClient videoApiClient,
             IEventHandlerFactory eventHandlerFactory,
-            IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
             IMapperFactory mapperFactory,
             TelemetryClient telemetryClient)
         {
+            _conferenceService = conferenceService;
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
-            _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _telemetryClient = telemetryClient;
@@ -61,11 +62,7 @@ namespace VideoWeb.Controllers
                 _telemetryClient.TrackCustomEvent("KinlyCallback", request);
             
                 var conferenceId = Guid.Parse(request.ConferenceId);
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
+                var conference = await _conferenceService.GetConference(conferenceId);
                 await UpdateConferenceRoomParticipants(conference, request);
 
                 var events = new List<ConferenceEventRequest>() {request};
@@ -179,7 +176,7 @@ namespace VideoWeb.Controllers
                 default: return;
             }
             
-            await _conferenceCache.UpdateConferenceAsync(conference);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
         }
 
         private async Task GenerateTransferEventOnVmrParticipantJoining(Conference conference, ConferenceEventRequest request)

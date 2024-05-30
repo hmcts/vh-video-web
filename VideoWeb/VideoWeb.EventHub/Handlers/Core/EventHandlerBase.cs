@@ -1,14 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.V2.Responses;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
-using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -22,26 +23,23 @@ namespace VideoWeb.EventHub.Handlers.Core
     public abstract class EventHandlerBase : IEventHandler
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
+        private readonly IConferenceService _conferenceService;
         protected readonly ILogger<EventHandlerBase> Logger;
-        private readonly IConferenceCache _conferenceCache;
-        private readonly IVideoApiClient _videoApiClient;
-
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient)
+        
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceService conferenceService, ILogger<EventHandlerBase> logger)
         {
             HubContext = hubContext;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
             Logger = logger;
-            _videoApiClient = videoApiClient;
         }
-
-        public Conference SourceConference { get; set; }
+        
+        protected Conference SourceConference { get; set; }
         public Participant SourceParticipant { get; set; }
-        public Endpoint SourceEndpoint { get; set; }
+        protected Endpoint SourceEndpoint { get; set; }
 
         public abstract EventType EventType { get; }
 
-        public async virtual Task HandleAsync(CallbackEvent callbackEvent)
+        public virtual async Task HandleAsync(CallbackEvent callbackEvent)
         {
             SourceConference = await GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
@@ -55,11 +53,10 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await PublishStatusAsync(callbackEvent);
         }
-
-        protected async Task<Conference> GetConference(Guid conferenceId)
+        
+        private async Task<Conference> GetConference(Guid conferenceId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+            var conference = await _conferenceService.GetConference(conferenceId);
             return conference;
         }
 

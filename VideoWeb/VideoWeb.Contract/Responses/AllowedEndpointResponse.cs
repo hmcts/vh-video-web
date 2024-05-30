@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -6,6 +7,6 @@ namespace VideoWeb.Contract.Responses
     {
         public Guid Id { get; set; }
         public string DisplayName { get; set; }
-        public string DefenceAdvocateUsername { get; set; }
+        public List<EndpointParticipant> EndpointParticipants { get; set; }
     }
 }

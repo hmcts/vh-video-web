@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Extensions;
 using VideoWeb.Helpers.Sorting;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
@@ -36,20 +38,20 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferencesController> _logger;
-        private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceService _conferenceService;
         private readonly IMapperFactory _mapperFactory;
         private readonly IBookingsApiClient _bookingApiClient;
 
         public ConferencesController(
             IVideoApiClient videoApiClient,
             ILogger<ConferencesController> logger,
-            IConferenceCache conferenceCache,
             IMapperFactory mapperFactory,
-            IBookingsApiClient bookingApiClient)
+            IBookingsApiClient bookingApiClient,
+            IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
             _mapperFactory = mapperFactory;
             _bookingApiClient = bookingApiClient;
         }
@@ -254,16 +256,17 @@ namespace VideoWeb.Controllers
             }
 
             ConferenceDetailsResponse conference;
+            HearingDetailsResponseV2 hearingDetails;
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-
                 if (conference == null)
                 {
                     _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
 
                     return NoContent();
                 }
+                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.Id);
             }
             catch (VideoApiException e)
             {
@@ -301,7 +304,7 @@ namespace VideoWeb.Controllers
             var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponseVho>();
             var response = conferenceResponseVhoMapper.Map(conference);
 
-            await _conferenceCache.AddConferenceAsync(conference);
+            await _conferenceService.ConferenceCache.AddConferenceAsync(conference, hearingDetails);
 
             return Ok(response);
         }
@@ -321,8 +324,7 @@ namespace VideoWeb.Controllers
         {
             _logger.LogDebug("GetConferenceById");
 
-            var claimsPrincipalToUserProfileResponseMapper =
-                _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+            var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
             var userProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
             if (conferenceId == Guid.Empty)
@@ -334,16 +336,16 @@ namespace VideoWeb.Controllers
 
             var username = userProfile.Username.ToLower().Trim();
             ConferenceDetailsResponse conference;
+            HearingDetailsResponseV2 hearingDetails;
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-
                 if (conference == null)
                 {
                     _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
-
                     return NoContent();
                 }
+                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.HearingId);
             }
             catch (VideoApiException e)
             {
@@ -372,12 +374,10 @@ namespace VideoWeb.Controllers
                 Role.QuickLinkObserver
             };
 
-            conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
-
+            conference.Participants = conference.Participants.Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
             var conferenceResponseMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
             var response = conferenceResponseMapper.Map(conference);
-            await _conferenceCache.AddConferenceAsync(conference);
+            await _conferenceService.ConferenceCache.AddConferenceAsync(conference, hearingDetails);
 
             return Ok(response);
         }

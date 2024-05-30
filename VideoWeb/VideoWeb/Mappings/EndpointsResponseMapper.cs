@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -15,7 +18,7 @@ namespace VideoWeb.Mappings
             _roomResponseMapper = roomResponseMapper;
         }
 
-        public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
+        public VideoEndpointResponse Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
         {
             var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
             var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
@@ -24,9 +27,14 @@ namespace VideoWeb.Mappings
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 Status = status,
-                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
                 PexipDisplayName = pexipDisplayName,
-                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom)
+                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
+                EndpointParticipants = linkedParticipants.Select(x => new EndpointParticipant
+                {
+                    ParticipantUsername = x.ParticipantUsername,
+                    LinkedParticipantType = Enum.Parse<LinkType>(x.LinkedParticipantType.ToString())
+                }).ToList()
+                
             };
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -23,7 +24,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The current endpoint status
         /// </summary>
-        public string DefenceAdvocateUsername { get; set; }
+        public List<EndpointParticipant> EndpointParticipants { get; set; }
         
         /// <summary>
         /// The display name when connected to the pexip node

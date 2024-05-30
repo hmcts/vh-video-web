@@ -2,30 +2,25 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class VhOfficerCallEventHandler : EventHandlerBase
+    public class VhOfficerCallEventHandler(
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        ILogger<EventHandlerBase> logger,
+        IVideoApiClient videoApiClient,
+        IConsultationNotifier consultationNotifier,
+        IConferenceService conferenceService)
+        : EventHandlerBase(hubContext, conferenceService, logger)
     {
-        private readonly IVideoApiClient _videoApiClient;
-        private readonly IConsultationNotifier _consultationNotifier;
-
-        public VhOfficerCallEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient, IConsultationNotifier consultationNotifier) : base(
-            hubContext, conferenceCache, logger, videoApiClient)
-        {
-            _videoApiClient = videoApiClient;
-            _consultationNotifier = consultationNotifier;
-        }
-
         public override EventType EventType => EventType.VhoCall;
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
@@ -33,16 +28,15 @@ namespace VideoWeb.EventHub.Handlers
             var targetRoom = ValidationConsultationRoom(callbackEvent);
             if (SourceEndpoint != null)
             {
-                return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                return videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = SourceConference.Id,
-                    RequestedById = Guid.Empty,
                     EndpointId = SourceEndpoint.Id,
                     RoomLabel = targetRoom
                 });
             }
 
-            return _consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty,
+            return consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty,
                 SourceParticipant.Id);
         }
 
