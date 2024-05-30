@@ -52,10 +52,9 @@ namespace VideoWeb.Services
             _conferenceService = conferenceService;
         }
         
-        public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
-            string staffMemberEmail, ClaimsPrincipal user)
+        public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile, string staffMemberEmail)
         {
-            return new AddStaffMemberRequest()
+            return new AddStaffMemberRequest
             {
                 FirstName = staffMemberProfile.FirstName,
                 LastName = staffMemberProfile.LastName,

@@ -10,8 +10,7 @@ namespace VideoWeb.Services
 {
     public interface IParticipantService
     {
-        AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
-            string staffMemberEmail, ClaimsPrincipal user);
+        AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile, string staffMemberEmail);
 
         bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference);
 
