@@ -177,13 +177,13 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType = null) {
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
         this.stopPresentation();
         this.initCallTag();
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
     disconnectFromCall() {
@@ -525,7 +525,7 @@ export class VideoCallService {
             );
             this.justRenegotiated = false;
         } else {
-            this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
+            // this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
 
             if (!this.streamModifiedSubscription) {
                 this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
