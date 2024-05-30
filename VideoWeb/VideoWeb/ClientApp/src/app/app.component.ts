@@ -94,7 +94,8 @@ export class AppComponent implements OnInit, OnDestroy {
             .pipe(first())
             .subscribe({
                 next: config => {
-                    this.supplierClientService.loadSupplierScript(config.supplier);
+                    const supplier = 'kinly';
+                    this.supplierClientService.loadSupplierScript(supplier);
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
