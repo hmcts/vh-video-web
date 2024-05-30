@@ -631,6 +631,11 @@ describe('WaitingRoomComponent message and clock', () => {
         describe('when eventHubIsConnected and token is set', () => {
             beforeEach(() => {
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+                component.loggedInUser = new LoggedParticipantResponse({
+                    participant_id: globalConference.participants[0].id,
+                    display_name: globalConference.participants[0].display_name,
+                    role: globalConference.participants[0].role
+                });
             });
             it('should use interpreter room when participant has links', async () => {
                 component.participant.linked_participants = [

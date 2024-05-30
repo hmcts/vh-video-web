@@ -1,7 +1,13 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    TokenResponse
+} from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -129,6 +135,12 @@ describe('WaitingRoomComponent Video Call', () => {
     });
 
     it('should get token and connect to video call', fakeAsync(() => {
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: globalConference.participants[0].id,
+            display_name: globalConference.participants[0].display_name,
+            role: globalConference.participants[0].role
+        });
+
         videoCallService.makeCall.calls.reset();
 
         const eventsHubReadySubject = new Subject<any>();
