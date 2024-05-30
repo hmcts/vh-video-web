@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework.Legacy;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
@@ -46,21 +47,21 @@ namespace VideoWeb.UnitTests.Mappings
 
             var participant = mapper.Map(response);
 
-            Assert.AreEqual(response.Username, participant.Username);
-            Assert.AreEqual(response.CaseTypeGroup, participant.CaseTypeGroup);
-            Assert.AreEqual(response.Id, participant.Id);
-            Assert.AreEqual(response.FirstName, participant.FirstName);
-            Assert.AreEqual(response.LastName, participant.LastName);
-            Assert.AreEqual(response.ContactEmail, participant.ContactEmail);
-            Assert.AreEqual(response.ContactTelephone, participant.ContactTelephone);
-            Assert.AreEqual(Role.Individual, participant.Role);
-            Assert.AreEqual(response.HearingRole, participant.HearingRole);
-            Assert.AreEqual(ParticipantStatus.Available, participant.ParticipantStatus);
-            Assert.AreEqual(response.DisplayName, participant.DisplayName);
-            Assert.AreEqual(response.CaseTypeGroup, participant.CaseTypeGroup);
-            Assert.AreEqual(response.RefId, participant.RefId);
-            Assert.AreEqual(response.Representee, participant.Representee);
-            Assert.AreEqual(LinkType.Interpreter, participant.LinkedParticipants.FirstOrDefault(x => x.LinkedId == linkedId).LinkType);
+            ClassicAssert.AreEqual(response.Username, participant.Username);
+            ClassicAssert.AreEqual(response.CaseTypeGroup, participant.CaseTypeGroup);
+            ClassicAssert.AreEqual(response.Id, participant.Id);
+            ClassicAssert.AreEqual(response.FirstName, participant.FirstName);
+            ClassicAssert.AreEqual(response.LastName, participant.LastName);
+            ClassicAssert.AreEqual(response.ContactEmail, participant.ContactEmail);
+            ClassicAssert.AreEqual(response.ContactTelephone, participant.ContactTelephone);
+            ClassicAssert.AreEqual(Role.Individual, participant.Role);
+            ClassicAssert.AreEqual(response.HearingRole, participant.HearingRole);
+            ClassicAssert.AreEqual(ParticipantStatus.Available, participant.ParticipantStatus);
+            ClassicAssert.AreEqual(response.DisplayName, participant.DisplayName);
+            ClassicAssert.AreEqual(response.CaseTypeGroup, participant.CaseTypeGroup);
+            ClassicAssert.AreEqual(response.RefId, participant.RefId);
+            ClassicAssert.AreEqual(response.Representee, participant.Representee);
+            ClassicAssert.AreEqual(LinkType.Interpreter, participant.LinkedParticipants.FirstOrDefault(x => x.LinkedId == linkedId).LinkType);
         }
     }
 }

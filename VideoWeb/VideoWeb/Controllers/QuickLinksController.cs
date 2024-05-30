@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 
@@ -27,7 +25,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
-    public class QuickLinksController : Controller
+    public class QuickLinksController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
@@ -71,7 +69,7 @@ namespace VideoWeb.Controllers
             }
             catch(VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get conference with hearing id: {hearingId}");
+                _logger.LogError(e, "Unable to get conference with hearing id: {HearingId}", hearingId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -114,7 +112,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to join hearing: {hearingId} {joinRequest.Name} {joinRequest.Role}");
+                _logger.LogError(e, "Unable to join hearing: {HearingId}", hearingId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -136,7 +134,7 @@ namespace VideoWeb.Controllers
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
-            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+            _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
             await _conferenceCache.UpdateConferenceAsync(conference);
 
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);

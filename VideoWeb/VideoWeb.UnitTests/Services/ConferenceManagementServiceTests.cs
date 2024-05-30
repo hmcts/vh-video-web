@@ -60,8 +60,8 @@ public class ConferenceManagementServiceTests
         const bool handRaised = true;
 
 
-        Func<Task> action = async () => await _sut.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised);
-        action.Should().Throw<ParticipantNotFoundException>();
+        var action = async () => await _sut.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised);
+        action.Should().ThrowAsync<ParticipantNotFoundException>();
         
         EventHubClientMock.Verify(
             x => x
@@ -81,7 +81,7 @@ public class ConferenceManagementServiceTests
             
         var judge = _conference.Participants.Single(x => x.IsJudge());
         EventHubContextMock.Verify(
-            x => x.Clients.Group(It.Is<string>(s => s == judge.Username.ToLowerInvariant()))
+            x => x.Clients.Group(It.Is<string>(s => string.Equals(s, judge.Username.ToLowerInvariant())))
                 .ParticipantHandRaiseMessage(participant.Id, conferenceId, handRaised), Times.Once);
             
         EventHubContextMock.Verify(

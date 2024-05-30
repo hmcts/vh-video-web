@@ -10,9 +10,9 @@ import { RoleGuard } from './role-guard';
 @Injectable({
     providedIn: 'root'
 })
-export class JudgeGuard extends RoleGuard {
-    protected roles = [Role.Judge];
-    protected loggerPrefix = '[JudgeGuard]';
+export class JudgeOrJudicialOfficeHolderGuard extends RoleGuard {
+    protected roles = [Role.Judge, Role.JudicialOfficeHolder];
+    protected loggerPrefix = '[JudgeOrJudicialOfficeHolderGuard]';
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
