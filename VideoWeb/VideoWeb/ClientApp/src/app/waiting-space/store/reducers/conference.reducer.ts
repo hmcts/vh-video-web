@@ -37,14 +37,18 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const updatedConference: VHConference = { ...conference, status: status };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateParticipantStatus, (state, { conferenceId, participantId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const participants = conference.participants.map(participant => {
             if (participant.id === participantId) {
@@ -64,7 +68,9 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.updateEndpointStatus, (state, { conferenceId, endpointId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const endpoints = conference.endpoints.map(endpoint => {
             if (endpoint.id === endpointId) {
@@ -84,7 +90,9 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.updateParticipantList, (state, { conferenceId, participants }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         // retain the pexip info for the participants (this does not come from the API)
         const updatedParticipants = participants.map(p => {
@@ -104,7 +112,9 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.updateExistingEndpoints, (state, { conferenceId, endpoints }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const updatedList: VHEndpoint[] = [];
 
@@ -127,7 +137,9 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.removeExistingEndpoints, (state, { conferenceId, removedEndpointIds }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const updatedList = conference.endpoints.filter(e => !removedEndpointIds.includes(e.id));
 
@@ -135,7 +147,9 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.addNewEndpoints, (state, { conferenceId, endpoints }) => {
         const conference = getCurrentConference(state, conferenceId);
-        if (!conference) return state;
+        if (!conference) {
+            return state;
+        }
 
         const newOnly = endpoints.filter(e => !conference.endpoints.some(ep => ep.id === e.id));
         const updatedList = [...conference.endpoints, ...newOnly];
