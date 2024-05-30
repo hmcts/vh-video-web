@@ -14,7 +14,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("hearing-venues")]
     [Authorize(AppRoles.VenueManagementRole)]
-    public class VenuesController : ControllerBase
+    public class VenuesController : Controller
     {
         private readonly ILogger<VenuesController> _logger;
         private readonly IBookingsApiClient _bookingsApiClient;

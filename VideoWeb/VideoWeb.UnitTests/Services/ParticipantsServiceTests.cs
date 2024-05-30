@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
@@ -28,10 +29,11 @@ namespace VideoWeb.UnitTests.Services
         private AutoMock _mocker;
         private ConferenceDetailsResponse _testConference;
         private ParticipantDetailsResponse _participantDetailsResponse;
-        private ParticipantService _service;
+        private IParticipantService _service;
         private UserProfileResponse _staffMemberProfile;
         private const string ContactEmail = "staffMemberEmail@hmcts.net";
-        
+        private ClaimsPrincipal _claimsPrincipal;
+
         [SetUp]
         public void Setup()
         {
@@ -47,7 +49,7 @@ namespace VideoWeb.UnitTests.Services
                 DisplayName = "DisplayName",
                 Name = "FullName"
             };
-            new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
+            _claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
         }
 
         [Test]
@@ -71,14 +73,14 @@ namespace VideoWeb.UnitTests.Services
         [Test]
         public void Should_return_addStaffMemberRequest()
         {
-            var result = _service.InitialiseAddStaffMemberRequest(_staffMemberProfile, ContactEmail);
-            result.Should().BeEquivalentTo(new AddStaffMemberRequest
+            var result = _service.InitialiseAddStaffMemberRequest(_staffMemberProfile, ContactEmail, _claimsPrincipal);
+            result.Should().Equals(new AddStaffMemberRequest
             {
                 FirstName = _staffMemberProfile.FirstName,
                 LastName = _staffMemberProfile.LastName,
                 Username = _staffMemberProfile.Username,
                 HearingRole = HearingRoleName.StaffMember,
-                Name = _staffMemberProfile.Name,
+                Name = _claimsPrincipal.Identity.Name,
                 DisplayName = _staffMemberProfile.DisplayName,
                 UserRole = UserRole.StaffMember,
                 ContactEmail = ContactEmail

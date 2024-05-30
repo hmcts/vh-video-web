@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
@@ -37,17 +37,13 @@ describe('JudgeGuard', () => {
         guard = new JudgeGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger(), launchDarklyServiceSpy);
     });
 
-    const unauthorisedRoles = Object.values(Role).filter(role => role !== Role.Judge);
-
-    unauthorisedRoles.forEach(role => {
-        it(`should not be able to activate component if role is ${role}`, async () => {
-            const profile = new UserProfileResponse({ roles: [role] });
-            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-            spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
-            const result = await guard.canActivate(null, null);
-            expect(result).toBeFalsy();
-            expect(router.navigate).toHaveBeenCalledWith(['/home']);
-        });
+    it('should not be able to activate component if role is not Judge', async () => {
+        const profile = new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
+        const result = await guard.canActivate(null, null);
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should be able to activate component if role is Judge', async () => {
@@ -58,7 +54,15 @@ describe('JudgeGuard', () => {
         expect(result).toBeTruthy();
     });
 
-    it('should log out when user profile cannot be retrieved', async () => {
+    it('should be able to activate component if role is JudicialOfficeHolder', async () => {
+        const profile = new UserProfileResponse({ roles: [Role.JudicialOfficeHolder] });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
+        const result = await guard.canActivate(null, null);
+        expect(result).toBeTruthy();
+    });
+
+    it('should logout when user profile cannot be retrieved', async () => {
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);
@@ -66,7 +70,7 @@ describe('JudgeGuard', () => {
         expect(router.navigate).toHaveBeenCalledWith(['/logout']);
     });
 
-    it('should return to login when user profile is not authorised', async () => {
+    it('should back to login when user profile is not authoried', async () => {
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
 
         const result = await guard.canActivate(null, null);

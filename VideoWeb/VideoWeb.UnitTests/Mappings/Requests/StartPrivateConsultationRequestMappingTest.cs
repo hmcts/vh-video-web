@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
 
             result.ConferenceId.Should().Be(request.ConferenceId);
             result.RequestedBy.Should().Be(request.RequestedBy);
-            result.RoomType.Should().Be((VideoApi.Contract.Enums.VirtualCourtRoomType)request.RoomType);
+            result.RoomType.Should().Equals(request.RoomType);
         }
     }
 }

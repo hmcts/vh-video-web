@@ -15,7 +15,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("profile")]
-    public class ProfilesController : ControllerBase
+    public class ProfilesController : Controller
     {
         private readonly ILogger<ProfilesController> _logger;
         private readonly IMapperFactory _mapperFactory;

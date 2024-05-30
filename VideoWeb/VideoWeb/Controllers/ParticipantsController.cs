@@ -28,7 +28,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class ParticipantsController : ControllerBase
+    public class ParticipantsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
@@ -86,7 +86,7 @@ namespace VideoWeb.Controllers
             }
             catch (ConferenceNotFoundException e)
             {
-                _logger.LogError(e, "Unable to retrieve conference details");
+                _logger.LogError(e, $"Unable to retrieve conference details");
                 return BadRequest(e);
             }
             
@@ -98,7 +98,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to update participant status for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
+                _logger.LogError(e, $"Unable to update participant status for " +
+                                    $"participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -125,7 +126,7 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e,
-                    "Unable to get heartbeat data for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
+                    $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -203,8 +204,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, "Unable to retrieve conference: {ConferenceId}", conferenceId);
-
+                _logger.LogError(ex, $"Unable to retrieve conference: ${conferenceId}");
+                
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
@@ -277,9 +278,10 @@ namespace VideoWeb.Controllers
                 var claimsPrincipalToUserProfileResponseMapper =
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
-
-                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
-
+                
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId,
+                    _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username, User));
+                
                 await _participantService.AddStaffMemberToConferenceCache(response);
                 
                 var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
@@ -291,7 +293,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to add staff member for conference: {ConferenceId}", conferenceId);
+                _logger.LogError(e, $"Unable to add staff member for " +
+                                    $"conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

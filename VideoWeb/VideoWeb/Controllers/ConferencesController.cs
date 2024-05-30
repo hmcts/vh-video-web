@@ -32,7 +32,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class ConferencesController : ControllerBase
+    public class ConferencesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferencesController> _logger;
@@ -393,7 +393,7 @@ namespace VideoWeb.Controllers
             return StatusCode(e.StatusCode, e.Response);
         }
 
-        private ObjectResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
+        private ActionResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
         {
             _logger.LogError(e, "Unable to get conferences for user");
             return StatusCode(e.StatusCode, e.Response);

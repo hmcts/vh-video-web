@@ -9,7 +9,12 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class HeartbeatRequestMapperTests
     {
-        private readonly HeartbeatRequestMapper _mapper = new();
+        private readonly IHeartbeatRequestMapper _mapper;
+
+        public HeartbeatRequestMapperTests()
+        {
+            _mapper = new HeartbeatRequestMapper();    
+        }
         
         [Test]
         public void Should_map_to_add_heartbeat_request()
@@ -91,7 +96,7 @@ namespace VideoWeb.UnitTests.Mappings
                 OutgoingAudioPercentageLostRecent = 3m,
                 OutgoingVideoPercentageLostRecent = 4m
             })
-            .Should().NotBe(null)
+            .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
             .And.Be(HeartbeatHealth.Good);
             
             // Bad if greater than 15 (include)
@@ -102,7 +107,7 @@ namespace VideoWeb.UnitTests.Mappings
                     OutgoingAudioPercentageLostRecent = 16m,
                     OutgoingVideoPercentageLostRecent = 4m
                 })
-                .Should().NotBe(null)
+                .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
                 .And.Be(HeartbeatHealth.Bad);
 
             // Poor between 10(inculde) and 15
@@ -113,7 +118,7 @@ namespace VideoWeb.UnitTests.Mappings
                     OutgoingAudioPercentageLostRecent = 3m,
                     OutgoingVideoPercentageLostRecent = 14m
                 })
-                .Should().NotBe(null)
+                .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
                 .And.Be(HeartbeatHealth.Poor);
         }
     }
