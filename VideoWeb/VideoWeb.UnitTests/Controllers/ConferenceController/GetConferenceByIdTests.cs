@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -85,7 +86,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
             var response = (ConferenceResponse)typedResult.Value;
             response.CaseNumber.Should().Be(conference.CaseNumber);
-            response.Participants[0].Role.Should().Be(UserRole.Individual);
+            response.Participants[0].Role.Should().Be((Role)UserRole.Individual);
             response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
@@ -180,7 +181,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var response = (await _controller.GetConferenceByIdAsync(conferenceId)).Result as NoContentResult;
 
-            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
+            ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")

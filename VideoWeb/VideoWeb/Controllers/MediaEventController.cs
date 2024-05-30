@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class MediaEventController : Controller
+    public class MediaEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MediaEventController> _logger;
@@ -56,7 +56,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to add media event for conference: {conferenceId}");
+                _logger.LogError(e, "Unable to add media event for conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -88,7 +88,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to add self-test failure event for conference: {conferenceId}");
+                _logger.LogError(e, "Unable to add self-test failure event for conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

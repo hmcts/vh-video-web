@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
 
             result.ConferenceId.Should().Be(request.ConferenceId);
             result.Lock.Should().Be(request.Lock);
-            result.RoomLabel.Should().Equals(request.RoomLabel);
+            result.RoomLabel.Should().BeSameAs(request.RoomLabel);
         }
     }
 }

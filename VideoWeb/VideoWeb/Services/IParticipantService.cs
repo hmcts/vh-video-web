@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
@@ -11,7 +8,7 @@ namespace VideoWeb.Services
     public interface IParticipantService
     {
         AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
-            string staffMemberEmail, ClaimsPrincipal user);
+            string staffMemberEmail);
 
         bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference);
 

@@ -7,6 +7,7 @@ using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             resultParticipant.Id.Should().Be(participant.Id);
             resultParticipant.Username.Should().Be(participant.Username);
-            resultParticipant.Role.Should().Be(participant.UserRole);
+            resultParticipant.Role.Should().Be((Role)participant.UserRole);
             resultParticipant.HearingRole.Should().Be(participant.HearingRole);
             resultParticipant.DisplayName.Should().Be(participant.DisplayName);
             resultParticipant.FirstName.Should().Be(participant.FirstName);

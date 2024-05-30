@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Services;
@@ -51,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var response = await _sut.GetVideoControlStatusesForConference(_conferenceId) as NoContentResult;
 
-            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
+            ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
         [Test]

@@ -45,11 +45,9 @@ namespace VideoWeb.Services
             _bookingApiClient = bookingApiClient;
             _conferenceService = conferenceService;
         }
-        
-        public ParticipantService(IBookingsApiClient bookingApiClient, IConferenceService conferenceService)
+
+        public ParticipantService()
         {
-            _bookingApiClient = bookingApiClient;
-            _conferenceService = conferenceService;
         }
         
         public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
@@ -88,84 +86,9 @@ namespace VideoWeb.Services
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
             
-            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+            _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
             await _conferenceCache.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
-        }
-        
-        public async Task<List<ParticipantForUserResponse>> GetParticipantsByConferenceIdAsync(Guid conferenceId)
-        {
-            var conference = await _conferenceService.GetOrAddConferenceAsync(conferenceId);
-            
-            var participantContactDetailsResponseVhoMapper = new ParticipantInConferenceResponseMapper();
-            
-            
-            return conference.Participants.Select(participantContactDetailsResponseVhoMapper.Map).ToList();
-        }
-        
-        public async Task<List<ParticipantContactDetailsResponseVho>>
-            GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
-        {
-            var conference = await _conferenceService.GetOrAddConferenceAsync(conferenceId);
-            
-            _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
-            var hostsInHearingsToday = await _videoApiClient.GetHostsInHearingsTodayAsync();
-            
-            var participantContactDetailsResponseVhoMapper = _mapperFactory
-                .Get<Conference, IEnumerable<VideoApi.Contract.Responses.ParticipantInHearingResponse>,
-                    IEnumerable<ParticipantContactDetailsResponseVho>>();
-            var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
-            
-            return response.ToList();
-        }
-        
-        public async Task<LoggedParticipantResponse> GetCurrentParticipantAsync(Guid conferenceId,
-            ClaimsPrincipal user)
-        {
-            var participantsRoles = new List<Role>
-            {
-                Role.Judge,
-                Role.Individual,
-                Role.Representative,
-                Role.JudicialOfficeHolder,
-                Role.QuickLinkParticipant,
-                Role.QuickLinkObserver,
-                Role.StaffMember
-            };
-            
-            var claimsPrincipalToUserProfileResponseMapper =
-                _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-            var profile = claimsPrincipalToUserProfileResponseMapper.Map(user);
-            
-            var response = new LoggedParticipantResponse
-            {
-                AdminUsername = user.Identity.Name,
-                DisplayName = "Admin",
-                Role = Role.VideoHearingsOfficer
-            };
-            
-            if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
-            {
-                var conference = await _conferenceService.GetOrAddConferenceAsync(conferenceId);
-                
-                var participantFromCache = conference.Participants
-                    .SingleOrDefault(
-                        x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
-                
-                if (participantFromCache == null)
-                {
-                    throw new ParticipantNotFoundException(conferenceId, profile.Username);
-                }
-                
-                response = new LoggedParticipantResponse
-                {
-                    ParticipantId = participantFromCache.Id,
-                    DisplayName = participantFromCache.DisplayName,
-                    Role = participantFromCache.Role
-                };
-            }
-            
-            return response;
         }
     }
 }
