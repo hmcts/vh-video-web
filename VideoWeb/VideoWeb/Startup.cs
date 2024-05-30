@@ -98,8 +98,8 @@ namespace VideoWeb
             services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
             services.AddSingleton(vodafoneTokenSettings);
 
-            var redis = Configuration.GetSection("RedisConfiguration").Get<RedisConfiguration>();
-            services.AddSingleton(redis);
+            // var redis = Configuration.GetSection("RedisConfiguration").Get<RedisConfiguration>();
+            // services.AddSingleton(redis);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);

@@ -172,20 +172,20 @@ namespace VideoWeb.Extensions
                     options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
                 });
 
-            var redisConfig = container.GetService<RedisConfiguration>();
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.ConfigurationOptions = new ConfigurationOptions
-                {
-                    EndPoints = { redisConfig.Endpoint },
-                    Password = redisConfig.Password,
-                    ConnectRetry = 1,
-                    BacklogPolicy = BacklogPolicy.FailFast,
-                    AbortOnConnectFail = false,
-                    ConnectTimeout = 3000,
-                    Ssl = true
-                };
-            });
+            // var redisConfig = container.GetService<RedisConfiguration>();
+            // services.AddStackExchangeRedisCache(options =>
+            // {
+            //     options.ConfigurationOptions = new ConfigurationOptions
+            //     {
+            //         EndPoints = { redisConfig.Endpoint },
+            //         Password = redisConfig.Password,
+            //         ConnectRetry = 1,
+            //         BacklogPolicy = BacklogPolicy.FailFast,
+            //         AbortOnConnectFail = false,
+            //         ConnectTimeout = 3000,
+            //         Ssl = true
+            //     };
+            // });
             return services;
         }
 
