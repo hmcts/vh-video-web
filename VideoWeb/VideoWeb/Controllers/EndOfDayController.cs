@@ -8,13 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
-using VideoApi.Contract.Enums;
-using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers.Sorting;
 using VideoWeb.Mappings;
-using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
 
 namespace VideoWeb.Controllers;
 
