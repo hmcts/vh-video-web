@@ -4,7 +4,7 @@ import { ConferenceUpdated, ParticipantUpdated } from './video-call-models';
 
 describe('ParticipantUpdated', () => {
     const participantDisplayName = new ConferenceTestData().getConferenceDetailNow().participants[0].tiled_display_name;
-    let inputs = ['No', null];
+    let inputs: string[] = [];
 
     it('should return muted status', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
