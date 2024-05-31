@@ -9,6 +9,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.JsonWebTokens;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common;
@@ -127,7 +128,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         }
 
         [Test]
-        public async Task ShouldAddClaimsOnTokenValidation()
+        public async Task ShouldAddClaimsOnTokenValidation_WhenSecurityTokenIs_JwtSecurityToken()
         {
             // Arrange
             var claimsPrincipal = new EjudClaimsPrincipalBuilder().Build();
@@ -148,6 +149,41 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             // Act
             await sut.GetClaimsPostTokenValidation(tokenValidatedContext, new JwtBearerOptions());
 
+            // Assert
+            var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
+            identity.FindFirst(identity.RoleClaimType).Value.Should().Be("Judge");
+        }
+        
+        [Test]
+        public async Task ShouldAddClaimsOnTokenValidation_WhenSecurityTokenIs_JsonWebToken()
+        {
+            // Arrange
+            var claimsPrincipal = new EjudClaimsPrincipalBuilder().Build();
+            var httpContext = new DefaultHttpContext
+            {
+                User = claimsPrincipal,
+                RequestServices = _mocker.Mock<IServiceProvider>().Object
+            };
+            
+            var options = new JwtBearerOptions();
+            sut.SetJwtBearerOptions(options);
+            var jwtSecurityToken = new JwtSecurityToken(issuer: "Issuer", claims: claimsPrincipal.Claims);
+            // convert to JsonWebToken
+            var handler = new JwtSecurityTokenHandler();
+            // Write the JwtSecurityToken to a string
+            var jwtString = handler.WriteToken(jwtSecurityToken);
+            
+            // Create a new JsonWebToken from the string
+            var jsonWebToken = new JsonWebToken(jwtString);
+            var tokenValidatedContext = new TokenValidatedContext(httpContext, new AuthenticationScheme("name", "displayName", typeof(AuthenticationHandler<JwtBearerOptions>)), options)
+            {
+                Principal = claimsPrincipal,
+                SecurityToken = jsonWebToken
+            };
+            
+            // Act
+            await sut.GetClaimsPostTokenValidation(tokenValidatedContext, new JwtBearerOptions());
+            
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
             identity.FindFirst(identity.RoleClaimType).Value.Should().Be("Judge");
