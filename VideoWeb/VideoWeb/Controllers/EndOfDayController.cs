@@ -47,33 +47,20 @@ public class EndOfDayController : ControllerBase
     [HttpGet("active-sessions")]
     [SwaggerOperation(OperationId = "GetActiveConferences")]
     [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetActiveConferences()
+    public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences()
     {
-        try
-        {
-            _logger.LogDebug("Getting all active conferences");
-            var allConferences =
-                await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(new List<string>());
-            
-            var activeConferences = allConferences.Where(x => x.Status == ConferenceState.Paused || x.Status == ConferenceState.InSession ||
-                                                              (x.Status == ConferenceState.Closed &&
-                                                               x.Participants.Exists(p => p.Status == ParticipantState.InConsultation))).ToList();
-            var allocatedHearings =
-                await _bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId));
-            
-            var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-            var response = activeConferences.Select(c => conferenceForVhOfficerResponseMapper.Map(c,
-                allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
-            response.Sort(new SortConferenceForVhoOfficerHelper());
-            return Ok(response);
-            
-        }
-        catch (VideoApiException e)
-        {
-            _logger.LogError(e, "Unable to get conferences for user");
-            return StatusCode(e.StatusCode, e.Response);
-        }
+        _logger.LogDebug("Getting all active conferences");
+        var activeConferences =
+            await _videoApiClient.GetActiveConferencesAsync();
         
+        var allocatedHearings =
+            await _bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId));
         
+        var conferenceForVhOfficerResponseMapper = _mapperFactory
+            .Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
+        var response = activeConferences.Select(c => conferenceForVhOfficerResponseMapper.Map(c,
+            allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
+        response.Sort(new SortConferenceForVhoOfficerHelper());
+        return Ok(response);
     }
 }
