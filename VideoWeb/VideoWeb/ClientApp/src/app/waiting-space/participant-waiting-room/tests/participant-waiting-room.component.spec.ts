@@ -32,6 +32,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -78,6 +79,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         const preferences = new VideoCallPreferences();
         preferences.audioOnly = false;
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
@@ -132,7 +137,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             userMediaServiceSpy,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

@@ -5,14 +5,11 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AllowedEndpointResponse,
-    ConferenceResponse,
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantStatus,
-    Role,
-    VideoEndpointResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -22,18 +19,19 @@ import { CaseTypeGroup } from '../models/case-type-group';
 
 import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
-    nonJudgeParticipants: ParticipantResponse[];
-    judge: ParticipantResponse;
-    staffMembers: ParticipantResponse[];
-    endpoints: VideoEndpointResponse[];
-    observers: ParticipantResponse[];
-    panelMembers: ParticipantResponse[];
-    wingers: ParticipantResponse[];
+    nonJudgeParticipants: VHParticipant[] = [];
+    judge: VHParticipant;
+    staffMembers: VHParticipant[] = [];
+    endpoints: VHEndpoint[] = [];
+    observers: VHParticipant[] = [];
+    panelMembers: VHParticipant[] = [];
+    wingers: VHParticipant[] = [];
 
     displayParticipantList = false;
 
@@ -41,7 +39,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
-    private _conference: ConferenceResponse;
+    private _conference: VHConference;
 
     protected constructor(
         protected consultationService: ConsultationService,
@@ -60,14 +58,14 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
             return true;
         } else {
             const loggedInParticipant = this._conference.participants.find(x => x.id === this.loggedInUser.participant_id);
-            const hasLinkedParticipants = loggedInParticipant.linked_participants.length;
-            const currentRoomIsJudicial = loggedInParticipant.current_room?.label.startsWith('JudgeJOH');
+            const hasLinkedParticipants = loggedInParticipant.linkedParticipants.length;
+            const currentRoomIsJudicial = loggedInParticipant.room?.label.startsWith('JudgeJOH');
 
             return !currentRoomIsJudicial && !hasLinkedParticipants;
         }
     }
 
-    get conference(): ConferenceResponse {
+    get conference(): VHConference {
         return this._conference;
     }
 
@@ -81,12 +79,15 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         );
     }
 
-    @Input() set conference(conference: ConferenceResponse) {
+    @Input() set conference(conference: VHConference) {
         this._conference = conference;
         this.initParticipants();
     }
 
     ngOnChanges() {
+        if (!this._conference) {
+            return;
+        }
         this.initParticipants();
         this.displayParticipantList = this.participantCount > 0;
     }
@@ -101,8 +102,8 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         this.sortEndpoints();
     }
 
-    isCaseTypeNone(participant: ParticipantResponse): boolean {
-        return !participant.case_type_group || participant.case_type_group === 'None';
+    isCaseTypeNone(participant: VHParticipant): boolean {
+        return !participant.caseTypeGroup || participant.caseTypeGroup === 'None';
     }
 
     executeTeardown(): void {
@@ -131,26 +132,26 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         this.focusService.restoreFocus();
     }
 
-    isParticipantAvailable(participant: ParticipantResponse): boolean {
+    isParticipantAvailable(participant: VHParticipant): boolean {
         return participant.status === ParticipantStatus.Available;
     }
 
-    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
+    isEndpointAvailable(endpoint: VHEndpoint): boolean {
         return endpoint.status === EndpointStatus.Connected;
     }
 
-    isWitness(participant: ParticipantResponse): boolean {
-        return participant.hearing_role === HearingRole.WITNESS;
+    isWitness(participant: VHParticipant): boolean {
+        return participant.hearingRole === HearingRole.WITNESS;
     }
 
-    hasInterpreterLink(participant: ParticipantResponse) {
-        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    hasInterpreterLink(participant: VHParticipant) {
+        return participant?.linkedParticipants.some(x => x.linkedType === LinkType.Interpreter);
     }
 
-    getHearingRole(participant: ParticipantResponse) {
-        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
+    getHearingRole(participant: VHParticipant) {
+        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearingRole));
         const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
-        if (participant.hearing_role === HearingRole.INTERPRETER) {
+        if (participant.hearingRole === HearingRole.INTERPRETER) {
             const interpreteeName = this.getInterpreteeName(participant.id);
             return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
         }
@@ -168,7 +169,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
-        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linkedParticipants[0].linkedId).name;
     }
 
     protected filterNonJudgeParticipants(): void {
@@ -177,30 +178,29 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                 x =>
                     x.role !== Role.Judge &&
                     x.role !== Role.JudicialOfficeHolder &&
-                    x.case_type_group !== CaseTypeGroup.OBSERVER &&
-                    x.hearing_role !== HearingRole.OBSERVER &&
+                    x.caseTypeGroup !== CaseTypeGroup.OBSERVER &&
+                    x.hearingRole !== HearingRole.OBSERVER &&
                     x.role !== Role.QuickLinkObserver &&
                     x.role !== Role.QuickLinkParticipant &&
-                    x.hearing_role !== HearingRole.STAFF_MEMBER
+                    x.hearingRole !== HearingRole.STAFF_MEMBER
             )
             .sort(
-                (a, b) =>
-                    a.case_type_group.localeCompare(b.case_type_group) || (a.name || a.display_name).localeCompare(b.name || b.display_name)
+                (a, b) => a.caseTypeGroup.localeCompare(b.caseTypeGroup) || (a.name || a.displayName).localeCompare(b.name || b.displayName)
             );
 
         nonJudgeParts = [
             ...nonJudgeParts,
             ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkParticipant)
-                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+                .sort((a, b) => a.displayName.localeCompare(b.displayName))
         ];
 
         const interpreterList = nonJudgeParts.filter(
             x =>
                 x.role === Role.Individual &&
-                x.hearing_role === HearingRole.INTERPRETER &&
-                Array.isArray(x.linked_participants) &&
-                x.linked_participants.length > 0
+                x.hearingRole === HearingRole.INTERPRETER &&
+                Array.isArray(x.linkedParticipants) &&
+                x.linkedParticipants.length > 0
         );
         if (!interpreterList) {
             this.nonJudgeParticipants = nonJudgeParts;
@@ -213,16 +213,16 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         let observers = this._conference.participants
             .filter(
                 x =>
-                    x.case_type_group === CaseTypeGroup.OBSERVER ||
-                    (x.hearing_role === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
+                    x.caseTypeGroup === CaseTypeGroup.OBSERVER ||
+                    (x.hearingRole === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
             )
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+            .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         observers = [
             ...observers,
             ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkObserver)
-                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+                .sort((a, b) => a.displayName.localeCompare(b.displayName))
         ];
 
         this.observers = observers;
@@ -230,8 +230,8 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     protected filterPanelMembers(): void {
         this.panelMembers = this._conference.participants
-            .filter(x => this.isParticipantPanelMember(x.hearing_role))
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+            .filter(x => this.isParticipantPanelMember(x.hearingRole))
+            .sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
     protected isParticipantPanelMember(hearingRole: string): boolean {
         return HearingRoleHelper.isPanelMember(hearingRole);
@@ -244,7 +244,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     protected filterStaffMember(): void {
         this.staffMembers = this._conference.participants
             .filter(x => x.role === Role.StaffMember)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+            .sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
 
     protected camelToSpaced(word: string) {
@@ -266,15 +266,12 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
             .toLowerCase();
     }
 
-    private orderForInterpreter(
-        nonJudgeParticipants: ParticipantResponse[],
-        interpreterList: ParticipantResponse[]
-    ): ParticipantResponse[] {
+    private orderForInterpreter(nonJudgeParticipants: VHParticipant[], interpreterList: VHParticipant[]): VHParticipant[] {
         const sortedNonJudgeParticipants = [...nonJudgeParticipants];
 
         interpreterList.forEach(interpreter => {
-            const linkDetails = interpreter.linked_participants[0];
-            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+            const linkDetails = interpreter.linkedParticipants[0];
+            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linkedId);
 
             const interpreterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
             const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id);
@@ -293,11 +290,11 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     private filterWingers(): void {
         this.wingers = this._conference.participants
-            .filter(x => x.hearing_role === HearingRole.WINGER)
+            .filter(x => x.hearingRole === HearingRole.WINGER)
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     private sortEndpoints(): void {
-        this.endpoints = [...this._conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
+        this.endpoints = [...this._conference.endpoints].sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
 }

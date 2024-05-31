@@ -20,6 +20,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -79,7 +80,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -93,6 +95,10 @@ describe('JohWaitingRoomComponent eventhub events', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     it('should play hearing starting sound when "in session" message received', fakeAsync(() => {

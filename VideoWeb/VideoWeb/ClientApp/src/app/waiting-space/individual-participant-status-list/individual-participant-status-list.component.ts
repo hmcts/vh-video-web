@@ -4,11 +4,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHParticipant } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -17,7 +18,7 @@ import { FocusService } from 'src/app/services/focus.service';
 })
 export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     ParticipantStatus = ParticipantStatus;
-    wingers: ParticipantResponse[];
+    wingers: VHParticipant[] = [];
     hearingVenueIsInScotland$: Observable<boolean>;
 
     constructor(
@@ -42,13 +43,13 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.executeTeardown();
     }
 
-    getParticipantStatusText(participant: ParticipantResponse): string {
+    getParticipantStatusText(participant: VHParticipant): string {
         return participant.status === ParticipantStatus.Available
             ? this.translateService.instant('individual-participant-status-list.available')
             : this.translateService.instant('individual-participant-status-list.unavailable');
     }
 
-    getParticipantStatusCss(participant: ParticipantResponse): string {
+    getParticipantStatusCss(participant: VHParticipant): string {
         if (
             (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
             this.hasUnavailableLinkedParticipants(participant)
@@ -65,7 +66,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         }
     }
 
-    getParticipantStatus(participant: ParticipantResponse): ParticipantStatus {
+    getParticipantStatus(participant: VHParticipant): ParticipantStatus {
         if (this.hasUnavailableLinkedParticipants(participant)) {
             return null;
         }
@@ -73,14 +74,14 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         return participant.status;
     }
 
-    isLoggedInParticipant(participant: ParticipantResponse) {
+    isLoggedInParticipant(participant: VHParticipant) {
         return participant.id === this.loggedInUser.participant_id;
     }
 
-    private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {
-        if (participant.linked_participants.length) {
-            return participant.linked_participants.some(lp => {
-                const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linked_id);
+    private hasUnavailableLinkedParticipants(participant: VHParticipant) {
+        if (participant.linkedParticipants.length) {
+            return participant.linkedParticipants.some(lp => {
+                const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linkedId);
                 return (
                     linkedParticipant &&
                     linkedParticipant.status !== ParticipantStatus.Available &&

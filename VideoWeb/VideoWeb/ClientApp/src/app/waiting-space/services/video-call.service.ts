@@ -26,6 +26,11 @@ import {
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
+import { Store } from '@ngrx/store';
+import { ConferenceActions } from '../store/actions/conference.actions';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-contract-to-state-model-mappers';
+
 /* eslint-disable @typescript-eslint/naming-convention */
 declare let PexRTC: any;
 
@@ -76,7 +81,8 @@ export class VideoCallService {
         private configService: ConfigService,
         private heartbeatService: HeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
-        private streamMixerService: StreamMixerService
+        private streamMixerService: StreamMixerService,
+        private store: Store<ConferenceState>
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -539,8 +545,11 @@ export class VideoCallService {
 
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
         this.logger.debug(`${this.loggerPrefix} handling participant created`);
-
-        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
+        this.store.dispatch(
+            ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
+        );
+        this.onParticipantCreatedSubject.next(participant);
     }
 
     private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
@@ -549,8 +558,10 @@ export class VideoCallService {
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
-        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
+        ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) });
+        this.videoCallEventsService.handleParticipantUpdated(participant);
+        this.onParticipantUpdatedSubject.next(participant);
     }
 
     private handleError(error: string) {
