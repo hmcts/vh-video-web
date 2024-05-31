@@ -21,6 +21,8 @@ import { HearingRole } from '../models/hearing-role-model';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 import { FocusService } from 'src/app/services/focus.service';
 import * as exp from 'constants';
+import { VHConference } from '../store/models/vh-conference';
+import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -30,7 +32,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
     const logger: Logger = new MockLogger();
-    let conference: ConferenceResponse;
+    let conference: VHConference;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let focusServiceSpy: jasmine.SpyObj<FocusService>;
@@ -52,10 +54,12 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     beforeEach(() => {
-        conference = testData.getConferenceDetailNow();
-        const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
+        conference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+        const participantObserverPanelMember = testData
+            .getListOfParticipantsObserverAndPanelMembers()
+            .map(x => mapParticipantToVHParticipant(x));
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
-        const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
+        const participantWinger = new ConferenceTestData().getListOfParticipantsWingers().map(x => mapParticipantToVHParticipant(x));
         participantWinger.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(
             consultationService,
@@ -68,7 +72,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         );
         component.conference = conference;
         component.ngOnInit();
-        editedStaffMember = conference.participants.find(p => p.hearing_role === HearingRole.STAFF_MEMBER);
+        editedStaffMember = conference.participants.find(p => p.hearingRole === HearingRole.STAFF_MEMBER);
     });
 
     afterEach(() => {
@@ -90,7 +94,7 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(component.staffMembers).toBeDefined();
         expect(component.staffMembers.length).toBe(1);
-        expect(component.staffMembers[0].display_name).toBe(
+        expect(component.staffMembers[0].displayName).toBe(
             testData.getListOfParticipantDetails().find(p => p.hearing_role === HearingRole.STAFF_MEMBER).display_name
         );
 
@@ -106,7 +110,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should show input template for change judge display name', () => {
         component.changeJudgeNameShow();
         expect(component.showChangeJudgeDisplayName).toBe(true);
-        expect(component.newJudgeDisplayName).toBe(component.judge.display_name);
+        expect(component.newJudgeDisplayName).toBe(component.judge.displayName);
         expect(focusServiceSpy.storeFocus).toHaveBeenCalled();
     });
 
@@ -123,27 +127,33 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(component.showChangeStaffMemberDisplayName).toBe(true);
         expect(component.canChangeStaffMemberName(editedStaffMember.id)).toBe(true);
-        expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name);
+        expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).displayName);
         expect(focusServiceSpy.storeFocus).toHaveBeenCalled();
     });
 
     it('should not show input template for changing staff member display name if for a different staff member', () => {
-        const participant5 = new ParticipantResponseVho({
-            id: 'FRGT1318-4965-49AF-A887-DED64554429T',
-            name: 'Staff Member name 2',
-            status: ParticipantStatus.Available,
-            role: Role.StaffMember,
-            display_name: 'Staff Member display name 2',
-            case_type_group: 'Staff Member',
-            tiled_display_name: 'Staff Member 2;Staff Member 2;9F681318-4965-49AF-A887-DED64554429T',
-            hearing_role: HearingRole.STAFF_MEMBER,
-            current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
-            linked_participants: []
-        });
-        component.conference.participants.push(participant5);
-        component.loggedInUser = conference.participants.find(
-            p => p.hearing_role === HearingRole.STAFF_MEMBER && p.id !== editedStaffMember.id
+        const participant5 = mapParticipantToVHParticipant(
+            new ParticipantResponseVho({
+                id: 'FRGT1318-4965-49AF-A887-DED64554429T',
+                name: 'Staff Member name 2',
+                status: ParticipantStatus.Available,
+                role: Role.StaffMember,
+                display_name: 'Staff Member display name 2',
+                case_type_group: 'Staff Member',
+                tiled_display_name: 'Staff Member 2;Staff Member 2;9F681318-4965-49AF-A887-DED64554429T',
+                hearing_role: HearingRole.STAFF_MEMBER,
+                current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
+                linked_participants: []
+            })
         );
+        component.conference.participants.push(participant5);
+        const user = conference.participants.find(p => p.hearingRole === HearingRole.STAFF_MEMBER && p.id !== editedStaffMember.id);
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: user.id,
+            display_name: user.displayName,
+            role: user.role,
+            admin_username: user.username
+        });
 
         expect(component.canChangeStaffMemberName(editedStaffMember.id)).toBe(false);
     });
@@ -164,7 +174,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         await component.saveJudgeDisplayName();
-        expect(component.judge.display_name).toBe(newName);
+        expect(component.judge.displayName).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
@@ -204,7 +214,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);
         await component.saveStaffMemberDisplayName(editedStaffMember.id);
-        expect(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name).toBe(newName);
+        expect(component.staffMembers.find(p => p.id === editedStaffMember.id).displayName).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();

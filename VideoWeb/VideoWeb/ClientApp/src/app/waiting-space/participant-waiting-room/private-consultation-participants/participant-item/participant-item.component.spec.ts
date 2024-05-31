@@ -1,18 +1,14 @@
 import { ActivatedRoute } from '@angular/router';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     EndpointStatus,
     LinkedParticipantResponse,
-    LinkedParticipantType,
     LinkType,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role,
-    RoomSummaryResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -20,6 +16,11 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantItemComponent } from './participant-item.component';
+import {
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from 'src/app/waiting-space/store/models/api-contract-to-state-model-mappers';
+import { VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
 
 describe('ParticipantItemComponent', () => {
     let component: ParticipantItemComponent;
@@ -68,13 +69,13 @@ describe('ParticipantItemComponent', () => {
     });
 
     it('should return participant available', () => {
-        const p = conference.participants[0];
+        const p = mapParticipantToVHParticipant(conference.participants[0]);
         p.status = ParticipantStatus.Available;
         expect(component.isParticipantAvailable(p)).toEqual(true);
     });
 
     it('should return endpoint available', () => {
-        const p = conference.endpoints[0];
+        const p = mapEndpointToVHEndpoint(conference.endpoints[0]);
         p.status = EndpointStatus.Connected;
         expect(component.isParticipantAvailable(p)).toEqual(true);
     });
@@ -94,7 +95,7 @@ describe('ParticipantItemComponent', () => {
             [ParticipantStatus.Disconnected, false]
         ];
         statuses.forEach(([status, available]) => {
-            const participant = new ParticipantResponse({
+            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], {
                 id: 'Participant1',
                 status: status as ParticipantStatus
             });
@@ -108,11 +109,9 @@ describe('ParticipantItemComponent', () => {
 
     it('should get participant in current room', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], {
             id: 'Participant1',
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse
+            room: { label: 'Room1', locked: false }
         });
 
         const result = component.isParticipantInCurrentRoom(participant);
@@ -123,11 +122,9 @@ describe('ParticipantItemComponent', () => {
 
     it('should get participant in current different room', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], {
             id: 'Participant1',
-            current_room: {
-                label: 'Room2'
-            } as RoomSummaryResponse
+            room: { label: 'Room2', locked: false }
         });
 
         const result = component.isParticipantInCurrentRoom(participant);
@@ -137,16 +134,17 @@ describe('ParticipantItemComponent', () => {
     });
 
     it('should get yellow row classes', () => {
-        component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.current_room.label = 'test-room';
+        const roomLabel = 'test-room';
+        component.roomLabel = roomLabel;
+        const p = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], { room: { label: roomLabel, locked: false } });
         expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
     it('should get row classes', () => {
-        component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.current_room.label = 'test-room-two';
+        const roomLabel = 'test-room';
+        component.roomLabel = roomLabel;
+
+        const p = jasmine.createSpyObj<VHParticipant>('VHParticipant', [], { room: { label: 'test-room-two', locked: false } });
         expect(component.getRowClasses(p)).toEqual('');
     });
 
@@ -180,7 +178,7 @@ describe('ParticipantItemComponent', () => {
                 linked_participants: linkedParticipants
             });
 
-            component.interpreter = interpreter;
+            component.interpreter = mapParticipantToVHParticipant(interpreter);
 
             const result = component.isInterpreterAvailable();
             expect(result).toBeTrue();
@@ -209,7 +207,7 @@ describe('ParticipantItemComponent', () => {
                 linked_participants: linkedParticipants
             });
 
-            component.interpreter = participant3;
+            component.interpreter = mapParticipantToVHParticipant(participant3);
 
             const result = component.isInterpreterAvailable();
             expect(result).toBeFalse();

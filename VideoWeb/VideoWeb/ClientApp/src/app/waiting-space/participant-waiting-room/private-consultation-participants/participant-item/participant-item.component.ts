@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 
 @Component({
     selector: 'app-participant-item',
@@ -7,8 +8,8 @@ import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients
     styleUrls: ['./participant-item.component.scss']
 })
 export class ParticipantItemComponent {
-    @Input() participant: ParticipantResponse;
-    @Input() interpreter: ParticipantResponse;
+    @Input() participant: VHParticipant;
+    @Input() interpreter: VHParticipant;
     @Input() participantCallStatuses: any = {};
     @Input() roomLabel: string;
     @Input() conferenceId: string;
@@ -17,7 +18,7 @@ export class ParticipantItemComponent {
 
     ParticipantStatus = ParticipantStatus;
 
-    getRowClasses(participant: any): string {
+    getRowClasses(participant: VHParticipant): string {
         if (this.isParticipantInCurrentRoom(participant)) {
             return 'yellow';
         }
@@ -25,13 +26,13 @@ export class ParticipantItemComponent {
         return '';
     }
 
-    isParticipantAvailable(participant: any): boolean {
+    isParticipantAvailable(participant: VHParticipant | VHEndpoint): boolean {
         const availableStatuses = ['Available', 'Connected', 'InConsultation'];
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    isParticipantInCurrentRoom(roomParticipant: any): boolean {
-        return roomParticipant.current_room?.label === this.roomLabel;
+    isParticipantInCurrentRoom(roomParticipant: VHParticipant): boolean {
+        return roomParticipant.room?.label === this.roomLabel;
     }
 
     isInterpreterAvailable(): boolean {

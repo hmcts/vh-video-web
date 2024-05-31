@@ -58,7 +58,7 @@
   </div>
   <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
-      [conference]="conference"
+      [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
       [roomLabel]="this.participant.current_room?.label"
     >
@@ -301,7 +301,7 @@
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
     <app-individual-participant-status-list
       [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
-      [conference]="conference"
+      [conference]="vhConference"
     >
     </app-individual-participant-status-list>
   </div>

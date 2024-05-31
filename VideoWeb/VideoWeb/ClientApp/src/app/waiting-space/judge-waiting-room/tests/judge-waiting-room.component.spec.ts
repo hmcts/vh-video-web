@@ -27,6 +27,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -192,6 +193,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         initAllWRDependencies();
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     beforeEach(async () => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
@@ -296,7 +301,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            mockConferenceStore
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

@@ -1,14 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    LoggedParticipantResponse,
-    ParticipantResponse,
-    ParticipantResponseVho,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, ParticipantResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
@@ -17,10 +10,12 @@ import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-securit
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHConference, VHLinkedParticipant, VHParticipant } from '../../store/models/vh-conference';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
-    let conference: ConferenceResponse;
+    let conference: VHConference;
     let participantsObserverPanelMember: ParticipantResponseVho[];
     let participantsWinger: ParticipantResponseVho[];
     let participantsWitness: ParticipantResponseVho[];
@@ -56,7 +51,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     beforeEach(() => {
-        conference = new ConferenceTestData().getConferenceDetailFuture();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailFuture());
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
         });
@@ -64,7 +59,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         logged = new LoggedParticipantResponse({
             participant_id: judge.id,
-            display_name: judge.display_name,
+            display_name: judge.displayName,
             role: Role.Judge
         });
         activatedRoute = <any>{
@@ -129,14 +124,14 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     describe('getParticipantStatus', () => {
-        let participant: ParticipantResponse;
+        let participant: VHParticipant;
         const allStatuses = Object.values(ParticipantStatus);
         beforeEach(() => {
-            participant = new ParticipantResponse();
+            participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['linkedParticipants', 'status']);
         });
 
         it('should return status when has no linked participants', () => {
-            participant.linked_participants = [];
+            participant.linkedParticipants = [];
             allStatuses.forEach(status => {
                 participant.status = status;
                 expect(component.getParticipantStatus(participant)).toEqual(status);
@@ -146,25 +141,23 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         describe('has linked participant', () => {
             const availableStatuses = [ParticipantStatus.Available, ParticipantStatus.InConsultation];
             const mainParticipantStatus = ParticipantStatus.Available;
+
             allStatuses.forEach(status => {
-                it(`should return null when linked participant is not available or status when available ${status}`, () => {
-                    component.nonJudgeParticipants = [
-                        {
-                            id: '1',
-                            status: status
-                        } as any
-                    ];
+                const expectedStatus = availableStatuses.includes(status) ? mainParticipantStatus : null;
+                const testCase = `should return ${expectedStatus} when linked participant status is ${status}`;
+
+                it(testCase, () => {
+                    const nonJudgeParticipant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['linkedParticipants', 'status']);
+                    nonJudgeParticipant.id = '1';
+                    nonJudgeParticipant.status = status;
+                    const linkedParticipant = jasmine.createSpyObj<VHLinkedParticipant>('VHLinkedParticipant', ['linkedId']);
+                    linkedParticipant.linkedId = '1';
+
+                    component.nonJudgeParticipants = [nonJudgeParticipant];
                     participant.status = mainParticipantStatus;
-                    participant.linked_participants = [
-                        {
-                            linked_id: '1'
-                        } as any
-                    ];
-                    if (availableStatuses.includes(status)) {
-                        expect(component.getParticipantStatus(participant)).toEqual(mainParticipantStatus);
-                    } else {
-                        expect(component.getParticipantStatus(participant)).toBeNull();
-                    }
+                    participant.linkedParticipants = [linkedParticipant];
+
+                    expect(component.getParticipantStatus(participant)).toEqual(expectedStatus);
                 });
             });
         });

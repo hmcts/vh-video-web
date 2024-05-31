@@ -16,7 +16,7 @@
             aria-hidden="true"></fa-icon>
     </div>
     <app-private-consultation-participant-display-name
-        [displayName]="participant?.display_name"
+        [displayName]="participant?.displayName"
         [isInCurrentRoom]="isParticipantInCurrentRoom(participant)"
         [isAvailable]="isParticipantAvailable(participant)">
     </app-private-consultation-participant-display-name>
@@ -30,7 +30,7 @@
 class="individual-endpoint-row">
     <div class="header-left" [class]="getRowClasses(interpreter)"> </div>
     <app-private-consultation-participant-display-name
-        [displayName]="interpreter?.display_name"
+        [displayName]="interpreter?.displayName"
         [isInCurrentRoom]="isParticipantInCurrentRoom(interpreter)"
         [isAvailable]="isParticipantAvailable(interpreter)">
     </app-private-consultation-participant-display-name>
