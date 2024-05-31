@@ -141,12 +141,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit(): void {
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+        this.audioMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
+        this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
             this.audioOnly = audioOnly;
-            this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+            this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
         });
 
         this.setupVideoCallSubscribers();
@@ -183,39 +183,40 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     setupEventhubSubscribers() {
+        const self = this;
         this.eventService
             .getParticipantStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(message => {
-                this.handleParticipantStatusChange(message);
+                self.handleParticipantStatusChange(message);
             });
 
         this.eventService
             .getHearingCountdownCompleteMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async conferenceId => {
-                await this.handleHearingCountdownComplete(conferenceId);
+            .subscribe(conferenceId => {
+                self.handleHearingCountdownComplete(conferenceId).then();
             });
 
         this.eventService
             .getParticipantHandRaisedMessage()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(message => {
-                this.handleParticipantHandRaiseChange(message);
+                self.handleParticipantHandRaiseChange(message);
             });
 
         this.eventService
             .getParticipantRemoteMuteStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(message => {
-                this.handleParticipantRemoteMuteChange(message);
+                self.handleParticipantRemoteMuteChange(message);
             });
 
         this.eventService
             .getParticipantToggleLocalMuteMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
-                await this.handleParticipantToggleLocalMuteChange(message);
+            .subscribe(message => {
+                self.handleParticipantToggleLocalMuteChange(message).then();
             });
     }
 
