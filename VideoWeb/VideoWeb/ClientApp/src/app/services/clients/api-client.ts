@@ -105,7 +105,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -133,7 +133,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Returns the active layout for a conference
      * @param conferenceId conference id
-     * @return Success
+     * @return OK
      */
     getLayoutForHearing(conferenceId: string): Observable<HearingLayout> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getlayout';
@@ -195,7 +195,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -246,7 +246,7 @@ export class ApiClient extends ApiClientBase {
      * Update the active layout for a conference
      * @param conferenceId conference id
      * @param layout (optional) layout
-     * @return Success
+     * @return OK
      */
     updateLayoutForHearing(conferenceId: string, layout: HearingLayout | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/updatelayout?';
@@ -308,7 +308,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -354,7 +354,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get recommended layout for hearing
      * @param conferenceId conference id
-     * @return Success
+     * @return OK
      */
     getRecommendedLayoutForHearing(conferenceId: string): Observable<HearingLayout> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getrecommendedlayout';
@@ -416,7 +416,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -526,7 +526,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -614,7 +614,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -702,7 +702,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -793,7 +793,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -884,7 +884,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -975,7 +975,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1066,7 +1066,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1093,7 +1093,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get conferences today for a host
-     * @return Success
+     * @return OK
      */
     getConferencesForHost(): Observable<ConferenceForHostResponse[]> {
         let url_ = this.baseUrl + '/conferences/hosts';
@@ -1153,7 +1153,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1198,7 +1198,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get conferences today for staff member with the specifed hearing venue names
      * @param hearingVenueNames (optional)
-     * @return Success
+     * @return OK
      */
     getConferencesForStaffMember(hearingVenueNames: string[] | undefined): Observable<ConferenceForHostResponse[]> {
         let url_ = this.baseUrl + '/conferences/staffmember?';
@@ -1264,7 +1264,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1308,7 +1308,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get conferences today for individual or representative excluding those that have been closed for over 120 minutes
-     * @return Success
+     * @return OK
      */
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         let url_ = this.baseUrl + '/conferences/individuals';
@@ -1368,7 +1368,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1415,7 +1415,7 @@ export class ApiClient extends ApiClientBase {
      * @param hearingVenueNames (optional)
      * @param allocatedCsoIds (optional)
      * @param includeUnallocated (optional)
-     * @return Success
+     * @return OK
      */
     getConferencesForVhOfficer(
         hearingVenueNames: string[] | undefined,
@@ -1493,7 +1493,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1532,7 +1532,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the details of a conference by id for VH officer
      * @param conferenceId The unique id of the conference
-     * @return Success
+     * @return OK
      */
     getConferenceByIdVHO(conferenceId: string): Observable<ConferenceResponseVho> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/vhofficer';
@@ -1594,7 +1594,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1640,7 +1640,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the details of a conference by id
      * @param conferenceId The unique id of the conference
-     * @return Success
+     * @return OK
      */
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}';
@@ -1702,7 +1702,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1817,7 +1817,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1854,7 +1854,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Returns the video control statuses for the conference
      * @param conferenceId conference id
-     * @return Success
+     * @return OK
      */
     getVideoControlStatusesForConference(conferenceId: string): Observable<ConferenceVideoControlStatuses> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getVideoControlStatuses';
@@ -1916,7 +1916,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1955,7 +1955,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * GetClientConfigurationSettings the configuration settings for client
-     * @return Success
+     * @return OK
      */
     getClientConfigurationSettings(): Observable<ClientSettingsResponse> {
         let url_ = this.baseUrl + '/config';
@@ -2015,7 +2015,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -2118,7 +2118,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2226,7 +2226,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2334,7 +2334,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2442,7 +2442,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2559,7 +2559,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2667,7 +2667,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2775,7 +2775,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2822,7 +2822,7 @@ export class ApiClient extends ApiClientBase {
      * Get all active conferences.
     This includes conferences that are in progress or paused.
     This includes conferences that are closed but the participants are still in consultation.
-     * @return Success
+     * @return OK
      */
     getActiveConferences(): Observable<ConferenceForVhOfficerResponse[]> {
         let url_ = this.baseUrl + '/end-of-day/active-sessions';
@@ -2882,7 +2882,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -2916,7 +2916,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getVideoEndpointsForConference(conferenceId: string): Observable<VideoEndpointResponse[]> {
         let url_ = this.baseUrl + '/{conferenceId}/participants';
@@ -2978,7 +2978,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3012,7 +3012,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
         let url_ = this.baseUrl + '/{conferenceId}/allowed-video-call-endpoints';
@@ -3074,7 +3074,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3117,7 +3117,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
         let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
@@ -3179,7 +3179,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3220,7 +3220,7 @@ export class ApiClient extends ApiClientBase {
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
-     * @return Success
+     * @return OK
      */
     getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantId: string): Observable<ChatResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/participant/{participantId}';
@@ -3284,7 +3284,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3329,7 +3329,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get number of unread messages for vho
      * @param conferenceId Id of the conference
-     * @return Success
+     * @return OK
      */
     getNumberOfUnreadAdminMessagesForConference(conferenceId: string): Observable<UnreadInstantMessageConferenceCountResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/unread/vho';
@@ -3393,7 +3393,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3425,7 +3425,7 @@ export class ApiClient extends ApiClientBase {
      * Get number of unread messages for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
-     * @return Success
+     * @return OK
      */
     getNumberOfUnreadAdminMessagesForConferenceByParticipant(
         conferenceId: string,
@@ -3494,7 +3494,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3584,7 +3584,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3687,7 +3687,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3790,7 +3790,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3897,7 +3897,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4004,7 +4004,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4111,7 +4111,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4211,7 +4211,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4313,7 +4313,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4423,7 +4423,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4533,7 +4533,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4577,7 +4577,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getHeartbeatDataForParticipant(conferenceId: string, participantId: string): Observable<ParticipantHeartbeatResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participant/{participantId}/heartbeatrecent';
@@ -4641,7 +4641,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -4756,7 +4756,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 400) {
@@ -4793,7 +4793,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the participant details of a conference by id for VH officer
      * @param conferenceId The unique id of the conference
-     * @return Success
+     * @return OK
      */
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/vhofficer/participants';
@@ -4857,7 +4857,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -4909,7 +4909,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantForUserResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participants';
@@ -4971,7 +4971,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5014,7 +5014,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/currentparticipant';
@@ -5076,7 +5076,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5114,7 +5114,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     staffMemberJoinConference(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/joinConference';
@@ -5176,7 +5176,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5224,7 +5224,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get profile for logged in user
-     * @return Success
+     * @return OK
      */
     getUserProfile(): Observable<UserProfileResponse> {
         let url_ = this.baseUrl + '/profile';
@@ -5284,7 +5284,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5315,7 +5315,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get profile for username
      * @param username (optional)
-     * @return Success
+     * @return OK
      */
     getProfileByUsername(username: string | undefined): Observable<UserProfileResponse> {
         let url_ = this.baseUrl + '/profile/query?';
@@ -5377,7 +5377,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5415,7 +5415,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getQuickLinkParticipantRoles(): Observable<Role[]> {
         let url_ = this.baseUrl + '/quickjoin/GetQuickLinkParticipantRoles';
@@ -5475,7 +5475,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5509,7 +5509,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     validateQuickLink(hearingId: string): Observable<boolean> {
         let url_ = this.baseUrl + '/quickjoin/ValidateQuickLink/{hearingId}';
@@ -5571,7 +5571,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5603,7 +5603,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * joinConferenceAsAQuickLinkUser
      * @param body (optional)
-     * @return Success
+     * @return OK
      */
     joinConferenceAsAQuickLinkUser(
         hearingId: string,
@@ -5672,7 +5672,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5702,7 +5702,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * isQuickLinkParticipantAuthorised
-     * @return Success
+     * @return OK
      */
     isQuickLinkParticipantAuthorised(): Observable<void> {
         let url_ = this.baseUrl + '/quickjoin/isQuickLinkParticipantAuthorised';
@@ -5760,7 +5760,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5796,7 +5796,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get the Pexip self test node.
-     * @return Success
+     * @return OK
      */
     getPexipConfig(): Observable<SelfTestPexipResponse> {
         let url_ = this.baseUrl + '/selftest';
@@ -5856,7 +5856,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5895,7 +5895,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Check if a user has completed a test call at least once today
-     * @return Success
+     * @return OK
      */
     checkUserCompletedATestToday(): Observable<void> {
         let url_ = this.baseUrl + '/selftest/today';
@@ -5953,7 +5953,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5988,7 +5988,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getTestCallResult(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
         let url_ = this.baseUrl + '/selftest/conferences/{conferenceId}/participants/{participantId}/selftestresult';
@@ -6052,7 +6052,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6090,7 +6090,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getIndependentTestCallResult(participantId: string): Observable<TestCallScoreResponse> {
         let url_ = this.baseUrl + '/selftest/independentselftestresult/{participantId}';
@@ -6152,7 +6152,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6190,7 +6190,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getTasks(conferenceId: string): Observable<TaskResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/tasks';
@@ -6252,7 +6252,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6289,7 +6289,7 @@ export class ApiClient extends ApiClientBase {
      * Update existing tasks
      * @param conferenceId The id of the conference to update
      * @param taskId The id of the task to update
-     * @return Success
+     * @return OK
      */
     completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/tasks/{taskId}';
@@ -6353,7 +6353,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6400,7 +6400,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return Success
+     * @return OK
      */
     getSelfTestToken(participantId: string): Observable<TokenResponse> {
         let url_ = this.baseUrl + '/participants/{participantId}/selftesttoken';
@@ -6462,7 +6462,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6504,7 +6504,7 @@ export class ApiClient extends ApiClientBase {
      * @param hearingVenueNames (optional)
      * @param allocatedCsoIds (optional)
      * @param includeUnallocated (optional)
-     * @return Success
+     * @return OK
      */
     getCourtRoomAccounts(
         hearingVenueNames: string[] | undefined,
@@ -6582,7 +6582,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6626,7 +6626,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get CSOS
-     * @return Success
+     * @return OK
      */
     getCSOs(): Observable<JusticeUserResponse[]> {
         let url_ = this.baseUrl + '/api/accounts/csos';
@@ -6686,7 +6686,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6721,7 +6721,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get available courts
-     * @return Success
+     * @return OK
      */
     getVenues(): Observable<HearingVenueResponse[]> {
         let url_ = this.baseUrl + '/hearing-venues/courts';
@@ -6781,7 +6781,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6888,7 +6888,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -6925,7 +6925,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * @param participantType (optional)
-     * @return Success
+     * @return OK
      */
     getParticipantRoomForParticipant(
         conferenceId: string,
@@ -6995,7 +6995,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Server Error', status, _responseText, _headers, result500);
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -7607,6 +7607,7 @@ export class StartHearingRequest implements IStartHearingRequest {
     layout?: HearingLayout;
     participants_to_force_transfer?: string[] | undefined;
     mute_guests?: boolean | undefined;
+    triggered_by_host_id?: string | undefined;
 
     constructor(data?: IStartHearingRequest) {
         if (data) {
@@ -7624,6 +7625,7 @@ export class StartHearingRequest implements IStartHearingRequest {
                 for (let item of _data['participants_to_force_transfer']) this.participants_to_force_transfer!.push(item);
             }
             this.mute_guests = _data['mute_guests'];
+            this.triggered_by_host_id = _data['triggered_by_host_id'];
         }
     }
 
@@ -7642,6 +7644,7 @@ export class StartHearingRequest implements IStartHearingRequest {
             for (let item of this.participants_to_force_transfer) data['participants_to_force_transfer'].push(item);
         }
         data['mute_guests'] = this.mute_guests;
+        data['triggered_by_host_id'] = this.triggered_by_host_id;
         return data;
     }
 }
@@ -7650,6 +7653,7 @@ export interface IStartHearingRequest {
     layout?: HearingLayout;
     participants_to_force_transfer?: string[] | undefined;
     mute_guests?: boolean | undefined;
+    triggered_by_host_id?: string | undefined;
 }
 
 export class UpdateConferenceParticipantsRequest implements IUpdateConferenceParticipantsRequest {
@@ -8173,7 +8177,8 @@ export enum Role {
     JudicialOfficeHolder = 'JudicialOfficeHolder',
     QuickLinkParticipant = 'QuickLinkParticipant',
     QuickLinkObserver = 'QuickLinkObserver',
-    StaffMember = 'StaffMember'
+    StaffMember = 'StaffMember',
+    Administrator = 'Administrator'
 }
 
 export class VideoControlStatus implements IVideoControlStatus {

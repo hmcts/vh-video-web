@@ -30,7 +30,7 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames, null, false);
+        service.startQuery(venueNames, null, false, false);
         tick();
         expect(service.venueNames).toBe(venueNames);
         expect(setInterval).toHaveBeenCalled();
@@ -43,7 +43,7 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated);
+        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated, false);
         tick();
         expect(service.venueNames.length).toBe(0);
         expect(service.allocatedCsoIds).toBe(allocatedCsoIds);

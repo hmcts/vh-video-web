@@ -86,7 +86,7 @@ namespace VideoWeb.Common
                     JusticeUserRole.Vho => AppRoles.VhOfficerRole,
                     JusticeUserRole.Judge => AppRoles.JudgeRole,
                     JusticeUserRole.StaffMember => AppRoles.StaffMember,
-                    JusticeUserRole.VhTeamLead => AppRoles.VhOfficerRole,
+                    JusticeUserRole.VhTeamLead => AppRoles.Administrator,
                     _ => null
                 };
                 if (appRole != null)

@@ -40,7 +40,7 @@ export class VhoQueryService {
     }
 
     async runQuery() {
-        if(this.activeSessionsOnly) {
+        if (this.activeSessionsOnly) {
             const activeConferences = await this.getActiveConferences();
             this.vhoConferences = activeConferences;
             this.vhoConferencesSubject.next(this.vhoConferences);

@@ -5,7 +5,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
+import { HearingVenueResponse, JusticeUserResponse, Role } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
@@ -24,6 +24,7 @@ export abstract class VenueListComponentDirective implements OnInit {
     errorMessage: string | null;
     vhoWorkAllocationFeatureFlag: boolean;
     activeSessions: boolean;
+    isAdministrator: boolean;
 
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
@@ -111,6 +112,7 @@ export abstract class VenueListComponentDirective implements OnInit {
     async getLoggedInCso(users: JusticeUserResponse[]): Promise<JusticeUserResponse> {
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
+        this.isAdministrator = loggedInUser.roles.includes(Role.Administrator);
         return loggedInCso;
     }
 

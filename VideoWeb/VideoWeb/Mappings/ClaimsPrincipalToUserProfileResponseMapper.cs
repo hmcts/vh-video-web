@@ -29,6 +29,8 @@ public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal
         
         if (user.IsInRole(AppRoles.VhOfficerRole))
             roles.Add(Role.VideoHearingsOfficer);
+        if (user.IsInRole(AppRoles.Administrator))
+            roles.Add(Role.Administrator);
         if (user.IsInRole(AppRoles.JudgeRole))
             roles.Add(Role.Judge);
         if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))

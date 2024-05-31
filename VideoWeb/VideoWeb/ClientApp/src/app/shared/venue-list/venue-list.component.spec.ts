@@ -5,6 +5,7 @@ import {
     CourtRoomsAccountResponse,
     HearingVenueResponse,
     JusticeUserResponse,
+    Role,
     UserProfileResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -64,7 +65,7 @@ describe('VenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
-    const loggedInUser = new UserProfileResponse({ username: 'loggedIn@email.com' });
+    const loggedInUser = new UserProfileResponse({ username: 'loggedIn@email.com', roles: [Role.Administrator] });
     const csos: JusticeUserResponse[] = [];
     const csoAllocatedToMe = new JusticeUserResponse({
         id: VenueListComponentDirective.ALLOCATED_TO_ME,

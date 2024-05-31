@@ -6,6 +6,7 @@ import {
     CourtRoomsAccountResponse,
     HearingVenueResponse,
     JusticeUserResponse,
+    Role,
     UserProfileResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -61,7 +62,7 @@ describe('VHOfficerVenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
-    const loggedInUser = new UserProfileResponse({ username: 'test-user1@hearings.reform.hmcts.net' });
+    const loggedInUser = new UserProfileResponse({ username: 'test-user1@hearings.reform.hmcts.net', roles: [Role.VideoHearingsOfficer] });
     const cso1 = new JusticeUserResponse({ username: loggedInUser.username, id: 'test-user-1' });
     const cso2 = new JusticeUserResponse({ username: 'test-user2@hearings.reform.hmcts.net', id: 'test-user-2' });
     const csos: JusticeUserResponse[] = [];
