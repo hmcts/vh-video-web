@@ -55,27 +55,34 @@ describe('ParticipantUpdated', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_audio_only_call = 'Yes';
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        expect(participantUpdated.isSpotlighted).toBeFalsy();
+        expect(participantUpdated.isAudioOnlyCall).toBeTruthy();
     });
 
     it('should return is audio only call false', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_audio_only_call = 'No';
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        expect(participantUpdated.isSpotlighted).toBeFalsy();
+        expect(participantUpdated.isAudioOnlyCall).toBeFalsy();
+    });
+
+    it('should return is audio only call false when null for pexip participant', () => {
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_audio_only_call = null;
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isAudioOnlyCall).toBeFalsy();
     });
 
     it('should return is video call true', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_video_call = 'Yes';
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        expect(participantUpdated.isSpotlighted).toBeFalsy();
+        expect(participantUpdated.isVideoCall).toBeTruthy();
     });
 
     it('should return is video call false', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_video_call = 'No';
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        expect(participantUpdated.isSpotlighted).toBeFalsy();
+        expect(participantUpdated.isVideoCall).toBeFalsy();
     });
 });
