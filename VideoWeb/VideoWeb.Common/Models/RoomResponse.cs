@@ -1,6 +1,6 @@
-namespace VideoWeb.Contract.Responses
+namespace VideoWeb.Common.Models
 {
-    public class RoomSummaryResponse
+    public class RoomResponse
     {
         /// <summary>
         /// Room Id

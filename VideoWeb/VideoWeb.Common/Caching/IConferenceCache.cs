@@ -11,12 +11,8 @@ namespace VideoWeb.Common.Caching
     {
         Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse);
         Task UpdateConferenceAsync(Conference conference);
+        Task UpdateConferenceParticipantsAsync(Guid id, IList<Participant> participants);
         Task<Conference>GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory);
         
-        // Task AddConferenceParticipantsAsync(ICollection<ParticipantSummaryResponse> participantsResponse,
-        //     Guid conferenceId);
-        // Task UpdateParticipantsAsync(IEnumerable<Participant> participants, Guid conferenceId);
-        //
-        // Task<List<Participant>>GetOrAddParticipantsAsync(Guid id, Func<Task<ICollection<ParticipantSummaryResponse>>> addParticipantsDetailsFactory);
     }
 }

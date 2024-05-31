@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
         protected AutoMock _mocker;
         protected ParticipantToParticipantResponseMapper _sut;
         private Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>> linkedParticipantMapperMock;
-        private Mock<IMapTo<CivilianRoom, RoomSummaryResponse>> roomMapperMock;
+        private Mock<IMapTo<CivilianRoom, RoomResponse>> roomMapperMock;
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Mappings
         private LinkedParticipantResponse linkedParticipantResponse2;
 
         private CivilianRoom civilianRoom;
-        private RoomSummaryResponse roomSummaryResponse;
+        private RoomResponse _roomResponseResponse;
         private Guid participantId = Guid.NewGuid();
 
         [SetUp]
@@ -55,16 +55,16 @@ namespace VideoWeb.UnitTests.Mappings
                 }
             };
 
-            roomSummaryResponse = new RoomSummaryResponse()
+            _roomResponseResponse = new RoomResponse()
             {
                 Id = "RoomSummaryResponseId",
                 Label = "RoomSummaryLabel",
                 Locked = false
             };
 
-            roomMapperMock = new Mock<IMapTo<CivilianRoom, RoomSummaryResponse>>();
-            roomMapperMock.Setup(mapper => mapper.Map(civilianRoom)).Returns(roomSummaryResponse);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(roomMapperMock.Object);
+            roomMapperMock = new Mock<IMapTo<CivilianRoom, RoomResponse>>();
+            roomMapperMock.Setup(mapper => mapper.Map(civilianRoom)).Returns(_roomResponseResponse);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomResponse>()).Returns(roomMapperMock.Object);
 
             _sut = _mocker.Create<ParticipantToParticipantResponseMapper>();
         }
@@ -113,7 +113,7 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.UserName.Should().Be(testParticipant.Username);
             mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
 
-            mapped.InterpreterRoom.Should().Be(roomSummaryResponse);
+            mapped.InterpreterRoom.Should().Be(_roomResponseResponse);
 
             linkedParticipants.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
             linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipant>()), Times.Exactly(linkedParticipants.Count));

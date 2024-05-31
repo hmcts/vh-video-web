@@ -7,14 +7,14 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class LinkedParticipantHearingResponseMapper : IMapTo<LinkedParticipantResponseV2, LinkedParticipantResponse>
+    public class LinkedParticipantHearingResponseMapper : IMapTo<LinkedParticipantResponseV2, LinkedParticipant>
     {
-        public LinkedParticipantResponse Map(LinkedParticipantResponseV2 input)
+        public LinkedParticipant Map(LinkedParticipantResponseV2 input)
         {
-            return new LinkedParticipantResponse
+            return new LinkedParticipant
             {
                 LinkedId = input.LinkedId,
-                Type = Enum.Parse<LinkedParticipantType>(input.TypeV2.ToString())
+                LinkType = Enum.Parse<LinkType>(input.TypeV2.ToString())
             };
         }
     }

@@ -72,12 +72,12 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// Current conference room
         /// </summary>
-        public RoomSummaryResponse CurrentRoom { get; set; }
+        public RoomResponse CurrentRoom { get; set; }
         
         /// <summary>
         /// Current interpreter room
         /// </summary>
-        public RoomSummaryResponse InterpreterRoom { get; set; }
+        public RoomResponse InterpreterRoom { get; set; }
         
         /// <summary>
         /// List of participants linked this participant

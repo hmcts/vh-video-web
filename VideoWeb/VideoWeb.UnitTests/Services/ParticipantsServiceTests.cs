@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Services
         [Test]
         public void Should_return_addStaffMemberRequest()
         {
-            var result = _service.InitialiseAddStaffMemberRequest(_staffMemberProfile, ContactEmail, _claimsPrincipal);
+            var result = _service.InitialiseAddStaffMemberRequest(_staffMemberProfile, ContactEmail);
             result.Should().Equals(new AddStaffMemberRequest
             {
                 FirstName = _staffMemberProfile.FirstName,

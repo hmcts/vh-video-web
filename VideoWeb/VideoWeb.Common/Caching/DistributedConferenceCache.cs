@@ -34,7 +34,14 @@ namespace VideoWeb.Common.Caching
         {
             await WriteToCache(conference.Id, conference);
         }
-
+        
+        public async Task UpdateConferenceParticipantsAsync(Guid id, IList<Participant> participants)
+        {
+            var conference = await ReadFromCache(id);
+            conference.Participants = participants.ToList();
+            await UpdateConferenceAsync(conference);
+        }
+        
         public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
         {
             var conference = await ReadFromCache(id);

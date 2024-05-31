@@ -13,9 +13,9 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantForUserResponseMapper : IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+        private readonly IMapTo<RoomResponse, Common.Models.RoomResponse> _roomResponseMapper;
 
-        public ParticipantForUserResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        public ParticipantForUserResponseMapper(IMapTo<RoomResponse, Common.Models.RoomResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }

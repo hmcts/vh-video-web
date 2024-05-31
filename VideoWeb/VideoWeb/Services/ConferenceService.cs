@@ -75,13 +75,14 @@ namespace VideoWeb.Services
             var judiciaryParticipants = hearing.JudiciaryParticipants;
             
             
-            var participantsInConference = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
+            var participantsSummaryInConference = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
             
             var mapper = new ParticipantDetailResponseMapper();
             
-            conference.Participants = mapper.Map(participantsInHearing, judiciaryParticipants, participantsInConference);
+            var composedParticipants = mapper.Map(participantsInHearing, judiciaryParticipants, participantsSummaryInConference, conference.Participants);
             
             await _conferenceCache.AddConferenceAsync(conference);
+            await _conferenceCache.UpdateConferenceParticipantsAsync(conferenceId, composedParticipants);
             
             return conference;
         }

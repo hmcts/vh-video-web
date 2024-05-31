@@ -18,16 +18,16 @@ public class ParticipantInConferenceResponseMapper : IMapTo<Participant, Partici
             Status = participant.ParticipantStatus,
             DisplayName = participant.DisplayName,
             Id = participant.Id,
-            //Name = participant.,
+            Name = participant.Name,
             Role = participant.Role,
             HearingRole = participant.HearingRole,
             Representee = participant.Representee,
-            //CurrentRoom = participant.,
-            //InterpreterRoom = participant.,
+            CurrentRoom = participant.CurrentRoom,
+            InterpreterRoom = participant.CurrentInterpreterRoom,
             LinkedParticipants = participant.LinkedParticipants.Select(linkParticipantMapper.Map).ToList(),
             UserName = participant.Username,
             CaseTypeGroup = participant.CaseTypeGroup,
-            //TiledDisplayName = participant.
+            //TiledDisplayName = participa
         };
         
         return participantForUserResponse;
