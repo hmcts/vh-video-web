@@ -18,6 +18,12 @@ describe('ParticipantUpdated', () => {
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isRemoteMuted).toBeFalsy();
     });
+    it('should return unmuted status when input is null', () => {
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_muted = null;
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isRemoteMuted).toBeFalsy();
+    });
     it('shuld return hand not raised', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.buzz_time = 0;
@@ -65,7 +71,7 @@ describe('ParticipantUpdated', () => {
         expect(participantUpdated.isAudioOnlyCall).toBeFalsy();
     });
 
-    it('should return is audio only call false when null for pexip participant', () => {
+    it('should return is audio only call false when input is null', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_audio_only_call = null;
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -82,6 +88,13 @@ describe('ParticipantUpdated', () => {
     it('should return is video call false', () => {
         const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.is_video_call = 'No';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isVideoCall).toBeFalsy();
+    });
+
+    it('should return is video call false when input is null', () => {
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_video_call = null;
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isVideoCall).toBeFalsy();
     });
