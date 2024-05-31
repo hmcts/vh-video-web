@@ -360,7 +360,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
+        this.logger.info(`${this.loggerPrefix} Updated participant: ${JSON.stringify(updatedParticipant)}`);
+
+        const participant = this.participants.find(x => updatedParticipant.pexipDisplayName?.includes(x.id));
         if (!participant) {
             this.logger.info(`${this.loggerPrefix} could NOT update participant in call`, {
                 displayName: updatedParticipant.pexipDisplayName
