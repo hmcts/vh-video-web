@@ -15,12 +15,12 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using VideoWeb.Services;
 using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
-using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -47,8 +47,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var conferenceId = Guid.NewGuid();
             var response = CreateValidParticipantsSummaryResponse();
+            
 
-            _mocker.Mock<IVideoApiClient>()
+            _mocker.Mock<IParticipantService>()
                 .Setup(x => x.GetParticipantsByConferenceIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
@@ -67,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                  "Please provide a valid conference Id", null, default, null);
 
-            _mocker.Mock<IVideoApiClient>()
+            _mocker.Mock<IParticipantService>()
                 .Setup(x => x.GetParticipantsByConferenceIdAsync(It.IsAny<Guid>()))
                 .Throws(apiException);
 
@@ -77,10 +78,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
         }
 
-        private List<ParticipantSummaryResponse> CreateValidParticipantsSummaryResponse()
+        private List<ParticipantForUserResponse> CreateValidParticipantsSummaryResponse()
         {
-            return Builder<ParticipantSummaryResponse>.CreateListOfSize(3).All()
-                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>()).Build().ToList();
+            return Builder<ParticipantForUserResponse>.CreateListOfSize(3).All()
+                .With(x => x.LinkedParticipants = new List<Contract.Responses.LinkedParticipantResponse>()).Build().ToList();
         }
     }
 }

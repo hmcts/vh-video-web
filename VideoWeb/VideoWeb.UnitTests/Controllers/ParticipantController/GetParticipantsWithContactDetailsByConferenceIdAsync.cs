@@ -23,6 +23,8 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Services;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
 using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
 using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
@@ -63,22 +65,15 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var conferenceId = Guid.NewGuid();
             var conference = CreateValidConference(conferenceId);
-
-            var judge3DifferentHearing = CreateParticipant("judge3", "Judge");
+            
             conference.Participants = _participants;
-            var judgeInHearing = conference.Participants.First(x => x.Username == "Judge");
-
-            var judgesInHearings = new List<ParticipantInHearingResponse>
-            {
-                new ParticipantInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
-            };
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetHostsInHearingsTodayAsync())
-                .ReturnsAsync(judgesInHearings);
+            
+            var participantsResponse = MapParticipantToResponse(conferenceId);
+            
+            
+            _mocker.Mock<IParticipantService>()
+                .Setup(x => x.GetParticipantsWithContactDetailsByConferenceIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(participantsResponse);
 
             var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id);
             var typedResult = result as OkObjectResult;
@@ -90,13 +85,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             results.Count.Should().Be(_participants.Count);
 
             // Individual
-            AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, false);
+            AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, false);
             // Interpreter
-            AssertResponseItem(results.ElementAt(1), conference.Participants[3], conferenceId, false);
+            AssertResponseItem(results.ElementAt(3), conference.Participants[3], conferenceId, false);
             // Representative
             AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, false);
             // Judge
-            AssertResponseItem(results.ElementAt(3), conference.Participants[0], conferenceId, true);
+            AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, true);
         }
 
         [Test]
@@ -115,8 +110,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            _mocker.Mock<IParticipantService>().Setup(x => x.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId))
+                //.Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ThrowsAsync(apiException);
         
             var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
@@ -144,6 +139,41 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.HearingVenueName.Should().Be("MyVenue");
             response.HostInAnotherHearing.Should().Be(isInAnotherHearing);
             response.Representee.Should().Be(participant.Representee);
+        }
+        
+        private List<ParticipantContactDetailsResponseVho> MapParticipantToResponse(Guid conferenceId)
+        {
+            var participants = _participants.Select(x =>
+            {
+                return new ParticipantContactDetailsResponseVho
+                {
+                    Id = x.Id,
+                    ConferenceId = conferenceId,
+                    Name = x.Name,
+                    Role = x.Role,
+                    HearingRole = x.HearingRole,
+                    Username = x.Username,
+                    CaseTypeGroup = x.CaseTypeGroup,
+                    RefId = x.RefId,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    DisplayName = x.DisplayName,
+                    Status = x.ParticipantStatus,
+                    ContactEmail = x.ContactEmail,
+                    ContactTelephone = x.ContactTelephone,
+                    HearingVenueName = "MyVenue",
+                    Representee = x.Representee,
+                    HostInAnotherHearing = false,
+                    LinkedParticipants = x.LinkedParticipants.Select(y=> new LinkedParticipantResponse
+                    {
+                        LinkedId = y.LinkedId,
+                        LinkType = y.LinkType
+                    }).ToList()
+                };
+            }).ToList();
+            
+            participants[0].HostInAnotherHearing = true;
+            return participants;
         }
         
         private static Participant CreateParticipant(string username, string caseTypeGroup)
