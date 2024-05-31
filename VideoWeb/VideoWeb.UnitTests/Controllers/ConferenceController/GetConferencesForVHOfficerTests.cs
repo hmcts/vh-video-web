@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -27,6 +26,7 @@ using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantR
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using ParticipantResponse = BookingsApi.Contract.V1.Responses.ParticipantResponse;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {

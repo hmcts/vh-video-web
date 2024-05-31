@@ -24,6 +24,10 @@ namespace VideoWeb.Common.Models
         public Guid RefId { get; set; }
         public string Representee { get; set; }
         
+        public RoomResponse CurrentRoom { get; set; }
+        
+        public RoomResponse CurrentInterpreterRoom { get; set; }
+        
         public List<LinkedParticipant> LinkedParticipants { get; set; }
 
         public bool IsJudge()

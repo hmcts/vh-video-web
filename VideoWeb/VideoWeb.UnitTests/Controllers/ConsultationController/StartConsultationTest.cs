@@ -23,6 +23,7 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {

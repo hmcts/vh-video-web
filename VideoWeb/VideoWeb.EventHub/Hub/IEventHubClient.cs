@@ -6,6 +6,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.EventHub.Hub
 {

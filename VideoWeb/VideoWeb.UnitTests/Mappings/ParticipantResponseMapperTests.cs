@@ -4,6 +4,7 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.UnitTests.Mappings

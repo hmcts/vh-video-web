@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { JudgeOrJudicialOfficeHolderGuard } from '../security/judge-or-judicial-office-holder.guard';
+import { JudgeGuard } from '../security/judge.guard';
 import { ParticipantGuard } from '../security/participant.guard';
 import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
 import { pageUrls } from '../shared/page-url.constants';
@@ -29,7 +29,7 @@ export const routes: Routes = [
     {
         path: `${pageUrls.JudgeHearingList}`,
         component: JudgeHearingListComponent,
-        canActivate: [JudgeOrJudicialOfficeHolderGuard],
+        canActivate: [JudgeGuard],
         data: { title: 'Judge hearing list' }
     },
     {

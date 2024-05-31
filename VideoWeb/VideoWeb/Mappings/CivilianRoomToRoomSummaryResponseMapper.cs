@@ -8,13 +8,13 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class CivilianRoomToRoomSummaryResponseMapper : IMapTo<CivilianRoom, RoomSummaryResponse>
+    public class CivilianRoomToRoomSummaryResponseMapper : IMapTo<CivilianRoom, RoomResponse>
     {
-        public RoomSummaryResponse Map(CivilianRoom input)
+        public RoomResponse Map(CivilianRoom input)
         {
             if(input != null)
             {
-                return new RoomSummaryResponse
+                return new RoomResponse
                 {
                     Id = input.Id.ToString(),
                     Label = input.RoomLabel

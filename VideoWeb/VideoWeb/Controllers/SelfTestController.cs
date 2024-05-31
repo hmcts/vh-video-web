@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("selftest")]
-    public class SelfTestController : ControllerBase
+    public class SelfTestController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ITestCallCache _testCallCache;
@@ -51,7 +51,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get Pexip configuration");
+                _logger.LogError(e, $"Unable to get Pexip configuration");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

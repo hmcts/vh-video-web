@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.Common.Caching
 {
@@ -20,7 +23,14 @@ namespace VideoWeb.Common.Caching
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             await UpdateConferenceAsync(conference);
         }
-
+        
+        public async Task UpdateConferenceParticipantsAsync(Guid id, IList<Participant> participants)
+        {
+            var conference = await Task.FromResult(_memoryCache.Get<Conference>(id));
+            conference.Participants = participants.ToList();
+            await UpdateConferenceAsync(conference);
+        }
+        
         public async Task UpdateConferenceAsync(Conference conference)
         {
             await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
@@ -29,7 +39,7 @@ namespace VideoWeb.Common.Caching
                 return Task.FromResult(conference);
             });
         }
-
+        
         public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
         {
             var conference = await Task.FromResult(_memoryCache.Get<Conference>(id));

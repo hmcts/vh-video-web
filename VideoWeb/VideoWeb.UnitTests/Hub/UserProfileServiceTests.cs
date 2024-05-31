@@ -13,6 +13,7 @@ using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using System.Collections.Generic;
 using System.Security.Claims;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Hub
 {

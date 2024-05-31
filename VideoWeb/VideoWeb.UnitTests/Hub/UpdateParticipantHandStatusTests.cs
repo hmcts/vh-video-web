@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Hub
 
             // act / assert
             Func<Task> action = async () => await Hub.UpdateParticipantHandStatus(conferenceId, participantId, false);
-            action.Should().NotThrowAsync<ParticipantNotFoundException>();
+            action.Should().NotThrow<ParticipantNotFoundException>();
         }
         
         [Test]

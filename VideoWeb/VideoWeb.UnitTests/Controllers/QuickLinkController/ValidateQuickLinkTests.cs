@@ -4,7 +4,6 @@ using Autofac.Extras.Moq;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using VideoApi.Client;
 using VideoWeb.Controllers;
 
@@ -47,8 +46,8 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var result = await _controller.ValidateQuickLink(_hearingId) as OkObjectResult;
 
             //Assert
-            ClassicAssert.IsInstanceOf<OkObjectResult>(result);
-            ClassicAssert.True((bool)result.Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.True((bool)result.Value);
         }
 
         [Test]
@@ -63,9 +62,9 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var result = await _controller.ValidateQuickLink(_hearingId) as ObjectResult;
 
             //Assert
-            ClassicAssert.IsInstanceOf<ObjectResult>(result);
-            ClassicAssert.AreEqual(result.Value, exception.Response);
-            ClassicAssert.AreEqual(result.StatusCode, exception.StatusCode);
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(result.Value, exception.Response);
+            Assert.AreEqual(result.StatusCode, exception.StatusCode);
         }
     }
 }

@@ -8,6 +8,10 @@ using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Enums;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using LinkedParticipantType = VideoApi.Contract.Enums.LinkedParticipantType;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -82,7 +86,7 @@ namespace VideoWeb.UnitTests.Mappings
                 var participant = participants[index];
                 response[index].Id.Should().Be(participant.Id);
                 response[index].DisplayName.Should().BeEquivalentTo(participant.DisplayName);
-                response[index].Role.Should().Be((Role)participant.UserRole);
+                response[index].Role.Should().BeEquivalentTo(participant.UserRole);
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
                 response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.CaseGroup);

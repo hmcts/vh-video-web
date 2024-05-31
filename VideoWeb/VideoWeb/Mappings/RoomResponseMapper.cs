@@ -1,12 +1,14 @@
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
+using RoomResponse = VideoWeb.Common.Models.RoomResponse;
 
 namespace VideoWeb.Mappings
 {
-    public class RoomResponseMapper : IMapTo<RoomSummaryResponse, RoomResponse>
+    public class RoomResponseMapper : IMapTo<VideoApi.Contract.Responses.RoomResponse, RoomResponse>
     {
-        public RoomResponse Map(RoomSummaryResponse input)
+        public RoomResponse Map(VideoApi.Contract.Responses.RoomResponse input)
         {
             if (input == null)
             {
@@ -15,7 +17,7 @@ namespace VideoWeb.Mappings
 
             return new RoomResponse
             {
-                Id = long.Parse(input.Id),
+                Id = input.Id.ToString(),
                 Label = input.Label,
                 Locked = input.Locked
             };

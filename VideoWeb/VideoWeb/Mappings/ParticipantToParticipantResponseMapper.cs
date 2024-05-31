@@ -6,17 +6,18 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
     public class ParticipantToParticipantResponseMapper : IMapTo<Participant, Conference, ParticipantResponse>
     {
         private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantMapper;
-        private readonly IMapTo<CivilianRoom, RoomSummaryResponse> roomMapper;
+        private readonly IMapTo<CivilianRoom, RoomResponse> roomMapper;
         public ParticipantToParticipantResponseMapper(IMapperFactory mapperFactory)
         {
             linkedParticipantMapper = mapperFactory.Get<LinkedParticipant, LinkedParticipantResponse>();
-            roomMapper = mapperFactory.Get<CivilianRoom, RoomSummaryResponse>();
+            roomMapper = mapperFactory.Get<CivilianRoom, RoomResponse>();
         }
         public ParticipantResponse Map(Participant participant, Conference conference)
         {

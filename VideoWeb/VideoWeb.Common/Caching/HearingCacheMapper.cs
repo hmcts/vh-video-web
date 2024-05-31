@@ -6,9 +6,9 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public static class ConferenceCacheMapper
+    public static class HearingCacheMapper
     {
-        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse)
+        public static Conference MapHearingToCacheModel(ConferenceDetailsResponse conferenceResponse)
         {
             var participants = conferenceResponse
                 .Participants

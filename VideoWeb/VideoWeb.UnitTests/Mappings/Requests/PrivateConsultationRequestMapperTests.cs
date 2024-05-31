@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
 
             var result = _sut.Map(request);
 
-            result.Answer.Should().Be((VideoApi.Contract.Requests.ConsultationAnswer)expectedAnswer);
+            result.Answer.Should().Be(expectedAnswer);
             result.ConferenceId.Should().Be(request.ConferenceId);
             result.RequestedBy.Should().Be(request.RequestedById);
             result.RequestedFor.Should().Be(request.RequestedForId);

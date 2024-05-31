@@ -22,6 +22,8 @@ using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

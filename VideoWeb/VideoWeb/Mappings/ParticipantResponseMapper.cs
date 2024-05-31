@@ -8,16 +8,17 @@ using VideoApi.Contract.Responses;
 using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 using VHLinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {
     public class ParticipantResponseMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponse>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+        private readonly IMapTo<RoomResponse, Common.Models.RoomResponse> _roomResponseMapper;
 
         private readonly IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> _linkedParticipantResponseMapper;
 
-        public ParticipantResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper, IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> linkedParticipantResponseMapper)
+        public ParticipantResponseMapper(IMapTo<RoomResponse, Common.Models.RoomResponse> roomResponseMapper, IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> linkedParticipantResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
             _linkedParticipantResponseMapper = linkedParticipantResponseMapper;

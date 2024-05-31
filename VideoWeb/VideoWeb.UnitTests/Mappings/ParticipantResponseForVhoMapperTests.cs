@@ -4,6 +4,7 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
+using ParticipantState = VideoApi.Contract.Enums.ParticipantState;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -31,7 +32,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var actualLp = response.LinkedParticipants[0];
             actualLp.LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
-            actualLp.LinkType.Should().Be((LinkType)participant.LinkedParticipants[0].Type);
+            actualLp.LinkType.Should().Be(participant.LinkedParticipants[0].Type);
         }
     }
 }

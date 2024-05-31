@@ -5,14 +5,15 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {
     public class ParticipantResponseForVhoMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponseVho>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+        private readonly IMapTo<RoomResponse, Common.Models.RoomResponse> _roomResponseMapper;
 
-        public ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        public ParticipantResponseForVhoMapper(IMapTo<RoomResponse, Common.Models.RoomResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }

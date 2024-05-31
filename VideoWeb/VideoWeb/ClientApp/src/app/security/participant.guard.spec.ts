@@ -20,7 +20,6 @@ describe('ParticipantGuard', () => {
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
@@ -35,11 +34,11 @@ describe('ParticipantGuard', () => {
     beforeEach(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
         guard = new ParticipantGuard(
+            launchDarklyServiceSpy,
             securityServiceProviderServiceSpy,
             profileServiceSpy,
             router,
-            new MockLogger(),
-            launchDarklyServiceSpy
+            new MockLogger()
         );
     });
 

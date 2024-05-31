@@ -3,14 +3,15 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using RoomResponse = VideoApi.Contract.Responses.RoomResponse;
 
 namespace VideoWeb.Mappings
 {
     public class EndpointsResponseMapper : IMapTo<EndpointResponse, int, VideoEndpointResponse>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+        private readonly IMapTo<RoomResponse, Common.Models.RoomResponse> _roomResponseMapper;
 
-        public EndpointsResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        public EndpointsResponseMapper(IMapTo<RoomResponse, Common.Models.RoomResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }

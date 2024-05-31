@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
 using VideoApi.Contract.Enums;
+using ParticipantInHearingResponse = VideoApi.Contract.Responses.ParticipantInHearingResponse;
+using ParticipantSummaryResponse = VideoApi.Contract.Responses.ParticipantSummaryResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

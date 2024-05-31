@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConferenceGuard } from '../security/conference.guard';
 import { JudgeGuard } from '../security/judge.guard';
-import { JudicialOfficeHolderGuard } from '../security/judicial-office-holder.guard';
-import { ParticipantGuard } from '../security/participant.guard';
 import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
 import { StaffMemberGuard } from '../security/staff-member.guard';
 import { BackLinkDetails } from '../shared/models/back-link-details';
@@ -18,7 +16,7 @@ const routes: Routes = [
     {
         path: `${pageUrls.ParticipantWaitingRoom}/:conferenceId`,
         component: ParticipantWaitingRoomComponent,
-        canActivate: [ParticipantGuard, ParticipantWaitingRoomGuard],
+        canActivate: [ParticipantWaitingRoomGuard],
         resolve: { loggedUser: LoggedUserResolveService },
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.ParticipantHearingList) }
     },
@@ -39,7 +37,7 @@ const routes: Routes = [
     {
         path: `${pageUrls.JOHWaitingRoom}/:conferenceId`,
         component: JohWaitingRoomComponent,
-        canActivate: [JudicialOfficeHolderGuard, ConferenceGuard],
+        canActivate: [JudgeGuard, ConferenceGuard],
         resolve: { loggedUser: LoggedUserResolveService },
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.JudgeHearingList) }
     }

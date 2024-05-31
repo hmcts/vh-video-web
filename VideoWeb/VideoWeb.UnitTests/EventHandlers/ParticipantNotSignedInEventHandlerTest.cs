@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
-            ClassicAssert.AreEqual(_eventHandler.EventType, EventType.ParticipantNotSignedIn);
+            Assert.AreEqual(_eventHandler.EventType, EventType.ParticipantNotSignedIn);
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,

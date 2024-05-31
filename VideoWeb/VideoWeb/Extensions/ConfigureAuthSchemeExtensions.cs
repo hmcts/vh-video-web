@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
-using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.Extensions
@@ -33,8 +31,6 @@ namespace VideoWeb.Extensions
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
-            const string callback = "Callback";
-            const string internalEvent = "InternalEvent";
 
             serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
             {
@@ -67,19 +63,19 @@ namespace VideoWeb.Extensions
                     {
                         if (context.Request.Path.StartsWithSegments("/callback"))
                         {
-                            return callback;
+                            return "Callback";
                         }
-                        if (context.Request.Path.StartsWithSegments("/internalevent"))
+                        else if (context.Request.Path.StartsWithSegments("/internalevent"))
                         {
-                            return internalEvent;
+                            return "InternalEvent";
                         }
-                        
+
                         var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
                         var provider = GetProviderFromRequest(context.Request, providerSchemes);
                         return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
                 })
-                .AddJwtBearer(callback, options =>
+                .AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -88,7 +84,7 @@ namespace VideoWeb.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
                     };
                 })
-                .AddJwtBearer(internalEvent, options =>
+                .AddJwtBearer("InternalEvent", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -105,7 +101,6 @@ namespace VideoWeb.Extensions
 
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies(providerSchemes);
-            serviceCollection.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
         }
 
         public static AuthProvider GetProviderFromRequest(HttpRequest httpRequest, IList<IProviderSchemes> providerSchemes)
