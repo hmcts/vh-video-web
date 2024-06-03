@@ -16,7 +16,8 @@ describe('VhoQueryService', () => {
             'getTasks',
             'completeTask',
             'getHeartbeatDataForParticipant',
-            'getCourtRoomAccounts'
+            'getCourtRoomAccounts',
+            'getActiveConferences'
         ]);
     });
 
@@ -81,6 +82,19 @@ describe('VhoQueryService', () => {
         await service.runQuery();
 
         expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith([], allocatedCsoIds, false);
+    });
+
+    it('should get active conferences when querying for active sessions only', async () => {
+        const data = testData.getTestData();
+        apiClient.getActiveConferences.and.returnValue(of(data));
+        const venueNames = ['venue1', 'venue2'];
+        service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
+        service.activeSessionsOnly = true;
+        await service.runQuery();
+
+        expect(apiClient.getActiveConferences).toHaveBeenCalledWith();
     });
 
     it('should get observable object', () => {
