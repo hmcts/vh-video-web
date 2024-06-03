@@ -66,7 +66,7 @@ namespace VideoWeb.Controllers
                     .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.Id.ToString()).ToList();
 
-                request.MuteGuests = false;
+                request.MuteGuests = true;
 
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
