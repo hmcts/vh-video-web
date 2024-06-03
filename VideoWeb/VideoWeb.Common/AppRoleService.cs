@@ -48,8 +48,7 @@ namespace VideoWeb.Common
             {
                 if (ex.StatusCode == (int)System.Net.HttpStatusCode.NotFound)
                 {
-                    var typedException = ex as BookingsApiException<ProblemDetails>;
-                    _logger.LogWarning(typedException, "User {Username} not found as a JusticeUser in BookingsApi", username);
+                    _logger.LogWarning(ex, "User {Username} not found as a JusticeUser in BookingsApi", username);
                 }
             }
 

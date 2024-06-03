@@ -13,8 +13,8 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
-    static ALLOCATED_TO_ME = 'AllocatedToMe';
-    static UNALLOCATED = 'Unallocated';
+    static readonly ALLOCATED_TO_ME = 'AllocatedToMe';
+    static readonly UNALLOCATED = 'Unallocated';
 
     venues: HearingVenueResponse[];
     csos: JusticeUserResponse[];

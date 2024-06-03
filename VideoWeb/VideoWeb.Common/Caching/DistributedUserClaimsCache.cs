@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Caching
 
         public DistributedUserClaimsCache(
             IDistributedCache distributedCache,
-            ILogger<RedisCacheBase<string, List<Claim>>> logger) : base(distributedCache, logger)
+            ILogger<DistributedUserClaimsCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
