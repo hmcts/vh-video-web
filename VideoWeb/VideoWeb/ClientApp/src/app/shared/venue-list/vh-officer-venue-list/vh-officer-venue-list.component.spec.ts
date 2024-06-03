@@ -84,7 +84,7 @@ describe('VHOfficerVenueListComponent', () => {
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts', 'getActiveConferences']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
@@ -207,6 +207,13 @@ describe('VHOfficerVenueListComponent', () => {
         expect(result.length).toBe(selection.length);
         expect(result[0]).toBe(venueNames[0].name);
     });
+
+    it('should navigate to admin hearing with list active sessions', fakeAsync(() => {
+        component.activeSessions = true;
+        component.goToHearingList();
+        tick();
+        expect(vhoQueryService.getActiveConferences).toHaveBeenCalled();
+    }));
 
     it('should navigate to admin hearing list, with venues selected', fakeAsync(() => {
         component.selectedVenues = selectedJudgeNames;

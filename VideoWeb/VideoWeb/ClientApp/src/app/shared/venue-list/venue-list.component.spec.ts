@@ -164,4 +164,22 @@ describe('VenueListComponent', () => {
             expect(csoFilter.allocatedCsoIds).toEqual([cso1.id]);
         }));
     });
+
+    describe('updateActiveSessionSelection', () => {
+        it('should clear all selections when active sessions is true', () => {
+            component.selectedVenues = [venueNames[0].name];
+            component.selectedCsos = [cso1.id];
+            component.updateActiveSessionSelection();
+            expect(component.selectedVenues.length).toBe(0);
+            expect(component.selectedCsos.length).toBe(0);
+            expect(csoSessionStorage.get()).toBeNull();
+            expect(venueSessionStorage.get()).toBeNull();
+        });
+
+        it('should set active sessions to true when active sessions is false', () => {
+            component.activeSessions = false;
+            component.updateActiveSessionSelection();
+            expect(component.activeSessions).toBeTrue();
+        });
+    });
 });
