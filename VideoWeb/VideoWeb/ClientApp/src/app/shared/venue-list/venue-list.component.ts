@@ -59,7 +59,11 @@ export abstract class VenueListComponentDirective implements OnInit {
     abstract get showVhoSpecificContent(): boolean;
 
     ngOnInit() {
+        this.activeSessions = this.activeSessionsStorage.get();
         this.setupSubscribers();
+        this.profileService.getUserProfile().then(user => {
+            this.isAdministrator = user.roles.includes(Role.Administrator);
+        });
     }
 
     updateVenueSelection() {
@@ -83,8 +87,9 @@ export abstract class VenueListComponentDirective implements OnInit {
             this.selectedCsos = [];
             this.csoAllocationStorage.clear();
             this.judgeAllocationStorage.clear();
-        } else {
             this.activeSessionsStorage.set(true);
+        } else {
+            this.activeSessionsStorage.set(false);
         }
     }
 
@@ -112,7 +117,6 @@ export abstract class VenueListComponentDirective implements OnInit {
     async getLoggedInCso(users: JusticeUserResponse[]): Promise<JusticeUserResponse> {
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
-        this.isAdministrator = loggedInUser.roles.includes(Role.Administrator);
         return loggedInCso;
     }
 

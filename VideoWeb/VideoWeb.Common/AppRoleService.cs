@@ -94,6 +94,11 @@ namespace VideoWeb.Common
                 }
             }
             
+            if (userRoles.Exists(x => x == JusticeUserRole.VhTeamLead))
+            {
+                // Team leaders (Admins) are also VHOs so add the VHO role to get the same journey
+                claims.Add(new Claim(ClaimTypes.Role, AppRoles.VhOfficerRole));
+            }
             return claims;
         }
     }
