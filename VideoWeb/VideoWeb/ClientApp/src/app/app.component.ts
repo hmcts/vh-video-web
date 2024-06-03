@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
                                 .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.CheckingAuthFinished))
                                 .subscribe(() => {
-                                    this.logger.addUserIdToLogger(userData.preferred_username);
+                                    this.logger.addUserIdToLogger(userData?.preferred_username);
                                 });
 
                             this.eventService

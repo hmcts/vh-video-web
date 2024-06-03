@@ -23,6 +23,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -47,6 +48,11 @@ describe('JohWaitingRoomComponent', () => {
     beforeAll(() => {
         initAllWRDependencies();
     });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     const logged = new LoggedParticipantResponse({
         participant_id: globalParticipant.id,
         display_name: globalParticipant.display_name,
@@ -94,7 +100,8 @@ describe('JohWaitingRoomComponent', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

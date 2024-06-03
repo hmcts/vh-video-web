@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
-    LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -13,6 +12,8 @@ import {
 } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantListItem } from '../participant-list-item';
+import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
+import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
@@ -20,7 +21,7 @@ import { ParticipantListItem } from '../participant-list-item';
 })
 export class StartPrivateConsultationComponent implements OnChanges {
     @Input() loggedInUser: LoggedParticipantResponse;
-    @Input() participants: ParticipantResponse[];
+    @Input() participants: ParticipantResponse[] = [];
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
@@ -40,11 +41,9 @@ export class StartPrivateConsultationComponent implements OnChanges {
         }
     }
 
-    participantHearingRoleText(participant: ParticipantResponse): string {
+    participantHearingRoleText(participant: VHParticipant): string {
         const translatedtext = this.translateService.instant('start-private-consultation.for');
-        const hearingRoleText = this.translateService.instant(
-            'hearing-role.' + participant.hearing_role.toLowerCase().split(' ').join('-')
-        );
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
         return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 
@@ -94,17 +93,17 @@ export class StartPrivateConsultationComponent implements OnChanges {
         this.cancel.emit();
     }
 
-    allowedFilter(endpoints: VideoEndpointResponse[]): VideoEndpointResponse[] {
-        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id === endpoint.id));
+    allowedFilter(endpoints: VideoEndpointResponse[]): VHEndpoint[] {
+        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id === endpoint.id)).map(e => mapEndpointToVHEndpoint(e));
     }
 
-    getEndpointDisabled(endpoint: VideoEndpointResponse): boolean {
+    getEndpointDisabled(endpoint: VHEndpoint): boolean {
         return endpoint.status !== EndpointStatus.Connected && endpoint.status !== EndpointStatus.InConsultation;
     }
 
-    getParticipantDisabled(participant: ParticipantResponse): boolean {
-        const someLinkedParticipantsUnavailable = participant.linked_participants?.some(lp => {
-            const p = this.getParticipantFromLinkedParticipant(lp);
+    getParticipantDisabled(participant: VHParticipant): boolean {
+        const someLinkedParticipantsUnavailable = participant.linkedParticipants?.some(lp => {
+            const p = this.getParticipantFromLinkedParticipant(lp.linkedId);
             return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
         });
 
@@ -114,7 +113,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
         );
     }
 
-    getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
+    getEndpointStatusCss(endpoint: VHEndpoint): string {
         if (endpoint.status !== EndpointStatus.Connected && endpoint.status !== EndpointStatus.InConsultation) {
             return 'unavailable';
         } else if (endpoint.status === EndpointStatus.InConsultation) {
@@ -122,7 +121,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
         }
     }
 
-    getParticipantStatusCss(participant: ParticipantResponse): string {
+    getParticipantStatusCss(participant: VHParticipant): string {
         if (this.getParticipantDisabled(participant)) {
             return 'unavailable';
         } else if (participant.status === ParticipantStatus.InConsultation) {
@@ -130,12 +129,12 @@ export class StartPrivateConsultationComponent implements OnChanges {
         }
     }
 
-    participantIsInConsultationRoom(participant: ParticipantResponse): boolean {
-        return participant.status === ParticipantStatus.InConsultation && participant.current_room != null;
+    participantIsInConsultationRoom(participant: VHParticipant): boolean {
+        return participant.status === ParticipantStatus.InConsultation && participant.room != null;
     }
 
-    endpointIsInConsultationRoom(endpoint: VideoEndpointResponse): boolean {
-        return endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null;
+    endpointIsInConsultationRoom(endpoint: VHEndpoint): boolean {
+        return endpoint.status === EndpointStatus.InConsultation && endpoint.room != null;
     }
 
     trackParticipant(index: number, item: ParticipantListItem) {
@@ -154,15 +153,16 @@ export class StartPrivateConsultationComponent implements OnChanges {
             )
             .map(p => {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = { ...p };
+                const participant: ParticipantListItem = mapParticipantToVHParticipant(p);
                 if (p.linked_participants && interpreterLink) {
-                    participant.interpreter = participantResponses.find(x => x.id === interpreterLink.linked_id);
+                    const pat = this.getParticipantFromLinkedParticipant(interpreterLink.linked_id);
+                    participant.interpreter = pat ? mapParticipantToVHParticipant(pat) : null;
                 }
                 return participant;
             });
     }
 
-    private getParticipantFromLinkedParticipant(linkedParticipant: LinkedParticipantResponse) {
-        return this.participants.find(x => x.id === linkedParticipant.linked_id);
+    private getParticipantFromLinkedParticipant(linkedId: string) {
+        return this.participants.find(x => x.id === linkedId);
     }
 }
