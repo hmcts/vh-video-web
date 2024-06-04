@@ -89,7 +89,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
         if (!this.venuesSelected && !this.csosSelected && !this.activeSessions) {
             this.logger.warn('[VenueList] - No venues or csos selected');
-            this.errorMessage = 'Failed to find venues or csos';
+            this.errorMessage = 'Please select a filter to view hearings';
             return;
         }
 

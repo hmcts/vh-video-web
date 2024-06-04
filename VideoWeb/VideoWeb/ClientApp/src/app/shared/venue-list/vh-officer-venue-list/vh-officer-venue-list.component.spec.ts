@@ -238,7 +238,7 @@ describe('VHOfficerVenueListComponent', () => {
         component.goToHearingList();
         tick();
         expect(loggerSpy).toHaveBeenCalled();
-        expect(component.errorMessage).toBe('Failed to find venues or csos');
+        expect(component.errorMessage).toBe('Please select a filter to view hearings');
     }));
 
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {

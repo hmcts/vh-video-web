@@ -89,7 +89,7 @@ export abstract class VenueListComponentDirective implements OnInit {
             this.judgeAllocationStorage.clear();
             this.activeSessionsStorage.set(true);
         } else {
-            this.activeSessionsStorage.set(false);
+            this.activeSessionsStorage.clear();
         }
     }
 
