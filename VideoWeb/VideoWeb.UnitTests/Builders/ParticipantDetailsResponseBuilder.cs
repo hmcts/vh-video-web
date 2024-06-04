@@ -14,6 +14,7 @@ namespace VideoWeb.UnitTests.Builders
         {
             _participant = Builder<ParticipantDetailsResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.CurrentStatus = ParticipantState.Available)
                 .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.UserRole = role)

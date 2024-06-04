@@ -1,10 +1,11 @@
-using System;
+using BookingsApi.Contract.V2.Enums;
+using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
-using VideoApi.Contract.Enums;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -13,72 +14,33 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_endpoint_to_cache_model()
         {
-            var defenceAdvocate = new EndpointParticipantResponse
-            {
-                ParticipantUsername = "DefenceAdvocate"
-            };
-            var endpointBuilder = new EndpointsResponseBuilder();
-            var endpoint = endpointBuilder.WithStatus(apiState).Build();
-            var endpointDetails = endpointBuilder.WithLinkedParticipant(defenceAdvocate).BuildEndpointDetailsResponse();
-            var result = _sut.Map(endpoint, endpointDetails.EndpointParticipants);
             var ep = Builder<EndpointResponse>.CreateNew().Build();
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
             cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.EndpointParticipants.Should().Contain(ep.DefenceAdvocate.ToLower());
         }
 
         [Test]
-        public void should_map_endpoint_to_cache_model_with_lower_trimmed_defence_advocate_username()
+        public void should_map_endpoint_participants_to_cache_model()
         {
-            var ep = new EndpointResponse
-            {
-                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
-                Status = EndpointState.Connected, DefenceAdvocate = " ALLUPPER "
-            };
-            
-            var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
-            cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.DisplayName);
-            cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate.ToLower().Trim());
-        }
-
-        [Test]
-        public void should_map_endpoint_to_cache_model_with_null_defence_advocate_username()
-        {
-            var ep = new EndpointResponse
+            var participants = Builder<Participant>.CreateListOfSize(1).Build();
+            var ep = new EndpointParticipantResponse
             {
-                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
-                Status = EndpointState.Connected
+                ParticipantId = participants[0].RefId,
+                ParticipantUsername = "username",
+                LinkedParticipantType = LinkedParticipantTypeV2.DefenceAdvocate
             };
 
-            var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
-
-            cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.DisplayName);
-            cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().BeNull();
+            var cachedModel = EndpointParticipantCacheMapper.MapEndpointParticipantToCacheModel(ep, participants);
+           
+            cachedModel.ParticipantId.Should().Be(participants[0].Id);
+            cachedModel.ParticipantRefId.Should().Be(ep.ParticipantId);
+            cachedModel.ParticipantUsername.Should().Be(participants[0].Username);
+            cachedModel.LinkedParticipantType.ToString().Should().Be(ep.LinkedParticipantType.ToString());
         }
 
-        [Test]
-        public void should_map_endpoint_to_cache_model_with_empty_defence_advocate_username()
-        {
-            var ep = new EndpointResponse
-            {
-                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
-                Status = EndpointState.Connected, DefenceAdvocate = "  "
-            };
-
-            var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
-
-            cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.DisplayName);
-            cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().BeEmpty();
-        }
     }
 }

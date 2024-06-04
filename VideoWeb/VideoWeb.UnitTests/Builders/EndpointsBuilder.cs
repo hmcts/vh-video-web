@@ -14,7 +14,6 @@ namespace VideoWeb.UnitTests.Builders
             _endpoint = Builder<EndpointResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Status = EndpointState.Connected)
-                .With(x=>x.DefenceAdvocate = "DefenceAdvocate")
                 .With(x=>x.DisplayName="DisplayName")
                 .Build();
         }

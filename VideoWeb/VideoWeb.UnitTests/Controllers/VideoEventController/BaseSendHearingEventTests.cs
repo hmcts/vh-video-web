@@ -11,6 +11,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
@@ -63,8 +64,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             };
             
             
-            conference.CivilianRooms.First().Participants.Add(conference.Participants[1].Id);
-            conference.CivilianRooms.First().Participants.Add(conference.Participants[2].Id);
+            conference.CivilianRooms[0].Participants.Add(conference.Participants[1].Id);
+            conference.CivilianRooms[0].Participants.Add(conference.Participants[2].Id);
 
             return conference;
         }
@@ -84,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
-                participants.First().Username = username;
+                participants[0].Username = username;
             }
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
@@ -115,12 +116,12 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             Mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-            Mocker.Mock<IConferenceCache>().Setup(cache => cache.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            Mocker.Mock<IConferenceService>().Setup(c => c.GetConference(TestConference.Id))
                 .ReturnsAsync(TestConference);
             Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<Conference>()))
                 .Callback<Conference>(updatedConference => { TestConference = updatedConference; });
             Mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(Mocker.Mock<IEventHandler>().Object);
+            Mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(Mocker.Mock<IConferenceCache>().Object);
         }
     }
 }

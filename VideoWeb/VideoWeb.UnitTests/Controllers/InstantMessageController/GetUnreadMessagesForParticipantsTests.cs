@@ -14,6 +14,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
@@ -31,10 +32,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 "Stacktrace goes here", null, default, null);
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername.ToString()))
                 .ThrowsAsync(apiException);
-            mocker.Mock<IConferenceCache>()
-             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-             .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conferenceId)))
+                .ReturnsAsync(conference);
 
             var result = await sut.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (ObjectResult)result;
@@ -50,10 +51,11 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var participantUsername = conference.Participants[0].Id;
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername.ToString()))
                 .ReturnsAsync(new List<InstantMessageResponse>());
-            mocker.Mock<IConferenceCache>()
-             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-             .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+                .ReturnsAsync(conference);
+
             var result = await sut.GetUnreadMessagesForParticipantAsync(conferenceId, Guid.Parse(participantUsername.ToString()));
 
             var typedResult = (OkObjectResult)result;
@@ -67,11 +69,11 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         {
             var conference = InitConference();
             var messages = InitMessages(conference);
-            mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
                 .ReturnsAsync(conference);
-
+            
             var judgeParticipant = conference.Participants.Single(x => x.Role == Role.Judge);
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, judgeParticipant.Username))
                 .ReturnsAsync(messages);
@@ -91,9 +93,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         {
             var conference = InitConference();
             var messages = InitMessagesRepresentative(conference);
-            mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
                 .ReturnsAsync(conference);
 
             var representativeParticipant = conference.Participants.First(x => x.Role == Role.Representative);

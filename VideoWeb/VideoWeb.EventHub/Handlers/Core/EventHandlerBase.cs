@@ -1,14 +1,7 @@
-using System;
 using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Client;
-using BookingsApi.Contract.V2.Responses;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
@@ -20,18 +13,14 @@ using Task = System.Threading.Tasks.Task;
 
 namespace VideoWeb.EventHub.Handlers.Core
 {
-    public abstract class EventHandlerBase : IEventHandler
+    public abstract class EventHandlerBase(
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IConferenceService conferenceService,
+        ILogger<EventHandlerBase> logger)
+        : IEventHandler
     {
-        protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
-        private readonly IConferenceService _conferenceService;
-        protected readonly ILogger<EventHandlerBase> Logger;
-        
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceService conferenceService, ILogger<EventHandlerBase> logger)
-        {
-            HubContext = hubContext;
-            _conferenceService = conferenceService;
-            Logger = logger;
-        }
+        protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext = hubContext;
+        protected readonly ILogger<EventHandlerBase> Logger = logger;
         
         protected Conference SourceConference { get; set; }
         public Participant SourceParticipant { get; set; }
@@ -41,7 +30,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public virtual async Task HandleAsync(CallbackEvent callbackEvent)
         {
-            SourceConference = await GetConference(callbackEvent.ConferenceId);
+            SourceConference = await conferenceService.GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
@@ -54,11 +43,6 @@ namespace VideoWeb.EventHub.Handlers.Core
             await PublishStatusAsync(callbackEvent);
         }
         
-        private async Task<Conference> GetConference(Guid conferenceId)
-        {
-            var conference = await _conferenceService.GetConference(conferenceId);
-            return conference;
-        }
 
         /// <summary>
         ///     Publish a participant event to all participants in conference to those connected to the HubContext

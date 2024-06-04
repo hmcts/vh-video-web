@@ -49,6 +49,7 @@ namespace VideoWeb.UnitTests.Services
                 Name = "FullName"
             };
             new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(_mocker.Mock<IConferenceCache>().Object);
         }
 
         [Test]

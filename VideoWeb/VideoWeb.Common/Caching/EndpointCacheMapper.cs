@@ -22,14 +22,14 @@ namespace VideoWeb.Common.Caching
     
     public static class EndpointParticipantCacheMapper
     {
-        public static EndpointParticipant MapEndpointParticipantToCacheModel(EndpointParticipantResponse endpointParticipantResponse, List<Participant> participants)
+        public static EndpointParticipant MapEndpointParticipantToCacheModel(EndpointParticipantResponse endpointParticipantResponse, IList<Participant> participants)
         {
             return new EndpointParticipant
             {
                 ParticipantId = participants.Single(x => x.RefId == endpointParticipantResponse.ParticipantId).Id,
                 ParticipantRefId = endpointParticipantResponse.ParticipantId,
                 ParticipantUsername = participants.Single(x => x.RefId == endpointParticipantResponse.ParticipantId).Username,
-                LinkedParticipantType = (LinkType) Enum.Parse(typeof(LinkType), endpointParticipantResponse.LinkedParticipantType.ToString())
+                LinkedParticipantType = (LinkType) endpointParticipantResponse.LinkedParticipantType
             };
         }
     }

@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Caching
             foreach (var endpoint in endpoints)
             {
                 endpoint.EndpointParticipants = hearingDetailsResponse.Endpoints
-                    .Single(x => x.Id == endpoint.Id).EndpointParticipants
+                    .Single(x => x.Id == endpoint.Id).EndpointParticipants?
                     .Select(x => EndpointParticipantCacheMapper.MapEndpointParticipantToCacheModel(x, participants))
                     .ToList();
             }
@@ -48,8 +48,8 @@ namespace VideoWeb.Common.Caching
 
         private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
         {
-            var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>())
-                .Select(MapLinkedParticipantToCacheModel).ToList();
+            var links = (participant.LinkedParticipants 
+                         ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
             return new Participant
             {
                 Id = participant.Id,

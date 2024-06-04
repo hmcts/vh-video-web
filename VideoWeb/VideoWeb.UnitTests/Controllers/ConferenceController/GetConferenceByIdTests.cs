@@ -5,7 +5,9 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
+using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -22,6 +23,8 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common;
+using VideoWeb.Common.Caching;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -38,7 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
@@ -63,8 +66,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             _controller = _mocker.Create<ConferencesController>();
             _controller.ControllerContext = context;
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
+            var cache = _mocker.Mock<IConferenceCache>();
+             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>()));
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
 
@@ -72,28 +76,31 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_when_user_is_in_conference()
         {
             var conference = CreateValidConferenceResponse();
+            var hearing = CreateValidHearingDetailResponse(conference);
             conference.Participants[0].UserRole = UserRole.Individual;
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingDetailsByIdV2Async(conference.HearingId))
+                .ReturnsAsync(hearing);
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
             var judge = conference.Participants.SingleOrDefault(p => p.UserRole == UserRole.Judge);
-            var staffMember = conference.Participants.SingleOrDefault(p => p.UserRole == UserRole.StaffMember);
-            _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
+            
+            _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
             var response = (ConferenceResponse)typedResult.Value;
             response.CaseNumber.Should().Be(conference.CaseNumber);
             response.Participants[0].Role.Should().Be((Role)UserRole.Individual);
-            response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
-            response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
-            response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
-            response.Participants.Any(x => x.Role == Role.Judge).Should().BeTrue();
-            response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.Individual).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.StaffMember).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.Representative).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.Judge).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.StaffMember).Should().BeTrue();
             response.Participants.SingleOrDefault(x => x.Role == Role.Judge).TiledDisplayName.Should().Be($"T{0};{judge.DisplayName};{judge.Id}");
-            response.Participants.Any(x => x.Role == Role.JudicialOfficeHolder).Should().BeTrue();
+            response.Participants.Exists(x => x.Role == Role.JudicialOfficeHolder).Should().BeTrue();
         }
 
         [Test]
@@ -200,7 +207,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
-                participants.First().Username = username;
+                participants[0].Username = username;
             }
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
@@ -209,6 +216,30 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.IsWaitingRoomOpen = true)
                 .Build();
             return conference;
+        }
+        private static HearingDetailsResponseV2 CreateValidHearingDetailResponse(ConferenceDetailsResponse conference)
+        {            
+            var judge = new JudicialParticipantResponseBuilder(true).Build();
+            var panelMember = new JudicialParticipantResponseBuilder(false).Build();
+            var staffMember = new ParticipantFromBookingApiResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
+            var individualDefendant = new ParticipantFromBookingApiResponseBuilder(UserRole.Individual, "Defendant").Build();
+            var individualClaimant = new ParticipantFromBookingApiResponseBuilder(UserRole.Individual, "Claimant").Build();
+            var repClaimant = new ParticipantFromBookingApiResponseBuilder(UserRole.Representative, "Claimant").Build();
+            var participants = new List<ParticipantResponseV2>()
+            {
+                individualDefendant, individualClaimant, repClaimant, staffMember
+            };
+            var judiciaryParticipants = new List<JudiciaryParticipantResponse>()
+            {
+                judge, panelMember
+            };
+            var hearing = Builder<HearingDetailsResponseV2>.CreateNew()
+                .With(x => x.Participants = participants)
+                .With(x => x.JudiciaryParticipants = judiciaryParticipants)
+                .Build();
+            hearing.Id = conference.HearingId;
+            
+            return hearing;
         }
 
     }

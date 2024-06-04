@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
         }

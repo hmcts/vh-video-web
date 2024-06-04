@@ -33,12 +33,7 @@ namespace VideoWeb.UnitTests.Hub
                 OperatingSystem = "Mac OS X",
                 OperatingSystemVersion = "10.15"
             };
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
             var mockJudgeClient = new Mock<IEventHubClient>();
@@ -107,11 +102,7 @@ namespace VideoWeb.UnitTests.Hub
                 OperatingSystem = "Mac OS X",
                 OperatingSystemVersion = "10.15"
             };
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
 
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();

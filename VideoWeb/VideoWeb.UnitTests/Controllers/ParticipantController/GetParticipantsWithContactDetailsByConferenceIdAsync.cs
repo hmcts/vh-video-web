@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -23,6 +23,7 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -69,10 +70,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             {
                 new ParticipantInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
             };
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conference.Id)).ReturnsAsync(conference);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetHostsInHearingsTodayAsync())
                 .ReturnsAsync(judgesInHearings);
@@ -87,13 +86,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             results.Count.Should().Be(_participants.Count);
 
             // Individual
-            AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, false);
+            AssertResponseItem(results[0], conference.Participants[1], conferenceId, false);
             // Interpreter
-            AssertResponseItem(results.ElementAt(1), conference.Participants[3], conferenceId, false);
+            AssertResponseItem(results[1], conference.Participants[3], conferenceId, false);
             // Representative
-            AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, false);
+            AssertResponseItem(results[2], conference.Participants[2], conferenceId, false);
             // Judge
-            AssertResponseItem(results.ElementAt(3), conference.Participants[0], conferenceId, true);
+            AssertResponseItem(results[3], conference.Participants[0], conferenceId, true);
         }
 
         [Test]
@@ -109,13 +108,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_throw_error_when_get_video_api_throws_error()
         {
             var conferenceId = Guid.NewGuid();
-            
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ThrowsAsync(apiException);
-        
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId)).ThrowsAsync(apiException);
             var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);

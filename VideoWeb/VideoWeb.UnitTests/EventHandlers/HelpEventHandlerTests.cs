@@ -15,8 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_messages_to_participants_on_help()
         {
-            _eventHandler = new HelpEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new HelpEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var callbackEvent = new CallbackEvent
@@ -25,13 +24,13 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 TimeStampUtc = DateTime.UtcNow,
-                ParticipantId = conference.Participants.First().Id
+                ParticipantId = conference.Participants[0].Id
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.HelpMessage(conference.Id, conference.Participants.First().DisplayName));
+            EventHubClientMock.Verify(x => x.HelpMessage(conference.Id, conference.Participants[0].DisplayName));
         }
     }
 }

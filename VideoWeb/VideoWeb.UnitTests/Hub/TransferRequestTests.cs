@@ -20,12 +20,8 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = conference.Id;
             var participantId = participant.Id;
             var transferDirection = TransferDirection.In;
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
@@ -52,11 +48,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var transferDirection = TransferDirection.In;
             
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
@@ -83,11 +75,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.Empty;
             var transferDirection = TransferDirection.In;
             
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);

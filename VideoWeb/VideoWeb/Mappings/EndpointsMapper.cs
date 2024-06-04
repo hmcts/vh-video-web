@@ -16,6 +16,7 @@ namespace VideoWeb.Mappings
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 EndpointStatus =  (EndpointStatus)(int)endpoint.Status,
+                CurrentRoom = endpoint.CurrentRoom,
                 EndpointParticipants = linkedParticipants.Select(x => new EndpointParticipant
                 {
                     ParticipantUsername = x.ParticipantUsername,

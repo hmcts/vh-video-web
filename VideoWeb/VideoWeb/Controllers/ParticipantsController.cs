@@ -159,11 +159,9 @@ namespace VideoWeb.Controllers
 
         private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
-            var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            var hearingDetailsResponse = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.HearingId);
-            await _conferenceService.ConferenceCache.AddConferenceAsync(conference, hearingDetailsResponse);
-            var participantResponseMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantResponse>();
-            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
+            var conference = await _conferenceService.ForceGetConference(conferenceId);
+            var participantResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var mappedParticipants = conference.Participants.Select(participant => participantResponseMapper.Map(participant, conference)).ToList();
             await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
                 Participants = mappedParticipants,

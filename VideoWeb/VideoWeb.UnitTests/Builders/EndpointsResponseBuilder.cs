@@ -1,5 +1,7 @@
 using FizzWare.NBuilder;
 using System;
+using System.Collections.Generic;
+using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 
@@ -8,7 +10,7 @@ namespace VideoWeb.UnitTests.Builders
     public class EndpointsResponseBuilder
     {
         private readonly EndpointResponse _endpoint;
-        private readonly BookingsApi.Contract.V2.Responses.EndpointResponseV2 _endpointDetail;
+        private readonly EndpointResponseV2 _endpointDetail;
 
         public EndpointsResponseBuilder()
         {
@@ -20,11 +22,12 @@ namespace VideoWeb.UnitTests.Builders
                 .With(x => x.Status = EndpointState.Connected)
                 .Build();
             
-            _endpointDetail = Builder<BookingsApi.Contract.V2.Responses.EndpointResponseV2>.CreateNew()
+            _endpointDetail = Builder<EndpointResponseV2>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.DisplayName = _endpoint.DisplayName)
                 .With(x => x.Pin = _endpoint.Pin)
                 .With(x => x.Sip = _endpoint.SipAddress)
+                .With(x => x.EndpointParticipants = new List<EndpointParticipantResponse>())
                 .Build();
         }
 
@@ -34,7 +37,7 @@ namespace VideoWeb.UnitTests.Builders
             return this;
         }
         
-        public EndpointsResponseBuilder WithLinkedParticipant(BookingsApi.Contract.V2.Responses.EndpointParticipantResponse endpointParticipant)
+        public EndpointsResponseBuilder WithLinkedParticipant(EndpointParticipantResponse endpointParticipant)
         {
             _endpointDetail.EndpointParticipants.Add(endpointParticipant);
             return this;

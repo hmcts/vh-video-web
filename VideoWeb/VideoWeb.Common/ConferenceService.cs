@@ -12,6 +12,7 @@ namespace VideoWeb.Common;
 public interface IConferenceService
 {
     public Task<Conference> GetConference(Guid conferenceId);
+    public Task<Conference> ForceGetConference(Guid conferenceId);
     public IConferenceCache ConferenceCache { get; }
 }
 
@@ -36,4 +37,16 @@ public class ConferenceService(
         }
     }
     
+    /// <summary>
+    /// Force query of database and update cache
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <returns></returns>
+    public async Task<Conference> ForceGetConference(Guid conferenceId)
+    {
+        var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+        var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId);
+        await ConferenceCache.AddConferenceAsync(conferenceDetails, hearingDetails);
+        return await GetConference(conferenceId);
+    }
 }

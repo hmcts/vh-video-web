@@ -9,10 +9,13 @@ using BookingApi = BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
 namespace VideoWeb.Mappings
 {
-    public class EndpointsResponseMapper : IMapTo<EndpointResponse, List<BookingApi.EndpointParticipantResponse>, VideoEndpointResponse>
+    public class VideoEndpointsResponseMapper : IMapTo<EndpointResponse, List<BookingApi.EndpointParticipantResponse>, VideoEndpointResponse>
     {
         private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
-
+        public VideoEndpointsResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        {
+            _roomResponseMapper = roomResponseMapper;
+        }
         public VideoEndpointResponse Map(EndpointResponse endpoint, List<BookingApi.EndpointParticipantResponse> linkedParticipants)
         {
             var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
@@ -29,13 +32,9 @@ namespace VideoWeb.Mappings
                     ParticipantUsername = x.ParticipantUsername,
                     LinkType = (LinkType)x.LinkedParticipantType
                 }).ToList()
-                
             };
         }
         
-        public EndpointsResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
-        {
-            _roomResponseMapper = roomResponseMapper;
-        }
+
     }
 }

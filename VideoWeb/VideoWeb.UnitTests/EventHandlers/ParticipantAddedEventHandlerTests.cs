@@ -21,8 +21,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_participants_updated_message_to_participants()
         {
-            _eventHandler = new ParticipantsUpdatedEventHandler(EventHubContextMock.Object, ConferenceCache,
-                LoggerMock.Object, VideoApiClientMock.Object);
+            _eventHandler = new ParticipantsUpdatedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
 

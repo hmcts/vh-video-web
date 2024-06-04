@@ -22,20 +22,17 @@ namespace VideoWeb.Contract.Responses
         public EndpointStatus Status { get; set; }
         
         /// <summary>
-        /// The current endpoint status
-        /// </summary>
-        public List<EndpointParticipantResponse> EndpointParticipants { get; set; }
-        
-        /// <summary>
         /// The display name when connected to the pexip node
         /// </summary>
         public string PexipDisplayName { get; set; }
-
-        public bool IsCurrentUser { get; set; }
-
+        
         /// <summary>
         /// Current conference room
         /// </summary>
         public RoomSummaryResponse CurrentRoom { get; set; }
+        
+        public List<EndpointParticipantResponse> EndpointParticipants { get; set; }
+        
+        public bool IsCurrentUser { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
@@ -14,11 +13,10 @@ using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using Autofac.Extras.Moq;
-using VideoApi.Contract.Enums;
 using VideoWeb.Contract.Request;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
@@ -35,15 +33,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(_mocker.Create<CivilianRoomToRoomSummaryResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()).Returns(_mocker.Create<UpdateParticipantRequestMapper>());
             
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, ParticipantResponse>()).Returns(_mocker.Create<ParticipantResponseMapper>(parameters));
-            
-            _mocker.Mock<IConferenceCache>().Setup(x => x.UpdateConferenceAsync(It.IsAny<Conference>())).Returns(Task.CompletedTask);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>(parameters));
             
             var eventHandlerMock = _mocker.Mock<IEventHandler>();
             _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);
@@ -54,13 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _testConference = eventComponentHelper.BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
 
-            var context = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = claimsPrincipal
-                }
-            };
+            var context = new ControllerContext { HttpContext = new DefaultHttpContext { User = claimsPrincipal } };
 
             _sut = _mocker.Create<ParticipantsController>();
             _sut.ControllerContext = context;
@@ -80,41 +71,37 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                         request.DisplayName == participantRequest.DisplayName)))
                 .Returns(Task.FromResult(default(object)));
             
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(conferenceId))
-                .ReturnsAsync(new ConferenceDetailsResponse
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(conferenceId))
+                .ReturnsAsync(new Conference()
                 {
                     Id = conferenceId,
-                    Participants = new List<ParticipantDetailsResponse>
-                    {
-                        new ()
+                    Participants =
+                    [
+                        new()
                         {
                             Id = participantId,
                             Username = "username",
                             DisplayName = "newDisplayName",
                             ContactEmail = "contactEmail",
-                            CurrentRoom = new RoomResponse(),
                             LinkedParticipants = null,
                             FirstName = "FirstName",
                             LastName = "LastName",
-                            UserRole = UserRole.Judge,
-                            CurrentStatus = ParticipantState.Available,
+                            Role = Role.Judge,
+                            ParticipantStatus = ParticipantStatus.Available,
                             CaseTypeGroup = "CaseGroup",
                             Representee = "Representee",
                             HearingRole = "HearingRole"
                         }
-                    }
+                    ]
                 });
 
             var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
-            _mocker.Mock<IVideoApiClient>()
-                .Verify(x => x.GetConferenceDetailsByIdAsync(conferenceId), Times.Once);
-            _mocker.Mock<IVideoApiClient>()
-                .Verify(x => x.UpdateParticipantDetailsAsync(conferenceId, participantId, It.IsAny<UpdateParticipantRequest>()), Times.Once);
+            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(conferenceId), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.UpdateParticipantDetailsAsync(conferenceId, participantId, It.IsAny<UpdateParticipantRequest>()), Times.Once);
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Once);
             
         }
 

@@ -19,8 +19,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_participant__status_messages_to_clients_and_asb_when_transfer_occurs(
             RoomType from, RoomType to, ParticipantState status)
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -47,8 +46,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_participant_status_when_transferring_to_new_consultation_room()
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -78,8 +76,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_participant_status_when_transferring_from_new_consultation_room()
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -109,8 +106,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_participant_status_when_transferring_a_linked_participant()
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.LinkedParticipants.Any() && x.Role == Role.Individual);

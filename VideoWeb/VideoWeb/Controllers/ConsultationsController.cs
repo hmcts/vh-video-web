@@ -295,8 +295,8 @@ namespace VideoWeb.Controllers
         {
             var conference = await conferenceService.GetConference(request.ConferenceId);
             var username = User.Identity?.Name?.ToLower().Trim();
-            var requestedBy = conference.Participants.SingleOrDefault(x =>
-                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            var requestedBy = conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            
             if (requestedBy == null)
             {
                 return Unauthorized("You must be a VHO or a member of the conference");

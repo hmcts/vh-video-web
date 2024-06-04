@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
@@ -25,7 +24,6 @@ namespace VideoWeb.Controllers
     [Authorize(AuthenticationSchemes = "InternalEvent")]
     public class InternalEventController : ControllerBase
     {
-        private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly IConferenceService _conferenceService;
         private readonly IEndpointsUpdatedEventNotifier _endpointsUpdatedEventNotifier;
@@ -35,7 +33,6 @@ namespace VideoWeb.Controllers
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
 
         public InternalEventController(
-            IVideoApiClient videoApiClient,
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
             IConferenceService conferenceService,
             ILogger<InternalEventController> logger,
@@ -45,7 +42,6 @@ namespace VideoWeb.Controllers
             IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier
             )
         {
-            _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
             _conferenceService = conferenceService;
             _endpointsUpdatedEventNotifier = endpointsUpdatedEventNotifier;
@@ -133,7 +129,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceService.GetConference(conferenceId);
+                var conference = await _conferenceService.ForceGetConference(conferenceId);
                 _logger.LogTrace("Initial conference details: {Conference}", conference);
 
                 await _endpointsUpdatedEventNotifier.PushEndpointsUpdatedEvent(conference, request);

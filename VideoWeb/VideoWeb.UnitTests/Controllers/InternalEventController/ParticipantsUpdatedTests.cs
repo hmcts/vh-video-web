@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Helpers.Interfaces;
@@ -23,7 +24,6 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
         protected VideoWeb.Controllers.InternalEventController _controller;
 
         private Guid testConferenceId;
-        private Guid existingParticipantId;
 
         Mock<Conference> mockConference;
 
@@ -41,28 +41,27 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 }
             };
 
-            var parameters = new ParameterBuilder(_mocker)
+            new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
                 .Build();
-
-
+            
             _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
-
             testConferenceId = Guid.NewGuid();
-            existingParticipantId = Guid.NewGuid();
-
             mockConference = _mocker.Mock<Conference>();
             mockConference.Object.Id = testConferenceId;
-
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == testConferenceId),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+    
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == testConferenceId)))
                 .ReturnsAsync(mockConference.Object);
-
+            
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ConferenceCache)
+                .Returns(_mocker.Mock<IConferenceCache>().Object);
+            
             _mocker.Mock<IParticipantsUpdatedEventNotifier>();
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
@@ -83,7 +82,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object, mockConference.Object.Participants), Times.Once);
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x 
+                => x.PushParticipantsUpdatedEvent(mockConference.Object, mockConference.Object.Participants), Times.Once);
         }
     }
 }

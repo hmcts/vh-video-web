@@ -4,6 +4,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
+using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
@@ -24,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
                 .Returns(_mocker.Create<ParticipantDetailsResponseMapper>());
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<EndpointResponse, Endpoint>())
+                .Setup(x => x.Get<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>())
                 .Returns(_mocker.Create<EndpointsMapper>());
             _sut = _mocker.Create<ConferenceMapper>();
         }

@@ -36,8 +36,7 @@ namespace VideoWeb.EventHub.Handlers
                 });
             }
 
-            return consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty,
-                SourceParticipant.Id);
+            return consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty, SourceParticipant.Id);
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)

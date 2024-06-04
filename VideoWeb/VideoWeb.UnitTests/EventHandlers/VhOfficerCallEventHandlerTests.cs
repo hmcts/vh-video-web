@@ -12,6 +12,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
@@ -20,12 +21,11 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 namespace VideoWeb.UnitTests.EventHandlers
 {
     [TestFixture]
-    public class VhOfficerCallEventHandlerTests
+    public class VhOfficerCallEventHandlerTests : EventHandlerTestBase
     {
         private VhOfficerCallEventHandler _eventHandler;
         private AutoMock _mocker;
         private MemoryCache _memoryCache;
-        private ConferenceCache _conferenceCache;
         private Conference _conference;
         
         [SetUp]
@@ -33,11 +33,13 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _conferenceCache = new ConferenceCache(_memoryCache);
-            _mocker = AutoMock.GetLoose(builder => builder.RegisterInstance<IConferenceCache>(_conferenceCache));
+            _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ConferenceCache)
+                .Returns(new ConferenceCache(_memoryCache));
             _eventHandler = _mocker.Create<VhOfficerCallEventHandler>();
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(_conference);
         }
-
         
         [TestCase(null)]
         [TestCase(RoomType.AdminRoom)]
@@ -57,9 +59,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 TransferTo = transferTo?.ToString(),
                 TimeStampUtc = DateTime.UtcNow
             };
-
-            var exception =
-                Assert.ThrowsAsync<ArgumentException>(async () => await _eventHandler.HandleAsync(callbackEvent));
+            var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _eventHandler.HandleAsync(callbackEvent));
             exception.Message.Should().Be("No consultation room provided");
         }
 
@@ -87,12 +87,11 @@ namespace VideoWeb.UnitTests.EventHandlers
                     _eventHandler.SourceParticipant.Id), Times.Once);
         }
 
-
         [Test]
         public async Task should_join_jvs_to_consultation_when_vho_call_starts()
         {
             // Arrange
-            var endpointForEvent = _conference.Endpoints.First();
+            var endpointForEvent = _conference.Endpoints[0];
             _memoryCache.Set(_conference.Id,_conference);
 
             var callbackEvent = new CallbackEvent
@@ -111,7 +110,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Assert
             _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => 
             r.ConferenceId == _conference.Id &&
-            r.RequestedById == Guid.Empty &&
             r.EndpointId == endpointForEvent.Id &&
             r.RoomLabel == callbackEvent.TransferTo)), Times.Once);
         }

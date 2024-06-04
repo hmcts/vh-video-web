@@ -8,7 +8,7 @@ using VHEndpointStatus = VideoWeb.Common.Models.EndpointStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class EndpointsResponseMapperTest : BaseMockerSutTestSetup<EndpointsResponseMapper>
+    public class VideoEndpointsResponseMapperTest : BaseMockerSutTestSetup<VideoEndpointsResponseMapper>
     {
         [TestCase(EndpointState.Connected, VHEndpointStatus.Connected)]
         [TestCase(EndpointState.Disconnected, VHEndpointStatus.Disconnected)]
@@ -16,14 +16,10 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(EndpointState.NotYetJoined, VHEndpointStatus.NotYetJoined)]
         public void Should_map_user_response_to_court_rooms_account(EndpointState apiState, VHEndpointStatus expected)
         {
-            var defenceAdvocate = new EndpointParticipantResponse
-            {
-                ParticipantUsername = "DefenceAdvocate"
-            };
+            var defenceAdvocate = new EndpointParticipantResponse { ParticipantUsername = "DefenceAdvocate" };
             var endpointBuilder = new EndpointsResponseBuilder();
             var endpoint = endpointBuilder.WithStatus(apiState).Build();
             var endpointDetails = endpointBuilder.WithLinkedParticipant(defenceAdvocate).BuildEndpointDetailsResponse();
-            
             var result = _sut.Map(endpoint, endpointDetails.EndpointParticipants);
 
             result.Should().NotBeNull();

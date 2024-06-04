@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using BookingsApi.Contract.V1.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Models
 {
@@ -10,6 +10,7 @@ namespace VideoWeb.Common.Models
         public string DisplayName { get; set; }
         public EndpointStatus EndpointStatus { get; set; }
         public List<EndpointParticipant> EndpointParticipants { get; set; }
+        public RoomResponse CurrentRoom { get; set; }
     }
 
     public class EndpointParticipant

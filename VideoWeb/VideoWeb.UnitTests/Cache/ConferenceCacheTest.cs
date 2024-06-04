@@ -1,19 +1,14 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Cache
 {
-    public class ConferenceCacheTest
+    public class ConferenceCacheTest : CacheTestBase
     {
         private IMemoryCache _memoryCache;
         private ConferenceCache _conferenceCache;
@@ -29,7 +24,8 @@ namespace VideoWeb.UnitTests.Cache
         public async Task Should_add_conference_to_cache()
         {
             var conference = CreateConferenceResponse();
-            await _conferenceCache.AddConferenceAsync(conference);
+            var hearingDetails = CreateHearingResponse();
+            await _conferenceCache.AddConferenceAsync(conference, hearingDetails);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
         
@@ -38,7 +34,8 @@ namespace VideoWeb.UnitTests.Cache
         {
             var newVenueName = "Updated Name for Test";
             var conference = CreateConferenceResponse();
-            await _conferenceCache.AddConferenceAsync(conference);
+            var hearingDetails = CreateHearingResponse();
+            await _conferenceCache.AddConferenceAsync(conference, hearingDetails);
             var cacheModel = _memoryCache.Get(conference.Id).As<Conference>();
             cacheModel.HearingVenueName = newVenueName;
             await _conferenceCache.UpdateConferenceAsync(cacheModel);
@@ -53,7 +50,7 @@ namespace VideoWeb.UnitTests.Cache
             var conference = new Conference { Id = Guid.NewGuid() };
 
             _memoryCache.Set(conference.Id, conference);
-            var result = await _conferenceCache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>());
+            var result = await _conferenceCache.GetOrAddConferenceAsync(conference.Id, DummyInput);
 
             result.Should().NotBeNull();
             result.Id.Should().Be(conference.Id);
@@ -63,38 +60,18 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_does_not_contains_key()
         {
             var conferenceDetails = CreateConferenceResponse();
+            var hearingDetails = CreateHearingResponse();
             conferenceDetails.Id = Guid.NewGuid();
 
             var result = await _conferenceCache.GetOrAddConferenceAsync(conferenceDetails.Id, () =>
             {
                 _memoryCache.Set(conferenceDetails.Id, new Conference{ Id = conferenceDetails.Id });
-                return Task.FromResult(conferenceDetails);
+                var responseObj = (conferenceDetails, hearingDetails);
+                return Task.FromResult(responseObj);
             });
 
             result.Should().NotBeNull();
             result.Id.Should().Be(conferenceDetails.Id);
         }
-
-        private static ConferenceDetailsResponse CreateConferenceResponse()
-        {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Participants = participants)
-                .With(x => x.Endpoints = endpoints)
-                .Build();
-            return conference;
-        }
-
-        private static IMemoryCache GetCache()
-        {
-            var services = new ServiceCollection();
-            services.AddMemoryCache();
-            var serviceProvider = services.BuildServiceProvider();
-
-            var memoryCache = serviceProvider.GetService<IMemoryCache>();
-            return memoryCache;
-        }
-
     }
 }
