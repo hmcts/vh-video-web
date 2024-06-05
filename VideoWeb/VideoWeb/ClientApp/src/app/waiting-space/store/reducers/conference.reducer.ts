@@ -207,7 +207,7 @@ export const conferenceReducer = createReducer(
             currentConference: { ...state.currentConference, participants: updatedParticipantsList, endpoints: updatedEndpointsList }
         };
     }),
-    on(ConferenceActions.updateParticipantRoom, (state, { participantId, toRoom }) => {
+    on(ConferenceActions.updateParticipantRoom, (state, { participantId, toRoom, fromRoom }) => {
         const participant = state.currentConference?.participants.find(p => p.id === participantId);
         const endpoint = state.currentConference?.endpoints.find(e => e.id === participantId);
 
@@ -216,18 +216,46 @@ export const conferenceReducer = createReducer(
         }
 
         let room: VHRoom = null;
-        if (toRoom.toLowerCase().includes('consultation')) {
+        const isConsultationRoom = toRoom.toLowerCase().includes('consultation');
+        if (isConsultationRoom) {
             room = state.availableRooms.find(r => r.label === toRoom) || { label: toRoom, locked: false };
+        }
+
+        // If room doesn't exist in availableRooms, add it
+        let updatedAvailableRooms = state.availableRooms;
+        if (isConsultationRoom && !state.availableRooms.find(r => r.label === room.label)) {
+            updatedAvailableRooms = [...state.availableRooms, room];
+        }
+
+        if (!isConsultationRoom) {
+            // if no endpoint or participant is in the room then remove it from the available rooms
+            const roomParticipants = state.currentConference.participants.filter(
+                p => p.id !== participantId && p.room && p.room.label === fromRoom
+            );
+            const roomEndpoints = state.currentConference.endpoints.filter(
+                e => e.id !== participantId && e.room && e.room.label === fromRoom
+            );
+            if (roomParticipants.length === 0 && roomEndpoints.length === 0) {
+                updatedAvailableRooms = state.availableRooms.filter(r => r.label !== fromRoom);
+            }
         }
 
         if (participant) {
             const updatedParticipants = state.currentConference.participants.map(p => (p.id === participantId ? { ...p, room: room } : p));
-            return { ...state, currentConference: { ...state.currentConference, participants: updatedParticipants } };
+            return {
+                ...state,
+                currentConference: { ...state.currentConference, participants: updatedParticipants },
+                availableRooms: updatedAvailableRooms
+            };
         }
 
         if (endpoint) {
             const updatedEndpoints = state.currentConference.endpoints.map(e => (e.id === participantId ? { ...e, room: room } : e));
-            return { ...state, currentConference: { ...state.currentConference, endpoints: updatedEndpoints } };
+            return {
+                ...state,
+                currentConference: { ...state.currentConference, endpoints: updatedEndpoints },
+                availableRooms: updatedAvailableRooms
+            };
         }
 
         return state;
