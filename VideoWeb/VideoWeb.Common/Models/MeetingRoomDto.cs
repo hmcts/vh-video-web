@@ -1,6 +1,6 @@
 namespace VideoWeb.Common.Models;
 
-public class ParticipantMeetingRoom
+public class MeetingRoomDto
 {
     /// <summary>
     /// Room Id

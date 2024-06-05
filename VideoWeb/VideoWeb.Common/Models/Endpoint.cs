@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Models
 {
@@ -10,7 +9,7 @@ namespace VideoWeb.Common.Models
         public string DisplayName { get; set; }
         public EndpointStatus EndpointStatus { get; set; }
         public List<EndpointParticipant> EndpointParticipants { get; set; }
-        public RoomResponse CurrentRoom { get; set; }
+        public MeetingRoomDto CurrentRoom { get; set; }
     }
 
     public class EndpointParticipant

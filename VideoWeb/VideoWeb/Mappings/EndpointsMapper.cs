@@ -11,18 +11,27 @@ namespace VideoWeb.Mappings
     {
         public Endpoint Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
         {
-            return new Endpoint
+            var endpointDto = new Endpoint
             {
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 EndpointStatus =  (EndpointStatus)(int)endpoint.Status,
-                CurrentRoom = endpoint.CurrentRoom,
                 EndpointParticipants = linkedParticipants.Select(x => new EndpointParticipant
                 {
                     ParticipantUsername = x.ParticipantUsername,
                     LinkedParticipantType = (LinkType)(int)x.LinkedParticipantType
                 }).ToList(),
             };
+            if(endpoint.CurrentRoom != null)
+            {
+                endpointDto.CurrentRoom = new MeetingRoomDto
+                {
+                    Id = endpoint.CurrentRoom.Id,
+                    Label = endpoint.CurrentRoom.Label,
+                    Locked = endpoint.CurrentRoom.Locked
+                };
+            }
+            return endpointDto;
         }
     }
 }

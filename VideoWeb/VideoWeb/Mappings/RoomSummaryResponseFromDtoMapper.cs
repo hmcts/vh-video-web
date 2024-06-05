@@ -1,12 +1,12 @@
-using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class RoomSummaryResponseMapper : IMapTo<RoomResponse, RoomSummaryResponse>
+    public class RoomSummaryResponseFromDtoMapper : IMapTo<MeetingRoomDto, RoomSummaryResponse>
     {
-        public RoomSummaryResponse Map(RoomResponse input)
+        public RoomSummaryResponse Map(MeetingRoomDto input)
         {
             if (input == null)
             {

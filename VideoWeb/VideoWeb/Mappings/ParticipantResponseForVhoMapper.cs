@@ -34,7 +34,7 @@ namespace VideoWeb.Mappings
                 HearingRole = participant.HearingRole,
                 CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
                 InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
-                LinkedParticipants = participant.LinkedParticipants.Select(lp => new VideoWeb.Contract.Responses.LinkedParticipantResponse()
+                LinkedParticipants = participant.LinkedParticipants.Select(lp => new Contract.Responses.LinkedParticipantResponse
                 {
                     LinkedId = lp.LinkedId,
                     LinkType = (LinkType)lp.Type

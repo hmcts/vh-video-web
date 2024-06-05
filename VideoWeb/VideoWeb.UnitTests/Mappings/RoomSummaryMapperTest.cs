@@ -2,7 +2,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,7 +18,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(null)]
         public void Should_set_label(string labelText)
         {
-            var input = new ParticipantMeetingRoom {Id = 1,Label = labelText };
+            var input = new RoomResponse() {Id = 1,Label = labelText };
             var result = _sut.Map(input);
             result.Label.Should().Be(labelText);
             result.Id.Should().Be("1");
@@ -29,7 +28,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(false)]
         public void Should_set_locked(bool lockedState)
         {
-            var input = new ParticipantMeetingRoom() { Locked = lockedState };
+            var input = new RoomResponse() { Locked = lockedState };
             _sut.Map(input).Locked.Should().Be(lockedState);
         }
 

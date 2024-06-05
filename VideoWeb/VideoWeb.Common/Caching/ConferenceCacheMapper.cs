@@ -86,8 +86,8 @@ namespace VideoWeb.Common.Caching
                 CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
                 LinkedParticipants = links,
-                CurrentRoom = RoomCacheMapper.Map(participant.CurrentRoom),
-                InterpreterRoom = RoomCacheMapper.Map(participant.CurrentInterpreterRoom)
+                CurrentRoomDto = RoomCacheMapper.Map(participant.CurrentRoom),
+                InterpreterRoomDto = RoomCacheMapper.Map(participant.CurrentInterpreterRoom)
             };
         }
 

@@ -10,11 +10,10 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantResponseMapper : IMapTo<Participant, ParticipantResponse>
     {
-        private readonly IMapTo<ParticipantMeetingRoom, RoomSummaryResponse> _roomResponseMapper;
-
+        private readonly IMapTo<MeetingRoomDto, RoomSummaryResponse> _roomResponseMapper;
         private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> _linkedParticipantResponseMapper;
 
-        public ParticipantResponseMapper(IMapTo<ParticipantMeetingRoom, RoomSummaryResponse> roomResponseMapper, IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantResponseMapper)
+        public ParticipantResponseMapper(IMapTo<MeetingRoomDto, RoomSummaryResponse> roomResponseMapper, IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
             _linkedParticipantResponseMapper = linkedParticipantResponseMapper;
@@ -37,8 +36,8 @@ namespace VideoWeb.Mappings
                 FirstName = participant.FirstName,
                 LastName = participant.LastName,
                 HearingRole = participant.HearingRole,
-                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
-                InterpreterRoom = _roomResponseMapper.Map(participant.InterpreterRoom),
+                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoomDto),
+                InterpreterRoom = _roomResponseMapper.Map(participant.InterpreterRoomDto),
                 LinkedParticipants = links,
                 UserName = participant.Username
             };
