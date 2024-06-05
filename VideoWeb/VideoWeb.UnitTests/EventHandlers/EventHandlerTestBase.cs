@@ -23,7 +23,7 @@ public abstract class EventHandlerTestBase
     protected IConferenceService ConferenceService { get; private set; }
     protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
     protected Mock<IVideoApiClient> VideoApiClientMock { get; private set; }
-    protected Conference TestConference { get; set; }
+    protected ConferenceDto TestConferenceDto { get; set; }
     
     [SetUp]
     public void Setup()
@@ -37,9 +37,9 @@ public abstract class EventHandlerTestBase
         LoggerMock = helper.EventHandlerBaseMock;
         VideoApiClientMock = helper.VideoApiClientMock;
         
-        TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
-        MemoryCache.Set(TestConference.Id, TestConference);
+        TestConferenceDto = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
+        MemoryCache.Set(TestConferenceDto.Id, TestConferenceDto);
         
-        helper.RegisterUsersForHubContext(TestConference.Participants);
+        helper.RegisterUsersForHubContext(TestConferenceDto.Participants);
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace VideoWeb.Common.Models
 {
-    public class CivilianRoom
+    public class CivilianRoomDto
     {
-        public CivilianRoom()
+        public CivilianRoomDto()
         {
             Participants = new List<Guid>();
         }

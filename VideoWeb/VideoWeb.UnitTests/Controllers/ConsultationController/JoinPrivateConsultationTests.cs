@@ -53,16 +53,16 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             Guid expectedParticipantId = Guid.NewGuid();
             string expectedRoomLabel = "ExpectedRoomLabel";
             
-            Conference conference = new Conference();
-            conference.Id = expectedConferenceId;
-            conference.Participants.Add(new Participant()
+            ConferenceDto conferenceDto = new ConferenceDto();
+            conferenceDto.Id = expectedConferenceId;
+            conferenceDto.Participants.Add(new ParticipantDto()
             {
                 Id = expectedParticipantId,
                 Username = ClaimsPrincipalBuilder.Username
             });
             
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conferenceDto.Id))).ReturnsAsync(conferenceDto);
 
             JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
             {
@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeAssignableTo<AcceptedResult>();
             
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
-                It.Is<Conference>(c => c == conference), 
+                It.Is<ConferenceDto>(c => c == conferenceDto), 
                 It.Is<Guid>(id => id == expectedParticipantId), 
                 It.Is<string>(room => room == expectedRoomLabel)), Times.Once);
             
@@ -102,14 +102,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             Guid expectedParticipantId = Guid.NewGuid();
             string expectedRoomLabel = "ExpectedRoomLabel";
             
-            Conference conference = new Conference();
-            conference.Id = expectedConferenceId;
-            conference.Participants.Add(new Participant()
+            ConferenceDto conferenceDto = new ConferenceDto();
+            conferenceDto.Id = expectedConferenceId;
+            conferenceDto.Participants.Add(new ParticipantDto()
             {
                 Id = Guid.NewGuid(),
                 Username = ClaimsPrincipalBuilder.Username
             });
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId))).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId))).ReturnsAsync(conferenceDto);
 
             JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
             {
@@ -126,7 +126,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.As<NotFoundObjectResult>().Value.As<string>().Should().Contain("participant");
             
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
-                It.Is<Conference>(c => c == conference), 
+                It.Is<ConferenceDto>(c => c == conferenceDto), 
                 It.Is<Guid>(id => id == expectedParticipantId), 
                 It.Is<string>(room => room == expectedRoomLabel)), Times.Never);
             
@@ -147,9 +147,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             string expectedRoomLabel = "ExpectedRoomLabel";
             int expectedStatusCode = 503;
             
-            Conference conference = new Conference();
-            conference.Id = expectedConferenceId;
-            conference.Participants.Add(new Participant()
+            ConferenceDto conferenceDto = new ConferenceDto();
+            conferenceDto.Id = expectedConferenceId;
+            conferenceDto.Participants.Add(new ParticipantDto()
             {
                 Id = Guid.NewGuid(),
                 Username = ClaimsPrincipalBuilder.Username
@@ -174,7 +174,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.As<StatusCodeResult>().StatusCode.Should().Be(expectedStatusCode);
             
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
-                It.Is<Conference>(c => c == conference), 
+                It.Is<ConferenceDto>(c => c == conferenceDto), 
                 It.Is<Guid>(id => id == expectedParticipantId), 
                 It.Is<string>(room => room == expectedRoomLabel)), Times.Never);
             

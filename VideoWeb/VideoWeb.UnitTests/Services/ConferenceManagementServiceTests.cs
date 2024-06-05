@@ -24,13 +24,13 @@ public class ConferenceManagementServiceTests
     private ConferenceManagementService _sut;
     public Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
     public Mock<IEventHubClient> EventHubClientMock { get; set; }
-    private Conference _conference;
+    private ConferenceDto _conferenceDto;
     private AutoMock _mocker;
 
     [SetUp]
     public void Setup()
     {
-        _conference = new ConferenceCacheModelBuilder().WithJudicialOfficeHolders().WithLinkedParticipantsInRoom()
+        _conferenceDto = new ConferenceCacheModelBuilder().WithJudicialOfficeHolders().WithLinkedParticipantsInRoom()
             .Build();
 
         EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
@@ -43,8 +43,8 @@ public class ConferenceManagementServiceTests
             builder.RegisterInstance(EventHubClientMock.Object);
         });
 
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conference.Id)).ReturnsAsync(_conference);
-        RegisterUsersForHubContext(_conference.Participants);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conferenceDto.Id)).ReturnsAsync(_conferenceDto);
+        RegisterUsersForHubContext(_conferenceDto.Participants);
         
         _sut = _mocker.Create<ConferenceManagementService>();
     }
@@ -52,7 +52,7 @@ public class ConferenceManagementServiceTests
     [Test]
     public void should_not_send_message_when_participant_does_not_exist()
     {
-        var conferenceId = _conference.Id;
+        var conferenceId = _conferenceDto.Id;
         var participantId = Guid.NewGuid();
         const bool handRaised = true;
 
@@ -62,63 +62,63 @@ public class ConferenceManagementServiceTests
         
         EventHubClientMock.Verify(
             x => x
-                .ParticipantHandRaiseMessage(participantId, _conference.Id, handRaised), Times.Never);
+                .ParticipantHandRaiseMessage(participantId, _conferenceDto.Id, handRaised), Times.Never);
     }
     
     [Test]
     public async Task should_publish_hand_raised_to_participants_and_linked_and_judge()
     {
-        var conferenceId = _conference.Id;
-        var participant = _conference.Participants.First(x => !x.IsJudge());
+        var conferenceId = _conferenceDto.Id;
+        var participant = _conferenceDto.Participants.First(x => !x.IsJudge());
         const bool handRaised = true;
         
 
         await _sut.UpdateParticipantHandStatusInConference(conferenceId, participant.Id, handRaised);
             
             
-        var judge = _conference.Participants.Single(x => x.IsJudge());
+        var judge = _conferenceDto.Participants.Single(x => x.IsJudge());
         EventHubContextMock.Verify(
             x => x.Clients.Group(It.Is<string>(s => string.Equals(s, judge.Username.ToLowerInvariant())))
                 .ParticipantHandRaiseMessage(participant.Id, conferenceId, handRaised), Times.Once);
             
         EventHubContextMock.Verify(
             x => x.Clients.Group(participant.Username.ToLowerInvariant())
-                .ParticipantHandRaiseMessage(participant.Id, _conference.Id, handRaised), Times.Once);
+                .ParticipantHandRaiseMessage(participant.Id, _conferenceDto.Id, handRaised), Times.Once);
 
         foreach (var lp in participant.LinkedParticipants)
         {
-            var linkedPat = _conference.Participants.Single(p => p.Id == lp.LinkedId);
+            var linkedPat = _conferenceDto.Participants.Single(p => p.Id == lp.LinkedId);
             EventHubContextMock.Verify(
                 x => x.Clients.Group(linkedPat.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(lp.LinkedId, _conference.Id, handRaised), Times.Once);
+                    .ParticipantHandRaiseMessage(lp.LinkedId, _conferenceDto.Id, handRaised), Times.Once);
         }
     }
     
     [Test]
     public async Task should_publish_hand_raised_to_all_johs_when_one_joh_is_is_raised()
     {
-        var conferenceId = _conference.Id;
-        var allJohs = _conference.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
-        var participant = _conference.Participants.First(x => x.IsJudicialOfficeHolder());
+        var conferenceId = _conferenceDto.Id;
+        var allJohs = _conferenceDto.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
+        var participant = _conferenceDto.Participants.First(x => x.IsJudicialOfficeHolder());
         const bool handRaised = true;
      
         await _sut.UpdateParticipantHandStatusInConference(conferenceId, participant.Id, handRaised);
         
-        var judge = _conference.Participants.Single(x => x.IsJudge());
+        var judge = _conferenceDto.Participants.Single(x => x.IsJudge());
             
         EventHubContextMock.Verify(
             x => x.Clients.Group(judge.Username.ToLowerInvariant())
-                .ParticipantHandRaiseMessage(participant.Id, _conference.Id, handRaised),  Times.Once);
+                .ParticipantHandRaiseMessage(participant.Id, _conferenceDto.Id, handRaised),  Times.Once);
             
         foreach (var joh in allJohs)
         {
             EventHubContextMock.Verify(
                 x => x.Clients.Group(joh.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(joh.Id, _conference.Id, handRaised), Times.Once);
+                    .ParticipantHandRaiseMessage(joh.Id, _conferenceDto.Id, handRaised), Times.Once);
         }
     }
 
-    private void RegisterUsersForHubContext(List<Participant> participants)
+    private void RegisterUsersForHubContext(List<ParticipantDto> participants)
     {
         foreach (var participant in participants)
         {

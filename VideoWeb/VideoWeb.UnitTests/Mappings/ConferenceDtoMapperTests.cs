@@ -12,9 +12,9 @@ using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceMapperTests
+    public class ConferenceDtoMapperTests
     {
-        private ConferenceMapper _sut;
+        private ConferenceDtoMapper _sut;
         private AutoMock _mocker;
 
         [SetUp]
@@ -22,12 +22,12 @@ namespace VideoWeb.UnitTests.Mappings
         {
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Setup(x => x.Get<ParticipantDetailsResponse, ParticipantDto>())
                 .Returns(_mocker.Create<ParticipantDetailsResponseMapper>());
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>())
+                .Setup(x => x.Get<EndpointResponse, List<EndpointParticipantResponse>, EndpointDto>())
                 .Returns(_mocker.Create<EndpointsMapper>());
-            _sut = _mocker.Create<ConferenceMapper>();
+            _sut = _mocker.Create<ConferenceDtoMapper>();
         }
 
         [Test]

@@ -154,14 +154,14 @@ namespace VideoWeb.UnitTests.Mappings
 
 
 
-        private static Conference CreateConferenceResponse(string username, string displayName)
+        private static ConferenceDto CreateConferenceResponse(string username, string displayName)
         {
-            var participants = Builder<Participant>.CreateListOfSize(2)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Username = username)
                 .With(x => x.DisplayName = displayName)
                 .Build().ToList();
 
-            var conference = Builder<Conference>.CreateNew()
+            var conference = Builder<ConferenceDto>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();
 

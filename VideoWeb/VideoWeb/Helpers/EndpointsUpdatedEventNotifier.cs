@@ -23,15 +23,15 @@ namespace VideoWeb.Helpers
             _mapperFactory = mapperFactory;
         }
 
-        public async Task PushEndpointsUpdatedEvent(Conference conference, UpdateConferenceEndpointsRequest endpointsToNotify)
+        public async Task PushEndpointsUpdatedEvent(ConferenceDto conferenceDto, UpdateConferenceEndpointsRequest endpointsToNotify)
         {
-            var videoEndpointResponseMapper = _mapperFactory.Get<Endpoint, VideoEndpointResponse>();
+            var videoEndpointResponseMapper = _mapperFactory.Get<EndpointDto, VideoEndpointResponse>();
             
-            var existingEndpoints = conference.Endpoints
+            var existingEndpoints = conferenceDto.Endpoints
                 .Where(e => endpointsToNotify.ExistingEndpoints.Any(x => x.Id == e.Id))
                 .Select(videoEndpointResponseMapper.Map);
             
-            var newEndpoint = conference.Endpoints
+            var newEndpoint = conferenceDto.Endpoints
                 .Where(e => endpointsToNotify.NewEndpoints.Any(x => x.Id == e.Id))
                 .Select(videoEndpointResponseMapper.Map);
             
@@ -42,8 +42,8 @@ namespace VideoWeb.Helpers
                 RemovedEndpoints = endpointsToNotify.RemovedEndpoints
             };
 
-            foreach (var participant in conference.Participants)
-                await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
+            foreach (var participant in conferenceDto.Participants)
+                await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conferenceDto.Id, endpoints);
             
         }
 

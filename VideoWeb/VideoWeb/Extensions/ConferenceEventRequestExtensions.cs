@@ -14,36 +14,36 @@ namespace VideoWeb.Extensions
             return !request.ParticipantRoomId.IsNullOrEmpty() && !request.ParticipantId.IsNullOrEmpty();
         }
 
-        public static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
+        public static bool IsParticipantInVmr(this ConferenceEventRequest request, ConferenceDto conferenceDto)
         {
-            return conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId) && conference
+            return conferenceDto.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId) && conferenceDto
                 .CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                 .Participants.Any(x => x.ToString() == request.ParticipantId);
         }
-        public static IEnumerable<Participant> GetOtherParticipantsInVmr(this ConferenceEventRequest request, Conference conference)
+        public static IEnumerable<ParticipantDto> GetOtherParticipantsInVmr(this ConferenceEventRequest request, ConferenceDto conferenceDto)
         {
-            if (conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId))
+            if (conferenceDto.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId))
             {
-                var participantIds = conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
+                var participantIds = conferenceDto.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                     .Participants.FindAll(x => x.ToString() != request.ParticipantId);
             
-                return conference.Participants.Where(x => participantIds.Contains(x.Id));
+                return conferenceDto.Participants.Where(x => participantIds.Contains(x.Id));
             }
-            return new List<Participant>();
+            return new List<ParticipantDto>();
         }
 
-        public static bool IsParticipantAVmr(this ConferenceEventRequest request, Conference conference,
+        public static bool IsParticipantAVmr(this ConferenceEventRequest request, ConferenceDto conferenceDto,
             out long roomId)
         {
             if (!long.TryParse(request.ParticipantId, out roomId)) return false;
             var id = roomId;
-            return conference.CivilianRooms.Any(x => x.Id == id);
+            return conferenceDto.CivilianRooms.Any(x => x.Id == id);
         }
 
         public static List<ConferenceEventRequest> CreateEventsForParticipantsInRoom(
-            this ConferenceEventRequest request, Conference conference, long roomId)
+            this ConferenceEventRequest request, ConferenceDto conferenceDto, long roomId)
         {
-            return conference.CivilianRooms.First(x => x.Id == roomId).Participants.Select(p =>
+            return conferenceDto.CivilianRooms.First(x => x.Id == roomId).Participants.Select(p =>
                 {
                     var json = JsonConvert.SerializeObject(request);
                     var participantEventRequest = JsonConvert.DeserializeObject<ConferenceEventRequest>(json);

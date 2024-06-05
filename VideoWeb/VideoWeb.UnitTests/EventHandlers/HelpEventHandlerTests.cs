@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new HelpEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConference;
+            var conference = TestConferenceDto;
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Help,

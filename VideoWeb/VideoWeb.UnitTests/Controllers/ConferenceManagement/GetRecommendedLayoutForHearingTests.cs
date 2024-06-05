@@ -20,26 +20,26 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
     [TestFixture]
     class GetRecommendedLayoutForHearingTests
     {
-        private Conference _conference;
-        private Participant _judgeParticipant; 
+        private ConferenceDto _conferenceDto;
+        private ParticipantDto _judgeParticipantDto; 
         private AutoMock _mocker;
         private ConferenceManagementController _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _judgeParticipant = new Participant
+            _judgeParticipantDto = new ParticipantDto
             {
                 Id = Guid.NewGuid(),
                 Username = "first last"
             };
 
-            _conference = new Conference()
+            _conferenceDto = new ConferenceDto()
             {
                 Id = Guid.NewGuid(),
-                Participants = new List<Participant>
+                Participants = new List<ParticipantDto>
                 {
-                    _judgeParticipant
+                    _judgeParticipantDto
                 }
             };
 
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 HttpContext = new DefaultHttpContext
                 {
                     User = new ClaimsPrincipalBuilder()
-                        .WithUsername(_judgeParticipant.Username)
+                        .WithUsername(_judgeParticipantDto.Username)
                         .WithRole(AppRoles.JudgeRole).Build()
                 }
             };
@@ -61,12 +61,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_ok_with_the_recommended_layout()
         {
             // Arrange
-            var expectedLayout = _conference.GetRecommendedLayout();
+            var expectedLayout = _conferenceDto.GetRecommendedLayout();
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ReturnsAsync(_conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conferenceDto.Id))).ReturnsAsync(_conferenceDto);
 
             // Act
-            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id);
+            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conferenceDto.Id);
 
             // Assert
             layoutResponse.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().Be(expectedLayout);
@@ -78,9 +78,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Arrange
             var statusCode = 123;
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ThrowsAsync(new VideoApiException("message", statusCode, null, null, null));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conferenceDto.Id))).ThrowsAsync(new VideoApiException("message", statusCode, null, null, null));
             // Act
-            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id);
+            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conferenceDto.Id);
 
             // Assert
             layoutResponse.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(statusCode);
@@ -90,10 +90,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public void should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
         {
             // Arrange
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ThrowsAsync(new Exception());
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conferenceDto.Id))).ThrowsAsync(new Exception());
 
             // Act
-            Assert.ThrowsAsync<Exception>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id));
+            Assert.ThrowsAsync<Exception>(async () => await _sut.GetRecommendedLayoutForHearing(_conferenceDto.Id));
         }
     }
 }

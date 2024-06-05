@@ -5,9 +5,9 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class AllowedEndpointResponseMapper : IMapTo<Endpoint, AllowedEndpointResponse>
+    public class AllowedEndpointResponseMapper : IMapTo<EndpointDto, AllowedEndpointResponse>
     {
-        public AllowedEndpointResponse Map(Endpoint input)
+        public AllowedEndpointResponse Map(EndpointDto input)
         {
             return new AllowedEndpointResponse
             {

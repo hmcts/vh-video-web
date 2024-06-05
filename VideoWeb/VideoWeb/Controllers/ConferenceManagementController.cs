@@ -479,23 +479,23 @@ namespace VideoWeb.Controllers
             return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
         }
 
-        private async Task<CivilianRoom> GetWitnessRoom(Conference conference, Guid participantId)
+        private async Task<CivilianRoomDto> GetWitnessRoom(ConferenceDto conferenceDto, Guid participantId)
         {
-            var witnessRoom = GetRoomForParticipant(conference, participantId);
+            var witnessRoom = GetRoomForParticipant(conferenceDto, participantId);
 
             if (witnessRoom != null) return witnessRoom;
             
-            conference = await RefreshConferenceCache(conference.Id);
+            conferenceDto = await RefreshConferenceCache(conferenceDto.Id);
         
-            witnessRoom = GetRoomForParticipant(conference, participantId);
+            witnessRoom = GetRoomForParticipant(conferenceDto, participantId);
 
             return witnessRoom;
         }
 
-        private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
-            conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
+        private static CivilianRoomDto GetRoomForParticipant(ConferenceDto conferenceDto, Guid participantId) => 
+            conferenceDto.CivilianRooms.Find(x => x.Participants.Contains(participantId));
 
-        private async Task<Conference> RefreshConferenceCache(Guid conferenceId)
+        private async Task<ConferenceDto> RefreshConferenceCache(Guid conferenceId)
         {
             var conferenceResponse = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             var hearingDetailsResponse = await _bookingApiClient.GetHearingDetailsByIdV2Async(conferenceResponse.HearingId);
@@ -504,28 +504,28 @@ namespace VideoWeb.Controllers
             return conference;
         }
         
-        private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId)
+        private async Task<ParticipantDto> GetParticipant(Guid conferenceId, Guid participantId)
         {
             var conference = await _conferenceService.GetConference(conferenceId);
             return conference.Participants.SingleOrDefault(x => x.Id == participantId);
         }
 
-        private async Task<Participant> GetParticipant(Guid conferenceId, string username)
+        private async Task<ParticipantDto> GetParticipant(Guid conferenceId, string username)
         {
             var conference = await _conferenceService.GetConference(conferenceId);
             return conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username.Trim(), StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private string GetParticipantRoleString(Participant participant)
+        private string GetParticipantRoleString(ParticipantDto participantDto)
         {
-            switch (participant.Role)
+            switch (participantDto.Role)
             {
                 case Role.QuickLinkParticipant:
                     return "Participant";
                 case Role.QuickLinkObserver:
                     return "Observer";
                 default:
-                    return participant.HearingRole;
+                    return participantDto.HearingRole;
             }
 
         }

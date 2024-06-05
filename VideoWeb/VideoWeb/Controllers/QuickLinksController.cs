@@ -131,7 +131,7 @@ namespace VideoWeb.Controllers
         {
             
             var conference = await _conferenceService.GetConference(response.ConferenceId);
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantDto>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));

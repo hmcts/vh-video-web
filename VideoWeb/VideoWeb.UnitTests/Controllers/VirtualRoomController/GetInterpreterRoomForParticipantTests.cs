@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
     {
         private AutoMock _mocker;
         private VirtualRoomsController _controller;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
@@ -34,14 +34,14 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
             BuildConferenceForTest();
             _mocker = AutoMock.GetLoose();
 
-            _mocker.Mock<IConferenceService>().Setup(c => c.GetConference(_testConference.Id)).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(c => c.GetConference(_testConferenceDto.Id)).ReturnsAsync(_testConferenceDto);
                 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<SharedParticipantRoomMapper>()
                 .Build();
 
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>())
+                .Setup(x => x.Get<SharedParticipantRoomResponse, ParticipantDto, bool, SharedParticipantRoom>())
                 .Returns(_mocker.Create<SharedParticipantRoomMapper>(parameters));
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -66,8 +66,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
-            var participantId = _testConference.Participants.First(x => !x.IsWitness() && !x.IsJudge()).Id;
-            var conferenceId = _testConference.Id;
+            var participantId = _testConferenceDto.Participants.First(x => !x.IsWitness() && !x.IsJudge()).Id;
+            var conferenceId = _testConferenceDto.Id;
 
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetInterpreterRoomForParticipantAsync(conferenceId, participantId))
@@ -87,8 +87,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
-            var participantId = _testConference.Participants.First(x => x.IsWitness()).Id;
-            var conferenceId = _testConference.Id;
+            var participantId = _testConferenceDto.Participants.First(x => x.IsWitness()).Id;
+            var conferenceId = _testConferenceDto.Id;
             var participantType = "Witness";
 
             _mocker.Mock<IVideoApiClient>()
@@ -110,8 +110,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 ParticipantJoinUri = "pat_join__panelmember",
                 PexipNode = "sip.unit.test.com"
             };
-            var participantId = _testConference.Participants.First(x => x.Role == Role.JudicialOfficeHolder).Id;
-            var conferenceId = _testConference.Id;
+            var participantId = _testConferenceDto.Participants.First(x => x.Role == Role.JudicialOfficeHolder).Id;
+            var conferenceId = _testConferenceDto.Id;
             var participantType = "Judicial";
 
             _mocker.Mock<IVideoApiClient>()
@@ -143,29 +143,29 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
 
         private void BuildConferenceForTest()
         {
-            var conference = new Conference
+            var conference = new ConferenceDto
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>()
+                Participants = new List<ParticipantDto>()
                 {
-                    Builder<Participant>.CreateNew()
+                    Builder<ParticipantDto>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid())
                         .With(x => x.HearingRole = "Witness").Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.JudicialOfficeHolder)
+                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.JudicialOfficeHolder)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
                 HearingVenueName = "Hearing Venue Test",
             };
 
-            _testConference = conference;
+            _testConferenceDto = conference;
         }
     }
 }

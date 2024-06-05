@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void When_does_not_match_existing_user_Should_map_all_properties_with_ref_id()
         {
-            var existingParticipants = new List<Participant>();
+            var existingParticipants = new List<ParticipantDto>();
 
             var linkedParticipant = _sut.Map(request, existingParticipants);
 
@@ -32,12 +32,12 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void When_does_match_existing_user_Should_map_all_properties_with_ref_id()
         {
-            var matchingParticipant = new Participant()
+            var matchingParticipant = new ParticipantDto()
             {
                 RefId = request.LinkedRefId,
                 Id = Guid.NewGuid(),
             };
-            var existingParticipants = new List<Participant>() { matchingParticipant };
+            var existingParticipants = new List<ParticipantDto>() { matchingParticipant };
 
             var linkedParticipant = _sut.Map(request, existingParticipants);
 

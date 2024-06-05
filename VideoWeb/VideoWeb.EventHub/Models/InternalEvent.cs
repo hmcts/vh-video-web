@@ -11,6 +11,6 @@ namespace VideoWeb.EventHub.Models
     {
         public Guid ConferenceId { get; set; }
         public EventType EventType { get; set; }
-        public IEnumerable<Participant> ParticipantsAdded { get; set; }
+        public IEnumerable<ParticipantDto> ParticipantsAdded { get; set; }
     }
 }

@@ -36,10 +36,10 @@ namespace VideoWeb.UnitTests.Cache
             var conference = CreateConferenceResponse();
             var hearingDetails = CreateHearingResponse();
             await _conferenceCache.AddConferenceAsync(conference, hearingDetails);
-            var cacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            var cacheModel = _memoryCache.Get(conference.Id).As<ConferenceDto>();
             cacheModel.HearingVenueName = newVenueName;
             await _conferenceCache.UpdateConferenceAsync(cacheModel);
-            var updatedCacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            var updatedCacheModel = _memoryCache.Get(conference.Id).As<ConferenceDto>();
             updatedCacheModel.HearingVenueName.Should().Be(newVenueName);
 
         }
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Cache
         [Test]
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_contains_key()
         {
-            var conference = new Conference { Id = Guid.NewGuid() };
+            var conference = new ConferenceDto { Id = Guid.NewGuid() };
 
             _memoryCache.Set(conference.Id, conference);
             var result = await _conferenceCache.GetOrAddConferenceAsync(conference.Id, DummyInput);
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Cache
 
             var result = await _conferenceCache.GetOrAddConferenceAsync(conferenceDetails.Id, () =>
             {
-                _memoryCache.Set(conferenceDetails.Id, new Conference{ Id = conferenceDetails.Id });
+                _memoryCache.Set(conferenceDetails.Id, new ConferenceDto{ Id = conferenceDetails.Id });
                 var responseObj = (conferenceDetails, hearingDetails);
                 return Task.FromResult(responseObj);
             });

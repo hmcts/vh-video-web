@@ -19,13 +19,13 @@ public class InstantMessageRules
     /// <summary>
     /// Check if the one side is in the conference and the other is an Admin or a staff member admin privileges
     /// </summary>
-    /// <param name="conference"></param>
+    /// <param name="conferenceDto"></param>
     /// <param name="to">This is either the DefaultAdminName or a string representation of a participant ID (GUID)</param>
     /// <param name="from">the username of the sender</param>
     /// <returns>true if the conversation is permitted</returns>
-    public async Task<bool> CanExchangeMessage(Conference conference, string to, string from)
+    public async Task<bool> CanExchangeMessage(ConferenceDto conferenceDto, string to, string from)
     {
-        var isFromParticipant = conference.IsParticipantInConference(from);
+        var isFromParticipant = conferenceDto.IsParticipantInConference(from);
         var isToAdmin = to.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase);
         if (isToAdmin && isFromParticipant)
         {
@@ -39,7 +39,7 @@ public class InstantMessageRules
         }
         
         // make sure the id if for a participant in the conference
-        if(!conference.Participants.Exists(p => p.Id == toGuid))
+        if(!conferenceDto.Participants.Exists(p => p.Id == toGuid))
         {
             return false;
         }
@@ -49,13 +49,13 @@ public class InstantMessageRules
         return fromUser.IsAdmin;
     }
 
-    public async Task<SendMessageDto> BuildSendMessageDtoFromAdmin(Conference conference, Guid messageUuid, string message, string username, Guid participantId)
+    public async Task<SendMessageDto> BuildSendMessageDtoFromAdmin(ConferenceDto conferenceDto, Guid messageUuid, string message, string username, Guid participantId)
     {
         var fromUser = await _userProfileService.GetUserAsync(username);
-        var participant = conference.GetParticipant(participantId);
+        var participant = conferenceDto.GetParticipant(participantId);
         var dto = new SendMessageDto()
         {
-            Conference = conference,
+            ConferenceDto = conferenceDto,
             Timestamp = DateTime.UtcNow,
             MessageUuid = messageUuid,
             Message = message,
@@ -68,13 +68,13 @@ public class InstantMessageRules
         return dto;
     }
 
-    public SendMessageDto BuildSendMessageDtoFromParticipant(Conference conference, Guid messageUuid,
+    public SendMessageDto BuildSendMessageDtoFromParticipant(ConferenceDto conferenceDto, Guid messageUuid,
         string message, string username)
     {
-        var participant = conference.GetParticipant(username);
+        var participant = conferenceDto.GetParticipant(username);
         var dto = new SendMessageDto()
         {
-            Conference = conference,
+            ConferenceDto = conferenceDto,
             Timestamp = DateTime.UtcNow,
             MessageUuid = messageUuid,
             Message = message,

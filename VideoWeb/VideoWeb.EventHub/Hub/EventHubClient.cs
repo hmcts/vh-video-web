@@ -211,7 +211,7 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task SendToParticipant(SendMessageDto dto)
         {
-            var participant = dto.Conference.Participants.Single(x =>
+            var participant = dto.ConferenceDto.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
             var username = _userProfileService.GetObfuscatedUsername(participant.Username);
@@ -220,17 +220,17 @@ namespace VideoWeb.EventHub.Hub
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
             await Clients.Group(participant.Username.ToLowerInvariant())
-                .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
+                .ReceiveMessage(dto.ConferenceDto.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
         }
 
         private async Task SendToAdmin(SendMessageDto dto, string fromId)
         {
-            var groupName = dto.Conference.Id.ToString();
+            var groupName = dto.ConferenceDto.Id.ToString();
             _logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
             var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
             await Clients.Group(groupName)
-                .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
+                .ReceiveMessage(dto.ConferenceDto.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
         }
         
@@ -481,16 +481,16 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
+        private List<ParticipantDto> GetLinkedParticipants(ConferenceDto conferenceDto, ParticipantDto participantDto)
         {
-            if (participant.IsJudicialOfficeHolder())
+            if (participantDto.IsJudicialOfficeHolder())
             {
-                return conference.Participants
-                    .Where(x => x.IsJudicialOfficeHolder() && x.Id != participant.Id).ToList();
+                return conferenceDto.Participants
+                    .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantDto.Id).ToList();
             }
 
-            return conference.Participants
-                .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
+            return conferenceDto.Participants
+                .Where(p => participantDto.LinkedParticipants.Select(x => x.LinkedId)
                     .Contains(p.Id)
                 ).ToList();
         }

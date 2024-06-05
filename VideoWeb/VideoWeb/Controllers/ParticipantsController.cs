@@ -81,7 +81,7 @@ namespace VideoWeb.Controllers
                 Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, ConferenceDto, CallbackEvent>();
             var callbackEvent = callbackEventMapper.Map(conferenceEventRequest, conference);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
@@ -107,10 +107,10 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private Guid GetIdForParticipantByUsernameInConference(Conference conference)
+        private Guid GetIdForParticipantByUsernameInConference(ConferenceDto conferenceDto)
         {
             var username = User.Identity.Name;
-            return conference.Participants
+            return conferenceDto.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
        
@@ -160,7 +160,7 @@ namespace VideoWeb.Controllers
         private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
             var conference = await _conferenceService.ForceGetConference(conferenceId);
-            var participantResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var participantResponseMapper = _mapperFactory.Get<ParticipantDto, ConferenceDto, ParticipantResponse>();
             var mappedParticipants = conference.Participants.Select(participant => participantResponseMapper.Map(participant, conference)).ToList();
             await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
@@ -202,7 +202,7 @@ namespace VideoWeb.Controllers
                 var hostsInHearingsToday = await _videoApiClient.GetHostsInHearingsTodayAsync();
 
                 var participantContactDetailsResponseVhoMapper = _mapperFactory
-                    .Get<Conference, IEnumerable<ParticipantInHearingResponse>,
+                    .Get<ConferenceDto, IEnumerable<ParticipantInHearingResponse>,
                         IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
 
@@ -332,14 +332,10 @@ namespace VideoWeb.Controllers
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
                 var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
-
                 await _participantService.AddStaffMemberToConferenceCache(response);
-                
-                var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-              
-                var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
+                var updatedConference = await _conferenceService.GetConference(conferenceId);
+                var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDto, ConferenceResponse>();
                 var mappedUpdatedConference = conferenceResponseVhoMapper.Map(updatedConference);
-                
                 return Ok(mappedUpdatedConference);
             }
             catch (VideoApiException e)

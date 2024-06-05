@@ -33,13 +33,13 @@ namespace VideoWeb.EventHub.Handlers
             foreach (var participant in participantsToNotify)
             {
                 await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
-                    .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
+                    .ParticipantsUpdatedMessage(SourceConferenceDto.Id, updatedParticipants);
                 Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
                     participant.Role);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
+                .ParticipantsUpdatedMessage(SourceConferenceDto.Id, updatedParticipants);
         }
     }
 }

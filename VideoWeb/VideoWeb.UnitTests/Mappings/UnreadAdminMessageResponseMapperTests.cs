@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_and_count_number_of_messages_since_vho_message()
         {
-            var participants = Builder<Participant>.CreateListOfSize(4)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             const string vho1Username = "vho1@hmcts.net";
             const string vho2Username = "vho2@hmcts.net";
 
-            var conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants)
+            var conference = Builder<ConferenceDto>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>
@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_and_return_total_message_count_when_vho_has_not_answered()
         {
-            var participants = Builder<Participant>.CreateListOfSize(4)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var judge = participants.Single(x => x.Role == Role.Judge);
 
-            var conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants)
+            var conference = Builder<ConferenceDto>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>
@@ -88,13 +88,13 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_total_message_count_when_there_is_no_chat_history()
         {
-            var participants = Builder<Participant>.CreateListOfSize(4)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 
-            var conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants)
+            var conference = Builder<ConferenceDto>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>();

@@ -6,24 +6,24 @@ using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 namespace VideoWeb.Mappings
 {
-    public class VideoEndpointsResponseDtoMapper : IMapTo<Endpoint, VideoEndpointResponse>
+    public class VideoEndpointsResponseDtoMapper : IMapTo<EndpointDto, VideoEndpointResponse>
     {
         private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
         public VideoEndpointsResponseDtoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }
-        public VideoEndpointResponse Map(Endpoint endpoint)
+        public VideoEndpointResponse Map(EndpointDto endpointDto)
         {
-            var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
+            var pexipDisplayName = $"PSTN;{endpointDto.DisplayName};{endpointDto.Id}";
             return new VideoEndpointResponse
             {
-                DisplayName = endpoint.DisplayName,
-                Id = endpoint.Id,
-                Status = endpoint.EndpointStatus,
+                DisplayName = endpointDto.DisplayName,
+                Id = endpointDto.Id,
+                Status = endpointDto.EndpointStatus,
                 PexipDisplayName = pexipDisplayName,
-                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
-                EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new EndpointParticipantResponse
+                CurrentRoom = _roomResponseMapper.Map(endpointDto.CurrentRoom),
+                EndpointParticipants = endpointDto.EndpointParticipants?.Select(x => new EndpointParticipantResponse
                 {
                     ParticipantUsername = x.ParticipantUsername,
                     LinkType = x.LinkedParticipantType

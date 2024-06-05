@@ -5,9 +5,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +23,6 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
-using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -51,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>())
                 .Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
 
@@ -76,19 +73,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_when_user_is_in_conference()
         {
             var conference = CreateValidConferenceResponse();
-            var hearing = CreateValidHearingDetailResponse(conference);
-            conference.Participants[0].UserRole = UserRole.Individual;
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            conference.Participants[0].Role = Role.Individual;
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingDetailsByIdV2Async(conference.HearingId))
-                .ReturnsAsync(hearing);
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
-            var judge = conference.Participants.SingleOrDefault(p => p.UserRole == UserRole.Judge);
+            var judge = conference.Participants.SingleOrDefault(p => p.Role == Role.Judge);
             
             _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
             var response = (ConferenceResponse)typedResult.Value;
@@ -107,8 +100,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_unauthorised_when_getting_conference_user_does_not_belong_to()
         {
             var conference = CreateValidConferenceResponse(null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
@@ -122,8 +115,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conference = CreateValidConferenceResponse(null);
             conference.CurrentStatus = ConferenceState.Closed;
             conference.IsWaitingRoomOpen = false;
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
@@ -152,8 +145,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token",
                 (int) HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
@@ -191,55 +184,30 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
-        private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
+        private static ConferenceDto CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
-            var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
-            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
-            var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
-            var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
-            var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
-            var panelMember =
-                new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
-            var participants = new List<ParticipantDetailsResponse>()
+            var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
+            var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
+            var individualDefendant = new ParticipantBuilder(Role.Individual, "Defendant").Build();
+            var individualClaimant = new ParticipantBuilder(Role.Individual, "Claimant").Build();
+            var repClaimant = new ParticipantBuilder(Role.Representative, "Claimant").Build();
+            var panelMember = new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
+            var participants = new List<ParticipantDto>()
             {
                 individualDefendant, individualClaimant, repClaimant, judge, panelMember, staffMember
             };
-            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
+            var endpoints = Builder<EndpointDto>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
                 participants[0].Username = username;
             }
 
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+            var conference = Builder<ConferenceDto>.CreateNew()
                 .With(x => x.Participants = participants)
                 .With(x => x.Endpoints = endpoints)
                 .With(x => x.IsWaitingRoomOpen = true)
                 .Build();
             return conference;
-        }
-        private static HearingDetailsResponseV2 CreateValidHearingDetailResponse(ConferenceDetailsResponse conference)
-        {            
-            var judge = new JudicialParticipantResponseBuilder(true).Build();
-            var panelMember = new JudicialParticipantResponseBuilder(false).Build();
-            var staffMember = new ParticipantFromBookingApiResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
-            var individualDefendant = new ParticipantFromBookingApiResponseBuilder(UserRole.Individual, "Defendant").Build();
-            var individualClaimant = new ParticipantFromBookingApiResponseBuilder(UserRole.Individual, "Claimant").Build();
-            var repClaimant = new ParticipantFromBookingApiResponseBuilder(UserRole.Representative, "Claimant").Build();
-            var participants = new List<ParticipantResponseV2>()
-            {
-                individualDefendant, individualClaimant, repClaimant, staffMember
-            };
-            var judiciaryParticipants = new List<JudiciaryParticipantResponse>()
-            {
-                judge, panelMember
-            };
-            var hearing = Builder<HearingDetailsResponseV2>.CreateNew()
-                .With(x => x.Participants = participants)
-                .With(x => x.JudiciaryParticipants = judiciaryParticipants)
-                .Build();
-            hearing.Id = conference.HearingId;
-            
-            return hearing;
         }
 
     }

@@ -24,17 +24,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
     [TestFixture]
     class UpdateLayoutForHearingTests
     {
-        private Conference _conference;
-        private Participant _judgeParticipant; 
+        private ConferenceDto _conferenceDto;
+        private ParticipantDto _judgeParticipantDto; 
         private AutoMock _mocker;
         private ConferenceManagementController _sut;
 
         [SetUp]
         public void SetUp()
         {
-            var participants = Builder<Participant>.CreateListOfSize(5).TheFirst(1).With(x => x.Role = Role.Judge).TheNext(1).With(x => x.Role = Role.StaffMember).TheRest().With(x => x.Role = Role.Individual).Build().ToList();
-            _judgeParticipant = participants.Single(x => x.Role == Role.Judge);
-            _conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants).Build();
+            var participants = Builder<ParticipantDto>.CreateListOfSize(5).TheFirst(1).With(x => x.Role = Role.Judge).TheNext(1).With(x => x.Role = Role.StaffMember).TheRest().With(x => x.Role = Role.Individual).Build().ToList();
+            _judgeParticipantDto = participants.Single(x => x.Role == Role.Judge);
+            _conferenceDto = Builder<ConferenceDto>.CreateNew().With(x => x.Participants = participants).Build();
 
             _mocker = AutoMock.GetLoose();
             _sut = _mocker.Create<ConferenceManagementController>();
@@ -44,12 +44,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 HttpContext = new DefaultHttpContext
                 {
                     User = new ClaimsPrincipalBuilder()
-                        .WithUsername(_judgeParticipant.Username)
+                        .WithUsername(_judgeParticipantDto.Username)
                         .WithRole(AppRoles.JudgeRole).Build()
                 }
             };
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ReturnsAsync(_conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conferenceDto.Id))).ReturnsAsync(_conferenceDto);
             
         }
 
@@ -60,14 +60,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var expectedLayout = HearingLayout.TwoPlus21;
 
             // Act
-            var layoutResponse = await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout);
+            var layoutResponse = await _sut.UpdateLayoutForHearing(_conferenceDto.Id, expectedLayout);
 
             // Assert
             layoutResponse.Should().BeAssignableTo<OkResult>();
             _mocker.Mock<IHearingLayoutService>()
                 .Verify(
-                    x => x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id),
-                        It.Is<Guid>(guid => guid == _judgeParticipant.Id), expectedLayout), Times.Once);
+                    x => x.UpdateLayout(It.Is<Guid>(guid => guid == _conferenceDto.Id),
+                        It.Is<Guid>(guid => guid == _judgeParticipantDto.Id), expectedLayout), Times.Once);
         }
 
         [Test]
@@ -75,10 +75,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var expectedLayout = HearingLayout.TwoPlus21;
-            var conference = new Conference
+            var conference = new ConferenceDto
             {
                 Id = Guid.NewGuid(),
-                Participants = new List<Participant>()
+                Participants = new List<ParticipantDto>()
             };
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
@@ -103,12 +103,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .ThrowsAsync(new VideoApiException("message", statusCode, "response", null, null));
 
             // Act
-            var layoutResponse = await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout);
+            var layoutResponse = await _sut.UpdateLayoutForHearing(_conferenceDto.Id, expectedLayout);
 
             // Assert
             layoutResponse.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(statusCode);
             _mocker.Mock<IHearingLayoutService>().Verify(x =>
-                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id), It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
+                x.UpdateLayout(It.Is<Guid>(guid => guid == _conferenceDto.Id), It.Is<Guid>(participantId => participantId == _judgeParticipantDto.Id),
                     expectedLayout));
         }
 
@@ -124,11 +124,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             // Act
             Assert.ThrowsAsync<Exception>(async () =>
-                await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout));
+                await _sut.UpdateLayoutForHearing(_conferenceDto.Id, expectedLayout));
 
             // Assert
             _mocker.Mock<IHearingLayoutService>().Verify(x =>
-                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id), It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
+                x.UpdateLayout(It.Is<Guid>(guid => guid == _conferenceDto.Id), It.Is<Guid>(participantId => participantId == _judgeParticipantDto.Id),
                     expectedLayout));
         }
     }

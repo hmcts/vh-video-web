@@ -334,17 +334,15 @@ namespace VideoWeb.Controllers
             }
 
             var username = userProfile.Username.ToLower().Trim();
-            ConferenceDetailsResponse conference;
-            HearingDetailsResponseV2 hearingDetails;
+            ConferenceDto conferenceDto;
             try
             {
-                conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                if (conference == null)
+                conferenceDto = await _conferenceService.ForceGetConference(conferenceId);
+                if (conferenceDto == null)
                 {
                     _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
                     return NoContent();
                 }
-                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.HearingId);
             }
             catch (VideoApiException e)
             {
@@ -353,7 +351,7 @@ namespace VideoWeb.Controllers
             }
 
             if (!userProfile.Roles.Contains(Role.StaffMember) &&
-                (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
+                (conferenceDto.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conferenceDto.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
                     "Unauthorised to view conference details {ConferenceId} because user is neither a VH Officer " +
@@ -373,10 +371,10 @@ namespace VideoWeb.Controllers
                 Role.QuickLinkObserver
             };
 
-            conference.Participants = conference.Participants.Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
-            var conferenceResponseMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
-            var response = conferenceResponseMapper.Map(conference);
-            await _conferenceService.ConferenceCache.AddConferenceAsync(conference, hearingDetails);
+            conferenceDto.Participants = conferenceDto.Participants.Where(x => displayRoles.Contains(x.Role)).ToList();
+            var conferenceResponseMapper = _mapperFactory.Get<ConferenceDto, ConferenceResponse>();
+            var response = conferenceResponseMapper.Map(conferenceDto);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conferenceDto);
 
             return Ok(response);
         }

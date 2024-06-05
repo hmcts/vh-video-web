@@ -9,9 +9,9 @@ namespace VideoWeb.Common.Caching
 {
     public static class EndpointCacheMapper
     {
-        public static Endpoint MapEndpointToCacheModel(EndpointResponse endpointResponse)
+        public static EndpointDto MapEndpointToCacheModel(EndpointResponse endpointResponse)
         {
-            return new Endpoint
+            return new EndpointDto
             {
                 Id = endpointResponse.Id,
                 DisplayName = endpointResponse.DisplayName,
@@ -22,14 +22,14 @@ namespace VideoWeb.Common.Caching
     
     public static class EndpointParticipantCacheMapper
     {
-        public static EndpointParticipant MapEndpointParticipantToCacheModel(EndpointParticipantResponse endpointParticipantResponse, IList<Participant> participants)
+        public static EndpointParticipant MapEndpointParticipantToCacheModel(EndpointParticipantResponse endpointParticipantResponse, IList<ParticipantDto> participants)
         {
             return new EndpointParticipant
             {
                 ParticipantId = participants.Single(x => x.RefId == endpointParticipantResponse.ParticipantId).Id,
                 ParticipantRefId = endpointParticipantResponse.ParticipantId,
                 ParticipantUsername = participants.Single(x => x.RefId == endpointParticipantResponse.ParticipantId).Username,
-                LinkedParticipantType = (LinkType) endpointParticipantResponse.LinkedParticipantType
+                LinkedParticipantType =  Enum.Parse<LinkType>(endpointParticipantResponse.LinkedParticipantType.ToString())
             };
         }
     }

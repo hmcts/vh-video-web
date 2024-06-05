@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
 
         private Guid testConferenceId;
 
-        Mock<Conference> mockConference;
+        Mock<ConferenceDto> mockConference;
 
 
         [SetUp]
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
             testConferenceId = Guid.NewGuid();
-            mockConference = _mocker.Mock<Conference>();
+            mockConference = _mocker.Mock<ConferenceDto>();
             mockConference.Object.Id = testConferenceId;
     
             _mocker.Mock<IConferenceService>()
@@ -64,8 +64,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             
             _mocker.Mock<IParticipantsUpdatedEventNotifier>();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<ParticipantDto>, ParticipantDto>()).Returns(_mocker.Create<ParticipantRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<ParticipantDto>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
             
         }
 

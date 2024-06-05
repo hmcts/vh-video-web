@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
             protected AutoMock _mocker;
             protected UpdateParticipantRequestToUpdateParticipantMapper _sut;
 
-            private Mock<IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>> linkedParticipantMapperMock;
+            private Mock<IMapTo<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant>> linkedParticipantMapperMock;
 
             private LinkedParticipantRequest linkedParticipantRequest1;
             private LinkedParticipantRequest linkedParticipantRequest2;
@@ -36,12 +36,12 @@ namespace VideoWeb.UnitTests.Mappings
                 linkedParticipantRequests = new List<LinkedParticipantRequest>() { linkedParticipantRequest1, linkedParticipantRequest2 };
                 linkedParticipant1 = new LinkedParticipant() { LinkedId = linkedParticipantRequest1.LinkedRefId };
                 linkedParticipant2 = new LinkedParticipant() { LinkedId = linkedParticipantRequest2.LinkedRefId };
-                linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>>();
-                linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest1, It.IsAny<IEnumerable<Participant>>())).Returns(linkedParticipant1);
-                linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest2, It.IsAny<IEnumerable<Participant>>())).Returns(linkedParticipant2);
+                linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant>>();
+                linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest1, It.IsAny<IEnumerable<ParticipantDto>>())).Returns(linkedParticipant1);
+                linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest2, It.IsAny<IEnumerable<ParticipantDto>>())).Returns(linkedParticipant2);
 
                 _mocker = AutoMock.GetLoose();
-                _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>()).Returns(linkedParticipantMapperMock.Object);
+                _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant>()).Returns(linkedParticipantMapperMock.Object);
                 _sut = _mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>();
 
                 testUpdateParticipant = new UpdateParticipantRequest()
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Mappings
             [Test]
             public void Should_map_correctly()
             {
-                var existingParticipants = new List<Participant>() { new Participant() { Id = Guid.NewGuid() } };
+                var existingParticipants = new List<ParticipantDto>() { new ParticipantDto() { Id = Guid.NewGuid() } };
                 var mapped = _sut.Map(testUpdateParticipant, existingParticipants);
 
                 mapped.ContactEmail.Should().Be(testUpdateParticipant.ContactEmail);

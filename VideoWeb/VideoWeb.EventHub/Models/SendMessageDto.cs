@@ -6,7 +6,7 @@ namespace VideoWeb.EventHub.Models
     public class SendMessageDto
     {
         public Guid MessageUuid { get; set; }
-        public Conference Conference { get; set; }
+        public ConferenceDto ConferenceDto { get; set; }
         public string Message { get; set; }
         public string From { get; set; }
         public string FromDisplayName { get; set; }

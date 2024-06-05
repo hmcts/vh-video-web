@@ -184,15 +184,15 @@ namespace VideoWeb.UnitTests.Hub
             );
         }
         
-        private Conference InitConference(string participantUsername)
+        private ConferenceDto InitConference(string participantUsername)
         {
             var conferenceId = Guid.NewGuid();
-            var participants = Builder<Participant>.CreateListOfSize(3)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(3)
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
                 .Build().ToList();
 
-            return Builder<Conference>.CreateNew()
+            return Builder<ConferenceDto>.CreateNew()
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();

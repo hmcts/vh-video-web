@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_not_signed_in_message_to_participants_and_service_bus_when_a_participant_is_signed_off()
         {
             _eventHandler = new ParticipantNotSignedInEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
-            var conference = TestConference;
+            var conference = TestConferenceDto;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             ClassicAssert.AreEqual(_eventHandler.EventType, EventType.ParticipantNotSignedIn);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
                     ParticipantState.NotSignedIn), Times.Exactly(participantCount));
         }
     }

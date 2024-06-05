@@ -23,7 +23,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            if (SourceParticipant.ParticipantStatus == Common.Models.ParticipantStatus.InHearing || SourceParticipant.ParticipantStatus == Common.Models.ParticipantStatus.InConsultation)
+            if (SourceParticipantDto.ParticipantStatus == Common.Models.ParticipantStatus.InHearing || SourceParticipantDto.ParticipantStatus == Common.Models.ParticipantStatus.InConsultation)
                 return PublishParticipantStatusMessage(ParticipantState.Disconnected);
 
             return Task.CompletedTask;

@@ -23,8 +23,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IConferenceService> _conferenceServiceMock;
         private Mock<ILogger<VideoWeb.Controllers.MediaEventController>> _logger;
-        private Conference _testConference;
-        private Participant _testParticipant;
+        private ConferenceDto _testConferenceDto;
+        private ParticipantDto _testParticipantDto;
         
         [SetUp]
         public void Setup()
@@ -35,13 +35,13 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
-            _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
-            _testParticipant.Username = ClaimsPrincipalBuilder.Username;
+            _testConferenceDto = new EventComponentHelper().BuildConferenceForTest();
+            _testParticipantDto = _testConferenceDto.Participants.First(x => !x.IsJudge());
+            _testParticipantDto.Username = ClaimsPrincipalBuilder.Username;
             
             _conferenceServiceMock
-                .Setup(x => x.GetConference(_testConference.Id))
-                .ReturnsAsync(_testConference);
+                .Setup(x => x.GetConference(_testConferenceDto.Id))
+                .ReturnsAsync(_testConferenceDto);
             
             var context = new ControllerContext
             {
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new AddSelfTestFailureEventRequest
             {
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
@@ -85,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new AddSelfTestFailureEventRequest
             {
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
@@ -99,20 +99,20 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         public async Task Should_call_api_when_cache_is_empty()
         {
             _conferenceServiceMock
-                .Setup(x => x.GetConference(_testConference.Id))
-                .ReturnsAsync(_testConference);
+                .Setup(x => x.GetConference(_testConferenceDto.Id))
+                .ReturnsAsync(_testConferenceDto);
             
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new AddSelfTestFailureEventRequest
             {
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
-            _conferenceServiceMock.Verify(x => x.GetConference(_testConference.Id), Times.Once);
+            _conferenceServiceMock.Verify(x => x.GetConference(_testConferenceDto.Id), Times.Once);
         }
     }
 }

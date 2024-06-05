@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _controller;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudicialOfficeHolderRole).Build();
 
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
             {
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<StartPrivateConsultationRequest, StartConsultationRequest>())
                 .Returns(_mocker.Create<StartPrivateConsultationRequestMapper>());
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            var conference = new Conference {Id = Guid.NewGuid()};
+            var conference = new ConferenceDto {Id = Guid.NewGuid()};
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
 
             var consultationRequest = Builder<StartPrivateConsultationRequest>.CreateNew()
@@ -80,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_accepted_when_request_is_sent()
         {
             // Arrange
-            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto);
 
             // Act
             var result = await _controller.StartConsultationAsync(request);
@@ -95,7 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_accepted_when_request_is_sent_participant_room_type()
         {
             // Arrange
-            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConferenceDto);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
                 .ReturnsAsync(new RoomResponse {Label = "Room1", Locked = false});
@@ -110,12 +110,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyRoomUpdateAsync(_testConference, It.Is<Room>(r =>
-                        r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
+                    x => x.NotifyRoomUpdateAsync(_testConferenceDto, It.Is<Room>(r =>
+                        r.ConferenceId == _testConferenceDto.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", request.RequestedBy,
+                    x => x.NotifyConsultationRequestAsync(_testConferenceDto, "Room1", request.RequestedBy,
                         It.IsIn(request.InviteParticipants)), Times.Exactly(request.InviteParticipants.Length));
         }
 
@@ -123,12 +123,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_only_join_first_successful_endpoint()
         {
             // Arrange
-            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConferenceDto);
             request.InviteEndpoints = new[]
             {
-                _testConference.Endpoints[0].Id, // Wrong defense advocate username
-                _testConference.Endpoints[1].Id, // Valid
-                _testConference.Endpoints[2].Id
+                _testConferenceDto.Endpoints[0].Id, // Wrong defense advocate username
+                _testConferenceDto.Endpoints[1].Id, // Valid
+                _testConferenceDto.Endpoints[2].Id
             }; // Shouldnt try
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
@@ -144,30 +144,30 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyRoomUpdateAsync(_testConference, It.Is<Room>(r =>
-                        r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
+                    x => x.NotifyRoomUpdateAsync(_testConferenceDto, It.Is<Room>(r =>
+                        r.ConferenceId == _testConferenceDto.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", request.RequestedBy,
+                    x => x.NotifyConsultationRequestAsync(_testConferenceDto, "Room1", request.RequestedBy,
                         It.IsIn(request.InviteParticipants)), Times.Exactly(request.InviteParticipants.Length));
 
             _mocker.Mock<IVideoApiClient>()
                 .Verify(
                     x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id)), Times.Once);
+                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConferenceDto.Id)), Times.Once);
         }
 
         [Test]
         public async Task Should_only_join_first_successful_endpoint_first_fail()
         {
             // Arrange
-            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConferenceDto);
             request.InviteEndpoints = new[]
             {
-                _testConference.Endpoints[0].Id, // Wrong defense advocate username
-                _testConference.Endpoints[1].Id, // Valid but mocked to throw
-                _testConference.Endpoints[2].Id
+                _testConferenceDto.Endpoints[0].Id, // Wrong defense advocate username
+                _testConferenceDto.Endpoints[1].Id, // Valid but mocked to throw
+                _testConferenceDto.Endpoints[2].Id
             }; // Valid
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
@@ -176,7 +176,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 "", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                    ecr.EndpointId == request.InviteEndpoints[1] && ecr.ConferenceId == _testConference.Id)))
+                    ecr.EndpointId == request.InviteEndpoints[1] && ecr.ConferenceId == _testConferenceDto.Id)))
                 .Throws(apiException);
 
             // Act
@@ -189,18 +189,18 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyRoomUpdateAsync(_testConference, It.Is<Room>(r =>
-                        r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
+                    x => x.NotifyRoomUpdateAsync(_testConferenceDto, It.Is<Room>(r =>
+                        r.ConferenceId == _testConferenceDto.Id && r.Label == "Room1" && !r.Locked)), Times.Once);
 
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", request.RequestedBy,
+                    x => x.NotifyConsultationRequestAsync(_testConferenceDto, "Room1", request.RequestedBy,
                         It.IsIn(request.InviteParticipants)), Times.Exactly(request.InviteParticipants.Length));
 
             _mocker.Mock<IVideoApiClient>()
                 .Verify(
                     x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id)), Times.Exactly(2));
+                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConferenceDto.Id)), Times.Exactly(2));
         }
 
         [Test]
@@ -214,7 +214,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
 
             var typedResult = (StatusCodeResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
@@ -232,7 +232,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
             var typedResult = (StatusCodeResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
         }
@@ -255,7 +255,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
 
             // Assert
             int timesCalledExpected;
@@ -279,12 +279,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Updates_Cache_When_JOH_Consultation_Room_Is_Not_Locked()
         {
             var controller = GetControllerWithContextForRole(AppRoles.JudgeRole);
-            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto);
             var expectedKeyName = $"johConsultationRoomLockedStatus_{request.ConferenceId}";
 
             var result =
                 await controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
 
             result.Should().BeOfType<AcceptedResult>();
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
@@ -295,14 +295,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Does_Not_Update_Cache_When_JOH_Consultation_Room_Is_Locked()
         {
             var controller = GetControllerWithContextForRole(AppRoles.JudgeRole);
-            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
+            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto);
             var expectedKeyName = $"johConsultationRoomLockedStatus_{request.ConferenceId}";
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>().Setup(x => x.IsJOHRoomLocked(expectedKeyName))
                 .Returns(Task.FromResult(true));
 
             var result =
                 await controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
 
             result.Should().BeOfType<AcceptedResult>();
             _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
@@ -315,7 +315,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
             var controller = _mocker.Create<ConsultationsController>();
             controller.ControllerContext = context;
-            Func<Task> action = async () => await _controller.StartConsultationAsync(ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+            Func<Task> action = async () => await _controller.StartConsultationAsync(ConsultationHelper.GetStartJohConsultationRequest(_testConferenceDto));
             await action.Should().ThrowAsync<UnauthorizedAccessException>();
         }
         

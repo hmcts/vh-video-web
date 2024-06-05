@@ -26,19 +26,19 @@ namespace VideoWeb.UnitTests.EventHandlers
         private VhOfficerCallEventHandler _eventHandler;
         private AutoMock _mocker;
         private MemoryCache _memoryCache;
-        private Conference _conference;
+        private ConferenceDto _conferenceDto;
         
         [SetUp]
         public void SetUp()
         {
-            _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
+            _conferenceDto = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IConferenceService>()
                 .Setup(x => x.ConferenceCache)
                 .Returns(new ConferenceCache(_memoryCache));
             _eventHandler = _mocker.Create<VhOfficerCallEventHandler>();
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(_conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(_conferenceDto);
         }
         
         [TestCase(null)]
@@ -47,14 +47,14 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.WaitingRoom)]
         public void Should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
         {
-            var participantForEvent = _conference.Participants.First(x => x.Role == Role.Individual);
-            _memoryCache.Set(_conference.Id, _conference);
+            var participantForEvent = _conferenceDto.Participants.First(x => x.Role == Role.Individual);
+            _memoryCache.Set(_conferenceDto.Id, _conferenceDto);
 
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Transfer,
                 EventId = Guid.NewGuid().ToString(),
-                ConferenceId = _conference.Id,
+                ConferenceId = _conferenceDto.Id,
                 ParticipantId = participantForEvent.Id,
                 TransferTo = transferTo?.ToString(),
                 TimeStampUtc = DateTime.UtcNow
@@ -66,14 +66,14 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_consultation_message_when_vho_call_starts()
         {
-            var participantForEvent = _conference.Participants.First(x => x.Role == Role.Individual);
-            _memoryCache.Set(_conference.Id, _conference);
+            var participantForEvent = _conferenceDto.Participants.First(x => x.Role == Role.Individual);
+            _memoryCache.Set(_conferenceDto.Id, _conferenceDto);
             
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.VhoCall,
                 EventId = Guid.NewGuid().ToString(),
-                ConferenceId = _conference.Id,
+                ConferenceId = _conferenceDto.Id,
                 ParticipantId = participantForEvent.Id,
                 TransferTo = "ConsultationRoom1",
                 TimeStampUtc = DateTime.UtcNow
@@ -83,22 +83,22 @@ namespace VideoWeb.UnitTests.EventHandlers
             
             // Verify messages sent to event hub clients
             _mocker.Mock<IConsultationNotifier>().Verify(
-                x => x.NotifyConsultationRequestAsync(_conference, callbackEvent.TransferTo, Guid.Empty,
-                    _eventHandler.SourceParticipant.Id), Times.Once);
+                x => x.NotifyConsultationRequestAsync(_conferenceDto, callbackEvent.TransferTo, Guid.Empty,
+                    _eventHandler.SourceParticipantDto.Id), Times.Once);
         }
 
         [Test]
         public async Task should_join_jvs_to_consultation_when_vho_call_starts()
         {
             // Arrange
-            var endpointForEvent = _conference.Endpoints[0];
-            _memoryCache.Set(_conference.Id,_conference);
+            var endpointForEvent = _conferenceDto.Endpoints[0];
+            _memoryCache.Set(_conferenceDto.Id,_conferenceDto);
 
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.VhoCall,
                 EventId = Guid.NewGuid().ToString(),
-                ConferenceId = _conference.Id,
+                ConferenceId = _conferenceDto.Id,
                 ParticipantId = endpointForEvent.Id,
                 TransferTo = "ConsultationRoom1",
                 TimeStampUtc = DateTime.UtcNow
@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Assert
             _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => 
-            r.ConferenceId == _conference.Id &&
+            r.ConferenceId == _conferenceDto.Id &&
             r.EndpointId == endpointForEvent.Id &&
             r.RoomLabel == callbackEvent.TransferTo)), Times.Once);
         }

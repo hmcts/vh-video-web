@@ -8,28 +8,28 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class UnreadInstantMessageConferenceCountResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>
+    public class UnreadInstantMessageConferenceCountResponseMapper : IMapTo<ConferenceDto, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>
     {
 
-        public UnreadInstantMessageConferenceCountResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
+        public UnreadInstantMessageConferenceCountResponse Map(ConferenceDto conferenceDto, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadInstantMessageConferenceCountResponse
             {
-                NumberOfUnreadMessagesConference = MapMessages(conference, messageResponses)
+                NumberOfUnreadMessagesConference = MapMessages(conferenceDto, messageResponses)
             };
             return response;
         }
 
-        private List<UnreadAdminMessageResponse> MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
+        private List<UnreadAdminMessageResponse> MapMessages(ConferenceDto conferenceDto, IList<InstantMessageResponse> messageResponses)
         {
             var unreadMessagesPerParticipant = new List<UnreadAdminMessageResponse>();
-            foreach (var participant in conference.Participants)
+            foreach (var participant in conferenceDto.Participants)
             {
                 var participantMessageResponses = messageResponses
                     .Where(p => p.From == participant.Username || p.To == participant.Username)
                     .OrderByDescending(x => x.TimeStamp).ToList();
 
-                var vhoMessage = participantMessageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
+                var vhoMessage = participantMessageResponses.FirstOrDefault(m => IsNonParticipantMessage(conferenceDto, m));
                 var participantMessageCount = vhoMessage == null ? participantMessageResponses.Count : participantMessageResponses.IndexOf(vhoMessage);
                 unreadMessagesPerParticipant.Add(new UnreadAdminMessageResponse
                 {
@@ -40,9 +40,9 @@ namespace VideoWeb.Mappings
             return unreadMessagesPerParticipant;
         }
 
-        private bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
+        private bool IsNonParticipantMessage(ConferenceDto conferenceDto, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+            return !conferenceDto.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

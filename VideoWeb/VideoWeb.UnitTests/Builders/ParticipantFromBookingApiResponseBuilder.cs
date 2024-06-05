@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using VideoApi.Contract.Enums;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {

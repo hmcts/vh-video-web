@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, VideoEndpointResponse>()).Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointDto, VideoEndpointResponse>()).Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>());
             _controller = _mocker.Create<EndpointsController>();
         }
         
@@ -35,9 +35,9 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public async Task Should_return_ok()
         {
             var conferenceId = Guid.NewGuid();
-            var endpoints = Builder<Endpoint>.CreateListOfSize(3).All().With(x => x.Id = Guid.NewGuid()).Build()
+            var endpoints = Builder<EndpointDto>.CreateListOfSize(3).All().With(x => x.Id = Guid.NewGuid()).Build()
                 .ToList();
-            var response = Builder<Conference>.CreateNew()
+            var response = Builder<ConferenceDto>.CreateNew()
                 .With(x => x.Endpoints = endpoints)
                 .With(x => x.Id = Guid.NewGuid()).Build();
             _mocker.Mock<IConferenceService>()

@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
             
-            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((ConferenceDto)null);
 
             SetupActionExecutingContext(actionArguments, user);
 
@@ -51,13 +51,13 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
             var participantId = Guid.NewGuid();
-            var conference = new Conference
+            var conference = new ConferenceDto
             {
                 // conference exists...
                 Id = ConferenceId,
-                Participants = new List<Participant>
+                Participants = new List<ParticipantDto>
                 {
-                    new Participant
+                    new ParticipantDto
                     {
                         // ...but user does not belong to it
                         Username = "Username",
@@ -94,13 +94,13 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
-            var conference = new Conference
+            var conference = new ConferenceDto
             {
                 // conference exists...
                 Id = ConferenceId,
-                Participants = new List<Participant>
+                Participants = new List<ParticipantDto>
                 {
-                    new Participant
+                    new ParticipantDto
                     {
                         // ...and user is a part of it
                         Username = UserName,

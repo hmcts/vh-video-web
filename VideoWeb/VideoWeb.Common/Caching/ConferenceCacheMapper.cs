@@ -9,7 +9,7 @@ namespace VideoWeb.Common.Caching
 {
     public static class ConferenceCacheMapper
     {
-        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
+        public static ConferenceDto MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
         {
             var participants = conferenceResponse
                 .Participants
@@ -17,7 +17,7 @@ namespace VideoWeb.Common.Caching
                 .ToList();
 
             var endpoints = conferenceResponse.Endpoints == null
-                ? new List<Endpoint>()
+                ? new List<EndpointDto>()
                 : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
             
             foreach (var endpoint in endpoints)
@@ -29,11 +29,20 @@ namespace VideoWeb.Common.Caching
             }
 
             var civilianRooms = conferenceResponse.CivilianRooms == null
-                ? new List<CivilianRoom>()
+                ? new List<CivilianRoomDto>()
                 : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
                     .ToList();
             
-            var conference = new Conference
+            var meetingRoom = conferenceResponse.MeetingRoom == null
+                ? null
+                : new ConferenceMeetingRoom
+                {
+                    ParticipantUri = conferenceResponse.MeetingRoom.ParticipantUri,
+                    PexipNode = conferenceResponse.MeetingRoom.PexipNode,
+                    PexipSelfTest = conferenceResponse.MeetingRoom.PexipSelfTestNode,
+                };
+            
+            var conference = new ConferenceDto
             {
                 Id = conferenceResponse.Id,
                 HearingId = conferenceResponse.HearingId,
@@ -41,16 +50,26 @@ namespace VideoWeb.Common.Caching
                 HearingVenueName = conferenceResponse.HearingVenueName,
                 Endpoints = endpoints,
                 CivilianRooms = civilianRooms,
-                CurrentStatus = conferenceResponse.CurrentStatus
+                CurrentStatus = conferenceResponse.CurrentStatus,
+                IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen,
+                CaseName = conferenceResponse.CaseName,
+                CaseNumber = conferenceResponse.CaseNumber,
+                CaseType = conferenceResponse.CaseType,
+                ScheduledDateTime = conferenceResponse.ScheduledDateTime,
+                ScheduledDuration = conferenceResponse.ScheduledDuration,
+                ClosedDateTime = conferenceResponse.ClosedDateTime,
+                AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
+                IsScottish = conferenceResponse.HearingVenueIsScottish,
+                IngestUrl = conferenceResponse.IngestUrl,
+                MeetingRoom = meetingRoom
             };
             return conference;
         }
 
-        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
+        private static ParticipantDto MapParticipantToCacheModel(ParticipantDetailsResponse participant)
         {
-            var links = (participant.LinkedParticipants 
-                         ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
-            return new Participant
+            var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
+            return new ParticipantDto
             {
                 Id = participant.Id,
                 RefId = participant.RefId,
@@ -66,7 +85,9 @@ namespace VideoWeb.Common.Caching
                 Username = participant.Username,
                 CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
-                LinkedParticipants = links
+                LinkedParticipants = links,
+                CurrentRoom = RoomCacheMapper.Map(participant.CurrentRoom),
+                InterpreterRoom = RoomCacheMapper.Map(participant.CurrentInterpreterRoom)
             };
         }
 

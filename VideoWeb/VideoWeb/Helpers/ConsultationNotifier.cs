@@ -22,94 +22,94 @@ namespace VideoWeb.Helpers
             _consultationInvitationTracker = consultationInvitationTracker;
         }
 
-        public async Task<Guid> NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById, Guid requestedForId)
+        public async Task<Guid> NotifyConsultationRequestAsync(ConferenceDto conferenceDto, string roomLabel, Guid requestedById, Guid requestedForId)
         {
-            var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            var invitationId = await _consultationInvitationTracker.StartTrackingInvitation(conference, roomLabel, requestedForId);
+            var participantFor = conferenceDto.Participants.First(x => x.Id == requestedForId);
+            var invitationId = await _consultationInvitationTracker.StartTrackingInvitation(conferenceDto, roomLabel, requestedForId);
 
-            var tasks = conference.Participants.Select(p =>
+            var tasks = conferenceDto.Participants.Select(p =>
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                    .RequestedConsultationMessage(conference.Id, invitationId, roomLabel, requestedById, participantFor.Id));
+                    .RequestedConsultationMessage(conferenceDto.Id, invitationId, roomLabel, requestedById, participantFor.Id));
             await Task.WhenAll(tasks);
             if (participantFor.LinkedParticipants.Any())
             {
-                await NotifyLinkedParticipantsOfConsultationRequest(conference, invitationId, participantFor, roomLabel, requestedById);
+                await NotifyLinkedParticipantsOfConsultationRequest(conferenceDto, invitationId, participantFor, roomLabel, requestedById);
             }
 
             return invitationId;
         }
         
-        private async Task NotifyLinkedParticipantsOfConsultationRequest(Conference conference, Guid invitationId, Participant participantFor, string roomLabel, Guid requestedById)
+        private async Task NotifyLinkedParticipantsOfConsultationRequest(ConferenceDto conferenceDto, Guid invitationId, ParticipantDto participantDtoFor, string roomLabel, Guid requestedById)
         {
-            var linkedIds = participantFor.LinkedParticipants.Select(x => x.LinkedId);
-            var linkedParticipants = conference.Participants.Where(p => linkedIds.Contains(p.Id));
+            var linkedIds = participantDtoFor.LinkedParticipants.Select(x => x.LinkedId);
+            var linkedParticipants = conferenceDto.Participants.Where(p => linkedIds.Contains(p.Id));
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                var tasks = conference.Participants.Select(p =>
+                var tasks = conferenceDto.Participants.Select(p =>
                     _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                        .RequestedConsultationMessage(conference.Id, invitationId, roomLabel, requestedById, linkedParticipant.Id));
+                        .RequestedConsultationMessage(conferenceDto.Id, invitationId, roomLabel, requestedById, linkedParticipant.Id));
                 await Task.WhenAll(tasks);  
             }
         }
 
-        public async Task NotifyConsultationResponseAsync(Conference conference, Guid invitationId, string roomLabel, Guid requestedForId,
+        public async Task NotifyConsultationResponseAsync(ConferenceDto conferenceDto, Guid invitationId, string roomLabel, Guid requestedForId,
             ConsultationAnswer answer)
         {
-            var endpoint = conference.Endpoints.FirstOrDefault(e => e.Id == requestedForId);
+            var endpoint = conferenceDto.Endpoints.FirstOrDefault(e => e.Id == requestedForId);
             if (endpoint != null)
             {
-                await PublishResponseMessage(conference, invitationId, roomLabel, endpoint.Id, answer, endpoint.Id);
+                await PublishResponseMessage(conferenceDto, invitationId, roomLabel, endpoint.Id, answer, endpoint.Id);
                 return;
             }
             
-            var participantFor = conference.Participants.First(x => x.Id == requestedForId);
+            var participantFor = conferenceDto.Participants.First(x => x.Id == requestedForId);
             await _consultationInvitationTracker.UpdateConsultationResponse(invitationId, participantFor.Id, answer);
             
             var haveAllAccepted =
                 await _consultationInvitationTracker.HaveAllParticipantsAccepted(invitationId);
 
-            await PublishResponseMessage(conference, invitationId, roomLabel, participantFor.Id, answer, participantFor.Id);
+            await PublishResponseMessage(conferenceDto, invitationId, roomLabel, participantFor.Id, answer, participantFor.Id);
 
             if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
                 return;
 
             if (participantFor.LinkedParticipants.Any())
-                await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, invitationId, participantFor, roomLabel, answer);
+                await NotifyLinkedParticipantsOfConsultationResponseAsync(conferenceDto, invitationId, participantFor, roomLabel, answer);
         }
         
-        private async Task NotifyLinkedParticipantsOfConsultationResponseAsync(Conference conference, Guid invitationId, Participant participantFor, string roomLabel, ConsultationAnswer answer)
+        private async Task NotifyLinkedParticipantsOfConsultationResponseAsync(ConferenceDto conferenceDto, Guid invitationId, ParticipantDto participantDtoFor, string roomLabel, ConsultationAnswer answer)
         {
-            var linkedIds = participantFor.LinkedParticipants.Select(x => x.LinkedId);
-            var linkedParticipants = conference.Participants.Where(p => linkedIds.Contains(p.Id));
+            var linkedIds = participantDtoFor.LinkedParticipants.Select(x => x.LinkedId);
+            var linkedParticipants = conferenceDto.Participants.Where(p => linkedIds.Contains(p.Id));
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                await PublishResponseMessage(conference, invitationId, roomLabel, linkedParticipant.Id, answer, participantFor.Id);
+                await PublishResponseMessage(conferenceDto, invitationId, roomLabel, linkedParticipant.Id, answer, participantDtoFor.Id);
             }
         }
         
-        private async Task PublishResponseMessage(Conference conference, Guid invitationId, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
+        private async Task PublishResponseMessage(ConferenceDto conferenceDto, Guid invitationId, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
         {
-            var tasks = conference.Participants.Select(p => 
+            var tasks = conferenceDto.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, invitationId, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conferenceDto.Id, invitationId, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 
-        public async Task NotifyRoomUpdateAsync(Conference conference, Room room)
+        public async Task NotifyRoomUpdateAsync(ConferenceDto conferenceDto, Room room)
         {
-            var tasks = conference.Participants.Select(p =>
+            var tasks = conferenceDto.Participants.Select(p =>
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
                     .RoomUpdate(room) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 
-        public async Task NotifyParticipantTransferring(Conference conference, Guid participantId, string roomLabel)
+        public async Task NotifyParticipantTransferring(ConferenceDto conferenceDto, Guid participantId, string roomLabel)
         {
-            var tasks = conference.Participants.Select(p => 
+            var tasks = conferenceDto.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, Guid.Empty, roomLabel, participantId, ConsultationAnswer.Transferring, participantId) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conferenceDto.Id, Guid.Empty, roomLabel, participantId, ConsultationAnswer.Transferring, participantId) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
     }

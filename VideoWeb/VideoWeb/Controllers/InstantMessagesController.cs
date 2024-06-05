@@ -105,7 +105,7 @@ namespace VideoWeb.Controllers
 
                 var conference = await _conferenceService.GetConference(conferenceId);
 
-                var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
+                var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<ConferenceDto, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
                 var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
 
                 return Ok(response);
@@ -144,7 +144,7 @@ namespace VideoWeb.Controllers
                 }
 
 
-                var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
+                var unreadAdminMessageResponseMapper = _mapperFactory.Get<ConferenceDto, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
                 var response = unreadAdminMessageResponseMapper.Map(conference, messages.ToList());
 
                 return Ok(response);
@@ -182,7 +182,7 @@ namespace VideoWeb.Controllers
                     fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
 
-                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, Conference, ChatResponse>();
+                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, ConferenceDto, ChatResponse>();
                 var mapped = chatResponseMapper.Map(message, fromDisplayName, isUser, conference);
                 response.Add(mapped);
             }

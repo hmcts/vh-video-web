@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests
         public async Task Should_call_function_and_add_to_cache_when_cache_contains_unexpected_data()
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
-            var conferenceResponse = Builder<Conference>.CreateNew().Build();
+            var conferenceResponse = Builder<ConferenceDto>.CreateNew().Build();
             var serialisedConference = JsonConvert.SerializeObject(conferenceResponse, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
             _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);

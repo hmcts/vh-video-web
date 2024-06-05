@@ -15,7 +15,6 @@ using VideoWeb.Mappings;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.UnitTests.Controllers.ConsultationController;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.EndpointController
 {
@@ -23,17 +22,17 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
     {
         private AutoMock _mocker;
         private EndpointsController _controller;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, AllowedEndpointResponse>()).Returns(_mocker.Create<AllowedEndpointResponseMapper>());
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointDto, AllowedEndpointResponse>()).Returns(_mocker.Create<AllowedEndpointResponseMapper>());
+            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConference.Id)))
-                .ReturnsAsync(_testConference);
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConferenceDto.Id)))
+                .ReturnsAsync(_testConferenceDto);
 
             _controller = _mocker.Create<EndpointsController>();
             
@@ -60,7 +59,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public async Task Should_return_ok()
         {
             // Arrange
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             SetupLoginAs("NoEndpointUser@hmcts.net");
 
             // Act
@@ -81,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public async Task Should_return_ok_with_linked_endpoints(string username, int expectedCount)
         {
             // Arrange
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             SetupLoginAs(username);
 
             // Act

@@ -7,15 +7,15 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantDetailsResponseMapper : IMapTo<ParticipantDetailsResponse, Participant>
+    public class ParticipantDetailsResponseMapper : IMapTo<ParticipantDetailsResponse, ParticipantDto>
     {
         public ParticipantDetailsResponseMapper()
         {
         }
 
-        public Participant Map(ParticipantDetailsResponse participantDetails)
+        public ParticipantDto Map(ParticipantDetailsResponse participantDetails)
         {
-            var participant = new Participant();
+            var participant = new ParticipantDto();
 
             participant.Id = participantDetails.Id;
             participant.Name = participantDetails.Name;

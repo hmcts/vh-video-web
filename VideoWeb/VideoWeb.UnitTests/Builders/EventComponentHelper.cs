@@ -76,7 +76,7 @@ public class EventComponentHelper
         };
     }
     
-    public void RegisterUsersForHubContext(IEnumerable<Participant> participants)
+    public void RegisterUsersForHubContext(IEnumerable<ParticipantDto> participants)
     {
         foreach (var participant in participants)
         {
@@ -88,27 +88,27 @@ public class EventComponentHelper
             .Returns(EventHubClientMock.Object);
     }
     
-    public Conference BuildConferenceForTest()
+    public ConferenceDto BuildConferenceForTest()
     {
-        return new Conference
+        return new ConferenceDto
         {
             Id = Guid.NewGuid(),
             HearingId = Guid.NewGuid(),
-            Participants = new List<Participant>()
+            Participants = new List<ParticipantDto>()
             {
-                Builder<Participant>.CreateNew()
+                Builder<ParticipantDto>.CreateNew()
                     .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                     .Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build()
             },
-            CivilianRooms = new List<CivilianRoom>
+            CivilianRooms = new List<CivilianRoomDto>
             {
                 new () {Id = 1, RoomLabel = "Interpreter1", Participants = {Guid.NewGuid(), Guid.NewGuid()}}
             }

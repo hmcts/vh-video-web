@@ -12,9 +12,9 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Mappings
 {
-    public class CallbackEventMapper : IMapTo<ConferenceEventRequest, Conference, CallbackEvent>
+    public class CallbackEventMapper : IMapTo<ConferenceEventRequest, ConferenceDto, CallbackEvent>
     {
-        public CallbackEvent Map(ConferenceEventRequest request, Conference conference)
+        public CallbackEvent Map(ConferenceEventRequest request, ConferenceDto conferenceDto)
         {
             request.EventType = request.EventType switch
             {
@@ -26,7 +26,7 @@ namespace VideoWeb.Mappings
             };
             var eventType = Enum.Parse<EventType>(request.EventType.ToString());
             var conferenceId = Guid.Parse(request.ConferenceId);
-            var otherParticipantsInVmr = request.GetOtherParticipantsInVmr(conference);
+            var otherParticipantsInVmr = request.GetOtherParticipantsInVmr(conferenceDto);
 
             Guid.TryParse(request.ParticipantId, out var participantId);
             
@@ -40,21 +40,21 @@ namespace VideoWeb.Mappings
                 TransferFrom = request.TransferFrom,
                 TimeStampUtc = request.TimeStampUtc,
                 ParticipantId = participantId,
-                IsParticipantInVmr = request.IsParticipantInVmr(conference),
-                ConferenceStatus = conference.CurrentStatus,
+                IsParticipantInVmr = request.IsParticipantInVmr(conferenceDto),
+                ConferenceStatus = conferenceDto.CurrentStatus,
             };
             
-            if (IsEndpointJoined(callbackEvent, conference))
+            if (IsEndpointJoined(callbackEvent, conferenceDto))
             {
                 callbackEvent.EventType = EventType.EndpointJoined;
             }
 
-            if (IsEndpointDisconnected(callbackEvent, conference))
+            if (IsEndpointDisconnected(callbackEvent, conferenceDto))
             {
                 callbackEvent.EventType = EventType.EndpointDisconnected;
             }
             
-            if (IsEndpointTransferred(callbackEvent, conference))
+            if (IsEndpointTransferred(callbackEvent, conferenceDto))
             {
                 callbackEvent.EventType = EventType.EndpointTransfer;
             }
@@ -63,24 +63,24 @@ namespace VideoWeb.Mappings
             return callbackEvent;
         }
 
-        private bool IsEndpointJoined(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointJoined(CallbackEvent callbackEvent, ConferenceDto conferenceDto)
         {
             return callbackEvent.EventType == EventType.Joined &&
-                   conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+                   conferenceDto.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
         
-        private bool IsEndpointDisconnected(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointDisconnected(CallbackEvent callbackEvent, ConferenceDto conferenceDto)
         {
             return callbackEvent.EventType == EventType.Disconnected &&
-                   conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+                   conferenceDto.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
         
-        private bool IsEndpointTransferred(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointTransferred(CallbackEvent callbackEvent, ConferenceDto conferenceDto)
         {
             return callbackEvent.EventType == EventType.Transfer &&
-                   conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+                   conferenceDto.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
-        private bool IsOtherParticipantInConsultation(IEnumerable<Participant> otherParticipantsInVmr)
+        private bool IsOtherParticipantInConsultation(IEnumerable<ParticipantDto> otherParticipantsInVmr)
         {
             return otherParticipantsInVmr.Any(
                 p => p.ParticipantStatus == ParticipantStatus.InConsultation);

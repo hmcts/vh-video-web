@@ -20,6 +20,7 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Contract.Request;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services;
@@ -31,7 +32,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private AutoMock _mocker;
         private ParticipantsController _sut;
         private ConferenceDetailsResponse _testConference;
-        private const string Username = "staff_member@hmcts.net";
 
         [SetUp]
         public void Setup()
@@ -45,7 +45,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _testConference = CreateValidConferenceResponse();
@@ -80,7 +80,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(_testConference);
-
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId))
+                .ReturnsAsync(CreateConferenceDto());
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), addStaffMemberRequest))
                 .Returns(Task.FromResult(default(AddStaffMemberResponse)));
@@ -164,6 +165,29 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             }
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+                .With(x => x.Participants = participants)
+                .Build();
+            return conference;
+        }
+        
+        private static ConferenceDto CreateConferenceDto(string username = "john@hmcts.net")
+        {
+            var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
+            var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
+            
+            var individualDefendant = new ParticipantBuilder(Role.Individual, "Defendant").Build();
+            var panelMember =
+                new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
+            var participants = new List<ParticipantDto>()
+            {
+                individualDefendant, judge, panelMember, staffMember
+            };
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                participants.First().Username = username;
+            }
+            
+            var conference = Builder<ConferenceDto>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();
             return conference;

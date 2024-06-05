@@ -56,21 +56,21 @@ namespace VideoWeb.UnitTests.Hub
             VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());
         }
 
-        private void VerifyMessageCallCount(Conference conference, Guid participantId, ParticipantMediaStatus message,
+        private void VerifyMessageCallCount(ConferenceDto conferenceDto, Guid participantId, ParticipantMediaStatus message,
             Times times)
         {
-            var judge = conference.Participants.Single(x => x.IsJudge());
+            var judge = conferenceDto.Participants.Single(x => x.IsJudge());
             EventHubClientMock.Verify(
                 x => x.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(participantId, conference.Id,
+                    .ParticipantMediaStatusMessage(participantId, conferenceDto.Id,
                         It.Is<ParticipantMediaStatus>(s =>
                             s.IsLocalAudioMuted == message.IsLocalAudioMuted &&
                             s.IsLocalVideoMuted == message.IsLocalVideoMuted)), times);
 
-            var staffMember = conference.Participants.Single(x => x.IsStaffMember());
+            var staffMember = conferenceDto.Participants.Single(x => x.IsStaffMember());
             EventHubClientMock.Verify(
                 x => x.Group(staffMember.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(participantId, conference.Id,
+                    .ParticipantMediaStatusMessage(participantId, conferenceDto.Id,
                         It.Is<ParticipantMediaStatus>(s =>
                             s.IsLocalAudioMuted == message.IsLocalAudioMuted &&
                             s.IsLocalVideoMuted == message.IsLocalVideoMuted)), times);
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Hub
 
             EventHubClientMock.Verify(
                 x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
-                    .ParticipantMediaStatusMessage(participantId, conference.Id, message), times);
+                    .ParticipantMediaStatusMessage(participantId, conferenceDto.Id, message), times);
         }
     }
 }

@@ -25,9 +25,9 @@ namespace VideoWeb.UnitTests.Helpers
     {
         private ParticipantsUpdatedEventNotifier _notifier;
         private AutoMock _mocker;
-        private Conference _conference;
-        private Participant _participant1;
-        private Participant _participant2;
+        private ConferenceDto _conferenceDto;
+        private ParticipantDto _participant1;
+        private ParticipantDto _participant2;
 
         [SetUp]
         public void SetUp()
@@ -35,18 +35,18 @@ namespace VideoWeb.UnitTests.Helpers
             _mocker = AutoMock.GetLoose();
             _notifier = _mocker.Create<ParticipantsUpdatedEventNotifier>();
 
-            _conference = new Conference();
-            _conference.Id = Guid.NewGuid();
-            _conference.Participants = new List<Participant>();
+            _conferenceDto = new ConferenceDto();
+            _conferenceDto.Id = Guid.NewGuid();
+            _conferenceDto.Participants = new List<ParticipantDto>();
 
-            _participant1 = new Participant();
+            _participant1 = new ParticipantDto();
             _participant1.Id = Guid.NewGuid();
 
-            _participant2 = new Participant();
+            _participant2 = new ParticipantDto();
             _participant2.Id = Guid.NewGuid();
 
-            _conference.Participants.Add(_participant1);
-            _conference.Participants.Add(_participant2);
+            _conferenceDto.Participants.Add(_participant1);
+            _conferenceDto.Participants.Add(_participant2);
         }
 
         [Test]
@@ -62,40 +62,40 @@ namespace VideoWeb.UnitTests.Helpers
 
             var responseList = new List<ParticipantResponse> { response1, response2 };
 
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conference)).Returns(response1);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conference)).Returns(response2);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Object);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conferenceDto)).Returns(response1);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conferenceDto)).Returns(response2);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDto, ConferenceDto, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Object);
 
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
             // Act
-            await _notifier.PushParticipantsUpdatedEvent(_conference, _conference.Participants);
+            await _notifier.PushParticipantsUpdatedEvent(_conferenceDto, _conferenceDto.Participants);
             
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, responseList))), Times.Once);
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conferenceDto.Id && ParticipantResponseListsMatch(c.Participants, responseList))), Times.Once);
         }
         
         [Test]
         public async Task Should_send_event_when_participants_to_notify_specified()
         {
             // Arrange
-            var participant1ToNotify = new Participant();
+            var participant1ToNotify = new ParticipantDto();
             participant1ToNotify.Id = _participant1.Id;
             
-            var participant2ToNotify = new Participant();
+            var participant2ToNotify = new ParticipantDto();
             participant2ToNotify.Id = _participant2.Id;
 
-            var participant3 = new Participant();
+            var participant3 = new ParticipantDto();
             participant3.Id = Guid.NewGuid();
             
-            _conference.Participants.Add(participant3);
+            _conferenceDto.Participants.Add(participant3);
             
-            var participant3ToNotify = new Participant();
+            var participant3ToNotify = new ParticipantDto();
             participant3ToNotify.Id = participant3.Id;
 
-            var participantsToNotify = new List<Participant> { participant1ToNotify, participant2ToNotify, participant3ToNotify };
+            var participantsToNotify = new List<ParticipantDto> { participant1ToNotify, participant2ToNotify, participant3ToNotify };
 
             var participant1Mapped = new ParticipantResponse();
             participant1Mapped.Id = _participant1.Id;
@@ -114,22 +114,22 @@ namespace VideoWeb.UnitTests.Helpers
             
             var participantsToNotifyMapped = new List<ParticipantResponse> { participant1ToNotifyMapped, participant2ToNotifyMapped, participant3ToNotifyMapped };
 
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conference)).Returns(participant1Mapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conference)).Returns(participant2Mapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant1ToNotify, _conference)).Returns(participant1ToNotifyMapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant2ToNotify, _conference)).Returns(participant2ToNotifyMapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant3ToNotify, _conference)).Returns(participant3ToNotifyMapped);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Object);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conferenceDto)).Returns(participant1Mapped);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conferenceDto)).Returns(participant2Mapped);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(participant1ToNotify, _conferenceDto)).Returns(participant1ToNotifyMapped);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(participant2ToNotify, _conferenceDto)).Returns(participant2ToNotifyMapped);
+            _mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Setup(x => x.Map(participant3ToNotify, _conferenceDto)).Returns(participant3ToNotifyMapped);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDto, ConferenceDto, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>>().Object);
 
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
             // Act
-            await _notifier.PushParticipantsUpdatedEvent(_conference, participantsToNotify);
+            await _notifier.PushParticipantsUpdatedEvent(_conferenceDto, participantsToNotify);
             
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conferenceDto.Id && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
         }
 
         private bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)

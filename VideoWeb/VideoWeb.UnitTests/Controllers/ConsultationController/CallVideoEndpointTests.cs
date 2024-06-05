@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     public class CallVideoEndpointTests
     {
         private AutoMock _mocker;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
@@ -25,11 +25,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker = AutoMock.GetLoose();
            
 
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
 
             var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
             var eventHubClientMock = _mocker.Mock<IEventHubClient>();
-            foreach (var participant in _testConference.Participants)
+            foreach (var participant in _testConferenceDto.Participants)
             {
                 eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
                     .Returns(eventHubClientMock.Object);
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                 .Returns(eventHubClientMock.Object);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
 
             SetupControllerWithClaims(null);
         }

@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
     {
         private AutoMock _mocker;
         private ParticipantsController _sut;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
@@ -40,8 +40,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var eventComponentHelper = new EventComponentHelper();
-            _testConference = eventComponentHelper.BuildConferenceForTest();
-            _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
+            _testConferenceDto = eventComponentHelper.BuildConferenceForTest();
+            _testConferenceDto.Participants[0].Username = ClaimsPrincipalBuilder.Username;
 
             var context = new ControllerContext
             {
@@ -51,20 +51,20 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, ConferenceDto, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
 
             _sut = _mocker.Create<ParticipantsController>();
             _sut.ControllerContext = context;
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_testConference.Id)).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_testConferenceDto.Id)).ReturnsAsync(_testConferenceDto);
         }
 
         [Test]
         public async Task Should_return_ok()
         {
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
                 EventType = EventType.Joined
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_call_api_when_cache_is_empty()
         {
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
                 EventType = EventType.Joined
@@ -91,13 +91,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Returns(Task.FromResult(default(object)));
             
             await _sut.UpdateParticipantStatusAsync(conferenceId, request);
-            _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(_testConference.Id), Times.Once);
+            _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(_testConferenceDto.Id), Times.Once);
         }
 
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
                 EventType = EventType.Joined

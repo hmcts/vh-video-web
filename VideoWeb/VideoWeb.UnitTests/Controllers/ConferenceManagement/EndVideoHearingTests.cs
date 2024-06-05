@@ -17,24 +17,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [SetUp]
         public void Setup()
         {
-            TestConference = BuildConferenceForTest();
+            TestConferenceDto = BuildConferenceForTest();
         }
         
         [Test]
         public async Task should_return_unauthorised_if_user_not_judge()
         {
-            var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
+            var participant = TestConferenceDto.Participants.First(x => x.Role == Role.Individual);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.EndVideoHearingAsync(TestConference.Id);
+            var result = await Controller.EndVideoHearingAsync(TestConferenceDto.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConference.Id), Times.Never);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConferenceDto.Id), Times.Never);
         }
 
         [Test]
@@ -46,17 +46,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
             
-            var result = await Controller.EndVideoHearingAsync(TestConference.Id);
+            var result = await Controller.EndVideoHearingAsync(TestConferenceDto.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConference.Id), Times.Never);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConferenceDto.Id), Times.Never);
         }
 
         [Test]
         public async Task should_return_video_api_error()
         {
-            var participant = TestConference.GetJudge();
+            var participant = TestConferenceDto.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -67,10 +67,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.EndVideoHearingAsync(TestConference.Id))
+                .Setup(x => x.EndVideoHearingAsync(TestConferenceDto.Id))
                 .ThrowsAsync(apiException);
             
-            var result = await Controller.EndVideoHearingAsync(TestConference.Id);
+            var result = await Controller.EndVideoHearingAsync(TestConferenceDto.Id);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be(responseMessage);
@@ -80,18 +80,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [Test]
         public async Task should_return_accepted_when_user_is_judge_in_conference()
         {
-            var participant = TestConference.GetJudge();
+            var participant = TestConferenceDto.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
             
             var Controller = SetupControllerWithClaims(user);
             
-            var result = await Controller.EndVideoHearingAsync(TestConference.Id);
+            var result = await Controller.EndVideoHearingAsync(TestConferenceDto.Id);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
             
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConference.Id), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.EndVideoHearingAsync(TestConferenceDto.Id), Times.Once);
         }
     }
 }

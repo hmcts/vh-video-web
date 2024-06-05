@@ -18,13 +18,13 @@ namespace VideoWeb.UnitTests.Mappings
             const string senderUsername = "john@hmcts.net";
             const string recipientUsername = "other@hmcts.net";
             const string fromDisplayName = "Johnny";
-            var conference = new Conference
+            var conference = new ConferenceDto
             {
                 Id = Guid.NewGuid(),
-                Participants = new List<Participant>
+                Participants = new List<ParticipantDto>
                 {
-                    new Participant { Id = Guid.NewGuid(), Username = senderUsername },
-                    new Participant { Id = Guid.NewGuid(), Username = recipientUsername }
+                    new ParticipantDto { Id = Guid.NewGuid(), Username = senderUsername },
+                    new ParticipantDto { Id = Guid.NewGuid(), Username = recipientUsername }
                 }
             };
 

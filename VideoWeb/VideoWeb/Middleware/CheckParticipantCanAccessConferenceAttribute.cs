@@ -96,10 +96,10 @@ namespace VideoWeb.Middleware
             return Guid.Empty;
         }
 
-        private Guid GetLoggedInParticipantId(ActionExecutingContext context, Conference conference)
+        private Guid GetLoggedInParticipantId(ActionExecutingContext context, ConferenceDto conferenceDto)
         {
             var username = context.HttpContext.User.Identity.Name;
-            var participant = conference.Participants
+            var participant = conferenceDto.Participants
                 .FirstOrDefault(x => x.Username?.Equals(username, StringComparison.CurrentCultureIgnoreCase) ?? false);
 
             return participant?.Id ?? Guid.Empty;

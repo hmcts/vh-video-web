@@ -20,13 +20,13 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
-            MemoryCache.Remove(TestConference.Id);
+            MemoryCache.Remove(TestConferenceDto.Id);
             var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
+            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id)).ReturnsAsync(confDetail);
 
             _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConference;
+            var conference = TestConferenceDto;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
@@ -42,21 +42,21 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
                     ParticipantState.Available), Times.Exactly(participantCount));
             
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id), Times.Once);
         }
         [Test]
         public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()
         {
-            MemoryCache.Remove(TestConference.Id);
+            MemoryCache.Remove(TestConferenceDto.Id);
             var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
+            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id)).ReturnsAsync(confDetail);
 
             _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConference;
+            var conference = TestConferenceDto;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
@@ -74,22 +74,22 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
                     ParticipantState.InHearing), Times.Exactly(participantCount));
 
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id), Times.Once);
         }
         
         [Test]
         public async Task Should_send_in_consultation_message_to_participants_and_service_bus_when_participant_joins_consultation()
         {
-            MemoryCache.Remove(TestConference.Id);
+            MemoryCache.Remove(TestConferenceDto.Id);
             var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
+            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id)).ReturnsAsync(confDetail);
 
             _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConference;
+            var conference = TestConferenceDto;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
@@ -108,15 +108,15 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
                     ParticipantState.InConsultation), Times.Exactly(participantCount));
 
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConferenceDto.Id), Times.Once);
         }
 
         private ConferenceDetailsResponse CreateConferenceDetailsResponse()
         {
-            var pats = TestConference.Participants.Select(p => new ParticipantDetailsResponse
+            var pats = TestConferenceDto.Participants.Select(p => new ParticipantDetailsResponse
             {
                 Id = p.Id,
                 Username = p.Username,
@@ -125,8 +125,8 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var conference = new ConferenceDetailsResponse
             {
-                Id = TestConference.Id,
-                HearingId = TestConference.HearingId,
+                Id = TestConferenceDto.Id,
+                HearingId = TestConferenceDto.HearingId,
                 Participants = pats
             };
             return conference;

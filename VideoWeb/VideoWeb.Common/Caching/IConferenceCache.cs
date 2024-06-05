@@ -9,7 +9,7 @@ namespace VideoWeb.Common.Caching
     public interface IConferenceCache
     {
         Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse);
-        Task UpdateConferenceAsync(Conference conference);
-        Task <Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory);
+        Task UpdateConferenceAsync(ConferenceDto conferenceDto);
+        Task <ConferenceDto> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory);
     }
 }

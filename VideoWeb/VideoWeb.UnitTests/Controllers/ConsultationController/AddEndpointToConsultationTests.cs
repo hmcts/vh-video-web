@@ -25,19 +25,19 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
 
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
 
             _sut = _mocker.Create<ConsultationsController>();
         }
@@ -49,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             SetupControllerWithClaims("john@hmcts.net");
             var request = new AddEndpointConsultationRequest
             {
-                ConferenceId = _testConference.Id,
+                ConferenceId = _testConferenceDto.Id,
                 EndpointId = Guid.NewGuid(),
                 RoomLabel = "RoomLabel"
             };
@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             SetupControllerWithClaims("not_in_conference@hmcts.net");
             var request = new AddEndpointConsultationRequest
             {
-                ConferenceId = _testConference.Id
+                ConferenceId = _testConferenceDto.Id
             };
 
             // Act
@@ -82,10 +82,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task should_return_call_JoinEndpointToConsultationAsync_with_correct_params()
         {
             // Arrange
-            SetupControllerWithClaims(_testConference.Participants[1].Username);
+            SetupControllerWithClaims(_testConferenceDto.Participants[1].Username);
             var request = new AddEndpointConsultationRequest
             {
-                ConferenceId = _testConference.Id,
+                ConferenceId = _testConferenceDto.Id,
                 EndpointId = Guid.NewGuid(),
                 RoomLabel = "RoomLabel"
             };
@@ -97,17 +97,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<AcceptedResult>();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId)), Times.Once);
-            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
+            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConferenceDto, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
         }
 
         [Test]
         public async Task should_return_call_videoapi_response_error_joining()
         {
             // Arrange
-            SetupControllerWithClaims(_testConference.Participants[1].Username);
+            SetupControllerWithClaims(_testConferenceDto.Participants[1].Username);
             var request = new AddEndpointConsultationRequest
             {
-                ConferenceId = _testConference.Id,
+                ConferenceId = _testConferenceDto.Id,
                 EndpointId = Guid.NewGuid(),
                 RoomLabel = "RoomLabel"
             };
@@ -130,10 +130,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
                     r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId)), Times.Once);
 
-            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
+            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConferenceDto,
                 Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
             
-            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
+            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConferenceDto,
                 Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed));
         }
 

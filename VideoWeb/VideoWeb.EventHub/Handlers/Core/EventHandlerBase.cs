@@ -22,19 +22,19 @@ namespace VideoWeb.EventHub.Handlers.Core
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext = hubContext;
         protected readonly ILogger<EventHandlerBase> Logger = logger;
         
-        protected Conference SourceConference { get; set; }
-        public Participant SourceParticipant { get; set; }
-        protected Endpoint SourceEndpoint { get; set; }
+        protected ConferenceDto SourceConferenceDto { get; set; }
+        public ParticipantDto SourceParticipantDto { get; set; }
+        protected EndpointDto SourceEndpointDto { get; set; }
 
         public abstract EventType EventType { get; }
 
         public virtual async Task HandleAsync(CallbackEvent callbackEvent)
         {
-            SourceConference = await conferenceService.GetConference(callbackEvent.ConferenceId);
-            if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
-            SourceParticipant = SourceConference.Participants
+            SourceConferenceDto = await conferenceService.GetConference(callbackEvent.ConferenceId);
+            if (SourceConferenceDto == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
+            SourceParticipantDto = SourceConferenceDto.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
-            SourceEndpoint = SourceConference.Endpoints
+            SourceEndpointDto = SourceConferenceDto.Endpoints
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             Logger.LogTrace("Handling Event: {EventType} for conferenceId {ConferenceId} with reason {Reason}",
@@ -51,23 +51,23 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState)
         {
-            foreach (var participant in SourceConference.Participants)
+            foreach (var participant in SourceConferenceDto.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
+                    .ParticipantStatusMessage(SourceParticipantDto.Id, SourceParticipantDto.Username, SourceConferenceDto.Id,
                         participantState);
                 Logger.LogTrace(
                     "Informing {Username} in conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
-                    participant.Username.ToLowerInvariant(), SourceConference.Id, SourceParticipant.Id,
-                    SourceParticipant.Role, participantState);
+                    participant.Username.ToLowerInvariant(), SourceConferenceDto.Id, SourceParticipantDto.Id,
+                    SourceParticipantDto.Role, participantState);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
+                .ParticipantStatusMessage(SourceParticipantDto.Id, SourceParticipantDto.Username, SourceConferenceDto.Id,
                     participantState);
             Logger.LogTrace(
                 "Informing Admin for conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
-                SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role, participantState);
+                SourceConferenceDto.Id, SourceParticipantDto.Id, SourceParticipantDto.Role, participantState);
         }
 
         /// <summary>
@@ -77,36 +77,36 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
-            foreach (var participant in SourceConference.Participants)
+            foreach (var participant in SourceConferenceDto.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
+                    .ConferenceStatusMessage(SourceConferenceDto.Id, hearingEventStatus);
                 Logger.LogTrace(
                     "Conference Status: Conference Id: {SourceConferenceId} | Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {HearingEventStatus}",
-                    SourceConference.Id, participant.Id, participant.Role, hearingEventStatus);
+                    SourceConferenceDto.Id, participant.Id, participant.Role, hearingEventStatus);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
+                .ConferenceStatusMessage(SourceConferenceDto.Id, hearingEventStatus);
         }
 
         protected async Task PublishEndpointStatusMessage(EndpointState endpointState)
         {
-            foreach (var participant in SourceConference.Participants)
+            foreach (var participant in SourceConferenceDto.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
+                    .EndpointStatusMessage(SourceEndpointDto.Id, SourceConferenceDto.Id, endpointState);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
+                .EndpointStatusMessage(SourceEndpointDto.Id, SourceConferenceDto.Id, endpointState);
             Logger.LogTrace("Endpoint Status: Endpoint Id: {SourceEndpointId} | Endpoint State: {EndpointState}",
-                SourceEndpoint.Id, endpointState);
+                SourceEndpointDto.Id, endpointState);
         }
 
         protected async Task PublishRoomTransferMessage(RoomTransfer roomTransfer)
         {
-            foreach (var participant in SourceConference.Participants)
+            foreach (var participant in SourceConferenceDto.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .RoomTransfer(roomTransfer);

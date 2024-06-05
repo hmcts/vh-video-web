@@ -27,20 +27,20 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
     {
         private AutoMock _mocker;
         private ParticipantsController _sut;
-        private Conference _testConference;
+        private ConferenceDto _testConferenceDto;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(_mocker.Create<CivilianRoomToRoomSummaryResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoomDto, RoomSummaryResponse>()).Returns(_mocker.Create<CivilianRoomToRoomSummaryResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()).Returns(_mocker.Create<UpdateParticipantRequestMapper>());
             
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDto, ConferenceDto, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>(parameters));
             
             var eventHandlerMock = _mocker.Mock<IEventHandler>();
             _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);
@@ -48,8 +48,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
 
             var eventComponentHelper = new EventComponentHelper();
-            _testConference = eventComponentHelper.BuildConferenceForTest();
-            _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
+            _testConferenceDto = eventComponentHelper.BuildConferenceForTest();
+            _testConferenceDto.Participants[0].Username = ClaimsPrincipalBuilder.Username;
 
             var context = new ControllerContext { HttpContext = new DefaultHttpContext { User = claimsPrincipal } };
 
@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_ok()
         {
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var participantId = Guid.NewGuid();
             var request = new UpdateParticipantDisplayNameRequest { DisplayName = "contactEmail"};
             
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             
             _mocker.Mock<IConferenceService>()
                 .Setup(x => x.ForceGetConference(conferenceId))
-                .ReturnsAsync(new Conference()
+                .ReturnsAsync(new ConferenceDto()
                 {
                     Id = conferenceId,
                     Participants =
@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_throw_error_when_get_api_throws_error()
         {
 
-            var conferenceId = _testConference.Id;
+            var conferenceId = _testConferenceDto.Id;
             var request = new UpdateParticipantDisplayNameRequest
             {
                 Fullname = "Judge Stive Adams",

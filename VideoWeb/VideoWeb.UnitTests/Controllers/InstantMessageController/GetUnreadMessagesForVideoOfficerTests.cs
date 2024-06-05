@@ -74,23 +74,23 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             responseModel.NumberOfUnreadMessagesConference[3].NumberOfUnreadMessages.Should().Be(0);
         }
 
-        private static Conference InitConference()
+        private static ConferenceDto InitConference()
         {
-            var participants = Builder<Participant>.CreateListOfSize(4)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Username = Internet.Email())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 
-            return Builder<Conference>.CreateNew().With(x => x.Id = Guid.NewGuid())
+            return Builder<ConferenceDto>.CreateNew().With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants).Build();
         }
 
-        private static List<InstantMessageResponse> InitMessages(Conference conference)
+        private static List<InstantMessageResponse> InitMessages(ConferenceDto conferenceDto)
         {
-            var judge = conference.Participants.Single(x => x.Role == Role.Judge);
-            var individual = conference.Participants.First(x => x.Role == Role.Individual);
+            var judge = conferenceDto.Participants.Single(x => x.Role == Role.Judge);
+            var individual = conferenceDto.Participants.First(x => x.Role == Role.Individual);
             const string vho1Username = "vho1@hmcts.net";
             const string vho2Username = "vho2@hmcts.net";
 

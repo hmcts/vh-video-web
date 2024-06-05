@@ -10,16 +10,16 @@ using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
+    public class ParticipantStatusResponseForVhoMapper : IMapTo<ConferenceDto, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
     {
         public IEnumerable<ParticipantContactDetailsResponseVho> Map(
-            Conference conference,
+            ConferenceDto conferenceDto,
             IEnumerable<ParticipantInHearingResponse> hostsInHearings)
         {
-            var conferenceId = conference.Id;
-            var hearingVenueName = conference.HearingVenueName;
+            var conferenceId = conferenceDto.Id;
+            var hearingVenueName = conferenceDto.HearingVenueName;
             
-            var pats = conference.Participants
+            var pats = conferenceDto.Participants
                 .OrderBy(x => x.CaseTypeGroup)
                 .Select(x =>
                 {

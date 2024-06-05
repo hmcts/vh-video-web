@@ -123,9 +123,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             typedResult.Should().NotBeNull();
         }
 
-        private static Conference InitConference()
+        private static ConferenceDto InitConference()
         {
-            var participants = Builder<Participant>.CreateListOfSize(5)
+            var participants = Builder<ParticipantDto>.CreateListOfSize(5)
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(1)
@@ -137,7 +137,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 
 
 
-            return Builder<Conference>.CreateNew().With(x => x.Id = Guid.NewGuid())
+            return Builder<ConferenceDto>.CreateNew().With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants).Build();
         }
     }

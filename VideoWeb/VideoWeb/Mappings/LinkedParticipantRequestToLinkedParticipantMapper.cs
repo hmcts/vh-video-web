@@ -7,9 +7,9 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class LinkedParticipantRequestToLinkedParticipantMapper : IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>
+    public class LinkedParticipantRequestToLinkedParticipantMapper : IMapTo<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant>
     {
-        public LinkedParticipant Map(LinkedParticipantRequest linkedParticipant, IEnumerable<Participant> existingParticipants)
+        public LinkedParticipant Map(LinkedParticipantRequest linkedParticipant, IEnumerable<ParticipantDto> existingParticipants)
         {
             var existingParticipantId = existingParticipants.FirstOrDefault(x => x.RefId == linkedParticipant.LinkedRefId)?.Id;
             var mappedId = existingParticipantId != null ? existingParticipantId : linkedParticipant.LinkedRefId;
