@@ -95,22 +95,24 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
+            var username = Context.User.Identity.Name.ToLowerInvariant();
+            var obfuscatedUsername = GetObfuscatedUsernameAsync(username);
+            
             if (exception == null)
             {
-                _logger.LogInformation("Disconnected from chat hub server-side: {Username}", userName);
+                _logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
             }
             else
             {
                 _logger.LogError(exception,
-                    "There was an error when disconnecting from chat hub server-side: {Username}", userName);
+                    "There was an error when disconnecting from chat hub server-side: {Username}", obfuscatedUsername);
             }
 
             var isAdmin = IsSenderAdmin();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
-            await _userProfileService.ClearUserCache(userName);
-            await _appRoleService.ClearUserCache(userName);
+            await _userProfileService.ClearUserCache(username);
+            await _appRoleService.ClearUserCache(username);
 
             await base.OnDisconnectedAsync(exception);
         }
