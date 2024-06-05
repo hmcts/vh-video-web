@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Helpers
     {
         private NewConferenceAddedEventNotifier _notifier;
         private AutoMock _mocker;
-        private ConferenceDto _conferenceDto;
+        private Conference _conference;
 
         [SetUp]
         public void SetUp()
@@ -25,8 +25,8 @@ namespace VideoWeb.UnitTests.Helpers
             _mocker = AutoMock.GetLoose();
             _notifier = _mocker.Create<NewConferenceAddedEventNotifier>();
 
-            _conferenceDto = new ConferenceDto();
-            _conferenceDto.Id = Guid.NewGuid();
+            _conference = new Conference();
+            _conference.Id = Guid.NewGuid();
         }
 
         [Test]

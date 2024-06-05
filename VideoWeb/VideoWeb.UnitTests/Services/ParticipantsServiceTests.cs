@@ -91,37 +91,37 @@ namespace VideoWeb.UnitTests.Services
         public async Task AddStaffMemberToConferenceCache_Updates_UpdateConferenceAsync()
         {
             // Arrange
-            var conference = new ConferenceDto();
-            var participantResponse = new ParticipantDto();
+            var conference = new Conference();
+            var participantResponse = new Participant();
             var addStaffMemberResponse = new AddStaffMemberResponse();
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
-            _mocker.Mock<IMapTo<ParticipantDetailsResponse, ParticipantDto>>()
+            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
                .Returns(participantResponse);
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, ParticipantDto>())
-                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, ParticipantDto>>().Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
 
             //Act
             await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse);
 
             // Assert
             _mocker.Mock<IConferenceCache>()
-                .Verify(x => x.UpdateConferenceAsync(It.Is<ConferenceDto>(y => y == conference)), Times.Once());
+                .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
-                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<ConferenceDto>(y => y == conference), conference.Participants), Times.Once());
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference), conference.Participants), Times.Once());
         }
 
         [Test]
         public async Task AddStaffMemberToConferenceCache_when_coference_is_in_cache()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, ParticipantDto>())
-                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, ParticipantDto>>().Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
 
             var addStaffMemberResponse = new AddStaffMemberResponse
             {
@@ -134,16 +134,16 @@ namespace VideoWeb.UnitTests.Services
 
             // Assert
             _mocker.Mock<IConferenceCache>()
-                .Verify(x => x.UpdateConferenceAsync(It.Is<ConferenceDto>(y => y == conference)), Times.Once());
+                .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
-                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<ConferenceDto>(y => y == conference), conference.Participants), Times.Once());
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference), conference.Participants), Times.Once());
         }
 
         [Test]
         public void AddStaffMemberToConferenceCache_when_coference_is_NULL()
         {
             // Arrange
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(null as ConferenceDto));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(null as Conference));
             var addStaffMemberResponse = new AddStaffMemberResponse
             {
                 ConferenceId = Guid.NewGuid(),
@@ -158,18 +158,18 @@ namespace VideoWeb.UnitTests.Services
         public async Task AddStaffMemberToConferenceCache_when_coference_is_mapping_Participantdetails_to_participant()
         {
             // Arrange
-            var conference = new ConferenceDto();
-            var participantResponse = new ParticipantDto();
+            var conference = new Conference();
+            var participantResponse = new Participant();
             
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
 
-            _mocker.Mock<IMapTo<ParticipantDetailsResponse, ParticipantDto>>()
+            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
                .Returns(participantResponse);
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, ParticipantDto>())
-                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, ParticipantDto>>().Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
 
             var addStaffMemberResponse = new AddStaffMemberResponse
             {

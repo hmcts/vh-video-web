@@ -8,11 +8,11 @@ namespace VideoWeb.UnitTests.Builders
 {
     public class ParticipantBuilder
     {
-        private readonly ISingleObjectBuilder<ParticipantDto> _participant;
+        private readonly ISingleObjectBuilder<Participant> _participant;
 
         public ParticipantBuilder(Role role, string caseTypeGroup)
         {
-            _participant = Builder<ParticipantDto>.CreateNew()
+            _participant = Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.ParticipantStatus = ParticipantStatus.Available)
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Builders
             return this;
         }
 
-        public ParticipantDto Build()
+        public Participant Build()
         {
             return _participant.Build();
         }

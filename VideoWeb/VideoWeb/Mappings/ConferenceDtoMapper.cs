@@ -5,20 +5,20 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceDtoMapper : IMapTo<ConferenceDetailsResponse, ConferenceDto>
+    public class ConferenceDtoMapper : IMapTo<ConferenceDetailsResponse, Conference>
     {
-        private readonly IMapTo<ParticipantDetailsResponse, ParticipantDto> _participantDetailsResponseMapper;
-        private readonly IMapTo<EndpointResponse, EndpointDto> _endpointMapper;
+        private readonly IMapTo<ParticipantDetailsResponse, Participant> _participantDetailsResponseMapper;
+        private readonly IMapTo<EndpointResponse, Endpoint> _endpointMapper;
 
-        public ConferenceDtoMapper(IMapTo<ParticipantDetailsResponse, ParticipantDto> participantDetailsResponseMapper, IMapTo<EndpointResponse, EndpointDto> endpointResponseMapper)
+        public ConferenceDtoMapper(IMapTo<ParticipantDetailsResponse, Participant> participantDetailsResponseMapper, IMapTo<EndpointResponse, Endpoint> endpointResponseMapper)
         {
             _participantDetailsResponseMapper = participantDetailsResponseMapper;
             _endpointMapper = endpointResponseMapper;
         }
 
-        public ConferenceDto Map(ConferenceDetailsResponse conference)
+        public Conference Map(ConferenceDetailsResponse conference)
         {
-            return new ConferenceDto
+            return new Conference
             {
                 Id = conference.Id,
                 Participants = conference.Participants.Select(_participantDetailsResponseMapper.Map).ToList(),

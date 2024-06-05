@@ -8,7 +8,7 @@ namespace VideoWeb.Helpers
 {
     public interface IConsultationInvitationTracker
     {
-        Task<Guid> StartTrackingInvitation(ConferenceDto conferenceDto, string roomLabel, Guid requestedParticipantId);
+        Task<Guid> StartTrackingInvitation(Conference conference, string roomLabel, Guid requestedParticipantId);
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);
         Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer);
         Task<bool> HaveAllParticipantsAccepted(Guid invitationId);
@@ -24,9 +24,9 @@ namespace VideoWeb.Helpers
             _consultationInvitationCache = consultationInvitationCache;
         }
 
-        public async Task<Guid> StartTrackingInvitation(ConferenceDto conferenceDto, string roomLabel, Guid requestedParticipantId)
+        public async Task<Guid> StartTrackingInvitation(Conference conference, string roomLabel, Guid requestedParticipantId)
         {
-            var requestedParticipant = conferenceDto.Participants.FirstOrDefault(p => p.Id == requestedParticipantId);
+            var requestedParticipant = conference.Participants.FirstOrDefault(p => p.Id == requestedParticipantId);
 
             if (requestedParticipant == null) 
                 return Guid.Empty;

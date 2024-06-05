@@ -21,20 +21,20 @@ namespace VideoWeb.UnitTests.Helpers
     {
         private EndpointsUpdatedEventNotifier _notifier;
         private AutoMock _mocker;
-        private ConferenceDto _conferenceDto;
+        private Conference _conference;
         private EventComponentHelper _eventHelper;
 
         [SetUp]
         public void SetUp()
         {
-            _conferenceDto = new ConferenceCacheModelBuilder().Build();
+            _conference = new ConferenceCacheModelBuilder().Build();
             _eventHelper = new EventComponentHelper
             {
                 EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
                 EventHubClientMock = new Mock<IEventHubClient>()
             };
             // this will register all participants as connected to the hub
-            _eventHelper.RegisterUsersForHubContext(_conferenceDto.Participants);
+            _eventHelper.RegisterUsersForHubContext(_conference.Participants);
 
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Helpers
                 .Build();
 
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<EndpointDto, VideoEndpointResponse>())
+                .Setup(x => x.Get<Endpoint, VideoEndpointResponse>())
                 .Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>(parameters));
 
             _notifier = new EndpointsUpdatedEventNotifier(_eventHelper.EventHubContextMock.Object, _mocker.Create<IMapperFactory>());
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Helpers
         public async Task Should_send_event()
         {
             // Arrange
-            var newEndpoint = new EndpointDto
+            var newEndpoint = new Endpoint
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "NewEndpoint",
@@ -80,12 +80,12 @@ namespace VideoWeb.UnitTests.Helpers
             };
 
             // Act
-            await _notifier.PushEndpointsUpdatedEvent(_conferenceDto, request);
+            await _notifier.PushEndpointsUpdatedEvent(_conference, request);
 
             // Assert
             _eventHelper.EventHubClientMock.Verify(x
-                => x.EndpointsUpdated(_conferenceDto.Id, It.IsAny<UpdateEndpointsDto>()), 
-                Times.Exactly(_conferenceDto.Participants.Count));
+                => x.EndpointsUpdated(_conference.Id, It.IsAny<UpdateEndpointsDto>()), 
+                Times.Exactly(_conference.Participants.Count));
         }
     }
 }

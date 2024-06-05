@@ -23,6 +23,7 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
+using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -48,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>())
                 .Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
 
@@ -184,7 +185,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
-        private static ConferenceDto CreateValidConferenceResponse(string username = "john@hmcts.net")
+        private static Conference CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
             var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
@@ -192,17 +193,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var individualClaimant = new ParticipantBuilder(Role.Individual, "Claimant").Build();
             var repClaimant = new ParticipantBuilder(Role.Representative, "Claimant").Build();
             var panelMember = new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
-            var participants = new List<ParticipantDto>()
+            var participants = new List<Participant>()
             {
                 individualDefendant, individualClaimant, repClaimant, judge, panelMember, staffMember
             };
-            var endpoints = Builder<EndpointDto>.CreateListOfSize(2).Build().ToList();
+            var endpoints = Builder<Endpoint>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
                 participants[0].Username = username;
             }
 
-            var conference = Builder<ConferenceDto>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Participants = participants)
                 .With(x => x.Endpoints = endpoints)
                 .With(x => x.IsWaitingRoomOpen = true)

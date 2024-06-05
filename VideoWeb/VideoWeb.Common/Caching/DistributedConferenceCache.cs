@@ -8,13 +8,13 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConferenceCache : RedisCacheBase<Guid, ConferenceDto>, IConferenceCache
+    public class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
     {
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
         public DistributedConferenceCache(
             IDistributedCache distributedCache, 
-            ILogger<RedisCacheBase<Guid, ConferenceDto>> logger) : base(distributedCache, logger)
+            ILogger<RedisCacheBase<Guid, Conference>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -33,12 +33,12 @@ namespace VideoWeb.Common.Caching
             throw new NotImplementedException();
         }
         
-        public async Task UpdateConferenceAsync(ConferenceDto conferenceDto)
+        public async Task UpdateConferenceAsync(Conference conference)
         {
-            await WriteToCache(conferenceDto.Id, conferenceDto);
+            await WriteToCache(conference.Id, conference);
         }
 
-        public async Task<ConferenceDto> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
         {
             var conference = await ReadFromCache(id);
 

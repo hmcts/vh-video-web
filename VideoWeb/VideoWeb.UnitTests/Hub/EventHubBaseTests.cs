@@ -120,10 +120,10 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(claims.Identity.Name);
         }
         
-        protected ConferenceDto CreateTestConference(string participantUsername, bool withLinked = false)
+        protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
-            var participants = Builder<ParticipantDto>.CreateListOfSize(6)
+            var participants = Builder<Participant>.CreateListOfSize(6)
                 .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
@@ -142,13 +142,13 @@ namespace VideoWeb.UnitTests.Hub
                 participantB.LinkedParticipants.Add(new LinkedParticipant{ LinkedId = participantA.Id, LinkType = LinkType.Interpreter});
             }
 
-            return Builder<ConferenceDto>.CreateNew()
+            return Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
         }
 
-        protected void SetupEventHubClientsForAllParticipantsInConference(ConferenceDto conferenceDto, bool includeAdmin)
+        protected void SetupEventHubClientsForAllParticipantsInConference(Conference conference, bool includeAdmin)
         {
             if (includeAdmin)
             {
@@ -157,7 +157,7 @@ namespace VideoWeb.UnitTests.Hub
                     .Returns(mockAdminClient.Object);
             }
 
-            foreach (var conferenceParticipant in conferenceDto.Participants)
+            foreach (var conferenceParticipant in conference.Participants)
             {
                 var mockClient = new Mock<IEventHubClient>();
                 EventHubClientMock.Setup(x => x.Group(conferenceParticipant.Username.ToLowerInvariant()))

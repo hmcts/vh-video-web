@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
             
             // conference doesn't exist (null)
-            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((ConferenceDto)null);
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
 
             SetupActionExecutingContext(actionArguments, user);
 
@@ -51,11 +51,11 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             };
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 // conference exists...
                 Id = ConferenceId,
-                Participants = new List<ParticipantDto>
+                Participants = new List<Participant>
                 {
                     new()
                     {
@@ -91,11 +91,11 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 // conference exists...
                 Id = ConferenceId,
-                Participants = new List<ParticipantDto>
+                Participants = new List<Participant>
                 {
                     new ()
                     {

@@ -67,16 +67,16 @@ public class ConferenceManagementService(
     
 
     
-    private List<ParticipantDto> GetLinkedParticipants(ConferenceDto conferenceDto, ParticipantDto participantDto)
+    private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
     {
-        if (participantDto.IsJudicialOfficeHolder())
+        if (participant.IsJudicialOfficeHolder())
         {
-            return conferenceDto.Participants
-                .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantDto.Id).ToList();
+            return conference.Participants
+                .Where(x => x.IsJudicialOfficeHolder() && x.Id != participant.Id).ToList();
         }
 
-        return conferenceDto.Participants
-            .Where(p => participantDto.LinkedParticipants.Select(x => x.LinkedId)
+        return conference.Participants
+            .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
                 .Contains(p.Id)
             ).ToList();
     }

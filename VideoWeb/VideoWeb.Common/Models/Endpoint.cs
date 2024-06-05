@@ -4,7 +4,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Models
 {
-    public class EndpointDto
+    public class Endpoint
     {
         public Guid Id { get; set; }
         public string DisplayName { get; set; }

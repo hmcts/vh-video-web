@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new SuspendEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConferenceDto;
+            var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {

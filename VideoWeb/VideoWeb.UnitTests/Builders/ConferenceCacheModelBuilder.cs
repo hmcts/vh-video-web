@@ -8,38 +8,38 @@ namespace VideoWeb.UnitTests.Builders
 {
     public class ConferenceCacheModelBuilder
     {
-        private readonly ConferenceDto _conferenceDto;
+        private readonly Conference _conference;
 
         public ConferenceCacheModelBuilder()
         {
-            _conferenceDto = new ConferenceDto
+            _conference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .With(x => x.Username = Faker.Internet.Email())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
-                Endpoints = new List<EndpointDto>
+                Endpoints = new List<Endpoint>
                 {
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
                         .Build(),
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
                         .Build()
                 },
                 HearingVenueName = "Hearing Venue Test"
@@ -48,36 +48,36 @@ namespace VideoWeb.UnitTests.Builders
 
         public ConferenceCacheModelBuilder WithJudicialOfficeHolders(int count = 2)
         {
-            var participants = Builder<ParticipantDto>.CreateListOfSize(count)
+            var participants = Builder<Participant>.CreateListOfSize(count)
                 .All().With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .With(x => x.Role = Role.JudicialOfficeHolder).Build().ToList();
-            _conferenceDto.Participants.AddRange(participants);
+            _conference.Participants.AddRange(participants);
             
             return this;
         }
 
         public ConferenceCacheModelBuilder WithLinkedParticipantsInRoom()
         {
-            _conferenceDto.CivilianRooms = new List<CivilianRoomDto>
+            _conference.CivilianRooms = new List<CivilianRoom>
             {
-                new CivilianRoomDto {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
             };
-            var participantA = _conferenceDto.Participants[1];
-            var participantB = _conferenceDto.Participants[2];
+            var participantA = _conference.Participants[1];
+            var participantB = _conference.Participants[2];
             participantA.LinkedParticipants.Add(new LinkedParticipant{LinkedId = participantB.Id, LinkType = LinkType.Interpreter});
             participantB.LinkedParticipants.Add(new LinkedParticipant{LinkedId = participantA.Id, LinkType = LinkType.Interpreter});
             
-            _conferenceDto.CivilianRooms[0].Participants.Add(participantA.Id);
-            _conferenceDto.CivilianRooms[0].Participants.Add(participantB.Id);
+            _conference.CivilianRooms[0].Participants.Add(participantA.Id);
+            _conference.CivilianRooms[0].Participants.Add(participantB.Id);
 
             return this;
         }
 
-        public ConferenceDto Build()
+        public Conference Build()
         {
-            return _conferenceDto;
+            return _conference;
         }
     }
 }

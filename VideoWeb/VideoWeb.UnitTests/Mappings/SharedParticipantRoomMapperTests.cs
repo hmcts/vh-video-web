@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_vmr_to_interpreter_room()
         {
-            var participant = new ParticipantDto
+            var participant = new Participant
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "Interpreter Doe"
@@ -35,13 +35,13 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_have_unique_tile_positions()
         {
-            var participantA = new ParticipantDto
+            var participantA = new Participant
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "Interpreter Doe"
             };
 
-            var participantB = new ParticipantDto
+            var participantB = new Participant
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "Interpretee Doe"
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_witness_vmr_to_interpreter_room()
         {
-            var participant = new ParticipantDto
+            var participant = new Participant
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "Witness Doe"
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_panel_member_vmr_to_shared_room()
         {
-            var participant = new ParticipantDto
+            var participant = new Participant
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "Panel Doe"

@@ -8,45 +8,45 @@ using VideoWeb.Common.Models;
 namespace VideoWeb.Mappings
 {
     public class ConferenceResponseMapper(
-        IMapTo<ParticipantDto, ParticipantResponse> participantResponseMapper,
-        IMapTo<EndpointDto, VideoEndpointResponse> videoEndpointResponseMapper) : IMapTo<ConferenceDto, ConferenceResponse>
+        IMapTo<Participant, ParticipantResponse> participantResponseMapper,
+        IMapTo<Endpoint, VideoEndpointResponse> videoEndpointResponseMapper) : IMapTo<Conference, ConferenceResponse>
     {
-        public ConferenceResponse Map(ConferenceDto conferenceDto)
+        public ConferenceResponse Map(Conference conference)
         {
             var response = new ConferenceResponse
             {
-                Id = conferenceDto.Id,
-                CaseName = conferenceDto.CaseName,
-                CaseNumber = conferenceDto.CaseNumber,
-                CaseType = conferenceDto.CaseType,
-                ScheduledDateTime = conferenceDto.ScheduledDateTime,
-                ScheduledDuration = conferenceDto.ScheduledDuration,
-                Status = ConferenceHelper.GetConferenceStatus(conferenceDto.CurrentStatus),
-                Participants = MapParticipants(conferenceDto),
-                ClosedDateTime = conferenceDto.ClosedDateTime,
-                HearingVenueName = conferenceDto.HearingVenueName,
-                AudioRecordingRequired = conferenceDto.AudioRecordingRequired,
-                HearingRefId = conferenceDto.HearingId,
-                Endpoints = conferenceDto.Endpoints?.Select(videoEndpointResponseMapper.Map).ToList(),
-                HearingVenueIsScottish = conferenceDto.IsScottish,
-                IngestUrl = conferenceDto.IngestUrl
+                Id = conference.Id,
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                CaseType = conference.CaseType,
+                ScheduledDateTime = conference.ScheduledDateTime,
+                ScheduledDuration = conference.ScheduledDuration,
+                Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
+                Participants = MapParticipants(conference),
+                ClosedDateTime = conference.ClosedDateTime,
+                HearingVenueName = conference.HearingVenueName,
+                AudioRecordingRequired = conference.AudioRecordingRequired,
+                HearingRefId = conference.HearingId,
+                Endpoints = conference.Endpoints?.Select(videoEndpointResponseMapper.Map).ToList(),
+                HearingVenueIsScottish = conference.IsScottish,
+                IngestUrl = conference.IngestUrl
             };
 
-            if (conferenceDto.MeetingRoom != null)
+            if (conference.MeetingRoom != null)
             {
-                response.ParticipantUri = conferenceDto.MeetingRoom.ParticipantUri;
-                response.PexipNodeUri = conferenceDto.MeetingRoom.PexipNode;
-                response.PexipSelfTestNodeUri = conferenceDto.MeetingRoom.PexipSelfTest;
+                response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
+                response.PexipNodeUri = conference.MeetingRoom.PexipNode;
+                response.PexipSelfTestNodeUri = conference.MeetingRoom.PexipSelfTest;
                 ParticipantTilePositionHelper.AssignTilePositions(response.Participants);
             }
 
             return response;
         }
 
-        private List<ParticipantResponse> MapParticipants(ConferenceDto conferenceDto)
+        private List<ParticipantResponse> MapParticipants(Conference conference)
         {
-            conferenceDto.Participants ??= new List<ParticipantDto>();
-            return conferenceDto.Participants
+            conference.Participants ??= new List<Participant>();
+            return conference.Participants
                 .OrderBy(x => x.CaseTypeGroup)
                 .Select(participantResponseMapper.Map)
                 .ToList();

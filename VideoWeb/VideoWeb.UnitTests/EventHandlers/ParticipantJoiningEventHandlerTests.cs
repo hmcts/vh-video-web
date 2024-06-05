@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new ParticipantJoiningEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConferenceDto;
+            var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Joining), Times.Exactly(participantCount));
         }
     }

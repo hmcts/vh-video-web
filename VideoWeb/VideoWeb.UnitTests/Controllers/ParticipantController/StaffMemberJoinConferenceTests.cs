@@ -45,7 +45,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _testConference = CreateValidConferenceResponse();
@@ -170,7 +170,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             return conference;
         }
         
-        private static ConferenceDto CreateConferenceDto(string username = "john@hmcts.net")
+        private static Conference CreateConferenceDto(string username = "john@hmcts.net")
         {
             var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
             var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
@@ -178,7 +178,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var individualDefendant = new ParticipantBuilder(Role.Individual, "Defendant").Build();
             var panelMember =
                 new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
-            var participants = new List<ParticipantDto>()
+            var participants = new List<Participant>()
             {
                 individualDefendant, judge, panelMember, staffMember
             };
@@ -187,7 +187,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 participants.First().Username = username;
             }
             
-            var conference = Builder<ConferenceDto>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();
             return conference;

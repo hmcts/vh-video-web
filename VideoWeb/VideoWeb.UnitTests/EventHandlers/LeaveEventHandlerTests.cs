@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConferenceDto;
+            var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             participantForEvent.ParticipantStatus = currentStatus;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Disconnected), Times.Exactly(participantCount));
         }
 
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConferenceDto;
+            var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             participantForEvent.ParticipantStatus = currentStatus;
             var callbackEvent = new CallbackEvent
@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipantDto.Id, _eventHandler.SourceParticipantDto.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Disconnected), Times.Never);
         }
     }

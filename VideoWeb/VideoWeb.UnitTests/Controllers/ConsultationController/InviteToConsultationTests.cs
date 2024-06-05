@@ -24,18 +24,18 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
 
-            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
+            _testConference = ConsultationHelper.BuildConferenceForTest();
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
 
             _sut = SetupControllerWithClaims(null);
         }
@@ -50,8 +50,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             
             var request = new InviteToConsultationRequest
             {
-                ConferenceId = _testConferenceDto.Id,
-                ParticipantId = _testConferenceDto.Participants[0].Id,
+                ConferenceId = _testConference.Id,
+                ParticipantId = _testConference.Participants[0].Id,
                 RoomLabel = "Room1"
             };
 
@@ -72,8 +72,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var request = new InviteToConsultationRequest
             {
-                ConferenceId = _testConferenceDto.Id,
-                ParticipantId = _testConferenceDto.Participants[0].Id,
+                ConferenceId = _testConference.Id,
+                ParticipantId = _testConference.Participants[0].Id,
                 RoomLabel = "Room1"
             };
 
@@ -84,8 +84,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<AcceptedResult>();
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationRequestAsync(_testConferenceDto, "Room1", Guid.Empty,
-                        _testConferenceDto.Participants[0].Id), Times.Once);
+                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", Guid.Empty,
+                        _testConference.Participants[0].Id), Times.Once);
         }
 
         [Test]
@@ -98,8 +98,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var request = new InviteToConsultationRequest
             {
-                ConferenceId = _testConferenceDto.Id,
-                ParticipantId = _testConferenceDto.Participants[0].Id,
+                ConferenceId = _testConference.Id,
+                ParticipantId = _testConference.Participants[0].Id,
                 RoomLabel = "Room1"
             };
 
@@ -110,8 +110,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<AcceptedResult>();
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationRequestAsync(_testConferenceDto, "Room1", _testConferenceDto.Participants[2].Id,
-                        _testConferenceDto.Participants[0].Id), Times.Once);
+                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", _testConference.Participants[2].Id,
+                        _testConference.Participants[0].Id), Times.Once);
         }
 
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)

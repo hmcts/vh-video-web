@@ -9,7 +9,7 @@ namespace VideoWeb.Common.Caching
 {
     public static class ConferenceCacheMapper
     {
-        public static ConferenceDto MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
+        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
         {
             var participants = conferenceResponse
                 .Participants
@@ -17,7 +17,7 @@ namespace VideoWeb.Common.Caching
                 .ToList();
 
             var endpoints = conferenceResponse.Endpoints == null
-                ? new List<EndpointDto>()
+                ? new List<Endpoint>()
                 : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
             
             foreach (var endpoint in endpoints)
@@ -29,7 +29,7 @@ namespace VideoWeb.Common.Caching
             }
 
             var civilianRooms = conferenceResponse.CivilianRooms == null
-                ? new List<CivilianRoomDto>()
+                ? new List<CivilianRoom>()
                 : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
                     .ToList();
             
@@ -42,7 +42,7 @@ namespace VideoWeb.Common.Caching
                     PexipSelfTest = conferenceResponse.MeetingRoom.PexipSelfTestNode,
                 };
             
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 Id = conferenceResponse.Id,
                 HearingId = conferenceResponse.HearingId,
@@ -66,10 +66,10 @@ namespace VideoWeb.Common.Caching
             return conference;
         }
 
-        private static ParticipantDto MapParticipantToCacheModel(ParticipantDetailsResponse participant)
+        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
         {
             var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
-            return new ParticipantDto
+            return new Participant
             {
                 Id = participant.Id,
                 RefId = participant.RefId,

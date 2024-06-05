@@ -9,34 +9,34 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantToParticipantResponseMapper : IMapTo<ParticipantDto, ConferenceDto, ParticipantResponse>
+    public class ParticipantToParticipantResponseMapper : IMapTo<Participant, Conference, ParticipantResponse>
     {
         private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantMapper;
-        private readonly IMapTo<CivilianRoomDto, RoomSummaryResponse> roomMapper;
+        private readonly IMapTo<CivilianRoom, RoomSummaryResponse> roomMapper;
         public ParticipantToParticipantResponseMapper(IMapperFactory mapperFactory)
         {
             linkedParticipantMapper = mapperFactory.Get<LinkedParticipant, LinkedParticipantResponse>();
-            roomMapper = mapperFactory.Get<CivilianRoomDto, RoomSummaryResponse>();
+            roomMapper = mapperFactory.Get<CivilianRoom, RoomSummaryResponse>();
         }
-        public ParticipantResponse Map(ParticipantDto participantDto, ConferenceDto conferenceDto)
+        public ParticipantResponse Map(Participant participant, Conference conference)
         {
             
             var response = new ParticipantResponse();
             
-            response.CaseTypeGroup = participantDto.CaseTypeGroup;
+            response.CaseTypeGroup = participant.CaseTypeGroup;
             response.CurrentRoom = null; // This cannot currently be gotten from the conference cache, the UI will keep the current room for an existing user.
-            response.DisplayName = participantDto.DisplayName;
-            response.FirstName = participantDto.FirstName;
-            response.HearingRole = participantDto.HearingRole;
-            response.Id = participantDto.Id;
-            response.InterpreterRoom = roomMapper.Map(conferenceDto.GetRoom(participantDto.Id));
-            response.LastName = participantDto.LastName;
-            response.Name = participantDto.Name;
-            response.Representee = participantDto.Representee;
-            response.Role = participantDto.Role;
-            response.Status = participantDto.ParticipantStatus;
-            response.LinkedParticipants = participantDto.LinkedParticipants?.Select(x => linkedParticipantMapper.Map(x)).ToList();
-            response.UserName = participantDto.Username;
+            response.DisplayName = participant.DisplayName;
+            response.FirstName = participant.FirstName;
+            response.HearingRole = participant.HearingRole;
+            response.Id = participant.Id;
+            response.InterpreterRoom = roomMapper.Map(conference.GetRoom(participant.Id));
+            response.LastName = participant.LastName;
+            response.Name = participant.Name;
+            response.Representee = participant.Representee;
+            response.Role = participant.Role;
+            response.Status = participant.ParticipantStatus;
+            response.LinkedParticipants = participant.LinkedParticipants?.Select(x => linkedParticipantMapper.Map(x)).ToList();
+            response.UserName = participant.Username;
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
 
             return response;

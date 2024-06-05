@@ -23,14 +23,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
+            _testConference = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
             {
@@ -41,7 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LockConsultationRoomRequest, LockRoomRequest>()).Returns(_mocker.Create<LockRoomRequestMapper>());
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
             _sut = _mocker.Create<ConsultationsController>();
             _sut.ControllerContext = context;
         }
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Arrange
             var request = new LockConsultationRoomRequest
             {
-                ConferenceId = _testConferenceDto.Id,
+                ConferenceId = _testConference.Id,
                 RoomLabel = "Room",
                 Lock = false
             };
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Arrange
             var request = new LockConsultationRoomRequest
             {
-                ConferenceId = _testConferenceDto.Id,
+                ConferenceId = _testConference.Id,
                 RoomLabel = "Room",
                 Lock = false
             };

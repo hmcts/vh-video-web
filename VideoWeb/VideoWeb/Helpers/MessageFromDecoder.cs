@@ -15,10 +15,10 @@ namespace VideoWeb.Helpers
         /// If not in the conference, safe to assume the message is from a VH officer and so get the first
         /// name stored in AD
         /// </summary>
-        /// <param name="conferenceDto">Conference with participants</param>
+        /// <param name="conference">Conference with participants</param>
         /// <param name="message">Message to decode</param>
         /// <returns>name to display</returns>
-        Task<string> GetMessageOriginatorAsync(ConferenceDto conferenceDto, InstantMessageResponse message);
+        Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message);
 
         bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername);
     }
@@ -32,9 +32,9 @@ namespace VideoWeb.Helpers
             _userProfileService = userProfileService;
         }
 
-        public async Task<string> GetMessageOriginatorAsync(ConferenceDto conferenceDto, InstantMessageResponse message)
+        public async Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message)
         {
-            var participant = conferenceDto.Participants.SingleOrDefault(x =>
+            var participant = conference.Participants.SingleOrDefault(x =>
                 x.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
             if (participant != null)
             {

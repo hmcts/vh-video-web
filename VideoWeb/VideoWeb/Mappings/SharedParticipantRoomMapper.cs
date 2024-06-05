@@ -7,15 +7,15 @@ using VideoWeb.Mappings.Interfaces;
 namespace VideoWeb.Mappings
 {
     public class
-        SharedParticipantRoomMapper : IMapTo<SharedParticipantRoomResponse, ParticipantDto, bool, SharedParticipantRoom>
+        SharedParticipantRoomMapper : IMapTo<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>
     {
-        public SharedParticipantRoom Map(SharedParticipantRoomResponse sharedRoom, ParticipantDto participantDto,
+        public SharedParticipantRoom Map(SharedParticipantRoomResponse sharedRoom, Participant participant,
             bool isWitness)
         {
             var node = sharedRoom.PexipNode.Replace("https://", string.Empty);
             var tilePrefix = isWitness ? "WITNESS" : "CIVILIAN";
             var tileDisplayName =
-                $"{tilePrefix};{ParticipantTilePositionHelper.NoHeartbeat};{participantDto.DisplayName};{participantDto.Id}";
+                $"{tilePrefix};{ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,

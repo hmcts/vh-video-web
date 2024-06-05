@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var participants = new List<ParticipantDto>
+            var participants = new List<Participant>
             {
                 new ParticipantBuilder(Role.Individual, "Claimant").WithHearingRole("Litigant in person").Build(),
                 new ParticipantBuilder(Role.Individual, "Defendant").WithHearingRole("Litigant in person").Build(),
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
             
             
-            var conference = Builder<ConferenceDto>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.MeetingRoom = meetingRoom)

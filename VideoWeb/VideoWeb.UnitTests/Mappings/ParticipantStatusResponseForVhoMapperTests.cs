@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests.Mappings
             var judge2DifferentHearing = CreateParticipant("judge2");
             var judge3DifferentHearing = CreateParticipant("judge3");
             var judge4DifferentHearing = CreateParticipant("judge4");
-            conference.Participants = new List<ParticipantDto>
+            conference.Participants = new List<Participant>
             {
                 judge1, judge2, judge3, judge4
             };
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Mappings
             var judge2 = CreateParticipant("judge2");
             var judge3 = CreateParticipant("judge3");
             var judge3DifferentHearing = CreateParticipant("judge3");
-            conference.Participants = new List<ParticipantDto>
+            conference.Participants = new List<Participant>
             {
                 judge1, judge2, judge3
             };
@@ -76,31 +76,31 @@ namespace VideoWeb.UnitTests.Mappings
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
         }
         
-        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, ParticipantDto participantDto, 
+        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
             Guid conferenceId, bool isInAnotherHearing)
         {
-            response.Id.Should().Be(participantDto.Id);
+            response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
-            response.Name.Should().Be(participantDto.Name);
-            response.Role.Should().Be(participantDto.Role);
-            response.HearingRole.Should().Be(participantDto.HearingRole);
-            response.Username.Should().Be(participantDto.Username);
-            response.CaseTypeGroup.Should().Be(participantDto.CaseTypeGroup);
-            response.RefId.Should().Be(participantDto.RefId);
-            response.FirstName.Should().Be(participantDto.FirstName);
-            response.LastName.Should().Be(participantDto.LastName);
-            response.DisplayName.Should().Be(participantDto.DisplayName);
-            response.Status.Should().Be(participantDto.ParticipantStatus);
-            response.ContactEmail.Should().Be(participantDto.ContactEmail);
-            response.ContactTelephone.Should().Be(participantDto.ContactTelephone);
+            response.Name.Should().Be(participant.Name);
+            response.Role.Should().Be(participant.Role);
+            response.HearingRole.Should().Be(participant.HearingRole);
+            response.Username.Should().Be(participant.Username);
+            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
+            response.RefId.Should().Be(participant.RefId);
+            response.FirstName.Should().Be(participant.FirstName);
+            response.LastName.Should().Be(participant.LastName);
+            response.DisplayName.Should().Be(participant.DisplayName);
+            response.Status.Should().Be(participant.ParticipantStatus);
+            response.ContactEmail.Should().Be(participant.ContactEmail);
+            response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.HostInAnotherHearing.Should().Be(isInAnotherHearing);
-            response.Representee.Should().Be(participantDto.Representee);
+            response.Representee.Should().Be(participant.Representee);
         }
 
-        private static ParticipantDto CreateParticipant(string username)
+        private static Participant CreateParticipant(string username)
         {
-            return Builder<ParticipantDto>.CreateNew()
+            return Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Name = username)
                 .With(x => x.Role = Role.Judge)
@@ -112,9 +112,9 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
         }
 
-        private static ConferenceDto CreateValidConference(Guid conferenceId)
+        private static Conference CreateValidConference(Guid conferenceId)
         {
-            var conference = Builder<ConferenceDto>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
                 .With(x => x.HearingId = Guid.NewGuid())
                 .With(x => x.HearingVenueName = "MyVenue")

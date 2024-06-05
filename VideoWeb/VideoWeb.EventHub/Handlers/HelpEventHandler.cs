@@ -23,7 +23,7 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .HelpMessage(SourceConferenceDto.Id, SourceParticipantDto?.DisplayName);
+                .HelpMessage(SourceConference.Id, SourceParticipant?.DisplayName);
         }
     }
 }

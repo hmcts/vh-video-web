@@ -8,15 +8,15 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class UpdateParticipantRequestToUpdateParticipantMapper : IMapTo<UpdateParticipantRequest, IEnumerable<ParticipantDto>, UpdateParticipant>
+    public class UpdateParticipantRequestToUpdateParticipantMapper : IMapTo<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>
     {
-        private readonly IMapTo<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant> linkedParticipantMapper;
+        private readonly IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant> linkedParticipantMapper;
         public UpdateParticipantRequestToUpdateParticipantMapper(IMapperFactory mapperFactory)
         {
-            linkedParticipantMapper = mapperFactory.Get<LinkedParticipantRequest, IEnumerable<ParticipantDto>, LinkedParticipant>();
+            linkedParticipantMapper = mapperFactory.Get<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>();
         }
 
-        public UpdateParticipant Map(UpdateParticipantRequest request, IEnumerable<ParticipantDto> existingParticipants)
+        public UpdateParticipant Map(UpdateParticipantRequest request, IEnumerable<Participant> existingParticipants)
         {
             return new UpdateParticipant()
             {

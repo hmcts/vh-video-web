@@ -22,10 +22,10 @@ namespace VideoWeb.UnitTests.Mappings
         {
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<ParticipantDetailsResponse, ParticipantDto>())
+                .Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
                 .Returns(_mocker.Create<ParticipantDetailsResponseMapper>());
             _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<EndpointResponse, List<EndpointParticipantResponse>, EndpointDto>())
+                .Setup(x => x.Get<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>())
                 .Returns(_mocker.Create<EndpointsMapper>());
             _sut = _mocker.Create<ConferenceDtoMapper>();
         }

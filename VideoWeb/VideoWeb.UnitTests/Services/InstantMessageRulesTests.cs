@@ -26,11 +26,11 @@ public class InstantMessageRulesTests
         public async Task CanExchangeMessage_Should_Return_True_When_To_Is_DefaultAdminName_And_From_Is_Participant()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var from = "participant1";
             var to = InstantMessageRules.DefaultAdminName;
 
-            conference.AddParticipant(new ParticipantDto { Id = Guid.NewGuid(), Username = from });
+            conference.AddParticipant(new Participant { Id = Guid.NewGuid(), Username = from });
 
             // Act
             var result = await _instantMessageRules.CanExchangeMessage(conference, to, from);
@@ -43,11 +43,11 @@ public class InstantMessageRulesTests
         public async Task CanExchangeMessage_Should_Return_True_When_From_Is_Admin_And_To_Is_Participant()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var from = InstantMessageRules.DefaultAdminName;
             var to = Guid.NewGuid().ToString();
 
-            conference.AddParticipant(new ParticipantDto { Id = Guid.Parse(to), Username = "participant1" });
+            conference.AddParticipant(new Participant { Id = Guid.Parse(to), Username = "participant1" });
 
             _userProfileServiceMock.Setup(x => x.GetUserAsync(from)).ReturnsAsync(new UserProfile { IsAdmin = true });
 
@@ -62,11 +62,11 @@ public class InstantMessageRulesTests
         public async Task CanExchangeMessage_Should_Return_False_When_To_Is_Not_DefaultAdminName_And_Is_Not_Participant()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var from = "participant1";
             var to = "invalid-guid";
 
-            conference.AddParticipant(new ParticipantDto { Id = Guid.NewGuid(), Username = from });
+            conference.AddParticipant(new Participant { Id = Guid.NewGuid(), Username = from });
 
             // Act
             var result = await _instantMessageRules.CanExchangeMessage(conference, to, from);
@@ -79,7 +79,7 @@ public class InstantMessageRulesTests
         public async Task CanExchangeMessage_Should_Return_False_When_To_Is_Not_Participant()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var from = "participant1";
             var to = Guid.NewGuid().ToString();
 
@@ -94,7 +94,7 @@ public class InstantMessageRulesTests
         public async Task BuildSendMessageDtoFromAdmin_Should_Return_SendMessageDto()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var messageUuid = Guid.NewGuid();
             var message = "test message";
             var username = "admin";
@@ -103,7 +103,7 @@ public class InstantMessageRulesTests
             var fromUser = new UserProfile { FirstName = "Admin" };
             _userProfileServiceMock.Setup(x => x.GetUserAsync(username)).ReturnsAsync(fromUser);
 
-            var participant = new ParticipantDto { Id = participantId, Username = "participant1" };
+            var participant = new Participant { Id = participantId, Username = "participant1" };
             conference.AddParticipant(participant);
 
             // Act
@@ -111,7 +111,7 @@ public class InstantMessageRulesTests
 
             // Assert
             result.Should().NotBeNull();
-            result.ConferenceDto.Should().Be(conference);
+            result.Conference.Should().Be(conference);
             result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000.Milliseconds());
             result.MessageUuid.Should().Be(messageUuid);
             result.Message.Should().Be(message);
@@ -125,12 +125,12 @@ public class InstantMessageRulesTests
         public void BuildSendMessageDtoFromParticipant_Should_Return_SendMessageDto()
         {
             // Arrange
-            var conference = new ConferenceDto();
+            var conference = new Conference();
             var messageUuid = Guid.NewGuid();
             var message = "test message";
             var username = "participant1";
 
-            var participant = new ParticipantDto { Id = Guid.NewGuid(), Username = username, DisplayName = "Participant 1" };
+            var participant = new Participant { Id = Guid.NewGuid(), Username = username, DisplayName = "Participant 1" };
             conference.AddParticipant(participant);
 
             // Act
@@ -138,7 +138,7 @@ public class InstantMessageRulesTests
 
             // Assert
             result.Should().NotBeNull();
-            result.ConferenceDto.Should().Be(conference);
+            result.Conference.Should().Be(conference);
             result.Timestamp.Should().BeCloseTo(DateTime.UtcNow, 1000.Milliseconds());
             result.MessageUuid.Should().Be(messageUuid);
             result.Message.Should().Be(message);

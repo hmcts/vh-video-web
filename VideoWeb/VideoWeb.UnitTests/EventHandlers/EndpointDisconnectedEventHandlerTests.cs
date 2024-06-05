@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new EndpointDisconnectedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
             
-            var conference = TestConferenceDto;
+            var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
             var participantForEvent = conference.Endpoints[0];
             var callbackEvent = new CallbackEvent

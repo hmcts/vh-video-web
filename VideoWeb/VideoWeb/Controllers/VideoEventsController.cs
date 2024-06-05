@@ -122,7 +122,7 @@ namespace VideoWeb.Controllers
             return _videoApiClient.RaiseVideoEventAsync(request);
         }
 
-        private CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, ConferenceDto conferenceDto)
+        private CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
         {
             var isPhoneEvent = string.IsNullOrEmpty(request.Phone);
             if (!isPhoneEvent)
@@ -130,8 +130,8 @@ namespace VideoWeb.Controllers
                 return null;
             }
 
-            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, ConferenceDto, CallbackEvent>();
-            var callbackEvent = callbackEventMapper.Map(request, conferenceDto);
+            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+            var callbackEvent = callbackEventMapper.Map(request, conference);
             request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
 
             return callbackEvent;
@@ -151,10 +151,10 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This updates the VMRs for a conference when a participant joins or leaves a VMR
         /// </summary>
-        /// <param name="conferenceDto"></param>
+        /// <param name="conference"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        private async Task UpdateConferenceRoomParticipants(ConferenceDto conferenceDto, ConferenceEventRequest request)
+        private async Task UpdateConferenceRoomParticipants(Conference conference, ConferenceEventRequest request)
         {
             if (!request.IsParticipantAndVmrEvent())
             {
@@ -167,19 +167,19 @@ namespace VideoWeb.Controllers
             switch (request.EventType)
             {
                 case EventType.Joined:
-                    conferenceDto.AddParticipantToRoom(vmrId, participantId);
+                    conference.AddParticipantToRoom(vmrId, participantId);
                     break;
                 
                 case EventType.Disconnected:
-                    conferenceDto.RemoveParticipantFromRoom(vmrId, participantId);
+                    conference.RemoveParticipantFromRoom(vmrId, participantId);
                     break;
                 default: return;
             }
             
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conferenceDto);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
         }
 
-        private async Task GenerateTransferEventOnVmrParticipantJoining(ConferenceDto conferenceDto, ConferenceEventRequest request)
+        private async Task GenerateTransferEventOnVmrParticipantJoining(Conference conference, ConferenceEventRequest request)
         {
             if (!request.IsParticipantAndVmrEvent())
             {
@@ -191,18 +191,18 @@ namespace VideoWeb.Controllers
                 var vmrId = long.Parse(request.ParticipantRoomId);
                 var participantId = Guid.Parse(request.ParticipantId);
             
-                var vmr = conferenceDto.CivilianRooms.Find(room => room.Id == vmrId);
+                var vmr = conference.CivilianRooms.Find(room => room.Id == vmrId);
                 var linkedParticipantInConsultation = vmr?.Participants.Where(participantGuid => participantGuid != participantId)
-                    .Select(participantGuid => conferenceDto.Participants.Find(y => participantGuid == y.Id))
+                    .Select(participantGuid => conference.Participants.Find(y => participantGuid == y.Id))
                     .FirstOrDefault(participant => participant?.ParticipantStatus == ParticipantStatus.InConsultation);
                 if (linkedParticipantInConsultation != null)
                 {
-                    var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceDto.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
+                    var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
                     if (room != null)
                     {
                         await SendHearingEventAsync(new ConferenceEventRequest
                         {
-                            ConferenceId = conferenceDto.Id.ToString(),
+                            ConferenceId = conference.Id.ToString(),
                             EventId = Guid.NewGuid().ToString(),
                             EventType = EventType.Transfer,
                             ParticipantId = vmrId.ToString(),

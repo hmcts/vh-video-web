@@ -26,17 +26,17 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
-            if (SourceEndpointDto != null)
+            if (SourceEndpoint != null)
             {
                 return videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
-                    ConferenceId = SourceConferenceDto.Id,
-                    EndpointId = SourceEndpointDto.Id,
+                    ConferenceId = SourceConference.Id,
+                    EndpointId = SourceEndpoint.Id,
                     RoomLabel = targetRoom
                 });
             }
 
-            return consultationNotifier.NotifyConsultationRequestAsync(SourceConferenceDto, targetRoom, Guid.Empty, SourceParticipantDto.Id);
+            return consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty, SourceParticipant.Id);
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)

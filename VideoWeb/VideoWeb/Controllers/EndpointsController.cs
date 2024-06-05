@@ -31,7 +31,7 @@ public class EndpointsController(
         try
         {
             var conference = await conferenceService.GetConference(conferenceId);
-            var videoEndpointResponseMapper = mapperFactory.Get<EndpointDto, VideoEndpointResponse>();
+            var videoEndpointResponseMapper = mapperFactory.Get<Endpoint, VideoEndpointResponse>();
             return Ok(conference.Endpoints.Select(videoEndpointResponseMapper.Map).ToList());
         }
         catch (VideoApiException e)
@@ -61,7 +61,7 @@ public class EndpointsController(
                                  ep.EndpointParticipants.Exists(e => e.ParticipantUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)))
                     .ToList();
         }
-        var allowedEndpointResponseMapper = mapperFactory.Get<EndpointDto, AllowedEndpointResponse>();
+        var allowedEndpointResponseMapper = mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
         var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
         return Ok(response);
         

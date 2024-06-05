@@ -21,33 +21,33 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [SetUp]
         public void Setup()
         {
-            TestConferenceDto = BuildConferenceForTest(true);
+            TestConference = BuildConferenceForTest(true);
         }
 
         [Test]
         public async Task should_return_unauthorised_if_not_host_conference()
         {
-            var participant = TestConferenceDto.Participants.First(x => x.Role == Role.Individual);
+            var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConferenceDto.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
             _mocker.Mock<IVideoApiClient>().Verify(
-                x => x.TransferParticipantAsync(TestConferenceDto.Id,
+                x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
         public async Task should_return_video_api_error()
         {
-            var judge = TestConferenceDto.GetJudge();
+            var judge = TestConference.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -60,9 +60,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 responseMessage, null, default, null);
 
             _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.SuspendHearingAsync(TestConferenceDto.Id)).ThrowsAsync(apiException);
+                x => x.SuspendHearingAsync(TestConference.Id)).ThrowsAsync(apiException);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConferenceDto.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
@@ -72,19 +72,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [Test]
         public async Task should_return_accepted()
         {
-            var judge = TestConferenceDto.GetJudge();
+            var judge = TestConference.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConferenceDto.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IVideoApiClient>().Verify(
-                x => x.SuspendHearingAsync(TestConferenceDto.Id), Times.Once);
+                x => x.SuspendHearingAsync(TestConference.Id), Times.Once);
         }
     }
 }

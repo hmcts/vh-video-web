@@ -13,13 +13,13 @@ namespace VideoWeb.UnitTests.Extensions
 {
     public class ConferenceEventRequestExtensionsTests
     {
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
         private static long _participantRoomId;
         
         [SetUp]
         public void Setup()
         {
-            _testConferenceDto = BuildConferenceForTest();
+            _testConference = BuildConferenceForTest();
             _participantRoomId = 1234;
         }
 
@@ -27,60 +27,60 @@ namespace VideoWeb.UnitTests.Extensions
         [TestCase(EventType.Disconnected, EventType.RoomParticipantDisconnected)]
         public void should_map_event_to_participant_room_event(EventType originalEventType, EventType expectedEventType)
         {
-            var civilianRoom = _testConferenceDto.CivilianRooms.First();
-            var participantId = _testConferenceDto.Participants.Last().Id;
+            var civilianRoom = _testConference.CivilianRooms.First();
+            var participantId = _testConference.Participants.Last().Id;
             var request = CreateRequest();
             request.EventType = originalEventType;
             request.ParticipantRoomId = civilianRoom.Id.ToString();
             request.ParticipantId = participantId.ToString();
 
-            var result = request.CreateEventsForParticipantsInRoom(_testConferenceDto, civilianRoom.Id);
+            var result = request.CreateEventsForParticipantsInRoom(_testConference, civilianRoom.Id);
             result.All(r => r.EventType == expectedEventType).Should().BeTrue();
         }
 
         [Test]
         public void should_map_transfer_event_to_participant_room_transfer_event()
         {
-            var civilianRoom = _testConferenceDto.CivilianRooms.First();
+            var civilianRoom = _testConference.CivilianRooms.First();
             var request = CreateRequest();
             request.EventType = EventType.Transfer;
             request.ParticipantId = civilianRoom.Id.ToString();
 
-            var result = request.CreateEventsForParticipantsInRoom(_testConferenceDto, civilianRoom.Id);
+            var result = request.CreateEventsForParticipantsInRoom(_testConference, civilianRoom.Id);
             result.All(r => r.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
         }
 
-        protected ConferenceDto BuildConferenceForTest()
+        protected Conference BuildConferenceForTest()
         {
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
-                Endpoints = new List<EndpointDto>
+                Endpoints = new List<Endpoint>
                 {
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
                         .Build(),
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
                         .Build()
                 },
                 HearingVenueName = "Hearing Venue Test",
-                CivilianRooms = new List<CivilianRoomDto>
+                CivilianRooms = new List<CivilianRoom>
                 {
-                    new CivilianRoomDto {Id = _participantRoomId, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                    new CivilianRoom {Id = _participantRoomId, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
                 },
                 CurrentStatus = ConferenceState.InSession,
             };
@@ -95,8 +95,8 @@ namespace VideoWeb.UnitTests.Extensions
         protected ConferenceEventRequest CreateRequest(string phone = null)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.ConferenceId = _testConferenceDto.Id.ToString())
-                .With(x => x.ParticipantId = _testConferenceDto.Participants[0].Id.ToString())
+                .With(x => x.ConferenceId = _testConference.Id.ToString())
+                .With(x => x.ParticipantId = _testConference.Participants[0].Id.ToString())
                 .With(x => x.EventType = EventType.Joined)
                 .With(x => x.Phone = phone)
                 .Build();

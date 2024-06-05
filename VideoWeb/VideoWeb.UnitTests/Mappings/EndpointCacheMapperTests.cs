@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
         public void should_map_endpoint_participants_to_cache_model()
         {
 
-            var participants = Builder<ParticipantDto>.CreateListOfSize(1).Build();
+            var participants = Builder<Participant>.CreateListOfSize(1).Build();
             var ep = new EndpointParticipantResponse
             {
                 ParticipantId = participants[0].RefId,

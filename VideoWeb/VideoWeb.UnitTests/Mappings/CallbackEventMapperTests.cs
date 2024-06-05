@@ -17,22 +17,22 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_conference_event_to_callback_event()
         {
-            var testConference = new ConferenceDto
+            var testConference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };
@@ -151,51 +151,51 @@ namespace VideoWeb.UnitTests.Mappings
             result.EventType.Should().Be(EventHub.Enums.EventType.Transfer);
         }
         
-        private static ConferenceDto CreateTestConferenceForEndpointEvent()
+        private static Conference CreateTestConferenceForEndpointEvent()
         {
-            var testConference = new ConferenceDto
+            var testConference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .Build()
                 },
-                Endpoints = Builder<EndpointDto>.CreateListOfSize(2).Build().ToList()
+                Endpoints = Builder<Endpoint>.CreateListOfSize(2).Build().ToList()
             };
             return testConference;
         }
         
-        private ConferenceDto CreateTestConferenceForRoomParticipantEvent()
+        private Conference CreateTestConferenceForRoomParticipantEvent()
         {
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
                 HearingVenueName = "Hearing Venue Test",
-                CivilianRooms = new List<CivilianRoomDto>
+                CivilianRooms = new List<CivilianRoom>
                 {
-                    new CivilianRoomDto {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
                 }
             };
 

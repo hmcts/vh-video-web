@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Caching
             // Arrange
             var conferenceId = Guid.NewGuid();
             var expectedLayout = HearingLayout.TwoPlus21;
-            var conference = new ConferenceDto()
+            var conference = new Conference()
             {
                 Id = conferenceId
             };
@@ -66,10 +66,10 @@ namespace VideoWeb.UnitTests.Caching
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
-            var conference = new ConferenceDto()
+            var conference = new Conference()
             {
                 Id = conferenceId,
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
             };
             var expectedLayout = conference.GetRecommendedLayout();
 
@@ -138,7 +138,7 @@ namespace VideoWeb.UnitTests.Caching
             var participants = BuildParticipantListWithAllRoles();
             var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
 
-            var conference = new ConferenceDto()
+            var conference = new Conference()
             {
                 Id = conferenceId,
                 Participants = participants
@@ -174,7 +174,7 @@ namespace VideoWeb.UnitTests.Caching
             var expectedLayout = HearingLayout.TwoPlus21;
             var participants = BuildParticipantListWithAllRoles();
 
-            var conference = new ConferenceDto()
+            var conference = new Conference()
             {
                 Id = conferenceId,
                 Participants = participants
@@ -219,15 +219,15 @@ namespace VideoWeb.UnitTests.Caching
 
             // Assert
             (await action.Should().ThrowExactlyAsync<VideoApiException>()).Which.Should().Be(exception);
-            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<ConferenceDto>()), Times.Never);
+            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),
                 Times.Never);
         }
 
-        private List<ParticipantDto> BuildParticipantListWithAllRoles()
+        private List<Participant> BuildParticipantListWithAllRoles()
         {
-            return Builder<ParticipantDto>.CreateListOfSize(12)
+            return Builder<Participant>.CreateListOfSize(12)
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(1).With(x => x.Role = Role.StaffMember)
                 .TheNext(1).With(x => x.Role = Role.CaseAdmin)

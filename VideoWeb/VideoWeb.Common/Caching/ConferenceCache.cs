@@ -15,22 +15,22 @@ namespace VideoWeb.Common.Caching
             await UpdateConferenceAsync(conference);
         }
  
-        public async Task UpdateConferenceAsync(ConferenceDto conferenceDto)
+        public async Task UpdateConferenceAsync(Conference conference)
         {
-            await memoryCache.GetOrCreateAsync(conferenceDto.Id, entry =>
+            await memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(4);
-                return Task.FromResult(conferenceDto);
+                return Task.FromResult(conference);
             });
         }
 
-        public async Task<ConferenceDto> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
         {
-            var conference = await Task.FromResult(memoryCache.Get<ConferenceDto>(id));
+            var conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             if (conference != null) return conference;
             var (conferenceDetails, hearingDetailsResponse) = await addConferenceDetailsFactory();
             await AddConferenceAsync(conferenceDetails, hearingDetailsResponse);
-            conference = await Task.FromResult(memoryCache.Get<ConferenceDto>(id));
+            conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             return conference;
         }
     }

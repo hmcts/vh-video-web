@@ -11,39 +11,39 @@ using VideoWeb.Common.Models;
 namespace VideoWeb.UnitTests.Common.Models
 {
     [TestFixture]
-    public class ConferenceDtoTests
+    public class ConferenceTests
     {
-        private ConferenceDto _conferenceDto;
+        private Conference _conference;
         [SetUp]
         public void SetUp()
         {
-            _conferenceDto = new ConferenceDto();
+            _conference = new Conference();
         }
 
         [Test]
         public void Should_add_participant()
         {
             // Arrange
-            var participant1 = new ParticipantDto();
+            var participant1 = new Participant();
             participant1.Id = new Guid();
             participant1.Username = "Participant1UserName";
 
-            var participant2 = new ParticipantDto();
+            var participant2 = new Participant();
             participant2.Id = new Guid();
             participant2.Username = "Participant2UserName";
 
-            var startingList = new List<ParticipantDto> { 
+            var startingList = new List<Participant> { 
                 participant1  
             };
 
-            _conferenceDto.Participants = new List<ParticipantDto>(startingList);
+            _conference.Participants = new List<Participant>(startingList);
 
             // Act
-            _conferenceDto.AddParticipant(participant2);
+            _conference.AddParticipant(participant2);
 
             // Assert
-            _conferenceDto.Participants.Should().HaveCount(startingList.Count + 1);
-            _conferenceDto.Participants.Should().Contain(participant2);
+            _conference.Participants.Should().HaveCount(startingList.Count + 1);
+            _conference.Participants.Should().Contain(participant2);
         }
 
         [TestCase(3, 2, HearingLayout.Dynamic)]
@@ -53,11 +53,11 @@ namespace VideoWeb.UnitTests.Common.Models
         public void Should_return_correct_layout_for_the_number_of_participants_and_endpoints(int numberOfParticipants, int numberOfEndpoints, HearingLayout expectedLayout)
         {
             // Arrange
-            _conferenceDto.Participants = Builder<ParticipantDto>.CreateListOfSize(numberOfParticipants).Build().ToList();
-            _conferenceDto.Endpoints = Builder<EndpointDto>.CreateListOfSize(numberOfEndpoints).Build().ToList();
+            _conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            _conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
 
             // Act
-            var recommendedLayout = _conferenceDto.GetRecommendedLayout();
+            var recommendedLayout = _conference.GetRecommendedLayout();
 
             // Assert
             recommendedLayout.Should().Be(expectedLayout);

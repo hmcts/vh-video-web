@@ -40,7 +40,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
-            var participant = new ParticipantDto();
+            var participant = new Participant();
             try
             {
                 var conference = await conferenceService.GetConference(request.ConferenceId);

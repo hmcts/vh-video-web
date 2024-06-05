@@ -23,12 +23,12 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
         private AutoMock _mocker;
         private VideoWeb.Controllers.InternalEventController _controller;
 
-        private ConferenceDto _conferenceDto;
+        private Conference _conference;
 
         [SetUp]
         public void Setup()
         {
-            _conferenceDto = new ConferenceCacheModelBuilder().Build();
+            _conference = new ConferenceCacheModelBuilder().Build();
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole("Judge").Build();
             var context = new ControllerContext
@@ -43,8 +43,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             _controller.ControllerContext = context;
 
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conferenceDto.Id)))
-                .ReturnsAsync(_conferenceDto);
+                .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conference.Id)))
+                .ReturnsAsync(_conference);
         }
 
         [Test]
@@ -61,13 +61,13 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 .With(x => x.NewEndpoints, newEndpointsList).Build();
 
             // Act
-            var result = await _controller.EndpointsUpdated(_conferenceDto.Id, updateEndpointsRequest);
+            var result = await _controller.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
             _mocker.Mock<IEndpointsUpdatedEventNotifier>()
-                .Verify(x => x.PushEndpointsUpdatedEvent(_conferenceDto, updateEndpointsRequest), Times.Once);
+                .Verify(x => x.PushEndpointsUpdatedEvent(_conference, updateEndpointsRequest), Times.Once);
         }
 
         [Test]
@@ -84,11 +84,11 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 .With(x => x.NewEndpoints, newEndpointsList).Build();
 
             _mocker.Mock<IEndpointsUpdatedEventNotifier>().Setup(x =>
-                    x.PushEndpointsUpdatedEvent(_conferenceDto, updateEndpointsRequest))
+                    x.PushEndpointsUpdatedEvent(_conference, updateEndpointsRequest))
                 .Throws(new VideoApiException("error", StatusCodes.Status500InternalServerError, "", null, null));
 
             // Act
-            var result = await _controller.EndpointsUpdated(_conferenceDto.Id, updateEndpointsRequest);
+            var result = await _controller.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -97,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 
             _mocker.Mock<IEndpointsUpdatedEventNotifier>().Verify(
-                x => x.PushEndpointsUpdatedEvent(_conferenceDto, It.IsAny<UpdateConferenceEndpointsRequest>()),
+                x => x.PushEndpointsUpdatedEvent(_conference, It.IsAny<UpdateConferenceEndpointsRequest>()),
                 Times.Once);
         }
 
@@ -115,13 +115,13 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             
             
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conferenceDto.Id)))
-                .ReturnsAsync(_conferenceDto);
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id)))
+                .ReturnsAsync(_conference);
 
-            var result = await _controller.EndpointsUpdated(_conferenceDto.Id, updateEndpointsRequest);
+            var result = await _controller.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
 
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conferenceDto.Id), Times.Once);
+            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conference.Id), Times.Once);
         }
     }
 }

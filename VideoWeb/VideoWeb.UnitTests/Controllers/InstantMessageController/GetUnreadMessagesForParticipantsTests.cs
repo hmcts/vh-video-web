@@ -112,9 +112,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             responseModel.NumberOfUnreadMessages.Should().Be(3);
         }
 
-        private static ConferenceDto InitConference()
+        private static Conference InitConference()
         {
-            var participants = Builder<ParticipantDto>.CreateListOfSize(4)
+            var participants = Builder<Participant>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Username = Internet.Email())
@@ -122,13 +122,13 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .TheNext(1).With(x => x.Role = Role.Representative)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 
-            return Builder<ConferenceDto>.CreateNew().With(x => x.Id = Guid.NewGuid())
+            return Builder<Conference>.CreateNew().With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants).Build();
         }
 
-        private static List<InstantMessageResponse> InitMessages(ConferenceDto conferenceDto)
+        private static List<InstantMessageResponse> InitMessages(Conference conference)
         {
-            var judge = conferenceDto.Participants.Single(x => x.Role == Role.Judge);
+            var judge = conference.Participants.Single(x => x.Role == Role.Judge);
             const string vho1Username = "vho1@hmcts.net";
 
             return new List<InstantMessageResponse>
@@ -146,9 +146,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             };
         }
 
-        private static List<InstantMessageResponse> InitMessagesRepresentative(ConferenceDto conferenceDto)
+        private static List<InstantMessageResponse> InitMessagesRepresentative(Conference conference)
         {
-            var representative = conferenceDto.Participants.Single(x => x.Role == Role.Representative);
+            var representative = conference.Participants.Single(x => x.Role == Role.Representative);
             const string vho1Username = "vho1@hmcts.net";
 
             return new List<InstantMessageResponse>

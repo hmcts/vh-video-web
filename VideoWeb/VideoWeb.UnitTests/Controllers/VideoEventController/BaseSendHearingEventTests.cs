@@ -19,46 +19,47 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
+using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
     public abstract class BaseSendHearingEventTests
     {
         protected VideoEventsController Sut;
-        protected ConferenceDto TestConferenceDto;
+        protected Conference TestConference;
         protected AutoMock Mocker;
         
-        protected ConferenceDto BuildConferenceForTest()
+        protected Conference BuildConferenceForTest()
         {
-            var conference = new ConferenceDto
+            var conference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<ParticipantDto>()
+                Participants = new List<Participant>()
                 {
-                    Builder<ParticipantDto>.CreateNew()
+                    Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<ParticipantDto>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
-                Endpoints = new List<EndpointDto>
+                Endpoints = new List<Endpoint>
                 {
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
                         .Build(),
-                    Builder<EndpointDto>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
                         .Build()
                 },
                 HearingVenueName = "Hearing Venue Test",
-                CivilianRooms = new List<CivilianRoomDto>
+                CivilianRooms = new List<CivilianRoom>
                 {
-                    new CivilianRoomDto {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
                 }
             };
             
@@ -72,8 +73,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         protected ConferenceEventRequest CreateRequest(string phone = null)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.ConferenceId = TestConferenceDto.Id.ToString())
-                .With(x => x.ParticipantId = TestConferenceDto.Participants[0].Id.ToString())
+                .With(x => x.ConferenceId = TestConference.Id.ToString())
+                .With(x => x.ParticipantId = TestConference.Participants[0].Id.ToString())
                 .With(x => x.EventType = EventType.Joined)
                 .With(x => x.Phone = phone)
                 .With(x => x.ParticipantRoomId = null)
@@ -96,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             Mocker = AutoMock.GetLoose();
 
-            TestConferenceDto = BuildConferenceForTest();
+            TestConference = BuildConferenceForTest();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -107,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
 
-            Mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, ConferenceDto, CallbackEvent>()).Returns(Mocker.Create<CallbackEventMapper>());
+            Mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(Mocker.Create<CallbackEventMapper>());
             Sut = Mocker.Create<VideoEventsController>();
             Sut.ControllerContext = context;
 
@@ -115,10 +116,10 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             Mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-            Mocker.Mock<IConferenceService>().Setup(c => c.GetConference(TestConferenceDto.Id))
-                .ReturnsAsync(TestConferenceDto);
-            Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<ConferenceDto>()))
-                .Callback<ConferenceDto>(updatedConference => { TestConferenceDto = updatedConference; });
+            Mocker.Mock<IConferenceService>().Setup(c => c.GetConference(TestConference.Id))
+                .ReturnsAsync(TestConference);
+            Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<Conference>()))
+                .Callback<Conference>(updatedConference => { TestConference = updatedConference; });
             Mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(Mocker.Mock<IEventHandler>().Object);
             Mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(Mocker.Mock<IConferenceCache>().Object);
         }

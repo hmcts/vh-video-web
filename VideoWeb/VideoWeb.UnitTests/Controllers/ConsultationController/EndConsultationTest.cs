@@ -24,14 +24,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
+            _testConference = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
             {
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>()).Returns(_mocker.Create<LeavePrivateConsultationRequestMapper>());
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
             _sut = _mocker.Create<ConsultationsController>();
             _sut.ControllerContext = context;
         }
@@ -54,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
-            var conference = new ConferenceDto { Id = Guid.NewGuid() };
+            var conference = new Conference { Id = Guid.NewGuid() };
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
             var endConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto);
+            var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
             var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
 
             result.Should().BeOfType<NoContentResult>();
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _sut.LeaveConsultationAsync(
-                    ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto));
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _sut.LeaveConsultationAsync(
-                    ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto));
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }

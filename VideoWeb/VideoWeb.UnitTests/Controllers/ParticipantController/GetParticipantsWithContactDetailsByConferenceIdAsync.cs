@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
     {
         private AutoMock _mocker;
         private EventComponentHelper _eventComponentHelper;
-        private List<ParticipantDto> _participants;
+        private List<Participant> _participants;
         private ParticipantsController _sut;
 
         [SetUp]
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             individual.LinkedParticipants.Add(new LinkedParticipant{LinkedId = interpreter.Id, LinkType = LinkType.Interpreter});
             interpreter.LinkedParticipants.Add(new LinkedParticipant{LinkedId = individual.Id, LinkType = LinkType.Interpreter});
             
-            _participants = new List<ParticipantDto>
+            _participants = new List<Participant>
             {
                 judge, individual, representative, interpreter
             };
@@ -116,31 +116,31 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
-        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, ParticipantDto participantDto, 
+        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
             Guid conferenceId, bool isInAnotherHearing)
         {
-            response.Id.Should().Be(participantDto.Id);
+            response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
-            response.Name.Should().Be(participantDto.Name);
-            response.Role.Should().Be(participantDto.Role);
-            response.HearingRole.Should().Be(participantDto.HearingRole);
-            response.Username.Should().Be(participantDto.Username);
-            response.CaseTypeGroup.Should().Be(participantDto.CaseTypeGroup);
-            response.RefId.Should().Be(participantDto.RefId);
-            response.FirstName.Should().Be(participantDto.FirstName);
-            response.LastName.Should().Be(participantDto.LastName);
-            response.DisplayName.Should().Be(participantDto.DisplayName);
-            response.Status.Should().Be(participantDto.ParticipantStatus);
-            response.ContactEmail.Should().Be(participantDto.ContactEmail);
-            response.ContactTelephone.Should().Be(participantDto.ContactTelephone);
+            response.Name.Should().Be(participant.Name);
+            response.Role.Should().Be(participant.Role);
+            response.HearingRole.Should().Be(participant.HearingRole);
+            response.Username.Should().Be(participant.Username);
+            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
+            response.RefId.Should().Be(participant.RefId);
+            response.FirstName.Should().Be(participant.FirstName);
+            response.LastName.Should().Be(participant.LastName);
+            response.DisplayName.Should().Be(participant.DisplayName);
+            response.Status.Should().Be(participant.ParticipantStatus);
+            response.ContactEmail.Should().Be(participant.ContactEmail);
+            response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.HostInAnotherHearing.Should().Be(isInAnotherHearing);
-            response.Representee.Should().Be(participantDto.Representee);
+            response.Representee.Should().Be(participant.Representee);
         }
         
-        private static ParticipantDto CreateParticipant(string username, string caseTypeGroup)
+        private static Participant CreateParticipant(string username, string caseTypeGroup)
         {
-            return Builder<ParticipantDto>.CreateNew()
+            return Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Name = username)
                 .With(x => x.Role = Role.Judge)
@@ -152,9 +152,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Build();
         }
 
-        private static ConferenceDto CreateValidConference(Guid conferenceId)
+        private static Conference CreateValidConference(Guid conferenceId)
         {
-            var conference = Builder<ConferenceDto>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
                 .With(x => x.HearingId = Guid.NewGuid())
                 .With(x => x.HearingVenueName = "MyVenue")
@@ -173,9 +173,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDto, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, ConferenceDto, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());

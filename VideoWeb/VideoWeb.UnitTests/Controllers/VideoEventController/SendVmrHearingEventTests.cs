@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.ParticipantRoomId = TestConferenceDto.CivilianRooms[0].Id.ToString();
+            request.ParticipantRoomId = TestConference.CivilianRooms[0].Id.ToString();
             
             // Act
             var result = await Sut.SendHearingEventAsync(request);
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var roomId = 999;
-            var participantId = TestConferenceDto.Participants[^1].Id;
+            var participantId = TestConference.Participants[^1].Id;
             var request = CreateRequest();
             request.EventType = EventType.Joined;
             request.ParticipantRoomId = roomId.ToString();
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
 
-            var newCacheRoom = TestConferenceDto.CivilianRooms.Find(x => x.Id == roomId);
+            var newCacheRoom = TestConference.CivilianRooms.Find(x => x.Id == roomId);
             newCacheRoom.Should().NotBeNull();
             newCacheRoom?.Participants.Exists(x => x == participantId).Should().BeTrue();
         }
@@ -70,12 +70,12 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_raise_transfer_event_when_participant_joins_and_other_vmr_participants_are_in_consultation()
         {
             // Arrange
-            var vmr = TestConferenceDto.CivilianRooms.First(x => x.Participants.Any());
-            vmr.Participants.ForEach(x => TestConferenceDto.Participants.First(y => y.Id == x).ParticipantStatus = ParticipantStatus.InConsultation);
+            var vmr = TestConference.CivilianRooms.First(x => x.Participants.Any());
+            vmr.Participants.ForEach(x => TestConference.Participants.First(y => y.Id == x).ParticipantStatus = ParticipantStatus.InConsultation);
             
             var finalParticipantCount = vmr.Participants.Count + 1;
             var roomId = vmr.Id;
-            var participantId = TestConferenceDto.Participants[^1].Id;
+            var participantId = TestConference.Participants[^1].Id;
             var request = CreateRequest();
             var consultationRoomId = 1234;
             var consultationRoomLabel = "ConsultationRoom1";
@@ -83,7 +83,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             request.ParticipantRoomId = roomId.ToString();
             request.ParticipantId = participantId.ToString();
 
-            var videoApiParticipantResponse = TestConferenceDto.Participants.Select(x => new ParticipantSummaryResponse()
+            var videoApiParticipantResponse = TestConference.Participants.Select(x => new ParticipantSummaryResponse()
             {
                 CaseGroup = x.CaseTypeGroup,
                 ContactEmail = x.ContactEmail,
@@ -108,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             }).ToList();
 
             Mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetParticipantsByConferenceIdAsync(It.Is<Guid>(y => y == TestConferenceDto.Id)))
+                .Setup(x => x.GetParticipantsByConferenceIdAsync(It.Is<Guid>(y => y == TestConference.Id)))
                 .ReturnsAsync(videoApiParticipantResponse);
             
             // Act
@@ -134,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_not_call_multiple_callback_events_for_vho_call_events()
         {
             // arrange
-            var room = TestConferenceDto.CivilianRooms.First(x => x.Participants.Any());
+            var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
 
             var request = CreateRequest();
             request.ParticipantId = room.Id.ToString();
@@ -157,7 +157,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_publish_transfer_event_to_all_participants_in_room()
         {
             // Arrange
-            var room = TestConferenceDto.CivilianRooms.First(x => x.Participants.Any());
+            var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
             var participantCount = room.Participants.Count;
 
             var request = CreateRequest();

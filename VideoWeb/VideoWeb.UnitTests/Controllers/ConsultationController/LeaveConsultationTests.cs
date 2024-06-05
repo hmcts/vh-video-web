@@ -26,14 +26,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConferenceDto = ConsultationHelper.BuildConferenceForTest();
+            _testConference = ConsultationHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
             {
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PrivateConsultationRequest, ConsultationRequestResponse>()).Returns(_mocker.Create<PrivateConsultationRequestMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Dictionary<string, string[]>, BadRequestModelResponse>()).Returns(_mocker.Create<BadRequestResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>()).Returns(_mocker.Create<LeavePrivateConsultationRequestMapper>());
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConferenceDto.Id))).ReturnsAsync(_testConferenceDto);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
             _sut = _mocker.Create<ConsultationsController>();
             _sut.ControllerContext = context;
         }
@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             // Arrange
-            var conference = new ConferenceDto {Id = Guid.NewGuid()};
+            var conference = new Conference {Id = Guid.NewGuid()};
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
             var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_no_content_when_request_is_sent()
         {
             // Arrange
-            var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto);
+            var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
 
             // Act
             var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Act
             var result =
                 await _sut.LeaveConsultationAsync(
-                    ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto));
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -116,7 +116,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Act
             var result =
                 await _sut.LeaveConsultationAsync(
-                    ConsultationHelper.GetLeaveConsultationRequest(_testConferenceDto));
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -126,7 +126,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public void Should_throw_InvalidOperationException_two_participants_requested_found()
         {
             // Arrange
-            var conference = _testConferenceDto;
+            var conference = _testConference;
             var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
             var findId = leaveConsultationRequest.ParticipantId;

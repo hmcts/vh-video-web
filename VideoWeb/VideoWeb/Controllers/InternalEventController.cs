@@ -69,8 +69,8 @@ namespace VideoWeb.Controllers
         {
             _logger.LogDebug($"ParticipantsUpdated called. ConferenceId: {conferenceId}, Request {JsonSerializer.Serialize(request)}");
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<ParticipantDto>, ParticipantDto>();
-            var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<ParticipantDto>, UpdateParticipant>();
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<Participant>, Participant>();
+            var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>();
 
             try
             {

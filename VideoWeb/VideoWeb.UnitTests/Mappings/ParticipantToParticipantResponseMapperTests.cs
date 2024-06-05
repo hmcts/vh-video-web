@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         protected AutoMock _mocker;
         protected ParticipantToParticipantResponseMapper _sut;
         private Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>> linkedParticipantMapperMock;
-        private Mock<IMapTo<CivilianRoomDto, RoomSummaryResponse>> roomMapperMock;
+        private Mock<IMapTo<CivilianRoom, RoomSummaryResponse>> roomMapperMock;
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings
         private LinkedParticipantResponse linkedParticipantResponse1;
         private LinkedParticipantResponse linkedParticipantResponse2;
 
-        private CivilianRoomDto _civilianRoomDto;
+        private CivilianRoom _civilianRoom;
         private RoomSummaryResponse roomSummaryResponse;
         private Guid participantId = Guid.NewGuid();
 
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Mappings
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>()).Returns(linkedParticipantMapperMock.Object);
 
-            _civilianRoomDto = new CivilianRoomDto()
+            _civilianRoom = new CivilianRoom()
             {
                 Id = 123456,
                 RoomLabel = "TestCiviliantRoomLabel",
@@ -61,9 +61,9 @@ namespace VideoWeb.UnitTests.Mappings
                 Locked = false
             };
 
-            roomMapperMock = new Mock<IMapTo<CivilianRoomDto, RoomSummaryResponse>>();
-            roomMapperMock.Setup(mapper => mapper.Map(_civilianRoomDto)).Returns(roomSummaryResponse);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoomDto, RoomSummaryResponse>()).Returns(roomMapperMock.Object);
+            roomMapperMock = new Mock<IMapTo<CivilianRoom, RoomSummaryResponse>>();
+            roomMapperMock.Setup(mapper => mapper.Map(_civilianRoom)).Returns(roomSummaryResponse);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(roomMapperMock.Object);
 
             _sut = _mocker.Create<ParticipantToParticipantResponseMapper>();
         }
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_correctly()
         {
-            var testParticipant = new ParticipantDto()
+            var testParticipant = new Participant()
             {
                 CaseTypeGroup = "TestCaseTypeGroup",
                 ContactEmail = "TestContactEmail",
@@ -90,10 +90,10 @@ namespace VideoWeb.UnitTests.Mappings
                 Username = "TestUsername",
             };
 
-            var testConference = new ConferenceDto()
+            var testConference = new Conference()
             {
-                CivilianRooms = new List<CivilianRoomDto> {
-                    _civilianRoomDto
+                CivilianRooms = new List<CivilianRoom> {
+                    _civilianRoom
                 }
             };
 

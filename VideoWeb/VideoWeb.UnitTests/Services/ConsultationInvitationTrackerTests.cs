@@ -17,14 +17,14 @@ namespace VideoWeb.UnitTests.Services
     public class ConsultationInvitationTrackerTests
     {
         private AutoMock _mocker;
-        private ConferenceDto _conferenceDto;
+        private Conference _conference;
         private IConsultationInvitationTracker _sut;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _conferenceDto = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
+            _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             _sut = _mocker.Create<ConsultationInvitationTracker>();
         }
         
@@ -33,11 +33,11 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_create_an_entry_in_the_cache_with_a_guid_representing_the_invitation_if_the_conference_has_linked_participants()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.WriteToCache(It.IsAny<ConsultationInvitation>()));
 
             // Act
-            var invitationGuid = await _sut.StartTrackingInvitation(_conferenceDto, "room_label", requestedForParticipant.Id);
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().NotBe(Guid.Empty);
@@ -53,11 +53,11 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_create_an_entry_in_the_cache_with_a_guid_representing_the_invitation_if_the_conference_DOES_NOT_have_linked_participants()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => !p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => !p.LinkedParticipants.Any());
             _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.WriteToCache(It.IsAny<ConsultationInvitation>()));
             
             // Act
-            var invitationGuid = await _sut.StartTrackingInvitation(_conferenceDto, "room_label", requestedForParticipant.Id);
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().NotBe(Guid.Empty);
@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_the_invitation_if_it_is_tracked()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = ConsultationInvitation.Create(requestedForParticipant.Id, "room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.ReadFromCache(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_the_null_if_it_is_NOT_tracked()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = ConsultationInvitation.Create(requestedForParticipant.Id,"room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.ReadFromCache(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
@@ -102,7 +102,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_null_if_the_GUID_is_empty()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = ConsultationInvitation.Create(requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.ReadFromCache(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
@@ -118,7 +118,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_HaveAllParticipantsAccepted_result_from_consultation_invite_method()
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = ConsultationInvitation.Create(
                 requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
 
@@ -157,7 +157,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_HaveAllResponded_result_from_consultation_invite_method(ConsultationAnswer answer)
         {
             // Arrange
-            var requestedForParticipant = _conferenceDto.Participants.First(p => p.LinkedParticipants.Any());
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = ConsultationInvitation.Create(
                 requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
 

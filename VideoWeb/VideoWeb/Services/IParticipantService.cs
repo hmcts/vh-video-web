@@ -13,6 +13,6 @@ namespace VideoWeb.Services
 
         bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference);
 
-        Task<ConferenceDto> AddStaffMemberToConferenceCache(AddStaffMemberResponse response);
+        Task<Conference> AddStaffMemberToConferenceCache(AddStaffMemberResponse response);
     }
 }

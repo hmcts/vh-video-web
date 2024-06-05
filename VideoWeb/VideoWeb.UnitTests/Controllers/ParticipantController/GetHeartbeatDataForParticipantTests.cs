@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private AutoMock _mocker;
         private ParticipantsController _sut;
         private EventComponentHelper _eventComponentHelper;
-        private ConferenceDto _testConferenceDto;
+        private Conference _testConference;
         private MemoryCache _memoryCache;
         private IConferenceCache _conferenceCache;
         
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _conferenceCache = new ConferenceCache(_memoryCache);
             _eventComponentHelper = new EventComponentHelper();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConferenceDto = _eventComponentHelper.BuildConferenceForTest();            
+            _testConference = _eventComponentHelper.BuildConferenceForTest();            
 
             var context = new ControllerContext
             {
@@ -52,8 +52,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _sut = _mocker.Create<ParticipantsController>(new TypedParameter(typeof(IEventHandlerFactory), eventHandlerFactory), new TypedParameter(typeof(IConferenceCache), _conferenceCache));
             _sut.ControllerContext = context;
 
-            _eventComponentHelper.Cache.Set(_testConferenceDto.Id, _testConferenceDto);
-            _eventComponentHelper.RegisterUsersForHubContext(_testConferenceDto.Participants);
+            _eventComponentHelper.Cache.Set(_testConference.Id, _testConference);
+            _eventComponentHelper.RegisterUsersForHubContext(_testConference.Participants);
         }
         
         [Test]

@@ -6,20 +6,20 @@ using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Models
 {
-    public class ConferenceDto
+    public class Conference
     {
-        public ConferenceDto()
+        public Conference()
         {
-            Participants = new List<ParticipantDto>();
-            Endpoints = new List<EndpointDto>();
-            CivilianRooms = new List<CivilianRoomDto>();
+            Participants = new List<Participant>();
+            Endpoints = new List<Endpoint>();
+            CivilianRooms = new List<CivilianRoom>();
         }
 
         public Guid Id { get; set; }
         public Guid HearingId { get; set; }
-        public List<ParticipantDto> Participants { get; set; }
-        public List<EndpointDto> Endpoints { get; set; }
-        public List<CivilianRoomDto> CivilianRooms { get; set; }
+        public List<Participant> Participants { get; set; }
+        public List<Endpoint> Endpoints { get; set; }
+        public List<CivilianRoom> CivilianRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
         public string CaseName { get; set; }
@@ -34,7 +34,7 @@ namespace VideoWeb.Common.Models
         public string IngestUrl { get; set; }
         public ConferenceMeetingRoom MeetingRoom { get; set; }
 
-        public ParticipantDto GetJudge()
+        public Participant GetJudge()
         {
             return Participants.SingleOrDefault(x => x.IsJudge());
         }
@@ -57,12 +57,12 @@ namespace VideoWeb.Common.Models
             }
         }
 
-        public void AddParticipant(ParticipantDto participantDto)
+        public void AddParticipant(Participant participant)
         {
             if (!Participants.Exists(p =>
-                    p.Username.Equals(participantDto.Username, StringComparison.InvariantCultureIgnoreCase)))
+                    p.Username.Equals(participant.Username, StringComparison.InvariantCultureIgnoreCase)))
             {
-                Participants.Add(participantDto);
+                Participants.Add(participant);
             }
         }
 
@@ -76,12 +76,12 @@ namespace VideoWeb.Common.Models
             return Participants.Exists(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public ParticipantDto GetParticipant(string username)
+        public Participant GetParticipant(string username)
         {
             return Participants.Find(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
         }
         
-        public ParticipantDto GetParticipant(Guid id)
+        public Participant GetParticipant(Guid id)
         {
             return Participants.Find(p => p.Id == id);
         }
@@ -101,17 +101,17 @@ namespace VideoWeb.Common.Models
             participant.LinkedParticipants = updateParticipant.LinkedParticipants;
         }
 
-        private CivilianRoomDto GetOrCreateCivilianRoom(long roomId)
+        private CivilianRoom GetOrCreateCivilianRoom(long roomId)
         {
             var room = CivilianRooms.Find(x => x.Id == roomId);
             if (room != null) return room;
-            room = new CivilianRoomDto {Id = roomId};
+            room = new CivilianRoom {Id = roomId};
             CivilianRooms.Add(room);
 
             return room;
         }
 
-        public CivilianRoomDto GetRoom(Guid participantId)
+        public CivilianRoom GetRoom(Guid participantId)
         {
             return CivilianRooms.Find(room => room.Participants.Contains(participantId));
         }

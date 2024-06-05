@@ -27,16 +27,16 @@ namespace VideoWeb.Helpers
             _logger = logger;
         }
         
-        public Task PushParticipantsUpdatedEvent(ConferenceDto conferenceDto, IList<ParticipantDto> participantsToNotify)
+        public Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
         {
-            var participantsToResponseMapper = _mapperFactory.Get<ParticipantDto, ConferenceDto, ParticipantResponse>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
             CallbackEvent callbackEvent = new CallbackEvent()
             {
-                ConferenceId = conferenceDto.Id,
+                ConferenceId = conference.Id,
                 EventType = EventType.ParticipantsUpdated,
                 TimeStampUtc = DateTime.UtcNow,
-                Participants = conferenceDto.Participants.Select(participant => participantsToResponseMapper.Map(participant, conferenceDto)).ToList(),
-                ParticipantsToNotify = participantsToNotify.Select(participant => participantsToResponseMapper.Map(participant, conferenceDto)).ToList()
+                Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList(),
+                ParticipantsToNotify = participantsToNotify.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
             };
 
             _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");

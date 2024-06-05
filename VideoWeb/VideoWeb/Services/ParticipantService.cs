@@ -63,7 +63,7 @@ namespace VideoWeb.Services
                        DateTime.UtcNow.AddMinutes(-closedMinutesThreshold));
         }
 
-        public async Task<ConferenceDto> AddStaffMemberToConferenceCache(AddStaffMemberResponse response)
+        public async Task<Conference> AddStaffMemberToConferenceCache(AddStaffMemberResponse response)
         {
             var conference = await _conferenceService.GetConference(response.ConferenceId);
 
@@ -72,7 +72,7 @@ namespace VideoWeb.Services
                 throw new ConferenceNotFoundException(response.ConferenceId);
             }
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantDto>();
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));

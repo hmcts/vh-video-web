@@ -5,9 +5,9 @@ namespace VideoWeb.Common.Caching
 {
     public static class CivilianRoomCacheMapper
     {
-        public static CivilianRoomDto MapCivilianRoomToCacheModel(CivilianRoomResponse civilianRoom)
+        public static CivilianRoom MapCivilianRoomToCacheModel(CivilianRoomResponse civilianRoom)
         {
-            return new CivilianRoomDto
+            return new CivilianRoom
             {
                 Id = civilianRoom.Id,
                 RoomLabel = civilianRoom.Label,

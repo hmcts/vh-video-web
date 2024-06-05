@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_correctly()
         {
-            var room = new CivilianRoomDto()
+            var room = new CivilianRoom()
             {
                 Id = 12345,
                 Participants = new List<Guid>

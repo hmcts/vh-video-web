@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             _eventHandler = new ParticipantsUpdatedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
-            var conference = TestConferenceDto;
+            var conference = TestConference;
 
             var participantCount = conference.Participants.Count;
             var participants = conference.Participants

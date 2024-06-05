@@ -20,13 +20,13 @@ namespace VideoWeb.UnitTests.Cache
     public class DistributedConferenceCacheTests : CacheTestBase
     {
         private Mock<IDistributedCache> _distributedCacheMock;
-        private Mock<ILogger<RedisCacheBase<Guid, ConferenceDto>>> _loggerMock;
+        private Mock<ILogger<RedisCacheBase<Guid, Conference>>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _loggerMock = new Mock<ILogger<RedisCacheBase<Guid, ConferenceDto>>>();
+            _loggerMock = new Mock<ILogger<RedisCacheBase<Guid, Conference>>>();
         }
         
         [Test]

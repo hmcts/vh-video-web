@@ -8,19 +8,19 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class UnreadAdminMessageResponseMapper : IMapTo<ConferenceDto, IList<InstantMessageResponse>, UnreadAdminMessageResponse>
+    public class UnreadAdminMessageResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>
     {
-        public UnreadAdminMessageResponse Map(ConferenceDto conferenceDto, IList<InstantMessageResponse> messageResponses)
+        public UnreadAdminMessageResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadAdminMessageResponse
             {
-                NumberOfUnreadMessages = MapMessages(conferenceDto, messageResponses),
-                ParticipantId = conferenceDto.GetJudge().Id
+                NumberOfUnreadMessages = MapMessages(conference, messageResponses),
+                ParticipantId = conference.GetJudge().Id
             };
             return response;
         }
 
-        private int MapMessages(ConferenceDto conferenceDto, IList<InstantMessageResponse> messageResponses)
+        private int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -28,13 +28,13 @@ namespace VideoWeb.Mappings
             }
 
             messageResponses = messageResponses.OrderByDescending(x => x.TimeStamp).ToList();
-            var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conferenceDto, m));
+            var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
             return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
-        private bool IsNonParticipantMessage(ConferenceDto conferenceDto, InstantMessageResponse message)
+        private bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
-            return !conferenceDto.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

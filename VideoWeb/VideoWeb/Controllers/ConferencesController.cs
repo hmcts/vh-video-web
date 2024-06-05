@@ -334,11 +334,11 @@ namespace VideoWeb.Controllers
             }
 
             var username = userProfile.Username.ToLower().Trim();
-            ConferenceDto conferenceDto;
+            Conference conference;
             try
             {
-                conferenceDto = await _conferenceService.ForceGetConference(conferenceId);
-                if (conferenceDto == null)
+                conference = await _conferenceService.ForceGetConference(conferenceId);
+                if (conference == null)
                 {
                     _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
                     return NoContent();
@@ -351,7 +351,7 @@ namespace VideoWeb.Controllers
             }
 
             if (!userProfile.Roles.Contains(Role.StaffMember) &&
-                (conferenceDto.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conferenceDto.IsWaitingRoomOpen))
+                (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
                     "Unauthorised to view conference details {ConferenceId} because user is neither a VH Officer " +
@@ -371,10 +371,10 @@ namespace VideoWeb.Controllers
                 Role.QuickLinkObserver
             };
 
-            conferenceDto.Participants = conferenceDto.Participants.Where(x => displayRoles.Contains(x.Role)).ToList();
-            var conferenceResponseMapper = _mapperFactory.Get<ConferenceDto, ConferenceResponse>();
-            var response = conferenceResponseMapper.Map(conferenceDto);
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conferenceDto);
+            conference.Participants = conference.Participants.Where(x => displayRoles.Contains(x.Role)).ToList();
+            var conferenceResponseMapper = _mapperFactory.Get<Conference, ConferenceResponse>();
+            var response = conferenceResponseMapper.Map(conference);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
 
             return Ok(response);
         }

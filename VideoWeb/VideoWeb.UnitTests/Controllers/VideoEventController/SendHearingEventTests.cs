@@ -204,8 +204,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private ConferenceEventRequest CreateEndpointRequest(EventType incomingEventType)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.ConferenceId = TestConferenceDto.Id.ToString())
-                .With(x => x.ParticipantId = TestConferenceDto.Endpoints[0].Id.ToString())
+                .With(x => x.ConferenceId = TestConference.Id.ToString())
+                .With(x => x.ParticipantId = TestConference.Endpoints[0].Id.ToString())
                 .With(x => x.EventType = incomingEventType)
                 .With(x => x.TransferTo = "ParticipantConsultationRoom10")
                 .With(x => x.TransferFrom = RoomType.WaitingRoom.ToString())

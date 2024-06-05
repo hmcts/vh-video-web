@@ -7,11 +7,11 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class EndpointsMapper : IMapTo<EndpointResponse, List<EndpointParticipantResponse>, EndpointDto>
+    public class EndpointsMapper : IMapTo<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>
     {
-        public EndpointDto Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
+        public Endpoint Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
         {
-            return new EndpointDto
+            return new Endpoint
             {
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,

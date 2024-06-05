@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace VideoWeb.Common.Models
 {
-    public class ParticipantDto
+    public class Participant
     {
-        public ParticipantDto()
+        public Participant()
         {
             LinkedParticipants = new List<LinkedParticipant>();
         }

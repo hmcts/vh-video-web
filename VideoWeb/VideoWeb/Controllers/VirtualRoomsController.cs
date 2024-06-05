@@ -55,7 +55,7 @@ namespace VideoWeb.Controllers
                 var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.First(x => x.Id == participantId);
                 var mapper =
-                    _mapperFactory.Get<SharedParticipantRoomResponse, ParticipantDto, bool, SharedParticipantRoom>();
+                    _mapperFactory.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>();
                 var response = mapper.Map(room, participant, participantType == "Witness");
                 return Ok(response);
             }
