@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
 
@@ -31,26 +33,29 @@ namespace VideoWeb.Controllers
     public class ParticipantsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IBookingsApiClient _bookingApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
-        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantService _participantService;
-
+        private readonly IConferenceService _conferenceService;
+        
         public ParticipantsController(
             IVideoApiClient videoApiClient,
+            IBookingsApiClient bookingApiClient,
             IEventHandlerFactory eventHandlerFactory,
-            IConferenceCache conferenceCache,
             ILogger<ParticipantsController> logger,
             IMapperFactory mapperFactory,
-            IParticipantService participantService
+            IParticipantService participantService,
+            IConferenceService conferenceService
         )
         {
             _videoApiClient = videoApiClient;
+            _bookingApiClient = bookingApiClient;
             _eventHandlerFactory = eventHandlerFactory;
-            _conferenceCache = conferenceCache;
             _logger = logger;
             _participantService = participantService;
+            _conferenceService = conferenceService;
             _mapperFactory = mapperFactory;
         }
 
@@ -63,9 +68,7 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participantId = GetIdForParticipantByUsernameInConference(conference);
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
@@ -156,10 +159,9 @@ namespace VideoWeb.Controllers
 
         private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
-            var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            await _conferenceCache.UpdateConferenceAsync(ConferenceCacheMapper.MapConferenceToCacheModel(conference));
-            var participantResponseMapper = _mapperFactory.Get<ParticipantDetailsResponse, ParticipantResponse>();
-            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
+            var conference = await _conferenceService.ForceGetConference(conferenceId);
+            var participantResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var mappedParticipants = conference.Participants.Select(participant => participantResponseMapper.Map(participant, conference)).ToList();
             await _eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
                 Participants = mappedParticipants,
@@ -194,8 +196,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                var conference = await _conferenceService.GetConference(conferenceId);
 
                 _logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 var hostsInHearingsToday = await _videoApiClient.GetHostsInHearingsTodayAsync();
@@ -268,8 +269,7 @@ namespace VideoWeb.Controllers
 
                 if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
                 {
-                    var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                        () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                    var conference = await _conferenceService.GetConference(conferenceId);
                     if (conference != null)
                     {
                         
@@ -279,12 +279,12 @@ namespace VideoWeb.Controllers
                         if (participantFromCache == null)
                         {
                             var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                            var updatedConferenceToCacheModel = ConferenceCacheMapper.MapConferenceToCacheModel(updatedConference);
+                            var hearingDetailsResponse = await _bookingApiClient.GetHearingDetailsByIdV2Async(updatedConference.HearingId);
+                            var updatedConferenceToCacheModel = ConferenceCacheMapper.MapConferenceToCacheModel(updatedConference, hearingDetailsResponse);
                             participantFromCache = updatedConferenceToCacheModel.Participants
-                                .Single(x =>
-                                    x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+                                .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
                             
-                            await _conferenceCache.UpdateConferenceAsync(updatedConferenceToCacheModel);
+                            await _conferenceService.ConferenceCache.UpdateConferenceAsync(updatedConferenceToCacheModel);
                         }
                         
                         response = new LoggedParticipantResponse
@@ -332,14 +332,10 @@ namespace VideoWeb.Controllers
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
                 var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
-
                 await _participantService.AddStaffMemberToConferenceCache(response);
-                
-                var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-              
-                var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
+                var updatedConference = await _conferenceService.GetConference(conferenceId);
+                var conferenceResponseVhoMapper = _mapperFactory.Get<Conference, ConferenceResponse>();
                 var mappedUpdatedConference = conferenceResponseVhoMapper.Map(updatedConference);
-                
                 return Ok(mappedUpdatedConference);
             }
             catch (VideoApiException e)

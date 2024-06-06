@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.UnitTests.Builders;
 
@@ -234,11 +232,8 @@ namespace VideoWeb.UnitTests.Hub
             JudgeUserProfile = InitProfile(JudgeUsername, Role.Judge.ToString());
             IndividualUserProfile = InitProfile(IndividualUsername, Role.Individual.ToString());
             RepresentativeUserProfile = InitProfile(RepresentativeUsername, Role.Representative.ToString());
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(Conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(Conference);
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id)).ReturnsAsync(Conference);
 
             ConferenceGroupChannel = new Mock<IEventHubClient>(); // only admins register to this
             JudgeGroupChannel = new Mock<IEventHubClient>();
@@ -269,11 +264,8 @@ namespace VideoWeb.UnitTests.Hub
                 .Returns(IndividualGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(representative.Username.ToLowerInvariant()))
                 .Returns(RepresentativeGroupChannel.Object);
-
-            ConferenceCache
-           .Setup(x => x.GetOrAddConferenceAsync(Conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-           .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-           .ReturnsAsync(Conference);
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id)).ReturnsAsync(Conference);
         }
 
         private Conference InitConference()

@@ -13,11 +13,11 @@ namespace VideoWeb.UnitTests.Common.Models
     [TestFixture]
     public class ConferenceTests
     {
-        private Conference conference;
+        private Conference _conference;
         [SetUp]
         public void SetUp()
         {
-            conference = new Conference();
+            _conference = new Conference();
         }
 
         [Test]
@@ -36,14 +36,14 @@ namespace VideoWeb.UnitTests.Common.Models
                 participant1  
             };
 
-            conference.Participants = new List<Participant>(startingList);
+            _conference.Participants = new List<Participant>(startingList);
 
             // Act
-            conference.AddParticipant(participant2);
+            _conference.AddParticipant(participant2);
 
             // Assert
-            conference.Participants.Should().HaveCount(startingList.Count + 1);
-            conference.Participants.Should().Contain(participant2);
+            _conference.Participants.Should().HaveCount(startingList.Count + 1);
+            _conference.Participants.Should().Contain(participant2);
         }
 
         [TestCase(3, 2, HearingLayout.Dynamic)]
@@ -53,11 +53,11 @@ namespace VideoWeb.UnitTests.Common.Models
         public void Should_return_correct_layout_for_the_number_of_participants_and_endpoints(int numberOfParticipants, int numberOfEndpoints, HearingLayout expectedLayout)
         {
             // Arrange
-            conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
-            conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
+            _conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            _conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
 
             // Act
-            var recommendedLayout = conference.GetRecommendedLayout();
+            var recommendedLayout = _conference.GetRecommendedLayout();
 
             // Assert
             recommendedLayout.Should().Be(expectedLayout);

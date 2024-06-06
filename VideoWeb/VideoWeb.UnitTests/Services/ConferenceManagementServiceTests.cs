@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
@@ -42,11 +43,7 @@ public class ConferenceManagementServiceTests
             builder.RegisterInstance(EventHubClientMock.Object);
         });
 
-        _mocker.Mock<IConferenceCache>().Setup(x =>
-                x.GetOrAddConferenceAsync(_conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-            .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-            .ReturnsAsync(_conference);
-        
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conference.Id)).ReturnsAsync(_conference);
         RegisterUsersForHubContext(_conference.Participants);
         
         _sut = _mocker.Create<ConferenceManagementService>();

@@ -11,10 +11,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Middleware;
-using VideoApi.Client;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
@@ -22,8 +21,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
     public class CheckParticipantCanAccessConferenceAttributeTest
     {
         private Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>> _logger;
-        protected Mock<IConferenceCache> ConferenceCache;
-        private Mock<IVideoApiClient> _videoApiClient;
+        protected Mock<IConferenceService> ConferenceService;
         protected CheckParticipantCanAccessConferenceAttribute Sut;
         protected readonly Guid ParticipantId = Guid.NewGuid();
         protected readonly Guid ConferenceId = Guid.NewGuid();
@@ -36,14 +34,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         public void SetUp()
         {
             _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>>();
-            ConferenceCache = new Mock<IConferenceCache>();
-            _videoApiClient = new Mock<IVideoApiClient>();
-            Sut = new CheckParticipantCanAccessConferenceAttribute(
-                _logger.Object,
-                ConferenceCache.Object,
-                _videoApiClient.Object
-            );
-
+            ConferenceService = new Mock<IConferenceService>();
+            Sut = new CheckParticipantCanAccessConferenceAttribute(_logger.Object, ConferenceService.Object);
             UserBuilder = new ClaimsPrincipalBuilder();
         }
 

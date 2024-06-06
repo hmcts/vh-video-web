@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,6 +21,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -37,6 +37,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _sut = SetupControllerWithClaims(claimsPrincipal);
+    
+            var cache = _mocker.Mock<IConferenceCache>();
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
         [Test]
@@ -48,10 +51,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _sut.GetConferenceByIdVHOAsync(conference.Id);
+            var result = await _sut.GetConferenceByIdVhoAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
-            _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
+            _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
             var response = (ConferenceResponseVho)typedResult.Value;
             response.CaseNumber.Should().Be(conference.CaseNumber);
             response.Participants[0].Role.Should().Be((Role)UserRole.Individual);
@@ -66,7 +69,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _sut.GetConferenceByIdVHOAsync(Guid.Empty);
+            var result = await _sut.GetConferenceByIdVhoAsync(Guid.Empty);
 
             var typedResult = (BadRequestObjectResult)result.Result;
             typedResult.Should().NotBeNull();
@@ -82,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _sut.GetConferenceByIdVHOAsync(Guid.NewGuid());
+            var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid());
 
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
@@ -98,7 +101,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _sut.GetConferenceByIdVHOAsync(Guid.NewGuid());
+            var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid());
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         }
@@ -112,7 +115,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(() => default);
 
-            var response = (await _sut.GetConferenceByIdVHOAsync(conferenceId)).Result as NoContentResult;
+            var response = (await _sut.GetConferenceByIdVhoAsync(conferenceId)).Result as NoContentResult;
 
             ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
@@ -131,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
             if (!string.IsNullOrWhiteSpace(username))
             {
-                participants.First().Username = username;
+                participants[0].Username = username;
             }
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
@@ -153,17 +156,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, VideoWeb.Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
 
             var controller = _mocker.Create<ConferencesController>();
             controller.ControllerContext = context;

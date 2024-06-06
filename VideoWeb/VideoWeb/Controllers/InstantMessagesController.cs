@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Extensions;
 using VideoWeb.Middleware;
 
@@ -26,23 +26,23 @@ namespace VideoWeb.Controllers
     public class InstantMessagesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
         private readonly IMapperFactory _mapperFactory;
-
+        private readonly IConferenceService _conferenceService;
+        
         public InstantMessagesController(
             IVideoApiClient videoApiClient,
             ILogger<InstantMessagesController> logger,
             IMessageDecoder messageDecoder,
-            IConferenceCache conferenceCache,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
-            _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
+            _conferenceService = conferenceService;
         }
 
         /// <summary>
@@ -61,11 +61,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-               (
-                   conferenceId,
-                   () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-               );
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
 
                 var messages =
@@ -107,11 +103,7 @@ namespace VideoWeb.Controllers
                     return Ok(new UnreadInstantMessageConferenceCountResponse());
                 }
 
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-                (
-                    conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-                );
+                var conference = await _conferenceService.GetConference(conferenceId);
 
                 var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
                 var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
@@ -140,11 +132,8 @@ namespace VideoWeb.Controllers
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-              (
-                  conferenceId,
-                  () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-              );
+                
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
 
                 var messages =
@@ -175,14 +164,10 @@ namespace VideoWeb.Controllers
             {
                 return response;
             }
+            
+            var conference = await _conferenceService.GetConference(conferenceId);
 
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
-            var username = User.Identity.Name;
+            var username = User.Identity?.Name;
 
             foreach (var message in messages)
             {

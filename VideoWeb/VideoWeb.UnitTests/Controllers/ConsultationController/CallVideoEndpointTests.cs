@@ -1,17 +1,15 @@
 using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
-using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -19,7 +17,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
     public class CallVideoEndpointTests
     {
         private AutoMock _mocker;
-        private ConsultationsController _sut;
         private Conference _testConference;
 
         [SetUp]
@@ -40,17 +37,13 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                 .Returns(eventHubClientMock.Object);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
 
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-
-            _sut = SetupControllerWithClaims(null);
+            SetupControllerWithClaims(null);
         }
         
-        private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
+        private void SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("rep1@hmcts.net").Build();
@@ -64,7 +57,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var controller = _mocker.Create<ConsultationsController>();
             controller.ControllerContext = context;
-            return controller;
         }
     }
 }

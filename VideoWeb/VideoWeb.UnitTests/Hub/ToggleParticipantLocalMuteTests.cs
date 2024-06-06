@@ -17,14 +17,8 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = conference.Id;
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var isLocalMuted = true;
-
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
 
             EventHubClientMock.Verify(
@@ -40,12 +34,8 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = conference.Id;
             var participantId = Guid.NewGuid();
             var localMute = true;
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
 
             EventHubClientMock.Verify(

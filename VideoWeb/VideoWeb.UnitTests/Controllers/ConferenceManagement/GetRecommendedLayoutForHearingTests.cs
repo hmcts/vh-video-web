@@ -12,6 +12,7 @@ using VideoWeb.Controllers;
 using FluentAssertions;
 using VideoApi.Client;
 using Microsoft.AspNetCore.Http;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
@@ -54,8 +55,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                         .WithRole(AppRoles.JudgeRole).Build()
                 }
             };
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(y => y == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(_conference);
         }
 
         [Test]
@@ -63,8 +62,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var expectedLayout = _conference.GetRecommendedLayout();
-                    
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(guid => guid == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(_conference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ReturnsAsync(_conference);
 
             // Act
             var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id);
@@ -78,9 +77,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var statusCode = 123;
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(guid => guid == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new VideoApiException("message", statusCode, null, null, null));
-
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ThrowsAsync(new VideoApiException("message", statusCode, null, null, null));
             // Act
             var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id);
 
@@ -92,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public void should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
         {
             // Arrange
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(guid => guid == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new Exception());
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ThrowsAsync(new Exception());
 
             // Act
             Assert.ThrowsAsync<Exception>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id));

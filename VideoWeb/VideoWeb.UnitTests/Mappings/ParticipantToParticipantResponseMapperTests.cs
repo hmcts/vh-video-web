@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings
         private LinkedParticipantResponse linkedParticipantResponse1;
         private LinkedParticipantResponse linkedParticipantResponse2;
 
-        private CivilianRoom civilianRoom;
+        private CivilianRoom _civilianRoom;
         private RoomSummaryResponse roomSummaryResponse;
         private Guid participantId = Guid.NewGuid();
 
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Mappings
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>()).Returns(linkedParticipantMapperMock.Object);
 
-            civilianRoom = new CivilianRoom()
+            _civilianRoom = new CivilianRoom()
             {
                 Id = 123456,
                 RoomLabel = "TestCiviliantRoomLabel",
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             roomMapperMock = new Mock<IMapTo<CivilianRoom, RoomSummaryResponse>>();
-            roomMapperMock.Setup(mapper => mapper.Map(civilianRoom)).Returns(roomSummaryResponse);
+            roomMapperMock.Setup(mapper => mapper.Map(_civilianRoom)).Returns(roomSummaryResponse);
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(roomMapperMock.Object);
 
             _sut = _mocker.Create<ParticipantToParticipantResponseMapper>();
@@ -93,7 +93,7 @@ namespace VideoWeb.UnitTests.Mappings
             var testConference = new Conference()
             {
                 CivilianRooms = new List<CivilianRoom> {
-                    civilianRoom
+                    _civilianRoom
                 }
             };
 

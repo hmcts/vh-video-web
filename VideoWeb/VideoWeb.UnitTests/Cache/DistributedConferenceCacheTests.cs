@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
@@ -16,7 +17,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Cache
 {
-    public class DistributedConferenceCacheTests
+    public class DistributedConferenceCacheTests : CacheTestBase
     {
         private Mock<IDistributedCache> _distributedCacheMock;
         private Mock<ILogger<RedisCacheBase<Guid, Conference>>> _loggerMock;
@@ -32,7 +33,8 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_contains_key()
         {
             var conferenceResponse = CreateConferenceResponse();
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            var hearingDetails = CreateHearingResponse();
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetails);
             var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
             _distributedCacheMock
@@ -41,7 +43,7 @@ namespace VideoWeb.UnitTests.Cache
 
             var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
-            var result = await cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>());
+            var result = await cache.GetOrAddConferenceAsync(conference.Id, DummyInput);
             result.Should().BeEquivalentTo(conference);
         }
         
@@ -49,7 +51,8 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_does_not_contains_key()
         {
             var conferenceResponse = CreateConferenceResponse();
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            var hearingDetails = CreateHearingResponse();
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetails);
             var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
             _distributedCacheMock
@@ -62,24 +65,10 @@ namespace VideoWeb.UnitTests.Cache
 
             var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
-            var result = await cache.GetOrAddConferenceAsync(conference.Id, async () => await Task.FromResult(conferenceResponse));
+            var result = await cache.GetOrAddConferenceAsync(conference.Id, async () => await Task.FromResult((conferenceResponse, hearingDetails)));
             result.Should().BeEquivalentTo(conference);
         }
-
-        private static ConferenceDetailsResponse CreateConferenceResponse()
-        {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Participants = participants)
-                .With(x => x.Endpoints = endpoints)
-                .Build();
-            return conference;
-        }
         
-        private static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None
-        };
+        private static JsonSerializerSettings SerializerSettings => new () { TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None };
     }
 }

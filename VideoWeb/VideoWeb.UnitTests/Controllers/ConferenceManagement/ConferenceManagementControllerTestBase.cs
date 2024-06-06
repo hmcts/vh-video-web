@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
-using VideoApi.Contract.Responses;
 using Autofac.Extras.Moq;
+using VideoWeb.Common;
+using VideoWeb.Common.Caching;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -31,11 +30,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     User = claimsPrincipal
                 }
             };
-
-            _mocker.Mock<IConferenceCache>().Setup(x =>
-                x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(TestConference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(TestConference);
+            
+            var cache = _mocker.Mock<IConferenceCache>();
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
 
             return sut;
         }

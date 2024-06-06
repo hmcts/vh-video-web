@@ -27,27 +27,27 @@ namespace VideoWeb.EventHub.Hub
         private readonly IAppRoleService _appRoleService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly IConferenceManagementService _conferenceManagementService;
-
+        private readonly IConferenceService _conferenceService;
+        
         public EventHub(IUserProfileService userProfileService,
             IAppRoleService appRoleService,
             IVideoApiClient videoApiClient,
             ILogger<EventHub> logger,
-            IConferenceCache conferenceCache,
             IHeartbeatRequestMapper heartbeatRequestMapper,
             IConferenceVideoControlStatusService conferenceVideoControlStatusService,
-            IConferenceManagementService conferenceManagementService)
+            IConferenceManagementService conferenceManagementService,
+            IConferenceService conferenceService)
         {
             _userProfileService = userProfileService;
             _appRoleService = appRoleService;
             _logger = logger;
-            _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
             _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
             _conferenceManagementService = conferenceManagementService;
+            _conferenceService = conferenceService;
             _videoApiClient = videoApiClient;
         }
 
@@ -170,7 +170,7 @@ namespace VideoWeb.EventHub.Hub
             try
             {
                 _logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var imRules = new InstantMessageRules(_userProfileService);
                 var from = Context.User.Identity!.Name!.ToLower();
                 var isTargetAdmin = to.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase);
@@ -235,17 +235,7 @@ namespace VideoWeb.EventHub.Hub
                 .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
         }
-
-        private async Task<Conference> GetConference(Guid conferenceId)
-        {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-            return conference;
-        }
-
+        
         public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
         {
             try
@@ -256,7 +246,7 @@ namespace VideoWeb.EventHub.Hub
                     conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion,
                     heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 );
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 await Clients.Group(participant.Username.ToLowerInvariant()).ReceiveHeartbeat
                 (
@@ -289,7 +279,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
 
                 var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (transferringParticipant == null)
@@ -322,7 +312,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
 
                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (participant == null)
@@ -363,7 +353,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 var linkedParticipants = GetLinkedParticipants(conference, participant);
 
@@ -417,7 +407,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (participant == null)
                 {
@@ -450,7 +440,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var participants = conference.Participants.Where(x => !x.IsHost());
 
                 foreach (var participant in participants)
@@ -477,7 +467,7 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var otherHosts = conference.Participants
                     .Where(x => x.IsHost() && x.Id != participantId)
                     .ToArray();

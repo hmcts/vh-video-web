@@ -17,6 +17,7 @@ using VideoWeb.UnitTests.Builders;
 using VideoWeb.EventHub.Services;
 using FizzWare.NBuilder;
 using System.Linq;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -47,8 +48,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                         .WithRole(AppRoles.JudgeRole).Build()
                 }
             };
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(y => y == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(_conference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ReturnsAsync(_conference);
+            
         }
 
         [Test]
@@ -78,8 +80,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 Id = Guid.NewGuid(),
                 Participants = new List<Participant>()
             };
-
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(y => y == conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
 
             // Act
             var layoutResponse = await _sut.UpdateLayoutForHearing(conference.Id, expectedLayout);

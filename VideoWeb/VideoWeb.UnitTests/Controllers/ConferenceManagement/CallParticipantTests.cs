@@ -48,6 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     x => x.TransferParticipantAsync(TestConference.Id,
                         It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
             }
+            
         }
 
         [Test]
@@ -242,7 +243,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_unauthorised_when_witness_is_called_before_interpreter_joins()
         {
             var judge = TestConference.GetJudge();
-            var interpreterRoom = TestConference.CivilianRooms.First();
+            var interpreterRoom = TestConference.CivilianRooms[0];
             var witnessIds = TestConference.Participants
                 .Where(p => p.IsWitness() && p.LinkedParticipants.Any())
                 .Select(p => p.Id).ToList();
@@ -253,7 +254,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds.First());
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds[0]);
 
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;

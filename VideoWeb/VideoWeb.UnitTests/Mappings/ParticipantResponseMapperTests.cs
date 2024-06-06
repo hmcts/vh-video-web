@@ -15,8 +15,8 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const ParticipantStatus expectedStatus = ParticipantStatus.Available;
             const Role expectedRole = Role.Individual;
-            var participant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
-                .WithStatus(ParticipantState.Available).Build();
+            var participant = new ParticipantBuilder(Role.Individual, "Claimant")
+                .WithStatus(ParticipantStatus.Available).Build();
             
             var response = _sut.Map(participant);
             response.Id.Should().Be(participant.Id);

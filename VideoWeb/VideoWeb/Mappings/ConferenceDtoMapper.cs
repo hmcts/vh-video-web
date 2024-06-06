@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
@@ -6,12 +5,12 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceMapper : IMapTo<ConferenceDetailsResponse, Conference>
+    public class ConferenceDtoMapper : IMapTo<ConferenceDetailsResponse, Conference>
     {
         private readonly IMapTo<ParticipantDetailsResponse, Participant> _participantDetailsResponseMapper;
         private readonly IMapTo<EndpointResponse, Endpoint> _endpointMapper;
 
-        public ConferenceMapper(IMapTo<ParticipantDetailsResponse, Participant> participantDetailsResponseMapper, IMapTo<EndpointResponse, Endpoint> endpointResponseMapper)
+        public ConferenceDtoMapper(IMapTo<ParticipantDetailsResponse, Participant> participantDetailsResponseMapper, IMapTo<EndpointResponse, Endpoint> endpointResponseMapper)
         {
             _participantDetailsResponseMapper = participantDetailsResponseMapper;
             _endpointMapper = endpointResponseMapper;

@@ -17,8 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_messages_to_participants_on_suspended()
         {
-            _eventHandler = new SuspendEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new SuspendEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -28,7 +27,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 TimeStampUtc = DateTime.UtcNow,
-                ParticipantId = conference.Participants.First().Id
+                ParticipantId = conference.Participants[0].Id
             };
 
             await _eventHandler.HandleAsync(callbackEvent);

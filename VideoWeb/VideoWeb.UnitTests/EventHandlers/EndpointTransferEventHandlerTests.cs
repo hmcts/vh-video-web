@@ -21,12 +21,11 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_endpoint_status_messages_to_clients(RoomType from, RoomType to,
             EndpointState status)
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
-            var participantForEvent = conference.Endpoints.First();
+            var participantForEvent = conference.Endpoints[0];
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.EndpointTransfer,
@@ -47,11 +46,10 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public void Should_throw_exception_when_transfer_cannot_be_mapped_to_endpoint_status_cannot_be_derived()
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
             
             var conference = TestConference;
-            var participantForEvent = conference.Endpoints.First();
+            var participantForEvent = conference.Endpoints[0];
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.EndpointTransfer,

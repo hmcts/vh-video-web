@@ -7,23 +7,21 @@ using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoApi.Client;
+using VideoWeb.Common;
 
 namespace VideoWeb.Middleware
 {
     public class CheckParticipantCanAccessConferenceAttribute : ActionFilterAttribute
     {
         private readonly ILogger<CheckParticipantCanAccessConferenceAttribute> _logger;
-        private readonly IConferenceCache _conferenceCache;
-        private readonly IVideoApiClient _videoApiClient;
+        private readonly IConferenceService _conferenceService;
 
         public CheckParticipantCanAccessConferenceAttribute(
             ILogger<CheckParticipantCanAccessConferenceAttribute> logger,
-            IConferenceCache conferenceCache,
-            IVideoApiClient videoApiClient)
+            IConferenceService conferenceService)
         {
             _logger = logger;
-            _conferenceCache = conferenceCache;
-            _videoApiClient = videoApiClient;
+            _conferenceService = conferenceService;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -46,7 +44,8 @@ namespace VideoWeb.Middleware
                 return;
             }
 
-            var conference = await GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
+            
             if (conference == null)
             {
                 var message404 = $"Conference with id:'{conferenceId}' not found.";
@@ -86,14 +85,7 @@ namespace VideoWeb.Middleware
 
             return true;
         }
-
-        private async Task<Conference> GetConference(Guid conferenceId)
-        {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-        }
-
+        
         private Guid GetActionArgument(ActionExecutingContext context, string actionArgumentKey)
         {
             if (context.ActionArguments.ContainsKey(actionArgumentKey))

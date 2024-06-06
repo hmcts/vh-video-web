@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
@@ -15,25 +16,18 @@ namespace VideoWeb.Helpers
     public class HearingLayoutService : IHearingLayoutService
     {
         private readonly ILogger<HearingLayoutService> _logger;
-        private readonly IVideoApiClient _videoApiClient;
-        private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceService _conferenceService;
         private readonly IHearingLayoutCache _hearingLayoutCache;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
 
-        public HearingLayoutService(ILogger<HearingLayoutService> logger, IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache hearingLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+        public HearingLayoutService(ILogger<HearingLayoutService> logger, IConferenceService conferenceService, IHearingLayoutCache hearingLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _logger = logger;
-            _videoApiClient = videoApiClient;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
             _hearingLayoutCache = hearingLayoutCache;
             _hubContext = hubContext;
         }
-
-        private async Task<Conference> GetConferenceFromCache(Guid conferenceId)
-        {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-        }
-
+        
         private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout)
         {
             await _hearingLayoutCache.WriteToCache(conferenceId, newLayout);
@@ -48,7 +42,7 @@ namespace VideoWeb.Helpers
         {
             try
             {
-                var conference = await GetConferenceFromCache(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var hearingLayout = await GetHearingLayoutFromCache(conferenceId);
                 return hearingLayout ?? conference.GetRecommendedLayout();
             }
@@ -63,8 +57,8 @@ namespace VideoWeb.Helpers
         public async Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout)
         {
             _logger.LogInformation("Attempting to change layout for {conferenceId} to {newLayout} by participant with the ID {changedById}.", conferenceId, newLayout, changedById);
-
-            Conference conference = await GetConferenceFromCache(conferenceId);
+            
+            var conference = await _conferenceService.GetConference(conferenceId);
 
             _logger.LogDebug("Got conference {conferenceId} to change layout to {newLayout} requested by participant with the ID {changedById}.", conferenceId, newLayout, changedById);
 

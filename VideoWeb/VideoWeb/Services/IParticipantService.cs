@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Services
@@ -12,6 +13,6 @@ namespace VideoWeb.Services
 
         bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference);
 
-        Task AddStaffMemberToConferenceCache(AddStaffMemberResponse response);
+        Task<Conference> AddStaffMemberToConferenceCache(AddStaffMemberResponse response);
     }
 }

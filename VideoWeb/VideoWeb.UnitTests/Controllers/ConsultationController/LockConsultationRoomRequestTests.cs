@@ -7,15 +7,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -42,12 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LockConsultationRoomRequest, LockRoomRequest>()).Returns(_mocker.Create<LockRoomRequestMapper>());
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
             _sut = _mocker.Create<ConsultationsController>();
             _sut.ControllerContext = context;
         }

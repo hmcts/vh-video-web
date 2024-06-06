@@ -6,19 +6,18 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
+using VideoWeb.Common;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class EndpointDisconnectedEventHandler : EventHandlerBase
+    public class EndpointDisconnectedEventHandler(
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IConferenceService conferenceService,
+        ILogger<EventHandlerBase> logger)
+        : EventHandlerBase(hubContext, conferenceService, logger)
     {
-        public EndpointDisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
-            hubContext, conferenceCache, logger, videoApiClient)
-        {
-        }
-
         public override EventType EventType => EventType.EndpointDisconnected;
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)

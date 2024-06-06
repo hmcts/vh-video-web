@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -29,7 +28,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.ParticipantRoomId = TestConference.CivilianRooms.First().Id.ToString();
+            request.ParticipantRoomId = TestConference.CivilianRooms[0].Id.ToString();
             
             // Act
             var result = await Sut.SendHearingEventAsync(request);
@@ -39,6 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            Mocker.Mock<IVideoApiClient>().Verify(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()), Times.Once);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var roomId = 999;
-            var participantId = TestConference.Participants.Last().Id;
+            var participantId = TestConference.Participants[^1].Id;
             var request = CreateRequest();
             request.EventType = EventType.Joined;
             request.ParticipantRoomId = roomId.ToString();
@@ -61,9 +61,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
 
-            var newCacheRoom = TestConference.CivilianRooms.FirstOrDefault(x => x.Id == roomId);
+            var newCacheRoom = TestConference.CivilianRooms.Find(x => x.Id == roomId);
             newCacheRoom.Should().NotBeNull();
-            newCacheRoom?.Participants.Any(x => x == participantId).Should().BeTrue();
+            newCacheRoom?.Participants.Exists(x => x == participantId).Should().BeTrue();
         }
 
         [Test]
@@ -75,17 +75,13 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             
             var finalParticipantCount = vmr.Participants.Count + 1;
             var roomId = vmr.Id;
-            var participantId = TestConference.Participants.Last().Id;
+            var participantId = TestConference.Participants[^1].Id;
             var request = CreateRequest();
             var consultationRoomId = 1234;
             var consultationRoomLabel = "ConsultationRoom1";
             request.EventType = EventType.Joined;
             request.ParticipantRoomId = roomId.ToString();
             request.ParticipantId = participantId.ToString();
-
-            var linkedParticipantInConsultation = vmr?.Participants.Where(x => x != participantId)
-                .Select(x => TestConference.Participants.FirstOrDefault(y => x == y.Id))
-                .FirstOrDefault(z => z?.ParticipantStatus == ParticipantStatus.InConsultation);
 
             var videoApiParticipantResponse = TestConference.Participants.Select(x => new ParticipantSummaryResponse()
             {

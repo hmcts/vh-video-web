@@ -14,8 +14,8 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -35,12 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
 
             _sut = SetupControllerWithClaims(null);
         }

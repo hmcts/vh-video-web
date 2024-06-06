@@ -12,7 +12,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.UnitTests.Controllers.ConsultationController;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
@@ -31,14 +31,14 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, AllowedEndpointResponse>()).Returns(_mocker.Create<AllowedEndpointResponseMapper>());
             _testConference = ConsultationHelper.BuildConferenceForTest();
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConference.Id)))
                 .ReturnsAsync(_testConference);
 
             _controller = _mocker.Create<EndpointsController>();
+            
+            var cache = _mocker.Mock<IConferenceCache>();
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
         private void SetupLoginAs(string username)

@@ -24,8 +24,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             var confDetail = CreateConferenceDetailsResponse();
             VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -55,8 +54,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             var confDetail = CreateConferenceDetailsResponse();
             VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -89,8 +87,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             var confDetail = CreateConferenceDetailsResponse();
             VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);

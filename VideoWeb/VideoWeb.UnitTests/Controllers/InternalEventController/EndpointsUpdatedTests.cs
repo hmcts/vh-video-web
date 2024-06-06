@@ -10,7 +10,7 @@ using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using VideoWeb.Common.Caching;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Helpers.Interfaces;
@@ -42,9 +42,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
 
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == _conference.Id),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conference.Id)))
                 .ReturnsAsync(_conference);
         }
 
@@ -113,20 +112,16 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 .With(x => x.ExistingEndpoints, new List<EndpointResponse>())
                 .With(x => x.RemovedEndpoints, new List<Guid>())
                 .With(x => x.NewEndpoints, newEndpointsList).Build();
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            
+            
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id)))
                 .ReturnsAsync(_conference);
 
             var result = await _controller.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
 
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IConferenceCache>()
-                .Verify(
-                    x => x.GetOrAddConferenceAsync(_conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()),
-                    Times.Once);
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.GetConferenceDetailsByIdAsync(_conference.Id), Times.Once);
+            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conference.Id), Times.Once);
         }
     }
 }

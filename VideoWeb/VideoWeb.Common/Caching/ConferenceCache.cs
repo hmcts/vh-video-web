@@ -1,45 +1,36 @@
 using System;
 using System.Threading.Tasks;
+using BookingsApi.Contract.V2.Responses;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public class ConferenceCache : IConferenceCache
+    public class ConferenceCache(IMemoryCache memoryCache) : IConferenceCache
     {
-        private readonly IMemoryCache _memoryCache;
-
-        public ConferenceCache(IMemoryCache memoryCache) 
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
         {
-            _memoryCache = memoryCache;
-        }
-
-        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
-        {
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
             await UpdateConferenceAsync(conference);
         }
-
+ 
         public async Task UpdateConferenceAsync(Conference conference)
         {
-            await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
+            await memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(4);
                 return Task.FromResult(conference);
             });
         }
 
-        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
         {
-            var conference = await Task.FromResult(_memoryCache.Get<Conference>(id));
-
+            var conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             if (conference != null) return conference;
-            
-            var conferenceDetails = await addConferenceDetailsFactory();
-            await AddConferenceAsync(conferenceDetails);
-            conference = await Task.FromResult(_memoryCache.Get<Conference>(id));
-
+            var (conferenceDetails, hearingDetailsResponse) = await addConferenceDetailsFactory();
+            await AddConferenceAsync(conferenceDetails, hearingDetailsResponse);
+            conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             return conference;
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Services;
@@ -22,19 +24,25 @@ namespace VideoWeb.Controllers
     public class ConferenceManagementController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IBookingsApiClient _bookingApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
-        private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
         private readonly IConferenceManagementService _conferenceManagementService;
-
-        public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceManagementService conferenceManagementService)
+        private readonly IConferenceService _conferenceService;
+        
+        public ConferenceManagementController(IVideoApiClient videoApiClient, 
+            IBookingsApiClient bookingApiClient,
+            ILogger<ConferenceManagementController> logger,
+            IHearingLayoutService hearingLayoutService, 
+            IConferenceManagementService conferenceManagementService,
+            IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
+            _bookingApiClient = bookingApiClient;
             _logger = logger;
-            _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
             _conferenceManagementService = conferenceManagementService;
+            _conferenceService = conferenceService;
         }
 
         /// <summary>
@@ -56,12 +64,8 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-                (
-                    conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-                );
- 
+                var conference = await _conferenceService.GetConference(conferenceId);
+                
                 request.ParticipantsToForceTransfer = conference.Participants
                     .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.Id.ToString()).ToList();
@@ -179,8 +183,7 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogDebug("Attempting get recommended layout  for conference {conferenceId}", conferenceId);
-                var conference = await GetConference(conferenceId);
-
+                var conference = await _conferenceService.GetConference(conferenceId);
                 return Ok(conference.GetRecommendedLayout());
             }
             catch (VideoApiException exception)
@@ -443,17 +446,14 @@ namespace VideoWeb.Controllers
 
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
-            var conference = await GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
+            
+            var conference = await _conferenceService.GetConference(conferenceId);
 
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
 
@@ -498,40 +498,21 @@ namespace VideoWeb.Controllers
         private async Task<Conference> RefreshConferenceCache(Guid conferenceId)
         {
             var conferenceResponse = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
-            await _conferenceCache.UpdateConferenceAsync(conference);
-
+            var hearingDetailsResponse = await _bookingApiClient.GetHearingDetailsByIdV2Async(conferenceResponse.HearingId);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
             return conference;
         }
-
-        private async Task<Conference> GetConference(Guid conferenceId)
-        {
-            return await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-        }
-
+        
         private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
+            var conference = await _conferenceService.GetConference(conferenceId);
             return conference.Participants.SingleOrDefault(x => x.Id == participantId);
         }
 
         private async Task<Participant> GetParticipant(Guid conferenceId, string username)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
+            var conference = await _conferenceService.GetConference(conferenceId);
             return conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username.Trim(), StringComparison.InvariantCultureIgnoreCase));
         }
 

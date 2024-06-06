@@ -13,7 +13,8 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
+using VideoWeb.Common;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Controllers.EndpointController
 {
@@ -26,7 +27,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>()).Returns(_mocker.Create<EndpointsResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, VideoEndpointResponse>()).Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>());
             _controller = _mocker.Create<EndpointsController>();
         }
         
@@ -34,11 +35,13 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public async Task Should_return_ok()
         {
             var conferenceId = Guid.NewGuid();
-            var response = Builder<EndpointResponse>.CreateListOfSize(4).All().With(x => x.Id = Guid.NewGuid()).Build()
+            var endpoints = Builder<Endpoint>.CreateListOfSize(3).All().With(x => x.Id = Guid.NewGuid()).Build()
                 .ToList();
-
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetEndpointsForConferenceAsync(It.IsAny<Guid>()))
+            var response = Builder<Conference>.CreateNew()
+                .With(x => x.Endpoints = endpoints)
+                .With(x => x.Id = Guid.NewGuid()).Build();
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(conferenceId))
                 .ReturnsAsync(response);
 
             var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId);
@@ -46,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             typedResult.Should().NotBeNull();
             var videoEndpointResponses = typedResult.Value.As<List<VideoEndpointResponse>>();
             videoEndpointResponses.Should().NotBeNull();
-            videoEndpointResponses.Count.Should().Be(response.Count);
+            videoEndpointResponses.Count.Should().Be(endpoints.Count);
         }
 
         [Test]
@@ -55,10 +58,10 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             var conferenceId = Guid.NewGuid();
             var apiException = new VideoApiException<ProblemDetails>("Not Found", (int)HttpStatusCode.NotFound,
                 "Please provide a valid conference Id", null, default, null);
-
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetEndpointsForConferenceAsync(It.IsAny<Guid>()))
-                .Throws(apiException);
+            
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(conferenceId))
+                .ThrowsAsync(apiException);
 
             var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId);
             var typedResult = (ObjectResult)result;
