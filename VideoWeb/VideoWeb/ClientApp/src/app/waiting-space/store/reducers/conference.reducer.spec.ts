@@ -760,6 +760,8 @@ describe('Conference Reducer', () => {
 
             expect(result.currentConference.participants[0].room.label).toEqual('Consultation Room 1');
             expect(result.currentConference.participants[0].room.locked).toBeFalse();
+
+            expect(result.availableRooms.length).toEqual(2);
         });
 
         it('should update the participant room and set current room when room is a hearing room', () => {

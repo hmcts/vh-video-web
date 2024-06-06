@@ -38,7 +38,12 @@ namespace VideoWeb.Common.Caching
 
         public async Task<List<Claim>> GetAsync(string key)
         {
-            return await ReadFromCache(key);
+            var result = await ReadFromCache(key);
+            if(result?.Count == 0)
+            {
+                return null;
+            }
+            return result;
         }
 
         public async Task ClearFromCache(string key)
