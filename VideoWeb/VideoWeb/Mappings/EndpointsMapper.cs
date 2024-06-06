@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;

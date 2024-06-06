@@ -10,7 +10,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoWeb.Services;
+using VideoWeb.Common;
 
 namespace VideoWeb.Controllers;
 

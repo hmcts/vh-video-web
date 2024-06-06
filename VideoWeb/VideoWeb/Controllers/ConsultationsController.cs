@@ -183,7 +183,7 @@ namespace VideoWeb.Controllers
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x != null && x.EndpointParticipants.Exists(ep => ep.ParticipantUsername.Equals(username, StringComparison.OrdinalIgnoreCase)));
+                        .Where(x => x != null && x.DefenceAdvocate.Equals(username, StringComparison.OrdinalIgnoreCase));
                     
                     foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
                     {

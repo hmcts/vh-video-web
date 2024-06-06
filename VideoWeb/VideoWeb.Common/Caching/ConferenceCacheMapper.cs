@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 
-namespace VideoWeb.Cache.Mappers
+namespace VideoWeb.Common.Caching
 {
     public static class ConferenceCacheMapper
     {
