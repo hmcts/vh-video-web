@@ -10,7 +10,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoWeb.Common;
+using VideoWeb.Services;
 
 namespace VideoWeb.Controllers;
 
@@ -47,23 +47,23 @@ public class EndpointsController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId)
     {
-        var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
-        var conference = await conferenceService.GetConference(conferenceId);
-        var isHostOrJoh = conference.Participants.Exists(x => (x.IsHost() || x.IsJudicialOfficeHolder()) &&
-                                                              x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
-        
-        var usersEndpoints = conference.Endpoints;
-        if(!isHostOrJoh)
         {
-            usersEndpoints =
-                usersEndpoints
-                    .Where(ep => ep.EndpointParticipants != null &&
-                                 ep.EndpointParticipants.Exists(e => e.ParticipantUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)))
-                    .ToList();
+            var username = User.Identity?.Name?.Trim() ??
+                           throw new UnauthorizedAccessException("No username found in claims");
+            var conference = await conferenceService.GetConference(conferenceId);
+            var isHostOrJoh = conference.Participants.Exists(x =>
+                (x.IsHost() || x.IsJudicialOfficeHolder()) && x.Username.Equals(User.Identity.Name?.Trim(),
+                    StringComparison.InvariantCultureIgnoreCase));
+            var usersEndpoints = conference.Endpoints;
+            if (!isHostOrJoh)
+                usersEndpoints = usersEndpoints.Where(ep =>
+                    ep.DefenceAdvocate != null &&
+                    ep.DefenceAdvocate.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            
+            var allowedEndpointResponseMapper = mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
+            var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
+            return Ok(response);
         }
-        var allowedEndpointResponseMapper = mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
-        var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
-        return Ok(response);
-        
     }
+    
 }

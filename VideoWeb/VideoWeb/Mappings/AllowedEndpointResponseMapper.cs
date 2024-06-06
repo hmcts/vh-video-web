@@ -13,11 +13,7 @@ namespace VideoWeb.Mappings
             {
                 DisplayName = input.DisplayName,
                 Id = input.Id,
-                EndpointParticipants = input.EndpointParticipants.Select(x => new EndpointParticipantResponse
-                {
-                    ParticipantUsername = x.ParticipantUsername,
-                    LinkType = x.LinkedParticipantType
-                }).ToList()
+                DefenceAdvocateUsername = input.DefenceAdvocate,
             };
         }
     }

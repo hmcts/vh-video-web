@@ -22,11 +22,7 @@ namespace VideoWeb.Mappings
                 Status = endpoint.EndpointStatus,
                 PexipDisplayName = pexipDisplayName,
                 CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
-                EndpointParticipants = endpoint.EndpointParticipants?.Select(x => new EndpointParticipantResponse
-                {
-                    ParticipantUsername = x.ParticipantUsername,
-                    LinkType = x.LinkedParticipantType
-                }).ToList()
+                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
             };
         }
         

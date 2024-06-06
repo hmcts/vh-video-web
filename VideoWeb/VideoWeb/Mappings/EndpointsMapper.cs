@@ -7,21 +7,18 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class EndpointsMapper : IMapTo<EndpointResponse, List<EndpointParticipantResponse>, Endpoint>
+    public class EndpointsMapper : IMapTo<EndpointResponse, Endpoint>
     {
-        public Endpoint Map(EndpointResponse endpoint, List<EndpointParticipantResponse> linkedParticipants)
+        public Endpoint Map(EndpointResponse endpoint)
         {
             var endpointDto = new Endpoint
             {
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 EndpointStatus =  (EndpointStatus)(int)endpoint.Status,
-                EndpointParticipants = linkedParticipants.Select(x => new EndpointParticipant
-                {
-                    ParticipantUsername = x.ParticipantUsername,
-                    LinkedParticipantType = (LinkType)(int)x.LinkedParticipantType
-                }).ToList(),
+                DefenceAdvocate = endpoint.DefenceAdvocate
             };
+            
             if(endpoint.CurrentRoom != null)
             {
                 endpointDto.CurrentRoom = new MeetingRoomDto

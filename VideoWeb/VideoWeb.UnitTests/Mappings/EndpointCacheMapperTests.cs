@@ -20,27 +20,7 @@ namespace VideoWeb.UnitTests.Mappings
             cachedModel.Id.Should().Be(ep.Id);
             cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
+            cachedModel.DefenceAdvocate.Should().Be(ep.DefenceAdvocate);
         }
-
-        [Test]
-        public void should_map_endpoint_participants_to_cache_model()
-        {
-
-            var participants = Builder<Participant>.CreateListOfSize(1).Build();
-            var ep = new EndpointParticipantResponse
-            {
-                ParticipantId = participants[0].RefId,
-                ParticipantUsername = "username",
-                LinkedParticipantType = LinkedParticipantTypeV2.DefenceAdvocate
-            };
-
-            var cachedModel = EndpointParticipantCacheMapper.MapEndpointParticipantToCacheModel(ep, participants);
-           
-            cachedModel.ParticipantId.Should().Be(participants[0].Id);
-            cachedModel.ParticipantRefId.Should().Be(ep.ParticipantId);
-            cachedModel.ParticipantUsername.Should().Be(participants[0].Username);
-            cachedModel.LinkedParticipantType.ToString().Should().Be(ep.LinkedParticipantType.ToString());
-        }
-
     }
 }

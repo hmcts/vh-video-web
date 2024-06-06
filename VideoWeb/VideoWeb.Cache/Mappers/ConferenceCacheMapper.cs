@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using BookingsApi.Contract.V2.Responses;
-using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
 
-namespace VideoWeb.Common.Caching
+namespace VideoWeb.Cache.Mappers
 {
     public static class ConferenceCacheMapper
     {
@@ -13,21 +10,13 @@ namespace VideoWeb.Common.Caching
         {
             var participants = conferenceResponse
                 .Participants
-                .Select(MapParticipantToCacheModel)
+                .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse.Participants))
                 .ToList();
 
             var endpoints = conferenceResponse.Endpoints == null
                 ? new List<Endpoint>()
                 : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
             
-            foreach (var endpoint in endpoints)
-            {
-                endpoint.EndpointParticipants = hearingDetailsResponse.Endpoints
-                    .Single(x => x.Id == endpoint.Id).EndpointParticipants?
-                    .Select(x => EndpointParticipantCacheMapper.MapEndpointParticipantToCacheModel(x, participants))
-                    .ToList();
-            }
-
             var civilianRooms = conferenceResponse.CivilianRooms == null
                 ? new List<CivilianRoom>()
                 : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
@@ -66,23 +55,24 @@ namespace VideoWeb.Common.Caching
             return conference;
         }
 
-        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
+        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, List<ParticipantResponseV2> participantDetails)
         {
             var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
+            var hearingDetails = participantDetails.Single(x => x.Id == participant.RefId);
             return new Participant
             {
                 Id = participant.Id,
                 RefId = participant.RefId,
                 Name = participant.Name,
-                FirstName = participant.FirstName,
-                LastName = participant.LastName,
-                ContactEmail = participant.ContactEmail,
-                ContactTelephone = participant.ContactTelephone,
-                DisplayName = participant.DisplayName,
-                Role = Enum.Parse<Role>(participant.UserRole.ToString(), true),
-                HearingRole = participant.HearingRole,
+                FirstName = hearingDetails.FirstName,
+                LastName = hearingDetails.LastName,
+                ContactEmail = hearingDetails.ContactEmail,
+                ContactTelephone = hearingDetails.ContactEmail,
+                DisplayName = hearingDetails.DisplayName,
+                Role = Enum.Parse<Role>(hearingDetails.UserRoleName, true),
+                HearingRole = hearingDetails.HearingRoleName,
                 ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true),
-                Username = participant.Username,
+                Username = hearingDetails.Username,
                 CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
                 LinkedParticipants = links,

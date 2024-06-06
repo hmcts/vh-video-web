@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 
@@ -17,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
             // Arrange
             var endpoint = new Endpoint 
             { 
-                EndpointParticipants = [new() { ParticipantUsername = defenceAdvocateUsername }],
+                DefenceAdvocate = defenceAdvocateUsername,
                 Id = Guid.NewGuid(),
                 DisplayName = displayName 
             };
@@ -28,7 +27,7 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().NotBeNull();
             result.DisplayName.Should().Be(displayName);
-            result.EndpointParticipants[0].ParticipantUsername.Should().Be(defenceAdvocateUsername);
+            result.DefenceAdvocateUsername.Should().Be(defenceAdvocateUsername);
             result.Id.Should().Be(endpoint.Id);
         }
     }

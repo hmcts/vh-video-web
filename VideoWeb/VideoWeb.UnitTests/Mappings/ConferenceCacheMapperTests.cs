@@ -57,50 +57,19 @@ namespace VideoWeb.UnitTests.Mappings
                 conference.Endpoints.Select(x => x.Id).Should().Contain(endpoint.Id);
                 conference.Endpoints.Select(x => x.DisplayName).Should().Contain(endpoint.DisplayName);
                 conference.Endpoints.Select(x => x.Status).Should().Contain((EndpointState)endpoint.EndpointStatus);
-                
-                var endpointParticipants =
-                    hearingResponse.Endpoints.Single(x => x.Id == endpoint.Id).EndpointParticipants;
-                                
-                foreach (var ep in endpoint.EndpointParticipants)
-                {
-                    var expected = endpointParticipants.Single(x => x.ParticipantId == ep.ParticipantRefId);
-                    ep.ParticipantUsername.Should().Be(expected.ParticipantUsername);
-                    ep.LinkedParticipantType.Should().Be((LinkType)expected.LinkedParticipantType);
-                }
+                conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocate);
             }
         }
         
         private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
         {
-            var endpointParticipants = new List<EndpointParticipantResponse>
-            {
-                new ()
-                {
-                    ParticipantId = conference.Participants[0].RefId,
-                    ParticipantUsername = conference.Participants[0].Username,
-                    LinkedParticipantType = LinkedParticipantTypeV2.DefenceAdvocate
-                },
-                new ()
-                {
-                    ParticipantId = conference.Participants[1].RefId,
-                    ParticipantUsername = conference.Participants[1].Username,
-                    LinkedParticipantType = LinkedParticipantTypeV2.Representative
-                },
-                new ()
-                {
-                    ParticipantId = conference.Participants[2].RefId,
-                    ParticipantUsername = conference.Participants[2].Username,
-                    LinkedParticipantType = LinkedParticipantTypeV2.Intermediary
-                }
-                
-            };
-            var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2()
+            var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2
             {
                 Id = x.Id,
                 DisplayName = x.DisplayName,
                 Sip = x.SipAddress,
                 Pin = x.Pin,
-                EndpointParticipants = endpointParticipants
+                DefenceAdvocateId = conference.Participants.First(p => p.Username == x.DefenceAdvocate).RefId,
             }).ToList();
             
             return Builder<HearingDetailsResponseV2>.CreateNew()
@@ -124,7 +93,7 @@ namespace VideoWeb.UnitTests.Mappings
             var participantB = participants[1];
             participantA.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantB.Id, Type = LinkedParticipantType.Interpreter });
             participantB.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantA.Id, Type = LinkedParticipantType.Interpreter });
-            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
+            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).All().With(e => e.DefenceAdvocate = participantA.Username).Build().ToList();
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.CurrentStatus = ConferenceState.Suspended)
