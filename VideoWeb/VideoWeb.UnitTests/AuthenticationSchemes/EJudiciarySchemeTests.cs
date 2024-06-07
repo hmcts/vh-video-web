@@ -193,6 +193,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         private static void AssertRoleClaimsAdded(ClaimsIdentity identity)
         {
             var roleClaims = identity.Claims.Where(c => c.Type == identity.RoleClaimType).ToList();
+            roleClaims.Count.Should().Be(2);
             roleClaims.Should().Contain(c => c.Value == "Judge");
             roleClaims.Should().Contain(c => c.Value == "JudicialOfficeHolder");
         }
