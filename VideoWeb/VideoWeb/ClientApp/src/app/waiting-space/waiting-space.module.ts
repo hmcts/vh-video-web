@@ -48,6 +48,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
     imports: [
@@ -55,7 +56,7 @@ import { ConferenceEffectsEffects } from './store/effects/conference-effects.eff
         WaitingSpaceRoutingModule,
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
-        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
         EffectsModule.forFeature([ConferenceEffectsEffects])
     ],
     declarations: [
