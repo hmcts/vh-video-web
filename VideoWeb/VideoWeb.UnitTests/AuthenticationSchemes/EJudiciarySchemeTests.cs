@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -151,7 +152,9 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
 
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
-            identity.FindFirst(identity.RoleClaimType).Value.Should().Be("Judge");
+            var roleClaims = identity.Claims.Where(c => c.Type == identity.RoleClaimType).ToList();
+            roleClaims.Should().Contain(c => c.Value == "Judge");
+            roleClaims.Should().Contain(c => c.Value == "JudicialOfficeHolder");
         }
         
         [Test]
@@ -186,7 +189,9 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
-            identity.FindFirst(identity.RoleClaimType).Value.Should().Be("Judge");
+            var roleClaims = identity.Claims.Where(c => c.Type == identity.RoleClaimType).ToList();
+            roleClaims.Should().Contain(c => c.Value == "Judge");
+            roleClaims.Should().Contain(c => c.Value == "JudicialOfficeHolder");
         }
     }
 }
