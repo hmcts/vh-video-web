@@ -152,9 +152,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
 
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
-            var roleClaims = identity.Claims.Where(c => c.Type == identity.RoleClaimType).ToList();
-            roleClaims.Should().Contain(c => c.Value == "Judge");
-            roleClaims.Should().Contain(c => c.Value == "JudicialOfficeHolder");
+            AssertRoleClaimsAdded(identity);
         }
         
         [Test]
@@ -189,6 +187,11 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
+            AssertRoleClaimsAdded(identity);
+        }
+        
+        private static void AssertRoleClaimsAdded(ClaimsIdentity identity)
+        {
             var roleClaims = identity.Claims.Where(c => c.Type == identity.RoleClaimType).ToList();
             roleClaims.Should().Contain(c => c.Value == "Judge");
             roleClaims.Should().Contain(c => c.Value == "JudicialOfficeHolder");
