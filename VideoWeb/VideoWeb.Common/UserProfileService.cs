@@ -65,7 +65,7 @@ namespace VideoWeb.Common
             return user.IsInRole(AppRoles.VhOfficerRole);
         }
 
-        private static List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
+        private List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
             var cliams = new List<Claim>();
@@ -99,6 +99,7 @@ namespace VideoWeb.Common
             }
             if (!roles.Any())
             {
+                _userProfileCache.ClearFromCache(user.Identity.Name);
                 throw new NotSupportedException($"No supported role for this application");
             }
 
