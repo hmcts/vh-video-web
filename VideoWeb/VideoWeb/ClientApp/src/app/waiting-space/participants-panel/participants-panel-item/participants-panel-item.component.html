@@ -1,3 +1,4 @@
+<!-- Column 1 -->
 <div
   [class]="{ yellow: hasSpotlight, red: isDisconnected }"
   appTooltip
@@ -37,7 +38,7 @@
     />
     <br />
   </span>
-  <span class="wrap-anywhere" innerHtml="{{ _participant.displayName | MultiLinePipe }}"></span>
+  <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
 </div>
 
 <ng-container *ngIf="!isDisconnected; else participantDisconnected">
@@ -55,49 +56,41 @@
         <img
           *ngIf="isMicRemoteMuted"
           appTooltip
-          [text]="isMicRemoteMuted ? 'participants-panel.unmute-lock' : 'participants-panel.mute-participant' | translate"
+          [text]="isMicRemoteMuted ? 'participants-panel.unmute-lock' : ('participants-panel.mute-participant' | translate)"
           colour="grey"
           [src]="isMicRemoteMuted ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
           class="panel-icon"
-          [attr.alt]="
-            (isMicRemoteMuted ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
-              | translate
-          "
-          (click)="toggleMuteParticipant(); $event.stopPropagation()"
+          [attr.alt]="(isMicRemoteMuted ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon') | translate"
+          (click)="toggleParticipantMute(); $event.stopPropagation()"
           tabindex="0"
-          (keyup.enter)="toggleMuteParticipant(); $event.stopPropagation()"
+          (keyup.enter)="toggleParticipantMute(); $event.stopPropagation()"
         />
         <fa-icon
           *ngIf="!isMicRemoteMuted"
           appTooltip
-          [text]="
-            (isLocalMicMuted ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate
-          "
+          [text]="(isLocalMicMuted ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate"
           colour="grey"
           icon="microphone"
           class="icon-button"
           [class]="{ red: isLocalMicMuted }"
-          (click)="toggleMuteParticipant(); $event.stopPropagation()"
+          (click)="toggleParticipantMute(); $event.stopPropagation()"
           tabindex="0"
-          (keyup.enter)="toggleMuteParticipant(); $event.stopPropagation()"
+          (keyup.enter)="toggleParticipantMute(); $event.stopPropagation()"
         >
         </fa-icon>
       </ng-container>
     </div>
-    <div
-      *ngIf="isCallable && !isInHearing"
-      [id]="idPrefix + '-' + _participant.id + '-admit-participant-controls'"
-    >
+    <div *ngIf="isCallable && !isInHearing" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
       <ng-container *ngIf="isAvailable; else participantUnavailable">
         <fa-icon
           *ngIf="!transferringIn"
-          [id]="idPrefix + '-' + _participant.id + '-admit-participant-icon'"
+          [id]="idPrefix + '-' + participant.id + '-admit-participant-icon'"
           appTooltip
           [text]="
             isWitness
               ? ('participants-panel.call-witness' | translate)
               : ('participants-panel.admit-participant'
-                | translate: { role: 'hearing-role.' + (_participant.hearingRole | hyphenate) | translate | lowercase })
+                | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
           "
           colour="green"
           class="icon-button"
@@ -107,17 +100,17 @@
           (keyup.enter)="callParticipantIntoHearing()"
         >
         </fa-icon>
-        <div [id]="idPrefix + '-' + _participant.id + '-transferring-in-text'" *ngIf="transferringIn" class="yellow">
+        <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'" *ngIf="transferringIn" class="yellow">
           {{ 'participants-panel.joining1' | translate }}
         </div>
       </ng-container>
       <ng-template #participantUnavailable>
         <fa-icon
-          [id]="idPrefix + '-' + _participant.id + '-participant-unavailable-icon'"
+          [id]="idPrefix + '-' + participant.id + '-participant-unavailable-icon'"
           appTooltip
           [text]="
             'participants-panel.participant-unavailable'
-              | translate: { role: 'hearing-role.' + (_participant.hearingRole | hyphenate) | translate }
+              | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
           "
           colour="grey"
           class="icon-button no-click"
@@ -150,18 +143,13 @@
       appTooltip
       [text]="
         hasSpotlight
-          ? _participant.displayName + ('participants-panel.remove-spotlight' | translate)
-          : _participant.displayName + ('participants-panel.click-to-spotlight' | translate)
+          ? participant.displayName + ('participants-panel.remove-spotlight' | translate)
+          : participant.displayName + ('participants-panel.click-to-spotlight' | translate)
       "
       colour="blue"
-      (click)="toggleSpotlightParticipant(); $event.stopPropagation()"
+      (click)="toggleParticipantSpotlight(); $event.stopPropagation()"
     >
-      <fa-icon
-        icon="thumbtack"
-        [class]="{ yellow: hasSpotlight }"
-        tabindex="0"
-        (keyup.enter)="toggleSpotlightParticipant()"
-      ></fa-icon>
+      <fa-icon icon="thumbtack" [class]="{ yellow: hasSpotlight }" tabindex="0" (keyup.enter)="toggleParticipantSpotlight()"></fa-icon>
     </div>
     <div *ngIf="isParticipantInHearing && isLocalCameraOff" class="icon-button no-click">
       <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate" icon="video-slash" class="red"></fa-icon>
@@ -170,25 +158,17 @@
 
   <!-- Column 6 -->
   <div>
-    <!-- <app-judge-context-menu
-      [participantInput]="participant"
-      *ngIf="!participant.isHost"
-      [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
-      (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
-      (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
-      (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"
-      (callParticipantIntoHearingEvent)="callParticipantIntoHearingEventHandler($event)"
-      (dismissParticipantFromHearingEvent)="dismissParticipantFromHearingEventHandler($event)"
-      (toggleLocalMuteParticipantEvent)="toggleLocalMuteParticipantEventHandler($event)"
-    >
-    </app-judge-context-menu> -->
-
     <app-judge-context-menu
-      [participantInput]="_participant"
+      [participantInput]="participant"
       *ngIf="!isHost"
       [hidden]="!isParticipantInHearing && !isAvailable"
-    >
-    </app-judge-context-menu>
+      (toggleMuteParticipantEvent)="toggleParticipantMute()"
+      (toggleSpotlightParticipantEvent)="toggleParticipantSpotlight()"
+      (lowerParticipantHandEvent)="lowerParticipantHand()"
+      (callParticipantIntoHearingEvent)="callParticipantIntoHearing()"
+      (dismissParticipantFromHearingEvent)="dismissParticipantFromHearing()"
+      (toggleLocalMuteParticipantEvent)="toggleParticipantLocalMute()"
+    ></app-judge-context-menu>
   </div>
 </ng-container>
 <ng-template #participantDisconnected>

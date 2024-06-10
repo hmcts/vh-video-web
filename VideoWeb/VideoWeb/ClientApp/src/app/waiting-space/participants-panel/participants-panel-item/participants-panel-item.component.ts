@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PanelModel } from '../../models/panel-model-base';
 import { HearingRole } from '../../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,6 +7,12 @@ import { LinkedParticipantPanelModel } from '../../models/linked-participant-pan
 import { VideoEndpointPanelModel } from '../../models/video-endpoint-panel-model';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ParticipantPanelModel } from '../../models/participant-panel-model';
+import {
+    CallParticipantIntoHearingEvent, DismissParticipantFromHearingEvent,
+    LowerParticipantHandEvent, ToggleLocalMuteParticipantEvent,
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent
+} from '../../../shared/models/participant-event';
 
 @Component({
     selector: 'app-participants-panel-item',
@@ -14,9 +20,16 @@ import { ParticipantPanelModel } from '../../models/participant-panel-model';
     styleUrl: './participants-panel-item.component.scss'
 })
 export class ParticipantsPanelItemComponent {
+    @Output() participantMuteToggled = new EventEmitter<ToggleMuteParticipantEvent>();
+    @Output() participantLocalMuteToggled = new EventEmitter<ToggleLocalMuteParticipantEvent>();
+    @Output() participantSpotlightToggled = new EventEmitter<ToggleSpotlightParticipantEvent>();
+    @Output() participantHandLowered = new EventEmitter<LowerParticipantHandEvent>();
+    @Output() participantAdmitted = new EventEmitter<CallParticipantIntoHearingEvent>();
+    @Output() participantDismissed = new EventEmitter<DismissParticipantFromHearingEvent>();
+
     readonly idPrefix = 'participants-panel';
 
-    _participant: PanelModel;
+    participant: PanelModel;
 
     isDisconnected = false;
     panelRowTooltipText = '';
@@ -40,8 +53,10 @@ export class ParticipantsPanelItemComponent {
     isAvailable = false;
     transferringIn = false;
 
+    constructor(private translateService: TranslateService) {}
+
     @Input() set item (value: PanelModel) {
-        this._participant = value;
+        this.participant = value;
         this.hasSpotlight = value.hasSpotlight();
         this.isDisconnected = value.isDisconnected();
         this.panelRowTooltipText = this.getPanelRowTooltipText(value);
@@ -67,11 +82,6 @@ export class ParticipantsPanelItemComponent {
         this.transferringIn = value.transferringIn;
     }
 
-
-
-    constructor(private translateService: TranslateService) {}
-
-
     isItemAnEndpoint(participant: PanelModel) {
         return participant instanceof VideoEndpointPanelModel;
     }
@@ -84,7 +94,7 @@ export class ParticipantsPanelItemComponent {
     }
 
     mapParticipantToParticipantResponse(): ParticipantResponse {
-        const participantModelTyped = this._participant as ParticipantPanelModel;
+        const participantModelTyped = this.participant as ParticipantPanelModel;
         const participantResponse = new ParticipantResponse();
         participantResponse.id = participantModelTyped.id;
         participantResponse.status = participantModelTyped.status;
@@ -134,24 +144,28 @@ export class ParticipantsPanelItemComponent {
         return this.translateService.instant(`participants-panel.${key}`);
     }
 
-    toggleSpotlightParticipant() {
-        //TODO: Implement this with emitter
+    toggleParticipantSpotlight() {
+        this.participantSpotlightToggled.emit({participant: this.participant});
     }
 
-    toggleMuteParticipant() {
-        //TODO: Implement this with emitter
+    toggleParticipantMute() {
+        this.participantMuteToggled.emit({participant: this.participant});
+    }
+
+    toggleParticipantLocalMute() {
+        this.participantLocalMuteToggled.emit({participant: this.participant});
     }
 
     lowerParticipantHand() {
-        //TODO: Implement this with emitter
-    }
-
-    lowerLinkedParticipantHand() {
-        //TODO: Implement this with emitter
+        this.participantHandLowered.emit({participant: this.participant});
     }
 
     callParticipantIntoHearing() {
-        //TODO: Implement this with emitter
+        this.participantAdmitted.emit({participant: this.participant});
+    }
+
+    dismissParticipantFromHearing() {
+        this.participantDismissed.emit({participant: this.participant});
     }
 
     private getHearingRole(participant: PanelModel): string {

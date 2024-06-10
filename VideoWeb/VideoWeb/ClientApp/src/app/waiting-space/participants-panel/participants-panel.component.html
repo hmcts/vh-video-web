@@ -270,7 +270,16 @@
         </div>
       </ng-template>
     </ng-container>
-    <app-participants-panel-item [participant]="participant" *ngFor="let participant of participants"></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participants"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
   </div>
 </div>
 <div class="container" *ngIf="totalParticipants == 0">
