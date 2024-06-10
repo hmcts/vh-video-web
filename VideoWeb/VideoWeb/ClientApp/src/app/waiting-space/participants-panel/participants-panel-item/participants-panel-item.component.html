@@ -1,11 +1,11 @@
 <div
-  [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }"
+  [class]="{ yellow: hasSpotlight, red: isDisconnected }"
   appTooltip
   [isDesktopOnly]="false"
-  [text]="getPanelRowTooltipText(participant)"
-  [colour]="getPanelRowTooltipColour(participant)"
+  [text]="panelRowTooltipText"
+  [colour]="panelRowTooltipColour"
 >
-  <span *ngIf="participant.isJudge">
+  <span *ngIf="isJudge">
     <img
       appCrestLogoImageSource
       [sctsImageSource]="'/assets/images/scot-crest-white.png'"
@@ -17,15 +17,15 @@
     />
     <br />
   </span>
-  <span *ngIf="isEndpoint(participant)">
+  <span *ngIf="isEndpoint">
     <fa-icon icon="tv" class="type-icon"> </fa-icon>
     <br />
   </span>
-  <span *ngIf="isLinkedParticipantAndAnInterpreter(participant)">
+  <span *ngIf="isLinkedParticipantAndAnInterpreter">
     <fa-icon icon="language" class="type-icon"> </fa-icon>
     <br />
   </span>
-  <span *ngIf="participant.isJudicialOfficeHolder">
+  <span *ngIf="isJudicialOfficeHolder">
     <img
       appCrestLogoImageSource
       [sctsImageSource]="'/assets/images/scot-crest-white.png'"
@@ -37,30 +37,30 @@
     />
     <br />
   </span>
-  <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
+  <span class="wrap-anywhere" innerHtml="{{ _participant.displayName | MultiLinePipe }}"></span>
 </div>
 
-<ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+<ng-container *ngIf="!isDisconnected; else participantDisconnected">
   <!-- Column 2 -->
   <div>
-    <div *ngIf="isParticipantInHearing(participant)">
-      <app-participant-alert *ngIf="!isEndpoint(participant)" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
+    <div *ngIf="isParticipantInHearing">
+      <app-participant-alert *ngIf="!isEndpoint" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
     </div>
   </div>
 
   <!-- Column 3 -->
   <div>
-    <div *ngIf="isParticipantInHearing(participant)">
-      <ng-container *ngIf="!participant.isHost">
+    <div *ngIf="isParticipantInHearing">
+      <ng-container *ngIf="!isHost">
         <img
-          *ngIf="participant.isMicRemoteMuted()"
+          *ngIf="isMicRemoteMuted"
           appTooltip
-          [text]="(participant.isMicRemoteMuted() ? 'participants-panel.unmute-lock' : 'participants-panel.mute-participant') | translate"
+          [text]="isMicRemoteMuted ? 'participants-panel.unmute-lock' : 'participants-panel.mute-participant' | translate"
           colour="grey"
-          [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
+          [src]="isMicRemoteMuted ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
           class="panel-icon"
           [attr.alt]="
-            (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
+            (isMicRemoteMuted ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
               | translate
           "
           (click)="toggleMuteParticipant(); $event.stopPropagation()"
@@ -68,15 +68,15 @@
           (keyup.enter)="toggleMuteParticipant(); $event.stopPropagation()"
         />
         <fa-icon
-          *ngIf="!participant.isMicRemoteMuted()"
+          *ngIf="!isMicRemoteMuted"
           appTooltip
           [text]="
-            (participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate
+            (isLocalMicMuted ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate
           "
           colour="grey"
           icon="microphone"
           class="icon-button"
-          [class]="{ red: participant.isLocalMicMuted() }"
+          [class]="{ red: isLocalMicMuted }"
           (click)="toggleMuteParticipant(); $event.stopPropagation()"
           tabindex="0"
           (keyup.enter)="toggleMuteParticipant(); $event.stopPropagation()"
@@ -85,19 +85,19 @@
       </ng-container>
     </div>
     <div
-      *ngIf="participant.isCallable && !participant.isInHearing()"
-      [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'"
+      *ngIf="isCallable && !isInHearing"
+      [id]="idPrefix + '-' + _participant.id + '-admit-participant-controls'"
     >
-      <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
+      <ng-container *ngIf="isAvailable; else participantUnavailable">
         <fa-icon
-          *ngIf="!participant.transferringIn"
-          [id]="idPrefix + '-' + participant.id + '-admit-participant-icon'"
+          *ngIf="!transferringIn"
+          [id]="idPrefix + '-' + _participant.id + '-admit-participant-icon'"
           appTooltip
           [text]="
-            participant.isWitness
+            isWitness
               ? ('participants-panel.call-witness' | translate)
               : ('participants-panel.admit-participant'
-                | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
+                | translate: { role: 'hearing-role.' + (_participant.hearingRole | hyphenate) | translate | lowercase })
           "
           colour="green"
           class="icon-button"
@@ -107,17 +107,17 @@
           (keyup.enter)="callParticipantIntoHearing()"
         >
         </fa-icon>
-        <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'" *ngIf="participant.transferringIn" class="yellow">
+        <div [id]="idPrefix + '-' + _participant.id + '-transferring-in-text'" *ngIf="transferringIn" class="yellow">
           {{ 'participants-panel.joining1' | translate }}
         </div>
       </ng-container>
       <ng-template #participantUnavailable>
         <fa-icon
-          [id]="idPrefix + '-' + participant.id + '-participant-unavailable-icon'"
+          [id]="idPrefix + '-' + _participant.id + '-participant-unavailable-icon'"
           appTooltip
           [text]="
             'participants-panel.participant-unavailable'
-              | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
+              | translate: { role: 'hearing-role.' + (_participant.hearingRole | hyphenate) | translate }
           "
           colour="grey"
           class="icon-button no-click"
@@ -131,7 +131,7 @@
   <!-- Column 4 -->
   <div>
     <div
-      *ngIf="!participant.isJudge && participant.hasHandRaised()"
+      *ngIf="!isJudge && hasHandRaised"
       class="icon-button"
       appTooltip
       [text]="'participants-panel.lower-hand' | translate"
@@ -145,25 +145,25 @@
   <!-- Column 5 -->
   <div>
     <div
-      *ngIf="isParticipantInHearing(participant) && !participant.isLocalCameraOff()"
+      *ngIf="isParticipantInHearing && !isLocalCameraOff"
       class="icon-button"
       appTooltip
       [text]="
-        participant.hasSpotlight()
-          ? participant.displayName + ('participants-panel.remove-spotlight' | translate)
-          : participant.displayName + ('participants-panel.click-to-spotlight' | translate)
+        hasSpotlight
+          ? _participant.displayName + ('participants-panel.remove-spotlight' | translate)
+          : _participant.displayName + ('participants-panel.click-to-spotlight' | translate)
       "
       colour="blue"
       (click)="toggleSpotlightParticipant(); $event.stopPropagation()"
     >
       <fa-icon
         icon="thumbtack"
-        [class]="{ yellow: participant.hasSpotlight() }"
+        [class]="{ yellow: hasSpotlight }"
         tabindex="0"
         (keyup.enter)="toggleSpotlightParticipant()"
       ></fa-icon>
     </div>
-    <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()" class="icon-button no-click">
+    <div *ngIf="isParticipantInHearing && isLocalCameraOff" class="icon-button no-click">
       <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate" icon="video-slash" class="red"></fa-icon>
     </div>
   </div>
@@ -184,15 +184,15 @@
     </app-judge-context-menu> -->
 
     <app-judge-context-menu
-      [participantInput]="participant"
-      *ngIf="!participant.isHost"
-      [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
+      [participantInput]="_participant"
+      *ngIf="!isHost"
+      [hidden]="!isParticipantInHearing && !isAvailable"
     >
     </app-judge-context-menu>
   </div>
 </ng-container>
 <ng-template #participantDisconnected>
   <div class="status-disconnected">
-    <app-participant-alert *ngIf="!isEndpoint(participant)" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
+    <app-participant-alert *ngIf="!isEndpoint" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
   </div>
 </ng-template>

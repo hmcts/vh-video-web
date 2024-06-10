@@ -14,46 +14,69 @@ import { ParticipantPanelModel } from '../../models/participant-panel-model';
     styleUrl: './participants-panel-item.component.scss'
 })
 export class ParticipantsPanelItemComponent {
-    @Input() participant: PanelModel;
-
     readonly idPrefix = 'participants-panel';
+
+    _participant: PanelModel;
+
+    isDisconnected = false;
+    panelRowTooltipText = '';
+    panelRowTooltipColour = '';
+    isJudge = false;
+    isHost = false;
+    isEndpoint = false;
+    isLinkedParticipantAndAnInterpreter = false;
+    isJudicialOfficeHolder = false;
+    isParticipantInHearing = false;
+    isWitness = false;
+
+    isMicRemoteMuted = false;
+    isLocalMicMuted = false;
+    hasHandRaised = false;
+    isLocalCameraOff = false;
+    hasSpotlight = false;
+
+    isCallable = false;
+    isInHearing = false;
+    isAvailable = false;
+    transferringIn = false;
+
+    @Input() set item (value: PanelModel) {
+        this._participant = value;
+        this.hasSpotlight = value.hasSpotlight();
+        this.isDisconnected = value.isDisconnected();
+        this.panelRowTooltipText = this.getPanelRowTooltipText(value);
+        this.panelRowTooltipColour = this.getPanelRowTooltipColour(value);
+        this.isJudge = value.hearingRole === HearingRole.JUDGE;
+        this.isHost = value.isHost;
+        this.isEndpoint = this.isItemAnEndpoint(value);
+        this.isLinkedParticipantAndAnInterpreter = this.determineIfIsLinkedParticipantAndAnInterpreter(value);
+        this.isJudicialOfficeHolder = value.isJudicialOfficeHolder;
+        this.isParticipantInHearing = value.isInHearing();
+        this.isWitness = value.isWitness;
+
+        this.isMicRemoteMuted = value.isMicRemoteMuted();
+        this.isLocalMicMuted = value.isLocalMicMuted();
+        this.hasHandRaised = value.hasHandRaised();
+        this.isLocalCameraOff = value.isLocalCameraOff();
+        this.hasSpotlight = value.hasSpotlight();
+
+
+        this.isCallable = value.isCallable;
+        this.isInHearing = value.isInHearing();
+        this.isAvailable = value.isAvailable();
+        this.transferringIn = value.transferringIn;
+    }
+
+
 
     constructor(private translateService: TranslateService) {}
 
-    private static showCaseRole(participant: PanelModel) {
-        return !(
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
-        );
-    }
 
-    // private static updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
-    //     participant.updateParticipant(
-    //         participantToBeUpdated?.isMicRemoteMuted(),
-    //         participantToBeUpdated?.hasHandRaised(),
-    //         participantToBeUpdated?.hasSpotlight(),
-    //         participantToBeUpdated?.id,
-    //         participantToBeUpdated?.isLocalMicMuted(),
-    //         participantToBeUpdated?.isLocalCameraOff()
-    //     );
-    //     participant.assignPexipId(participantToBeUpdated?.pexipId);
-    // }
-
-    isParticipantDisconnected(participant: PanelModel): boolean {
-        return participant.isDisconnected();
-    }
-
-    isEndpoint(participant: PanelModel) {
+    isItemAnEndpoint(participant: PanelModel) {
         return participant instanceof VideoEndpointPanelModel;
     }
 
-    isParticipantInHearing(participant: PanelModel): boolean {
-        return participant.isInHearing();
-    }
-
-    isLinkedParticipantAndAnInterpreter(participant: PanelModel) {
+    determineIfIsLinkedParticipantAndAnInterpreter(participant: PanelModel) {
         if (!(participant instanceof LinkedParticipantPanelModel)) {
             return false;
         }
@@ -61,7 +84,7 @@ export class ParticipantsPanelItemComponent {
     }
 
     mapParticipantToParticipantResponse(): ParticipantResponse {
-        const participantModelTyped = this.participant as ParticipantPanelModel;
+        const participantModelTyped = this._participant as ParticipantPanelModel;
         const participantResponse = new ParticipantResponse();
         participantResponse.id = participantModelTyped.id;
         participantResponse.status = participantModelTyped.status;
@@ -111,10 +134,6 @@ export class ParticipantsPanelItemComponent {
         return this.translateService.instant(`participants-panel.${key}`);
     }
 
-    isWitness(participant: PanelModel) {
-        return participant.isWitness;
-    }
-
     toggleSpotlightParticipant() {
         //TODO: Implement this with emitter
     }
@@ -151,6 +170,15 @@ export class ParticipantsPanelItemComponent {
         const translatedCaseTypeGroup = this.translateService.instant(
             'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );
-        return ParticipantsPanelItemComponent.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
+        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
+    }
+
+    private showCaseRole(participant: PanelModel) {
+        return !(
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+        );
     }
 }
