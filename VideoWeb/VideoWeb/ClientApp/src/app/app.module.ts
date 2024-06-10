@@ -1,5 +1,5 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
-import { APP_ID, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
+import { APP_ID, ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,6 +22,10 @@ import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
 import { NavigatorComponent } from './home/navigator/navigator.component';
+
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -53,7 +57,10 @@ export function getLocale() {
                 useFactory: createTranslateLoader
             }
         }),
-        AuthConfigModule
+        AuthConfigModule,
+        StoreModule.forRoot({}),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forRoot([])
     ],
     providers: [
         { provide: API_BASE_URL, useFactory: () => '.' },

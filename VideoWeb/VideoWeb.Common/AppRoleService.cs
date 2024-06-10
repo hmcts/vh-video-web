@@ -48,8 +48,7 @@ namespace VideoWeb.Common
             {
                 if (ex.StatusCode == (int)System.Net.HttpStatusCode.NotFound)
                 {
-                    var typedException = ex as BookingsApiException<ProblemDetails>;
-                    _logger.LogWarning(typedException, "User {Username} not found as a JusticeUser in BookingsApi", username);
+                    _logger.LogWarning(ex, "User {Username} not found as a JusticeUser in BookingsApi", username);
                 }
             }
 
@@ -86,7 +85,7 @@ namespace VideoWeb.Common
                     JusticeUserRole.Vho => AppRoles.VhOfficerRole,
                     JusticeUserRole.Judge => AppRoles.JudgeRole,
                     JusticeUserRole.StaffMember => AppRoles.StaffMember,
-                    JusticeUserRole.VhTeamLead => AppRoles.VhOfficerRole,
+                    JusticeUserRole.VhTeamLead => AppRoles.Administrator,
                     _ => null
                 };
                 if (appRole != null)
@@ -95,6 +94,11 @@ namespace VideoWeb.Common
                 }
             }
             
+            if (userRoles.Exists(x => x == JusticeUserRole.VhTeamLead))
+            {
+                // Team leaders (Admins) are also VHOs so add the VHO role to get the same journey
+                claims.Add(new Claim(ClaimTypes.Role, AppRoles.VhOfficerRole));
+            }
             return claims;
         }
     }

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 import { ConsultationErrorComponent } from './consultation-modals/consultation-error/consultation-error.component';
@@ -43,9 +43,22 @@ import { StartPrivateConsultationComponent } from './participant-waiting-room/st
 import { JoinPrivateConsultationComponent } from './participant-waiting-room/join-private-consultation/join-private-consultation.component';
 import { PrivateConsultationLegalRepTermsOfServiceComponent } from './participant-waiting-room/private-consultation-legal-rep-terms-of-service/private-consultation-legal-rep-terms-of-service.component';
 import { NgOptimizedImage } from '@angular/common';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
-    imports: [SharedModule, WaitingSpaceRoutingModule, NgOptimizedImage],
+    imports: [
+        SharedModule,
+        WaitingSpaceRoutingModule,
+        NgOptimizedImage,
+        StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
+        environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forFeature([ConferenceEffectsEffects])
+    ],
     declarations: [
         JudgeParticipantStatusListComponent,
         IndividualParticipantStatusListComponent,

@@ -37,7 +37,7 @@
     <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
-            [conference]="conference"
+            [conference]="vhConference"
             [participantEndpoints]="participantEndpoints"
             [roomLabel]="this.participant.current_room?.label"
         >
@@ -58,6 +58,8 @@
         <div
             id="secondIncomingFeed"
             *ngIf="presentationStream"
+            (keydown.enter)="switchStreamWindows()"
+            (keydown.space)="switchStreamWindows()"
             (click)="switchStreamWindows()"
             appTooltip
             [text]="'joh-waiting-room.switch-to-main-screen' | translate"
@@ -209,7 +211,7 @@
 
     <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
         <app-judge-participant-status-list
-            [conference]="conference"
+            [conference]="vhConference"
         >
         </app-judge-participant-status-list>
     </div>

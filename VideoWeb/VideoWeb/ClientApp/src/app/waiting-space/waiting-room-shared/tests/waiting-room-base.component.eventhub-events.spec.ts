@@ -62,7 +62,8 @@ import {
     router,
     videoWebService,
     videoCallService,
-    titleService
+    titleService,
+    mockConferenceStore
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -89,6 +90,7 @@ import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-cha
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
 import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -107,6 +109,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(async () => {
@@ -137,7 +143,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: RoomClosingToastrService, useValue: roomClosingToastrService },
                 { provide: ClockService, useValue: clockService },
                 { provide: ConsultationInvitationService, useValue: consultationInvitiationService },
-                { provide: Title, useValue: titleService }
+                { provide: Title, useValue: titleService },
+                provideMockStore()
             ]
         });
         fixture = TestBed.createComponent(WRTestComponent);

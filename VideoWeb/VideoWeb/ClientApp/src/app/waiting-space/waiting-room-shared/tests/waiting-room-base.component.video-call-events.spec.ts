@@ -52,6 +52,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -112,7 +113,8 @@ describe('WaitingRoomComponent Video Call', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -132,6 +134,8 @@ describe('WaitingRoomComponent Video Call', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
+
+        mockConferenceStore.resetSelectors();
     });
 
     it('should get token and connect to video call', fakeAsync(() => {

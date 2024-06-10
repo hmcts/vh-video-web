@@ -43,7 +43,7 @@ export class ParticipantUpdated {
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;
         this.uuid = uuid;
-        this.isAudioOnlyCall = isAudioOnlyCall.toUpperCase() === 'YES';
+        this.isAudioOnlyCall = isAudioOnlyCall?.toUpperCase() === 'YES';
         this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
         this.protocol = protocol;
     }

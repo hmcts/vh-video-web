@@ -291,7 +291,9 @@ describe('CommandCentreComponent - Core', () => {
             const venues = null;
             const allocatedCsoIds = csoFilter.allocatedCsoIds;
             const includeUnallocated = csoFilter.includeUnallocated;
-            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated);
+            const activeSessionsOnly = false;
+            component.activeSessionsOnly = activeSessionsOnly;
+            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated, activeSessionsOnly);
             expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
         });
 

@@ -20,6 +20,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -48,6 +49,10 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(() => {
@@ -82,7 +87,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             userMediaServiceSpy,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

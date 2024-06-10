@@ -36,6 +36,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -70,6 +71,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
@@ -94,7 +99,8 @@ describe('WaitingRoomComponent message and clock', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

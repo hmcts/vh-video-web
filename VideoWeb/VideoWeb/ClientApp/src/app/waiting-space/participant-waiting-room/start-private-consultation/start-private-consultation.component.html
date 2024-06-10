@@ -26,12 +26,12 @@
               (change)="toggleParticipant(participant.id)"
             />
             <label class="govuk-label govuk-checkboxes__label checkboxes-label" for="{{ participant.id }}">
-              <span class="govuk-!-font-weight-bold">{{ participant.display_name }}</span>
+              <span class="govuk-!-font-weight-bold">{{ participant.displayName }}</span>
               {{ participantHearingRoleText(participant) }}
               <br />
               <ng-container class="interpreter" *ngIf="participant.interpreter">
-                <span class="govuk-!-font-weight-bold">{{ participant.interpreter.display_name }}</span>
-                {{ participantHearingRoleText(participant.interpreter) }} for {{ participant.display_name }}
+                <span class="govuk-!-font-weight-bold">{{ participant.interpreter.displayName }}</span>
+                {{ participantHearingRoleText(participant.interpreter) }} for {{ participant.displayName }}
                 <br />
               </ng-container>
               <label
@@ -42,8 +42,8 @@
                 <ng-template #available>
                   <ng-container *ngIf="participantIsInConsultationRoom(participant)">
                     <span>{{ 'start-private-consultation.in' | translate }} </span>
-                    <span>{{ participant.current_room.label | roomName | lowercase }} </span>
-                    <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
+                    <span>{{ participant.room.label | roomName | lowercase }} </span>
+                    <fa-icon *ngIf="participant.room.locked" icon="lock"></fa-icon>
                   </ng-container>
                 </ng-template>
               </label>
@@ -62,7 +62,7 @@
             (change)="toggleEndpoint(endpoint.id)"
           />
           <label class="govuk-label govuk-checkboxes__label checkboxes-label" for="{{ endpoint.id }}">
-            <span class="govuk-!-font-weight-bold">{{ endpoint.display_name }}</span>
+            <span class="govuk-!-font-weight-bold">{{ endpoint.displayName }}</span>
             {{ 'start-private-consultation.video-access-point' | translate }}
             <br />
             <label
@@ -74,8 +74,8 @@
               <ng-template #available>
                 <ng-container *ngIf="endpointIsInConsultationRoom(endpoint)">
                   <span>{{ 'start-private-consultation.in' | translate }} </span>
-                  <span>{{ endpoint.current_room.label | roomName | lowercase }} </span>
-                  <fa-icon *ngIf="endpoint.current_room.locked" icon="lock"></fa-icon>
+                  <span>{{ endpoint.room.label | roomName | lowercase }} </span>
+                  <fa-icon *ngIf="endpoint.room.locked" icon="lock"></fa-icon>
                 </ng-container>
               </ng-template>
             </label>

@@ -17,7 +17,8 @@ const testCases = [
     { roles: [Role.JudicialOfficeHolder], shouldFireJoiningEvent: true },
     { roles: [Role.QuickLinkParticipant], shouldFireJoiningEvent: true },
     { roles: [Role.QuickLinkObserver], shouldFireJoiningEvent: true },
-    { roles: [Role.StaffMember], shouldFireJoiningEvent: false }
+    { roles: [Role.StaffMember], shouldFireJoiningEvent: false },
+    { roles: [Role.Administrator], shouldFireJoiningEvent: false }
 ];
 
 describe('ParticipantStatusGuard', () => {

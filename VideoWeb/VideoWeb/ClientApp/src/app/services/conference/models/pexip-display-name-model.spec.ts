@@ -57,7 +57,6 @@ describe('PexipDisplayNameModel', () => {
             const displayName = 'DISPLAY_NAME';
             const id = 'ID';
             const toParse = `${role};${heartbeat};${displayName};${id}`;
-            console.log(HeartbeatMode);
 
             // Act
             const model = PexipDisplayNameModel.fromString(toParse);
