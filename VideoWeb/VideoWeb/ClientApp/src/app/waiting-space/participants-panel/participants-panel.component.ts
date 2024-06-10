@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Subject, Subscription, combineLatest } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -33,6 +33,10 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { IndividualPanelModel } from '../models/individual-panel-model';
 
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
@@ -44,6 +48,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     participants: PanelModel[] = [];
     nonEndpointParticipants: PanelModel[] = [];
     endpointParticipants: PanelModel[] = [];
+    totalParticipants: number;
+    totalParticipantsInWaitingRoom: number;
     isMuteAll = false;
     conferenceId: string;
 
@@ -56,6 +62,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     readonly idPrefix = 'participants-panel';
 
     private readonly loggerPrefix = '[ParticipantsPanel] -';
+    private onDestroy$ = new Subject<void>();
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
@@ -65,7 +72,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
-        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
+        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        private store: Store<ConferenceState>
     ) {}
 
     private static showCaseRole(participant: PanelModel) {
@@ -91,6 +99,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        const participants$ = this.store.select(ConferenceSelectors.getParticipants);
+        const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
+
+        combineLatest([participants$, endpoints$])
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(([participants, endpoints]) => {
+                this.totalParticipants = participants.length + endpoints.length;
+                this.totalParticipantsInWaitingRoom =
+                    participants.filter(x => x.status === ParticipantStatus.Available).length +
+                    endpoints.filter(x => x.status === EndpointStatus.Connected).length;
+            });
         this.getParticipantsList().then(() => {
             this.postGetParticipantsListHandler();
             this.setupVideoCallSubscribers();
@@ -155,6 +174,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();

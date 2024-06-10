@@ -1,5 +1,6 @@
-<div class="container" *ngIf="participants.length > 0">
-  <h2 class="govuk-heading-s white">{{ 'participants-panel.participants' | translate }} ({{ participants.length }})</h2>
+<div class="container" *ngIf="totalParticipants > 0">
+  <h3 class="govuk-heading-s white">{{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})</h3>
+  <h3 class="govuk-heading-s white">In waiting room ({{ totalParticipantsInWaitingRoom }})</h3>
 
   <div class="button-row">
     <div
@@ -173,7 +174,7 @@
                   participant.isWitness
                     ? ('participants-panel.call-witness' | translate)
                     : ('participants-panel.admit-participant'
-                      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
+                      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
                 "
                 colour="green"
                 class="icon-button"
@@ -193,7 +194,7 @@
                 appTooltip
                 [text]="
                   'participants-panel.participant-unavailable'
-                    | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
+                    | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
                 "
                 colour="grey"
                 class="icon-button no-click"
@@ -269,8 +270,9 @@
         </div>
       </ng-template>
     </ng-container>
+    <app-participants-panel-item [participant]="participant" *ngFor="let participant of participants"></app-participants-panel-item>
   </div>
 </div>
-<div class="container" *ngIf="participants.length == 0">
+<div class="container" *ngIf="totalParticipants == 0">
   <h4 class="govuk-heading-s white">{{ 'participants-panel.loading-participants' | translate }}</h4>
 </div>
