@@ -25,6 +25,7 @@ namespace VideoWeb.AuthenticationSchemes
                 // Cache can expire the at the same time the token does.
                 var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
                 claimsIdentity?.AddClaim(new Claim(claimsIdentity.RoleClaimType, "Judge"));
+                claimsIdentity?.AddClaim(new Claim(claimsIdentity.RoleClaimType, "JudicialOfficeHolder"));
             }
         }
     }
