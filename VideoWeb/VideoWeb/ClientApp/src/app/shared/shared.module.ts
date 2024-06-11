@@ -160,7 +160,6 @@ export function getSettings(configService: ConfigService) {
         TruncatableTextComponent,
         CookiesComponent,
         ConfirmSelfTestPopupComponent
-        // WarnJoinHearingPopupComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -215,7 +214,6 @@ export function getSettings(configService: ConfigService) {
         RandomPipe,
         TruncatableTextComponent,
         ConfirmSelfTestPopupComponent
-        // WarnJoinHearingPopupComponent
     ]
 })
 export class SharedModule {

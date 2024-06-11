@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { YesNoPopupBaseDirective } from '../../../waiting-space/confirmation/yes-no-popup-base.component';
+import { YesNoPopupBaseDirective } from '../../confirmation/yes-no-popup-base.component';
 
 @Component({
     selector: 'app-confirm-self-test-popup',
     templateUrl: './confirm-self-test-popup.component.html',
-    styleUrls: ['../../../waiting-space/confirmation/yes-no-popup-base.component.scss']
+    styleUrls: ['../../confirmation/yes-no-popup-base.component.scss']
 })
 export class ConfirmSelfTestPopupComponent extends YesNoPopupBaseDirective {
     @Output() popupAnswered = new EventEmitter<boolean>();

@@ -1,5 +1,9 @@
+import { Injectable } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 
+@Injectable({
+    providedIn: 'root'
+})
 export class DeviceDetectionService {
     private loggerPrefix: string;
 

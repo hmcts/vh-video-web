@@ -897,14 +897,14 @@
     "cancel": "Canslo"
   },
   "confirm-self-test-popup": {
-    "title": "Your self test is about to begin",
-    "message": "Please take a moment to prepare.",
-    "submit-button": "lawn"
+    "title": "Mae eich hunan brawf ar fin dechrau",
+    "message": "Cymerwch eiliad i baratoi.",
+    "submit-button": "Iawn"
   },
   "warn-join-hearing-popup": {
-    "title": "Your hearing is scheduled to start at",
-    "message": "Please take a moment to prepare.",
-    "submit-button": "lawn"
+    "title": "Disgwylir i'ch gwrandawiad ddechrau ar",
+    "message": "Cymerwch eiliad i baratoi.",
+    "submit-button": "Iawn"
   },
   "participants-panel": {
     "participants": "Cyfranogwyr",
