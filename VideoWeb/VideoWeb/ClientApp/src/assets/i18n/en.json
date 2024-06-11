@@ -633,7 +633,9 @@
     "mute-all": "Mute all",
     "unmute-all": "Unmute all",
     "mute-all-tooltip": "Mute all participants",
-    "unmute-all-tooltip": "Unmute all participants"
+    "unmute-all-tooltip": "Unmute all participants",
+    "in-waiting-room": "In waiting room",
+    "not-connected": "Not connected"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",

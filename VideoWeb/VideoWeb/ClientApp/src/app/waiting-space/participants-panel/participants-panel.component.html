@@ -1,6 +1,10 @@
 <div class="container" *ngIf="totalParticipants > 0">
-  <h3 class="govuk-heading-s white">{{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})</h3>
-  <h3 class="govuk-heading-s white">In waiting room ({{ totalParticipantsInWaitingRoom }})</h3>
+  <div class="header-row">
+    <p class="govuk-body white">{{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})</p>
+    <p id="totalInWrCount" class="govuk-body white vh-pointer" (click)="scrollToElement('panelListNotConnectedHeader')">
+      {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
+    </p>
+  </div>
 
   <div class="button-row">
     <div
@@ -69,7 +73,67 @@
   <div class="panel-container-list" id="panelList">
     <app-participants-panel-item
       [item]="participant"
-      *ngFor="let participant of allParticipantsExcludingWaitingRoom"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsInHearing"
       (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
       (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
       (participantHandLowered)="lowerParticipantHandEventHandler($event)"
@@ -79,11 +143,29 @@
     ></app-participants-panel-item>
   </div>
 
-  <h3 class="govuk-heading-s white govuk-!-margin-top-7">In waiting room ({{ totalParticipantsInWaitingRoom }})</h3>
+  <h3 class="govuk-heading-s white govuk-!-margin-top-7">
+    {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
+  </h3>
   <div class="panel-container-list" id="panelListInWaitingRoom">
     <app-participants-panel-item
       [item]="participant"
       *ngFor="let participant of participantsInWaitingRoom"
+      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+    ></app-participants-panel-item>
+  </div>
+
+  <h3 id="panelListNotConnectedHeader" class="govuk-heading-s white govuk-!-margin-top-7">
+    {{ 'participants-panel.not-connected' | translate }}
+  </h3>
+  <div class="panel-container-list" id="panelListNotConnected">
+    <app-participants-panel-item
+      [item]="participant"
+      *ngFor="let participant of participantsNotConnected"
       (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
       (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
       (participantHandLowered)="lowerParticipantHandEventHandler($event)"

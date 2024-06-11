@@ -13,6 +13,12 @@
   overflow: auto;
 }
 
+.header-row {
+  display: grid;
+  grid-template-columns: auto auto;
+  width: 100%;
+}
+
 .button-row {
   display: grid;
   grid-template-columns: auto auto auto;

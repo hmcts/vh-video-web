@@ -77,12 +77,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private changeDetector: ChangeDetectorRef
     ) {}
 
-    get allParticipantsExcludingWaitingRoom() {
-        return this.participants.filter(x => !x.isAvailable());
+    get participantsInHearing() {
+        return this.participants.filter(x => x.isInHearing() && !x.isDisconnected());
     }
 
     get participantsInWaitingRoom() {
         return this.participants.filter(x => x.isAvailable());
+    }
+
+    get participantsNotConnected() {
+        return this.participants.filter(x => !x.isAvailable() && !x.isInHearing());
     }
 
     private static showCaseRole(participant: PanelModel) {
@@ -494,6 +498,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
+    }
+
+    scrollToElement(elementId: string) {
+        const element = document.getElementById(elementId);
+        element?.scrollIntoView({ behavior: 'smooth' });
     }
 
     isParticipantInHearing(participant: PanelModel): boolean {
