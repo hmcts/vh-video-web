@@ -20,7 +20,7 @@ describe('ParticipantsPanelItemComponent', () => {
     let component: ParticipantsPanelItemComponent;
     let fixture: ComponentFixture<ParticipantsPanelItemComponent>;
     let conference: ConferenceResponse;
-    let testData: ConferenceTestData = new ConferenceTestData();
+    const testData: ConferenceTestData = new ConferenceTestData();
     const panelModelMapper = new ParticipantPanelModelMapper();
     beforeEach(async () => {
         conference = testData.getConferenceDetailNow();
