@@ -530,7 +530,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
+                if (createdParticipant.pexipDisplayName?.includes(this.videoCallService.wowzaAgentName)) {
                     this.assignWowzaAgent(createdParticipant);
                 }
             });
