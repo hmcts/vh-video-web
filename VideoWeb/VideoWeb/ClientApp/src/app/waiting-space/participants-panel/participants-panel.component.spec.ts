@@ -78,7 +78,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
-import { before } from 'node:test';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -196,7 +196,8 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantRemoteMuteStoreService,
                     useValue: remoteMuteServiceSpy
-                }
+                },
+                provideMockStore()
             ]
         }).compileComponents();
     });

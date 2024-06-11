@@ -42,7 +42,6 @@ export class ParticipantsPanelItemComponent {
     constructor(private translateService: TranslateService) {}
 
     @Input() set item(value: PanelModel) {
-        console.log('[Shaed] item', value);
         this.participant = value;
         this.isJudge = value.hearingRole === HearingRole.JUDGE;
         this.isHost = value.isHost;
@@ -50,7 +49,6 @@ export class ParticipantsPanelItemComponent {
         this.isJudicialOfficeHolder = value.isJudicialOfficeHolder;
         this.isWitness = value.isWitness;
     }
-
 
     isLinkedParticipantAndAnInterpreter() {
         if (!(this.participant instanceof LinkedParticipantPanelModel)) {
@@ -69,8 +67,7 @@ export class ParticipantsPanelItemComponent {
             toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText();
         }
         if (this.participant.isWitness && this.participant.isAvailable() && !this.participant.isInHearing()) {
-            toolTipText =
-                this.participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText();
+            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText();
         }
         if (this.participant.isDisconnected()) {
             toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText();
@@ -143,8 +140,12 @@ export class ParticipantsPanelItemComponent {
             return '';
         }
         const translatedtext = this.getTranslatedText('for');
-        const hearingRoleText = this.translateService.instant('hearing-role.' + this.participant.hearingRole.toLowerCase().split(' ').join('-'));
-        return this.participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${this.participant.representee}` : `<br/>${hearingRoleText}`;
+        const hearingRoleText = this.translateService.instant(
+            'hearing-role.' + this.participant.hearingRole.toLowerCase().split(' ').join('-')
+        );
+        return this.participant.representee
+            ? `<br/>${hearingRoleText} ${translatedtext} ${this.participant.representee}`
+            : `<br/>${hearingRoleText}`;
     }
 
     private getCaseRole(): string {
