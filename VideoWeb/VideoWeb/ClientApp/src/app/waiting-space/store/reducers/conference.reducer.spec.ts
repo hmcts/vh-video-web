@@ -23,11 +23,17 @@ function deepFreeze(object) {
 describe('Conference Reducer', () => {
     let conferenceTestData: VHConference;
     let existingInitialState: ConferenceState;
-    let originalRoom: VHRoom;
+    let originalParticipantConsultationRoom: VHRoom;
+    let originalJudgeJohConsultationRoom: VHRoom;
 
     beforeEach(() => {
-        originalRoom = {
-            label: 'Room 999',
+        originalParticipantConsultationRoom = {
+            label: 'ParticipantConsultationRoom1',
+            locked: false
+        };
+
+        originalJudgeJohConsultationRoom = {
+            label: 'JudgeJOHConsultationRoom2',
             locked: false
         };
 
@@ -46,7 +52,7 @@ describe('Conference Reducer', () => {
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
-                    room: originalRoom,
+                    room: originalParticipantConsultationRoom,
                     caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'John Doe',
@@ -78,7 +84,7 @@ describe('Conference Reducer', () => {
                     username: 'chris.green@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr Chris Green;729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
-                    room: originalRoom,
+                    room: originalParticipantConsultationRoom,
                     caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'Chris Green',
@@ -96,7 +102,7 @@ describe('Conference Reducer', () => {
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
                     defenceAdvocate: 'john.doe@test.com',
-                    room: originalRoom
+                    room: originalParticipantConsultationRoom
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
@@ -109,7 +115,7 @@ describe('Conference Reducer', () => {
         };
         existingInitialState = {
             currentConference: conferenceTestData,
-            availableRooms: [originalRoom]
+            availableRooms: [originalParticipantConsultationRoom]
         };
         deepFreeze(existingInitialState);
     });
@@ -388,7 +394,7 @@ describe('Conference Reducer', () => {
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
-                    room: { label: 'Room 1', locked: false },
+                    room: { label: 'ParticipantConsultationRoom3', locked: false },
                     caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'John Doe',
@@ -424,13 +430,13 @@ describe('Conference Reducer', () => {
             // john doe remains but in a room, new judge and chris green is removed
             expect(result.currentConference.participants.length).toEqual(2);
             expect(result.currentConference.participants[0].name).toEqual('Mr John Doe');
-            expect(result.currentConference.participants[0].room.label).toEqual('Room 1');
+            expect(result.currentConference.participants[0].room.label).toEqual('ParticipantConsultationRoom3');
             expect(result.currentConference.participants[0].status).toEqual(ParticipantStatus.InConsultation);
             expect(result.currentConference.participants[1].name).toEqual('Judge New');
             expect(result.currentConference.participants.some(p => p.name === 'Mr Chris Green')).toBeFalse();
 
             expect(result.availableRooms.length).toEqual(2);
-            expect(result.availableRooms[1].label).toEqual('Room 1');
+            expect(result.availableRooms[1].label).toEqual('ParticipantConsultationRoom3');
         });
     });
 
@@ -692,13 +698,13 @@ describe('Conference Reducer', () => {
     describe('updateRoom action', () => {
         it('should update the room in the available rooms list', () => {
             const updatedRoom = {
-                label: 'Room 999',
+                label: originalParticipantConsultationRoom.label,
                 locked: true
             };
             const result = conferenceReducer(existingInitialState, ConferenceActions.updateRoom({ room: updatedRoom }));
 
             expect(result.availableRooms.length).toEqual(1);
-            expect(result.availableRooms[0].label).toEqual('Room 999');
+            expect(result.availableRooms[0].label).toEqual(originalParticipantConsultationRoom.label);
             expect(result.availableRooms[0].locked).toBeTrue();
 
             // John Doe
@@ -711,13 +717,13 @@ describe('Conference Reducer', () => {
 
         it('should add the room to the available rooms list', () => {
             const newRoom: VHRoom = {
-                label: 'Room 998',
+                label: 'ParticipantConsultationRoom5',
                 locked: false
             };
             const result = conferenceReducer(existingInitialState, ConferenceActions.updateRoom({ room: newRoom }));
 
             expect(result.availableRooms.length).toEqual(2);
-            expect(result.availableRooms[1].label).toEqual('Room 998');
+            expect(result.availableRooms[1].label).toEqual('ParticipantConsultationRoom5');
         });
     });
 
@@ -753,12 +759,12 @@ describe('Conference Reducer', () => {
                 existingInitialState,
                 ConferenceActions.updateParticipantRoom({
                     participantId: conferenceTestData.participants[0].id,
-                    fromRoom: 'Room 999',
-                    toRoom: 'Consultation Room 1'
+                    fromRoom: originalJudgeJohConsultationRoom.label,
+                    toRoom: 'ParticipantConsultationRoom5'
                 })
             );
 
-            expect(result.currentConference.participants[0].room.label).toEqual('Consultation Room 1');
+            expect(result.currentConference.participants[0].room.label).toEqual('ParticipantConsultationRoom5');
             expect(result.currentConference.participants[0].room.locked).toBeFalse();
 
             expect(result.availableRooms.length).toEqual(2);
@@ -769,8 +775,8 @@ describe('Conference Reducer', () => {
                 existingInitialState,
                 ConferenceActions.updateParticipantRoom({
                     participantId: conferenceTestData.participants[0].id,
-                    fromRoom: 'Room 999',
-                    toRoom: 'Hearing Room 1'
+                    fromRoom: originalParticipantConsultationRoom.label,
+                    toRoom: 'HearingRoom'
                 })
             );
 
@@ -782,12 +788,12 @@ describe('Conference Reducer', () => {
                 existingInitialState,
                 ConferenceActions.updateParticipantRoom({
                     participantId: conferenceTestData.endpoints[0].id,
-                    fromRoom: 'Room 999',
-                    toRoom: 'Consultation Room 1'
+                    fromRoom: originalParticipantConsultationRoom.label,
+                    toRoom: 'ParticipantConsultationRoom5'
                 })
             );
 
-            expect(result.currentConference.endpoints[0].room.label).toEqual('Consultation Room 1');
+            expect(result.currentConference.endpoints[0].room.label).toEqual('ParticipantConsultationRoom5');
             expect(result.currentConference.endpoints[0].room.locked).toBeFalse();
         });
 
@@ -796,8 +802,8 @@ describe('Conference Reducer', () => {
                 existingInitialState,
                 ConferenceActions.updateParticipantRoom({
                     participantId: conferenceTestData.endpoints[0].id,
-                    fromRoom: 'Room 999',
-                    toRoom: 'Hearing Room 1'
+                    fromRoom: originalParticipantConsultationRoom.label,
+                    toRoom: 'HearingRoom'
                 })
             );
 
