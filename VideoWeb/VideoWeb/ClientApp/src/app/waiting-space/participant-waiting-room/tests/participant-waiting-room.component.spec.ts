@@ -156,8 +156,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
         clockService.getClock.calls.reset();
-        eventsServiceSpy.getHearingStatusMessage.calls.reset();
-        eventsServiceSpy.onEventsHubReady.calls.reset();
     });
 
     afterEach(() => {
@@ -286,6 +284,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('ngOnInit', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
         it('should subscribe to audio only property and send message when it occurs', fakeAsync(() => {
             component.audioOnly = false;
             component.ngOnInit();
@@ -312,6 +314,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('dismissWarning', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
         it('should hide warning and start subscribers', fakeAsync(() => {
             component.showWarning = true;
             component.dismissWarning();
@@ -324,8 +330,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     function assertSubscribersStarted() {
         expect(clockService.getClock).toHaveBeenCalled();
-        expect(eventsServiceSpy.getHearingStatusMessage).toHaveBeenCalled();
-        expect(eventsServiceSpy.onEventsHubReady).toHaveBeenCalled();
+        expect(component.eventHubSubscription$.add).toHaveBeenCalled();
     }
 
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {

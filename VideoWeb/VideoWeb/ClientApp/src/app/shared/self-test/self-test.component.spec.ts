@@ -663,7 +663,7 @@ describe('SelfTestComponent', () => {
 
             // Assert
             expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
-            assertTokenFetchAndCall();
+            assertFetchTokenAndCall();
         }));
 
         it('should raise an api error if it fails to get the self test token', fakeAsync(() => {
@@ -708,11 +708,11 @@ describe('SelfTestComponent', () => {
 
             // Assert
             expect(component.showWarning).toBeFalse();
-            assertTokenFetchAndCall();
+            assertFetchTokenAndCall();
         }));
     });
 
-    function assertTokenFetchAndCall() {
+    function assertFetchTokenAndCall() {
         expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
         expect(callSpy).toHaveBeenCalledTimes(1);
     }

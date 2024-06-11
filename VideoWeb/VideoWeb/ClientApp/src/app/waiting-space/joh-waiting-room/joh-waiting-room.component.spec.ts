@@ -117,8 +117,6 @@ describe('JohWaitingRoomComponent', () => {
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
         clockService.getClock.calls.reset();
-        eventsService.getHearingStatusMessage.calls.reset();
-        eventsService.onEventsHubReady.calls.reset();
     });
 
     describe('get allowAudioOnlyToggle', () => {
@@ -237,6 +235,10 @@ describe('JohWaitingRoomComponent', () => {
     }));
 
     describe('ngOnInit', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
         it('should init hearing alert and subscribers', fakeAsync(() => {
             component.ngOnInit();
             flushMicrotasks();
@@ -246,6 +248,7 @@ describe('JohWaitingRoomComponent', () => {
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();
             expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
+            assertSubscribersStarted();
         }));
 
         it('should show warning when user is on mobile IOS device', fakeAsync(() => {
@@ -258,6 +261,10 @@ describe('JohWaitingRoomComponent', () => {
     });
 
     describe('dismissWarning', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
         it('should hide warning and start subscribers', fakeAsync(() => {
             component.showWarning = true;
             component.dismissWarning();
@@ -270,8 +277,7 @@ describe('JohWaitingRoomComponent', () => {
 
     function assertSubscribersStarted() {
         expect(clockService.getClock).toHaveBeenCalled();
-        expect(eventsService.getHearingStatusMessage).toHaveBeenCalled();
-        expect(eventsService.onEventsHubReady).toHaveBeenCalled();
+        expect(component.eventHubSubscription$.add).toHaveBeenCalled();
     }
 
     const getConferenceStatusTextTestCases = [
