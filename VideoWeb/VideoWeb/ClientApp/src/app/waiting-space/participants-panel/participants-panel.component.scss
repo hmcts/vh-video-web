@@ -1,65 +1,16 @@
 @import 'govuk-frontend/govuk/base';
 
-.container {
-  padding: 12px;
+.white {
+  color: govuk-colour('white') !important;
 }
 
-.yellow {
-  color: govuk-colour('yellow') !important;
-}
-.red {
-  color: govuk-colour('red') !important;
-}
-.white {
-  color: rgba(255, 255, 255, 0.9);
+.container {
+  padding: 12px;
 }
 
 .panel-container-list {
   overflow-x: hidden;
   overflow: auto;
-  padding-bottom: 12rem;
-}
-
-.panel-icon {
-  width: 24px;
-  cursor: pointer;
-}
-
-.panel-icon-crest {
-  width: 27px;
-}
-
-.status-disconnected {
-  grid-column-start: 2;
-  grid-column-end: 7;
-}
-
-.type-icon {
-  font-size: 30px;
-}
-
-.icon-button,
-.icon-button-dark {
-  cursor: pointer;
-  opacity: 0.9;
-  font-size: 20px;
-}
-
-.icon-button {
-  color: govuk-colour('white');
-}
-
-.icon-button-dark {
-  color: govuk-colour('black');
-}
-
-.icon-button:hover {
-  opacity: 1;
-}
-
-.no-click {
-  cursor: default !important;
-  opacity: 1 !important;
 }
 
 .button-row {

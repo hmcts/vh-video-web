@@ -77,6 +77,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private changeDetector: ChangeDetectorRef
     ) {}
 
+    get allParticipantsExcludingWaitingRoom() {
+        return this.participants.filter(x => !x.isAvailable());
+    }
+
+    get participantsInWaitingRoom() {
+        return this.participants.filter(x => x.isAvailable());
+    }
+
     private static showCaseRole(participant: PanelModel) {
         return !(
             participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
@@ -449,8 +457,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.updateStatus(message.status, message.participantId);
         participant.updateTransferringInStatus(false, message.participantId);
-
-        this.participants = [...this.participants];
 
         this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
             conference: this.conferenceId,
