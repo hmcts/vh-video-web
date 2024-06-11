@@ -39,7 +39,6 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
@@ -77,9 +76,6 @@ describe('JohWaitingRoomComponent', () => {
 
     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
-    const deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
-    deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
-
     beforeEach(async () => {
         translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
@@ -105,8 +101,7 @@ describe('JohWaitingRoomComponent', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore,
-            deviceDetectionServiceSpy
+            mockConferenceStore
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -250,8 +245,16 @@ describe('JohWaitingRoomComponent', () => {
             assertSetUpSubscribers();
         }));
 
-        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
-            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+        it('should show warning when user is on iPhone', fakeAsync(() => {
+            deviceTypeService.isIphone.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+
+        it('should show warning when user is on iPad', fakeAsync(() => {
+            deviceTypeService.isIpad.and.returnValue(true);
             component.ngOnInit();
             tick();
 

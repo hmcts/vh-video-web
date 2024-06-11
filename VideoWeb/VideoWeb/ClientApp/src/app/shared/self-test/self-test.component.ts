@@ -21,7 +21,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 @Component({
     selector: 'app-self-test',
@@ -72,10 +72,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaStreamService: UserMediaStreamService,
         private videoFilterService: VideoFilterService,
         private videoCallService: VideoCallService,
-        private deviceDetectionService: DeviceDetectionService
-    ) {
-        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefix);
-    }
+        private deviceTypeService: DeviceTypeService
+    ) {}
 
     get streamsActive() {
         let outgoingActive = true;
@@ -154,7 +152,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         await this.setupPexipClient();
-        if (this.deviceDetectionService.isMobileIOSDevice()) {
+        if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
             this.showWarning = true;
         } else {
             await this.fetchTokenAndCall();

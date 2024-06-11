@@ -26,7 +26,7 @@ import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelfTestComponent } from './self-test.component';
 import { ElementRef } from '@angular/core';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -44,7 +44,7 @@ describe('SelfTestComponent', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
-    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
+    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
@@ -98,8 +98,9 @@ describe('SelfTestComponent', () => {
 
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['userAgent']);
 
-        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
-        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isIphone', 'isIpad']);
+        deviceTypeServiceSpy.isIphone.and.returnValue(false);
+        deviceTypeServiceSpy.isIpad.and.returnValue(false);
 
         component = new SelfTestComponent(
             loggerSpy,
@@ -109,7 +110,7 @@ describe('SelfTestComponent', () => {
             userMediaStreamServiceSpy,
             videoFilterServiceSpy,
             videoCallServiceSpy,
-            deviceDetectionServiceSpy
+            deviceTypeServiceSpy
         );
     });
 
@@ -682,9 +683,21 @@ describe('SelfTestComponent', () => {
             expect(callSpy).not.toHaveBeenCalled();
         }));
 
-        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
+        it('should show warning when user is on iPhone', fakeAsync(() => {
             // Arrange
-            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+            deviceTypeServiceSpy.isIphone.and.returnValue(true);
+
+            // Act
+            component.setupTestAndCall();
+            flush();
+
+            // Assert
+            expect(component.showWarning).toBeTrue();
+        }));
+
+        it('should show warning when user is on iPad', fakeAsync(() => {
+            // Arrange
+            deviceTypeServiceSpy.isIpad.and.returnValue(true);
 
             // Act
             component.setupTestAndCall();

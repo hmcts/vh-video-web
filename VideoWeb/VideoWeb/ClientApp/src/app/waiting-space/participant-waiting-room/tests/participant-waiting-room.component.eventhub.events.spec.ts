@@ -37,7 +37,6 @@ import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -47,7 +46,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let shouldUnloadSubject: Subject<void>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -65,9 +63,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-
-        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
-        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
 
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
@@ -93,8 +88,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore,
-            deviceDetectionServiceSpy
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

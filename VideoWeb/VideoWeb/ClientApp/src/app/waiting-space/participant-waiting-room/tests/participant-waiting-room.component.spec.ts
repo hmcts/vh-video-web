@@ -49,7 +49,6 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CaseTypeGroup } from '../../models/case-type-group';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -63,7 +62,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
-    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -117,9 +115,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
-        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
-        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
-
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -144,8 +139,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore,
-            deviceDetectionServiceSpy
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -304,8 +298,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             assertSetUpSubscribers();
         }));
 
-        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
-            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+        it('should show warning when user is on iPhone', fakeAsync(() => {
+            deviceTypeService.isIphone.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+
+        it('should show warning when user is on iPad', fakeAsync(() => {
+            deviceTypeService.isIpad.and.returnValue(true);
             component.ngOnInit();
             tick();
 

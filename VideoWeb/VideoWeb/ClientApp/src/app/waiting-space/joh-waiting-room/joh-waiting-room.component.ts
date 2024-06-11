@@ -28,7 +28,6 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -67,8 +66,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected store: Store<ConferenceState>,
-        private deviceDetectionService: DeviceDetectionService
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -93,8 +91,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             focusService,
             store
         );
-
-        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefixJOH);
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -178,7 +174,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
-            if (this.deviceDetectionService.isMobileIOSDevice()) {
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
                 this.showWarning = true;
             } else {
                 this.setUpSubscribers();

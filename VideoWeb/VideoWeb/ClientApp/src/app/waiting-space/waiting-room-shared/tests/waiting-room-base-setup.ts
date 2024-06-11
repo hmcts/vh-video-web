@@ -117,6 +117,7 @@ export function initAllWRDependencies() {
         'getBrowserVersion',
         'isSupportedBrowser',
         'isIpad',
+        'isIphone',
         'isTablet'
     ]);
 

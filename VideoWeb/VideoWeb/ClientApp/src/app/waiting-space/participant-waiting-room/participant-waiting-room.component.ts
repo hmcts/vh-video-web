@@ -33,7 +33,6 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -79,8 +78,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected store: Store<ConferenceState>,
-        private deviceDetectionService: DeviceDetectionService
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -105,8 +103,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             focusService,
             store
         );
-
-        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefixParticipant);
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -359,7 +355,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
-            if (this.deviceDetectionService.isMobileIOSDevice()) {
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
                 this.showWarning = true;
             } else {
                 this.setUpSubscribers();
