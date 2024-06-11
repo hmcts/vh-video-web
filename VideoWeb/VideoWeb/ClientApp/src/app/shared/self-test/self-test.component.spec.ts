@@ -51,6 +51,9 @@ describe('SelfTestComponent', () => {
         token: '3a9643611de98e66979bf9519c33fc8d28c39100a4cdc29aaf1b6041b9e16e45'
     });
 
+    let selfTestParticipantId = 'participant-id';
+    let callSpy: jasmine.Spy<() => Promise<void>>;
+
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
 
@@ -399,7 +402,7 @@ describe('SelfTestComponent', () => {
             // Arrange
             const expectedSelfTestNode = 'pexip-node';
             const conferenceAlias = 'testcall2';
-            const selfTestParticipantId = 'participant-id';
+            selfTestParticipantId = 'participant-id';
             const maxBandwidth = 1234;
 
             const encodedTokenOptions = btoa(`${token.expires_on};${selfTestParticipantId};${token.token}`);
@@ -430,7 +433,7 @@ describe('SelfTestComponent', () => {
         it('should disconnect and reconnect', fakeAsync(() => {
             // Arrange
             const disconnectSpy = spyOn(component, 'disconnect');
-            const callSpy = spyOn(component, 'call');
+            callSpy = spyOn(component, 'call');
             const stream = new MediaStream();
             component.preferredMicrophoneStream = null;
 
@@ -643,9 +646,6 @@ describe('SelfTestComponent', () => {
             expect(videoWebServiceSpy.raiseSelfTestFailureEvent).not.toHaveBeenCalled();
         }));
     });
-
-    const selfTestParticipantId = 'participant-id';
-    let callSpy: jasmine.Spy<() => Promise<void>>;
 
     describe('setupTestAndCall', () => {
         let setupPexipClientSpy: jasmine.Spy<() => Promise<void>>;

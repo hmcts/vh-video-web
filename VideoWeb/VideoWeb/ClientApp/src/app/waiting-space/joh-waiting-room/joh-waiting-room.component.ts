@@ -151,6 +151,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -196,10 +201,5 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-    }
-
-    dismissWarning() {
-        this.showWarning = false;
-        this.setUpSubscribers();
     }
 }

@@ -45,7 +45,6 @@ describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -78,7 +77,7 @@ describe('JohWaitingRoomComponent', () => {
 
     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
-    deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
+    const deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
     deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
 
     beforeEach(async () => {

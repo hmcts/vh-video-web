@@ -333,6 +333,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         ModalTrapFocus.trap('video-container');
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -387,10 +392,5 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-    }
-
-    dismissWarning() {
-        this.showWarning = false;
-        this.setUpSubscribers();
     }
 }
