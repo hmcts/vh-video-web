@@ -98,7 +98,6 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 import { CookiesComponent } from './cookies/cookies.component';
 import { ConfirmSelfTestPopupComponent } from './self-test/confirmation/confirm-self-test-popup.component';
-import { WarnJoinHearingPopupComponent } from '../waiting-space/confirmation/warn-join-hearing-popup.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -160,8 +159,8 @@ export function getSettings(configService: ConfigService) {
         RandomPipe,
         TruncatableTextComponent,
         CookiesComponent,
-        ConfirmSelfTestPopupComponent,
-        WarnJoinHearingPopupComponent
+        ConfirmSelfTestPopupComponent
+        // WarnJoinHearingPopupComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -215,8 +214,8 @@ export function getSettings(configService: ConfigService) {
         HookElementDirective,
         RandomPipe,
         TruncatableTextComponent,
-        ConfirmSelfTestPopupComponent,
-        WarnJoinHearingPopupComponent
+        ConfirmSelfTestPopupComponent
+        // WarnJoinHearingPopupComponent
     ]
 })
 export class SharedModule {
