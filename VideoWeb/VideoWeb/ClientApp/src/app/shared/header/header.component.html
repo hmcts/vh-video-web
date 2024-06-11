@@ -23,10 +23,16 @@
   <div class="govuk-header__content">
     <nav class="govuk-header__navigation" [attr.aria-label]="'header.account-navigation-label' | translate">
       <ul class="govuk-header__navigation-list">
-        <li class="govuk-header__navigation-item">
+        <li class="govuk-header__navigation-item stay-right">
           <span id="header-username">{{ username }}</span>
         </li>
-        <li *ngIf="loggedIn" class="govuk-header__navigation-item">
+      </ul>
+    </nav>
+  </div>
+  <div class="govuk-header__content govuk-header__content_secondary">
+    <nav class="govuk-header__navigation" [attr.aria-label]="'header.account-navigation-label' | translate">
+      <ul class="govuk-header__navigation-list">
+        <li *ngIf="loggedIn" class="govuk-header__navigation-item stay-right">
           <a id="logout-link" class="govuk-header__link" [routerLink]="logoutRoute">{{ 'header.sign-out' | translate }}</a>
         </li>
       </ul>
