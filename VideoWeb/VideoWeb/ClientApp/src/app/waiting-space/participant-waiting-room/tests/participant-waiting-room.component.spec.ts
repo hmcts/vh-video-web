@@ -301,7 +301,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
             expect(component.showWarning).toBeFalse();
-            assertSubscribersStarted();
+            assertSetUpSubscribers();
         }));
 
         it('should show warning when user is on mobile IOS device', fakeAsync(() => {
@@ -324,11 +324,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             tick();
 
             expect(component.showWarning).toBeFalse();
-            assertSubscribersStarted();
+            assertSetUpSubscribers();
         }));
     });
 
-    function assertSubscribersStarted() {
+    function assertSetUpSubscribers() {
         expect(clockService.getClock).toHaveBeenCalled();
         expect(component.eventHubSubscription$.add).toHaveBeenCalled();
     }

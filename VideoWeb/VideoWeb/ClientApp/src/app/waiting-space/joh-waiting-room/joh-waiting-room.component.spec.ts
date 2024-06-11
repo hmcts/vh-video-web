@@ -248,7 +248,7 @@ describe('JohWaitingRoomComponent', () => {
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();
             expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
-            assertSubscribersStarted();
+            assertSetUpSubscribers();
         }));
 
         it('should show warning when user is on mobile IOS device', fakeAsync(() => {
@@ -271,11 +271,11 @@ describe('JohWaitingRoomComponent', () => {
             tick();
 
             expect(component.showWarning).toBeFalse();
-            assertSubscribersStarted();
+            assertSetUpSubscribers();
         }));
     });
 
-    function assertSubscribersStarted() {
+    function assertSetUpSubscribers() {
         expect(clockService.getClock).toHaveBeenCalled();
         expect(component.eventHubSubscription$.add).toHaveBeenCalled();
     }

@@ -357,12 +357,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             if (this.deviceDetectionService.isMobileIOSDevice()) {
                 this.showWarning = true;
             } else {
-                this.startSubscribers();
+                this.setUpSubscribers();
             }
         });
     }
 
-    private startSubscribers() {
+    private setUpSubscribers() {
         this.subscribeToClock();
         this.startEventHubSubscribers();
         this.connectToPexip();
@@ -391,6 +391,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     dismissWarning() {
         this.showWarning = false;
-        this.startSubscribers();
+        this.setUpSubscribers();
     }
 }

@@ -176,12 +176,12 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             if (this.deviceDetectionService.isMobileIOSDevice()) {
                 this.showWarning = true;
             } else {
-                this.startSubscribers();
+                this.setUpSubscribers();
             }
         });
     }
 
-    private startSubscribers() {
+    private setUpSubscribers() {
         this.subscribeToClock();
         this.startEventHubSubscribers();
         this.connectToPexip();
@@ -200,6 +200,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
     dismissWarning() {
         this.showWarning = false;
-        this.startSubscribers();
+        this.setUpSubscribers();
     }
 }
