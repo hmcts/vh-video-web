@@ -33,6 +33,7 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -48,8 +49,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     hearingVenueIsScottish$: Observable<boolean>;
 
     emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
+    showWarning = false;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
+    private readonly deviceDetectionService: DeviceDetectionService;
     private destroyedSubject = new Subject();
     private title = 'Participant waiting room';
 
@@ -102,6 +105,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             focusService,
             store
         );
+
+        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefixParticipant);
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -349,11 +354,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
-            this.registerMediaStatusPublisher();
+            if (this.deviceDetectionService.isMobileIOSDevice()) {
+                this.showWarning = true;
+            } else {
+                this.startSubscribers();
+            }
         });
+    }
+
+    private startSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
+        this.registerMediaStatusPublisher();
     }
 
     private registerMediaStatusPublisher() {
@@ -374,5 +387,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    dismissWarning() {
+        this.showWarning = false;
+        this.startSubscribers();
     }
 }

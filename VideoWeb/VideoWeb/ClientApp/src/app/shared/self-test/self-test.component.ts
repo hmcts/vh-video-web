@@ -21,6 +21,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 @Component({
     selector: 'app-self-test',
@@ -58,9 +59,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
+    showWarning = false;
 
     private destroyedSubject = new Subject();
     private readonly loggerPrefix = '[SelfTest] -';
+    private readonly deviceDetectionService: DeviceDetectionService;
 
     constructor(
         private logger: Logger,
@@ -70,7 +73,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaStreamService: UserMediaStreamService,
         private videoFilterService: VideoFilterService,
         private videoCallService: VideoCallService
-    ) {}
+    ) {
+        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefix);
+    }
 
     get streamsActive() {
         let outgoingActive = true;
@@ -149,6 +154,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         await this.setupPexipClient();
+        if (this.deviceDetectionService.isMobileIOSDevice()) {
+            this.showWarning = true;
+        } else {
+            await this.fetchTokenAndCall();
+        }
+    }
+
+    async fetchTokenAndCall() {
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug(`${this.loggerPrefix} Retrieved token for self test`, {
@@ -159,6 +172,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         } catch (error) {
             this.errorService.handleApiError(error);
         }
+    }
+
+    async dismissWarning() {
+        this.showWarning = false;
+        await this.fetchTokenAndCall();
     }
 
     changeDevices() {

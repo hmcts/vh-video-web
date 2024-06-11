@@ -971,6 +971,16 @@
     "mute-my-microphone": "Mute my microphone",
     "cancel": "Cancel"
   },
+  "confirm-self-test-popup": {
+    "title": "Your self test is about to begin",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "OK"
+  },
+  "warn-join-hearing-popup": {
+    "title": "Your hearing is scheduled to start at",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "OK"
+  },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
     "display-text": "Copy joining by phone details to clipboard",

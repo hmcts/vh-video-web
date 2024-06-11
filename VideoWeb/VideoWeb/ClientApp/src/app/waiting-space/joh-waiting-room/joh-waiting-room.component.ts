@@ -28,6 +28,7 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -36,11 +37,13 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     isParticipantsPanelHidden = false;
+    showWarning = false;
 
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
     private title = 'JOH waiting room';
     private readonly MODAL_WINDOW = 'video-hearing-container';
+    private readonly deviceDetectionService: DeviceDetectionService;
 
     constructor(
         protected route: ActivatedRoute,
@@ -90,6 +93,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             focusService,
             store
         );
+
+        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefixJOH);
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -168,10 +173,18 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
+            if (this.deviceDetectionService.isMobileIOSDevice()) {
+                this.showWarning = true;
+            } else {
+                this.startSubscribers();
+            }
         });
+    }
+
+    private startSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
     }
 
     private cleanUp() {
@@ -183,5 +196,10 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    dismissWarning() {
+        this.showWarning = false;
+        this.startSubscribers();
     }
 }
