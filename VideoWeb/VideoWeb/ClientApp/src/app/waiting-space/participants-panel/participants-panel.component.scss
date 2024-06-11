@@ -38,18 +38,6 @@
   font-size: 30px;
 }
 
-.participants-grid {
-  font-family: 'GDS Transport', arial, sans-serif;
-  color: govuk-colour('white');
-  display: grid;
-  grid-template-columns: auto 30px 30px 30px 30px 30px;
-  > div {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
-  }
-}
-
 .icon-button,
 .icon-button-dark {
   cursor: pointer;

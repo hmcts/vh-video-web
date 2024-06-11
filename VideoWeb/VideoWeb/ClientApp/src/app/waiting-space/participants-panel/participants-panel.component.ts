@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription, combineLatest } from 'rxjs';
@@ -73,7 +73,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        private store: Store<ConferenceState>
+        private store: Store<ConferenceState>,
+        private changeDetector: ChangeDetectorRef
     ) {}
 
     private static showCaseRole(participant: PanelModel) {
@@ -235,30 +236,35 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getParticipantMediaStatusMessage().subscribe(async message => {
                 this.handleParticipantMediaStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
                 this.handleParticipantHandRaiseChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
@@ -292,6 +298,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
                     this.removeParticipantsNotInConference(mappedList);
                     this.updateParticipants();
+                    this.changeDetector.detectChanges();
                 }
             })
         );
@@ -442,6 +449,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.updateStatus(message.status, message.participantId);
         participant.updateTransferringInStatus(false, message.participantId);
+
+        this.participants = [...this.participants];
 
         this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
             conference: this.conferenceId,

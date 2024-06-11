@@ -8,8 +8,10 @@ import { VideoEndpointPanelModel } from '../../models/video-endpoint-panel-model
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ParticipantPanelModel } from '../../models/participant-panel-model';
 import {
-    CallParticipantIntoHearingEvent, DismissParticipantFromHearingEvent,
-    LowerParticipantHandEvent, ToggleLocalMuteParticipantEvent,
+    CallParticipantIntoHearingEvent,
+    DismissParticipantFromHearingEvent,
+    LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from '../../../shared/models/participant-event';
@@ -31,66 +33,84 @@ export class ParticipantsPanelItemComponent {
 
     participant: PanelModel;
 
-    isDisconnected = false;
-    panelRowTooltipText = '';
-    panelRowTooltipColour = '';
     isJudge = false;
     isHost = false;
     isEndpoint = false;
-    isLinkedParticipantAndAnInterpreter = false;
     isJudicialOfficeHolder = false;
-    isParticipantInHearing = false;
     isWitness = false;
-
-    isMicRemoteMuted = false;
-    isLocalMicMuted = false;
-    hasHandRaised = false;
-    isLocalCameraOff = false;
-    hasSpotlight = false;
-
-    isCallable = false;
-    isInHearing = false;
-    isAvailable = false;
-    transferringIn = false;
 
     constructor(private translateService: TranslateService) {}
 
-    @Input() set item (value: PanelModel) {
+    @Input() set item(value: PanelModel) {
+        console.log('[Shaed] item', value);
         this.participant = value;
-        this.hasSpotlight = value.hasSpotlight();
-        this.isDisconnected = value.isDisconnected();
-        this.panelRowTooltipText = this.getPanelRowTooltipText(value);
-        this.panelRowTooltipColour = this.getPanelRowTooltipColour(value);
         this.isJudge = value.hearingRole === HearingRole.JUDGE;
         this.isHost = value.isHost;
-        this.isEndpoint = this.isItemAnEndpoint(value);
-        this.isLinkedParticipantAndAnInterpreter = this.determineIfIsLinkedParticipantAndAnInterpreter(value);
+        this.isEndpoint = this.isItemAnEndpoint();
         this.isJudicialOfficeHolder = value.isJudicialOfficeHolder;
-        this.isParticipantInHearing = value.isInHearing();
         this.isWitness = value.isWitness;
-
-        this.isMicRemoteMuted = value.isMicRemoteMuted();
-        this.isLocalMicMuted = value.isLocalMicMuted();
-        this.hasHandRaised = value.hasHandRaised();
-        this.isLocalCameraOff = value.isLocalCameraOff();
-        this.hasSpotlight = value.hasSpotlight();
-
-
-        this.isCallable = value.isCallable;
-        this.isInHearing = value.isInHearing();
-        this.isAvailable = value.isAvailable();
-        this.transferringIn = value.transferringIn;
     }
 
-    isItemAnEndpoint(participant: PanelModel) {
-        return participant instanceof VideoEndpointPanelModel;
-    }
 
-    determineIfIsLinkedParticipantAndAnInterpreter(participant: PanelModel) {
-        if (!(participant instanceof LinkedParticipantPanelModel)) {
+    isLinkedParticipantAndAnInterpreter() {
+        if (!(this.participant instanceof LinkedParticipantPanelModel)) {
             return false;
         }
-        return participant.participants.some(x => x.hearingRole === HearingRole.INTERPRETER);
+        return this.participant.participants.some(x => x.hearingRole === HearingRole.INTERPRETER);
+    }
+
+    getPanelRowTooltipText() {
+        let toolTipText = this.participant.displayName + this.getAdditionalText();
+
+        if (!this.participant.isDisconnected() && !this.participant.isInHearing()) {
+            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText();
+        }
+        if (this.participant.isAvailable()) {
+            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText();
+        }
+        if (this.participant.isWitness && this.participant.isAvailable() && !this.participant.isInHearing()) {
+            toolTipText =
+                this.participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText();
+        }
+        if (this.participant.isDisconnected()) {
+            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText();
+        }
+
+        return toolTipText;
+    }
+
+    getPanelRowTooltipColour() {
+        if (this.participant.isDisconnected()) {
+            return 'red';
+        } else if (this.participant.isAvailable() || this.participant.isInHearing()) {
+            return 'blue';
+        } else {
+            return 'grey';
+        }
+    }
+
+    toggleParticipantSpotlight() {
+        this.participantSpotlightToggled.emit({ participant: this.participant });
+    }
+
+    toggleParticipantMute() {
+        this.participantMuteToggled.emit({ participant: this.participant });
+    }
+
+    toggleParticipantLocalMute() {
+        this.participantLocalMuteToggled.emit({ participant: this.participant });
+    }
+
+    lowerParticipantHand() {
+        this.participantHandLowered.emit({ participant: this.participant });
+    }
+
+    callParticipantIntoHearing() {
+        this.participantAdmitted.emit({ participant: this.participant });
+    }
+
+    dismissParticipantFromHearing() {
+        this.participantDismissed.emit({ participant: this.participant });
     }
 
     mapParticipantToParticipantResponse(): ParticipantResponse {
@@ -106,93 +126,43 @@ export class ParticipantsPanelItemComponent {
         return participantResponse;
     }
 
-    getPanelRowTooltipText(participant: PanelModel) {
-        let toolTipText = participant.displayName + this.getAdditionalText(participant);
-
-        if (!participant.isDisconnected() && !participant.isInHearing()) {
-            toolTipText = participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
-        }
-        if (participant.isAvailable()) {
-            toolTipText = participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
-        }
-        if (participant.isWitness && participant.isAvailable() && !participant.isInHearing()) {
-            toolTipText =
-                participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText(participant);
-        }
-        if (participant.isDisconnected()) {
-            toolTipText = participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
-        }
-
-        return toolTipText;
+    private getAdditionalText(): string {
+        return this.participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole() + this.getCaseRole() : '';
     }
 
-    getAdditionalText(participant: PanelModel): string {
-        return participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole(participant) + this.getCaseRole(participant) : '';
-    }
-
-    getPanelRowTooltipColour(participant: PanelModel) {
-        if (participant.isDisconnected()) {
-            return 'red';
-        } else if (participant.isAvailable() || participant.isInHearing()) {
-            return 'blue';
-        } else {
-            return 'grey';
-        }
-    }
-
-    getTranslatedText(key: string): string {
+    private getTranslatedText(key: string): string {
         return this.translateService.instant(`participants-panel.${key}`);
     }
 
-    toggleParticipantSpotlight() {
-        this.participantSpotlightToggled.emit({participant: this.participant});
+    private isItemAnEndpoint() {
+        return this.participant instanceof VideoEndpointPanelModel;
     }
 
-    toggleParticipantMute() {
-        this.participantMuteToggled.emit({participant: this.participant});
-    }
-
-    toggleParticipantLocalMute() {
-        this.participantLocalMuteToggled.emit({participant: this.participant});
-    }
-
-    lowerParticipantHand() {
-        this.participantHandLowered.emit({participant: this.participant});
-    }
-
-    callParticipantIntoHearing() {
-        this.participantAdmitted.emit({participant: this.participant});
-    }
-
-    dismissParticipantFromHearing() {
-        this.participantDismissed.emit({participant: this.participant});
-    }
-
-    private getHearingRole(participant: PanelModel): string {
-        if (participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+    private getHearingRole(): string {
+        if (this.participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
             return '';
         }
         const translatedtext = this.getTranslatedText('for');
-        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
-        return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
+        const hearingRoleText = this.translateService.instant('hearing-role.' + this.participant.hearingRole.toLowerCase().split(' ').join('-'));
+        return this.participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${this.participant.representee}` : `<br/>${hearingRoleText}`;
     }
 
-    private getCaseRole(participant: PanelModel): string {
-        if (!participant.caseTypeGroup) {
+    private getCaseRole(): string {
+        if (!this.participant.caseTypeGroup) {
             return '';
         }
         const translatedCaseTypeGroup = this.translateService.instant(
-            'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
+            'case-type-group.' + this.participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );
-        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
+        return this.showCaseRole() ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
-    private showCaseRole(participant: PanelModel) {
+    private showCaseRole() {
         return !(
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            this.participant.caseTypeGroup.toLowerCase() === 'endpoint'
         );
     }
 }
