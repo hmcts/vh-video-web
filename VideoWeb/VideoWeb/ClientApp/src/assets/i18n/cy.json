@@ -896,6 +896,16 @@
     "mute-my-microphone": "Troi fy meicroffôn i ffwrdd",
     "cancel": "Canslo"
   },
+  "confirm-self-test-popup": {
+    "title": "Your self test is about to begin",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "lawn"
+  },
+  "warn-join-hearing-popup": {
+    "title": "Your hearing is scheduled to start at",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "lawn"
+  },
   "participants-panel": {
     "participants": "Cyfranogwyr",
     "mute-lock": "Mudo a chloi",

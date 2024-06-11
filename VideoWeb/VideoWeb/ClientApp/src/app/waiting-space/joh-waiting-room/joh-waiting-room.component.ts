@@ -43,7 +43,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     private destroyedSubject = new Subject();
     private title = 'JOH waiting room';
     private readonly MODAL_WINDOW = 'video-hearing-container';
-    private readonly deviceDetectionService: DeviceDetectionService;
 
     constructor(
         protected route: ActivatedRoute,
@@ -68,7 +67,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        private deviceDetectionService: DeviceDetectionService
     ) {
         super(
             route,
@@ -94,7 +94,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             store
         );
 
-        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefixJOH);
+        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefixJOH);
     }
 
     get allowAudioOnlyToggle(): boolean {

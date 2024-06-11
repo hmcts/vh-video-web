@@ -39,11 +39,13 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -76,6 +78,9 @@ describe('JohWaitingRoomComponent', () => {
 
     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
+    deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
+    deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
+
     beforeEach(async () => {
         translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
@@ -101,7 +106,8 @@ describe('JohWaitingRoomComponent', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore
+            mockConferenceStore,
+            deviceDetectionServiceSpy
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -110,6 +116,9 @@ describe('JohWaitingRoomComponent', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+        clockService.getClock.calls.reset();
+        eventsService.getHearingStatusMessage.calls.reset();
+        eventsService.onEventsHubReady.calls.reset();
     });
 
     describe('get allowAudioOnlyToggle', () => {
@@ -227,16 +236,43 @@ describe('JohWaitingRoomComponent', () => {
         expect(result).toBeTrue();
     }));
 
-    it('should init hearing alert and subscribers', fakeAsync(() => {
-        component.ngOnInit();
-        flushMicrotasks();
-        tick(100);
-        expect(component.clockSubscription$).toBeDefined();
-        expect(component.eventHubSubscription$).toBeDefined();
-        expect(component.videoCallSubscription$).toBeDefined();
-        expect(component.displayDeviceChangeModal).toBeFalsy();
-        expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
-    }));
+    describe('ngOnInit', () => {
+        it('should init hearing alert and subscribers', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            tick(100);
+            expect(component.clockSubscription$).toBeDefined();
+            expect(component.eventHubSubscription$).toBeDefined();
+            expect(component.videoCallSubscription$).toBeDefined();
+            expect(component.displayDeviceChangeModal).toBeFalsy();
+            expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
+        }));
+
+        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
+            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+    });
+
+    describe('dismissWarning', () => {
+        it('should hide warning and start subscribers', fakeAsync(() => {
+            component.showWarning = true;
+            component.dismissWarning();
+            tick();
+
+            expect(component.showWarning).toBeFalse();
+            assertSubscribersStarted();
+        }));
+    });
+
+    function assertSubscribersStarted() {
+        expect(clockService.getClock).toHaveBeenCalled();
+        expect(eventsService.getHearingStatusMessage).toHaveBeenCalled();
+        expect(eventsService.onEventsHubReady).toHaveBeenCalled();
+    }
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },

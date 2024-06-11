@@ -63,7 +63,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     private destroyedSubject = new Subject();
     private readonly loggerPrefix = '[SelfTest] -';
-    private readonly deviceDetectionService: DeviceDetectionService;
 
     constructor(
         private logger: Logger,
@@ -72,9 +71,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private videoFilterService: VideoFilterService,
-        private videoCallService: VideoCallService
+        private videoCallService: VideoCallService,
+        private deviceDetectionService: DeviceDetectionService
     ) {
-        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefix);
+        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefix);
     }
 
     get streamsActive() {

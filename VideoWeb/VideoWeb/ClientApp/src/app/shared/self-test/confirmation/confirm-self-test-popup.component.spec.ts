@@ -1,22 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ConfirmSelfTestPopupComponent } from '../../../waiting-space/confirmation/confirm-self-test-popup.component';
+import { FocusService } from 'src/app/services/focus.service';
+import { ConfirmSelfTestPopupComponent } from './confirm-self-test-popup.component';
 
 describe('ConfirmSelfTestPopupComponent', () => {
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
     let component: ConfirmSelfTestPopupComponent;
-    let fixture: ComponentFixture<ConfirmSelfTestPopupComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [ConfirmSelfTestPopupComponent]
-        }).compileComponents();
-
-        fixture = TestBed.createComponent(ConfirmSelfTestPopupComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+    beforeEach(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus']);
+        component = new ConfirmSelfTestPopupComponent(focusServiceSpy);
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should emit true when submit is called', () => {
+        spyOn(component.popupAnswered, 'emit');
+        component.submit();
+        expect(component.popupAnswered.emit).toHaveBeenCalledWith(true);
     });
 });

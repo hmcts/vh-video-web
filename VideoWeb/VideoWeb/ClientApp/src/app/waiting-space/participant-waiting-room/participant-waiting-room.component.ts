@@ -52,7 +52,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     showWarning = false;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
-    private readonly deviceDetectionService: DeviceDetectionService;
     private destroyedSubject = new Subject();
     private title = 'Participant waiting room';
 
@@ -80,7 +79,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        private deviceDetectionService: DeviceDetectionService
     ) {
         super(
             route,
@@ -106,7 +106,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             store
         );
 
-        this.deviceDetectionService = new DeviceDetectionService(logger, this.loggerPrefixParticipant);
+        this.deviceDetectionService.setLoggerPrefix(this.loggerPrefixParticipant);
     }
 
     get allowAudioOnlyToggle(): boolean {

@@ -37,12 +37,14 @@ import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 import { RoomTransfer } from '../../shared/models/room-transfer';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 describe('JohWaitingRoomComponent eventhub events', () => {
     let component: JohWaitingRoomComponent;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     const hearingStatusSubject = hearingStatusSubjectMock;
     const translateService = translateServiceSpy;
@@ -57,6 +59,9 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
+        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
+        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
 
         component = new JohWaitingRoomComponent(
             activatedRoute,
@@ -81,7 +86,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore
+            mockConferenceStore,
+            deviceDetectionServiceSpy
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

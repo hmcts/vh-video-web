@@ -1,10 +1,13 @@
 import { Logger } from 'src/app/services/logging/logger-base';
 
 export class DeviceDetectionService {
-    constructor(
-        protected logger: Logger,
-        protected loggerPrefix: string
-    ) {}
+    private loggerPrefix: string;
+
+    constructor(protected logger: Logger) {}
+
+    setLoggerPrefix(prefix: string): void {
+        this.loggerPrefix = prefix;
+    }
 
     isMobileIOSDevice(): boolean {
         const userAgent = navigator.userAgent || (window as any).opera;

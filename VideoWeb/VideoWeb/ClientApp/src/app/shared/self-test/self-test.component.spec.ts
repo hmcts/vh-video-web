@@ -26,6 +26,7 @@ import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelfTestComponent } from './self-test.component';
 import { ElementRef } from '@angular/core';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -43,6 +44,7 @@ describe('SelfTestComponent', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
+    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
@@ -93,6 +95,9 @@ describe('SelfTestComponent', () => {
 
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['userAgent']);
 
+        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
+        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
+
         component = new SelfTestComponent(
             loggerSpy,
             videoWebServiceSpy,
@@ -100,7 +105,8 @@ describe('SelfTestComponent', () => {
             userMediaServiceSpy,
             userMediaStreamServiceSpy,
             videoFilterServiceSpy,
-            videoCallServiceSpy
+            videoCallServiceSpy,
+            deviceDetectionServiceSpy
         );
     });
 
@@ -638,9 +644,10 @@ describe('SelfTestComponent', () => {
         }));
     });
 
+    const selfTestParticipantId = 'participant-id';
+    let callSpy: jasmine.Spy<() => Promise<void>>;
+
     describe('setupTestAndCall', () => {
-        const selfTestParticipantId = 'participant-id';
-        let callSpy: jasmine.Spy<() => Promise<void>>;
         let setupPexipClientSpy: jasmine.Spy<() => Promise<void>>;
 
         beforeEach(() => {
@@ -656,8 +663,7 @@ describe('SelfTestComponent', () => {
 
             // Assert
             expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
-            expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
-            expect(callSpy).toHaveBeenCalledTimes(1);
+            assertTokenFetchAndCall();
         }));
 
         it('should raise an api error if it fails to get the self test token', fakeAsync(() => {
@@ -675,7 +681,41 @@ describe('SelfTestComponent', () => {
             expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
             expect(callSpy).not.toHaveBeenCalled();
         }));
+
+        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
+            // Arrange
+            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+
+            // Act
+            component.setupTestAndCall();
+            flush();
+
+            // Assert
+            expect(component.showWarning).toBeTrue();
+        }));
     });
+
+    describe('dismissWarning', () => {
+        beforeEach(() => {
+            component.selfTestParticipantId = selfTestParticipantId;
+            callSpy = spyOn(component, 'call');
+        });
+
+        it('should hide warning, fetch token and call', fakeAsync(async () => {
+            // Act & Assert
+            component.showWarning = true;
+            await component.dismissWarning();
+
+            // Assert
+            expect(component.showWarning).toBeFalse();
+            assertTokenFetchAndCall();
+        }));
+    });
+
+    function assertTokenFetchAndCall() {
+        expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
+        expect(callSpy).toHaveBeenCalledTimes(1);
+    }
 
     describe('ngOnDestroy', () => {
         let disconnectSpy: jasmine.Spy<() => void>;

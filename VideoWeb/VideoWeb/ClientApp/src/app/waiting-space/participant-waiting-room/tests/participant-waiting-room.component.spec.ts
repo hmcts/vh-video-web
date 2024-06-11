@@ -49,6 +49,8 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CaseTypeGroup } from '../../models/case-type-group';
+import { DeviceDetectionService } from 'src/app/services/device-detection.service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -61,6 +63,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
+    let deviceDetectionServiceSpy: jasmine.SpyObj<DeviceDetectionService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -114,6 +117,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
+        deviceDetectionServiceSpy = jasmine.createSpyObj<DeviceDetectionService>(['setLoggerPrefix', 'isMobileIOSDevice']);
+        deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(false);
+
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -138,7 +144,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
-            mockConferenceStore
+            mockConferenceStore,
+            deviceDetectionServiceSpy
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -148,6 +155,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+        clockService.getClock.calls.reset();
+        eventsServiceSpy.getHearingStatusMessage.calls.reset();
+        eventsServiceSpy.onEventsHubReady.calls.reset();
     });
 
     afterEach(() => {
@@ -288,8 +298,35 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
+            expect(component.showWarning).toBeFalse();
+            assertSubscribersStarted();
+        }));
+
+        it('should show warning when user is on mobile IOS device', fakeAsync(() => {
+            deviceDetectionServiceSpy.isMobileIOSDevice.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
         }));
     });
+
+    describe('dismissWarning', () => {
+        it('should hide warning and start subscribers', fakeAsync(() => {
+            component.showWarning = true;
+            component.dismissWarning();
+            tick();
+
+            expect(component.showWarning).toBeFalse();
+            assertSubscribersStarted();
+        }));
+    });
+
+    function assertSubscribersStarted() {
+        expect(clockService.getClock).toHaveBeenCalled();
+        expect(eventsServiceSpy.getHearingStatusMessage).toHaveBeenCalled();
+        expect(eventsServiceSpy.onEventsHubReady).toHaveBeenCalled();
+    }
 
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
         expect(component.privateConsultationAccordianExpanded).toBeFalsy();
