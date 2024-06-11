@@ -97,7 +97,7 @@ import { AppInsightsLoggerService } from '../services/logging/loggers/app-insigh
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 import { CookiesComponent } from './cookies/cookies.component';
-import { ConfirmSelfTestPopupComponent } from '../waiting-space/confirmation/confirm-self-test-popup.component';
+import { ConfirmSelfTestPopupComponent } from './self-test/confirmation/confirm-self-test-popup.component';
 import { WarnJoinHearingPopupComponent } from '../waiting-space/confirmation/warn-join-hearing-popup.component';
 
 export function getSettings(configService: ConfigService) {
