@@ -658,32 +658,6 @@ describe('ParticipantService', () => {
 
     describe('handlePexipParticipantUpdates', () => {
         describe('maintains pexip id map', () => {
-            // TODO: fix this test before merge!
-            // it('should set the pexip ID when the event is raised', () => {
-            //     // Arrange
-            //     const newPexipId = 'new-pexip-id';
-            //     const participantId = participantOne.id;
-            //     const pexipName = `pexip-name-${participantId}`;
-            //     const participantUpdated: ParticipantUpdated = {
-            //         pexipDisplayName: pexipName,
-            //         uuid: newPexipId
-            //         // handRaised: false,
-            //         // isAudioOnlyCall: false,
-            //         // isRemoteMuted: false,
-            //         // isSpotlighted: false,
-            //         // isVideoCall: true,
-            //         // id
-            //     };
-
-            //     spyOnProperty(sut, 'participants', 'get').and.returnValue([participantUpdated]);
-
-            //     // Act
-            //     sut.handlePexipUpdate(participantUpdated);
-
-            //     // Assert
-            //     expect(sut.participants[0].pexipId).toEqual(newPexipId);
-            // });
-
             it('should set a second pexip ID when the event is raised again', () => {
                 // Arrange
                 const pexipIdOne = 'pexip-id-one';
@@ -1255,6 +1229,26 @@ describe('ParticipantService', () => {
                 expect(result).toBeNull();
                 expect(participant.isHandRaised).toBeTrue();
             }));
+        });
+
+        it('should not action when pexip display name is undefined', () => {
+            // Arrange
+            const participantUpdated: ParticipantUpdated = {
+                pexipDisplayName: undefined,
+                uuid: undefined,
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                isAudioOnlyCall: false,
+                isVideoCall: false,
+                protocol: ''
+            };
+
+            // Act
+            sut.handlePexipUpdate(participantUpdated);
+
+            // Assert
+            expect(sut.participants.length).toBe(0);
         });
     });
 
