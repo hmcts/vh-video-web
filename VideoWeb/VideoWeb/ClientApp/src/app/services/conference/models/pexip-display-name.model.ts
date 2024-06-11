@@ -14,6 +14,9 @@ export class PexipDisplayNameModel {
     ) {}
 
     static fromString(pexipDisplayName: string): PexipDisplayNameModel {
+        if (!pexipDisplayName) {
+            return null;
+        }
         const parts = pexipDisplayName.split(';');
 
         if (parts.length === 3) {

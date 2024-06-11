@@ -114,6 +114,9 @@ export class ParticipantService {
             participantUpdate: update
         });
 
+        if (!update.pexipDisplayName) {
+            return;
+        }
         const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
         if (participantOrVmr instanceof VirtualMeetingRoomModel) {
             this.handlePexipVmrUpdate(participantOrVmr, update);
