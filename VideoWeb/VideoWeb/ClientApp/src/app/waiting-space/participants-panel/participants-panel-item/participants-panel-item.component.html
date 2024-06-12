@@ -66,7 +66,7 @@
             "
             (click)="toggleParticipantMute(); $event.stopPropagation()"
             tabindex="0"
-            (keyup.enter)="toggleParticipantMute(); $event.stopPropagation()"
+            (keydown.enter)="toggleParticipantMute(); $event.stopPropagation()"
           />
           <fa-icon
             *ngIf="!participant.isMicRemoteMuted()"
@@ -78,7 +78,7 @@
             [class]="{ red: participant.isLocalMicMuted() }"
             (click)="toggleParticipantMute(); $event.stopPropagation()"
             tabindex="0"
-            (keyup.enter)="toggleParticipantMute(); $event.stopPropagation()"
+            (keydown.enter)="toggleParticipantMute(); $event.stopPropagation()"
           >
           </fa-icon>
         </ng-container>
@@ -103,7 +103,7 @@
             icon="sign-in-alt"
             (click)="callParticipantIntoHearing(); $event.stopPropagation()"
             tabindex="0"
-            (keyup.enter)="callParticipantIntoHearing()"
+            (keydown.enter)="callParticipantIntoHearing()"
           >
           </fa-icon>
           <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'" *ngIf="participant.transferringIn" class="yellow">
@@ -136,6 +136,7 @@
         [text]="'participants-panel.lower-hand' | translate"
         colour="grey"
         (click)="lowerParticipantHand(); $event.stopPropagation()"
+        (keydown.enter)="lowerParticipantHand(); $event.stopPropagation()"
       >
         <fa-icon [icon]="['far', 'hand-paper']" class="yellow" tabindex="0" (keyup.enter)="lowerParticipantHand()"></fa-icon>
       </div>
@@ -154,6 +155,7 @@
         "
         colour="blue"
         (click)="toggleParticipantSpotlight(); $event.stopPropagation()"
+        (keydown.enter)="toggleParticipantSpotlight(); $event.stopPropagation()"
       >
         <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }" tabindex="0" (keyup.enter)="toggleParticipantSpotlight()"></fa-icon>
       </div>
