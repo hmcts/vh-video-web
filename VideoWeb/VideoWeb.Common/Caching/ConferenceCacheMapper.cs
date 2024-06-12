@@ -4,6 +4,7 @@ using System.Linq;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.Common.Caching
 {
@@ -13,7 +14,7 @@ namespace VideoWeb.Common.Caching
         {
             var participants = conferenceResponse
                 .Participants
-                .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse.Participants))
+                .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse))
                 .ToList();
 
             var endpoints = conferenceResponse.Endpoints == null
@@ -58,33 +59,23 @@ namespace VideoWeb.Common.Caching
             return conference;
         }
 
-        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, List<ParticipantResponseV2> participantDetails)
+        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, HearingDetailsResponseV2 hearingDetails)
         {
-            var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
-            var participantHearingDetails = participantDetails.Single(x => x.Id == participant.RefId);
-            var model = new Participant();
-            model.Id = participant.Id;
-            model.RefId = participant.RefId;
-            model.Name = participant.Name;
-            model.FirstName = participantHearingDetails.FirstName;
-            model.LastName = participantHearingDetails.LastName;
-            model.ContactEmail = participantHearingDetails.ContactEmail;
-            model.ContactTelephone = participantHearingDetails.TelephoneNumber;
-            model.DisplayName = participantHearingDetails.DisplayName;
-            model.Role = Enum.Parse<Role>(participantHearingDetails.UserRoleName, true);
-            model.HearingRole = participantHearingDetails.HearingRoleName;
-            model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
-            model.Username = participantHearingDetails.Username;
-            model.CaseTypeGroup = participant.CaseTypeGroup;
-            model.Representee = participant.Representee;
-            model.LinkedParticipants = links;
-            model.CurrentRoomDto = RoomCacheMapper.Map(participant.CurrentRoom);
-            model.InterpreterRoomDto = RoomCacheMapper.Map(participant.CurrentInterpreterRoom);
+            var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
+            //TODO: Need to update bookingApi contract to provide judiciary participant ID in the response and match on that
+            var judiciaryDetails = hearingDetails.JudiciaryParticipants?.SingleOrDefault(x => x.Email == participant.Username);
+            
+            var model = 
+                ParticipantCacheMapper.Map(participant, participantDetails) ??
+                ParticipantCacheMapper.Map(participant, judiciaryDetails) ??
+                throw new ArgumentException("Participant not found in hearing details");
+
+            model.LinkedParticipants = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
+            
             return model;
         }
-
-        private static LinkedParticipant MapLinkedParticipantToCacheModel(
-            LinkedParticipantResponse linkedParticipant)
+        
+        private static LinkedParticipant MapLinkedParticipantToCacheModel(LinkedParticipantResponse linkedParticipant)
         {
             return new LinkedParticipant
             {

@@ -8055,9 +8055,7 @@ export enum EndpointStatus {
 }
 
 export enum LinkType {
-    Interpreter = 'Interpreter',
-    Representative = 'Representative',
-    Intermediary = 'Intermediary'
+    Interpreter = 'Interpreter'
 }
 
 export enum ParticipantStatus {

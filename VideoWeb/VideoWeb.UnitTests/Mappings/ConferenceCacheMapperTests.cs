@@ -46,8 +46,6 @@ namespace VideoWeb.UnitTests.Mappings
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
             }
             
-
-
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
             judge.IsJudge().Should().BeTrue();
             judge.IsWitness().Should().BeFalse();
