@@ -11,7 +11,6 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Services;
 
@@ -24,21 +23,18 @@ namespace VideoWeb.Controllers
     public class ConferenceManagementController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IBookingsApiClient _bookingApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IHearingLayoutService _hearingLayoutService;
         private readonly IConferenceManagementService _conferenceManagementService;
         private readonly IConferenceService _conferenceService;
         
-        public ConferenceManagementController(IVideoApiClient videoApiClient, 
-            IBookingsApiClient bookingApiClient,
+        public ConferenceManagementController(IVideoApiClient videoApiClient,
             ILogger<ConferenceManagementController> logger,
             IHearingLayoutService hearingLayoutService, 
             IConferenceManagementService conferenceManagementService,
             IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
-            _bookingApiClient = bookingApiClient;
             _logger = logger;
             _hearingLayoutService = hearingLayoutService;
             _conferenceManagementService = conferenceManagementService;
@@ -523,9 +519,6 @@ namespace VideoWeb.Controllers
 
         private Task TransferParticipantAsync(Guid conferenceId, Guid participantId, TransferType transferType)
         {
-            _logger.LogDebug("Sending request to {transferType.ToString().ToLowerInvariant()} participant {ParticipantId} from video hearing {ConferenceId}",
-                transferType, participantId, conferenceId);
-
             return _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
             {
                 ParticipantId = participantId,

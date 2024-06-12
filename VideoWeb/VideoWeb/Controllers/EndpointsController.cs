@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers;
 
 [Produces("application/json")]
 [ApiController]
-[Microsoft.AspNetCore.Components.Route("video-endpoints")]
+[Route("video-endpoints")]
 public class EndpointsController(
     ILogger<EndpointsController> logger,
     IMapperFactory mapperFactory,
