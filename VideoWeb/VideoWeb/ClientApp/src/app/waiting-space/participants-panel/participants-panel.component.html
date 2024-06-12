@@ -1,73 +1,77 @@
 <div class="container" *ngIf="totalParticipants > 0">
   <div class="header-row">
     <p class="govuk-body white">{{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})</p>
-    <p id="totalInWrCount" class="govuk-body white vh-pointer" (click)="scrollToElement('panelListNotConnectedHeader')">
+    <a
+      id="totalInWrCount"
+      class="govuk-body white vh-pointer"
+      tabindex="0"
+      (keydown.enter)="scrollToElement('panelListNotConnectedHeader')"
+      (click)="scrollToElement('panelListNotConnectedHeader')"
+    >
       {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
-    </p>
+    </a>
   </div>
 
   <div class="button-row">
-    <div
+    <button
+      type="submit"
       class="small-button row1"
-      data-prevent-double-click="true"
-      (click)="updateAllParticipantsLocalMuteStatus(true)"
+      data-module="govuk-button"
       appTooltip
       [text]="'participants-panel.mute-all-tooltip' | translate"
       colour="grey"
-      tabindex="0"
-      (keyup.enter)="updateAllParticipantsLocalMuteStatus(true)"
+      (keydown.enter)="updateAllParticipantsLocalMuteStatus(true)"
     >
       {{ 'participants-panel.mute-all' | translate }}
-    </div>
+    </button>
 
-    <div
+    <button
+      type="submit"
       class="small-button row1"
-      data-prevent-double-click="true"
-      (click)="updateAllParticipantsLocalMuteStatus(false)"
+      data-module="govuk-button"
       appTooltip
       [text]="'participants-panel.unmute-all-tooltip' | translate"
       colour="grey"
-      tabindex="0"
-      (keyup.enter)="updateAllParticipantsLocalMuteStatus(false)"
+      (keydown.enter)="updateAllParticipantsLocalMuteStatus(false)"
     >
       {{ 'participants-panel.unmute-all' | translate }}
-    </div>
+    </button>
 
-    <div
+    <button
+      type="submit"
       class="small-button row2"
-      data-prevent-double-click="true"
-      (click)="muteAndLockAll()"
+      data-module="govuk-button"
       appTooltip
       [text]="'participants-panel.mute-tooltip' | translate"
       colour="grey"
-      tabindex="0"
-      (keyup.enter)="muteAndLockAll()"
+      (keydown.enter)="muteAndLockAll()"
     >
       {{ 'participants-panel.mute-lock' | translate }}
-    </div>
-    <div
+    </button>
+
+    <button
+      type="submit"
       class="small-button row2"
-      data-prevent-double-click="true"
-      (click)="unlockAll()"
+      data-module="govuk-button"
       appTooltip
       [text]="'participants-panel.unmute-tooltip' | translate"
       colour="grey"
-      tabindex="0"
-      (keyup.enter)="unlockAll()"
+      (keydown.enter)="unlockAll()"
     >
       {{ 'participants-panel.unmute-lock' | translate }}
-    </div>
-    <div
+    </button>
+
+    <button
+      type="submit"
       class="small-button row2"
-      (click)="lowerAllHands()"
+      data-module="govuk-button"
       appTooltip
       [text]="'participants-panel.lower-hands-tooltip' | translate"
       colour="grey"
-      tabindex="0"
-      (keyup.enter)="lowerAllHands()"
+      (keydown.enter)="lowerAllHands()"
     >
       {{ 'participants-panel.lower-hands' | translate }}
-    </div>
+    </button>
   </div>
 
   <div class="panel-container-list" id="panelList">
