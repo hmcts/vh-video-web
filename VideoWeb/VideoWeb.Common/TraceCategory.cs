@@ -3,6 +3,7 @@
     public enum TraceCategory
     {
         AppException,
+        Dependency,
         EventHub
     }
 }

@@ -39,6 +39,8 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -100,7 +102,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        private launchDarklyService: LaunchDarklyService
+        private launchDarklyService: LaunchDarklyService,
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -122,7 +125,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             hearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            store
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
@@ -526,7 +530,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
+                if (createdParticipant.pexipDisplayName?.includes(this.videoCallService.wowzaAgentName)) {
                     this.assignWowzaAgent(createdParticipant);
                 }
             });
@@ -658,6 +662,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private cleanUp() {
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
         this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
         });

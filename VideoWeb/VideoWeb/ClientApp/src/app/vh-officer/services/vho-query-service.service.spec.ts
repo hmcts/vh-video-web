@@ -16,7 +16,8 @@ describe('VhoQueryService', () => {
             'getTasks',
             'completeTask',
             'getHeartbeatDataForParticipant',
-            'getCourtRoomAccounts'
+            'getCourtRoomAccounts',
+            'getActiveConferences'
         ]);
     });
 
@@ -30,7 +31,7 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames, null, false);
+        service.startQuery(venueNames, null, false, false);
         tick();
         expect(service.venueNames).toBe(venueNames);
         expect(setInterval).toHaveBeenCalled();
@@ -43,7 +44,7 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated);
+        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated, false);
         tick();
         expect(service.venueNames.length).toBe(0);
         expect(service.allocatedCsoIds).toBe(allocatedCsoIds);
@@ -81,6 +82,19 @@ describe('VhoQueryService', () => {
         await service.runQuery();
 
         expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith([], allocatedCsoIds, false);
+    });
+
+    it('should get active conferences when querying for active sessions only', async () => {
+        const data = testData.getTestData();
+        apiClient.getActiveConferences.and.returnValue(of(data));
+        const venueNames = ['venue1', 'venue2'];
+        service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
+        service.activeSessionsOnly = true;
+        await service.runQuery();
+
+        expect(apiClient.getActiveConferences).toHaveBeenCalledWith();
     });
 
     it('should get observable object', () => {

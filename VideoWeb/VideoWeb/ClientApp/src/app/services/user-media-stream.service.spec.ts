@@ -413,7 +413,6 @@ describe('UserMediaStreamService', () => {
             });
 
             const currentStreamTracks = currentStream.getTracks();
-            console.log(currentStreamTracks);
             expect(currentStreamTracks).toBeTruthy();
             expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
             expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeTruthy();

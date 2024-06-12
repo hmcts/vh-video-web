@@ -18,7 +18,8 @@ import {
     globalEndpoint,
     notificationSoundsService,
     toastrService,
-    initAllWRDependencies
+    initAllWRDependencies,
+    mockConferenceStore
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { NotificationToastrService } from './notification-toastr.service';
 import { ConsultationInvitation } from './consultation-invitation.service';
@@ -36,6 +37,10 @@ describe('NotificationToastrService', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(() => {

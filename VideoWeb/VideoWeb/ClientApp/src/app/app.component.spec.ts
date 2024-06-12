@@ -201,7 +201,7 @@ describe('AppComponent', () => {
         checkAuthSubject.next({ isAuthenticated: true } as LoginResponse);
 
         eventValue = {
-            type: EventTypes.NewAuthenticationResult,
+            type: EventTypes.CheckingAuthFinished,
             value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
         };
 

@@ -50,6 +50,17 @@ describe('PexipDisplayNameModel', () => {
             expect(result).toBeNull();
         });
 
+        it('should return null if input is falsy', () => {
+            // Arrange
+            const pexipDisplayName = undefined;
+
+            // Act
+            const result = PexipDisplayNameModel.fromString(pexipDisplayName);
+
+            // Assert
+            expect(result).toBeNull();
+        });
+
         it('should parse the string into the model when heartbeat is set', () => {
             // Arrange
             const role = 'ROLE';
@@ -57,7 +68,6 @@ describe('PexipDisplayNameModel', () => {
             const displayName = 'DISPLAY_NAME';
             const id = 'ID';
             const toParse = `${role};${heartbeat};${displayName};${id}`;
-            console.log(HeartbeatMode);
 
             // Act
             const model = PexipDisplayNameModel.fromString(toParse);

@@ -12,5 +12,6 @@ namespace VideoWeb.Common.Models
         public const string QuickLinkParticipant = "QuickLinkParticipant";
         public const string QuickLinkObserver = "QuickLinkObserver";
         public const string StaffMember = "StaffMember";
+        public const string Administrator = "Administrator";
     }
 }

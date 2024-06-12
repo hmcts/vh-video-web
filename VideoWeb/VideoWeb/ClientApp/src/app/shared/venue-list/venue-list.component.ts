@@ -5,7 +5,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
+import { HearingVenueResponse, JusticeUserResponse, Role } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
@@ -13,8 +13,8 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
-    static ALLOCATED_TO_ME = 'AllocatedToMe';
-    static UNALLOCATED = 'Unallocated';
+    static readonly ALLOCATED_TO_ME = 'AllocatedToMe';
+    static readonly UNALLOCATED = 'Unallocated';
 
     venues: HearingVenueResponse[];
     csos: JusticeUserResponse[];
@@ -23,10 +23,13 @@ export abstract class VenueListComponentDirective implements OnInit {
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
     errorMessage: string | null;
     vhoWorkAllocationFeatureFlag: boolean;
+    activeSessions: boolean;
+    isAdministrator: boolean;
 
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
+    protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -42,6 +45,7 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
+        this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
     }
 
     get venuesSelected(): boolean {
@@ -55,19 +59,38 @@ export abstract class VenueListComponentDirective implements OnInit {
     abstract get showVhoSpecificContent(): boolean;
 
     ngOnInit() {
+        this.activeSessions = this.activeSessionsStorage.get();
         this.setupSubscribers();
+        this.profileService.getUserProfile().then(user => {
+            this.isAdministrator = user.roles.includes(Role.Administrator);
+        });
     }
 
     updateVenueSelection() {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
         this.csoAllocationStorage.clear();
+        this.activeSessionsStorage.clear();
     }
 
     async updateCsoSelection() {
         this.selectedVenues = [];
         this.csoAllocationStorage.set(await this.getCsoFilter());
         this.judgeAllocationStorage.clear();
+        this.activeSessionsStorage.clear();
+    }
+
+    updateActiveSessionSelection() {
+        this.activeSessions = !this.activeSessions;
+        if (this.activeSessions) {
+            this.selectedVenues = [];
+            this.selectedCsos = [];
+            this.csoAllocationStorage.clear();
+            this.judgeAllocationStorage.clear();
+            this.activeSessionsStorage.set(true);
+        } else {
+            this.activeSessionsStorage.clear();
+        }
     }
 
     async getCsoFilter(): Promise<CsoFilter> {

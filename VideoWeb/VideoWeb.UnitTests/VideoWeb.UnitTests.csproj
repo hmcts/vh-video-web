@@ -22,19 +22,13 @@
     <PackageReference Include="NUnit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="NBuilder" Version="6.1.0" />
-    <PackageReference Include="VideoApi.Client" Version="1.51.9" />
+    <PackageReference Include="VideoApi.Client" Version="1.51.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Controllers\TestCallsController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Controllers\TestCallsController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Controllers\TestCallsController\**" />
+    <Folder Include="Controllers\TestCallsController\" />
   </ItemGroup>
 </Project>

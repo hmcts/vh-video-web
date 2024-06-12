@@ -639,6 +639,12 @@ describe('ParticipantsPanelComponent', () => {
                 expect(pat.assignPexipId).toHaveBeenCalledTimes(1);
                 expect(pat.assignPexipId).toHaveBeenCalledWith(testUuid);
             });
+
+            it('should handle pexip participant that does not have a display name', () => {
+                const user: ParticipantUpdated = { ...updatedParticipant, pexipDisplayName: undefined };
+                component.handleParticipantUpdatedInVideoCall(user);
+                expect(pat.pexipId).toBeUndefined();
+            });
         });
     });
 
