@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
@@ -21,7 +23,7 @@ namespace VideoWeb.Common.Caching
 
         public DistributedUserClaimsCache(
             IDistributedCache distributedCache,
-            ILogger<RedisCacheBase<string, List<Claim>>> logger) : base(distributedCache, logger)
+            ILogger<DistributedUserClaimsCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -38,12 +40,8 @@ namespace VideoWeb.Common.Caching
 
         public async Task<List<Claim>> GetAsync(string key)
         {
-            var result = await ReadFromCache(key);
-            if(result?.Count == 0)
-            {
-                return null;
-            }
-            return result;
+            var result = await ReadFromCache<List<CustomClaim>>(key);
+            return result?.Count == 0 ? null : result?.Select(x => x.ToClaim()).ToList();
         }
 
         public async Task ClearFromCache(string key)

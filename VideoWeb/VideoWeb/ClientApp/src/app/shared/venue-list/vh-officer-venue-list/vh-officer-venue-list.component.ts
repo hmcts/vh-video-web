@@ -63,23 +63,36 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     async goToHearingList() {
         this.errorMessage = null;
-        if (this.csosSelected) {
-            await this.updateCsoSelection();
+
+        if (this.activeSessions) {
+            this.selectedCsos = [];
+            this.selectedVenues = [];
+            this.csoAllocationStorage.clear();
+            this.judgeAllocationStorage.clear();
+            await this.vhoQueryService.getActiveConferences();
         } else {
-            this.updateVenueSelection();
+            if (this.csosSelected) {
+                await this.updateCsoSelection();
+            } else {
+                this.updateVenueSelection();
+            }
+
+            const csoFilter = this.csoAllocationStorage.get();
+            const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(
+                this.selectedVenues,
+                csoFilter?.allocatedCsoIds ?? [],
+                csoFilter?.includeUnallocated ?? false
+            );
+
+            this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
         }
-        const csoFilter = this.csoAllocationStorage.get();
-        const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(
-            this.selectedVenues,
-            csoFilter?.allocatedCsoIds ?? [],
-            csoFilter?.includeUnallocated ?? false
-        );
-        if (!this.venuesSelected && !this.csosSelected) {
+
+        if (!this.venuesSelected && !this.csosSelected && !this.activeSessions) {
             this.logger.warn('[VenueList] - No venues or csos selected');
-            this.errorMessage = 'Failed to find venues or csos';
+            this.errorMessage = 'Please select a filter to view hearings';
             return;
         }
-        this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
+
         await this.router.navigateByUrl(pageUrls.AdminHearingList);
     }
 

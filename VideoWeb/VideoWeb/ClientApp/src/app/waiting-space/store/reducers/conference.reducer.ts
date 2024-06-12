@@ -159,7 +159,7 @@ export const conferenceReducer = createReducer(
     on(ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
         const conference = state.currentConference;
         const participants = conference.participants.map(p =>
-            participant.pexipDisplayName.includes(p.id) ? { ...p, pexipInfo: participant } : p
+            participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p
         );
 
         return { ...state, currentConference: { ...conference, participants } };

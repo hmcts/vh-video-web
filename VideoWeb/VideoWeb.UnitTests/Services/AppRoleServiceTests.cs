@@ -33,7 +33,6 @@ namespace VideoWeb.UnitTests.Services
             _sut = new AppRoleService(_cacheMock.Object, _bookingsApiClientMock.Object, _loggerMock.Object);
         }
 
-        [TestCase(JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
         [TestCase(JusticeUserRole.Vho, AppRoles.VhOfficerRole)]
         [TestCase(JusticeUserRole.CaseAdmin, AppRoles.CaseAdminRole)]
         [TestCase(JusticeUserRole.Judge, AppRoles.JudgeRole)]
@@ -49,10 +48,10 @@ namespace VideoWeb.UnitTests.Services
 
             var userClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.GivenName, justiceUser.FirstName),
-                new Claim(ClaimTypes.Surname, justiceUser.Lastname),
-                new Claim(ClaimTypes.Name, justiceUser.FullName),
-                new Claim(ClaimTypes.Role, expectedAppRole)
+                new(ClaimTypes.GivenName, justiceUser.FirstName),
+                new(ClaimTypes.Surname, justiceUser.Lastname),
+                new(ClaimTypes.Name, justiceUser.FullName),
+                new(ClaimTypes.Role, expectedAppRole)
             };
 
             _cacheMock.Setup(x => x.GetAsync(username)).ReturnsAsync(userClaims);
@@ -62,6 +61,39 @@ namespace VideoWeb.UnitTests.Services
             // assert
             claims.Count.Should().Be(4); // name, given name, surname and role
             claims.First(x => x.Type == ClaimTypes.Role).Value.Should().Be(expectedAppRole);
+            claims.First(x => x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
+            claims.First(x => x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
+            claims.First(x => x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
+        }
+        
+        [Test]
+        public async Task should_map_justice_user_team_lead_to_admin_and_vho_app_role_and_set_cache()
+        {
+            // arrange
+            const JusticeUserRole justiceUserRole = JusticeUserRole.VhTeamLead;
+            string[] expectedAppRoles = [AppRoles.VhOfficerRole, AppRoles.Administrator];
+            
+            var username = "random@claims.com";
+            var justiceUser = InitJusticeUser(new List<JusticeUserRole>(){justiceUserRole}, username);
+            _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
+                .ReturnsAsync(justiceUser);
+            
+            var userClaims = new List<Claim>
+            {
+                new(ClaimTypes.GivenName, justiceUser.FirstName),
+                new(ClaimTypes.Surname, justiceUser.Lastname),
+                new(ClaimTypes.Name, justiceUser.FullName),
+                new(ClaimTypes.Role, AppRoles.Administrator),
+                new(ClaimTypes.Role, AppRoles.VhOfficerRole),
+            };
+            
+            _cacheMock.Setup(x => x.GetAsync(username)).ReturnsAsync(userClaims);
+            // act
+            var claims = await _sut.GetClaimsForUserAsync(username);
+            
+            // assert
+            claims.Count.Should().Be(5); // name, given name, surname, admin and vho role
+            claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).Should().BeEquivalentTo(expectedAppRoles);
             claims.First(x => x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
             claims.First(x => x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
             claims.First(x => x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);

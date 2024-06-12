@@ -597,6 +597,26 @@ describe('HearingControlsBaseComponent', () => {
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
     });
 
+    it('should return false and not toggle mute if pexip display name is undefined', () => {
+        videoCallService.toggleMute.calls.reset();
+        const payload: ParticipantUpdated = {
+            pexipDisplayName: undefined,
+            isRemoteMuted: false,
+            isSpotlighted: true,
+            handRaised: false,
+            uuid: undefined,
+            isAudioOnlyCall: false,
+            isVideoCall: false,
+            protocol: ''
+        };
+        component.audioMuted = true;
+
+        const result = component.handleParticipantUpdatedInVideoCall(payload);
+
+        expect(result).toBeFalsy();
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+    });
+
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;

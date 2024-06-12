@@ -38,6 +38,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     venueAllocations: string[] = [];
     courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
     csoFilter: CsoFilter;
+    activeSessionsOnly: boolean;
 
     selectedMenu: MenuOption;
 
@@ -56,6 +57,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     configSettings: ClientSettingsResponse;
     displayFilters = false;
     vhoWorkAllocationFeatureFlag: boolean;
+
+    protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
     private readonly loggerPrefix = '[CommandCentre] -';
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
@@ -78,6 +81,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
+        this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
+        this.activeSessionsOnly = this.activeSessionsStorage.get() ?? false;
         this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
             this.vhoWorkAllocationFeatureFlag = value;
         });
@@ -236,7 +241,12 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.loadVenueSelection();
         this.loadCourtRoomsAccountFilters();
         this.loadCsoFilter();
-        this.queryService.startQuery(this.venueAllocations, this.csoFilter?.allocatedCsoIds, this.csoFilter?.includeUnallocated);
+        this.queryService.startQuery(
+            this.venueAllocations,
+            this.csoFilter?.allocatedCsoIds,
+            this.csoFilter?.includeUnallocated,
+            this.activeSessionsOnly
+        );
         this.retrieveHearingsForVhOfficer(true);
     }
 

@@ -36,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
     skipLinkDiv: ElementRef;
 
     loggedIn = false;
-    username = '';
+    username: string = null;
     isRepresentativeOrIndividual: boolean;
     pageTitle = 'Video Hearings - ';
 
@@ -105,7 +105,8 @@ export class AppComponent implements OnInit, OnDestroy {
                                 .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.CheckingAuthFinished))
                                 .subscribe(() => {
-                                    this.logger.addUserIdToLogger(userData?.preferred_username);
+                                    this.username = userData?.preferred_username?.toLowerCase();
+                                    this.logger.addUserIdToLogger(this.username);
                                 });
 
                             this.eventService
@@ -164,7 +165,6 @@ export class AppComponent implements OnInit, OnDestroy {
     async retrieveProfileRole(): Promise<void> {
         try {
             const profile = await this.profileService.getUserProfile();
-            this.username = profile.username;
             if (profile.roles.some(role => PARTICIPANT_ROLES.includes(role))) {
                 this.isRepresentativeOrIndividual = true;
             }

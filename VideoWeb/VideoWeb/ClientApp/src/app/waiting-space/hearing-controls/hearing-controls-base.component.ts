@@ -270,6 +270,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
+        if (!updatedParticipant.pexipDisplayName) {
+            return false;
+        }
         if (!updatedParticipant.pexipDisplayName.includes(this.participant.id)) {
             return false;
         }
