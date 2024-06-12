@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_joining_message_to_participants_and_service_bus_when_a_participant_is_joining()
         {
-            _eventHandler = new ParticipantJoiningEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new ParticipantJoiningEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);

@@ -33,7 +33,7 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_contains_key()
         {
             var conferenceResponse = CreateConferenceResponse();
-            var hearingDetails = CreateHearingResponse();
+            var hearingDetails = CreateHearingResponse(conferenceResponse);
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetails);
             var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_does_not_contains_key()
         {
             var conferenceResponse = CreateConferenceResponse();
-            var hearingDetails = CreateHearingResponse();
+            var hearingDetails = CreateHearingResponse(conferenceResponse);
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetails);
             var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);

@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Cache
         public async Task Should_add_conference_to_cache()
         {
             var conference = CreateConferenceResponse();
-            var hearingDetails = CreateHearingResponse();
+            var hearingDetails = CreateHearingResponse(conference);
             await _conferenceCache.AddConferenceAsync(conference, hearingDetails);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Cache
         {
             var newVenueName = "Updated Name for Test";
             var conference = CreateConferenceResponse();
-            var hearingDetails = CreateHearingResponse();
+            var hearingDetails = CreateHearingResponse(conference);
             await _conferenceCache.AddConferenceAsync(conference, hearingDetails);
             var cacheModel = _memoryCache.Get(conference.Id).As<Conference>();
             cacheModel.HearingVenueName = newVenueName;
@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Cache
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_does_not_contains_key()
         {
             var conferenceDetails = CreateConferenceResponse();
-            var hearingDetails = CreateHearingResponse();
+            var hearingDetails = CreateHearingResponse(conferenceDetails);
             conferenceDetails.Id = Guid.NewGuid();
 
             var result = await _conferenceCache.GetOrAddConferenceAsync(conferenceDetails.Id, () =>

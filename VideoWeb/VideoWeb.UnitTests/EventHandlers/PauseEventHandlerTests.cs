@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_messages_to_participants_on_pause()
         {
-            _eventHandler = new PauseEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new PauseEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(ParticipantStatus.InHearing)]
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_leaves_if_they_were_in_consultation_or_hearing(ParticipantStatus currentStatus)
         {
-            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(ParticipantStatus.UnableToJoin)]
         public async Task Should_NOT_send_available_message_to_participants_and_service_bus_when_participant_leaves_if_they_were_NOT_in_consultation_or_hearing(ParticipantStatus currentStatus)
         {
-            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);

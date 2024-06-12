@@ -30,12 +30,24 @@ public abstract class CacheTestBase
         return conference;
     }
     
-    protected static HearingDetailsResponseV2 CreateHearingResponse()
+    protected static HearingDetailsResponseV2 CreateHearingResponse(ConferenceDetailsResponse conference)
     {
-        var participants = Builder<ParticipantResponseV2>.CreateListOfSize(2).Build().ToList();
+        var hearingParticipants = conference.Participants.Select(x => new ParticipantResponseV2
+        {
+            Id = x.RefId,
+            Username = x.Username,
+            DisplayName = x.DisplayName,
+            Representee = x.Representee,
+            FirstName = x.FirstName,
+            LastName = x.LastName,
+            UserRoleName = x.UserRole.ToString(),
+        }).ToList();
+        
         var endpoints = Builder<EndpointResponseV2>.CreateListOfSize(2).Build().ToList();
+        
         var hearing = Builder<HearingDetailsResponseV2>.CreateNew()
-            .With(x => x.Participants = participants)
+            .With(x => x.Id == conference.HearingId)
+            .With(x => x.Participants = hearingParticipants)
             .With(x => x.Endpoints = endpoints)
             .Build();
         return hearing;

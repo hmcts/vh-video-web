@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             EventHubContextMock.Setup(x => x.Clients.Group("csousername@email.com"))
                 .Returns(EventHubClientMock.Object);
-            _eventHandler = new AllocationHearingsEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new AllocationHearingsEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var allocatedHearingsDetails = new List<HearingDetailRequest>();
             var callbackEvent = new CallbackEvent

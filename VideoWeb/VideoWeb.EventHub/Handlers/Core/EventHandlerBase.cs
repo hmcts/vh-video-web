@@ -79,8 +79,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             foreach (var participant in SourceConference.Participants)
             {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant()).ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
                 Logger.LogTrace(
                     "Conference Status: Conference Id: {SourceConferenceId} | Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {HearingEventStatus}",
                     SourceConference.Id, participant.Id, participant.Role, hearingEventStatus);
@@ -108,8 +107,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             foreach (var participant in SourceConference.Participants)
             {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .RoomTransfer(roomTransfer);
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant()).RoomTransfer(roomTransfer);
                 Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
                     participant.Role);
             }

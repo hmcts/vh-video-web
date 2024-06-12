@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_messages_to_participants_on_help()
         {
-            _eventHandler = new HelpEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new HelpEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var callbackEvent = new CallbackEvent

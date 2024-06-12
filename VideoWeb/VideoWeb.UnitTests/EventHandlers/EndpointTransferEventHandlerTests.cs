@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_endpoint_status_messages_to_clients(RoomType from, RoomType to,
             EndpointState status)
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public void Should_throw_exception_when_transfer_cannot_be_mapped_to_endpoint_status_cannot_be_derived()
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantForEvent = conference.Endpoints[0];

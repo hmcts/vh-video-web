@@ -9,12 +9,44 @@ namespace VideoWeb.UnitTests.Builders
     {
         private readonly ISingleObjectBuilder<ParticipantResponseV2> _participant;
 
-        public ParticipantFromBookingApiResponseBuilder(UserRole role, string hearingRole)
+        public ParticipantFromBookingApiResponseBuilder(Guid? id = null)
         {
             _participant = Builder<ParticipantResponseV2>.CreateNew()
-                .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.UserRoleName = role.ToString())
-                .With(x => x.HearingRoleName = hearingRole);
+                .With(x => x.Id = id ?? Guid.NewGuid())
+                .With(x => x.UserRoleName = "Individual")
+                .With(x => x.HearingRoleName = "Litigant in person")
+                .With(x => x.DisplayName = "John Doe")
+                .With(x => x.FirstName = "John")
+                .With(x => x.LastName = "Doe")
+                .With(x => x.ContactEmail = "john@doe.net")
+                .With(x => x.TelephoneNumber = "0123456789")
+                .With(x => x.Username = "john@username.com");
+            
+        }
+        
+        public ParticipantFromBookingApiResponseBuilder WithContactEmail(string email)
+        {
+            _participant.With(x => x.ContactEmail = email);
+            return this;
+        }
+        
+        public ParticipantFromBookingApiResponseBuilder WithUsername(string username)
+        {
+            _participant.With(x => x.Username = username);
+            return this;
+        }
+        
+        public ParticipantFromBookingApiResponseBuilder WithContactTelephone(string telephone)
+        {
+            _participant.With(x => x.TelephoneNumber = telephone);
+            return this;
+        }
+        
+        public ParticipantFromBookingApiResponseBuilder WithRoles(string userRole, string hearingRole)
+        {
+            _participant.With(x => x.HearingRoleName = hearingRole);
+            _participant.With(x => x.UserRoleName = userRole);
+            return this;
         }
         
         public ParticipantResponseV2 Build()

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -26,23 +25,28 @@ namespace VideoWeb.UnitTests.Mappings
             response.HearingId.Should().Be(conference.HearingId);
 
             response.Participants.Count.Should().Be(conference.Participants.Count);
+            
+            foreach (var resultParticipant in response.Participants)
+            {
+                var participant = conference.Participants.Single(x => x.Id == resultParticipant.Id);
+                var participantDetails = hearingResponse.Participants.Single(x => x.Id == resultParticipant.RefId);
+                
+                resultParticipant.Id.Should().Be(participant.Id);
+                resultParticipant.Username.Should().Be(participantDetails.Username);
+                resultParticipant.Role.Should().Be((Role)participant.UserRole);
+                resultParticipant.HearingRole.Should().Be(participant.HearingRole);
+                resultParticipant.DisplayName.Should().Be(participantDetails.DisplayName);
+                resultParticipant.FirstName.Should().Be(participantDetails.FirstName);
+                resultParticipant.LastName.Should().Be(participantDetails.LastName);
+                resultParticipant.ContactEmail.Should().Be(participantDetails.ContactEmail);
+                resultParticipant.ContactTelephone.Should().Be(participantDetails.TelephoneNumber);
+                resultParticipant.Representee.Should().Be(participant.Representee);
+                resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
+                resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
+                resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
+            }
+            
 
-            var participant = conference.Participants[0];
-            var resultParticipant  = response.Participants[0];
-
-            resultParticipant.Id.Should().Be(participant.Id);
-            resultParticipant.Username.Should().Be(participant.Username);
-            resultParticipant.Role.Should().Be((Role)participant.UserRole);
-            resultParticipant.HearingRole.Should().Be(participant.HearingRole);
-            resultParticipant.DisplayName.Should().Be(participant.DisplayName);
-            resultParticipant.FirstName.Should().Be(participant.FirstName);
-            resultParticipant.LastName.Should().Be(participant.LastName);
-            resultParticipant.ContactEmail.Should().Be(participant.ContactEmail);
-            resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
-            resultParticipant.Representee.Should().Be(participant.Representee);
-            resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
-            resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
-            resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
 
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
             judge.IsJudge().Should().BeTrue();
@@ -63,9 +67,16 @@ namespace VideoWeb.UnitTests.Mappings
         
         private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
         {
+            var participants = new List<ParticipantResponseV2>();
+            
+            foreach (var participant in conference.Participants)
+                participants.Add(new ParticipantFromBookingApiResponseBuilder(participant.RefId)
+                    .WithRoles(participant.UserRole.ToString(), participant.HearingRole)
+                    .Build());
+            
             var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2
             {
-                Id = x.Id,
+                Id = conference.HearingId,
                 DisplayName = x.DisplayName,
                 Sip = x.SipAddress,
                 Pin = x.Pin,
@@ -75,6 +86,7 @@ namespace VideoWeb.UnitTests.Mappings
             return Builder<HearingDetailsResponseV2>.CreateNew()
                 .With(x => x.Id = conference.HearingId)
                 .With(x => x.Endpoints = endpoints)
+                .With(x => x.Participants = participants)
                 .Build();
         }
         

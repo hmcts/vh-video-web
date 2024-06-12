@@ -485,7 +485,7 @@ namespace VideoWeb.Controllers
 
             if (witnessRoom != null) return witnessRoom;
             
-            conference = await RefreshConferenceCache(conference.Id);
+            conference = await _conferenceService.ForceGetConference(conference.Id);
         
             witnessRoom = GetRoomForParticipant(conference, participantId);
 
@@ -494,15 +494,6 @@ namespace VideoWeb.Controllers
 
         private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
             conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
-
-        private async Task<Conference> RefreshConferenceCache(Guid conferenceId)
-        {
-            var conferenceResponse = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            var hearingDetailsResponse = await _bookingApiClient.GetHearingDetailsByIdV2Async(conferenceResponse.HearingId);
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
-            return conference;
-        }
         
         private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId)
         {

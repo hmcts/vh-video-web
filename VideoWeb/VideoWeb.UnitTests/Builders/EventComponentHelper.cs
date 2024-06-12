@@ -20,12 +20,11 @@ namespace VideoWeb.UnitTests.Builders;
 public class EventComponentHelper
 {
     public IMemoryCache Cache { get; set; }
-    public IConferenceService ConferenceService { get; set; }
+    public Mock<IConferenceService> ConferenceServiceMock { get; set; }
     public Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
     public Mock<IEventHubClient> EventHubClientMock { get; set; }
     public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
     public Mock<IVideoApiClient> VideoApiClientMock { get; set; }
-    public Mock<IBookingsApiClient> BookingApiClientMock { get; set; }
     
     
     public List<IEventHandler> GetHandlers()
@@ -34,10 +33,10 @@ public class EventComponentHelper
         var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
         var logger = new Mock<ILogger<EventHandlerBase>>();
         var videoApiClient = new Mock<IVideoApiClient>();
-        var bookingApiClient = new Mock<IBookingsApiClient>();
         var consultationNotifier = new Mock<IConsultationNotifier>();
+        var conferenceService = new Mock<IConferenceService>();
         
-        return GetHandlers(eventHubContextMock, cache, logger, videoApiClient, bookingApiClient, consultationNotifier);
+        return GetHandlers(eventHubContextMock, cache, logger, videoApiClient, consultationNotifier, conferenceService);
     }
     
     private List<IEventHandler> GetHandlers(
@@ -45,34 +44,33 @@ public class EventComponentHelper
         IMemoryCache memoryCache,
         Mock<ILogger<EventHandlerBase>> logger,
         Mock<IVideoApiClient> videoApiClientMock,
-        Mock<IBookingsApiClient> bookingApiClientMock,
-        Mock<IConsultationNotifier> consultationNotifier)
+        Mock<IConsultationNotifier> consultationNotifier,
+        Mock<IConferenceService> conferenceService)
     {
         Cache = memoryCache;
+        ConferenceServiceMock = conferenceService;
         VideoApiClientMock = videoApiClientMock;
-        BookingApiClientMock = bookingApiClientMock;
-        ConferenceService = new ConferenceService(new ConferenceCache(memoryCache), videoApiClientMock.Object, bookingApiClientMock.Object);
         EventHubContextMock = eventHubContextMock;
         EventHubClientMock = new Mock<IEventHubClient>();
         EventHandlerBaseMock = new Mock<ILogger<EventHandlerBase>>();
         return new List<IEventHandler>
         {
-            new CloseEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new DisconnectedEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new HelpEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new JoinedEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new LeaveEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new StartEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new CountdownFinishedEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new PauseEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new SuspendEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new TransferEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new ParticipantJoiningEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new VhOfficerCallEventHandler(eventHubContextMock.Object, logger.Object, videoApiClientMock.Object, consultationNotifier.Object, ConferenceService),
-            new EndpointJoinedEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object),
-            new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceService, logger.Object)
+            new CloseEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new DisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new HelpEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new JoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new LeaveEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new StartEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new CountdownFinishedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new PauseEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new SuspendEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new TransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new ParticipantJoiningEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new VhOfficerCallEventHandler(eventHubContextMock.Object, logger.Object, videoApiClientMock.Object, consultationNotifier.Object, ConferenceServiceMock.Object),
+            new EndpointJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
         };
     }
     

@@ -61,27 +61,26 @@ namespace VideoWeb.Common.Caching
         private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, List<ParticipantResponseV2> participantDetails)
         {
             var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
-            var hearingDetails = participantDetails.Single(x => x.Id == participant.RefId);
-            return new Participant
-            {
-                Id = participant.Id,
-                RefId = participant.RefId,
-                Name = participant.Name,
-                FirstName = hearingDetails.FirstName,
-                LastName = hearingDetails.LastName,
-                ContactEmail = hearingDetails.ContactEmail,
-                ContactTelephone = hearingDetails.ContactEmail,
-                DisplayName = hearingDetails.DisplayName,
-                Role = Enum.Parse<Role>(hearingDetails.UserRoleName, true),
-                HearingRole = hearingDetails.HearingRoleName,
-                ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true),
-                Username = hearingDetails.Username,
-                CaseTypeGroup = participant.CaseTypeGroup,
-                Representee = participant.Representee,
-                LinkedParticipants = links,
-                CurrentRoomDto = RoomCacheMapper.Map(participant.CurrentRoom),
-                InterpreterRoomDto = RoomCacheMapper.Map(participant.CurrentInterpreterRoom)
-            };
+            var participantHearingDetails = participantDetails.Single(x => x.Id == participant.RefId);
+            var model = new Participant();
+            model.Id = participant.Id;
+            model.RefId = participant.RefId;
+            model.Name = participant.Name;
+            model.FirstName = participantHearingDetails.FirstName;
+            model.LastName = participantHearingDetails.LastName;
+            model.ContactEmail = participantHearingDetails.ContactEmail;
+            model.ContactTelephone = participantHearingDetails.TelephoneNumber;
+            model.DisplayName = participantHearingDetails.DisplayName;
+            model.Role = Enum.Parse<Role>(participantHearingDetails.UserRoleName, true);
+            model.HearingRole = participantHearingDetails.HearingRoleName;
+            model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
+            model.Username = participantHearingDetails.Username;
+            model.CaseTypeGroup = participant.CaseTypeGroup;
+            model.Representee = participant.Representee;
+            model.LinkedParticipants = links;
+            model.CurrentRoomDto = RoomCacheMapper.Map(participant.CurrentRoom);
+            model.InterpreterRoomDto = RoomCacheMapper.Map(participant.CurrentInterpreterRoom);
+            return model;
         }
 
         private static LinkedParticipant MapLinkedParticipantToCacheModel(

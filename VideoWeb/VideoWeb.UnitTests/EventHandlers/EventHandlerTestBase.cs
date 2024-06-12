@@ -9,6 +9,7 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
 using VideoWeb.Common;
+using VideoWeb.Common.Caching;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 
@@ -20,9 +21,8 @@ public abstract class EventHandlerTestBase
     protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
     protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
     protected IMemoryCache MemoryCache { get; set; }
-    protected IConferenceService ConferenceService { get; private set; }
+    protected Mock<IConferenceService> ConferenceServiceMock { get; private set; }
     protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
-    protected Mock<IVideoApiClient> VideoApiClientMock { get; private set; }
     protected Conference TestConference { get; set; }
     
     [SetUp]
@@ -33,12 +33,14 @@ public abstract class EventHandlerTestBase
         EventHubContextMock = helper.EventHubContextMock;
         EventHubClientMock = helper.EventHubClientMock;
         MemoryCache = helper.Cache;
-        ConferenceService = helper.ConferenceService;
+        ConferenceServiceMock = helper.ConferenceServiceMock;
         LoggerMock = helper.EventHandlerBaseMock;
-        VideoApiClientMock = helper.VideoApiClientMock;
         
         TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
         MemoryCache.Set(TestConference.Id, TestConference);
+        
+        ConferenceServiceMock.Setup(x => x.ConferenceCache).Returns(new ConferenceCache(MemoryCache));
+        ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id)).ReturnsAsync(TestConference);
         
         helper.RegisterUsersForHubContext(TestConference.Participants);
     }

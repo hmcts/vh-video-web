@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_endpoint_disconnected_message_to_participants_and_admin()
         {
-            _eventHandler = new EndpointDisconnectedEventHandler(EventHubContextMock.Object, ConferenceService, LoggerMock.Object);
+            _eventHandler = new EndpointDisconnectedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -34,9 +33,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
             
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(
-                x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, EndpointState.Disconnected),
-                Times.Exactly(participantCount));
+            EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, EndpointState.Disconnected), Times.Exactly(participantCount));
         }
     }
 }
