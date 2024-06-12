@@ -49,7 +49,6 @@ public class GetActiveConferencesTests
 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
