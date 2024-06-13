@@ -46,6 +46,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
+    interpreterUser: boolean;
 
     emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
 
@@ -252,7 +253,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             this.notificationSoundsService.stopHearingAlertSound();
         }
     }
-
     openStartConsultationModal() {
         this.displayStartPrivateConsultationModal = true;
     }
@@ -326,6 +326,14 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     setTrapFocus() {
         ModalTrapFocus.trap('video-container');
+    }
+
+    onInterprterUserToggle() {
+        this.interpreterUser = !this.interpreterUser;
+        if (this.interpreterUser) {
+            const stream = this.videoCallService.pexipAPI.user_media_stream;
+            stream.getAudioTracks().forEach(track => (track.contentHint = 'interpreter'));
+        }
     }
 
     private onShouldReload(): void {

@@ -300,6 +300,7 @@ export class UserMediaStreamService {
 
                 if (this.currentStream) {
                     microphoneStream.getAudioTracks().forEach(track => {
+                        // track.contentHint = 'interpreter';
                         this.currentStream.addTrack(track);
 
                         this.logger.debug(`${this.loggerPrefix} mic changed. Added track`, {
