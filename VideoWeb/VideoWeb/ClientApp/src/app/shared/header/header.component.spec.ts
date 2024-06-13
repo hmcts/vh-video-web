@@ -116,6 +116,17 @@ describe('Header component template file', () => {
         expect(logoutButton).toBeNull();
     });
 
+    it('display the username when provided', () => {
+        component.loggedIn = true;
+        component.username = 'testUser';
+
+        fixture.detectChanges();
+
+        const username = debugElement.query(By.css('#header-username'));
+
+        expect(username.nativeElement.textContent).toBe('testUser');
+    });
+
     it('renders scottish logo when hearing venue is scottish', () => {
         scottishHearingVenueSubject.next(true);
 

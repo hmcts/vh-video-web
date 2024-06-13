@@ -1,22 +1,28 @@
 .govuk-header__logo {
-  width: 90%;
+  width: 50%;
   margin-bottom: 0px;
+}
+
+.govuk-header__content {
+  width: 50%;
+  margin-bottom: 0px;
+}
+
+.govuk-header__content_secondary {
+  width: 100%;
+  float: right;
+}
+
+.stay-right {
+  float: right;
 }
 
 .govuk-header__logotype-crown {
   margin-right: 10px;
-}
-.vh-ml15 {
-  margin-right: 15px;
-  margin-bottom: 10px;
 }
 
 @media only screen and (max-width: 600px) {
   .govuk-header__logo {
     width: 100%;
   }
-}
-
-.header-item {
-  padding: 5px;
 }
