@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework.Legacy;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
@@ -23,7 +24,12 @@ namespace VideoWeb.UnitTests.Mappings
                 ContactEmail = "john.doe@hmcts.net",
                 ContactTelephone = "0984757587",
                 CurrentInterpreterRoom = new RoomResponse(),
-                CurrentRoom = new RoomResponse(),
+                CurrentRoom = new RoomResponse
+                {
+                    Id = 1,
+                    Label = "Room 1",
+                    Locked = true
+                },
                 CurrentStatus = ParticipantState.Available,
                 DisplayName = "john",
                 FirstName = "John",
@@ -44,9 +50,9 @@ namespace VideoWeb.UnitTests.Mappings
                 Username = "john55",
                 UserRole = UserRole.Individual
             };
-
+            
             var participant = mapper.Map(response);
-
+            
             ClassicAssert.AreEqual(response.Username, participant.Username);
             ClassicAssert.AreEqual(response.CaseTypeGroup, participant.CaseTypeGroup);
             ClassicAssert.AreEqual(response.Id, participant.Id);
@@ -62,6 +68,24 @@ namespace VideoWeb.UnitTests.Mappings
             ClassicAssert.AreEqual(response.RefId, participant.RefId);
             ClassicAssert.AreEqual(response.Representee, participant.Representee);
             ClassicAssert.AreEqual(LinkType.Interpreter, participant.LinkedParticipants.FirstOrDefault(x => x.LinkedId == linkedId).LinkType);
+            participant.CurrentRoom.Should().NotBeNull();
+            participant.CurrentRoom.Id.Should().Be(response.CurrentRoom.Id);
+            participant.CurrentRoom.Label.Should().Be(response.CurrentRoom.Label);
+            participant.CurrentRoom.Locked.Should().Be(response.CurrentRoom.Locked);
+        }
+        
+        [Test]
+        public void Maps_Participant_From_Response_Without_Current_Room()
+        {
+            var mapper = new ParticipantDetailsResponseMapper();
+            var response = new ParticipantDetailsResponse
+            {
+                LinkedParticipants = new List<LinkedParticipantResponse>()
+            };
+            
+            var participant = mapper.Map(response);
+            
+            participant.CurrentRoom.Should().BeNull();
         }
     }
 }

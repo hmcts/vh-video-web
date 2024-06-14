@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponse()
             {
                 CaseTypeGroup = participant.CaseTypeGroup,
-                CurrentRoom = MapRoomToRoomSummaryResponse(participant.CurrentRoom),
+                CurrentRoom = MapParticipantRoom(participant.CurrentRoom),
                 DisplayName = participant.DisplayName,
                 FirstName = participant.FirstName,
                 HearingRole = participant.HearingRole,
@@ -44,7 +44,7 @@ namespace VideoWeb.Mappings
             return response;
         }
         
-        private RoomSummaryResponse MapRoomToRoomSummaryResponse(ParticipantRoom participantRoom)
+        private static RoomSummaryResponse MapParticipantRoom(ParticipantRoom participantRoom)
         {
             if (participantRoom == null) return null;
             

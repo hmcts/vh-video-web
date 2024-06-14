@@ -88,6 +88,12 @@ namespace VideoWeb.UnitTests.Mappings
                 Role = Role.JudicialOfficeHolder,
                 Id = participantId,
                 Username = "TestUsername",
+                CurrentRoom = new ParticipantRoom
+                {
+                    Id = 1,
+                    Label = "Room1",
+                    Locked = true
+                }
             };
 
             var testConference = new Conference()
@@ -113,9 +119,28 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
 
             mapped.InterpreterRoom.Should().Be(roomSummaryResponse);
+            mapped.CurrentRoom.Should().NotBeNull();
+            mapped.CurrentRoom.Id.Should().Be(testParticipant.CurrentRoom.Id.ToString());
+            mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
+            mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
 
             linkedParticipants.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
             linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipant>()), Times.Exactly(linkedParticipants.Count));
+        }
+        
+        [Test]
+        public void should_map_correctly_without_current_room()
+        {
+            var testParticipant = new Participant();
+            
+            var testConference = new Conference
+            {
+                CivilianRooms = [civilianRoom]
+            };
+            
+            var mapped = _sut.Map(testParticipant, testConference);
+            
+            mapped.CurrentRoom.Should().BeNull();
         }
     }
 }
