@@ -621,7 +621,7 @@
           appTooltip
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
-          (keydown.enter)="displayConfirmationLeaveHearingDialog()"
+          (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
           tabindex="0"
           role="listbox"
