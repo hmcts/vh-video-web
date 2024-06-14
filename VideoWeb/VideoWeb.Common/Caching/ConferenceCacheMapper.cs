@@ -52,7 +52,7 @@ namespace VideoWeb.Common.Caching
                 ScheduledDuration = conferenceResponse.ScheduledDuration,
                 ClosedDateTime = conferenceResponse.ClosedDateTime,
                 AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
-                IsScottish = conferenceResponse.HearingVenueIsScottish,
+                IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
                 IngestUrl = conferenceResponse.IngestUrl,
                 MeetingRoom = meetingRoom
             };
@@ -62,7 +62,6 @@ namespace VideoWeb.Common.Caching
         private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, HearingDetailsResponseV2 hearingDetails)
         {
             var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
-            //TODO: Need to update bookingApi contract to provide judiciary participant ID in the response and match on that
             var judiciaryDetails = hearingDetails.JudiciaryParticipants?.SingleOrDefault(x => x.Email == participant.Username);
             
             var model = 

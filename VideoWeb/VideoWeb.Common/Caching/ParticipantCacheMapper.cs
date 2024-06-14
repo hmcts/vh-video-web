@@ -46,13 +46,8 @@ public static class ParticipantCacheMapper
         model.ContactEmail = judiciaryDetails.OptionalContactEmail;
         model.ContactTelephone = judiciaryDetails.OptionalContactTelephone;
         model.DisplayName = judiciaryDetails.DisplayName;
-        
-        //TODO: Cannot determine from judicary contract
         model.Role = (Role)Enum.Parse(typeof(Role), participant.UserRole.ToString());
-        
-        //TODO: Only return hearing role code for now, need to update to return enum
-        model.HearingRole = participant.HearingRole;
-        
+        model.HearingRole = judiciaryDetails.HearingRoleCode.ToString();
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
         model.Username = judiciaryDetails.Email;
         model.CaseTypeGroup = participant.CaseTypeGroup;
