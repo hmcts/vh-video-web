@@ -37,6 +37,10 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.ContactEmail.Should().Be(participant.ContactEmail);
             resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
+            resultParticipant.CurrentRoom.Should().NotBeNull();
+            resultParticipant.CurrentRoom.Id.Should().Be(participant.CurrentRoom.Id);
+            resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
+            resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
             resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
             resultParticipant.LinkedParticipants[0].LinkType.ToString().Should()
                 .Be(participant.LinkedParticipants[0].Type.ToString());
@@ -50,6 +54,18 @@ namespace VideoWeb.UnitTests.Mappings
             var witness = response.Participants.First(x => x.HearingRole == "Witness");
             witness.IsJudge().Should().BeFalse();
             witness.IsWitness().Should().BeTrue();
+        }
+        
+        [Test]
+        public void Should_map_without_current_room()
+        {
+            var conference = BuildConferenceDetailsResponse();
+            conference.Participants[0].CurrentRoom = null;
+            var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
+            
+            var resultParticipant  = response.Participants[0];
+            
+            resultParticipant.CurrentRoom.Should().BeNull();
         }
 
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
@@ -74,6 +90,12 @@ namespace VideoWeb.UnitTests.Mappings
                 LinkedId = participantB.Id,
                 Type = LinkedParticipantType.Interpreter
             });
+            participantA.CurrentRoom = new RoomResponse
+            {
+                Id = 1,
+                Label = "Room 1",
+                Locked = true
+            };
             
             participantB.LinkedParticipants.Add(new LinkedParticipantResponse
             {
