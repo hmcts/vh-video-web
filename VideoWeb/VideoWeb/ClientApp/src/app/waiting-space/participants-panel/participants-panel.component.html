@@ -21,6 +21,7 @@
       [text]="'participants-panel.mute-all-tooltip' | translate"
       colour="grey"
       (keydown.enter)="updateAllParticipantsLocalMuteStatus(true)"
+      (click)="updateAllParticipantsLocalMuteStatus(true)"
     >
       {{ 'participants-panel.mute-all' | translate }}
     </button>
@@ -33,6 +34,7 @@
       [text]="'participants-panel.unmute-all-tooltip' | translate"
       colour="grey"
       (keydown.enter)="updateAllParticipantsLocalMuteStatus(false)"
+      (click)="updateAllParticipantsLocalMuteStatus(false)"
     >
       {{ 'participants-panel.unmute-all' | translate }}
     </button>
@@ -45,6 +47,7 @@
       [text]="'participants-panel.mute-tooltip' | translate"
       colour="grey"
       (keydown.enter)="muteAndLockAll()"
+      (click)="muteAndLockAll()"
     >
       {{ 'participants-panel.mute-lock' | translate }}
     </button>
@@ -57,6 +60,7 @@
       [text]="'participants-panel.unmute-tooltip' | translate"
       colour="grey"
       (keydown.enter)="unlockAll()"
+      (click)="unlockAll()"
     >
       {{ 'participants-panel.unmute-lock' | translate }}
     </button>
@@ -69,6 +73,7 @@
       [text]="'participants-panel.lower-hands-tooltip' | translate"
       colour="grey"
       (keydown.enter)="lowerAllHands()"
+      (click)="lowerAllHands()"
     >
       {{ 'participants-panel.lower-hands' | translate }}
     </button>
