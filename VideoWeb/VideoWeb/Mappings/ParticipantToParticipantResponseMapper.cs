@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponse()
             {
                 CaseTypeGroup = participant.CaseTypeGroup,
-                CurrentRoom = null, // This cannot currently be gotten from the conference cache, the UI will keep the current room for an existing user.
+                CurrentRoom = MapRoomToRoomSummaryResponse(participant.CurrentRoom),
                 DisplayName = participant.DisplayName,
                 FirstName = participant.FirstName,
                 HearingRole = participant.HearingRole,
@@ -42,6 +42,18 @@ namespace VideoWeb.Mappings
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
 
             return response;
+        }
+        
+        private RoomSummaryResponse MapRoomToRoomSummaryResponse(ParticipantRoom participantRoom)
+        {
+            if (participantRoom == null) return null;
+            
+            return new RoomSummaryResponse
+            {
+                Id = participantRoom.Id.ToString(),
+                Label = participantRoom.Label,
+                Locked = participantRoom.Locked
+            };
         }
     }
 }
