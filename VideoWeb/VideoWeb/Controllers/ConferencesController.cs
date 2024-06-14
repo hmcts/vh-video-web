@@ -203,11 +203,8 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
-
                 var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
-                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday
-                    .Select(e => e.Id)
-                    .ToArray()};
+                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
                 var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
@@ -255,17 +252,14 @@ namespace VideoWeb.Controllers
             }
 
             ConferenceDetailsResponse conference;
-            HearingDetailsResponseV2 hearingDetails;
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 if (conference == null)
                 {
                     _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
-
                     return NoContent();
                 }
-                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.Id);
             }
             catch (VideoApiException e)
             {
@@ -299,12 +293,10 @@ namespace VideoWeb.Controllers
             conference.Participants = conference
                 .Participants
                 .Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
-
+            
             var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponseVho>();
             var response = conferenceResponseVhoMapper.Map(conference);
-
-            await _conferenceService.ConferenceCache.AddConferenceAsync(conference, hearingDetails);
-
+            
             return Ok(response);
         }
 

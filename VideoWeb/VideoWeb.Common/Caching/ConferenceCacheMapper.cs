@@ -52,14 +52,14 @@ namespace VideoWeb.Common.Caching
                 ScheduledDuration = conferenceResponse.ScheduledDuration,
                 ClosedDateTime = conferenceResponse.ClosedDateTime,
                 AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
-                IsScottish = conferenceResponse.HearingVenueIsScottish,
+                IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
                 IngestUrl = conferenceResponse.IngestUrl,
                 MeetingRoom = meetingRoom
             };
             return conference;
         }
 
-        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant, HearingDetailsResponseV2 hearingDetails)
+        private static Participant MapParticipantToCacheModel(ParticipantResponse participant, HearingDetailsResponseV2 hearingDetails)
         {
             var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
             //TODO: Need to update bookingApi contract to provide judiciary participant ID in the response and match on that

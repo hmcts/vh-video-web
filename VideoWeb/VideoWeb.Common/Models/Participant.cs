@@ -10,7 +10,6 @@ namespace VideoWeb.Common.Models
             LinkedParticipants = new List<LinkedParticipant>();
         }
         public Guid Id { get; set; }
-        public string Name { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ContactEmail { get; set; }
@@ -20,11 +19,10 @@ namespace VideoWeb.Common.Models
         public string HearingRole { get; set; }
         public ParticipantStatus ParticipantStatus { get; set; }
         public string DisplayName { get; set; }
-        public string CaseTypeGroup { get; set; }
         public Guid RefId { get; set; }
         public string Representee { get; set; }
-        public MeetingRoomDto CurrentRoomDto { get; set; }
-        public MeetingRoomDto InterpreterRoomDto { get; set; }
+        public MeetingRoom CurrentRoom { get; set; }
+        public MeetingRoom InterpreterRoom { get; set; }
         
         public List<LinkedParticipant> LinkedParticipants { get; set; }
 

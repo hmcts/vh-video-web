@@ -90,7 +90,6 @@ namespace VideoWeb.Common.Models
         {
             var participant = Participants.Find(x => x.RefId == updateParticipant.ParticipantRefId);
             if(participant == null) return;
-            participant.Name = updateParticipant.Fullname;
             participant.FirstName = updateParticipant.FirstName;
             participant.LastName = updateParticipant.LastName;
             participant.DisplayName = updateParticipant.DisplayName;

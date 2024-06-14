@@ -18,11 +18,8 @@ namespace VideoWeb.Mappings
             return new Participant
             {
                 Id = request.Id,
-                Name = request.Name,
                 Role = (Role)request.UserRole,
                 HearingRole = request.HearingRole,
-
-                CaseTypeGroup = request.CaseTypeGroup,
                 ContactEmail = request.ContactEmail,
                 ContactTelephone = request.ContactTelephone,
                 DisplayName = request.DisplayName,

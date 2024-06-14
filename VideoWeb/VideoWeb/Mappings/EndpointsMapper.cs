@@ -18,7 +18,7 @@ namespace VideoWeb.Mappings
             
             if(endpoint.CurrentRoom != null)
             {
-                endpointDto.CurrentRoom = new MeetingRoomDto
+                endpointDto.CurrentRoom = new MeetingRoom
                 {
                     Id = endpoint.CurrentRoom.Id,
                     Label = endpoint.CurrentRoom.Label,

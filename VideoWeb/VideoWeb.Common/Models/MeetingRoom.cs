@@ -1,6 +1,6 @@
 namespace VideoWeb.Common.Models;
 
-public class MeetingRoomDto
+public class MeetingRoom
 {
     /// <summary>
     /// Room Id
@@ -14,4 +14,6 @@ public class MeetingRoomDto
     /// Is the room locked
     /// </summary>
     public bool Locked { get; set; }
+    
+    public string AdminUrl { get; set; }
 }

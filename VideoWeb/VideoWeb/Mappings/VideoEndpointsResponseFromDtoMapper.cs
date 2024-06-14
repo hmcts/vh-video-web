@@ -7,8 +7,8 @@ namespace VideoWeb.Mappings
 {
     public class VideoEndpointsResponseDtoMapper : IMapTo<Endpoint, VideoEndpointResponse>
     {
-        private readonly IMapTo<MeetingRoomDto, RoomSummaryResponse> _roomResponseMapper;
-        public VideoEndpointsResponseDtoMapper(IMapTo<MeetingRoomDto, RoomSummaryResponse> roomResponseMapper)
+        private readonly IMapTo<MeetingRoom, RoomSummaryResponse> _roomResponseMapper;
+        public VideoEndpointsResponseDtoMapper(IMapTo<MeetingRoom, RoomSummaryResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }

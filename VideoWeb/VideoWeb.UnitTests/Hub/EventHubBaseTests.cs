@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;

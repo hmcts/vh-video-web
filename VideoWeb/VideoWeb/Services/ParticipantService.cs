@@ -2,19 +2,17 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VideoApi.Client;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Controllers;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.Services
 {
@@ -72,8 +70,8 @@ namespace VideoWeb.Services
                 throw new ConferenceNotFoundException(response.ConferenceId);
             }
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
-            conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantResponse, Participant>();
+            conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
 
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
             await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);

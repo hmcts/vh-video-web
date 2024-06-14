@@ -47,11 +47,6 @@ namespace VideoWeb.Contract.Responses
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// The group a participant belongs to in a case
-        /// </summary>
-        public string CaseTypeGroup { get; set; }
-
-        /// <summary>
         /// The participant hearing ref id in a booking
         /// </summary>
         public Guid RefId { get; set; }

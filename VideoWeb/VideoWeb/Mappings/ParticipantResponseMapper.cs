@@ -10,10 +10,10 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantResponseMapper : IMapTo<Participant, ParticipantResponse>
     {
-        private readonly IMapTo<MeetingRoomDto, RoomSummaryResponse> _roomResponseMapper;
+        private readonly IMapTo<MeetingRoom, RoomSummaryResponse> _roomResponseMapper;
         private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> _linkedParticipantResponseMapper;
 
-        public ParticipantResponseMapper(IMapTo<MeetingRoomDto, RoomSummaryResponse> roomResponseMapper, IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantResponseMapper)
+        public ParticipantResponseMapper(IMapTo<MeetingRoom, RoomSummaryResponse> roomResponseMapper, IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
             _linkedParticipantResponseMapper = linkedParticipantResponseMapper;
@@ -27,17 +27,16 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponse
             {
                 Id = participant.Id,
-                Name = participant.Name,
+                Name = participant.FirstName + " " + participant.LastName,
                 Status = status,
                 Role = role,
                 DisplayName = participant.DisplayName,
-                CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
                 FirstName = participant.FirstName,
                 LastName = participant.LastName,
                 HearingRole = participant.HearingRole,
-                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoomDto),
-                InterpreterRoom = _roomResponseMapper.Map(participant.InterpreterRoomDto),
+                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
+                InterpreterRoom = _roomResponseMapper.Map(participant.InterpreterRoom),
                 LinkedParticipants = links,
                 UserName = participant.Username
             };

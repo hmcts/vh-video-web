@@ -47,16 +47,18 @@ public class EndOfDayController : ControllerBase
     public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences()
     {
         _logger.LogDebug("Getting all active conferences");
-        var activeConferences =
-            await _videoApiClient.GetActiveConferencesAsync();
         
-        var allocatedHearings =
-            await _bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId));
+        var activeConferences = await _videoApiClient
+            .GetActiveConferencesAsync();
+        var allocatedHearings = await _bookingsApiClient
+            .GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId));
         
         var conferenceForVhOfficerResponseMapper = _mapperFactory
             .Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-        var response = activeConferences.Select(c => conferenceForVhOfficerResponseMapper.Map(c,
-            allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
+        var response = activeConferences
+            .Select(c => conferenceForVhOfficerResponseMapper
+                .Map(c, allocatedHearings?
+                .FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
         response.Sort(new SortConferenceForVhoOfficerHelper());
         return Ok(response);
     }

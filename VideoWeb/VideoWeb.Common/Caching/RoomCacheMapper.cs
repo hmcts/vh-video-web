@@ -5,12 +5,12 @@ namespace VideoWeb.Common.Caching;
 
 public static class RoomCacheMapper
 {
-    public static MeetingRoomDto Map(RoomResponse roomResponse)
+    public static MeetingRoom Map(RoomResponse roomResponse)
     {
         if(roomResponse == null)
             return null;
         
-        return new MeetingRoomDto
+        return new MeetingRoom
         {
             Id = roomResponse.Id,
             Label = roomResponse.Label,

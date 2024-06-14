@@ -47,7 +47,7 @@ namespace VideoWeb.Mappings
         {
             conference.Participants ??= new List<Participant>();
             return conference.Participants
-                .OrderBy(x => x.CaseTypeGroup)
+                .OrderBy(x => x.Role)
                 .Select(participantResponseMapper.Map)
                 .ToList();
         }

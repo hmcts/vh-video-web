@@ -4,11 +4,12 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantResponseForVhoMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponseVho>
+    public class ParticipantResponseForVhoMapper : IMapTo<ParticipantResponse, ParticipantResponseVho>
     {
         private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
 
@@ -17,7 +18,10 @@ namespace VideoWeb.Mappings
             _roomResponseMapper = roomResponseMapper;
         }
 
-        public ParticipantResponseVho Map(ParticipantDetailsResponse participant)
+        /// <summary>
+        /// TODO: Properties removed, verify before removing todo
+        /// </summary>
+        public ParticipantResponseVho Map(ParticipantResponse participant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString());
             var role = Enum.Parse<Role>(participant.UserRole.ToString());
@@ -25,13 +29,9 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponseVho
             {
                 Id = participant.Id,
-                Name = participant.Name,
                 Status = status,
                 Role = role,
                 DisplayName = participant.DisplayName,
-                CaseTypeGroup = participant.CaseTypeGroup,
-                Representee = participant.Representee,
-                HearingRole = participant.HearingRole,
                 CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
                 InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
                 LinkedParticipants = participant.LinkedParticipants.Select(lp => new Contract.Responses.LinkedParticipantResponse
