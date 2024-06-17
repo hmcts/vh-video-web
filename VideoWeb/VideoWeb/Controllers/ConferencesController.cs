@@ -265,12 +265,18 @@ namespace VideoWeb.Controllers
 
                     return NoContent();
                 }
-                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.Id);
+                hearingDetails = await _bookingApiClient.GetHearingDetailsByIdV2Async(conference.HearingId);
             }
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
 
+                return StatusCode(e.StatusCode, e.Response);
+            }
+            catch (BookingsApiException e)
+            {
+                _logger.LogError(e, "Unable to retrieve hearing");
+                
                 return StatusCode(e.StatusCode, e.Response);
             }
 

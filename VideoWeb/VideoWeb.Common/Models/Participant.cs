@@ -5,10 +5,6 @@ namespace VideoWeb.Common.Models
 {
     public class Participant
     {
-        public Participant()
-        {
-            LinkedParticipants = new List<LinkedParticipant>();
-        }
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string FirstName { get; set; }
@@ -23,11 +19,11 @@ namespace VideoWeb.Common.Models
         public string CaseTypeGroup { get; set; }
         public Guid RefId { get; set; }
         public string Representee { get; set; }
-        public MeetingRoomDto CurrentRoomDto { get; set; }
-        public MeetingRoomDto InterpreterRoomDto { get; set; }
+        public MeetingRoomDto CurrentRoom { get; set; }
+        public MeetingRoomDto InterpreterRoom { get; set; }
         
-        public List<LinkedParticipant> LinkedParticipants { get; set; }
-
+        public List<LinkedParticipant> LinkedParticipants { get; set; } = new();
+        
         public bool IsJudge()
         {
             return Role == Role.Judge;

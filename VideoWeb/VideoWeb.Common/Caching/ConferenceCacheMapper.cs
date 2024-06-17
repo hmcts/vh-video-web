@@ -67,7 +67,7 @@ namespace VideoWeb.Common.Caching
             var model = 
                 ParticipantCacheMapper.Map(participant, participantDetails) ??
                 ParticipantCacheMapper.Map(participant, judiciaryDetails) ??
-                throw new ArgumentException("Participant not found in hearing details");
+                ParticipantCacheMapper.Map(participant);
 
             model.LinkedParticipants = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
             
