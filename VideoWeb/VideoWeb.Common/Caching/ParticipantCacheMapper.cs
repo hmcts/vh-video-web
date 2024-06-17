@@ -24,6 +24,7 @@ public static class ParticipantCacheMapper
         model.RefId = participant.RefId;
         model.FirstName = hearingDetails.FirstName;
         model.LastName = hearingDetails.LastName;
+        model.Name = participant.Name;
         model.ContactEmail = hearingDetails.ContactEmail;
         model.ContactTelephone = hearingDetails.TelephoneNumber;
         model.DisplayName = hearingDetails.DisplayName;
@@ -53,6 +54,7 @@ public static class ParticipantCacheMapper
         model.RefId = participant.RefId;
         model.FirstName = judiciaryDetails.FirstName;
         model.LastName = judiciaryDetails.LastName;
+        model.Name = participant.Name;
         model.ContactEmail = judiciaryDetails.OptionalContactEmail;
         model.ContactTelephone = judiciaryDetails.OptionalContactTelephone;
         model.DisplayName = judiciaryDetails.DisplayName;
@@ -73,6 +75,7 @@ public static class ParticipantCacheMapper
         var model = new Participant();
         model.Id = participant.Id;
         model.RefId = participant.RefId;
+        model.Name = participant.Name;
         model.DisplayName = participant.DisplayName;
         model.Role = Enum.Parse<Role>(participant.UserRole.ToString(), true);
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
