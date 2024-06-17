@@ -82,7 +82,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     get participantsInWaitingRoom() {
-        return this.participants.filter(x => x.isAvailable());
+        return this.participants.filter(x => x.isAvailable() && !x.isInHearing());
     }
 
     get participantsNotConnected() {
@@ -121,7 +121,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 this.totalParticipants = participants.length + endpoints.length;
                 this.totalParticipantsInWaitingRoom =
                     participants.filter(x => x.status === ParticipantStatus.Available).length +
-                    endpoints.filter(x => x.status === EndpointStatus.Connected).length;
+                    endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
             });
         this.getParticipantsList().then(() => {
             this.postGetParticipantsListHandler();
