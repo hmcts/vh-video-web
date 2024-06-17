@@ -70,6 +70,8 @@ export const ConferenceActions = createActionGroup({
             requestedFor: string;
             answer: ConsultationAnswer;
             responseInitiatorId: string;
-        }>()
+        }>(),
+
+        'Update Host Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>()
     }
 });
