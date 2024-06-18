@@ -26,7 +26,6 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
@@ -141,7 +140,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return (
             !this.isOrHasWitnessLink() &&
             !this.isObserver &&
-            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
+            this.participant?.hearing_role !== HearingRole.OBSERVER &&
             !this.isQuickLinkObserver &&
             !this.participant.linked_participants.length &&
             !this.isVictim &&
@@ -268,7 +267,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
                 p.role !== Role.StaffMember &&
-                p.case_type_group !== CaseTypeGroup.OBSERVER &&
                 p.hearing_role !== HearingRole.OBSERVER &&
                 p.hearing_role !== HearingRole.WITNESS
         );

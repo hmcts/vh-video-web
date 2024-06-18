@@ -244,14 +244,6 @@
             [innerHtml]="getHearingRole(participant)"
           ></dd>
 
-          <dd
-            *ngIf="!isCaseTypeNone(participant)"
-            id="p-{{ participant.id }}-case-type-group-participant"
-            class="govuk-body-m govuk-!-margin-bottom-3"
-          >
-            {{ 'case-type-group.' + stringToTranslateId(participant.caseTypeGroup) | translate }}
-          </dd>
-
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
               id="p-{{ participant.id }}-status-participant"

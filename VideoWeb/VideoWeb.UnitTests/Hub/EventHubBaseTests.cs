@@ -89,10 +89,10 @@ namespace VideoWeb.UnitTests.Hub
 
         protected string[] SetupJudgeConferences(int numOfConferences, int numOfConferencesWithUser)
         {
-            var participantsWithUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
+            var participantsWithUser = Builder<ParticipantResponse>.CreateListOfSize(3)
                 .TheFirst(1).With(x => x.Username = Claims.Identity.Name).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
-            var participantsWithoutUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
+            var participantsWithoutUser = Builder<ParticipantResponse>.CreateListOfSize(3)
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
 

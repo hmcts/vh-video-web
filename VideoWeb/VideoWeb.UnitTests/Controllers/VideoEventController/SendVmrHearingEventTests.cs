@@ -83,11 +83,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             request.ParticipantRoomId = roomId.ToString();
             request.ParticipantId = participantId.ToString();
 
-            var videoApiParticipantResponse = TestConference.Participants.Select(x => new ParticipantSummaryResponse()
+            var videoApiParticipantResponse = TestConference.Participants.Select(x => new ParticipantResponse()
             {
-                CaseGroup = x.CaseTypeGroup,
-                ContactEmail = x.ContactEmail,
-                ContactTelephone = x.ContactTelephone,
                 CurrentInterpreterRoom = new RoomResponse()
                 {
                     Id = vmr.Id,
@@ -101,9 +98,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                     Locked = false
                 },
                 DisplayName = x.DisplayName,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                HearingRole = x.HearingRole,
                 Id = x.Id
             }).ToList();
 

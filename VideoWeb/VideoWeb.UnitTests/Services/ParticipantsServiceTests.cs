@@ -19,6 +19,7 @@ using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services;
 using VideoWeb.UnitTests.Builders;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Services;
 
@@ -27,7 +28,7 @@ public class ParticipantsServiceTests
 {
     private AutoMock _mocker;
     private ConferenceDetailsResponse _testConference;
-    private ParticipantDetailsResponse _participantDetailsResponse;
+    private ParticipantResponse _ParticipantResponse;
     private ParticipantService _service;
     private UserProfileResponse _staffMemberProfile;
     private const string ContactEmail = "staffMemberEmail@hmcts.net";
@@ -37,7 +38,7 @@ public class ParticipantsServiceTests
     {
         _mocker = AutoMock.GetLoose();
         _testConference = Builder<ConferenceDetailsResponse>.CreateNew().Build();
-        _participantDetailsResponse = Builder<ParticipantDetailsResponse>.CreateNew().Build();
+        _ParticipantResponse = Builder<ParticipantResponse>.CreateNew().Build();
         _service = _mocker.Create<ParticipantService>();
         _staffMemberProfile = new UserProfileResponse
         {
@@ -94,12 +95,12 @@ public class ParticipantsServiceTests
         var participantResponse = new Participant();
         var addStaffMemberResponse = new AddStaffMemberResponse();
         _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
-        _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
-            .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
+        _mocker.Mock<IMapTo<ParticipantResponse, Participant>>()
+            .Setup(x => x.Map(It.Is<ParticipantResponse>(x => x == _ParticipantResponse)))
             .Returns(participantResponse);
         
-        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
-            .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantResponse, Participant>())
+            .Returns(_mocker.Mock<IMapTo<ParticipantResponse, Participant>>().Object);
         
         //Act
         await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse);
@@ -119,13 +120,13 @@ public class ParticipantsServiceTests
         
         _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
         
-        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
-            .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantResponse, Participant>())
+            .Returns(_mocker.Mock<IMapTo<ParticipantResponse, Participant>>().Object);
         
         var addStaffMemberResponse = new AddStaffMemberResponse
         {
             ConferenceId = Guid.NewGuid(),
-            ParticipantDetails = _participantDetailsResponse
+            Participant = _ParticipantResponse
         };
         
         // Act
@@ -146,7 +147,7 @@ public class ParticipantsServiceTests
         var addStaffMemberResponse = new AddStaffMemberResponse
         {
             ConferenceId = Guid.NewGuid(),
-            ParticipantDetails = _participantDetailsResponse
+            Participant = _ParticipantResponse
         };
         
         // Act and Assert
@@ -154,7 +155,7 @@ public class ParticipantsServiceTests
     }
     
     [Test]
-    public async Task AddStaffMemberToConferenceCache_when_coference_is_mapping_Participantdetails_to_participant()
+    public async Task AddStaffMemberToConferenceCache_when_coference_is_mapping_Participant_to_participant()
     {
         // Arrange
         var conference = new Conference();
@@ -163,17 +164,17 @@ public class ParticipantsServiceTests
         
         _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(conference));
         
-        _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
-            .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
+        _mocker.Mock<IMapTo<ParticipantResponse, Participant>>()
+            .Setup(x => x.Map(It.Is<ParticipantResponse>(x => x == _ParticipantResponse)))
             .Returns(participantResponse);
         
-        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
-            .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantResponse, Participant>())
+            .Returns(_mocker.Mock<IMapTo<ParticipantResponse, Participant>>().Object);
         
         var addStaffMemberResponse = new AddStaffMemberResponse
         {
             ConferenceId = Guid.NewGuid(),
-            ParticipantDetails = _participantDetailsResponse
+            Participant = _ParticipantResponse
         };
         
         // Act

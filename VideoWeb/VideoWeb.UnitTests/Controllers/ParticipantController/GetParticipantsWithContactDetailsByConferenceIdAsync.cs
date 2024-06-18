@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -24,6 +23,7 @@ using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -40,10 +40,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker = AutoMock.GetLoose();
             _eventComponentHelper = new EventComponentHelper();
 
-            var judge = CreateParticipant("Judge", "Judge");
-            var individual = CreateParticipant("Individual", "Claimant");
-            var interpreter = CreateParticipant("Interpreter", "Claimant");
-            var representative = CreateParticipant("Representative", "Defendant");
+            var judge = CreateParticipant("Judge");
+            var individual = CreateParticipant("Individual");
+            var interpreter = CreateParticipant("Interpreter");
+            var representative = CreateParticipant("Representative");
             individual.LinkedParticipants.Add(new LinkedParticipant{LinkedId = interpreter.Id, LinkType = LinkType.Interpreter});
             interpreter.LinkedParticipants.Add(new LinkedParticipant{LinkedId = individual.Id, LinkType = LinkType.Interpreter});
             
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var conference = CreateValidConference(conferenceId);
 
-            var judge3DifferentHearing = CreateParticipant("judge3", "Judge");
+            var judge3DifferentHearing = CreateParticipant("judge3");
             conference.Participants = _participants;
             var judgeInHearing = conference.Participants.First(x => x.Username == "Judge");
 
@@ -121,11 +121,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
-            response.Name.Should().Be(participant.Name);
             response.Role.Should().Be(participant.Role);
             response.HearingRole.Should().Be(participant.HearingRole);
             response.Username.Should().Be(participant.Username);
-            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
             response.FirstName.Should().Be(participant.FirstName);
             response.LastName.Should().Be(participant.LastName);
@@ -138,14 +136,12 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.Representee.Should().Be(participant.Representee);
         }
         
-        private static Participant CreateParticipant(string username, string caseTypeGroup)
+        private static Participant CreateParticipant(string username)
         {
             return Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Name = username)
                 .With(x => x.Role = Role.Judge)
                 .With(x => x.Username = username)
-                .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .With(x => x.DisplayName = $"{username} {username}")
@@ -176,7 +172,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantResponseForUserMapper>());
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
             var parameters = new ParameterBuilder(_mocker)

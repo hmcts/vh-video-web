@@ -21,6 +21,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.EndOfDayController;
 
@@ -48,10 +49,10 @@ public class GetActiveConferencesTests
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
             
@@ -68,7 +69,7 @@ public class GetActiveConferencesTests
     public async Task should_return_active_conferences()
     {
         // arrange
-        var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+        var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
             .All()
             .With(x => x.Username = Internet.Email())
             .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())

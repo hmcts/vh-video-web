@@ -4,7 +4,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
@@ -68,17 +67,15 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_correctly()
         {
-            var existingParticipants = new List<Participant>() { new Participant() { Id = Guid.NewGuid() } };
+            var existingParticipants = new List<Participant> { new () { Id = Guid.NewGuid() } };
             var mapped = _sut.Map(testParticipant, existingParticipants);
 
-            mapped.CaseTypeGroup.Should().Be(testParticipant.CaseTypeGroup);
             mapped.ContactEmail.Should().Be(testParticipant.ContactEmail);
             mapped.ContactTelephone.Should().Be(testParticipant.ContactTelephone);
             mapped.DisplayName.Should().Be(testParticipant.DisplayName);
             mapped.FirstName.Should().Be(testParticipant.FirstName);
             mapped.HearingRole.Should().Be(testParticipant.HearingRole);
             mapped.LastName.Should().Be(testParticipant.LastName);
-            mapped.Name.Should().Be(testParticipant.Name);
             mapped.Representee.Should().Be(testParticipant.Representee);
             mapped.Role.Should().Be((Role)testParticipant.UserRole);
             mapped.Id.Should().Be(testParticipant.Id);

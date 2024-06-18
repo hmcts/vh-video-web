@@ -50,10 +50,9 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
         const role = lip.role;
-        const caseTypeGroup = lip.caseTypeGroup;
         const hearingRole = lip.hearingRole;
         const representee = lip.representee;
-        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
+        const model = new LinkedParticipantPanelModel(roomid, displayName, role, pexipName, hearingRole, representee);
         model.participants = participants;
         return model;
     }
@@ -63,10 +62,9 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
         const role = joh.role;
-        const caseTypeGroup = joh.caseTypeGroup;
         const hearingRole = joh.hearingRole;
 
-        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, null);
+        const model = new LinkedParticipantPanelModel(roomid, displayName, role, pexipName, hearingRole, null);
         model.participants = participants;
         return model;
     }

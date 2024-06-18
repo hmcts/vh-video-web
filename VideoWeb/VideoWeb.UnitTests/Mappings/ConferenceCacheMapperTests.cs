@@ -12,6 +12,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
+    //TODO: Add individual participant (judicial and quicklink) mappers
     public class ConferenceCacheMapperTests
     {
         [Test]
@@ -34,13 +35,13 @@ namespace VideoWeb.UnitTests.Mappings
                 resultParticipant.Id.Should().Be(participant.Id);
                 resultParticipant.Username.Should().Be(participantDetails.Username);
                 resultParticipant.Role.Should().Be((Role)participant.UserRole);
-                resultParticipant.HearingRole.Should().Be(participant.HearingRole);
+                resultParticipant.HearingRole.Should().Be(participantDetails.HearingRoleName);
                 resultParticipant.DisplayName.Should().Be(participantDetails.DisplayName);
                 resultParticipant.FirstName.Should().Be(participantDetails.FirstName);
                 resultParticipant.LastName.Should().Be(participantDetails.LastName);
                 resultParticipant.ContactEmail.Should().Be(participantDetails.ContactEmail);
                 resultParticipant.ContactTelephone.Should().Be(participantDetails.TelephoneNumber);
-                resultParticipant.Representee.Should().Be(participant.Representee);
+                resultParticipant.Representee.Should().Be(participantDetails.Representee);
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
@@ -69,7 +70,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             foreach (var participant in conference.Participants)
                 participants.Add(new ParticipantFromBookingApiResponseBuilder(participant.RefId)
-                    .WithRoles(participant.UserRole.ToString(), participant.HearingRole)
+                    .WithRoles(participant.UserRole.ToString())
                     .Build());
             
             var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2
@@ -90,14 +91,14 @@ namespace VideoWeb.UnitTests.Mappings
         
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
         {
-            var participants = new List<ParticipantDetailsResponse>
+            var participants = new List<ParticipantResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").WithHearingRole("Professional").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").WithHearingRole("Judge").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Witness").Build()
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Representative).Build(),
+                new ParticipantResponseBuilder(UserRole.Judge).Build(),
+                new ParticipantResponseBuilder(UserRole.CaseAdmin).Build(),
+                new ParticipantResponseBuilder(UserRole.Individual).Build()
             };
             var participantA = participants[0];
             var participantB = participants[1];

@@ -19,6 +19,7 @@ using VideoWeb.Controllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.QuickLinkController
 {
@@ -47,23 +48,23 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var jwt = "JWT";
             var conference = new Conference();
             var participant = new Participant();
-            var participantDetails = new ParticipantDetailsResponse();
+            var participantDetails = new ParticipantResponse();
             
             _mocker.Mock<IVideoApiClient>().Setup(x => x.AddQuickLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddQuickLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddQuickLinkParticipantResponse
             {
-                ParticipantDetails = participantDetails,
+                Participant = participantDetails,
                 Token = jwt,
                 ConferenceId = conferenceId
             });
 
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
 
-            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
-                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == participantDetails)))
+            _mocker.Mock<IMapTo<ParticipantResponse, Participant>>()
+                .Setup(x => x.Map(It.Is<ParticipantResponse>(x => x == participantDetails)))
                 .Returns(participant);
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>()).Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantResponse, Participant>()).Returns(_mocker.Mock<IMapTo<ParticipantResponse, Participant>>().Object);
             
             // Act
             var result = await _controller.Join(hearingId, new QuickLinkParticipantJoinRequest

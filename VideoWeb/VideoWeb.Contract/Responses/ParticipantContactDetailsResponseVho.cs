@@ -60,7 +60,7 @@ namespace VideoWeb.Contract.Responses
         /// The participant's last name
         /// </summary>
         public string LastName { get; set; }
-
+        
         /// <summary>
         /// The participant's contact email
         /// </summary>
@@ -84,7 +84,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant represented by the representative
         /// </summary>
-        public string Representee { get; set; }    
+        public string Representee { get; set; }
         
         /// <summary>
         /// List of participants linked this participant

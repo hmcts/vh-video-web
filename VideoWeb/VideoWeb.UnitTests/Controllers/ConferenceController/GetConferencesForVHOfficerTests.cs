@@ -26,7 +26,7 @@ using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using ParticipantResponse = BookingsApi.Contract.V1.Responses.ParticipantResponse;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -176,7 +176,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso(bool includeUnallocated)
         {
             // Arrange
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -287,7 +287,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso_on_unallocated_hearings_only()
         {
             // Arrange
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -402,11 +402,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForUserResponseMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
 

@@ -6,13 +6,12 @@ export class ParticipantPanelModel extends IndividualPanelModel {
         id: string,
         displayName: string,
         role: Role,
-        caseTypeGroup: string,
         pexipDisplayName: string,
         hearingRole: string,
         representee: string,
         public status: ParticipantStatus
     ) {
-        super(id, displayName, role, caseTypeGroup, pexipDisplayName, hearingRole, representee);
+        super(id, displayName, role, pexipDisplayName, hearingRole, representee);
     }
 
     get isCallableAndReadyToJoin(): boolean {
@@ -46,7 +45,7 @@ export class ParticipantPanelModel extends IndividualPanelModel {
         return this.id === participantId;
     }
 
-    updateStatus(status: ParticipantStatus, participantId?: string) {
+    updateStatus(status: ParticipantStatus) {
         this.status = status;
     }
 }

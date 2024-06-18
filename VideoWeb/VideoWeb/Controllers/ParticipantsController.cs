@@ -174,7 +174,6 @@ namespace VideoWeb.Controllers
 
                 return BadRequest(ModelState);
             }
-
             try
             {
                 var conference = await conferenceService.GetConference(conferenceId);
@@ -182,8 +181,7 @@ namespace VideoWeb.Controllers
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync();
 
-                var participantContactDetailsResponseVhoMapper = mapperFactory
-                    .Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var participantContactDetailsResponseVhoMapper = mapperFactory.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
 
                 return Ok(response);
@@ -199,15 +197,15 @@ namespace VideoWeb.Controllers
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
-        [ProducesResponseType(typeof(List<ParticipantForUserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId)
         {
             try
             {
                 var conference = await conferenceService.GetConference(conferenceId);
-                var participantForUserResponsesMapper = mapperFactory.Get<IEnumerable<Participant>, List<ParticipantForUserResponse>>();
-                var participants = participantForUserResponsesMapper.Map(conference.Participants);
+                var participantMapper = mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+                var participants = conference.Participants.Select(x => participantMapper.Map(x, conference)).ToList();
                 return Ok(participants);
             }
             catch (VideoApiException e)

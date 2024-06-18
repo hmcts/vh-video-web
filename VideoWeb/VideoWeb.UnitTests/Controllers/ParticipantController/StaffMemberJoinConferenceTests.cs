@@ -17,13 +17,13 @@ using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
-using VideoWeb.Contract.Request;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ConferenceResponseMapper>()
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .Build();
             
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
@@ -149,19 +149,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
-            var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
-            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
-
-            var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
-            var panelMember =
-                new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
-            var participants = new List<ParticipantDetailsResponse>()
-            {
-                individualDefendant, judge, panelMember, staffMember
-            };
+            var judge = new ParticipantResponseBuilder(UserRole.Judge).Build();
+            var staffMember = new ParticipantResponseBuilder(UserRole.StaffMember).Build();
+            var individualDefendant = new ParticipantResponseBuilder(UserRole.Individual).Build();
+            var panelMember = new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).Build();
+            var participants = new List<ParticipantResponse> { individualDefendant, judge, panelMember, staffMember };
             if (!string.IsNullOrWhiteSpace(username))
             {
-                participants.First().Username = username;
+                participants[0].Username = username;
             }
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
@@ -172,12 +167,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         
         private static Conference CreateConferenceDto(string username = "john@hmcts.net")
         {
-            var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
-            var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
+            var judge = new ParticipantBuilder(Role.Judge).Build();
+            var staffMember = new ParticipantBuilder(Role.StaffMember).Build();
             
-            var individualDefendant = new ParticipantBuilder(Role.Individual, "Defendant").Build();
-            var panelMember =
-                new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
+            var individualDefendant = new ParticipantBuilder(Role.Individual).Build();
+            var panelMember = new ParticipantBuilder(Role.JudicialOfficeHolder).Build();
             var participants = new List<Participant>()
             {
                 individualDefendant, judge, panelMember, staffMember

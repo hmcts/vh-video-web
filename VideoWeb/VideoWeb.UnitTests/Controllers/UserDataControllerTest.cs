@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers
             _mocker = AutoMock.GetLoose();
             
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .Build();
             
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));

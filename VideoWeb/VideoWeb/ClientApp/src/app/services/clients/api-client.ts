@@ -2919,7 +2919,7 @@ export class ApiClient extends ApiClientBase {
      * @return OK
      */
     getVideoEndpointsForConference(conferenceId: string): Observable<VideoEndpointResponse[]> {
-        let url_ = this.baseUrl + '/{conferenceId}/participants';
+        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/participants';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
@@ -3015,7 +3015,7 @@ export class ApiClient extends ApiClientBase {
      * @return OK
      */
     allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
-        let url_ = this.baseUrl + '/{conferenceId}/allowed-video-call-endpoints';
+        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/allowed-video-call-endpoints';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
@@ -4911,7 +4911,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantForUserResponse[]> {
+    getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participants';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -4942,14 +4942,14 @@ export class ApiClient extends ApiClientBase {
                         try {
                             return this.processGetParticipantsByConferenceId(response_ as any);
                         } catch (e) {
-                            return _observableThrow(e) as any as Observable<ParticipantForUserResponse[]>;
+                            return _observableThrow(e) as any as Observable<ParticipantResponse[]>;
                         }
-                    } else return _observableThrow(response_) as any as Observable<ParticipantForUserResponse[]>;
+                    } else return _observableThrow(response_) as any as Observable<ParticipantResponse[]>;
                 })
             );
     }
 
-    protected processGetParticipantsByConferenceId(response: HttpResponseBase): Observable<ParticipantForUserResponse[]> {
+    protected processGetParticipantsByConferenceId(response: HttpResponseBase): Observable<ParticipantResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse
@@ -4981,7 +4981,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     if (Array.isArray(resultData200)) {
                         result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ParticipantForUserResponse.fromJS(item));
+                        for (let item of resultData200) result200!.push(ParticipantResponse.fromJS(item));
                     } else {
                         result200 = <any>null;
                     }
@@ -5010,7 +5010,7 @@ export class ApiClient extends ApiClientBase {
                 })
             );
         }
-        return _observableOf<ParticipantForUserResponse[]>(null as any);
+        return _observableOf<ParticipantResponse[]>(null as any);
     }
 
     /**
@@ -10084,8 +10084,6 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     status?: ParticipantStatus;
     /** The participant's display name */
     display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The participant hearing ref id in a booking */
     ref_id?: string;
     /** The participant's first name */
@@ -10123,7 +10121,6 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.hearing_role = _data['hearing_role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
-            this.case_type_group = _data['case_type_group'];
             this.ref_id = _data['ref_id'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10156,7 +10153,6 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['hearing_role'] = this.hearing_role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
-        data['case_type_group'] = this.case_type_group;
         data['ref_id'] = this.ref_id;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10188,8 +10184,6 @@ export interface IParticipantContactDetailsResponseVho {
     status?: ParticipantStatus;
     /** The participant's display name */
     display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The participant hearing ref id in a booking */
     ref_id?: string;
     /** The participant's first name */
@@ -10218,8 +10212,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
     role?: Role;
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
-    /** The group a participant belongs to */
-    case_type_group?: string | undefined;
     /** The participant hearing role in conference */
     hearing_role?: string | undefined;
 
@@ -10237,7 +10229,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
             this.display_name = _data['display_name'];
             this.role = _data['role'];
             this.representee = _data['representee'];
-            this.case_type_group = _data['case_type_group'];
             this.hearing_role = _data['hearing_role'];
         }
     }
@@ -10255,7 +10246,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
         data['display_name'] = this.display_name;
         data['role'] = this.role;
         data['representee'] = this.representee;
-        data['case_type_group'] = this.case_type_group;
         data['hearing_role'] = this.hearing_role;
         return data;
     }
@@ -10269,8 +10259,6 @@ export interface IParticipantForHostResponse {
     role?: Role;
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
-    /** The group a participant belongs to */
-    case_type_group?: string | undefined;
     /** The participant hearing role in conference */
     hearing_role?: string | undefined;
 }
@@ -10286,8 +10274,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10319,7 +10305,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
-            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10349,7 +10334,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
-        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10376,8 +10360,6 @@ export interface IParticipantForUserResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10406,8 +10388,6 @@ export class ParticipantResponse implements IParticipantResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10439,7 +10419,6 @@ export class ParticipantResponse implements IParticipantResponse {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
-            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10469,7 +10448,6 @@ export class ParticipantResponse implements IParticipantResponse {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
-        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10497,8 +10475,6 @@ export interface IParticipantResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10527,8 +10503,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The hearing role */
@@ -10554,7 +10528,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
-            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
@@ -10581,7 +10554,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
-        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['hearing_role'] = this.hearing_role;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
@@ -10606,8 +10578,6 @@ export interface IParticipantResponseVho {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
-    /** The group a participant belongs to in a case */
-    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The hearing role */

@@ -6,35 +6,28 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {
-    public class ParticipantDetailsResponseBuilder
+    public class ParticipantResponseBuilder
     {
-        private readonly ISingleObjectBuilder<ParticipantDetailsResponse> _participant;
+        private readonly ISingleObjectBuilder<ParticipantResponse> _participant;
 
-        public ParticipantDetailsResponseBuilder(UserRole role, string caseTypeGroup)
+        public ParticipantResponseBuilder(UserRole role)
         {
-            _participant = Builder<ParticipantDetailsResponse>.CreateNew()
+            _participant = Builder<ParticipantResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.CurrentStatus = ParticipantState.Available)
-                .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.UserRole = role)
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>
-                    { new LinkedParticipantResponse() { LinkedId = Guid.NewGuid(), Type = LinkedParticipantType.Interpreter } });
+                    { new () { LinkedId = Guid.NewGuid(), Type = LinkedParticipantType.Interpreter } });
         }
 
-        public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)
+        public ParticipantResponseBuilder WithStatus(ParticipantState state)
         {
             _participant.With(x => x.CurrentStatus = state);
             return this;
         }
 
-        public ParticipantDetailsResponseBuilder WithHearingRole(string hearingRole)
-        {
-            _participant.With(x => x.HearingRole = hearingRole);
-            return this;
-        }
-
-        public ParticipantDetailsResponse Build()
+        public ParticipantResponse Build()
         {
             return _participant.Build();
         }

@@ -1,5 +1,4 @@
 import { ParticipantStatus, Role, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantContactDetails {
@@ -22,10 +21,6 @@ export class ParticipantContactDetails {
 
     get name() {
         return this.participant.name;
-    }
-
-    get caseGroup() {
-        return this.participant.case_type_group;
     }
 
     get contactEmail() {
@@ -82,20 +77,6 @@ export class ParticipantContactDetails {
 
     get hostInAnotherHearing(): boolean {
         return this.isHostInAnotherHearing;
-    }
-
-    get showCaseRole(): boolean {
-        if (!this.participant.case_type_group) {
-            return false;
-        }
-
-        return this.participant.case_type_group.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.STAFF_MEMBER.toLowerCase()
-            ? false
-            : true;
     }
 
     get isInterpreterOrInterpretee(): boolean {

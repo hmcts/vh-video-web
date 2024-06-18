@@ -31,7 +31,6 @@ export interface IParticipantDetails {
     name: string;
     displayName: string;
     pexipDisplayName: PexipDisplayNameModel;
-    caseGroup: string;
     role: Role;
     hearingRole: string;
     status: ParticipantStatus;
@@ -48,7 +47,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public name: string,
         public displayName: string,
         pexipDisplayName: string | PexipDisplayNameModel,
-        public caseGroup: string,
         public role: Role,
         public hearingRole: string,
         public isEndPoint: boolean,
@@ -90,7 +88,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             videoEndpointResponse.pexip_display_name, // same as tiled_display_name
             null,
             null,
-            null,
             true,
             null,
             null,
@@ -105,7 +102,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
-            participant.case_type_group,
             participant.role,
             participant.hearing_role,
             false,
@@ -134,10 +130,6 @@ export class Participant {
 
     get fullName() {
         return this.participant.name;
-    }
-
-    get caseGroup() {
-        return this.participant.case_type_group;
     }
 
     get status(): ParticipantStatus {

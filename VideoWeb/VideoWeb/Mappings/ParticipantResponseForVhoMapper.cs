@@ -9,15 +9,9 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantResponseForVhoMapper : IMapTo<ParticipantResponse, ParticipantResponseVho>
+    public class ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        : IMapTo<ParticipantResponse, ParticipantResponseVho>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
-
-        public ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
-        {
-            _roomResponseMapper = roomResponseMapper;
-        }
-
         /// <summary>
         /// TODO: Properties removed, verify before removing todo
         /// </summary>
@@ -32,8 +26,8 @@ namespace VideoWeb.Mappings
                 Status = status,
                 Role = role,
                 DisplayName = participant.DisplayName,
-                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
-                InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
+                CurrentRoom = roomResponseMapper.Map(participant.CurrentRoom),
+                InterpreterRoom = roomResponseMapper.Map(participant.CurrentInterpreterRoom),
                 LinkedParticipants = participant.LinkedParticipants.Select(lp => new Contract.Responses.LinkedParticipantResponse
                 {
                     LinkedId = lp.LinkedId,

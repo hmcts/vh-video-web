@@ -10,13 +10,12 @@ namespace VideoWeb.UnitTests.Builders
     {
         private readonly ISingleObjectBuilder<Participant> _participant;
 
-        public ParticipantBuilder(Role role, string caseTypeGroup)
+        public ParticipantBuilder(Role role)
         {
             _participant = Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.ParticipantStatus = ParticipantStatus.Available)
-                .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.Role = role)
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>
                     { new () { LinkedId = Guid.NewGuid(), LinkType = LinkType.Interpreter } });

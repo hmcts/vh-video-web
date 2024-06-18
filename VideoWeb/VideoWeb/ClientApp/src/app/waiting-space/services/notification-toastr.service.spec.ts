@@ -4,7 +4,6 @@ import {
     EndpointStatus,
     HearingDetailRequest,
     ParticipantResponse,
-    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -765,7 +764,6 @@ describe('NotificationToastrService', () => {
         const testParticipant = new ParticipantResponse();
         testParticipant.display_name = 'TestParticipantDisplayName';
         testParticipant.hearing_role = 'TestParticipantHearingRole';
-        testParticipant.case_type_group = 'TestParticipantCaseTypeGroup';
 
         const translatedNameMessage = 'TranslatedNameMessage';
         const translatedRoleMessage = 'TranslatedRoleMessage';
@@ -885,7 +883,6 @@ describe('NotificationToastrService', () => {
 
         it('should set the role message with correct values when no party', () => {
             // Act
-            testParticipant.case_type_group = null;
             const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
 
             // Assert

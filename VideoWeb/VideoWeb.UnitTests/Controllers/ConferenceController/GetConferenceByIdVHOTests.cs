@@ -22,6 +22,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -122,13 +123,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
-            var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
-            var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
-            var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
-            var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
+            var judge = new ParticipantResponseBuilder(UserRole.Judge).Build();
+            var individualDefendant = new ParticipantResponseBuilder(UserRole.Individual).Build();
+            var individualClaimant = new ParticipantResponseBuilder(UserRole.Individual).Build();
+            var repClaimant = new ParticipantResponseBuilder(UserRole.Representative).Build();
             var panelMember =
-                new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
-            var participants = new List<ParticipantDetailsResponse>()
+                new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).Build();
+            var participants = new List<ParticipantResponse>()
             {
                 individualDefendant, individualClaimant, repClaimant, judge, panelMember
             };
@@ -155,11 +156,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .Build();
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));

@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
         protected ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
                 participants[0].Username = username;

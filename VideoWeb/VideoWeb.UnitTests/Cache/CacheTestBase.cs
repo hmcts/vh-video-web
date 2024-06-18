@@ -21,7 +21,7 @@ public abstract class CacheTestBase
     
     protected static ConferenceDetailsResponse CreateConferenceResponse()
     {
-        var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+        var participants = Builder<ParticipantResponse>.CreateListOfSize(2).Build().ToList();
         var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
         var conference = Builder<ConferenceDetailsResponse>.CreateNew()
             .With(x => x.Participants = participants)
@@ -37,9 +37,8 @@ public abstract class CacheTestBase
             Id = x.RefId,
             Username = x.Username,
             DisplayName = x.DisplayName,
-            Representee = x.Representee,
-            FirstName = x.FirstName,
-            LastName = x.LastName,
+            FirstName = "John",
+            LastName = "Doe",
             UserRoleName = x.UserRole.ToString(),
         }).ToList();
         

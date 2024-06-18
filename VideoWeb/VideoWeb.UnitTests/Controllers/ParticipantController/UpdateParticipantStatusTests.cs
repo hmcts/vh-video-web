@@ -21,6 +21,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -54,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantResponseForUserMapper>());
 
             _sut = _mocker.Create<ParticipantsController>();
             _sut.ControllerContext = context;

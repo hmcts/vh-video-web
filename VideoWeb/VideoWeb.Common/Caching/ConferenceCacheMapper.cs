@@ -62,13 +62,13 @@ namespace VideoWeb.Common.Caching
         private static Participant MapParticipantToCacheModel(ParticipantResponse participant, HearingDetailsResponseV2 hearingDetails)
         {
             var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
-            //TODO: Need to update bookingApi contract to provide judiciary participant ID in the response and match on that
-            var judiciaryDetails = hearingDetails.JudiciaryParticipants?.SingleOrDefault(x => x.Email == participant.Username);
+            var judiciaryDetails = hearingDetails.JudiciaryParticipants?
+                .SingleOrDefault(x => String.Equals(x.Email, participant.Username, StringComparison.OrdinalIgnoreCase));
             
             var model = 
                 ParticipantCacheMapper.Map(participant, participantDetails) ??
                 ParticipantCacheMapper.Map(participant, judiciaryDetails) ??
-                throw new ArgumentException("Participant not found in hearing details");
+                ParticipantCacheMapper.Map(participant);
 
             model.LinkedParticipants = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
             

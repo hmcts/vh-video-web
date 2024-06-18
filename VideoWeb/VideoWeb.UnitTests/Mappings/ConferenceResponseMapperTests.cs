@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
@@ -33,15 +33,15 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var participants = new List<Participant>
             {
-                new ParticipantBuilder(Role.Individual, "Claimant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantBuilder(Role.Individual, "Defendant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantBuilder(Role.Representative, "Defendant").WithHearingRole("Representative").Build(),
-                new ParticipantBuilder(Role.Judge, "None").WithHearingRole("Judge").Build(),
-                new ParticipantBuilder(Role.CaseAdmin, "None").Build(),
-                new ParticipantBuilder(Role.Individual, "Observer").WithHearingRole("Observer").Build(),
-                new ParticipantBuilder(Role.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
-                new ParticipantBuilder(Role.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
-                new ParticipantBuilder(Role.Individual, "Witness").WithHearingRole("Witness").Build()
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
+                new ParticipantBuilder(Role.Representative).WithHearingRole("Representative").Build(),
+                new ParticipantBuilder(Role.Judge).WithHearingRole("Judge").Build(),
+                new ParticipantBuilder(Role.CaseAdmin).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Observer").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Witness").Build()
             };
 
 
@@ -98,15 +98,6 @@ namespace VideoWeb.UnitTests.Mappings
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
             }
-
-            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
-            caseTypeGroups.Count.Should().BeGreaterThan(2);
-            caseTypeGroups[0].Should().Be("Claimant");
-            caseTypeGroups[1].Should().Be("Defendant");
-            caseTypeGroups[2].Should().Be("None");
-            caseTypeGroups[3].Should().Be("Observer");
-            caseTypeGroups[4].Should().Be("Panel Member");
-
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
             response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();

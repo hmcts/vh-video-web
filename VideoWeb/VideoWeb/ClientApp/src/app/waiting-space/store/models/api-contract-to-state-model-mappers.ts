@@ -29,7 +29,6 @@ export function mapParticipantToVHParticipant(participant: ParticipantResponse):
         tiledDisplayName: participant.tiled_display_name,
         role: participant.role,
         hearingRole: participant.hearing_role,
-        caseTypeGroup: participant.case_type_group,
         representee: participant.representee,
         pexipInfo: null,
         room: participant.current_room ? mapRoomToVHRoom(participant.current_room) : null,

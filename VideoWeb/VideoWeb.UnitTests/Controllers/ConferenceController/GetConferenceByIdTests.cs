@@ -38,11 +38,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker = AutoMock.GetLoose();
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .Build();
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, VideoWeb.Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
@@ -187,12 +187,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
         private static Conference CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
-            var judge = new ParticipantBuilder(Role.Judge, "Judge").Build();
-            var staffMember = new ParticipantBuilder(Role.StaffMember, "StaffMember").Build();
-            var individualDefendant = new ParticipantBuilder(Role.Individual, "Defendant").Build();
-            var individualClaimant = new ParticipantBuilder(Role.Individual, "Claimant").Build();
-            var repClaimant = new ParticipantBuilder(Role.Representative, "Claimant").Build();
-            var panelMember = new ParticipantBuilder(Role.JudicialOfficeHolder, "Panel Member").Build();
+            var judge = new ParticipantBuilder(Role.Judge).Build();
+            var staffMember = new ParticipantBuilder(Role.StaffMember).Build();
+            var individualDefendant = new ParticipantBuilder(Role.Individual).Build();
+            var individualClaimant = new ParticipantBuilder(Role.Individual).Build();
+            var repClaimant = new ParticipantBuilder(Role.Representative).Build();
+            var panelMember = new ParticipantBuilder(Role.JudicialOfficeHolder).Build();
             var participants = new List<Participant>()
             {
                 individualDefendant, individualClaimant, repClaimant, judge, panelMember, staffMember

@@ -28,36 +28,6 @@ describe('HearingSummary', () => {
         expect(hearing.allocatedCso).toEqual(c.allocated_cso);
     });
 
-    it('should get applicant rep', () => {
-        const c = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(c);
-        const appRep = hearing.applicantRepresentative;
-        expect(appRep.role).toBe(Role.Representative);
-    });
-
-    it('should get applicants', () => {
-        const c = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(c);
-        const apps = hearing.applicants;
-        const groups = apps.filter(x => x.caseGroup !== 'applicant').length;
-        expect(groups).toBe(0);
-    });
-
-    it('should get defendent rep', () => {
-        const c = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(c);
-        const defRep = hearing.defendantRepresentative;
-        expect(defRep.role).toBe(Role.Representative);
-    });
-
-    it('should get respondents', () => {
-        const c = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(c);
-        const respondents = hearing.respondents;
-        const groups = respondents.filter(x => x.caseGroup !== 'respondent').length;
-        expect(groups).toBe(0);
-    });
-
     it('should return judge', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const judge = new HearingSummary(c).judge;

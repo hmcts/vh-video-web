@@ -19,6 +19,7 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -35,7 +36,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantResponseForUserMapper>());
 
             _sut = _mocker.Create<ParticipantsController>();
         }
@@ -75,9 +76,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
         }
 
-        private List<ParticipantSummaryResponse> CreateValidParticipantsSummaryResponse()
+        private List<ParticipantResponse> CreateValidParticipantsSummaryResponse()
         {
-            return Builder<ParticipantSummaryResponse>.CreateListOfSize(3).All()
+            return Builder<ParticipantResponse>.CreateListOfSize(3).All()
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>()).Build().ToList();
         }
     }

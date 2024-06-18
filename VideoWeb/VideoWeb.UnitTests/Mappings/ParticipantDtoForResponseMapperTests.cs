@@ -11,10 +11,10 @@ using Moq;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantToParticipantResponseMapperTests
+    public class ParticipantDtoForResponseMapperTests
     {
         protected AutoMock _mocker;
-        protected ParticipantToParticipantResponseMapper _sut;
+        protected ParticipantDtoForResponseMapper _sut;
         private Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>> linkedParticipantMapperMock;
         private Mock<IMapTo<CivilianRoom, RoomSummaryResponse>> roomMapperMock;
 
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Mappings
             roomMapperMock.Setup(mapper => mapper.Map(_civilianRoom)).Returns(roomSummaryResponse);
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(roomMapperMock.Object);
 
-            _sut = _mocker.Create<ParticipantToParticipantResponseMapper>();
+            _sut = _mocker.Create<ParticipantDtoForResponseMapper>();
         }
 
         [Test]
@@ -73,7 +73,6 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var testParticipant = new Participant()
             {
-                CaseTypeGroup = "TestCaseTypeGroup",
                 ContactEmail = "TestContactEmail",
                 ContactTelephone = "TestContactTelephone",
                 DisplayName = "TestDisplayName",
@@ -81,7 +80,6 @@ namespace VideoWeb.UnitTests.Mappings
                 HearingRole = "TestHearingRole",
                 LastName = "TestLastName",
                 LinkedParticipants = linkedParticipants,
-                Name = "TestName",
                 ParticipantStatus = ParticipantStatus.Disconnected,
                 RefId = Guid.NewGuid(),
                 Representee = "TestRepresentee",
@@ -99,12 +97,10 @@ namespace VideoWeb.UnitTests.Mappings
 
             var mapped = _sut.Map(testParticipant, testConference);
 
-            mapped.CaseTypeGroup.Should().Be(testParticipant.CaseTypeGroup);
             mapped.DisplayName.Should().Be(testParticipant.DisplayName);
             mapped.FirstName.Should().Be(testParticipant.FirstName);
             mapped.HearingRole.Should().Be(testParticipant.HearingRole);
             mapped.LastName.Should().Be(testParticipant.LastName);
-            mapped.Name.Should().Be(testParticipant.Name);
             mapped.Status.Should().Be(testParticipant.ParticipantStatus);
             mapped.Representee.Should().Be(testParticipant.Representee);
             mapped.Role.Should().Be(testParticipant.Role);

@@ -17,7 +17,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
 
@@ -37,10 +36,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()).Returns(_mocker.Create<UpdateParticipantRequestMapper>());
             
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantDtoForResponseMapper>(parameters));
             
             var eventHandlerMock = _mocker.Mock<IEventHandler>();
             _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);
@@ -89,7 +88,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                             LastName = "LastName",
                             Role = Role.Judge,
                             ParticipantStatus = ParticipantStatus.Available,
-                            CaseTypeGroup = "CaseGroup",
                             Representee = "Representee",
                             HearingRole = "HearingRole"
                         }
