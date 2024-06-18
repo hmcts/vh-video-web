@@ -104,13 +104,13 @@ stages:
 
           - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
+              dockerComposeFile: $(System.DefaultWorkingDirectory)/docker-compose.yml
               azureSubscription: ${{ variables.acrSubscription }}
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
 
           - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
             parameters:
-              dockerComposeFile: $(System.DefaultWorkingDirectory)/docker-compose.yml
               azureSubscription: ${{ variables.acrSubscription }}
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
