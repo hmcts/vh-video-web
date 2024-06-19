@@ -896,6 +896,11 @@
     "mute-my-microphone": "Troi fy meicroffôn i ffwrdd",
     "cancel": "Canslo"
   },
+  "warn-join-hearing-popup": {
+    "title": "Disgwylir i'ch gwrandawiad ddechrau ar",
+    "message": "Cymerwch eiliad i baratoi.",
+    "submit-button": "Iawn"
+  },
   "participants-panel": {
     "participants": "Cyfranogwyr",
     "participants-tooltip": "Rhestr o'r cyfranogwyr sydd yn y gwrandawiad",
