@@ -97,7 +97,7 @@ import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-
         StartPrivateConsultationComponent,
         JoinPrivateConsultationComponent,
         PrivateConsultationLegalRepTermsOfServiceComponent,
-        ParticipantsPanelItemComponent
+        ParticipantsPanelItemComponent,
         WarnJoinHearingPopupComponent
     ],
     providers: [
