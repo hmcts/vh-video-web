@@ -607,7 +607,8 @@
     "red": "red",
     "blue": "blue",
     "grey": "grey",
-    "participants": "Participants",
+    "participants": "All participants",
+    "participants-tooltip": "All participants booked into the hearing",
     "mute-lock": "Mute & lock",
     "mute-tooltip": "Mute all participants and prevent them from unmuting",
     "unmute-lock": "Unlock mute",
@@ -633,7 +634,10 @@
     "mute-all": "Mute all",
     "unmute-all": "Unmute all",
     "mute-all-tooltip": "Mute all participants",
-    "unmute-all-tooltip": "Unmute all participants"
+    "unmute-all-tooltip": "Unmute all participants",
+    "in-waiting-room": "In waiting room",
+    "in-waiting-room-tooltip": "All participants in the waiting room",
+    "not-connected": "Not connected"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",
