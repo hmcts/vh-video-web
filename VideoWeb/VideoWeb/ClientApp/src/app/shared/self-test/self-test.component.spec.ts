@@ -26,7 +26,6 @@ import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelfTestComponent } from './self-test.component';
 import { ElementRef } from '@angular/core';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -44,15 +43,11 @@ describe('SelfTestComponent', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
-    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
         token: '3a9643611de98e66979bf9519c33fc8d28c39100a4cdc29aaf1b6041b9e16e45'
     });
-
-    let selfTestParticipantId = 'participant-id';
-    let callSpy: jasmine.Spy<() => Promise<void>>;
 
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
@@ -98,10 +93,6 @@ describe('SelfTestComponent', () => {
 
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['userAgent']);
 
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isIphone', 'isIpad']);
-        deviceTypeServiceSpy.isIphone.and.returnValue(false);
-        deviceTypeServiceSpy.isIpad.and.returnValue(false);
-
         component = new SelfTestComponent(
             loggerSpy,
             videoWebServiceSpy,
@@ -109,8 +100,7 @@ describe('SelfTestComponent', () => {
             userMediaServiceSpy,
             userMediaStreamServiceSpy,
             videoFilterServiceSpy,
-            videoCallServiceSpy,
-            deviceTypeServiceSpy
+            videoCallServiceSpy
         );
     });
 
@@ -403,7 +393,7 @@ describe('SelfTestComponent', () => {
             // Arrange
             const expectedSelfTestNode = 'pexip-node';
             const conferenceAlias = 'testcall2';
-            selfTestParticipantId = 'participant-id';
+            const selfTestParticipantId = 'participant-id';
             const maxBandwidth = 1234;
 
             const encodedTokenOptions = btoa(`${token.expires_on};${selfTestParticipantId};${token.token}`);
@@ -434,7 +424,7 @@ describe('SelfTestComponent', () => {
         it('should disconnect and reconnect', fakeAsync(() => {
             // Arrange
             const disconnectSpy = spyOn(component, 'disconnect');
-            callSpy = spyOn(component, 'call');
+            const callSpy = spyOn(component, 'call');
             const stream = new MediaStream();
             component.preferredMicrophoneStream = null;
 
@@ -649,6 +639,8 @@ describe('SelfTestComponent', () => {
     });
 
     describe('setupTestAndCall', () => {
+        const selfTestParticipantId = 'participant-id';
+        let callSpy: jasmine.Spy<() => Promise<void>>;
         let setupPexipClientSpy: jasmine.Spy<() => Promise<void>>;
 
         beforeEach(() => {
@@ -664,7 +656,8 @@ describe('SelfTestComponent', () => {
 
             // Assert
             expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
-            assertFetchTokenAndCall();
+            expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
+            expect(callSpy).toHaveBeenCalledTimes(1);
         }));
 
         it('should raise an api error if it fails to get the self test token', fakeAsync(() => {
@@ -682,53 +675,7 @@ describe('SelfTestComponent', () => {
             expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
             expect(callSpy).not.toHaveBeenCalled();
         }));
-
-        it('should show warning when user is on iPhone', fakeAsync(() => {
-            // Arrange
-            deviceTypeServiceSpy.isIphone.and.returnValue(true);
-
-            // Act
-            component.setupTestAndCall();
-            flush();
-
-            // Assert
-            expect(component.showWarning).toBeTrue();
-        }));
-
-        it('should show warning when user is on iPad', fakeAsync(() => {
-            // Arrange
-            deviceTypeServiceSpy.isIpad.and.returnValue(true);
-
-            // Act
-            component.setupTestAndCall();
-            flush();
-
-            // Assert
-            expect(component.showWarning).toBeTrue();
-        }));
     });
-
-    describe('dismissWarning', () => {
-        beforeEach(() => {
-            component.selfTestParticipantId = selfTestParticipantId;
-            callSpy = spyOn(component, 'call');
-        });
-
-        it('should hide warning, fetch token and call', fakeAsync(async () => {
-            // Act & Assert
-            component.showWarning = true;
-            await component.dismissWarning();
-
-            // Assert
-            expect(component.showWarning).toBeFalse();
-            assertFetchTokenAndCall();
-        }));
-    });
-
-    function assertFetchTokenAndCall() {
-        expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
-        expect(callSpy).toHaveBeenCalledTimes(1);
-    }
 
     describe('ngOnDestroy', () => {
         let disconnectSpy: jasmine.Spy<() => void>;

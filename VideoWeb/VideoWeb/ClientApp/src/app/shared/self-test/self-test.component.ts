@@ -21,7 +21,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 @Component({
     selector: 'app-self-test',
@@ -59,7 +58,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
-    showWarning = false;
 
     private destroyedSubject = new Subject();
     private readonly loggerPrefix = '[SelfTest] -';
@@ -71,8 +69,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private videoFilterService: VideoFilterService,
-        private videoCallService: VideoCallService,
-        private deviceTypeService: DeviceTypeService
+        private videoCallService: VideoCallService
     ) {}
 
     get streamsActive() {
@@ -152,14 +149,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         await this.setupPexipClient();
-        if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
-            this.showWarning = true;
-        } else {
-            await this.fetchTokenAndCall();
-        }
-    }
-
-    async fetchTokenAndCall() {
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug(`${this.loggerPrefix} Retrieved token for self test`, {
@@ -170,11 +159,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         } catch (error) {
             this.errorService.handleApiError(error);
         }
-    }
-
-    async dismissWarning() {
-        this.showWarning = false;
-        await this.fetchTokenAndCall();
     }
 
     changeDevices() {

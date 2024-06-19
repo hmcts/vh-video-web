@@ -97,7 +97,6 @@ import { AppInsightsLoggerService } from '../services/logging/loggers/app-insigh
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 import { CookiesComponent } from './cookies/cookies.component';
-import { ConfirmSelfTestPopupComponent } from './self-test/confirmation/confirm-self-test-popup.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -158,8 +157,7 @@ export function getSettings(configService: ConfigService) {
         HookElementDirective,
         RandomPipe,
         TruncatableTextComponent,
-        CookiesComponent,
-        ConfirmSelfTestPopupComponent
+        CookiesComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -212,8 +210,7 @@ export function getSettings(configService: ConfigService) {
         RoomNamePipe,
         HookElementDirective,
         RandomPipe,
-        TruncatableTextComponent,
-        ConfirmSelfTestPopupComponent
+        TruncatableTextComponent
     ]
 })
 export class SharedModule {
