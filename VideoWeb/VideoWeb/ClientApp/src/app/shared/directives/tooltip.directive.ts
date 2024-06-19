@@ -5,6 +5,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
     selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnDestroy {
+    @Input() above = false;
     @Output() tooltipShown = new EventEmitter();
 
     _text: string;
@@ -41,8 +42,6 @@ export class TooltipDirective implements OnDestroy {
     @Input() set isDesktopOnly(value: boolean) {
         this._isDesktopOnly = value;
     }
-
-    @Input() above: boolean = false;
 
     @HostListener('focus', ['$event']) onKeyDown($event: FocusEvent) {
         if (!this.tooltipKeyTab) {
