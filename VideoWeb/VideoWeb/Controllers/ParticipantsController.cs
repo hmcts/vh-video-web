@@ -4,12 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -46,8 +44,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
-            UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
+        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
             var conference = await conferenceService.GetConference(conferenceId);
             var participantId = GetIdForParticipantByUsernameInConference(conference);
@@ -141,8 +138,8 @@ namespace VideoWeb.Controllers
         private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
             var conference = await conferenceService.ForceGetConference(conferenceId);
-            var participantResponseMapper = mapperFactory.Get<Participant, Conference, ParticipantResponse>();
-            var mappedParticipants = conference.Participants.Select(participant => participantResponseMapper.Map(participant, conference)).ToList();
+            var participantResponseMapper = mapperFactory.Get<Participant, ParticipantResponse>();
+            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
             await eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
                 Participants = mappedParticipants,
@@ -179,8 +176,8 @@ namespace VideoWeb.Controllers
                 var conference = await conferenceService.GetConference(conferenceId);
 
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
+                
                 var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync();
-
                 var participantContactDetailsResponseVhoMapper = mapperFactory.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
 
@@ -204,8 +201,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await conferenceService.GetConference(conferenceId);
-                var participantMapper = mapperFactory.Get<Participant, Conference, ParticipantResponse>();
-                var participants = conference.Participants.Select(x => participantMapper.Map(x, conference)).ToList();
+                var participantMapper = mapperFactory.Get<Participant, ParticipantResponse>();
+                var participants = conference.Participants.Select(participantMapper.Map).ToList();
                 return Ok(participants);
             }
             catch (VideoApiException e)

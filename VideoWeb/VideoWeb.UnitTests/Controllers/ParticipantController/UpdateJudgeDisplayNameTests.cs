@@ -32,14 +32,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>()).Returns(_mocker.Create<CivilianRoomToRoomSummaryResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()).Returns(_mocker.Create<UpdateParticipantRequestMapper>());
             
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantDtoForResponseMapper>()
                 .Build();
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantDtoForResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Create<ParticipantDtoForResponseMapper>(parameters));
             
             var eventHandlerMock = _mocker.Mock<IEventHandler>();
             _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);

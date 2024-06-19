@@ -350,24 +350,9 @@ namespace VideoWeb.Controllers
                     "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
                 return Unauthorized();
             }
-
-            // these are roles that are filtered against when lists participants on the UI
-            var displayRoles = new List<Role>
-            {
-                Role.Judge,
-                Role.Individual,
-                Role.Representative,
-                Role.JudicialOfficeHolder,
-                Role.StaffMember,
-                Role.QuickLinkParticipant,
-                Role.QuickLinkObserver
-            };
-
-            conference.Participants = conference.Participants.Where(x => displayRoles.Contains(x.Role)).ToList();
+            
             var conferenceResponseMapper = _mapperFactory.Get<Conference, ConferenceResponse>();
             var response = conferenceResponseMapper.Map(conference);
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
-
             return Ok(response);
         }
 

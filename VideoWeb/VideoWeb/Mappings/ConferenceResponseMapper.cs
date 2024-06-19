@@ -8,7 +8,7 @@ using VideoWeb.Common.Models;
 namespace VideoWeb.Mappings
 {
     public class ConferenceResponseMapper(
-        IMapTo<Participant, Conference, ParticipantResponse> participantResponseMapper,
+        IMapTo<Participant, ParticipantResponse> participantResponseMapper,
         IMapTo<Endpoint, VideoEndpointResponse> videoEndpointResponseMapper) : IMapTo<Conference, ConferenceResponse>
     {
         public ConferenceResponse Map(Conference conference)
@@ -48,7 +48,7 @@ namespace VideoWeb.Mappings
             conference.Participants ??= new List<Participant>();
             return conference.Participants
                 .OrderBy(x => x.Role)
-                .Select(p => participantResponseMapper.Map(p, conference))
+                .Select(participantResponseMapper.Map)
                 .ToList();
         }
     }

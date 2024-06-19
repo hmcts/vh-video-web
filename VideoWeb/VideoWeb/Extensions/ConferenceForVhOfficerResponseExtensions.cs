@@ -12,22 +12,16 @@ namespace VideoWeb.Extensions
         {
             var isQueryingByCso = query.AllocatedCsoIds.Any() || query.IncludeUnallocated;
             if (!isQueryingByCso)
-            {
                 return conferences;
-            }
 
             IEnumerable<ConferenceForVhOfficerResponse> filteredConferences;
         
             if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
-            {
                 filteredConferences = conferences.Where(UnallocatedFilterPredicate());
-            }
             else
-            {
                 filteredConferences = conferences
                     .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
                     .Union(query.IncludeUnallocated ? conferences.Where(UnallocatedFilterPredicate()) : Array.Empty<ConferenceForVhOfficerResponse>());
-            }
 
             return filteredConferences;
         }

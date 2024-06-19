@@ -12,6 +12,7 @@ namespace VideoWeb.Common.Models
         public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FullTitledName { get; set; }
         public string ContactEmail { get; set; }
         public string ContactTelephone { get; set; }
         public string Username { get; set; }

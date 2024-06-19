@@ -6,39 +6,42 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public class ParticipantDtoForUserResponseMapper : IMapTo<IEnumerable<Participant>, List<ParticipantForUserResponse>>
 {
-    public class ParticipantDtoForUserResponseMapper : IMapTo<IEnumerable<Participant>, List<ParticipantForUserResponse>>
+    public List<ParticipantForUserResponse> Map(IEnumerable<Participant> participants)
     {
-        private readonly IMapTo<MeetingRoom, RoomSummaryResponse> _roomResponseMapper;
-
-        public ParticipantDtoForUserResponseMapper(IMapTo<MeetingRoom, RoomSummaryResponse> roomResponseMapper)
+        var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
+            {
+                Id = participant.Id,
+                DisplayName = participant.DisplayName,
+                Status = Enum.Parse<ParticipantStatus>(participant.ParticipantStatus.ToString()),
+                Role = participant.Role,
+                CurrentRoom = Map(participant.CurrentRoom),
+                InterpreterRoom = Map(participant.InterpreterRoom),
+                LinkedParticipants = participant.LinkedParticipants.Select(x =>
+                    new Contract.Responses.LinkedParticipantResponse
+                    {
+                        LinkedId = x.LinkedId,
+                        LinkType = x.LinkType
+                    }).ToList()
+            })
+            .ToList();
+        
+        ParticipantTilePositionHelper.AssignTilePositions(mappedParticipants);
+        
+        return mappedParticipants;
+    }
+    private RoomSummaryResponse Map(MeetingRoom input)
+    {
+        if (input == null)
         {
-            _roomResponseMapper = roomResponseMapper;
+            return null;
         }
-
-        public List<ParticipantForUserResponse> Map(IEnumerable<Participant> participants)
+        return new RoomSummaryResponse
         {
-            var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
-                {
-                    Id = participant.Id,
-                    DisplayName = participant.DisplayName,
-                    Status = Enum.Parse<ParticipantStatus>(participant.ParticipantStatus.ToString()),
-                    Role = participant.Role,
-                    CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
-                    InterpreterRoom = _roomResponseMapper.Map(participant.InterpreterRoom),
-                    LinkedParticipants = participant.LinkedParticipants.Select(x =>
-                        new Contract.Responses.LinkedParticipantResponse
-                        {
-                            LinkedId = x.LinkedId,
-                            LinkType = x.LinkType
-                        }).ToList()
-                })
-                .ToList();
-
-            ParticipantTilePositionHelper.AssignTilePositions(mappedParticipants);
-            
-            return mappedParticipants;
-        }
+            Id = input.Id.ToString(), Label = input.Label, Locked = input.Locked
+        };
     }
 }

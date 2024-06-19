@@ -55,14 +55,7 @@ export abstract class PanelModel {
      */
     private isLocalVideoMuted: boolean;
 
-    constructor(
-        id: string,
-        displayName: string,
-        role: Role,
-        pexipDisplayName: string,
-        hearingRole: string,
-        representee: string
-    ) {
+    constructor(id: string, displayName: string, role: Role, pexipDisplayName: string, hearingRole: string, representee: string) {
         this.id = id;
         this.displayName = displayName;
         this.role = role;

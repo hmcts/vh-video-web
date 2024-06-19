@@ -47,9 +47,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_when_user_is_an_admin()
         {
             var conference = CreateValidConferenceResponse(null);
-            conference.Participants[0].UserRole = UserRole.Individual;
+            var testParticipant = conference.Participants[0];
+            testParticipant.UserRole = UserRole.Individual;
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .Setup(x => x.GetConferenceDetailsByIdAsync(conference.Id))
                 .ReturnsAsync(conference);
 
             var result = await _sut.GetConferenceByIdVhoAsync(conference.Id);
@@ -58,7 +59,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
             var response = (ConferenceResponseVho)typedResult.Value;
             response.CaseNumber.Should().Be(conference.CaseNumber);
-            response.Participants[0].Role.Should().Be((Role)UserRole.Individual);
+            response.Participants.Find(e => e.Id == testParticipant.Id).Role.Should().Be((Role)UserRole.Individual);
         }
 
         [Test]
@@ -127,8 +128,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var individualDefendant = new ParticipantResponseBuilder(UserRole.Individual).Build();
             var individualClaimant = new ParticipantResponseBuilder(UserRole.Individual).Build();
             var repClaimant = new ParticipantResponseBuilder(UserRole.Representative).Build();
-            var panelMember =
-                new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).Build();
+            var panelMember = new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).Build();
+            
             var participants = new List<ParticipantResponse>()
             {
                 individualDefendant, individualClaimant, repClaimant, judge, panelMember

@@ -9828,9 +9828,9 @@ export interface IConferenceResponseVho {
 
 export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
     /** The venue name (judge first name) */
-    first_name?: string | undefined;
+    venue_name?: string | undefined;
     /** The list of court rooms (judge last name) */
-    last_names?: string[] | undefined;
+    judges?: string[] | undefined;
 
     constructor(data?: ICourtRoomsAccountResponse) {
         if (data) {
@@ -9842,10 +9842,10 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.first_name = _data['first_name'];
-            if (Array.isArray(_data['last_names'])) {
-                this.last_names = [] as any;
-                for (let item of _data['last_names']) this.last_names!.push(item);
+            this.venue_name = _data['venue_name'];
+            if (Array.isArray(_data['judges'])) {
+                this.judges = [] as any;
+                for (let item of _data['judges']) this.judges!.push(item);
             }
         }
     }
@@ -9859,10 +9859,10 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['first_name'] = this.first_name;
-        if (Array.isArray(this.last_names)) {
-            data['last_names'] = [];
-            for (let item of this.last_names) data['last_names'].push(item);
+        data['venue_name'] = this.venue_name;
+        if (Array.isArray(this.judges)) {
+            data['judges'] = [];
+            for (let item of this.judges) data['judges'].push(item);
         }
         return data;
     }
@@ -9870,9 +9870,9 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
 export interface ICourtRoomsAccountResponse {
     /** The venue name (judge first name) */
-    first_name?: string | undefined;
+    venue_name?: string | undefined;
     /** The list of court rooms (judge last name) */
-    last_names?: string[] | undefined;
+    judges?: string[] | undefined;
 }
 
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {

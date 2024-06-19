@@ -25,6 +25,7 @@ public static class ParticipantCacheMapper
         model.RefId = participant.RefId;
         model.FirstName = hearingDetails.FirstName;
         model.LastName = hearingDetails.LastName;
+        model.FullTitledName = $"{hearingDetails.Title} {hearingDetails.FirstName} {hearingDetails.LastName}";
         model.ContactEmail = hearingDetails.ContactEmail;
         model.ContactTelephone = hearingDetails.TelephoneNumber;
         model.DisplayName = hearingDetails.DisplayName;
@@ -54,6 +55,7 @@ public static class ParticipantCacheMapper
         model.RefId = participant.RefId;
         model.FirstName = judiciaryDetails.FirstName;
         model.LastName = judiciaryDetails.LastName;
+        model.FullTitledName = judiciaryDetails.FullName;
         model.ContactEmail = judiciaryDetails.OptionalContactEmail;
         model.ContactTelephone = judiciaryDetails.OptionalContactTelephone;
         model.DisplayName = judiciaryDetails.DisplayName;
@@ -90,6 +92,6 @@ public static class ParticipantCacheMapper
             UserRole.StaffMember => "Staff Member",
             UserRole.QuickLinkObserver => "Quick Link Observer",
             UserRole.QuickLinkParticipant => "Quick Link Participant",
-            _ => throw new ArgumentOutOfRangeException(nameof(userRole), userRole, null)
+            _ => null
         };
 }

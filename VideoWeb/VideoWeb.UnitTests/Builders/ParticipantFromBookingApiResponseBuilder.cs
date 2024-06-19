@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Builders
         
         public ParticipantFromBookingApiResponseBuilder WithRoles(string userRole)
         {
-            _participant.With(x => x.HearingRoleName = userRole);
+            _participant.With(x => x.HearingRoleName = (userRole == "Individual") ? "Witness" : userRole);
             _participant.With(x => x.UserRoleName = userRole);
             return this;
         }

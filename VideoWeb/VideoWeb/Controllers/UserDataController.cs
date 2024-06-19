@@ -51,7 +51,7 @@ namespace VideoWeb.Controllers
                 logger.LogError("Conferences exist without a judge )");
             
             var responses = conferences
-                .Where(c => c.Participants.Exists(p => p.UserRole != UserRole.Judge) && allocatedHearings.Any(x => x.HearingId == c.HearingRefId))
+                .Where(c => allocatedHearings.Any(x => x.HearingId == c.HearingRefId))
                 .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                 .ApplyCsoFilter(query)
                 .ToList();

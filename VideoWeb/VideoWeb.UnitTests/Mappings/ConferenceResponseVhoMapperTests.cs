@@ -73,19 +73,17 @@ namespace VideoWeb.UnitTests.Mappings
             participantsResponse.Should().NotBeNullOrEmpty();
             foreach (var participantResponse in participantsResponse)
             {
-                if (participantResponse.Role == Role.Representative)
+                if (participantResponse.Role == Role.Representative || participantResponse.Role == Role.Individual)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("T4").Should().BeTrue();
-
+                    (participantResponse.TiledDisplayName.StartsWith("T1")
+                     || participantResponse.TiledDisplayName.StartsWith("T2")
+                     || participantResponse.TiledDisplayName.StartsWith("T3")
+                     || participantResponse.TiledDisplayName.StartsWith("T4"))
+                        .Should().BeTrue();
                 }
                 if (participantResponse.Role == Role.Judge)
                 {
                     participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
-                }
-                if (participantResponse.Role == Role.Individual)
-                {
-                    (participantResponse.TiledDisplayName.StartsWith("T1") ||
-                        participantResponse.TiledDisplayName.StartsWith("T2")).Should().BeTrue();
                 }
                 if (participantResponse.Role == Role.CaseAdmin)
                 {

@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var judgesInHearings = new List<ParticipantInHearingResponse>
             {
-                new ParticipantInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
+                new () { Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
             };
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conference.Id)).ReturnsAsync(conference);
@@ -86,13 +86,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             results.Count.Should().Be(_participants.Count);
 
             // Individual
-            AssertResponseItem(results[0], conference.Participants[1], conferenceId, false);
+            AssertResponseItem(results[1], conference.Participants[1], conferenceId, false);
             // Interpreter
-            AssertResponseItem(results[1], conference.Participants[3], conferenceId, false);
+            AssertResponseItem(results[3], conference.Participants[3], conferenceId, false);
             // Representative
             AssertResponseItem(results[2], conference.Participants[2], conferenceId, false);
             // Judge
-            AssertResponseItem(results[3], conference.Participants[0], conferenceId, true);
+            AssertResponseItem(results[0], conference.Participants[0], conferenceId, true);
         }
 
         [Test]
@@ -116,8 +116,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
-        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
-            Guid conferenceId, bool isInAnotherHearing)
+        private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, Guid conferenceId, bool isInAnotherHearing)
         {
             response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
