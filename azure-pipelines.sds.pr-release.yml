@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: fix_docker_compose
+      ref: master
       endpoint: hmcts
 
 trigger: none
@@ -103,7 +103,6 @@ stages:
 
           - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
-              dockerComposeFile: $(System.DefaultWorkingDirectory)/docker-compose.yml
               azureSubscription: ${{ variables.acrSubscription }}
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
