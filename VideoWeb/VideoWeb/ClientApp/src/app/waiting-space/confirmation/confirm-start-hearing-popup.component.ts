@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
+import { YesNoPopupBaseDirective } from '../../shared/confirmation/yes-no-popup-base.component';
 import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.component';
@@ -8,7 +8,7 @@ import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.comp
 @Component({
     selector: 'app-confirm-start-hearing-popup',
     templateUrl: './confirm-start-hearing-popup.component.html',
-    styleUrls: ['./yes-no-popup-base.component.scss']
+    styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']
 })
 export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @ViewChild(MuteMicrophoneComponent) muteMicrophoneForm: MuteMicrophoneComponent;

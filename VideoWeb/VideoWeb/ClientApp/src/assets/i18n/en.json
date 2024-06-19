@@ -971,6 +971,11 @@
     "mute-my-microphone": "Mute my microphone",
     "cancel": "Cancel"
   },
+  "warn-join-hearing-popup": {
+    "title": "Your hearing is scheduled to start at",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "OK"
+  },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
     "display-text": "Copy joining by phone details to clipboard",
