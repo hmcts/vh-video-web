@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: fix_docker_compose
+      ref: master
       endpoint: hmcts
 
 trigger: none
@@ -20,7 +20,6 @@ stages:
   #####################################################
   # CI Build Checks. ##################################
   - stage: CI_Build
-
     displayName: CI Build
     variables:
       - template: variables/shared.yaml
