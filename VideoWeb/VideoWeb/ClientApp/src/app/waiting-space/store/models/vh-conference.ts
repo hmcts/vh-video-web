@@ -37,6 +37,7 @@ export interface VHEndpoint {
     status: EndpointStatus;
     defenceAdvocate: string | undefined;
     room: VHRoom;
+    pexipInfo?: VHPexipParticipant;
 }
 
 export interface VHPexipParticipant {

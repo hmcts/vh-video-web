@@ -48,6 +48,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     hearingVenueIsScottish$: Observable<boolean>;
 
     emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
+    showWarning = false;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
@@ -328,6 +329,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         ModalTrapFocus.trap('video-container');
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -349,11 +355,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
-            this.registerMediaStatusPublisher();
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+                this.showWarning = true;
+            } else {
+                this.setUpSubscribers();
+            }
         });
+    }
+
+    private setUpSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
+        this.registerMediaStatusPublisher();
     }
 
     private registerMediaStatusPublisher() {
