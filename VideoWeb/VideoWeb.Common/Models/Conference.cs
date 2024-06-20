@@ -13,6 +13,7 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
             CivilianRooms = new List<CivilianRoom>();
+            ConsultationRooms = new List<ParticipantRoom>();
         }
 
         public Guid Id { get; set; }
@@ -20,12 +21,40 @@ namespace VideoWeb.Common.Models
         public List<Participant> Participants { get; set; }
         public List<Endpoint> Endpoints { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
+        public List<ParticipantRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
 
         public Participant GetJudge()
         {
             return Participants.SingleOrDefault(x => x.IsJudge());
+        }
+
+        public void AddParticipantToConsultationRoom(string roomLabel, Guid participantId)
+        {
+            var consultationRoom = ConsultationRooms.Find(x => x.Label == roomLabel);
+            if (consultationRoom == null)
+            {
+                consultationRoom = new ParticipantRoom {Label = roomLabel};
+                ConsultationRooms.Add(consultationRoom);
+            }
+
+            Participants.Find(x => x.Id == participantId).CurrentRoom = consultationRoom;
+        }
+        
+        public void RemoveParticipantFromConsultationRoom(Guid participantId, string roomLabel)
+        {
+            var participant = Participants.Find(x => x.Id == participantId);
+            if (participant.CurrentRoom != null)
+            {
+                participant.CurrentRoom = null;
+            }
+            // check if the room is empty and remove it
+            // TODO: need to make sure no endpoints are in there too
+            if (Participants.TrueForAll(x => x.CurrentRoom?.Label != roomLabel))
+            {
+                ConsultationRooms.RemoveAll(x => x.Label == roomLabel);
+            }
         }
 
         public void AddParticipantToRoom(long roomId, Guid participantId)

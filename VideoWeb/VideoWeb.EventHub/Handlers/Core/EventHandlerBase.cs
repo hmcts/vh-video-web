@@ -125,8 +125,6 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         protected async Task PublishRoomTransferMessage(RoomTransfer roomTransfer)
         {
-            var newRoom = SourceConference.CivilianRooms.Find(x => x.RoomLabel == roomTransfer.ToRoom) ?? new CivilianRoom();
-
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
@@ -135,7 +133,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     participant.Role);
             }
             
-            SourceConference.AddParticipantToRoom(newRoom.Id, roomTransfer.ParticipantId);
+            UpdateConsultationRoom(SourceConference, roomTransfer.ParticipantId, roomTransfer.ToRoom, roomTransfer.FromRoom);
             
             await _conferenceCache.UpdateConferenceAsync(SourceConference);
 
@@ -143,6 +141,20 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .RoomTransfer(roomTransfer);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHubPPS2.VhOfficersGroupName);
         }
+
+        private void UpdateConsultationRoom(Conference conference, Guid participantId, string toRoom, string fromRoom)
+        {
+            var isToConsultationRoom = toRoom.ToLower().Contains("consultation");
+            if (isToConsultationRoom)
+            {
+                conference.AddParticipantToConsultationRoom(toRoom, participantId);
+            }
+            else
+            {
+                conference.RemoveParticipantFromConsultationRoom(participantId, fromRoom);
+            }
+        }
+        
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
     }
 }

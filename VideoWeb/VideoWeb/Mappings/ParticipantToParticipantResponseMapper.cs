@@ -50,7 +50,6 @@ namespace VideoWeb.Mappings
             
             return new RoomSummaryResponse
             {
-                Id = participantRoom.Id.ToString(),
                 Label = participantRoom.Label,
                 Locked = participantRoom.Locked
             };

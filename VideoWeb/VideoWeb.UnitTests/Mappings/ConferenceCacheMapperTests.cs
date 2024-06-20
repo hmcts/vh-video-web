@@ -38,7 +38,6 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
             resultParticipant.CurrentRoom.Should().NotBeNull();
-            resultParticipant.CurrentRoom.Id.Should().Be(participant.CurrentRoom.Id);
             resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
             resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
             resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);

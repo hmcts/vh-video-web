@@ -24,6 +24,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("callback")]
     [Authorize(AuthenticationSchemes = "Callback")]
+    [AllowAnonymous]
     public class VideoEventsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
