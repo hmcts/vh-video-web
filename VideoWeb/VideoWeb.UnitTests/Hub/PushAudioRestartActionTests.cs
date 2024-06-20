@@ -23,7 +23,7 @@ public class PushAudioRestartActionTests: EventHubBaseTests
             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
             .ReturnsAsync(conference);
 
-        await Hub.PushAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
+        await HubPps2.PushAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
 
         foreach (var participant in hosts)
             EventHubClientMock.Verify(x => x.Group(participant.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId), Times.Once);

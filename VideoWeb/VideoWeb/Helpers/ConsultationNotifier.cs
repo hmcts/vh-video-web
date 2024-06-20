@@ -13,10 +13,10 @@ namespace VideoWeb.Helpers
     public class ConsultationNotifier : IConsultationNotifier
     {
         
-        private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
+        private readonly IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient> _hubContext;
         private readonly IConsultationInvitationTracker _consultationInvitationTracker;
 
-        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IConsultationInvitationTracker consultationInvitationTracker)
+        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient> hubContext, IConsultationInvitationTracker consultationInvitationTracker)
         {
             _hubContext = hubContext;
             _consultationInvitationTracker = consultationInvitationTracker;

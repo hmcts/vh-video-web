@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _controller = _mocker.Create<ConsultationsController>();

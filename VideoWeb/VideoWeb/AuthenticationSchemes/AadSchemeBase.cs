@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Models;
 using VideoWeb.Services;
 
 namespace VideoWeb.AuthenticationSchemes
@@ -37,6 +38,11 @@ namespace VideoWeb.AuthenticationSchemes
         {
             if (context.SecurityToken is JwtSecurityToken jwtToken)
             {
+                if (DoesNotNeedAdditionalClaims(context.Principal!))
+                {
+                    return;
+                }
+
                 var usernameClaim = jwtToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
                 var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
                 var claims = await appRoleService!.GetClaimsForUserAsync(usernameClaim.Value);
@@ -45,11 +51,27 @@ namespace VideoWeb.AuthenticationSchemes
             
             if (context.SecurityToken is JsonWebToken jsonWebToken)
             {
+                if (DoesNotNeedAdditionalClaims(context.Principal!))
+                {
+                    return;
+                }
                 var usernameClaim = jsonWebToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
                 var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
                 var claims = await appRoleService!.GetClaimsForUserAsync(usernameClaim.Value);
                 context.Principal!.AddIdentity(new ClaimsIdentity(claims));
             }
+        }
+        
+        /// <summary>
+        /// Not all users will need to query bookings api for additional claims
+        /// </summary>
+        /// <param name="principal"></param>
+        /// <returns></returns>
+        private bool DoesNotNeedAdditionalClaims( ClaimsPrincipal principal)
+        {
+            return principal.IsInRole(AppRoles.CitizenRole) || principal.IsInRole(AppRoles.JudgeRole) ||
+                   principal.IsInRole(AppRoles.RepresentativeRole) ||
+                   principal.IsInRole(AppRoles.QuickLinkObserver) || principal.IsInRole(AppRoles.QuickLinkParticipant);
         }
     }
 }

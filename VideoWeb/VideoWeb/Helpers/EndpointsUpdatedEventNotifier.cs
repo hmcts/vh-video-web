@@ -14,10 +14,10 @@ namespace VideoWeb.Helpers
 {
     public class EndpointsUpdatedEventNotifier : IEndpointsUpdatedEventNotifier
     {
-        private readonly IHubContext<VideoWeb.EventHub.Hub.EventHub, IEventHubClient> _hubContext;
+        private readonly IHubContext<VideoWeb.EventHub.Hub.EventHubPPS2, IEventHubClient> _hubContext;
         private readonly IMapperFactory _mapperFactory;
 
-        public EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IMapperFactory mapperFactory)
+        public EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient> hubContext, IMapperFactory mapperFactory)
         {
             _hubContext = hubContext;
             _mapperFactory = mapperFactory;
