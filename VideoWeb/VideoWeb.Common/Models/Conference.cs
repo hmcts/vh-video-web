@@ -32,13 +32,7 @@ namespace VideoWeb.Common.Models
 
         public void AddParticipantToConsultationRoom(string roomLabel, Guid participantId)
         {
-            var consultationRoom = ConsultationRooms.Find(x => x.Label == roomLabel);
-            if (consultationRoom == null)
-            {
-                consultationRoom = new ParticipantRoom {Label = roomLabel};
-                ConsultationRooms.Add(consultationRoom);
-            }
-
+            var consultationRoom = UpsertConsultationRoom(roomLabel, true);
             Participants.Find(x => x.Id == participantId).CurrentRoom = consultationRoom;
         }
         
@@ -143,6 +137,19 @@ namespace VideoWeb.Common.Models
                 >= 6 => HearingLayout.OnePlus7,
                 _ => HearingLayout.Dynamic
             };
+        }
+
+        public ParticipantRoom UpsertConsultationRoom(string roomLabel, bool roomLocked)
+        {
+            var consultationRoom = ConsultationRooms.Find(x => x.Label == roomLabel);
+            if (consultationRoom == null)
+            {
+                consultationRoom = new ParticipantRoom {Label = roomLabel, Locked = roomLocked};
+                ConsultationRooms.Add(consultationRoom);
+            }
+
+            consultationRoom.Locked = roomLocked;
+            return consultationRoom;
         }
     }
 }
