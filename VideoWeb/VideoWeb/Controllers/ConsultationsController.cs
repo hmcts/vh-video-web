@@ -190,6 +190,8 @@ namespace VideoWeb.Controllers
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+                    conference.UpsertConsultationRoom(room.Label, room.Locked);
+                    await _conferenceCache.UpdateConferenceAsync(conference);
                     await _consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
                     {
