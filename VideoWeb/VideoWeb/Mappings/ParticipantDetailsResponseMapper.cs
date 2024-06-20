@@ -47,7 +47,6 @@ namespace VideoWeb.Mappings
             
             return new ParticipantRoom
             {
-                Id = room.Id,
                 Label = room.Label,
                 Locked = room.Locked
             };

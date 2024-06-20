@@ -69,7 +69,6 @@ namespace VideoWeb.UnitTests.Mappings
             ClassicAssert.AreEqual(response.Representee, participant.Representee);
             ClassicAssert.AreEqual(LinkType.Interpreter, participant.LinkedParticipants.FirstOrDefault(x => x.LinkedId == linkedId).LinkType);
             participant.CurrentRoom.Should().NotBeNull();
-            participant.CurrentRoom.Id.Should().Be(response.CurrentRoom.Id);
             participant.CurrentRoom.Label.Should().Be(response.CurrentRoom.Label);
             participant.CurrentRoom.Locked.Should().Be(response.CurrentRoom.Locked);
         }

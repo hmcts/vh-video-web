@@ -90,7 +90,6 @@ namespace VideoWeb.UnitTests.Mappings
                 Username = "TestUsername",
                 CurrentRoom = new ParticipantRoom
                 {
-                    Id = 1,
                     Label = "Room1",
                     Locked = true
                 }
@@ -120,7 +119,6 @@ namespace VideoWeb.UnitTests.Mappings
 
             mapped.InterpreterRoom.Should().Be(roomSummaryResponse);
             mapped.CurrentRoom.Should().NotBeNull();
-            mapped.CurrentRoom.Id.Should().Be(testParticipant.CurrentRoom.Id.ToString());
             mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
             mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
 
