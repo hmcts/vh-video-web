@@ -133,9 +133,9 @@ namespace VideoWeb.EventHub.Handlers.Core
                     .RoomTransfer(roomTransfer);
                 Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
                     participant.Role);
-
-                SourceConference.AddParticipantToRoom(newRoom.Id, participant.Id);
             }
+            
+            SourceConference.AddParticipantToRoom(newRoom.Id, roomTransfer.ParticipantId);
             
             await _conferenceCache.UpdateConferenceAsync(SourceConference);
 
