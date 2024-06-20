@@ -125,8 +125,8 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         protected async Task PublishRoomTransferMessage(RoomTransfer roomTransfer)
         {
-            var newRoom = SourceConference.CivilianRooms.Find(x => x.RoomLabel == roomTransfer.ToRoom);
-            
+            var newRoom = SourceConference.CivilianRooms.Find(x => x.RoomLabel == roomTransfer.ToRoom) ?? new CivilianRoom();
+
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
@@ -134,10 +134,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
                     participant.Role);
 
-                if (newRoom != null)
-                {
-                    SourceConference.AddParticipantToRoom(newRoom.Id, participant.Id);
-                }
+                SourceConference.AddParticipantToRoom(newRoom.Id, participant.Id);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
