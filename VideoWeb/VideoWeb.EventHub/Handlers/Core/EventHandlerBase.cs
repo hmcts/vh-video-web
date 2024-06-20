@@ -136,6 +136,8 @@ namespace VideoWeb.EventHub.Handlers.Core
 
                 SourceConference.AddParticipantToRoom(newRoom.Id, participant.Id);
             }
+            
+            await _conferenceCache.UpdateConferenceAsync(SourceConference);
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
