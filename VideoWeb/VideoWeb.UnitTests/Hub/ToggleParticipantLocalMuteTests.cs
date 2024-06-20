@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await Hub.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
+            await HubPps2.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
 
             EventHubClientMock.Verify(
                 x => x.Group(participant.Username.ToLowerInvariant())
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await Hub.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
+            await HubPps2.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
 
             EventHubClientMock.Verify(
                 x => x.Group(It.IsAny<string>())

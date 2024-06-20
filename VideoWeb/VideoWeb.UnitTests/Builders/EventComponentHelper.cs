@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Builders
         public List<IEventHandler> EventHandlersList { get; set; }
         public IMemoryCache Cache { get; set; }
         public IConferenceCache ConferenceCache { get; set; }
-        public Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
+        public Mock<IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient>> EventHubContextMock { get; set; }
         public Mock<IEventHubClient> EventHubClientMock { get; set; }
 
         public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.Builders
         public List<IEventHandler> GetHandlers()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
-            var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+            var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient>>();
             var logger = new Mock<ILogger<EventHandlerBase>>();
             var apiClient = new Mock<IVideoApiClient>();
             var consultationNotifier = new Mock<IConsultationNotifier>();
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Builders
         }
 
         private List<IEventHandler> GetHandlers(
-            Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
+            Mock<IHubContext<EventHub.Hub.EventHubPPS2, IEventHubClient>> eventHubContextMock,
             IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger, Mock<IVideoApiClient> apiClientMock, Mock<IConsultationNotifier> consultationNotifier)
         {
             Cache = memoryCache;
@@ -87,7 +87,7 @@ namespace VideoWeb.UnitTests.Builders
                     .Returns(EventHubClientMock.Object);
             }
 
-            EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+            EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHubPPS2.VhOfficersGroupName))
                 .Returns(EventHubClientMock.Object);
         }
 

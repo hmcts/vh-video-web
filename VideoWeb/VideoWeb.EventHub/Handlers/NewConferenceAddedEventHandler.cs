@@ -15,7 +15,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class NewConferenceAddedEventHandler : EventHandlerBase
     {
-        public NewConferenceAddedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public NewConferenceAddedEventHandler(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
@@ -29,7 +29,7 @@ namespace VideoWeb.EventHub.Handlers
         }
         private async Task PublishNewConferenceAddedMessage(Guid conferenceId)
         {
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
                 .NewConferenceAddedMessage(conferenceId);
         }
     }

@@ -16,7 +16,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class TransferEventHandler : EventHandlerBase
     {
-        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public TransferEventHandler(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
