@@ -8,5 +8,6 @@ namespace VideoWeb.Common.Models
         public string DisplayName { get; set; }
         public EndpointStatus EndpointStatus { get; set; }
         public string DefenceAdvocateUsername { get; set; }
+        public ParticipantRoom CurrentRoom { get; set; }
     }
 }
