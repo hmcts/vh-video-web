@@ -215,7 +215,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.LinkedParticipants.Any() && x.Role == Role.Individual);
+            var participantForEvent = conference.Participants.First(x => x.LinkedParticipants.Count != 0 && x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
             var callbackEvent = new CallbackEvent

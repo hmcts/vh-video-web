@@ -89,10 +89,7 @@ namespace VideoWeb.Common.Models
         public void RemoveParticipantFromRoom(long roomId, Guid participantId)
         {
             var room = GetOrCreateCivilianRoom(roomId);
-            if (room.Participants.Contains(participantId))
-            {
-                room.Participants.Remove(participantId);
-            }
+            room.Participants.Remove(participantId);
         }
 
         public void AddParticipant(Participant participant)
