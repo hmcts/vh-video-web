@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await HubPps2.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
+            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             EventHubClientMock.Verify(
                 x => x.Group(participant.Username.ToLowerInvariant())
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             
-            await HubPps2.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
+            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             foreach (var joh in allJohs)
             {
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             
-            await HubPps2.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
+            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
             
             EventHubClientMock.Verify(
                 x => x.Group(It.IsAny<string>())

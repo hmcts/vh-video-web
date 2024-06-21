@@ -21,12 +21,12 @@ namespace VideoWeb.EventHub.Handlers.Core
 {
     public abstract class EventHandlerBase : IEventHandler
     {
-        protected readonly IHubContext<Hub.EventHubPPS2, IEventHubClient> HubContext;
+        protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
         protected readonly ILogger<EventHandlerBase> Logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IVideoApiClient _videoApiClient;
 
-        protected EventHandlerBase(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient)
         {
             HubContext = hubContext;
@@ -81,7 +81,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     SourceParticipant.Role, participantState);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
                     participantState);
             Logger.LogTrace(
@@ -105,7 +105,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     SourceConference.Id, participant.Id, participant.Role, hearingEventStatus);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
         }
 
@@ -117,7 +117,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
             Logger.LogTrace("Endpoint Status: Endpoint Id: {SourceEndpointId} | Endpoint State: {EndpointState}",
                 SourceEndpoint.Id, endpointState);
@@ -137,9 +137,9 @@ namespace VideoWeb.EventHub.Handlers.Core
             
             await _conferenceCache.UpdateConferenceAsync(SourceConference);
 
-            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
-            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHubPPS2.VhOfficersGroupName);
+            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
         private void UpdateConsultationRoom(Conference conference, Guid participantId, string toRoom, string fromRoom)

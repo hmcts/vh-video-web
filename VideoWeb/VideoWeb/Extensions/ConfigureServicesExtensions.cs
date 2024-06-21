@@ -165,7 +165,7 @@ namespace VideoWeb.Extensions
                     options.PayloadSerializerSettings.Converters.Add(
                         new StringEnumConverter());
                 })
-                .AddHubOptions<EventHub.Hub.EventHubPPS2>(options => 
+                .AddHubOptions<EventHub.Hub.EventHub>(options => 
                 { 
                     options.EnableDetailedErrors = true;
                     options.ClientTimeoutInterval = TimeSpan.FromMilliseconds(60000);

@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await HubPps2.ToggleAllParticipantLocalMute(conferenceId, isLocalMuted);
+            await Hub.ToggleAllParticipantLocalMute(conferenceId, isLocalMuted);
 
             foreach (var participant in nonHostParticipants)
             {
