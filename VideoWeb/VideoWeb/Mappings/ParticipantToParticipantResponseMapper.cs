@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponse()
             {
                 CaseTypeGroup = participant.CaseTypeGroup,
-                CurrentRoom = MapParticipantRoom(participant.CurrentRoom),
+                CurrentRoom = MapRoom(participant.CurrentRoom),
                 DisplayName = participant.DisplayName,
                 FirstName = participant.FirstName,
                 HearingRole = participant.HearingRole,
@@ -44,14 +44,14 @@ namespace VideoWeb.Mappings
             return response;
         }
         
-        private static RoomSummaryResponse MapParticipantRoom(ParticipantRoom participantRoom)
+        private static RoomSummaryResponse MapRoom(ConsultationRoom consultationRoom)
         {
-            if (participantRoom == null) return null;
+            if (consultationRoom == null) return null;
             
             return new RoomSummaryResponse
             {
-                Label = participantRoom.Label,
-                Locked = participantRoom.Locked
+                Label = consultationRoom.Label,
+                Locked = consultationRoom.Locked
             };
         }
     }

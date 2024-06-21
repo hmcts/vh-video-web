@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Role = Role.JudicialOfficeHolder,
                 Id = participantId,
                 Username = "TestUsername",
-                CurrentRoom = new ParticipantRoom
+                CurrentRoom = new ConsultationRoom
                 {
                     Label = "Room1",
                     Locked = true

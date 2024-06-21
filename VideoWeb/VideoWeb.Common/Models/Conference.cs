@@ -13,7 +13,7 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
             CivilianRooms = new List<CivilianRoom>();
-            ConsultationRooms = new List<ParticipantRoom>();
+            ConsultationRooms = new List<ConsultationRoom>();
         }
 
         public Guid Id { get; set; }
@@ -21,7 +21,7 @@ namespace VideoWeb.Common.Models
         public List<Participant> Participants { get; set; }
         public List<Endpoint> Endpoints { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
-        public List<ParticipantRoom> ConsultationRooms { get; set; }
+        public List<ConsultationRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
 
@@ -162,12 +162,12 @@ namespace VideoWeb.Common.Models
             };
         }
 
-        public ParticipantRoom UpsertConsultationRoom(string roomLabel, bool roomLocked)
+        public ConsultationRoom UpsertConsultationRoom(string roomLabel, bool roomLocked)
         {
             var consultationRoom = ConsultationRooms.Find(x => x.Label == roomLabel);
             if (consultationRoom == null)
             {
-                consultationRoom = new ParticipantRoom {Label = roomLabel, Locked = roomLocked};
+                consultationRoom = new ConsultationRoom {Label = roomLabel, Locked = roomLocked};
                 ConsultationRooms.Add(consultationRoom);
             }
 

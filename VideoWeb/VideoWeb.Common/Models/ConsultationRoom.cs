@@ -1,6 +1,6 @@
 namespace VideoWeb.Common.Models
 {
-    public class ParticipantRoom
+    public class ConsultationRoom
     {
         /// <summary>
         /// The room label

@@ -18,11 +18,11 @@ namespace VideoWeb.Mappings
             };
         }
         
-        private static ParticipantRoom MapRoom(RoomResponse room)
+        private static ConsultationRoom MapRoom(RoomResponse room)
         {
             if (room == null) return null;
 
-            return new ParticipantRoom
+            return new ConsultationRoom
             {
                 Label = room.Label,
                 Locked = room.Locked

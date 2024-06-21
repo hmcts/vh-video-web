@@ -72,11 +72,11 @@ namespace VideoWeb.Common.Caching
             };
         }
         
-        private static ParticipantRoom MapRoomToCacheModel(RoomResponse room)
+        private static ConsultationRoom MapRoomToCacheModel(RoomResponse room)
         {
             if (room == null) return null;
             
-            return new ParticipantRoom
+            return new ConsultationRoom
             {
                 Label = room.Label,
                 Locked = room.Locked
