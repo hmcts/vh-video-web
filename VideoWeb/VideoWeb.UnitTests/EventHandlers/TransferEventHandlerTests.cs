@@ -193,7 +193,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var expectedStatus = ParticipantState.Available;
             
-            // The only participant in the consultation room
+            // The only participant left in the consultation room
             conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participantForEvent.Id);
             
             await _eventHandler.HandleAsync(callbackEvent);

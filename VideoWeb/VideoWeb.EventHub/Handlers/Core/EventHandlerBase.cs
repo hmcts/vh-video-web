@@ -144,14 +144,33 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         private void UpdateConsultationRoom(Conference conference, Guid participantId, string toRoom, string fromRoom)
         {
+            var participant = conference.Participants.Find(p => p.Id == participantId);
+            var endpoint = conference.Endpoints.Find(e => e.Id == participantId);
+            
             var isToConsultationRoom = toRoom.ToLower().Contains("consultation");
             if (isToConsultationRoom)
             {
-                conference.AddParticipantToConsultationRoom(toRoom, participantId);
+                if (participant != null)
+                {
+                    conference.AddParticipantToConsultationRoom(toRoom, participantId);
+                }
+
+                if (endpoint != null)
+                {
+                    conference.AddEndpointToConsultationRoom(toRoom, participantId);
+                }
             }
             else
             {
-                conference.RemoveParticipantFromConsultationRoom(participantId, fromRoom);
+                if (participant != null)
+                {
+                    conference.RemoveParticipantFromConsultationRoom(participantId, fromRoom);
+                }
+
+                if (endpoint != null)
+                {
+                    conference.RemoveEndpointFromConsultationRoom(participantId, fromRoom);
+                }
             }
         }
         

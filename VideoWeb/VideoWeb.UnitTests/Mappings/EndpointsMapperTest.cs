@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(EndpointState.NotYetJoined, VHEndpointStatus.NotYetJoined)]
         public void Should_map_user_response_to_court_rooms_account(EndpointState apiState, VHEndpointStatus expected)
         {
-            var endpoint = new EndpointsBuilder().WithStatus(apiState).Build();
+            var endpoint = new EndpointsBuilder().WithStatus(apiState).WithCurrentRoom().Build();
             var result = _sut.Map(endpoint);
             
             result.Should().NotBeNull();
@@ -24,6 +24,19 @@ namespace VideoWeb.UnitTests.Mappings
             result.EndpointStatus.ToString().Should().Be(endpoint.Status.ToString());
             result.DefenceAdvocateUsername.Should().Be(endpoint.DefenceAdvocate);
             result.DisplayName.Should().Be(endpoint.DisplayName);
+            result.CurrentRoom.Should().NotBeNull();
+            result.CurrentRoom.Label.Should().Be(endpoint.CurrentRoom.Label);
+            result.CurrentRoom.Locked.Should().Be(endpoint.CurrentRoom.Locked);
+        }
+        
+        [Test]
+        public void Should_map_user_response_to_court_rooms_account_without_current_room()
+        {
+            var endpoint = new EndpointsBuilder().WithStatus(EndpointState.Connected).Build();
+            var result = _sut.Map(endpoint);
+            
+            result.Should().NotBeNull();
+            result.CurrentRoom.Should().BeNull();
         }
     }
 }
