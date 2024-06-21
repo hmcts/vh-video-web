@@ -103,10 +103,13 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_accepted_when_request_is_sent_participant_room_type()
         {
             // Arrange
+            const string roomLabel = "Room1";
+            const bool locked = false;
+            
             var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
-                .ReturnsAsync(new RoomResponse {Label = "Room1", Locked = false});
+                .ReturnsAsync(new RoomResponse {Label = roomLabel, Locked = locked});
 
             // Act
             var result = await _controller.StartConsultationAsync(request);
@@ -125,6 +128,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Verify(
                     x => x.NotifyConsultationRequestAsync(_testConference, "Room1", request.RequestedBy,
                         It.IsIn(request.InviteParticipants)), Times.Exactly(request.InviteParticipants.Length));
+
+            _testConference.ConsultationRooms.Count.Should().Be(1);
+            var consultationRoomInCache = _testConference.ConsultationRooms[0];
+            consultationRoomInCache.Label.Should().Be(roomLabel);
+            consultationRoomInCache.Locked.Should().Be(locked);
         }
 
         [Test]
