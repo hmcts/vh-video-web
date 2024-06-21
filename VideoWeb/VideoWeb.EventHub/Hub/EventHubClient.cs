@@ -18,24 +18,24 @@ using VideoWeb.Common;
 
 namespace VideoWeb.EventHub.Hub
 {
-    public class EventHubPPS2 : Hub<IEventHubClient>
+    public class EventHub : Hub<IEventHubClient>
     {
         public static string VhOfficersGroupName => "VhOfficers";
         public static string DefaultAdminName => "Admin";
 
         private readonly IUserProfileService _userProfileService;
         private readonly IAppRoleService _appRoleService;
-        private readonly ILogger<EventHubPPS2> _logger;
+        private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly IConferenceManagementService _conferenceManagementService;
 
-        public EventHubPPS2(IUserProfileService userProfileService,
+        public EventHub(IUserProfileService userProfileService,
             IAppRoleService appRoleService,
             IVideoApiClient videoApiClient,
-            ILogger<EventHubPPS2> logger,
+            ILogger<EventHub> logger,
             IConferenceCache conferenceCache,
             IHeartbeatRequestMapper heartbeatRequestMapper,
             IConferenceVideoControlStatusService conferenceVideoControlStatusService,

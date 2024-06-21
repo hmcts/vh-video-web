@@ -13,7 +13,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class StartEventHandler : EventHandlerBase
     {
-        public StartEventHandler(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
+        public StartEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {

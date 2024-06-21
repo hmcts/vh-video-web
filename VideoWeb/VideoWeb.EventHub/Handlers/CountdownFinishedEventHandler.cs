@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class CountdownFinishedEventHandler : EventHandlerBase
     {
-        public CountdownFinishedEventHandler(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
+        public CountdownFinishedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
@@ -29,7 +29,7 @@ namespace VideoWeb.EventHub.Handlers
                 Logger.LogTrace($"Conference Countdown finished: Conference Id: { SourceConference.Id }");
             }
 
-            await HubContext.Clients.Group(Hub.EventHubPPS2.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .CountdownFinished(SourceConference.Id);
         }
     }

@@ -157,7 +157,7 @@ namespace VideoWeb
                 endpoints.MapDefaultControllerRoute();
 
                 var hubPath = Configuration.GetValue<string>("VhServices:EventHubPath");
-                endpoints.MapHub<EventHub.Hub.EventHubPPS2>(hubPath, options =>
+                endpoints.MapHub<EventHub.Hub.EventHub>(hubPath, options =>
                 {
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;

@@ -18,7 +18,7 @@ namespace VideoWeb.EventHub.Handlers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConsultationNotifier _consultationNotifier;
 
-        public VhOfficerCallEventHandler(IHubContext<Hub.EventHubPPS2, IEventHubClient> hubContext,
+        public VhOfficerCallEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient, IConsultationNotifier consultationNotifier) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
