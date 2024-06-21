@@ -168,7 +168,6 @@ export class VideoWebService implements IVideoWebApiService {
     getActiveIndividualConference(): ConferenceLite {
         return this.activeConferencesCache.get();
     }
-
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
         return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
     }

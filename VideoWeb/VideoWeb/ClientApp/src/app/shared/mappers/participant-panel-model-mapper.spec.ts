@@ -3,8 +3,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { ParticipantPanelModelMapper } from './participant-panel-model-mapper';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
-
 describe('ParticipantPanelModelMapper', () => {
     let mapper: ParticipantPanelModelMapper;
     const testData = new ConferenceTestData();
@@ -90,7 +88,6 @@ describe('ParticipantPanelModelMapper', () => {
 
         participants.push(
             new ParticipantForUserResponse({
-                case_type_group: CaseTypeGroup.PANEL_MEMBER,
                 display_name: 'D',
                 hearing_role: HearingRole.PANEL_MEMBER,
                 role: Role.JudicialOfficeHolder
@@ -99,7 +96,6 @@ describe('ParticipantPanelModelMapper', () => {
 
         participants.push(
             new ParticipantForUserResponse({
-                case_type_group: CaseTypeGroup.PANEL_MEMBER,
                 display_name: 'A',
                 hearing_role: HearingRole.PANEL_MEMBER,
                 role: Role.JudicialOfficeHolder
@@ -108,7 +104,6 @@ describe('ParticipantPanelModelMapper', () => {
 
         participants.push(
             new ParticipantForUserResponse({
-                case_type_group: CaseTypeGroup.NONE,
                 display_name: 'C',
                 hearing_role: HearingRole.WINGER,
                 role: Role.JudicialOfficeHolder
@@ -117,7 +112,6 @@ describe('ParticipantPanelModelMapper', () => {
 
         participants.push(
             new ParticipantForUserResponse({
-                case_type_group: CaseTypeGroup.PANEL_MEMBER,
                 display_name: 'B',
                 hearing_role: HearingRole.PANEL_MEMBER,
                 role: Role.JudicialOfficeHolder

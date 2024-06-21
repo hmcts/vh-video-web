@@ -648,8 +648,7 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
-      "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Iawn"
     },
     "endpoint-added": {

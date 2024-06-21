@@ -125,7 +125,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
                 courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
             }
         };
-        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue_name, x.judges, true));
+        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.rooms, true));
         const previousFilter = this.courtAccountsAllocationStorage.get();
         if (previousFilter) {
             previousFilter.forEach(x => updateFilterSelection(x));

@@ -261,7 +261,29 @@ export const conferenceReducer = createReducer(
         return state;
     }),
 
-    on(ConferenceActions.updateHostDisplayName, (state, { displayName, participantId, conferenceId }) => {
+    on(ConferenceActions.updateJudgeDisplayName, (state, { displayName, participantId, conferenceId }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+
+        const participants = conference.participants.map(participant => {
+            if (participant.id === participantId) {
+                const updatedP: VHParticipant = {
+                    ...participant,
+                    displayName: displayName
+                };
+                return updatedP;
+            } else {
+                return participant;
+            }
+        });
+
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    }),
+
+    on(ConferenceActions.updateStaffMemberDisplayName, (state, { displayName, participantId, conferenceId }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {
             return state;

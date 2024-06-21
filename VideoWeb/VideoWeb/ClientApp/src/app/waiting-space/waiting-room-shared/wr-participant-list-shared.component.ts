@@ -151,7 +151,9 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
             return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
         }
         if (participant.representee) {
-            return `${translatedHearingRole} ${translatedFor} <br><strong>${participant.representee}</strong>`;
+            const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
+            const hearingRoleText = translatedRepresentative;
+            return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
         }
         return `${translatedHearingRole}`;
     }
@@ -176,9 +178,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
-            .sort(
-                (a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName)
-            );
+            .sort((a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName));
 
         nonJudgeParts = [
             ...nonJudgeParts,

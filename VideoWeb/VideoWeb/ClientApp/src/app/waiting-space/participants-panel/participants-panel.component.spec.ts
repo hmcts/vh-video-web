@@ -58,7 +58,6 @@ import {
     VideoEndpointResponse
 } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
@@ -244,8 +243,6 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(component.participants.length).toBe(expectedCount);
-        expect(component.participants[0].caseTypeGroup.toLowerCase()).toBe('judge');
-        expect(component.participants[1].caseTypeGroup.toLowerCase()).toBe('panelmember');
 
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
@@ -253,7 +250,7 @@ describe('ParticipantsPanelComponent', () => {
             component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant2.display_name)
         );
 
-        expect(component.participants[component.participants.length - 2].caseTypeGroup.toLowerCase()).toBe('observer');
+        expect(component.participants[component.participants.length - 2].hearingRole).toBe(HearingRole.OBSERVER);
         expect(component.participants[component.participants.length - 1].role).toBe(Role.QuickLinkObserver);
     }));
 
@@ -765,8 +762,7 @@ describe('ParticipantsPanelComponent', () => {
             const participant = mapper.mapFromParticipantUserResponse({
                 id: Guid.create().toString(),
                 role: Role.Individual,
-                hearing_role: HearingRole.LITIGANT_IN_PERSON,
-                case_type_group: CaseTypeGroup.PANEL_MEMBER
+                hearing_role: HearingRole.LITIGANT_IN_PERSON
             } as ParticipantResponse);
 
             // Act
@@ -959,14 +955,11 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
-        );
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.litigant-in-person`);
     });
     it('should getPanelRowTooltipAdditionalText return no case role when empty', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
-        p.case_type_group = '';
         const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.litigant-in-person`);
     });
@@ -975,7 +968,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}<br/>case-type-group.applicant`
+            `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}`
         );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
@@ -988,7 +981,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>case-type-group.panelmember`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];
@@ -1273,7 +1266,6 @@ describe('ParticipantsPanelComponent', () => {
             display_name: 'Manual Judge 26',
             role: Role.Judge,
             representee: null,
-            case_type_group: 'judge',
             tiled_display_name: 'JUDGE; HEARTBEAT',
             hearing_role: HearingRole.JUDGE,
             linked_participants: []
@@ -1286,7 +1278,6 @@ describe('ParticipantsPanelComponent', () => {
             interpreter_room: new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false }),
             role: Role.JudicialOfficeHolder,
             representee: null,
-            case_type_group: 'PanelMember',
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
             hearing_role: HearingRole.PANEL_MEMBER,
             linked_participants: []
@@ -1298,7 +1289,6 @@ describe('ParticipantsPanelComponent', () => {
             display_name: 'Manual Individual 25',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'Applicant',
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual Individual 25;92a3d792-dfad-474f-b587-b83766506ec6',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             linked_participants: []
@@ -1371,7 +1361,6 @@ describe('ParticipantsPanelComponent', () => {
             display_name: 'QL Test 1',
             role: Role.QuickLinkParticipant,
             representee: null,
-            case_type_group: null,
             tiled_display_name: 'JUDGE; HEARTBEAT',
             hearing_role: 'WITNESS;NO_HEARTBEAT;QL Test 1;ecdbb7ee-ba03-4a78-8225-fdfce2cb14d6',
             linked_participants: []
@@ -1425,7 +1414,6 @@ describe('ParticipantsPanelComponent', () => {
             display_name: 'Manual Judge 26',
             role: Role.Judge,
             representee: null,
-            case_type_group: 'judge',
             tiled_display_name: 'JUDGE; HEARTBEAT',
             hearing_role: HearingRole.JUDGE,
             linked_participants: []
@@ -1440,7 +1428,6 @@ describe('ParticipantsPanelComponent', () => {
             interpreter_room: linkedParticipantInterpreterRoom,
             role: Role.JudicialOfficeHolder,
             representee: null,
-            case_type_group: 'PanelMember',
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
             hearing_role: HearingRole.PANEL_MEMBER,
             linked_participants: []
@@ -1453,7 +1440,6 @@ describe('ParticipantsPanelComponent', () => {
             interpreter_room: linkedParticipantInterpreterRoom,
             role: Role.JudicialOfficeHolder,
             representee: null,
-            case_type_group: 'PanelMember',
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
             hearing_role: HearingRole.PANEL_MEMBER,
             linked_participants: []
@@ -1518,7 +1504,6 @@ describe('ParticipantsPanelComponent', () => {
             interpreter_room: linkedParticipantInterpreterRoom,
             role: Role.JudicialOfficeHolder,
             representee: null,
-            case_type_group: 'PanelMember',
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
             hearing_role: HearingRole.PANEL_MEMBER,
             linked_participants: []
@@ -1862,7 +1847,6 @@ describe('ParticipantsPanelComponent', () => {
     describe('getParticipantsList', () => {
         it('should list participants and endpoints in correct order', async () => {
             const judge = new ParticipantResponse({
-                case_type_group: 'Judge',
                 current_room: undefined,
                 display_name: 'Manual Judge_26',
                 first_name: 'Manual',
@@ -1922,10 +1906,12 @@ describe('ParticipantsPanelComponent', () => {
             const respondent2Index = participantList.findIndex(x => x.displayName === 'F, H');
             const quickLinkParticipant1Index = participantList.findIndex(x => x.displayName === 'Mr C Smith');
             const quickLinkParticipant2Index = participantList.findIndex(x => x.displayName === 'Mr D Smith');
-            expect(applicant1Index).toEqual(5);
-            expect(applicant2Index).toEqual(6);
-            expect(respondent1Index).toEqual(7);
-            expect(respondent2Index).toEqual(8);
+            // No longer sorting appellants and respondents as caseTypesGroups don't exist (arnt populated in real life) so order is more flexible
+            const suitableIndicies = [5, 6, 7, 8];
+            expect(suitableIndicies.includes(applicant1Index)).toBeTruthy();
+            expect(suitableIndicies.includes(applicant2Index)).toBeTruthy();
+            expect(suitableIndicies.includes(respondent1Index)).toBeTruthy();
+            expect(suitableIndicies.includes(respondent2Index)).toBeTruthy();
             expect(quickLinkParticipant1Index).toEqual(9);
             expect(quickLinkParticipant2Index).toEqual(10);
 

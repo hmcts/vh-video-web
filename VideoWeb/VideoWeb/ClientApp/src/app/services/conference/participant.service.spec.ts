@@ -43,7 +43,7 @@ describe('ParticipantService', () => {
         display_name: 'Interpreter',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
+
         tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
         hearing_role: HearingRole.INTERPRETER,
         first_name: 'Interpreter',
@@ -59,7 +59,7 @@ describe('ParticipantService', () => {
         display_name: 'Interpretee',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
+
         tiled_display_name: `CIVILIAN;Interpretee;${participantTwoId}`,
         hearing_role: HearingRole.LITIGANT_IN_PERSON,
         first_name: 'Interpretee',
@@ -78,7 +78,7 @@ describe('ParticipantService', () => {
         display_name: 'PanelMember 1',
         role: Role.JudicialOfficeHolder,
         representee: null,
-        case_type_group: 'PanelMember',
+
         tiled_display_name: `JOH;PannelMember;${vmrParticipantOneId}`,
         hearing_role: HearingRole.PANEL_MEMBER,
         first_name: 'PanelMember',
@@ -98,7 +98,7 @@ describe('ParticipantService', () => {
         display_name: 'PanelMember 2',
         role: Role.JudicialOfficeHolder,
         representee: null,
-        case_type_group: 'PanelMember',
+
         tiled_display_name: `JOH;PannelMember;${vmrParticipantTwoId}`,
         hearing_role: HearingRole.PANEL_MEMBER,
         first_name: 'PanelMember',
@@ -454,7 +454,6 @@ describe('ParticipantService', () => {
             'TestName1',
             'TestDisplayName1',
             'ROLE;HEARTBEAT;DISPLAY NAME;ID',
-            'TestCaseGroup1',
             Role.JudicialOfficeHolder,
             'TestHearingRole1',
             true,
@@ -474,7 +473,6 @@ describe('ParticipantService', () => {
             'TestName2',
             'TestDisplayName2',
             'ROLE;HEARTBEAT;DISPLAY NAME;ID',
-            'TestCaseGroup2',
             Role.JudicialOfficeHolder,
             'TestHearingRole2',
             false,

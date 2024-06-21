@@ -17,17 +17,17 @@ namespace VideoWeb.UnitTests.Mappings
 
             result.Should().NotBeNull();
             result.Count.Should().Be(2);
-            result[0].Judges.Count.Should().Be(3);
-            result[1].Judges.Count.Should().Be(1);
+            result[0].Rooms.Count.Should().Be(3);
+            result[1].Rooms.Count.Should().Be(1);
 
-            result[0].VenueName.Should().Be("Venue Name 01");
-            result[1].VenueName.Should().Be("Venue Name 02");
+            result[0].Venue.Should().Be("Venue Name 01");
+            result[1].Venue.Should().Be("Venue Name 02");
 
-            result[0].Judges[0].Should().Be("Alpha");
-            result[0].Judges[1].Should().Be("Beta");
-            result[0].Judges[2].Should().Be("Gamma");
+            result[0].Rooms[0].Should().Be("Alpha");
+            result[0].Rooms[1].Should().Be("Beta");
+            result[0].Rooms[2].Should().Be("Gamma");
 
-            result[1].Judges[0].Should().Be("Gamma");
+            result[1].Rooms[0].Should().Be("Gamma");
 
         }
         

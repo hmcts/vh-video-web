@@ -9828,9 +9828,9 @@ export interface IConferenceResponseVho {
 
 export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
     /** The venue name (judge first name) */
-    venue_name?: string | undefined;
+    venue?: string | undefined;
     /** The list of court rooms (judge last name) */
-    judges?: string[] | undefined;
+    rooms?: string[] | undefined;
 
     constructor(data?: ICourtRoomsAccountResponse) {
         if (data) {
@@ -9842,10 +9842,10 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.venue_name = _data['venue_name'];
-            if (Array.isArray(_data['judges'])) {
-                this.judges = [] as any;
-                for (let item of _data['judges']) this.judges!.push(item);
+            this.venue = _data['venue'];
+            if (Array.isArray(_data['rooms'])) {
+                this.rooms = [] as any;
+                for (let item of _data['rooms']) this.rooms!.push(item);
             }
         }
     }
@@ -9859,10 +9859,10 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['venue_name'] = this.venue_name;
-        if (Array.isArray(this.judges)) {
-            data['judges'] = [];
-            for (let item of this.judges) data['judges'].push(item);
+        data['venue'] = this.venue;
+        if (Array.isArray(this.rooms)) {
+            data['rooms'] = [];
+            for (let item of this.rooms) data['rooms'].push(item);
         }
         return data;
     }
@@ -9870,9 +9870,9 @@ export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
 
 export interface ICourtRoomsAccountResponse {
     /** The venue name (judge first name) */
-    venue_name?: string | undefined;
+    venue?: string | undefined;
     /** The list of court rooms (judge last name) */
-    judges?: string[] | undefined;
+    rooms?: string[] | undefined;
 }
 
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {

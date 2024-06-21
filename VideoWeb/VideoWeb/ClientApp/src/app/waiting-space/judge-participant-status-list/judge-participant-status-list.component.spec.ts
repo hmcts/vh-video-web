@@ -2,7 +2,6 @@ import { fakeAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
-    ConferenceResponse,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponseVho,
@@ -20,10 +19,13 @@ import { Logger } from '../../services/logging/logger-base';
 import { HearingRole } from '../models/hearing-role-model';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 import { FocusService } from 'src/app/services/focus.service';
-import * as exp from 'constants';
 import { VHConference } from '../store/models/vh-conference';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { ConferenceActions } from '../store/actions/conference.actions';
 
+export let mockConferenceStore: MockStore<ConferenceState>;
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
 
@@ -42,6 +44,10 @@ describe('JudgeParticipantStatusListComponent', () => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDisplayName', 'getObfuscatedName']);
+
+        const initialState = initialConferenceState;
+        mockConferenceStore = createMockStore({ initialState });
+
         const logged = new LoggedParticipantResponse({
             participant_id: '1111-1111',
             display_name: 'Some name',
@@ -68,7 +74,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             videoWebService,
             activatedRoute,
             translateService,
-            focusServiceSpy
+            focusServiceSpy,
+            mockConferenceStore
         );
         component.conference = conference;
         component.ngOnInit();
@@ -76,6 +83,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     afterEach(() => {
+        mockConferenceStore.resetSelectors();
         jasmine.getEnv().allowRespy(true);
         component.ngOnDestroy();
     });
@@ -139,7 +147,6 @@ describe('JudgeParticipantStatusListComponent', () => {
                 status: ParticipantStatus.Available,
                 role: Role.StaffMember,
                 display_name: 'Staff Member display name 2',
-                case_type_group: 'Staff Member',
                 tiled_display_name: 'Staff Member 2;Staff Member 2;9F681318-4965-49AF-A887-DED64554429T',
                 hearing_role: HearingRole.STAFF_MEMBER,
                 current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
@@ -174,10 +181,22 @@ describe('JudgeParticipantStatusListComponent', () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         await component.saveJudgeDisplayName();
-        expect(component.judge.displayName).toBe(newName);
+        mockConferenceStore.scannedActions$.subscribe(action => {
+            if (action.type === ConferenceActions.updateJudgeDisplayName.type) {
+                expect(action).toEqual(
+                    ConferenceActions.updateJudgeDisplayName({
+                        participantId: component.judge.id,
+                        displayName: newName,
+                        conferenceId: conference.id
+                    })
+                );
+            }
+        });
+        expect(component.newJudgeDisplayName).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
+        mockConferenceStore.resetSelectors();
     });
 
     it('should return name with alphanumeric characters', async () => {
@@ -214,10 +233,22 @@ describe('JudgeParticipantStatusListComponent', () => {
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);
         await component.saveStaffMemberDisplayName(editedStaffMember.id);
-        expect(component.staffMembers.find(p => p.id === editedStaffMember.id).displayName).toBe(newName);
+        mockConferenceStore.scannedActions$.subscribe(action => {
+            if (action.type === ConferenceActions.updateStaffMemberDisplayName.type) {
+                expect(action).toEqual(
+                    ConferenceActions.updateStaffMemberDisplayName({
+                        participantId: editedStaffMember.id,
+                        displayName: newName,
+                        conferenceId: conference.id
+                    })
+                );
+            }
+        });
+        expect(component.newStaffMemberDisplayName).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
+        mockConferenceStore.resetSelectors();
     });
 
     it('should log error when unable to save new staff member name', async () => {
@@ -227,9 +258,9 @@ describe('JudgeParticipantStatusListComponent', () => {
         videoWebService.updateParticipantDisplayName.and.rejectWith(error);
         spyOn(logger, 'error');
 
-        await component.saveStaffMemberDisplayName(editedStaffMember.id);
-
-        expect(logger.error).toHaveBeenCalled();
+        await component.saveStaffMemberDisplayName(editedStaffMember.id).then(() => {
+            expect(logger.error).toHaveBeenCalled();
+        });
     });
 
     it('should get the participant count excluding judge', () => {
@@ -325,7 +356,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             videoWebService,
             activatedRoute,
             translateService,
-            focusServiceSpy
+            focusServiceSpy,
+            mockConferenceStore
         );
         component.conference = conference;
         component.ngOnInit();

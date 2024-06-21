@@ -176,7 +176,6 @@ describe('LinkedParticipantPanelModel', () => {
         const id1 = 'id1';
         const displayName1 = 'displayName1';
         const role1 = Role.None;
-        const caseTypeGroup1 = 'caseTypeGroup1';
         const pexipDisplayName1 = 'pexipDisplayName1';
         const hearingRole1 = 'hearingRole1';
         const representee1 = 'representsee1';
@@ -185,7 +184,6 @@ describe('LinkedParticipantPanelModel', () => {
         const id2 = 'id2';
         const displayName2 = 'displayName2';
         const role2 = Role.None;
-        const caseTypeGroup2 = 'caseTypeGroup2';
         const pexipDisplayName2 = 'pexipDisplayName2';
         const hearingRole2 = 'hearingRole2';
         const representee2 = 'representsee2';
@@ -195,7 +193,6 @@ describe('LinkedParticipantPanelModel', () => {
             id1,
             displayName1,
             role1,
-            caseTypeGroup1,
             pexipDisplayName1,
             hearingRole1,
             representee1,
@@ -205,7 +202,6 @@ describe('LinkedParticipantPanelModel', () => {
             id2,
             displayName2,
             role2,
-            caseTypeGroup2,
             pexipDisplayName2,
             hearingRole2,
             representee2,

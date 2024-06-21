@@ -2,16 +2,16 @@ using System.Collections.Generic;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class CourtRoomsAccountResponse(string venue, List<string> judges)
+    public class CourtRoomsAccountResponse(string venue, List<string> rooms)
     {
         /// <summary>
         /// The venue name (judge first name)
         /// </summary>
-        public string VenueName { get; set; } = venue;
+        public string Venue { get; set; } = venue;
         
         /// <summary>
         /// The list of court rooms (judge last name)
         /// </summary>
-        public List<string> Judges { get; set; } = judges ?? new List<string>();
+        public List<string> Rooms { get; set; } = rooms ?? new List<string>();
     }
 }

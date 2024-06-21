@@ -1305,8 +1305,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message-without-party": "{{role}} has been added to the hearing.",
-      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+      "message": "{{role}} has been added to the hearing.",
       "dismiss": "OK"
     },
     "endpoint-added": {

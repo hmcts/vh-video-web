@@ -120,7 +120,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     async saveJudgeDisplayName() {
         const displayName = this.removeSpecialCharacters(this.newJudgeDisplayName);
         this.store.dispatch(
-            ConferenceActions.updateHostDisplayName({
+            ConferenceActions.updateJudgeDisplayName({
                 participantId: this.judge.id,
                 displayName: displayName,
                 conferenceId: this.conference.id
@@ -134,7 +134,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     async saveStaffMemberDisplayName(id: string) {
         const displayName = this.removeSpecialCharacters(this.newStaffMemberDisplayName);
         this.store.dispatch(
-            ConferenceActions.updateHostDisplayName({ participantId: id, displayName: displayName, conferenceId: this.conference.id })
+            ConferenceActions.updateStaffMemberDisplayName({
+                participantId: id,
+                displayName: displayName,
+                conferenceId: this.conference.id
+            })
         );
         this.showChangeStaffMemberDisplayName = false;
         const updatedStaffMember = this.staffMembers.find(p => p.id === id);

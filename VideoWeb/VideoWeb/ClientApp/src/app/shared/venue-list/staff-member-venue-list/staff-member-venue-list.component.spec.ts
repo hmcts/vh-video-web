@@ -40,8 +40,8 @@ describe('StaffMemerVenueListComponent', () => {
     selectedJudgeNames.push(venueName2.name);
     selectedJudgeNames.push(venueName3.name);
 
-    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ first_name: 'Birmingham', last_names: ['Room 01', 'Room 02'] });
-    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ first_name: 'Manchester', last_names: ['Room 01', 'Room 02'] });
+    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
+    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
     const courtAccounts: CourtRoomsAccountResponse[] = [];
     courtAccounts.push(courtRoomsAccounts1);
     courtAccounts.push(courtRoomsAccounts2);

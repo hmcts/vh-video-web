@@ -311,7 +311,7 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
-        const messageBody = this.translateService.instant('notification-toastr.participant-added.message-without-party', {
+        const messageBody = this.translateService.instant('notification-toastr.participant-added.message', {
             role: this.translateHearingRole(participant.hearing_role)
         });
 

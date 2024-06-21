@@ -23,7 +23,7 @@ namespace VideoWeb.Mappings
            var accountList = venuesAndJudges
                .Select(s => new CourtRoomsAccountResponse(s.Key, 
                    s.Select(g => g.judge).OrderBy(o => o).ToList()))
-               .OrderBy(s => s.VenueName)
+               .OrderBy(s => s.Venue)
                .ToList();
 
             return accountList; 

@@ -20,7 +20,7 @@ export class ParticipantContactDetails {
     }
 
     get name() {
-        return this.participant.name;
+        return this.participant.name ?? this.participant.first_name + ' ' + this.participant.last_name;
     }
 
     get contactEmail() {

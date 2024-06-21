@@ -31,7 +31,6 @@ describe('ConferenceService', () => {
         display_name: 'Interpreter',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
         tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
         hearing_role: HearingRole.INTERPRETER,
         first_name: 'Interpreter',
@@ -47,7 +46,7 @@ describe('ConferenceService', () => {
         display_name: 'Interpretee',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
+
         tiled_display_name: `CIVILIAN;Interpretee;${participantTwoId}`,
         hearing_role: HearingRole.LITIGANT_IN_PERSON,
         first_name: 'Interpretee',

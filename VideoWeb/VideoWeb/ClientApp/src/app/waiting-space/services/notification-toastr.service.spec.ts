@@ -766,12 +766,10 @@ describe('NotificationToastrService', () => {
         testParticipant.hearing_role = 'TestParticipantHearingRole';
 
         const translatedNameMessage = 'TranslatedNameMessage';
-        const translatedRoleMessage = 'TranslatedRoleMessage';
         const translatedHearingRole = 'TranslatedHearingRole';
         const translatedCaseTypeGroup = 'TranslatedCaseTypeGroup';
 
-        const translatedMessageWithParty = 'TranslatedMessageWithParty';
-        const translatedMessageWithoutParty = 'TranslatedMessageWithoutParty';
+        const translatedMessage = 'TranslatedMessage';
 
         const expectedButtonTranslationString = 'notification-toastr.participant-added.dismiss';
         const expectedInHearingColor = 'white';
@@ -789,12 +787,8 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
 
             translateServiceSpy.instant
-                .withArgs('notification-toastr.participant-added.message-with-party', jasmine.any(Object))
-                .and.returnValue(translatedMessageWithParty);
-
-            translateServiceSpy.instant
-                .withArgs('notification-toastr.participant-added.message-without-party', jasmine.any(Object))
-                .and.returnValue(translatedMessageWithoutParty);
+                .withArgs('notification-toastr.participant-added.message', jasmine.any(Object))
+                .and.returnValue(translatedMessage);
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.participant-added.title', {
@@ -865,36 +859,17 @@ describe('NotificationToastrService', () => {
             expect(toastrService.remove).not.toHaveBeenCalled();
         });
 
-        it('should set the role message with correct values', () => {
+        it(' should set the role message with correct values', () => {
             // Act
             const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
 
             // Assert
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^hearing-role./));
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^case-type-group./));
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith('notification-toastr.participant-added.message-with-party', {
-                role: translatedHearingRole,
-                party: translatedCaseTypeGroup
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('notification-toastr.participant-added.message', {
+                role: translatedHearingRole
             });
-
             expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedNameMessage);
-            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedMessageWithParty);
-        });
-
-        it('should set the role message with correct values when no party', () => {
-            // Act
-            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
-
-            // Assert
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^hearing-role./));
-            expect(translateServiceSpy.instant).not.toHaveBeenCalledWith(jasmine.stringMatching(/^case-type-group./));
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith('notification-toastr.participant-added.message-without-party', {
-                role: translatedHearingRole,
-                party: null
-            });
-
-            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedNameMessage);
-            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedMessageWithoutParty);
+            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedMessage);
         });
 
         it('should have the color black when NOT in hearing', () => {

@@ -71,7 +71,7 @@ export const ConferenceActions = createActionGroup({
             answer: ConsultationAnswer;
             responseInitiatorId: string;
         }>(),
-
-        'Update Host Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>()
+        'Update Judge Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
+        'Update StaffMember Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>()
     }
 });

@@ -9,6 +9,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
+import { HearingRole } from '../../waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
     id: string;
@@ -98,11 +99,11 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
-            null, //participant.name,
+            null, // participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
             participant.role,
-            null, //participant.hearing_role,
+            null, // participant.hearing_role,
             false,
             participant.interpreter_room,
             participant.linked_participants,
@@ -127,7 +128,7 @@ export class Participant {
         return this.participant.id;
     }
 
-    //get fullName() { return this.participant.name; }
+    // get fullName() { return this.participant.name; }
 
     get status(): ParticipantStatus {
         return this.participant.status;
@@ -145,7 +146,6 @@ export class Participant {
         return this.participant.display_name;
     }
 
-    /*
     get representee(): string {
         return this.participant.representee;
     }
@@ -155,7 +155,9 @@ export class Participant {
     }
 
     get isInterpreterOrInterpretee() {
-        return (this.participant.hearing_role === HearingRole.INTERPRETER || (this.participant.linked_participants && this.participant.linked_participants.length > 0));
+        return (
+            this.participant.hearing_role === HearingRole.INTERPRETER ||
+            (this.participant.linked_participants && this.participant.linked_participants.length > 0)
+        );
     }
-    */
 }

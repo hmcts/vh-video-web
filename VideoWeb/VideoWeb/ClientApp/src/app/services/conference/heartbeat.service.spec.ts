@@ -20,7 +20,6 @@ describe('HeartbeatService', () => {
         null,
         null,
         null,
-        null,
         Role.None,
         null,
         false,
