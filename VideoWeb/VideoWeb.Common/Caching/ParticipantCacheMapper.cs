@@ -69,7 +69,7 @@ public static class ParticipantCacheMapper
     }
     
     /// <summary>
-    /// QuicklinkParticipant mapping to DTO
+    /// Quicklink and Staff Participant mapping to DTO
     /// </summary>
     public static Participant Map(ParticipantResponse participant)
     {

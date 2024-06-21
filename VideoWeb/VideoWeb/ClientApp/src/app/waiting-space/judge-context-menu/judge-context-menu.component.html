@@ -3,7 +3,6 @@
   class="panel-icon"
   (click)="toggleDropdown()"
   [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
-  tabindex="0"
   (keyup.enter)="toggleDropdown()"
 />
 <div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (1 | random)">
