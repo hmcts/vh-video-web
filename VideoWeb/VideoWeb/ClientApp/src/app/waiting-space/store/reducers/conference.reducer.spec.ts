@@ -264,6 +264,7 @@ describe('Conference Reducer', () => {
 
             expect(updatedResult.currentConference.participants[0].status).toBe(updatedStatus);
             expect(updatedResult.currentConference.participants[0].room).toBeNull();
+            expect(updatedResult.currentConference.participants[0].pexipInfo).toBeNull();
         });
     });
 
@@ -337,6 +338,22 @@ describe('Conference Reducer', () => {
 
             expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
             expect(updatedResult.currentConference.endpoints[0].room).toBeNull();
+        });
+
+        it('should update the room of the endpoint to null when status is Disconnected', () => {
+            const updatedStatus = EndpointStatus.Disconnected;
+            const updatedResult = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateEndpointStatus({
+                    conferenceId: conferenceTestData.id,
+                    endpointId: conferenceTestData.endpoints[0].id,
+                    status: updatedStatus
+                })
+            );
+
+            expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
+            expect(updatedResult.currentConference.endpoints[0].room).toBeNull();
+            expect(updatedResult.currentConference.endpoints[0].pexipInfo).toBeNull();
         });
     });
 
@@ -605,6 +622,25 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
         });
 
+        it('should add pexip info to the endpoint', () => {
+            const pexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: `PTSN;${conferenceTestData.endpoints[0].displayName};${conferenceTestData.endpoints[0].id}`,
+                uuid: '1922_John Doe',
+                isAudioOnlyCall: false,
+                isVideoCall: true,
+                protocol: 'sip'
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.upsertPexipParticipant({ participant: pexipParticipant })
+            );
+
+            expect(result.currentConference.endpoints[0].pexipInfo).toEqual(pexipParticipant);
+        });
+
         it('should ignore pexip info to if participant is not on the list', () => {
             const pexipParticipant = {
                 isRemoteMuted: false,
@@ -654,6 +690,36 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
+        });
+
+        it('should remove pexip info from the endpoint', () => {
+            const initialStateWithPexipInfo: ConferenceState = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    endpoints: [
+                        {
+                            ...existingInitialState.currentConference.endpoints[0],
+                            pexipInfo: {
+                                isRemoteMuted: false,
+                                isSpotlighted: false,
+                                handRaised: false,
+                                pexipDisplayName: `1922_John Doe${conferenceTestData.endpoints[0].id}`,
+                                uuid: '1922_John Doe',
+                                isAudioOnlyCall: false,
+                                isVideoCall: true,
+                                protocol: 'sip'
+                            }
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(
+                initialStateWithPexipInfo,
+                ConferenceActions.deletePexipParticipant({ pexipUUID: '1922_John Doe' })
+            );
+
+            expect(result.currentConference.endpoints[0].pexipInfo).toBeFalsy();
         });
 
         it('should ignore pexip info to if participant is not on the list', () => {

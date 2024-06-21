@@ -36,6 +36,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     isParticipantsPanelHidden = false;
+    showWarning = false;
 
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
@@ -146,6 +147,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -168,10 +174,18 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+                this.showWarning = true;
+            } else {
+                this.setUpSubscribers();
+            }
         });
+    }
+
+    private setUpSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
     }
 
     private cleanUp() {

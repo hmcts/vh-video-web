@@ -895,8 +895,14 @@
     "mute-my-microphone": "Troi fy meicroffôn i ffwrdd",
     "cancel": "Canslo"
   },
+  "warn-join-hearing-popup": {
+    "title": "Disgwylir i'ch gwrandawiad ddechrau ar",
+    "message": "Cymerwch eiliad i baratoi.",
+    "submit-button": "Iawn"
+  },
   "participants-panel": {
     "participants": "Cyfranogwyr",
+    "participants-tooltip": "Rhestr o'r cyfranogwyr sydd yn y gwrandawiad",
     "mute-lock": "Mudo a chloi",
     "mute-tooltip": "Mudo'r holl gyfranogwyr a'u hatal rhag gallu dadfudo eu hunain",
     "unmute-lock": "Datgloi mudo",
@@ -930,7 +936,10 @@
     "mute-all": "Tewi pawb",
     "unmute-all": "Clywed pawb",
     "mute-all-tooltip": "Rhoi yr holl gyfranogwyr ar miwt",
-    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt"
+    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt",
+    "in-waiting-room": "Yn yr ystafell aros",
+    "in-waiting-room-tooltip": "Rhestr o gyfranogwyr yn yr ystafell aros",
+    "not-connected": "Heb gysylltu"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",

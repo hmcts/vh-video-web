@@ -110,6 +110,7 @@ describe('JohWaitingRoomComponent', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+        clockService.getClock.calls.reset();
     });
 
     describe('get allowAudioOnlyToggle', () => {
@@ -227,16 +228,59 @@ describe('JohWaitingRoomComponent', () => {
         expect(result).toBeTrue();
     }));
 
-    it('should init hearing alert and subscribers', fakeAsync(() => {
-        component.ngOnInit();
-        flushMicrotasks();
-        tick(100);
-        expect(component.clockSubscription$).toBeDefined();
-        expect(component.eventHubSubscription$).toBeDefined();
-        expect(component.videoCallSubscription$).toBeDefined();
-        expect(component.displayDeviceChangeModal).toBeFalsy();
-        expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
-    }));
+    describe('ngOnInit', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
+        it('should init hearing alert and subscribers', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            tick(100);
+            expect(component.clockSubscription$).toBeDefined();
+            expect(component.eventHubSubscription$).toBeDefined();
+            expect(component.videoCallSubscription$).toBeDefined();
+            expect(component.displayDeviceChangeModal).toBeFalsy();
+            expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
+            assertSetUpSubscribers();
+        }));
+
+        it('should show warning when user is on iPhone', fakeAsync(() => {
+            deviceTypeService.isIphone.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+
+        it('should show warning when user is on iPad', fakeAsync(() => {
+            deviceTypeService.isIpad.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+    });
+
+    describe('dismissWarning', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
+        it('should hide warning and start subscribers', fakeAsync(() => {
+            component.showWarning = true;
+            component.dismissWarning();
+            tick();
+
+            expect(component.showWarning).toBeFalse();
+            assertSetUpSubscribers();
+        }));
+    });
+
+    function assertSetUpSubscribers() {
+        expect(clockService.getClock).toHaveBeenCalled();
+        expect(component.eventHubSubscription$.add).toHaveBeenCalled();
+    }
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },

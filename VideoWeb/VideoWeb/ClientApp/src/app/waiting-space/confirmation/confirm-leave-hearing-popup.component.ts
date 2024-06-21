@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
+import { YesNoPopupBaseDirective } from '../../shared/confirmation/yes-no-popup-base.component';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-confirm-leave-hearing-popup',
     templateUrl: './confirm-leave-hearing-popup.component.html',
-    styleUrls: ['./yes-no-popup-base.component.scss']
+    styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']
 })
 export class ConfirmLeaveHearingPopupComponent extends YesNoPopupBaseDirective implements AfterViewInit {
     @ViewChild('btnConfirmStartRef') btnLeave: ElementRef;

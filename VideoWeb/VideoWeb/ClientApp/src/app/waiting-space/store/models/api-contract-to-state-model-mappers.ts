@@ -33,7 +33,7 @@ export function mapParticipantToVHParticipant(participant: ParticipantResponse):
         pexipInfo: null,
         room: participant.current_room ? mapRoomToVHRoom(participant.current_room) : null,
         linkedParticipants:
-            participant?.linked_participants.map(lp => ({
+            participant?.linked_participants?.map(lp => ({
                 linkedId: lp.linked_id,
                 linkedType: lp.link_type
             })) ?? []

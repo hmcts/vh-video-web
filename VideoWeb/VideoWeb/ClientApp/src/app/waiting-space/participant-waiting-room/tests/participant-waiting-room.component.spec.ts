@@ -145,6 +145,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+        clockService.getClock.calls.reset();
     });
 
     afterEach(() => {
@@ -273,6 +274,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('ngOnInit', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
         it('should subscribe to audio only property and send message when it occurs', fakeAsync(() => {
             component.audioOnly = false;
             component.ngOnInit();
@@ -285,8 +290,46 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
             expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
+            expect(component.showWarning).toBeFalse();
+            assertSetUpSubscribers();
+        }));
+
+        it('should show warning when user is on iPhone', fakeAsync(() => {
+            deviceTypeService.isIphone.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
+        }));
+
+        it('should show warning when user is on iPad', fakeAsync(() => {
+            deviceTypeService.isIpad.and.returnValue(true);
+            component.ngOnInit();
+            tick();
+
+            expect(component.showWarning).toBeTrue();
         }));
     });
+
+    describe('dismissWarning', () => {
+        beforeEach(() => {
+            spyOn(component.eventHubSubscription$, 'add').and.callThrough();
+        });
+
+        it('should hide warning and start subscribers', fakeAsync(() => {
+            component.showWarning = true;
+            component.dismissWarning();
+            tick();
+
+            expect(component.showWarning).toBeFalse();
+            assertSetUpSubscribers();
+        }));
+    });
+
+    function assertSetUpSubscribers() {
+        expect(clockService.getClock).toHaveBeenCalled();
+        expect(component.eventHubSubscription$.add).toHaveBeenCalled();
+    }
 
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
         expect(component.privateConsultationAccordianExpanded).toBeFalsy();
