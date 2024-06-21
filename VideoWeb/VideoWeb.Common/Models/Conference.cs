@@ -30,43 +30,48 @@ namespace VideoWeb.Common.Models
             return Participants.SingleOrDefault(x => x.IsJudge());
         }
 
-        public void AddParticipantToConsultationRoom(string roomLabel, Guid participantId)
+        public void AddParticipantToConsultationRoom(string roomLabel, Participant participant)
         {
             var consultationRoom = UpsertConsultationRoom(roomLabel, true);
-            Participants.Find(x => x.Id == participantId).CurrentRoom = consultationRoom;
+            participant.CurrentRoom = consultationRoom;
         }
         
-        public void AddEndpointToConsultationRoom(string roomLabel, Guid endpointId)
+        public void AddEndpointToConsultationRoom(string roomLabel, Endpoint endpoint)
         {
             var consultationRoom = UpsertConsultationRoom(roomLabel, true);
-            Endpoints.Find(x => x.Id == endpointId).CurrentRoom = consultationRoom;
+            endpoint.CurrentRoom = consultationRoom;
         }
         
-        public void RemoveParticipantFromConsultationRoom(Guid participantId, string roomLabel)
+        public void RemoveParticipantFromConsultationRoom(Participant participant, string roomLabel)
         {
-            var participant = Participants.Find(x => x.Id == participantId);
             if (participant.CurrentRoom != null)
             {
                 participant.CurrentRoom = null;
             }
-            // check if the room is empty and remove it
-            if (Participants.TrueForAll(x => x.CurrentRoom?.Label != roomLabel) &&
-                Endpoints.TrueForAll(x => x.CurrentRoom?.Label != roomLabel))
-            {
-                ConsultationRooms.RemoveAll(x => x.Label == roomLabel);
-            }
+            
+            CheckAndRemoveEmptyConsultationRoom(roomLabel);
         }
         
-        public void RemoveEndpointFromConsultationRoom(Guid endpointId, string roomLabel)
+        public void RemoveEndpointFromConsultationRoom(Endpoint endpoint, string roomLabel)
         {
-            var endpoint = Endpoints.Find(x => x.Id == endpointId);
             if (endpoint.CurrentRoom != null)
             {
                 endpoint.CurrentRoom = null;
             }
-            // check if the room is empty and remove it
-            if (Participants.TrueForAll(x => x.CurrentRoom?.Label != roomLabel) &&
-               Endpoints.TrueForAll(x => x.CurrentRoom?.Label != roomLabel))
+            
+            CheckAndRemoveEmptyConsultationRoom(roomLabel);
+        }
+
+        /// <summary>
+        /// Check if the room is empty and remove it if so
+        /// </summary>
+        /// <param name="roomLabel"></param>
+        private void CheckAndRemoveEmptyConsultationRoom(string roomLabel)
+        {
+            var roomIsEmpty = Participants.TrueForAll(x => x.CurrentRoom?.Label != roomLabel) && 
+                              Endpoints.TrueForAll(x => x.CurrentRoom?.Label != roomLabel);
+            
+            if (roomIsEmpty)
             {
                 ConsultationRooms.RemoveAll(x => x.Label == roomLabel);
             }

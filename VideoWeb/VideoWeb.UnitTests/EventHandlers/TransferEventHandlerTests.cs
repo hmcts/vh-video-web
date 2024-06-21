@@ -112,7 +112,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             {
                 if (participant.Id == participantForEvent.Id) continue;
                 
-                conference.AddParticipantToConsultationRoom(callbackEvent.TransferTo, participant.Id);
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferTo, participant);
             }
             
             await _eventHandler.HandleAsync(callbackEvent);
@@ -155,7 +155,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             foreach (var participant in conference.Participants)
             {
-                conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participant.Id);
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participant);
             }
 
             await _eventHandler.HandleAsync(callbackEvent);
@@ -194,7 +194,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             var expectedStatus = ParticipantState.Available;
             
             // The only participant left in the consultation room
-            conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participantForEvent.Id);
+            conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participantForEvent);
             
             await _eventHandler.HandleAsync(callbackEvent);
 

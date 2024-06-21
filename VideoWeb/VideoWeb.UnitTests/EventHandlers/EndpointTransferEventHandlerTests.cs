@@ -101,7 +101,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             foreach (var participant in conference.Participants)
             {
-                conference.AddParticipantToConsultationRoom(callbackEvent.TransferTo, participant.Id);
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferTo, participant);
             }
             
             await _eventHandler.HandleAsync(callbackEvent);
@@ -139,12 +139,12 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             foreach (var participant in conference.Participants)
             {
-                conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participant.Id);
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participant);
             }
 
             foreach (var endpoint in conference.Endpoints)
             {
-                conference.AddEndpointToConsultationRoom(callbackEvent.TransferFrom, endpoint.Id);
+                conference.AddEndpointToConsultationRoom(callbackEvent.TransferFrom, endpoint);
             }
             
             await _eventHandler.HandleAsync(callbackEvent);
@@ -178,7 +178,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             // The only participant or endpoint left in the consultation room
-            conference.AddEndpointToConsultationRoom(callbackEvent.TransferFrom, participantForEvent.Id);
+            conference.AddEndpointToConsultationRoom(callbackEvent.TransferFrom, participantForEvent);
             
             await _eventHandler.HandleAsync(callbackEvent);
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, EndpointState.Connected),
