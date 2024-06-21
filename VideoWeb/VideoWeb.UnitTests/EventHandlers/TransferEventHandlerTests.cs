@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -73,6 +74,60 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     expectedStatus), Times.Exactly(participantCount));
+
+            // Verify the conference cache has been updated
+            conference.ConsultationRooms.Count.Should().Be(1);
+            var consultationRoom = conference.ConsultationRooms[0];
+            consultationRoom.Label.Should().Be(callbackEvent.TransferTo);
+            consultationRoom.Locked.Should().Be(true);
+            participantForEvent.CurrentRoom.Should().Be(consultationRoom);
+        }
+        
+        [Test]
+        public async Task should_send_participant_status_when_transferring_to_existing_consultation_room()
+        {
+            // ie we are transferring a participant into a room with participants already in it
+            
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferFrom = RoomType.WaitingRoom.ToString(),
+                TransferTo = "JudgeConsultationRoom3",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            var expectedStatus = ParticipantState.InConsultation;
+
+            foreach (var participant in conference.Participants)
+            {
+                if (participant.Id == participantForEvent.Id) continue;
+                
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferTo, participant.Id);
+            }
+            
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    expectedStatus), Times.Exactly(participantCount));
+
+            // Verify the conference cache has been updated
+            conference.ConsultationRooms.Count.Should().Be(1);
+            var consultationRoom = conference.ConsultationRooms[0];
+            consultationRoom.Label.Should().Be(callbackEvent.TransferTo);
+            consultationRoom.Locked.Should().Be(true);
+            participantForEvent.CurrentRoom.Should().Be(consultationRoom);
         }
 
         [Test]
@@ -98,12 +153,59 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var expectedStatus = ParticipantState.Available;
 
+            foreach (var participant in conference.Participants)
+            {
+                conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participant.Id);
+            }
+
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     expectedStatus), Times.Exactly(participantCount));
+            
+            // Verify the conference cache has been updated
+            conference.ConsultationRooms.Count.Should().Be(1);
+            participantForEvent.CurrentRoom.Should().BeNull();
+        }
+
+        [Test]
+        public async Task should_remove_consultation_room_when_transferring_all_participants_out()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferFrom = "JudgeConsultationRoom3",
+                TransferTo = RoomType.WaitingRoom.ToString(),
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            var expectedStatus = ParticipantState.Available;
+            
+            // The only participant in the consultation room
+            conference.AddParticipantToConsultationRoom(callbackEvent.TransferFrom, participantForEvent.Id);
+            
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    expectedStatus), Times.Exactly(participantCount));
+            
+            // Verify the conference cache has been updated
+            conference.ConsultationRooms.Count.Should().Be(0);
+            participantForEvent.CurrentRoom.Should().BeNull();
         }
 
         [Test]
