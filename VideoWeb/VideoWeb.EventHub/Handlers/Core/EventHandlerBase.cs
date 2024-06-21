@@ -132,48 +132,59 @@ namespace VideoWeb.EventHub.Handlers.Core
                 Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
                     participant.Role);
             }
-            
-            UpdateConsultationRoom(SourceConference, roomTransfer.ParticipantId, roomTransfer.ToRoom, roomTransfer.FromRoom);
-            
-            await _conferenceCache.UpdateConferenceAsync(SourceConference);
+
+            await UpdateConsultationRoom(roomTransfer);
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
-        private void UpdateConsultationRoom(Conference conference, Guid participantId, string toRoom, string fromRoom)
+        private async Task UpdateConsultationRoom(RoomTransfer roomTransfer)
         {
-            var participant = conference.Participants.Find(p => p.Id == participantId);
-            var endpoint = conference.Endpoints.Find(e => e.Id == participantId);
+            var participantToTransfer = SourceConference.Participants.Find(p => p.Id == roomTransfer.ParticipantId);
+            var endpointToTransfer = SourceConference.Endpoints.Find(e => e.Id == roomTransfer.ParticipantId);
             
-            var isToConsultationRoom = toRoom.ToLower().Contains("consultation");
+            if (participantToTransfer != null)
+            {
+                UpdateConsultationRoomForParticipant(participantToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
+            }
+            if (endpointToTransfer != null)
+            {
+                UpdateConsultationRoomForEndpoint(endpointToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
+            }
+            
+            await _conferenceCache.UpdateConferenceAsync(SourceConference);
+        }
+
+        private void UpdateConsultationRoomForParticipant(Participant participant, string toRoom, string fromRoom)
+        {
+            var isToConsultationRoom = IsToConsultationRoom(toRoom);
             if (isToConsultationRoom)
             {
-                if (participant != null)
-                {
-                    conference.AddParticipantToConsultationRoom(toRoom, participantId);
-                }
-
-                if (endpoint != null)
-                {
-                    conference.AddEndpointToConsultationRoom(toRoom, participantId);
-                }
+                SourceConference.AddParticipantToConsultationRoom(toRoom, participant);
             }
             else
             {
-                if (participant != null)
-                {
-                    conference.RemoveParticipantFromConsultationRoom(participantId, fromRoom);
-                }
-
-                if (endpoint != null)
-                {
-                    conference.RemoveEndpointFromConsultationRoom(participantId, fromRoom);
-                }
+                SourceConference.RemoveParticipantFromConsultationRoom(participant, fromRoom);
             }
         }
-        
+
+        private void UpdateConsultationRoomForEndpoint(Endpoint endpoint, string toRoom, string fromRoom)
+        {
+            var isToConsultationRoom = IsToConsultationRoom(toRoom);
+            if (isToConsultationRoom)
+            {
+                SourceConference.AddEndpointToConsultationRoom(toRoom, endpoint);
+            }
+            else
+            {
+                SourceConference.RemoveEndpointFromConsultationRoom(endpoint, fromRoom);
+            }
+        }
+
+        private static bool IsToConsultationRoom(string toRoom) => toRoom.Contains("consultation", StringComparison.CurrentCultureIgnoreCase);
+
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
     }
 }
