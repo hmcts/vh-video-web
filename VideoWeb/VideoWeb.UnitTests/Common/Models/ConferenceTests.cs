@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 
@@ -13,11 +12,17 @@ namespace VideoWeb.UnitTests.Common.Models
     [TestFixture]
     public class ConferenceTests
     {
-        private Conference conference;
+        private Conference _conference;
+        private ConsultationRoom _consultationRoom;
+        
         [SetUp]
         public void SetUp()
         {
-            conference = new Conference();
+            _conference = new Conference();
+            _consultationRoom = new ConsultationRoom
+            {
+                Label = "JudgeConsultationRoom3"
+            };
         }
 
         [Test]
@@ -36,14 +41,14 @@ namespace VideoWeb.UnitTests.Common.Models
                 participant1  
             };
 
-            conference.Participants = new List<Participant>(startingList);
+            _conference.Participants = new List<Participant>(startingList);
 
             // Act
-            conference.AddParticipant(participant2);
+            _conference.AddParticipant(participant2);
 
             // Assert
-            conference.Participants.Should().HaveCount(startingList.Count + 1);
-            conference.Participants.Should().Contain(participant2);
+            _conference.Participants.Should().HaveCount(startingList.Count + 1);
+            _conference.Participants.Should().Contain(participant2);
         }
 
         [TestCase(3, 2, HearingLayout.Dynamic)]
@@ -53,14 +58,136 @@ namespace VideoWeb.UnitTests.Common.Models
         public void Should_return_correct_layout_for_the_number_of_participants_and_endpoints(int numberOfParticipants, int numberOfEndpoints, HearingLayout expectedLayout)
         {
             // Arrange
-            conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
-            conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
+            _conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            _conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
 
             // Act
-            var recommendedLayout = conference.GetRecommendedLayout();
+            var recommendedLayout = _conference.GetRecommendedLayout();
 
             // Assert
             recommendedLayout.Should().Be(expectedLayout);
+        }
+
+        [Test]
+        public void RemoveParticipantFromConsultationRoom_RemovesRoom_When_Room_Is_Empty()
+        {
+            // Arrange
+            var participantToRemove = new Participant
+            {
+                Id = Guid.NewGuid()
+            };
+            _conference.AddParticipantToConsultationRoom(_consultationRoom.Label, participantToRemove);
+            
+            // Act
+            _conference.RemoveParticipantFromConsultationRoom(participantToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(0);
+            participantToRemove.CurrentRoom.Should().BeNull();
+        }
+
+        [Test]
+        public void RemoveParticipantFromConsultationRoom_DoesNotRemoveRoom_When_Room_Contains_Participants()
+        {
+            // Arrange
+            AddParticipantsToConsultationRoom(5);
+            
+            var participantToRemove = _conference.Participants[0];
+            
+            // Act
+            _conference.RemoveParticipantFromConsultationRoom(participantToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(1);
+            participantToRemove.CurrentRoom.Should().BeNull();
+        }
+        
+        [Test]
+        public void RemoveParticipantFromConsultationRoom_DoesNotRemoveRoom_When_Room_Contains_Endpoints()
+        {
+            // Arrange
+            AddParticipantsToConsultationRoom(1);
+            AddEndpointsToConsultationRoom(5);
+            
+            var participantToRemove = _conference.Participants[0];
+            
+            // Act
+            _conference.RemoveParticipantFromConsultationRoom(participantToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(1);
+            participantToRemove.CurrentRoom.Should().BeNull();
+        }
+        
+        [Test]
+        public void RemoveEndpointFromConsultationRoom_RemovesRoom_When_Room_Is_Empty()
+        {
+            // Arrange
+            var endpointToRemove = new Endpoint
+            {
+                Id = Guid.NewGuid()
+            };
+            _conference.AddEndpointToConsultationRoom(_consultationRoom.Label, endpointToRemove);
+            
+            // Act
+            _conference.RemoveEndpointFromConsultationRoom(endpointToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(0);
+            endpointToRemove.CurrentRoom.Should().BeNull();
+        }
+
+        [Test]
+        public void RemoveEndpointFromConsultationRoom_DoesNotRemoveRoom_When_Room_Contains_Participants()
+        {
+            // Arrange
+            AddParticipantsToConsultationRoom(5);
+            AddEndpointsToConsultationRoom(1);
+            
+            var endpointToRemove = _conference.Endpoints[0];
+            
+            // Act
+            _conference.RemoveEndpointFromConsultationRoom(endpointToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(1);
+            endpointToRemove.CurrentRoom.Should().BeNull();
+        }
+        
+        [Test]
+        public void RemoveEndpointFromConsultationRoom_DoesNotRemoveRoom_When_Room_Contains_Endpoints()
+        {
+            // Arrange
+            AddEndpointsToConsultationRoom(5);
+            
+            var endpointToRemove = _conference.Endpoints[0];
+            
+            // Act
+            _conference.RemoveEndpointFromConsultationRoom(endpointToRemove, _consultationRoom.Label);
+            
+            // Assert
+            _conference.ConsultationRooms.Count.Should().Be(1);
+            endpointToRemove.CurrentRoom.Should().BeNull();
+        }
+
+        private void AddParticipantsToConsultationRoom(int numberOfParticipants)
+        {
+            _conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            
+            foreach (var participant in _conference.Participants)
+            {
+                _conference.AddParticipantToConsultationRoom(_consultationRoom.Label, participant);
+            }
+        }
+
+        private void AddEndpointsToConsultationRoom(int numberOfEndpoints)
+        {
+            _conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
+            
+            foreach (var endpoint in _conference.Endpoints)
+            {
+                _conference.AddEndpointToConsultationRoom(_consultationRoom.Label, endpoint);
+            }
         }
     }
 }

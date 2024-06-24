@@ -36,8 +36,20 @@ namespace VideoWeb.Mappings
                 LinkedId = x.LinkedId,
                 LinkType = Enum.Parse<LinkType>(x.Type.ToString())
             }).ToList();
+            participant.CurrentRoom = MapRoom(participantDetails.CurrentRoom);
 
             return participant;
+        }
+        
+        private static ConsultationRoom MapRoom(RoomResponse room)
+        {
+            if (room == null) return null;
+            
+            return new ConsultationRoom
+            {
+                Label = room.Label,
+                Locked = room.Locked
+            };
         }
     }
 }
