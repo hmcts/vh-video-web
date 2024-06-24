@@ -165,6 +165,7 @@
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
   z-index: 999;
+  text-align: left;
 }
 
 .dropdown-content .action {
@@ -177,6 +178,17 @@
 .dropdown-content .action:hover {
   background-color: govuk-colour('green');
   color: govuk-colour('white');
+}
+
+.dropdown-content button {
+  line-height: 30px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding-left: 0px;
+  padding-right: 0px;
+  font-size: 1rem;
+  text-align: left;
 }
 
 .show {
