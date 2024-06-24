@@ -103,7 +103,7 @@
   vertical-align: top;
   margin-right: 15px;
   cursor: pointer;
-  padding-inline: default;
+  padding-inline: revert !important;
 }
 
 .small-button.red {
@@ -192,6 +192,7 @@
   padding-right: 0px;
   font-size: 1rem;
   text-align: left;
+  width: 100%;
 }
 
 .show {
