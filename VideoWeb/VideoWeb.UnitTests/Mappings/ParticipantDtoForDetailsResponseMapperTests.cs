@@ -82,11 +82,17 @@ namespace VideoWeb.UnitTests.Mappings
                 Role = Role.JudicialOfficeHolder,
                 Id = participantId,
                 Username = "TestUsername",
-                InterpreterRoom = new MeetingRoom
+                CurrentRoom = new ConsultationRoom
                 {
-                    Id = long.Parse(roomSummaryResponse.Id),
-                    Label = roomSummaryResponse.Label,
-                    Locked = roomSummaryResponse.Locked
+                    Label = "Room1",
+                    Locked = true
+                }
+            };
+
+            var testConference = new Conference()
+            {
+                CivilianRooms = new List<CivilianRoom> {
+                    civilianRoom
                 }
             };
 
@@ -102,7 +108,29 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.Id.Should().Be(testParticipant.Id);
             mapped.UserName.Should().Be(testParticipant.Username);
             mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
-            mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
+
+            mapped.InterpreterRoom.Should().Be(roomSummaryResponse);
+            mapped.CurrentRoom.Should().NotBeNull();
+            mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
+            mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
+
+            linkedParticipants.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
+            linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipant>()), Times.Exactly(linkedParticipants.Count));
+        }
+        
+        [Test]
+        public void should_map_correctly_without_current_room()
+        {
+            var testParticipant = new Participant();
+            
+            var testConference = new Conference
+            {
+                CivilianRooms = [civilianRoom]
+            };
+            
+            var mapped = _sut.Map(testParticipant, testConference);
+            
+            mapped.CurrentRoom.Should().BeNull();
         }
     }
 }

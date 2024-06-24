@@ -8,24 +8,25 @@ namespace VideoWeb.Mappings
     {
         public Endpoint Map(EndpointResponse endpoint)
         {
-            var endpointDto = new Endpoint
+            return new Endpoint
             {
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
-                EndpointStatus =  (EndpointStatus)(int)endpoint.Status,
-                DefenceAdvocate = endpoint.DefenceAdvocate
+                EndpointStatus =  (EndpointStatus)((int)endpoint.Status),
+                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
+                CurrentRoom = MapRoom(endpoint.CurrentRoom)
             };
-            
-            if(endpoint.CurrentRoom != null)
+        }
+        
+        private static ConsultationRoom MapRoom(RoomResponse room)
+        {
+            if (room == null) return null;
+
+            return new ConsultationRoom
             {
-                endpointDto.CurrentRoom = new MeetingRoom
-                {
-                    Id = endpoint.CurrentRoom.Id,
-                    Label = endpoint.CurrentRoom.Label,
-                    Locked = endpoint.CurrentRoom.Locked
-                };
-            }
-            return endpointDto;
+                Label = room.Label,
+                Locked = room.Locked
+            };
         }
     }
 }

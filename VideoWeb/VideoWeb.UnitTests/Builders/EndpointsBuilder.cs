@@ -24,6 +24,17 @@ namespace VideoWeb.UnitTests.Builders
             return this;
         }
 
+        public EndpointsBuilder WithCurrentRoom()
+        {
+            _endpoint.CurrentRoom = new RoomResponse
+            {
+                Id = 1,
+                Label = "Room 1",
+                Locked = true
+            };
+            return this;
+        }
+
         public EndpointResponse Build()
         {
             return _endpoint;

@@ -42,6 +42,11 @@ namespace VideoWeb.UnitTests.Mappings
                 resultParticipant.ContactEmail.Should().Be(participantDetails.ContactEmail);
                 resultParticipant.ContactTelephone.Should().Be(participantDetails.TelephoneNumber);
                 resultParticipant.Representee.Should().Be(participantDetails.Representee);
+                
+                resultParticipant.CurrentRoom.Should().NotBeNull();
+                resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
+                resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
+                
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
@@ -89,6 +94,19 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
         }
         
+        
+        [Test]
+        public void Should_map_without_current_room()
+        {
+            var conference = BuildConferenceDetailsResponse();
+            conference.Participants[0].CurrentRoom = null;
+            var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
+            
+            var resultParticipant  = response.Participants[0];
+            
+            resultParticipant.CurrentRoom.Should().BeNull();
+        }
+
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
         {
             var participants = new List<ParticipantResponse>
@@ -102,7 +120,10 @@ namespace VideoWeb.UnitTests.Mappings
             };
             var participantA = participants[0];
             var participantB = participants[1];
-            participantA.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantB.Id, Type = LinkedParticipantType.Interpreter });
+            participantA.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantB.Id, Type = LinkedParticipantType.Interpreter});
+           
+            participantA.CurrentRoom = new RoomResponse            {Id = 1,Label = "Room 1", Locked = true};
+
             participantB.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantA.Id, Type = LinkedParticipantType.Interpreter });
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).All().With(e => e.DefenceAdvocate = participantA.Username).Build().ToList();
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();

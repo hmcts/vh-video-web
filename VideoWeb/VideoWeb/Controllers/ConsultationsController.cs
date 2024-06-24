@@ -175,6 +175,8 @@ namespace VideoWeb.Controllers
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
                     var room = await videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+                    conference.UpsertConsultationRoom(room.Label, room.Locked);
+                    await conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
                     await consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
                     {
@@ -183,7 +185,7 @@ namespace VideoWeb.Controllers
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x != null && x.DefenceAdvocate.Equals(username, StringComparison.OrdinalIgnoreCase));
+                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
                     
                     foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
                     {

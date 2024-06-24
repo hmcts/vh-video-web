@@ -13,6 +13,7 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
             CivilianRooms = new List<CivilianRoom>();
+            ConsultationRooms = new List<ConsultationRoom>();
         }
 
         public Guid Id { get; set; }
@@ -20,6 +21,7 @@ namespace VideoWeb.Common.Models
         public List<Participant> Participants { get; set; }
         public List<Endpoint> Endpoints { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
+        public List<ConsultationRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
         public string CaseName { get; set; }
@@ -39,6 +41,53 @@ namespace VideoWeb.Common.Models
             return Participants.SingleOrDefault(x => x.IsJudge());
         }
 
+        public void AddParticipantToConsultationRoom(string roomLabel, Participant participant)
+        {
+            var consultationRoom = UpsertConsultationRoom(roomLabel, true);
+            participant.CurrentRoom = consultationRoom;
+        }
+        
+        public void AddEndpointToConsultationRoom(string roomLabel, Endpoint endpoint)
+        {
+            var consultationRoom = UpsertConsultationRoom(roomLabel, true);
+            endpoint.CurrentRoom = consultationRoom;
+        }
+        
+        public void RemoveParticipantFromConsultationRoom(Participant participant, string roomLabel)
+        {
+            if (participant.CurrentRoom != null)
+            {
+                participant.CurrentRoom = null;
+            }
+            
+            CheckAndRemoveEmptyConsultationRoom(roomLabel);
+        }
+        
+        public void RemoveEndpointFromConsultationRoom(Endpoint endpoint, string roomLabel)
+        {
+            if (endpoint.CurrentRoom != null)
+            {
+                endpoint.CurrentRoom = null;
+            }
+            
+            CheckAndRemoveEmptyConsultationRoom(roomLabel);
+        }
+
+        /// <summary>
+        /// Check if the room is empty and remove it if so
+        /// </summary>
+        /// <param name="roomLabel"></param>
+        private void CheckAndRemoveEmptyConsultationRoom(string roomLabel)
+        {
+            var roomIsEmpty = Participants.TrueForAll(x => x.CurrentRoom?.Label != roomLabel) && 
+                              Endpoints.TrueForAll(x => x.CurrentRoom?.Label != roomLabel);
+            
+            if (roomIsEmpty)
+            {
+                ConsultationRooms.RemoveAll(x => x.Label == roomLabel);
+            }
+        }
+
         public void AddParticipantToRoom(long roomId, Guid participantId)
         {
             var room = GetOrCreateCivilianRoom(roomId);
@@ -51,10 +100,7 @@ namespace VideoWeb.Common.Models
         public void RemoveParticipantFromRoom(long roomId, Guid participantId)
         {
             var room = GetOrCreateCivilianRoom(roomId);
-            if (room.Participants.Contains(participantId))
-            {
-                room.Participants.Remove(participantId);
-            }
+            room.Participants.Remove(participantId);
         }
 
         public void AddParticipant(Participant participant)
@@ -124,6 +170,19 @@ namespace VideoWeb.Common.Models
                 >= 6 => HearingLayout.OnePlus7,
                 _ => HearingLayout.Dynamic
             };
+        }
+
+        public ConsultationRoom UpsertConsultationRoom(string roomLabel, bool roomLocked)
+        {
+            var consultationRoom = ConsultationRooms.Find(x => x.Label == roomLabel);
+            if (consultationRoom == null)
+            {
+                consultationRoom = new ConsultationRoom {Label = roomLabel, Locked = roomLocked};
+                ConsultationRooms.Add(consultationRoom);
+            }
+
+            consultationRoom.Locked = roomLocked;
+            return consultationRoom;
         }
     }
 }
