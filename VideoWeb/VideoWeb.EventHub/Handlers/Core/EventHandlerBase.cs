@@ -133,10 +133,58 @@ namespace VideoWeb.EventHub.Handlers.Core
                     participant.Role);
             }
 
+            await UpdateConsultationRoom(roomTransfer);
+
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
+
+        private async Task UpdateConsultationRoom(RoomTransfer roomTransfer)
+        {
+            var participantToTransfer = SourceConference.Participants.Find(p => p.Id == roomTransfer.ParticipantId);
+            var endpointToTransfer = SourceConference.Endpoints.Find(e => e.Id == roomTransfer.ParticipantId);
+            
+            if (participantToTransfer != null)
+            {
+                UpdateConsultationRoomForParticipant(participantToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
+            }
+            if (endpointToTransfer != null)
+            {
+                UpdateConsultationRoomForEndpoint(endpointToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
+            }
+            
+            await _conferenceCache.UpdateConferenceAsync(SourceConference);
+        }
+
+        private void UpdateConsultationRoomForParticipant(Participant participant, string toRoom, string fromRoom)
+        {
+            var isToConsultationRoom = IsToConsultationRoom(toRoom);
+            if (isToConsultationRoom)
+            {
+                SourceConference.AddParticipantToConsultationRoom(toRoom, participant);
+            }
+            else
+            {
+                SourceConference.RemoveParticipantFromConsultationRoom(participant, fromRoom);
+            }
+        }
+
+        private void UpdateConsultationRoomForEndpoint(Endpoint endpoint, string toRoom, string fromRoom)
+        {
+            var isToConsultationRoom = IsToConsultationRoom(toRoom);
+            if (isToConsultationRoom)
+            {
+                SourceConference.AddEndpointToConsultationRoom(toRoom, endpoint);
+            }
+            else
+            {
+                SourceConference.RemoveEndpointFromConsultationRoom(endpoint, fromRoom);
+            }
+        }
+
+        private static bool IsToConsultationRoom(string toRoom) => toRoom.Contains("consultation", StringComparison.CurrentCultureIgnoreCase);
+
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
     }
 }

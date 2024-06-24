@@ -57,7 +57,8 @@ namespace VideoWeb.Common.Caching
                 Username = participant.Username,
                 CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
-                LinkedParticipants = links
+                LinkedParticipants = links,
+                CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom)
             };
         }
 
@@ -68,6 +69,17 @@ namespace VideoWeb.Common.Caching
             {
                 LinkedId = linkedParticipant.LinkedId,
                 LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
+            };
+        }
+        
+        private static ConsultationRoom MapRoomToCacheModel(RoomResponse room)
+        {
+            if (room == null) return null;
+            
+            return new ConsultationRoom
+            {
+                Label = room.Label,
+                Locked = room.Locked
             };
         }
     }
