@@ -1,7 +1,7 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -19,12 +19,12 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    let conference: ConferenceResponse;
     const profile = new UserProfileResponse({ roles: [Role.Judge] });
     let currentStreamSubject: Subject<MediaStream>;
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
-    let activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+    let activatedRoute: ActivatedRoute;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -33,6 +33,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     beforeEach(async () => {
+        conference = new ConferenceTestData().getConferenceDetailFuture();
+        activatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [], ['currentStream$']);
         currentStreamSubject = new Subject<MediaStream>();
 
@@ -40,10 +42,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             'getConferencesForIndividual',
             'setActiveIndividualConference',
             'raiseMediaEvent',
+            'getConferenceById',
             'getObfuscatedName'
         ]);
         videoWebService.getObfuscatedName.and.returnValue('test username');
-
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
             'handleApiError',
@@ -143,6 +146,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         });
     });
 
+    it('should go to declaration page', () => {
+        component.goToDeclaration();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Declaration, conference.id]);
+    });
+
     it('should log error when raising event fails', async () => {
         const error = new Error('unit test error');
         videoWebService.raiseMediaEvent.and.callFake(() => Promise.reject(error));
@@ -176,4 +184,37 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(component.postPermissionDeniedAlert).toHaveBeenCalledTimes(1);
         expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
     }));
+
+    describe('Participant is a QL observer', () => {
+        beforeEach(() => {
+            profile.roles = [Role.QuickLinkObserver];
+            profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
+        });
+
+        it('should skip self', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+
+            expect(component.skipSelfTest).toBeTrue();
+        }));
+    });
+
+    describe('Participant is an observer', () => {
+        beforeEach(() => {
+            profile.roles = [Role.Individual];
+            console.log(conference.participants);
+            const individual = conference.participants.find(x => x.role === Role.Individual);
+            individual.hearing_role = 'Observer';
+            profile.username = individual.user_name;
+            conference.participants = conference.participants.filter(x => x.role === Role.Individual);
+            profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
+        });
+
+        it('should skip self', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+
+            expect(component.skipSelfTest).toBeTrue();
+        }));
+    });
 });
