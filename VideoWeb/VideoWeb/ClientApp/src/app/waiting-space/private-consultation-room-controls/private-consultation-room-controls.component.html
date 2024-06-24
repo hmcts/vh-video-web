@@ -317,7 +317,7 @@
       </div>
     </div>
     <div *ngIf="!isObserver" class="flexBar"></div>
-    <div
+    <button
       class="icon-button"
       id="toggle-participants-panel"
       appTooltip
@@ -325,29 +325,27 @@
       [text]="'private-consultation-room-controls.participants-panel' | translate"
       colour="grey"
       (click)="togglePanelStatus('Participants')"
-      (keydown.enter)="togglePanelStatus('Participants')"
+      (keydown.enter)="$event.preventDefault(); togglePanelStatus('Participants')"
       tabindex="0"
-      role="listbox"
     >
       <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
-    </div>
+    </button>
     <div class="show-for-medium-only">
       <ng-container *ngIf="isHost && !isPrivateConsultation">
         <div class="flexBar"></div>
 
-        <div
+        <button
           class="icon-button"
           id="leave-hearing-landscape"
           appTooltip
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
           (click)="displayConfirmationLeaveHearingDialog()"
-          (keydown.enter)="displayConfirmationLeaveHearingDialog()"
+          (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           tabindex="0"
-          role="listbox"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
-        </div>
+        </button>
 
         <div class="flexBar"></div>
       </ng-container>
@@ -400,7 +398,7 @@
       </button>
     </div>
     <div class="hearing-controls-desktop">
-      <div
+      <button
         class="icon-button"
         id="toggle-chat-panel-desktop"
         appTooltip
@@ -408,13 +406,12 @@
         [text]="'private-consultation-room-controls.chat-panel' | translate"
         colour="grey"
         (click)="togglePanelStatus('Chat')"
-        (keydown.enter)="togglePanelStatus('Chat')"
+        (keydown.enter)="$event.preventDefault(); togglePanelStatus('Chat')"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
-      </div>
+      </button>
 
       <div
         class="icon-button dropdown always-on"
@@ -484,7 +481,7 @@
         </div>
       </div>
 
-      <div
+      <button
         *ngIf="screenShareStream || sharingDynamicEvidence"
         class="icon-button"
         id="stop-screenshare-img-desktop"
@@ -494,14 +491,13 @@
         (click)="stopScreenShare()"
         (keydown.enter)="stopScreenShare()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
-      </div>
+      </button>
 
       <div class="flexBar"></div>
 
-      <div
+      <button
         class="icon-button"
         id="toggle-media-device-img-desktop"
         appTooltip
@@ -511,12 +507,11 @@
         (keydown.enter)="changeDeviceSelected()"
         (keydown.space)="changeDeviceSelected()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon icon="sliders-h"></fa-icon>
-      </div>
+      </button>
 
-      <div
+      <button
         class="icon-button"
         id="toggle-self-view-img-desktop"
         appTooltip
@@ -529,15 +524,14 @@
         "
         colour="grey"
         (click)="toggleView()"
-        (keydown.enter)="toggleView()"
-        (keydown.space)="toggleView()"
+        (keydown.enter)="$event.preventDefault(); toggleView()"
+        (keydown.space)="$event.preventDefault(); toggleView()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
-      </div>
+      </button>
 
-      <div
+      <button
         class="icon-button"
         id="toggle-video-mute-img-desktop"
         appTooltip
@@ -550,15 +544,14 @@
         "
         colour="grey"
         (click)="toggleVideoMute()"
-        (keydown.enter)="toggleVideoMute()"
-        (keydown.space)="toggleVideoMute()"
+        (keydown.enter)="$event.preventDefault(); toggleVideoMute()"
+        (keydown.space)="$event.preventDefault(); toggleVideoMute()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
-      </div>
+      </button>
 
-      <div
+      <button
         class="icon-button"
         id="toggle-audio-mute-img-desktop"
         appTooltip
@@ -571,13 +564,12 @@
         "
         colour="grey"
         (click)="toggleMute()"
-        (keydown.enter)="toggleMute()"
-        (keydown.space)="toggleMute()"
+        (keydown.enter)="$event.preventDefault(); toggleMute()"
+        (keydown.space)="$event.preventDefault(); toggleMute()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
-      </div>
+      </button>
 
       <div
         class="icon-button"
@@ -590,7 +582,7 @@
         <fa-icon icon="microphone-slash" class="red" tabindex="0"></fa-icon>
       </div>
 
-      <div
+      <button
         class="icon-button"
         id="toggle-hand-raised-img-desktop"
         appTooltip
@@ -603,19 +595,17 @@
         "
         colour="grey"
         (click)="toggleHandRaised()"
-        (keyup.enter)="toggleHandRaised()"
-        (keyup.space)="toggleHandRaised()"
-        (keydown.enter)="toggleHandRaised()"
+        (keydown.enter)="$event.preventDefault(); toggleHandRaised()"
+        (keydown.space)="$event.preventDefault(); toggleHandRaised()"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
-      </div>
+      </button>
 
       <ng-container *ngIf="canShowLeaveButton">
         <div class="flexBar"></div>
 
-        <div
+        <button
           id="leave-hearing-desktop"
           class="icon-button"
           appTooltip
@@ -624,10 +614,9 @@
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
           tabindex="0"
-          role="listbox"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
-        </div>
+        </button>
 
         <div class="flexBar"></div>
       </ng-container>
