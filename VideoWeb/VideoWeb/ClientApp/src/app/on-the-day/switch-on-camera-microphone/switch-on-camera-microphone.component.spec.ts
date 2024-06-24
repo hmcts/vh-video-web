@@ -19,7 +19,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
-    let conference: ConferenceResponse;
+    let conference: ConferenceResponse = new ConferenceTestData().getConferenceDetailFuture();
     const profile = new UserProfileResponse({ roles: [Role.Judge] });
     let currentStreamSubject: Subject<MediaStream>;
     let router: jasmine.SpyObj<Router>;
