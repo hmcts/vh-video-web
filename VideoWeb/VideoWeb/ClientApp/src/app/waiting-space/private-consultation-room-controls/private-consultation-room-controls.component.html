@@ -389,7 +389,7 @@
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
       </button>
 
-      <div
+      <button
         class="icon-button dropdown always-on"
         id="start-screenshare-img-desktop"
         *ngIf="!screenShareStream && canShowScreenShareButton"
@@ -397,14 +397,13 @@
         [text]="'private-consultation-room-controls.share-my-screen' | translate"
         colour="grey"
         (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
-        (keydown.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        (keydown.enter)="$event.preventDefault(); showEvidenceContextMenu = !showEvidenceContextMenu"
         (keydown.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
         tabindex="0"
-        role="listbox"
       >
         <fa-icon icon="share-square"></fa-icon>
         <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
-          <div
+          <button
             id="shareDropdown-startEvidenceSharing"
             *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
             (click)="startScreenShareWithMicrophone()"
@@ -414,7 +413,6 @@
             [colour]="'grey'"
             (keydown.enter)="startScreenShareWithMicrophone()"
             tabindex="0"
-            role="listbox"
           >
             <span class="action"
               ><fa-icon
@@ -426,10 +424,9 @@
               ></fa-icon>
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
             </span>
-          </div>
+          </button>
           <div
             id="shareDropdown-unsupportedEvidenceSharing"
-            *ngIf="enableDynamicEvidenceSharing && !canShowDynamicEvidenceShareButton"
             appTooltip
             [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
             colour="red"
@@ -439,7 +436,7 @@
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.unsupported-dynamic-evidence' | translate }}</span>
             </p>
           </div>
-          <div
+          <button
             id="shareDropdown-startDocumentSharing"
             (click)="startScreenShare()"
             (keydown.enter)="startScreenShare()"
@@ -447,15 +444,14 @@
             [text]="'private-consultation-room-controls.share-document-evidence' | translate"
             [colour]="'grey'"
             tabindex="0"
-            role="listbox"
           >
             <span class="action"
               ><fa-icon icon="file-alt" tabindex="0" (keydown.enter)="startScreenShare()" (keydown.space)="startScreenShare()"></fa-icon>
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
             </span>
-          </div>
+          </button>
         </div>
-      </div>
+      </button>
 
       <button
         *ngIf="screenShareStream || sharingDynamicEvidence"

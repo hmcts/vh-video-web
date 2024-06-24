@@ -175,7 +175,9 @@
   display: block;
 }
 
-.dropdown-content .action:hover {
+.dropdown-content .action:hover,
+.dropdown-content button.action:hover,
+.dropdown-content button:hover .action {
   background-color: govuk-colour('green');
   color: govuk-colour('white');
 }
