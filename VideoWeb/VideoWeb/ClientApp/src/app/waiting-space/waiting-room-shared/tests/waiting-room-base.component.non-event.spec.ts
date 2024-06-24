@@ -51,6 +51,7 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { CallError } from '../../models/video-call-models';
+import { PexipCallType } from '../../services/video-call.service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -649,6 +650,7 @@ describe('WaitingRoomComponent message and clock', () => {
                     tile_display_name: `I1;Interpreter1;${component.participant.id}`
                 });
                 videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+                const callType: PexipCallType = null;
 
                 await component.call();
 
@@ -656,7 +658,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    callType
                 );
             });
 
@@ -675,6 +678,7 @@ describe('WaitingRoomComponent message and clock', () => {
                     tile_display_name: `I1;Interpreter1;${component.participant.id}`
                 });
                 videoCallService.retrieveWitnessInterpreterRoom.and.resolveTo(room);
+                const callType: PexipCallType = null;
 
                 await component.call();
 
@@ -682,7 +686,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    callType
                 );
             });
 
@@ -695,6 +700,7 @@ describe('WaitingRoomComponent message and clock', () => {
                     tile_display_name: `T1;PanelMember;${component.participant.id}`
                 });
                 videoCallService.retrieveJudicialRoom.and.resolveTo(room);
+                const callType: PexipCallType = null;
 
                 await component.call();
 
@@ -702,7 +708,38 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    callType
+                );
+            });
+
+            it('should use recvonly call type when participant role is QL observer', async () => {
+                component.participant.role = Role.QuickLinkObserver;
+                const callType: PexipCallType = 'recvonly';
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    component.conference.pexip_node_uri,
+                    component.conference.participant_uri,
+                    component.participant.tiled_display_name,
+                    component.maxBandwidth,
+                    callType
+                );
+            });
+
+            it('should use recvonly call type when participant hearing role is observer', async () => {
+                component.participant.hearing_role = HearingRole.OBSERVER;
+                const callType: PexipCallType = 'recvonly';
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    component.conference.pexip_node_uri,
+                    component.conference.participant_uri,
+                    component.participant.tiled_display_name,
+                    component.maxBandwidth,
+                    callType
                 );
             });
         });

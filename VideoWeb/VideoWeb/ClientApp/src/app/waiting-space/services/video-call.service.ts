@@ -34,6 +34,8 @@ import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-con
 /* eslint-disable @typescript-eslint/naming-convention */
 declare let PexRTC: any;
 
+export type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none';
+
 @Injectable()
 export class VideoCallService {
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
@@ -183,13 +185,19 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+    makeCall(
+        pexipNode: string,
+        conferenceAlias: string,
+        participantDisplayName: string,
+        maxBandwidth: number,
+        callType: PexipCallType = null
+    ) {
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
         this.stopPresentation();
         this.initCallTag();
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
     disconnectFromCall() {

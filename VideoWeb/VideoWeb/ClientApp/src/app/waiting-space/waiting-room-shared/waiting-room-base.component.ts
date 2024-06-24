@@ -58,7 +58,7 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
-import { VideoCallService } from '../services/video-call.service';
+import { PexipCallType, VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
@@ -819,7 +819,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        const callType: PexipCallType =
+            this.participant.role === Role.QuickLinkObserver || this.participant.hearing_role === HearingRole.OBSERVER ? 'recvonly' : null;
+        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, callType);
     }
 
     needsInterpreterRoom(): boolean {
