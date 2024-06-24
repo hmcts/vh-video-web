@@ -103,6 +103,7 @@
   vertical-align: top;
   margin-right: 15px;
   cursor: pointer;
+  padding-inline: default;
 }
 
 .small-button.red {
@@ -227,6 +228,10 @@
   @include responds-to(large) {
     display: inline-flex;
   }
+}
+
+.hearing-controls-desktop button {
+  padding-inline: 0px;
 }
 
 .leave-hearing-button {
