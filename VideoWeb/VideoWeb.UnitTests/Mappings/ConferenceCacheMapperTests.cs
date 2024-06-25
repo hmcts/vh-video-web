@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Mappings
                 resultParticipant.Username.Should().Be(participantDetails.Username);
                 resultParticipant.Role.Should().Be((Role)participant.UserRole);
                 resultParticipant.HearingRole.Should().Be(participantDetails.HearingRoleName);
-                resultParticipant.DisplayName.Should().Be(participantDetails.DisplayName);
+                resultParticipant.DisplayName.Should().Be(participant.DisplayName);
                 resultParticipant.FirstName.Should().Be(participantDetails.FirstName);
                 resultParticipant.LastName.Should().Be(participantDetails.LastName);
                 resultParticipant.ContactEmail.Should().Be(participantDetails.ContactEmail);

@@ -19,9 +19,10 @@ namespace VideoWeb.Common.Models
         public Role Role { get; set; }
         public string HearingRole { get; set; }
         public ParticipantStatus ParticipantStatus { get; set; }
+        /// Needs to come from video-api not booking-api, for if the judge updates it within the hearing
         public string DisplayName { get; set; }
         public Guid RefId { get; set; }
-        public string Representee { get; set; }
+        public string Representee { get; set; } 
         public ConsultationRoom CurrentRoom { get; set; }
         public ConsultationRoom InterpreterRoom { get; set; }
         public List<LinkedParticipant> LinkedParticipants { get; set; }

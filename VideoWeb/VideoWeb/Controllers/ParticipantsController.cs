@@ -121,8 +121,10 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var apiRequest = mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
-                await videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest);
+                await videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, new UpdateParticipantRequest
+                {
+                    DisplayName = participantRequest.DisplayName
+                });
                 await UpdateCacheAndPublishUpdate(conferenceId);
             }
             catch (VideoApiException ex)

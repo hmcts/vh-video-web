@@ -29,7 +29,7 @@ public static class ParticipantCacheMapper
         model.FullTitledName = $"{hearingDetails.Title} {hearingDetails.FirstName} {hearingDetails.LastName}";
         model.ContactEmail = hearingDetails.ContactEmail;
         model.ContactTelephone = hearingDetails.TelephoneNumber;
-        model.DisplayName = hearingDetails.DisplayName;
+        model.DisplayName = participant.DisplayName;
         model.Role = Enum.Parse<Role>(hearingDetails.UserRoleName, true);
         model.HearingRole = hearingDetails.HearingRoleName;
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
@@ -59,7 +59,7 @@ public static class ParticipantCacheMapper
         model.FullTitledName = judiciaryDetails.FullName;
         model.ContactEmail = judiciaryDetails.OptionalContactEmail;
         model.ContactTelephone = judiciaryDetails.OptionalContactTelephone;
-        model.DisplayName = judiciaryDetails.DisplayName;
+        model.DisplayName = participant.DisplayName;
         model.Role = (Role)Enum.Parse(typeof(Role), participant.UserRole.ToString());
         model.HearingRole = judiciaryDetails.HearingRoleCode.ToString();
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);

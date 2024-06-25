@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantStatus, Role, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -127,7 +127,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
             })
         );
         this.showChangeJudgeDisplayName = false;
-        await this.updateJudgeDisplayName();
         this.focusService.restoreFocus();
     }
 
@@ -141,8 +140,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
             })
         );
         this.showChangeStaffMemberDisplayName = false;
-        const updatedStaffMember = this.staffMembers.find(p => p.id === id);
-        await this.updateStaffMemberDisplayName(updatedStaffMember);
         this.focusService.restoreFocus();
     }
 
@@ -164,48 +161,5 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.individualParticipants = this.conference.participants.filter(
             x => x.role === Role.Individual && x.hearingRole !== HearingRole.OBSERVER
         );
-    }
-
-    private async updateJudgeDisplayName() {
-        const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
-            fullname: this.judge.name,
-            display_name: this.judge.displayName,
-            representee: this.judge.representee,
-            first_name: this.judge.firstName,
-            last_name: this.judge.lastName
-        });
-
-        try {
-            this.logger.debug('[JudgeParticipantStatusList] - Attempting to update judge', {
-                judge: this.judge.id,
-                displayName: this.judge.displayName
-            });
-            await this.videoWebService.updateParticipantDisplayName(this.conference.id, this.judge.id, updateParticipantRequest);
-        } catch (error) {
-            this.logger.error(`[JudgeParticipantStatusList] - There was an error update judge display name ${this.judge.id}`, error);
-        }
-    }
-
-    private async updateStaffMemberDisplayName(staffMember: VHParticipant) {
-        const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
-            fullname: staffMember.name,
-            display_name: staffMember.displayName,
-            representee: staffMember.representee,
-            first_name: staffMember.firstName,
-            last_name: staffMember.lastName
-        });
-
-        try {
-            this.logger.debug('[JudgeParticipantStatusList] - Attempting to update staff member', {
-                staffMember: staffMember.id,
-                displayName: staffMember.displayName
-            });
-            await this.videoWebService.updateParticipantDisplayName(this.conference.id, staffMember.id, updateParticipantRequest);
-        } catch (error) {
-            this.logger.error(
-                `[JudgeParticipantStatusList] - There was an error updating staff member display name ${staffMember.id}`,
-                error
-            );
-        }
     }
 }

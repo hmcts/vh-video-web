@@ -8897,16 +8897,8 @@ export interface IUpdateConferenceEndpointsRequest {
 }
 
 export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDisplayNameRequest {
-    /** Participant Fullname */
-    fullname?: string | undefined;
-    /** Participant FirstName */
-    first_name?: string | undefined;
-    /** Participant LastName */
-    last_name?: string | undefined;
     /** Participant Display Name */
     display_name?: string | undefined;
-    /** Representee */
-    representee?: string | undefined;
 
     constructor(data?: IUpdateParticipantDisplayNameRequest) {
         if (data) {
@@ -8918,11 +8910,7 @@ export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDi
 
     init(_data?: any) {
         if (_data) {
-            this.fullname = _data['fullname'];
-            this.first_name = _data['first_name'];
-            this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
-            this.representee = _data['representee'];
         }
     }
 
@@ -8935,26 +8923,14 @@ export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDi
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['fullname'] = this.fullname;
-        data['first_name'] = this.first_name;
-        data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
-        data['representee'] = this.representee;
         return data;
     }
 }
 
 export interface IUpdateParticipantDisplayNameRequest {
-    /** Participant Fullname */
-    fullname?: string | undefined;
-    /** Participant FirstName */
-    first_name?: string | undefined;
-    /** Participant LastName */
-    last_name?: string | undefined;
     /** Participant Display Name */
     display_name?: string | undefined;
-    /** Representee */
-    representee?: string | undefined;
 }
 
 export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {

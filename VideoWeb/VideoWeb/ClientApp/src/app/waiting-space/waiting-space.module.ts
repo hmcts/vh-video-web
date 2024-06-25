@@ -47,7 +47,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
+import { ConferenceEffects } from './store/effects/conference.effects';
 import { environment } from 'src/environments/environment';
 import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
@@ -59,7 +59,7 @@ import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffectsEffects])
+        EffectsModule.forFeature([ConferenceEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,

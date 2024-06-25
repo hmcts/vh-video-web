@@ -194,7 +194,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         });
         expect(component.newJudgeDisplayName).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
-        expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
         mockConferenceStore.resetSelectors();
     });
@@ -208,18 +207,6 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         // Then
         expect(result).toBe('new name');
-    });
-
-    it('should log error when unable to save new judge name', async () => {
-        const error = { error: 'test failure' };
-        const newName = 'new name';
-        component.onEnterJudgeDisplayName(newName);
-        videoWebService.updateParticipantDisplayName.and.rejectWith(error);
-        spyOn(logger, 'error');
-
-        await component.saveJudgeDisplayName();
-
-        expect(logger.error).toHaveBeenCalled();
     });
 
     it('should update new staff member display name with user input', () => {
@@ -246,21 +233,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         });
         expect(component.newStaffMemberDisplayName).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
-        expect(videoWebService.updateParticipantDisplayName).toHaveBeenCalledTimes(1);
         expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
         mockConferenceStore.resetSelectors();
-    });
-
-    it('should log error when unable to save new staff member name', async () => {
-        const error = { error: 'test failure' };
-        const newName = 'new name';
-        component.onEnterStaffMemberDisplayName(newName);
-        videoWebService.updateParticipantDisplayName.and.rejectWith(error);
-        spyOn(logger, 'error');
-
-        await component.saveStaffMemberDisplayName(editedStaffMember.id).then(() => {
-            expect(logger.error).toHaveBeenCalled();
-        });
     });
 
     it('should get the participant count excluding judge', () => {

@@ -4,7 +4,7 @@ import { addMatchers, cold, hot, initTestScheduler } from 'jasmine-marbles';
 import { Observable, of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing'; // import this
 
-import { ConferenceEffectsEffects } from './conference-effects.effects';
+import { ConferenceEffects } from './conference.effects';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -12,17 +12,17 @@ import { mapConferenceToVHConference } from '../models/api-contract-to-state-mod
 
 describe('ConferenceEffectsEffects', () => {
     let actions$: Observable<any>;
-    let effects: ConferenceEffectsEffects;
+    let effects: ConferenceEffects;
     let apiClient: jasmine.SpyObj<ApiClient>;
 
     beforeEach(() => {
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [ConferenceEffectsEffects, provideMockActions(() => actions$), { provide: ApiClient, useValue: apiClient }]
+            providers: [ConferenceEffects, provideMockActions(() => actions$), { provide: ApiClient, useValue: apiClient }]
         });
 
-        effects = TestBed.inject(ConferenceEffectsEffects);
+        effects = TestBed.inject(ConferenceEffects);
     });
 
     it('should be created', () => {
