@@ -33,7 +33,6 @@ describe('JudgeOrJudicialOfficeHolderGuard', () => {
     });
 
     beforeEach(() => {
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
         guard = new JudgeOrJudicialOfficeHolderGuard(
             securityServiceProviderServiceSpy,
             profileServiceSpy,

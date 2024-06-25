@@ -6,7 +6,6 @@ import { Role } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
 import { AuthBaseGuard } from './auth-base.guard';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
-import { LaunchDarklyService } from '../services/launch-darkly.service';
 
 @Injectable({
     providedIn: 'root'
@@ -19,10 +18,9 @@ export abstract class RoleGuard extends AuthBaseGuard {
         securityServiceProviderService: SecurityServiceProvider,
         protected userProfileService: ProfileService,
         protected router: Router,
-        protected logger: Logger,
-        protected ldService: LaunchDarklyService
+        protected logger: Logger
     ) {
-        super(securityServiceProviderService, router, logger, ldService);
+        super(securityServiceProviderService, router, logger);
     }
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {

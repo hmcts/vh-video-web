@@ -37,7 +37,6 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
@@ -57,7 +56,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
     displayJoinHearingPopup: boolean;
-    isMuteMicrophoneEnabled = false;
 
     unreadMessageCount = 0;
     audioErrorRetryToast: VhToastComponent;
@@ -102,7 +100,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        private launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
         super(
@@ -143,9 +140,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
-        this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
-            this.isMuteMicrophoneEnabled = value;
-        });
     }
 
     assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
@@ -314,11 +308,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async joinHearingClicked() {
-        if (this.isMuteMicrophoneEnabled) {
-            this.displayJoinPopup();
-        } else {
-            await this.joinHearingInSession();
-        }
+        this.displayJoinPopup();
     }
 
     displayJoinPopup() {

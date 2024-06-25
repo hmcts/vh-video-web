@@ -5,12 +5,8 @@ import { ConfigService } from './api/config.service';
 import { first, map } from 'rxjs/operators';
 
 export const FEATURE_FLAGS = {
-    vhoWorkAllocation: 'vho-work-allocation',
-    ejudiciarySignIn: 'ejud-feature',
     dom1SignIn: 'dom1',
-    multiIdpSelection: 'multi-idp-selection',
     wowzaKillButton: 'wowza-listener-kill-switch',
-    hostMuteMicrophone: 'host-mute-microphone',
     vodafone: 'vodafone'
 };
 

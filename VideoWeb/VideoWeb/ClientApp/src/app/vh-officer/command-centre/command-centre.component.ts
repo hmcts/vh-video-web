@@ -21,7 +21,6 @@ import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 import { CsoFilter } from '../services/models/cso-filter';
@@ -56,7 +55,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     configSettings: ClientSettingsResponse;
     displayFilters = false;
-    vhoWorkAllocationFeatureFlag: boolean;
 
     protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
@@ -74,7 +72,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private screenHelper: ScreenHelper,
         private eventbus: EventBusService,
         private configService: ConfigService,
-        private ldService: LaunchDarklyService,
         protected notificationToastrService: NotificationToastrService
     ) {
         this.loadingData = false;
@@ -83,9 +80,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
         this.activeSessionsOnly = this.activeSessionsStorage.get() ?? false;
-        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
-            this.vhoWorkAllocationFeatureFlag = value;
-        });
     }
 
     ngOnInit(): void {
