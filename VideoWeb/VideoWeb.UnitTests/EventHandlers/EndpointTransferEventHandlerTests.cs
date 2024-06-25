@@ -46,8 +46,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_endpoint_status_messages_to_clients_when_transferring_to_new_consultation_room()
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -80,8 +79,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_endpoint_status_messages_to_clients_when_transferring_to_existing_consultation_room()
         {
             // ie we are transferring into a room with participants or endpoints already in it
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -118,8 +116,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_endpoint_status_messages_to_clients_when_transferring_from_new_consultation_room()
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -158,8 +155,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_endpoint_status_messages_to_clients_when_transferring_all_participants_out()
         {
-            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

@@ -57,8 +57,8 @@ public class EndpointsController(
             var usersEndpoints = conference.Endpoints;
             if (!isHostOrJoh)
                 usersEndpoints = usersEndpoints.Where(ep =>
-                    ep.DefenceAdvocate != null &&
-                    ep.DefenceAdvocate.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+                    ep.DefenceAdvocateUsername != null &&
+                    ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
             
             var allowedEndpointResponseMapper = mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
             var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();

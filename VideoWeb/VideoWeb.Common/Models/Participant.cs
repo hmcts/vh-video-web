@@ -22,8 +22,8 @@ namespace VideoWeb.Common.Models
         public string DisplayName { get; set; }
         public Guid RefId { get; set; }
         public string Representee { get; set; }
-        public MeetingRoom CurrentRoom { get; set; }
-        public MeetingRoom InterpreterRoom { get; set; }
+        public ConsultationRoom CurrentRoom { get; set; }
+        public ConsultationRoom InterpreterRoom { get; set; }
         public List<LinkedParticipant> LinkedParticipants { get; set; }
 
         public bool IsJudge()
@@ -60,7 +60,5 @@ namespace VideoWeb.Common.Models
         {
             return IsJudge() || IsStaffMember();
         }
-        
-        public ConsultationRoom CurrentRoom { get; set; }
     }
 }

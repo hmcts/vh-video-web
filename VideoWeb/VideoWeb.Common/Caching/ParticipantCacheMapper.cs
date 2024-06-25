@@ -2,6 +2,7 @@ using System;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
@@ -34,8 +35,8 @@ public static class ParticipantCacheMapper
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
         model.Username = hearingDetails.Username;
         model.Representee = hearingDetails.Representee;
-        model.CurrentRoom = RoomCacheMapper.Map(participant.CurrentRoom);
-        model.InterpreterRoom = RoomCacheMapper.Map(participant.CurrentInterpreterRoom);
+        model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
+        model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
         return model;
     }
     
@@ -63,8 +64,8 @@ public static class ParticipantCacheMapper
         model.HearingRole = judiciaryDetails.HearingRoleCode.ToString();
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
         model.Username = judiciaryDetails.Email;
-        model.CurrentRoom = RoomCacheMapper.Map(participant.CurrentRoom);
-        model.InterpreterRoom = RoomCacheMapper.Map(participant.CurrentInterpreterRoom);
+        model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
+        model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
         return model;
     }
     
@@ -81,8 +82,8 @@ public static class ParticipantCacheMapper
         model.HearingRole = GetHearingRoleFromUserRole(participant.UserRole);
         model.ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true);
         model.Username = participant.Username;
-        model.CurrentRoom = RoomCacheMapper.Map(participant.CurrentRoom);
-        model.InterpreterRoom = RoomCacheMapper.Map(participant.CurrentInterpreterRoom);
+        model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
+        model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
         return model;
     }
     
@@ -94,4 +95,15 @@ public static class ParticipantCacheMapper
             UserRole.QuickLinkParticipant => "Quick Link Participant",
             _ => null
         };
+    private static ConsultationRoom MapRoomToCacheModel(RoomResponse room)
+    {
+        if (room == null) return null;
+        
+        return new ConsultationRoom
+        {
+            Id = room.Id,
+            Label = room.Label,
+            Locked = room.Locked
+        };
+    }
 }

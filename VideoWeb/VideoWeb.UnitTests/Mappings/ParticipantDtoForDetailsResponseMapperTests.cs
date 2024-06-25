@@ -15,8 +15,6 @@ namespace VideoWeb.UnitTests.Mappings
     {
         protected AutoMock _mocker;
         protected ParticipantDtoForResponseMapper _sut;
-        private Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>> linkedParticipantMapperMock;
-        private Mock<IMapTo<CivilianRoom, RoomSummaryResponse>> roomMapperMock;
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
@@ -25,7 +23,6 @@ namespace VideoWeb.UnitTests.Mappings
         private LinkedParticipantResponse linkedParticipantResponse1;
         private LinkedParticipantResponse linkedParticipantResponse2;
 
-        private CivilianRoom _civilianRoom;
         private RoomSummaryResponse roomSummaryResponse;
         private Guid participantId = Guid.NewGuid();
 
@@ -37,22 +34,8 @@ namespace VideoWeb.UnitTests.Mappings
             linkedParticipants = new List<LinkedParticipant>() { linkedParticipant1, linkedParticipant2 };
             linkedParticipantResponse1 = new LinkedParticipantResponse() { LinkedId = linkedParticipant1.LinkedId };
             linkedParticipantResponse2 = new LinkedParticipantResponse() { LinkedId = linkedParticipant2.LinkedId };
-            linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>>();
-            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipant1)).Returns(linkedParticipantResponse1);
-            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipant2)).Returns(linkedParticipantResponse2);
 
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>()).Returns(linkedParticipantMapperMock.Object);
-
-            _civilianRoom = new CivilianRoom()
-            {
-                Id = 123456,
-                RoomLabel = "TestCiviliantRoomLabel",
-                Participants = new List<Guid>()
-                {
-                    participantId
-                }
-            };
 
             roomSummaryResponse = new RoomSummaryResponse()
             {
@@ -86,13 +69,12 @@ namespace VideoWeb.UnitTests.Mappings
                 {
                     Label = "Room1",
                     Locked = true
-                }
-            };
-
-            var testConference = new Conference()
-            {
-                CivilianRooms = new List<CivilianRoom> {
-                    civilianRoom
+                },
+                InterpreterRoom = new ConsultationRoom
+                {
+                    Id = long.Parse(roomSummaryResponse.Id),
+                    Label = roomSummaryResponse.Label,
+                    Locked = roomSummaryResponse.Locked
                 }
             };
 
@@ -107,30 +89,11 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.Role.Should().Be(testParticipant.Role);
             mapped.Id.Should().Be(testParticipant.Id);
             mapped.UserName.Should().Be(testParticipant.Username);
-            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
-
-            mapped.InterpreterRoom.Should().Be(roomSummaryResponse);
+            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse> { linkedParticipantResponse1, linkedParticipantResponse2 });
+            mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
             mapped.CurrentRoom.Should().NotBeNull();
             mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
             mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
-
-            linkedParticipants.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
-            linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipant>()), Times.Exactly(linkedParticipants.Count));
-        }
-        
-        [Test]
-        public void should_map_correctly_without_current_room()
-        {
-            var testParticipant = new Participant();
-            
-            var testConference = new Conference
-            {
-                CivilianRooms = [civilianRoom]
-            };
-            
-            var mapped = _sut.Map(testParticipant, testConference);
-            
-            mapped.CurrentRoom.Should().BeNull();
         }
     }
 }

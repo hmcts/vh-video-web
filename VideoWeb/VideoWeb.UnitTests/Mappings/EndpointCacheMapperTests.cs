@@ -1,11 +1,8 @@
-using BookingsApi.Contract.V2.Enums;
-using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -20,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
             cachedModel.Id.Should().Be(ep.Id);
             cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocate.Should().Be(ep.DefenceAdvocate);
+            cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate);
         }
     }
 }

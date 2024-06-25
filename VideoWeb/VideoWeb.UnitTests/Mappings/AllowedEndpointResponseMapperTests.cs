@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
             // Arrange
             var endpoint = new Endpoint 
             { 
-                DefenceAdvocate = defenceAdvocateUsername,
+                DefenceAdvocateUsername = defenceAdvocateUsername,
                 Id = Guid.NewGuid(),
                 DisplayName = displayName 
             };

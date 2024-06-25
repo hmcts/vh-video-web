@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Helpers
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "NewEndpoint",
-                DefenceAdvocate = "endpointDefenceAdvocate"
+                DefenceAdvocateUsername = "endpointDefenceAdvocate"
             };
             
             var request = new UpdateConferenceEndpointsRequest()

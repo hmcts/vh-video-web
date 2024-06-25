@@ -7,8 +7,8 @@ namespace VideoWeb.Mappings
 {
     public class VideoEndpointsResponseDtoMapper : IMapTo<Endpoint, VideoEndpointResponse>
     {
-        private readonly IMapTo<MeetingRoom, RoomSummaryResponse> _roomResponseMapper;
-        public VideoEndpointsResponseDtoMapper(IMapTo<MeetingRoom, RoomSummaryResponse> roomResponseMapper)
+        private readonly IMapTo<ConsultationRoom, RoomSummaryResponse> _roomResponseMapper;
+        public VideoEndpointsResponseDtoMapper(IMapTo<ConsultationRoom, RoomSummaryResponse> roomResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
         }
@@ -22,7 +22,7 @@ namespace VideoWeb.Mappings
                 Status = endpoint.EndpointStatus,
                 PexipDisplayName = pexipDisplayName,
                 CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
-                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
+                DefenceAdvocateUsername = endpoint.DefenceAdvocateUsername,
             };
         }
         

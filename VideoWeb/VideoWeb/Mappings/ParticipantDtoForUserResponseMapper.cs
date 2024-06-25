@@ -33,7 +33,7 @@ public class ParticipantDtoForUserResponseMapper : IMapTo<IEnumerable<Participan
         
         return mappedParticipants;
     }
-    private RoomSummaryResponse Map(MeetingRoom input)
+    private RoomSummaryResponse Map(ConsultationRoom input)
     {
         if (input == null)
         {

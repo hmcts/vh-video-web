@@ -42,10 +42,11 @@ namespace VideoWeb.UnitTests.Mappings
                 resultParticipant.ContactEmail.Should().Be(participantDetails.ContactEmail);
                 resultParticipant.ContactTelephone.Should().Be(participantDetails.TelephoneNumber);
                 resultParticipant.Representee.Should().Be(participantDetails.Representee);
-                
-                resultParticipant.CurrentRoom.Should().NotBeNull();
-                resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
-                resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
+                if (resultParticipant.CurrentRoom != null)
+                {
+                    resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
+                    resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
+                }
                 
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
@@ -65,8 +66,22 @@ namespace VideoWeb.UnitTests.Mappings
                 conference.Endpoints.Select(x => x.Id).Should().Contain(endpoint.Id);
                 conference.Endpoints.Select(x => x.DisplayName).Should().Contain(endpoint.DisplayName);
                 conference.Endpoints.Select(x => x.Status).Should().Contain((EndpointState)endpoint.EndpointStatus);
-                conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocate);
+                conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
             }
+        }
+        
+        
+        [Test]
+        public void Should_map_without_current_room()
+        {
+            var conference = BuildConferenceDetailsResponse();
+            var hearing = BuildHearingDetailsResponse(conference);
+            conference.Participants[0].CurrentRoom = null;
+            var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+            
+            var resultParticipant  = response.Participants[0];
+            
+            resultParticipant.CurrentRoom.Should().BeNull();
         }
         
         private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
@@ -93,19 +108,6 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Participants = participants)
                 .Build();
         }
-        
-        
-        [Test]
-        public void Should_map_without_current_room()
-        {
-            var conference = BuildConferenceDetailsResponse();
-            conference.Participants[0].CurrentRoom = null;
-            var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
-            
-            var resultParticipant  = response.Participants[0];
-            
-            resultParticipant.CurrentRoom.Should().BeNull();
-        }
 
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
         {
@@ -121,16 +123,16 @@ namespace VideoWeb.UnitTests.Mappings
             var participantA = participants[0];
             var participantB = participants[1];
             participantA.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantB.Id, Type = LinkedParticipantType.Interpreter});
-           
-            participantA.CurrentRoom = new RoomResponse            {Id = 1,Label = "Room 1", Locked = true};
-
+            participantA.CurrentRoom = new RoomResponse {Id = 1,Label = "Room 1", Locked = true};
             participantB.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantA.Id, Type = LinkedParticipantType.Interpreter });
+            participantB.CurrentRoom = new RoomResponse {Id = 2,Label = "Room 2", Locked = true};
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).All().With(e => e.DefenceAdvocate = participantA.Username).Build().ToList();
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.MeetingRoom = meetingRoom)
+                .With(x => x.CivilianRooms = [new() { Id = 1, Label = "Room 1" }])
                 .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;

@@ -1,4 +1,3 @@
-using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -13,7 +12,7 @@ namespace VideoWeb.Mappings
             {
                 DisplayName = input.DisplayName,
                 Id = input.Id,
-                DefenceAdvocateUsername = input.DefenceAdvocate,
+                DefenceAdvocateUsername = input.DefenceAdvocateUsername,
             };
         }
     }

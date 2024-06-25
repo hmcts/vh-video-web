@@ -86,8 +86,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         {
             // ie we are transferring a participant into a room with participants already in it
             
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -170,8 +169,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_remove_consultation_room_when_transferring_all_participants_out()
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);

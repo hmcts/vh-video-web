@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -133,7 +134,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 UpdateConsultationRoomForEndpoint(endpointToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
             }
             
-            await _conferenceCache.UpdateConferenceAsync(SourceConference);
+            await conferenceService.ConferenceCache.UpdateConferenceAsync(SourceConference);
         }
 
         private void UpdateConsultationRoomForParticipant(Participant participant, string toRoom, string fromRoom)

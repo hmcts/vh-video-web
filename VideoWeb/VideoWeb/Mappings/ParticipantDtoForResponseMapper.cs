@@ -20,17 +20,16 @@ namespace VideoWeb.Mappings
             response.Representee = participant.Representee;
             response.Role = participant.Role;
             response.Status = participant.ParticipantStatus;
-            response.LinkedParticipants 
-                = participant.LinkedParticipants?.Select(e => new LinkedParticipantResponse { LinkedId = e.LinkedId, LinkType = e.LinkType }).ToList();
+            response.LinkedParticipants = participant.LinkedParticipants?.Select(e => new LinkedParticipantResponse { LinkedId = e.LinkedId, LinkType = e.LinkType }).ToList();
             response.UserName = participant.Username;
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
             response.CurrentRoom = Map(participant.CurrentRoom);
-            response.InterpreterRoom = Map(participant.InterpreterRoom); 
+            response.InterpreterRoom  = Map(participant.InterpreterRoom);
 
             return response;
         }
         
-        private RoomSummaryResponse Map(MeetingRoom input)
+        private RoomSummaryResponse Map(ConsultationRoom input)
         {
             if (input == null)
             {

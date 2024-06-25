@@ -4,9 +4,9 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class RoomSummaryResponseFromDtoMapper : IMapTo<MeetingRoom, RoomSummaryResponse>
+    public class RoomSummaryResponseFromDtoMapper : IMapTo<ConsultationRoom, RoomSummaryResponse>
     {
-        public RoomSummaryResponse Map(MeetingRoom input)
+        public RoomSummaryResponse Map(ConsultationRoom input)
         {
             if (input == null)
             {
