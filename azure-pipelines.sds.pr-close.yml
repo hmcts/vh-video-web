@@ -1,5 +1,6 @@
 name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
+
 resources:
   repositories:
     - repository: azTemplates
