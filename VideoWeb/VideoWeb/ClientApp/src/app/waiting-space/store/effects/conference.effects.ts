@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import {of} from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
-import {ApiClient, UpdateParticipantDisplayNameRequest} from 'src/app/services/clients/api-client';
+import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 
@@ -24,10 +24,21 @@ export class ConferenceEffects {
         this.actions$.pipe(
             ofType(ConferenceActions.updateJudgeDisplayName, ConferenceActions.updateStaffMemberDisplayName),
             switchMap(action =>
-                this.apiClient.updateParticipantDisplayName(action.conferenceId, action.participantId, new UpdateParticipantDisplayNameRequest({display_name: action.displayName}))
-                .pipe(
-                    map(() => ConferenceActions.updateParticipantDisplayNameSuccess({ conferenceId: action.conferenceId, participantId: action.participantId, displayName: action.displayName }))
-                )
+                this.apiClient
+                    .updateParticipantDisplayName(
+                        action.conferenceId,
+                        action.participantId,
+                        new UpdateParticipantDisplayNameRequest({ display_name: action.displayName })
+                    )
+                    .pipe(
+                        map(() =>
+                            ConferenceActions.updateParticipantDisplayNameSuccess({
+                                conferenceId: action.conferenceId,
+                                participantId: action.participantId,
+                                displayName: action.displayName
+                            })
+                        )
+                    )
             )
         )
     );
