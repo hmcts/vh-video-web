@@ -117,5 +117,41 @@ public class GetActiveConferencesTests
         typedResult.Should().NotBeNull();
         typedResult.StatusCode.Should().Be(200);
     }
+
+    [Test]
+    public async Task should_return_empty_list_when_api_returns_404()
+    {
+        // arrange
+        _mocker.Mock<IVideoApiClient>()
+            .Setup(x => x.GetActiveConferencesAsync())
+            .ThrowsAsync(new VideoApiException("Not found", 404, "Not found", null, null));
+
+        // act
+        var result = await _sut.GetActiveConferences();
+        
+        // assert
+        var typedResult = (OkObjectResult) result.Result;
+        typedResult.Should().NotBeNull();
+        typedResult.StatusCode.Should().Be(200);
+        typedResult.Value.Should().BeOfType<List<ConferenceForVhOfficerResponse>>().Which.Should().BeEmpty();
+    }
+    
+    [Test]
+    public async Task should_return_error_when_api_throws_exception()
+    {
+        // arrange
+        _mocker.Mock<IVideoApiClient>()
+            .Setup(x => x.GetActiveConferencesAsync())
+            .ThrowsAsync(new VideoApiException("Internal server error", 500, "Internal server error", null, null));
+        
+        // act
+        var result = await _sut.GetActiveConferences();
+        
+        // assert
+        var typedResult = (ObjectResult) result.Result;
+        typedResult.Should().NotBeNull();
+        typedResult.StatusCode.Should().Be(500);
+        typedResult.Value.Should().Be("Internal server error");
+    }
     
 }
