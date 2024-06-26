@@ -49,6 +49,10 @@ export class UserMediaStreamService {
         this.userMediaService.isAudioOnly$.subscribe(audioOnly => {
             this.onIsAudioOnlyChanged(audioOnly);
         });
+
+        this.userMediaService.isReceiveOnly$.subscribe(receiveOnly => {
+            this.onReceiveOnlyChanged(receiveOnly);
+        });
     }
 
     get activeCameraStream$(): Observable<MediaStream | null> {
@@ -106,6 +110,51 @@ export class UserMediaStreamService {
 
                 this.logger.debug(`${this.loggerPrefix} current stream built.`);
             });
+    }
+
+    private onReceiveOnlyChanged(receiveOnly: boolean) {
+        if (receiveOnly) {
+            this.logger.debug(`${this.loggerPrefix} receive only is true. Removing active camera and microphone tracks.`, {
+                receiveOnly: receiveOnly,
+                activeCamera: this.activeCameraStream,
+                activeMicrophone: this.activeMicrophoneStream,
+                currentStream: this.currentStream
+            });
+
+            this.activeCameraStream?.getVideoTracks().forEach(track => {
+                this.currentStream.removeTrack(track);
+                this.logger.debug(`${this.loggerPrefix} video track removed from current stream. Track not stopped`, {
+                    track: track
+                });
+            });
+
+            this.activeMicrophoneStream?.getAudioTracks().forEach(track => {
+                this.currentStream.removeTrack(track);
+                this.logger.debug(`${this.loggerPrefix} audio track removed from current stream. Track not stopped`, {
+                    track: track
+                });
+            });
+
+            this.activeCameraStreamSubject.next(null);
+            this.activeMicrophoneStreamSubject.next(null);
+            this.streamModifiedSubject.next();
+        } else {
+            this.logger.debug(`${this.loggerPrefix} receive only is false. Adding active camera and microphone tracks.`, {
+                receiveOnly: receiveOnly,
+                activeCamera: this.activeCameraStream,
+                activeMicrophone: this.activeMicrophoneStream,
+                currentStream: this.currentStream
+            });
+
+            this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.addTrack(track));
+            this.activeMicrophoneStream?.getAudioTracks().forEach(track => this.currentStream.addTrack(track));
+
+            this.activeCameraStreamSubject.next(this.activeCameraStream);
+            this.activeMicrophoneStreamSubject.next(this.activeMicrophoneStream);
+            this.streamModifiedSubject.next();
+        }
+
+        this.logger.debug(`${this.loggerPrefix} Receive only update complete.`);
     }
 
     private onIsAudioOnlyChanged(audioOnly: boolean) {

@@ -31,10 +31,12 @@ export class UserMediaService {
     private activeVideoDevice: UserMediaDevice;
     private activeMicrophoneDevice: UserMediaDevice;
     private isAudioOnly = true;
+    private receiveOnly = true;
     private connectedDevicesSubject: ReplaySubject<UserMediaDevice[]> = new ReplaySubject(1);
     private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
+    private isReceiveOnlySubject = new ReplaySubject<boolean>(1);
 
     constructor(
         private errorService: ErrorService,
@@ -44,6 +46,10 @@ export class UserMediaService {
 
     get isAudioOnly$(): Observable<boolean> {
         return this.isAudioOnlySubject.asObservable();
+    }
+
+    get isReceiveOnly$(): Observable<boolean> {
+        return this.isReceiveOnlySubject.asObservable();
     }
 
     get activeVideoDevice$(): Observable<UserMediaDevice> {
@@ -142,6 +148,12 @@ export class UserMediaService {
         if (this.isAudioOnly !== audioOnly) {
             this.setIsAudioOnly(audioOnly);
         }
+    }
+
+    updateToReceiveOnly(receiveOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Attempting switch to no outgoing stream.`);
+        this.receiveOnly = receiveOnly;
+        this.isReceiveOnlySubject.next(this.receiveOnly);
     }
 
     hasMultipleDevices(): Observable<boolean> {

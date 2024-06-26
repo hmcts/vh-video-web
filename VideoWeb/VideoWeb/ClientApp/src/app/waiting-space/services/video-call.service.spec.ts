@@ -41,6 +41,7 @@ describe('VideoCallService', () => {
     let currentStreamSubject: ReplaySubject<MediaStream>;
     let streamModifiedSubject: Subject<void>;
     let isAudioOnlySubject: ReplaySubject<boolean>;
+    let isReceiveOnlySubject: ReplaySubject<boolean>;
 
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
@@ -69,7 +70,7 @@ describe('VideoCallService', () => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['selectScreenToShare', 'initialise'],
-            ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
+            ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$', 'isReceiveOnly$']
         );
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>(
@@ -80,11 +81,13 @@ describe('VideoCallService', () => {
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
         streamModifiedSubject = new Subject<void>();
         isAudioOnlySubject = new ReplaySubject<boolean>(1);
+        isReceiveOnlySubject = new ReplaySubject<boolean>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'streamModified$').and.returnValue(streamModifiedSubject.asObservable());
 
         getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices$').and.returnValue(of(testData.getListOfCameras()));
         getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'isReceiveOnly$').and.returnValue(isReceiveOnlySubject.asObservable());
 
         heartbeatServiceSpy = jasmine.createSpyObj<HeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
 

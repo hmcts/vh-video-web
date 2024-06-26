@@ -819,7 +819,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+
+        if (this.isStaffMember()) {
+            this.videoCallService.makeReceiveOnlyCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        } else {
+            this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        }
     }
 
     needsInterpreterRoom(): boolean {
@@ -1190,6 +1195,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     shouldCurrentUserJoinHearing(): boolean {
         return !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
+    }
+
+    isStaffMember(): boolean {
+        return this.loggedInUser.role === Role.StaffMember;
     }
 
     isHost(): boolean {

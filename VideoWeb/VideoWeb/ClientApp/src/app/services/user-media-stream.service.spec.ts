@@ -43,6 +43,7 @@ describe('UserMediaStreamService', () => {
     let activeCameraDeviceSubject: ReplaySubject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: ReplaySubject<UserMediaDevice>;
     let isAudioOnlySubject: ReplaySubject<boolean>;
+    let isReceiveOnlySubject: ReplaySubject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let audioOnlyImageServiceSpy: jasmine.SpyObj<AudioOnlyImageService>;
 
@@ -65,13 +66,18 @@ describe('UserMediaStreamService', () => {
         activeCameraDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         isAudioOnlySubject = new ReplaySubject<boolean>(1);
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']);
+        isReceiveOnlySubject = new ReplaySubject<boolean>(1);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
+            [],
+            ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$', 'isReceiveOnly$']
+        );
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(
             activeMicrophoneDeviceSubject.asObservable()
         );
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isReceiveOnly$').and.returnValue(isReceiveOnlySubject.asObservable());
 
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 

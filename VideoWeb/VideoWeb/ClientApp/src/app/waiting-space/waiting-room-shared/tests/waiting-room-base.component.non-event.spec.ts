@@ -108,6 +108,11 @@ describe('WaitingRoomComponent message and clock', () => {
         component.hearing = new Hearing(conference);
         component.conference = conference;
         component.participant = participant;
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: participant.id,
+            display_name: participant.display_name,
+            role: participant.role
+        });
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
     });

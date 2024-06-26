@@ -35,6 +35,7 @@ describe('SelectMediaDevicesComponent', () => {
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let isAudioOnlySubject: Subject<boolean>;
+    let isReceiveOnlySubject: Subject<boolean>;
     let filterChangedSubject: Subject<BackgroundFilter | null>;
 
     let activeCameraStreamSubject: Subject<MediaStream>;
@@ -48,13 +49,21 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['updateActiveCamera', 'updateActiveMicrophone', 'updateIsAudioOnly'],
-            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
+            [
+                'activeVideoDevice$',
+                'activeMicrophoneDevice$',
+                'connectedVideoDevices$',
+                'connectedMicrophoneDevices$',
+                'isAudioOnly$',
+                'isReceiveOnly$'
+            ]
         );
         connectedVideoDevicesSubject = new Subject<UserMediaDevice[]>();
         connectedMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
+        isReceiveOnlySubject = new Subject<boolean>();
         filterChangedSubject = new Subject<BackgroundFilter | null>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
 
@@ -65,6 +74,7 @@ describe('SelectMediaDevicesComponent', () => {
             connectedMicrophoneDevicesSubject.asObservable()
         );
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'isReceiveOnly$').and.returnValue(isReceiveOnlySubject.asObservable());
 
         userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeCameraStream$', 'activeMicrophoneStream$']);
 

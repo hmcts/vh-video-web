@@ -151,8 +151,11 @@
     "button-close": "Close",
     "on": "ON",
     "off": "OFF",
+    "receive-only-on": "ON",
+    "receive-only-off": "OFF",
     "warning": "Warning",
-    "join-with-camera-on-off": " Join with your camera on/off"
+    "join-with-camera-on-off": " Join with your camera on/off",
+    "join-receive-only-on-off": " Join without a camera or microphone on/off"
   },
   "self-test": {
     "testing-equipment": "Testing your equipment",

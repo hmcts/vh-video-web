@@ -20,6 +20,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     @Output() shouldClose = new EventEmitter();
 
     @Input() showAudioOnlySetting = false;
+    @Input() showReceiveOnlySetting = false;
 
     @ViewChild('availableMicsListRef') availableMicsList: ElementRef<HTMLDivElement>;
 
@@ -30,6 +31,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     selectedMicrophoneDevice: UserMediaDevice;
     selectedMicrophoneStream: MediaStream;
     connectWithCameraOn: boolean;
+    receieveOnlyOn: boolean;
     blockToggleClicks: boolean;
     showBackgroundFilter: boolean;
 
@@ -51,6 +53,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
             ? this.translateService.instant('select-media-devices.on')
             : this.translateService.instant('select-media-devices.off');
         return result.toUpperCase();
+    }
+
+    get receiveOnlyToggleText(): string {
+        const result: string = this.receieveOnlyOn
+            ? this.translateService.instant('select-media-devices.receive-only-on')
+            : this.translateService.instant('select-media-devices.receive-only-off');
+        return result;
     }
 
     get hasOnlyOneAvailableCameraDevice(): boolean {
@@ -95,6 +104,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
             this.connectWithCameraOn = !isAudioOnly;
         });
 
+        this.userMediaService.isReceiveOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isReceiveOnly => {
+            this.receieveOnlyOn = isReceiveOnly;
+        });
+
         this.userMediaService.activeVideoDevice$.pipe(takeUntil(this.destroyedSubject)).subscribe(cameraDevice => {
             this.updateSelectedCamera(cameraDevice);
         });
@@ -125,6 +138,12 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         this.connectWithCameraOn = !this.connectWithCameraOn;
         this.logger.debug(`${this.loggerPrefix} Toggled camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
         this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
+    }
+
+    toggleReceiveOnlySwitch() {
+        this.receieveOnlyOn = !this.receieveOnlyOn;
+        this.logger.debug(`${this.loggerPrefix} Toggled connect with camera/mic to ${this.receieveOnlyOn ? 'on' : 'off'}`);
+        this.userMediaService.updateToReceiveOnly(this.receieveOnlyOn);
     }
 
     transitionstart() {

@@ -44,6 +44,9 @@ export class VideoCallService {
     streamModifiedSubscription: Subscription;
     wowzaAgentName = 'vh-wowza';
 
+    conferenceDetails: { pexipNode: string; conferenceAlias: string; participantDisplayName: string; maxBandwidth: number };
+    switchingCallType = false;
+
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
 
@@ -167,6 +170,33 @@ export class VideoCallService {
             this.renegotiateCall();
             self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
+
+        this.userMediaService.isReceiveOnly$.pipe(skip(1)).subscribe(isReceiveOnly => {
+            if (self.switchingCallType) {
+                return;
+            }
+            self.switchingCallType = true;
+            if (isReceiveOnly) {
+                self.pexipAPI.user_media_stream = null;
+
+                self.makeReceiveOnlyCall(
+                    self.conferenceDetails.pexipNode,
+                    self.conferenceDetails.conferenceAlias,
+                    self.conferenceDetails.participantDisplayName,
+                    self.conferenceDetails.maxBandwidth
+                );
+            } else {
+                self.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
+                    self.pexipAPI.user_media_stream = currentStream;
+                    self.makeCall(
+                        self.conferenceDetails.pexipNode,
+                        self.conferenceDetails.conferenceAlias,
+                        self.conferenceDetails.participantDisplayName,
+                        self.conferenceDetails.maxBandwidth
+                    );
+                });
+            }
+        });
     }
 
     initTurnServer() {
@@ -184,12 +214,34 @@ export class VideoCallService {
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.conferenceDetails = {
+            pexipNode,
+            conferenceAlias,
+            participantDisplayName,
+            maxBandwidth
+        };
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
         this.stopPresentation();
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+    }
+
+    makeReceiveOnlyCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.conferenceDetails = {
+            pexipNode,
+            conferenceAlias,
+            participantDisplayName,
+            maxBandwidth
+        };
+        this.logger.debug(`${this.loggerPrefix} make receive-only pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.userMediaService.updateToReceiveOnly(true);
+        this.stopPresentation();
+        this.initCallTag();
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
     disconnectFromCall() {
@@ -530,6 +582,7 @@ export class VideoCallService {
                 `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
             );
             this.justRenegotiated = false;
+            this.switchingCallType = false;
         } else {
             this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
 
@@ -545,6 +598,7 @@ export class VideoCallService {
 
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
         this.logger.debug(`${this.loggerPrefix} handling participant created`);
+        console.log('pexip_participant', JSON.stringify(participantUpdate));
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
@@ -558,6 +612,7 @@ export class VideoCallService {
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        console.log('pexip_participant', JSON.stringify(participantUpdate));
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) });
         this.videoCallEventsService.handleParticipantUpdated(participant);

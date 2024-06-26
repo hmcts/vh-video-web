@@ -159,10 +159,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
-    isStaffMember(): boolean {
-        return this.loggedInUser.role === Role.StaffMember;
-    }
-
     onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
             this.logger.debug(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);

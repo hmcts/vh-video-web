@@ -423,7 +423,10 @@
     "permission-switch-off-camera": "Mae'n rhaid i chi gael caniatâd y llys i droi eich camera i ffwrdd ",
     "on": "YMLAEN",
     "off": "I FFWRDD",
+    "receive-only-on": "YMLAEN",
+    "receive-only-off": "I FFWRDD",
     "join-with-camera-on-off": " Ymuno gyda'ch camera ymlaen/i ffwrdd",
+    "join-receive-only-on-off": "Ymunwch heb gamera na meicroffon ymlaen / i ffwrdd",
     "browser-support": "Ni allwch ddefnyddio'r porwr hwn i wneud galwadau fideo"
   },
   "camera-check": {
