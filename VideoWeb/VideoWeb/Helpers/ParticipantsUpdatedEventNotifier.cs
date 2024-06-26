@@ -29,14 +29,14 @@ namespace VideoWeb.Helpers
         
         public Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
         {
-            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
             CallbackEvent callbackEvent = new CallbackEvent()
             {
                 ConferenceId = conference.Id,
                 EventType = EventType.ParticipantsUpdated,
                 TimeStampUtc = DateTime.UtcNow,
-                Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList(),
-                ParticipantsToNotify = participantsToNotify.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+                Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant)).ToList(),
+                ParticipantsToNotify = participantsToNotify.Select(participant => participantsToResponseMapper.Map(participant)).ToList()
             };
 
             _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
