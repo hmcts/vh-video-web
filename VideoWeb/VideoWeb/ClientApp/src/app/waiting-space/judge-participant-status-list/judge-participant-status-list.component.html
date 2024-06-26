@@ -94,7 +94,7 @@
           role="presentation"
         >
           <dt id="p-{{ participant.id }}-name-winger" class="govuk-heading-s govuk-!-margin-bottom-3">
-            {{ participant.name }}
+            {{ participant.name ?? participant.displayName }}
           </dt>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -126,7 +126,7 @@
           role="presentation"
         >
           <dt id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
-            {{ participant.name }}
+            {{ participant.name ?? participant.displayName }}
           </dt>
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
@@ -235,7 +235,7 @@
             <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
               <fa-icon icon="language" size="2x"></fa-icon>
             </span>
-            {{ participant.name }}
+            {{ participant.name ?? participant.displayName }}
           </dt>
 
           <dd
@@ -306,7 +306,7 @@
           role="presentation"
         >
           <dt id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-3">
-            {{ participant.name }}
+            {{ participant.name ?? participant.displayName }}
           </dt>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
