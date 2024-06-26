@@ -77,3 +77,4 @@ stages:
               domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
               name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
               domainUris: ${{ variables.app_redirect_uri }}
+              
