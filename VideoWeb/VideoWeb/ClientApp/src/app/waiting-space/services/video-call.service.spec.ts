@@ -31,7 +31,7 @@ const config = new ClientSettingsResponse({
     supplier_turn_server_credential: 'credential'
 });
 
-fdescribe('VideoCallService', () => {
+describe('VideoCallService', () => {
     let service: VideoCallService;
     let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
