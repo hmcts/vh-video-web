@@ -38,7 +38,6 @@ declare let PexRTC: any;
 export class VideoCallService {
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
-    readonly callTypeAudioOnly = 'audioonly';
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
@@ -183,13 +182,28 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
-            pexipNode: pexipNode
-        });
-        this.stopPresentation();
-        this.initCallTag();
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+    async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        console.log('foo1');
+        const result = await this.userMediaService.checkCameraAndMicrophonePresence();
+        console.log('foo2', result);
+        const hasCameraDevices = result.hasACamera;
+        const hasMicrophoneDevices = result.hasAMicrophone;
+
+        if (hasCameraDevices && hasMicrophoneDevices) {
+            console.log('foo3');
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        } else if (!hasCameraDevices && hasMicrophoneDevices) {
+            console.log('foo4');
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'audioonly');
+        } else {
+            console.log('foo5');
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
+        }
+    }
+
+    makeReceiveOnlyCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.pexipAPI.user_media_stream = new MediaStream([]);
+        this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
     disconnectFromCall() {
@@ -520,6 +534,22 @@ export class VideoCallService {
         this.pexipAPI.setParticipantText(uuid, text);
     }
 
+    private makePexipCall(
+        pexipNode: string,
+        conferenceAlias: string,
+        participantDisplayName: string,
+        maxBandwidth: number,
+        callType?: PexipCallType
+    ) {
+        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.stopPresentation();
+        this.initCallTag();
+        console.log('foo6', pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+    }
+
     private handleSetup(stream: MediaStream | URL) {
         this.onSetupSubject.next(new CallSetup(stream));
     }
@@ -545,6 +575,7 @@ export class VideoCallService {
 
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
         this.logger.debug(`${this.loggerPrefix} handling participant created`);
+        console.log('shaed-pexipcreate', JSON.stringify(participantUpdate));
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
@@ -559,6 +590,7 @@ export class VideoCallService {
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        console.log('shaed-participantUpdate', JSON.stringify(participantUpdate));
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })

@@ -819,7 +819,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        await this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
 
     needsInterpreterRoom(): boolean {

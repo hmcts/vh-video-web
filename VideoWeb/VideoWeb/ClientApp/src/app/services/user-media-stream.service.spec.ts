@@ -65,13 +65,17 @@ describe('UserMediaStreamService', () => {
         activeCameraDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         isAudioOnlySubject = new ReplaySubject<boolean>(1);
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
+            ['checkCameraAndMicrophonePresence'],
+            ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']
+        );
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(
             activeMicrophoneDeviceSubject.asObservable()
         );
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 

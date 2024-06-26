@@ -93,6 +93,13 @@ export class UserMediaService {
         );
     }
 
+    async checkCameraAndMicrophonePresence(): Promise<{ hasACamera: boolean; hasAMicrophone: boolean }> {
+        const devices = await this.navigator.mediaDevices.enumerateDevices();
+        const hasACamera = devices.some(device => device.kind === 'videoinput');
+        const hasAMicrophone = devices.some(device => device.kind === 'audioinput');
+        return { hasACamera, hasAMicrophone };
+    }
+
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
             retry(3),

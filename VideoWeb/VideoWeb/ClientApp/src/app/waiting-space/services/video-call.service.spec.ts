@@ -31,7 +31,7 @@ const config = new ClientSettingsResponse({
     supplier_turn_server_credential: 'credential'
 });
 
-describe('VideoCallService', () => {
+fdescribe('VideoCallService', () => {
     let service: VideoCallService;
     let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
@@ -68,7 +68,7 @@ describe('VideoCallService', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['selectScreenToShare', 'initialise'],
+            ['selectScreenToShare', 'initialise', 'checkCameraAndMicrophonePresence'],
             ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
@@ -85,6 +85,7 @@ describe('VideoCallService', () => {
         getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices$').and.returnValue(of(testData.getListOfCameras()));
         getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
         heartbeatServiceSpy = jasmine.createSpyObj<HeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
 
@@ -192,15 +193,44 @@ describe('VideoCallService', () => {
         expect(() => service.disconnectFromCall()).toThrowError('[VideoCallService] - Pexip Client has not been initialised.');
     });
 
-    it('should call pexip with call details', () => {
+    it('should call pexip with call details', async () => {
         const node = 'node124';
         const conferenceAlias = 'WR173674fff';
         const participantDisplayName = 'T1;John Doe';
         const maxBandwidth = 767;
+        const callType: PexipCallType = null;
         service.pexipAPI = pexipSpy;
 
-        service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
-        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+        expect(pexipSpy.call_tag).toBeDefined();
+    });
+
+    it('should call pexip with as receive only when user does not have devices', async () => {
+        const node = 'node124';
+        const conferenceAlias = 'WR173674fff';
+        const participantDisplayName = 'T1;John Doe';
+        const maxBandwidth = 767;
+        const callType: PexipCallType = 'recvonly';
+        userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: false, hasAMicrophone: false }));
+        service.pexipAPI = pexipSpy;
+
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+        expect(pexipSpy.call_tag).toBeDefined();
+    });
+
+    it('should call pexip with as audio only when user has a microphone only', async () => {
+        const node = 'node124';
+        const conferenceAlias = 'WR173674fff';
+        const participantDisplayName = 'T1;John Doe';
+        const maxBandwidth = 767;
+        const callType: PexipCallType = 'audioonly';
+        userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: false, hasAMicrophone: true }));
+        service.pexipAPI = pexipSpy;
+
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         expect(pexipSpy.call_tag).toBeDefined();
     });
 

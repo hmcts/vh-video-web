@@ -1,4 +1,5 @@
 import { Role } from '../../services/clients/api-client';
+import { VHParticipant } from '../store/models/vh-conference';
 import { CaseTypeGroup } from './case-type-group';
 import { HearingRole } from './hearing-role-model';
 
@@ -26,6 +27,7 @@ export abstract class PanelModel {
     public caseTypeGroup: string;
     public hearingRole: string;
     public representee: string;
+    public vhParticipant: VHParticipant;
 
     /**
      * Has been muted by the judge
@@ -153,6 +155,10 @@ export abstract class PanelModel {
 
     participantsList(): PanelModel[] {
         return [this];
+    }
+
+    setVHParticipant(vhparticipant: VHParticipant) {
+        this.vhParticipant = vhparticipant;
     }
 
     private setOrderInTheList(): number {

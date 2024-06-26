@@ -11,7 +11,15 @@ export function getBaseUrl() {
 }
 
 const providers = [{ provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] }];
-
+// TODO: reminder to remove this before merge
+// navigator.mediaDevices.getUserMedia = () => {
+//     console.warn('using shaed mock');
+//     return Promise.resolve(new MediaStream());
+// };
+// navigator.mediaDevices.enumerateDevices = () => {
+//     console.warn('using shaed mock');
+//     return Promise.resolve([]);
+// };
 if (environment.production) {
     enableProdMode();
 }
