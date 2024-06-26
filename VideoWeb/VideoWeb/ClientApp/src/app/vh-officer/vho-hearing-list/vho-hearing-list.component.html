@@ -1,5 +1,5 @@
 <div id="conference-list" class="govuk-!-padding-3">
-  <div
+  <div onKeyPress=""
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
     *ngFor="let conference of conferences; trackBy: trackConference"
