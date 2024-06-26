@@ -7,7 +7,6 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HearingVenueResponse, JusticeUserResponse, Role } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
-import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
@@ -35,7 +34,6 @@ export abstract class VenueListComponentDirective implements OnInit {
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
-        protected ldService: LaunchDarklyService,
         protected profileService: ProfileService
     ) {
         this.selectedVenues = [];

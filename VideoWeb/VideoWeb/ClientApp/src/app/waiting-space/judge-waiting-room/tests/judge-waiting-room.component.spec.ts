@@ -58,7 +58,6 @@ import { ParticipantDeleted, ParticipantUpdated } from '../../models/video-call-
 import { PexipDisplayNameModel } from '../../../services/conference/models/pexip-display-name.model';
 import { WaitingRoomBaseDirective } from '../../waiting-room-shared/waiting-room-base.component';
 import { videoCallServiceSpy } from '../../../testing/mocks/mock-video-call.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../../services/models/conference-status-message';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
@@ -187,7 +186,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let shouldReloadSubject: Subject<void>;
     let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-    const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -271,8 +269,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
-
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -301,7 +297,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
-            launchDarklyServiceSpy,
             mockConferenceStore
         );
 
@@ -1311,21 +1306,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         it('should display join hearing popup when mute microphone feature is enabled', fakeAsync(() => {
-            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
             component.ngOnInit();
             tick();
-            expect(component.isMuteMicrophoneEnabled).toBeTruthy();
             component.joinHearingClicked();
             expect(component.displayJoinHearingPopup).toBeTruthy();
-        }));
-
-        it('should join hearing when mute microphone feature is disabled', fakeAsync(() => {
-            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(false));
-            component.ngOnInit();
-            tick();
-            expect(component.isMuteMicrophoneEnabled).toBeFalsy();
-            component.joinHearingClicked();
-            expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
     });
 

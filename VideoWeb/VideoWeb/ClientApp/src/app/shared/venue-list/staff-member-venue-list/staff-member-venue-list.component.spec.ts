@@ -12,7 +12,6 @@ import { pageUrls } from '../../page-url.constants';
 import { StaffMemberVenueListComponent } from './staff-member-venue-list.component';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
@@ -22,7 +21,6 @@ describe('StaffMemerVenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
-    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -56,7 +54,6 @@ describe('StaffMemerVenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -65,17 +62,9 @@ describe('StaffMemerVenueListComponent', () => {
     });
 
     beforeEach(() => {
-        component = new StaffMemberVenueListComponent(
-            videoWebServiceSpy,
-            router,
-            vhoQueryService,
-            logger,
-            launchDarklyServiceSpy,
-            profileServiceSpy
-        );
+        component = new StaffMemberVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, profileServiceSpy);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
         venueSessionStorage.clear();
     });
 
@@ -93,7 +82,6 @@ describe('StaffMemerVenueListComponent', () => {
                     { provide: Router, useValue: router },
                     { provide: VhoQueryService, useValue: vhoQueryService },
                     { provide: Logger, useValue: logger },
-                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy },
                     { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             });

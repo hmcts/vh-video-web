@@ -28,7 +28,6 @@ describe('IdpSelectionComponent', () => {
         router.navigate.calls.reset();
         component = new IdpSelectionComponent(router, new MockLogger(), oidcConfigSetupServiceSpy, launchDarklyServiceSpy);
         configServiceSpy.getClientSettings.and.returnValue(of(null));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.ejudiciarySignIn).and.returnValue(of(false));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.dom1SignIn).and.returnValue(of(false));
     });
 
@@ -52,19 +51,7 @@ describe('IdpSelectionComponent', () => {
         expect(component.showError()).toBeFalse();
     });
 
-    it('should getProviders should return providers without edjud when feature flag is off', fakeAsync(() => {
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.ejudiciarySignIn).and.returnValue(of(false));
-        component.ngOnInit();
-        tick();
-
-        const providers = component.getProviders();
-
-        expect(providers.length).toBe(1);
-        expect(providers[0]).toBe('vhaad');
-    }));
-
-    it('should getProviders including ejud when ejud feature flag is on', fakeAsync(() => {
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.ejudiciarySignIn).and.returnValue(of(true));
+    it('should getProviders including ejud', fakeAsync(() => {
         component.ngOnInit();
         tick();
 
@@ -82,7 +69,7 @@ describe('IdpSelectionComponent', () => {
 
         const providers = component.getProviders();
 
-        expect(providers.length).toBe(1);
+        expect(providers.length).toBe(2);
         expect(providers[0]).toBe('vhaad');
     }));
 
@@ -93,7 +80,7 @@ describe('IdpSelectionComponent', () => {
 
         const providers = component.getProviders();
 
-        expect(providers.length).toBe(2);
+        expect(providers.length).toBe(3);
         expect(providers.includes('vhaad')).toBeTruthy();
         expect(providers.includes('dom1')).toBeTruthy();
     }));
