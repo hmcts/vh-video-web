@@ -60,6 +60,7 @@ describe('SelectMediaDevicesComponent', () => {
         isAudioOnlySubject = new Subject<boolean>();
         filterChangedSubject = new Subject<BackgroundFilter | null>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
+        focusServiceSpy.restoreFocus.calls.reset();
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
