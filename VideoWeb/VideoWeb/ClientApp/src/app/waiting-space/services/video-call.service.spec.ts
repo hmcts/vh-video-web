@@ -220,12 +220,12 @@ describe('VideoCallService', () => {
         expect(pexipSpy.call_tag).toBeDefined();
     });
 
-    it('should call pexip with as audio only when user has a microphone only', async () => {
+    it('should call pexip as normal when user has a microphone only', async () => {
         const node = 'node124';
         const conferenceAlias = 'WR173674fff';
         const participantDisplayName = 'T1;John Doe';
         const maxBandwidth = 767;
-        const callType: PexipCallType = 'audioonly';
+        const callType: PexipCallType = null;
         userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: false, hasAMicrophone: true }));
         service.pexipAPI = pexipSpy;
 
