@@ -59,7 +59,7 @@ export function getLocale() {
         }),
         AuthConfigModule,
         StoreModule.forRoot({}),
-        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        StoreDevtoolsModule.instrument({ logOnly: !isDevMode() }),
         EffectsModule.forRoot([])
     ],
     providers: [
