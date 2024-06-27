@@ -496,6 +496,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     changeDeviceSelected() {
+        this.focusService.storeFocus();
         this.changeDeviceToggle.emit();
     }
 

@@ -10,6 +10,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { ModalTrapFocus } from '../modal/modal-trap-focus';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -43,7 +44,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         private logger: Logger,
         private translateService: TranslateService,
         private profileService: ProfileService,
-        private videoFilterService: VideoFilterService
+        private videoFilterService: VideoFilterService,
+        private focusService: FocusService
     ) {}
 
     get audioOnlyToggleText(): string {
@@ -136,6 +138,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     }
 
     onClose() {
+        this.focusService.restoreFocus();
         this.shouldClose.emit();
     }
 
