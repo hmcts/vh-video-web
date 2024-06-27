@@ -190,7 +190,7 @@ export class VideoCallService {
         if (hasCameraDevices && hasMicrophoneDevices) {
             this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
         } else if (!hasCameraDevices && hasMicrophoneDevices) {
-            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'audioonly');
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
         } else {
             this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
         }
