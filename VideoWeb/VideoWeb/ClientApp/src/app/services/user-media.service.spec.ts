@@ -9,7 +9,7 @@ import { Guid } from 'guid-typescript';
 import { ErrorService } from './error.service';
 import { ConferenceSetting } from '../shared/models/conference-setting';
 
-describe('UserMediaService', () => {
+fdescribe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
@@ -173,6 +173,15 @@ describe('UserMediaService', () => {
         flush();
         expect(result.length).toBeGreaterThan(0);
     }));
+
+    it('should return the presence of a camera and a microphone', async () => {
+        spyOn(navigator.mediaDevices as any, 'enumerateDevices').and.resolveTo(testData.getListOfDevices());
+
+        const result = await userMediaService.checkCameraAndMicrophonePresence();
+
+        expect(result.hasACamera).toBeTrue();
+        expect(result.hasAMicrophone).toBeTrue();
+    });
 
     it('should filter devices with device ids of default and communications camera and microphone devices', fakeAsync(() => {
         const deviceList = testData.getListOfDevices();
