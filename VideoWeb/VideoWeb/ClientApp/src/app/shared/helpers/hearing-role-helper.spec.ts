@@ -4,6 +4,7 @@ import { HearingRoleHelper } from './hearing-role-helper';
 describe('HearingRoleHelper', () => {
     const panelMemberRoles = [
         HearingRole.PANEL_MEMBER,
+        HearingRole.PANELMEMBER,
         HearingRole.MEDICAL_MEMBER,
         HearingRole.FINANCIAL_MEMBER,
         HearingRole.LEGAL_MEMBER,

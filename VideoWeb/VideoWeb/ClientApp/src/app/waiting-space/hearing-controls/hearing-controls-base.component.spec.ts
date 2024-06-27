@@ -837,6 +837,7 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.JUDGE,
             HearingRole.MACKENZIE_FRIEND,
             HearingRole.PANEL_MEMBER,
+            HearingRole.PANELMEMBER,
             HearingRole.PROSECUTION,
             HearingRole.PROSECUTION_ADVOCATE,
             HearingRole.REPRESENTATIVE,
