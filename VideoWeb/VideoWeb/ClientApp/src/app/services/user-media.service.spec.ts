@@ -9,7 +9,7 @@ import { Guid } from 'guid-typescript';
 import { ErrorService } from './error.service';
 import { ConferenceSetting } from '../shared/models/conference-setting';
 
-fdescribe('UserMediaService', () => {
+describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
