@@ -865,7 +865,6 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.endpoints[0].room).toBeNull();
         });
 
-
         it('should update the conference state, after host changes their display name', () => {
             const result = conferenceReducer(
                 existingInitialState,
@@ -876,7 +875,7 @@ describe('Conference Reducer', () => {
                 })
             );
 
-            expect(result.currentConference.participants[0].displayName).toBe( 'New Name');
+            expect(result.currentConference.participants[0].displayName).toBe('New Name');
         });
     });
 });
