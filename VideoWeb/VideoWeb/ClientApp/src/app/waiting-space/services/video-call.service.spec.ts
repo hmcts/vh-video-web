@@ -68,7 +68,7 @@ describe('VideoCallService', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['selectScreenToShare', 'initialise', 'checkCameraAndMicrophonePresence'],
+            ['selectScreenToShare', 'initialise', 'checkCameraAndMicrophonePresence', 'updateStartWithAudioMuted'],
             ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
@@ -201,7 +201,7 @@ describe('VideoCallService', () => {
         const callType: PexipCallType = null;
         service.pexipAPI = pexipSpy;
 
-        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         expect(pexipSpy.call_tag).toBeDefined();
     });
@@ -215,9 +215,10 @@ describe('VideoCallService', () => {
         userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: false, hasAMicrophone: false }));
         service.pexipAPI = pexipSpy;
 
-        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, '12345');
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         expect(pexipSpy.call_tag).toBeDefined();
+        expect(userMediaService.updateStartWithAudioMuted).toHaveBeenCalledWith('12345', true);
     });
 
     it('should call pexip as normal when user has a microphone only', async () => {
@@ -229,7 +230,7 @@ describe('VideoCallService', () => {
         userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: false, hasAMicrophone: true }));
         service.pexipAPI = pexipSpy;
 
-        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, '12345');
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         expect(pexipSpy.call_tag).toBeDefined();
     });

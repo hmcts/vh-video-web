@@ -656,7 +656,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    component.conference.id
                 );
             });
 
@@ -682,7 +683,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    component.conference.id
                 );
             });
 
@@ -702,7 +704,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     room.pexip_node,
                     room.participant_join_uri,
                     room.tile_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    component.conference.id
                 );
             });
 
@@ -715,7 +718,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     component.conference.pexip_node_uri,
                     component.conference.participant_uri,
                     component.participant.tiled_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    component.conference.id
                 );
             });
 
@@ -728,7 +732,8 @@ describe('WaitingRoomComponent message and clock', () => {
                     component.conference.pexip_node_uri,
                     component.conference.participant_uri,
                     component.participant.tiled_display_name,
-                    component.maxBandwidth
+                    component.maxBandwidth,
+                    component.conferenceId
                 );
             });
         });

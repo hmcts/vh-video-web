@@ -61,6 +61,7 @@
           </span>
         </button>
         <button
+          *ngif="hasAMicrophone || hasACamera"
           id="toggle-media-device-img"
           colour="grey"
           (click)="changeDeviceSelected()"
@@ -74,7 +75,7 @@
         </button>
         <button
           id="toggle-self-view-img"
-          *ngIf="!audioOnly"
+          *ngIf="!audioOnly && hasACamera"
           colour="grey"
           (click)="toggleView()"
           (keydown.enter)="toggleView()"
@@ -467,9 +468,10 @@
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </button>
 
-      <div class="flexBar"></div>
+      <div *ngif="hasAMicrophone || hasACamera" class="flexBar"></div>
 
       <button
+        *ngif="hasAMicrophone || hasACamera"
         class="icon-button"
         id="toggle-media-device-img-desktop"
         appTooltip
@@ -487,7 +489,7 @@
         class="icon-button"
         id="toggle-self-view-img-desktop"
         appTooltip
-        *ngIf="!audioOnly"
+        *ngIf="!audioOnly && hasACamera"
         [text]="
           (selfViewOpen
             ? 'private-consultation-room-controls.selfview-toggle-true'
@@ -507,7 +509,7 @@
         class="icon-button"
         id="toggle-video-mute-img-desktop"
         appTooltip
-        *ngIf="!isJudge && !audioOnly"
+        *ngIf="!isJudge && !audioOnly && hasACamera"
         [text]="
           (videoMuted
             ? 'private-consultation-room-controls.video-mute-toggle-true'
@@ -527,7 +529,7 @@
         class="icon-button"
         id="toggle-audio-mute-img-desktop"
         appTooltip
-        *ngIf="!remoteMuted || isHost"
+        *ngIf="(!remoteMuted || isHost) && hasAMicrophone"
         [text]="
           (audioMuted
             ? 'private-consultation-room-controls.audio-mute-toggle-true'

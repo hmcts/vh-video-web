@@ -39,8 +39,8 @@ declare interface PexRTC {
 declare type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none';
 
 declare interface PexipClient {
-    video_source: string;
-    audio_source: string;
+    video_source: string | boolean;
+    audio_source: string | boolean;
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;

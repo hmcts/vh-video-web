@@ -132,8 +132,13 @@ describe('HearingControlsBaseComponent', () => {
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['getConferenceSetting'], ['isAudioOnly$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['getConferenceSetting', 'checkCameraAndMicrophonePresence'],
+            ['isAudioOnly$']
+        );
         userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
+        userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 

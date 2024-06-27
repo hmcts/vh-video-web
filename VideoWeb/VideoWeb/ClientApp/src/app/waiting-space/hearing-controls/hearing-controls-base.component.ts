@@ -55,6 +55,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
 
+    hasACamera = true;
+    hasAMicrophone = true;
+
     sharingDynamicEvidence: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
@@ -143,6 +146,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     ngOnInit(): void {
         this.audioMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
         this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
+
+        this.userMediaService.checkCameraAndMicrophonePresence().then(result => {
+            this.hasACamera = result.hasACamera;
+            this.hasAMicrophone = result.hasAMicrophone;
+        });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
             this.audioOnly = audioOnly;

@@ -42,6 +42,7 @@ export class VideoCallService {
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
     wowzaAgentName = 'vh-wowza';
+    deviceAvailability: { hasACamera: boolean; hasAMicrophone: boolean };
 
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
@@ -182,22 +183,40 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        const result = await this.userMediaService.checkCameraAndMicrophonePresence();
-        const hasCameraDevices = result.hasACamera;
-        const hasMicrophoneDevices = result.hasAMicrophone;
+    async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
+        this.deviceAvailability = await this.userMediaService.checkCameraAndMicrophonePresence();
+        const hasCameraDevices = this.deviceAvailability.hasACamera;
+        const hasMicrophoneDevices = this.deviceAvailability.hasAMicrophone;
 
         if (hasCameraDevices && hasMicrophoneDevices) {
             this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
         } else if (!hasCameraDevices && hasMicrophoneDevices) {
+            this.pexipAPI.video_source = false;
             this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
         } else {
+            this.pexipAPI.video_source = false;
+            this.pexipAPI.audio_source = false;
             this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
+        }
+
+        if (conferenceId && !hasMicrophoneDevices) {
+            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
         }
     }
 
-    makeReceiveOnlyCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+    makeReceiveOnlyCall(
+        pexipNode: string,
+        conferenceAlias: string,
+        participantDisplayName: string,
+        maxBandwidth: number,
+        conferenceId: string
+    ) {
         this.pexipAPI.user_media_stream = new MediaStream([]);
+        this.pexipAPI.video_source = false;
+        this.pexipAPI.audio_source = false;
+        if (conferenceId) {
+            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
+        }
         this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
