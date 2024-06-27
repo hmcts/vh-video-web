@@ -13,7 +13,7 @@ env:
   ado_project: "Video Hearings"
   ado_pipeline: "hmcts.vh-video-web.sds.pr-close"
   pr_number: ${{github.event.pull_request.number}}
-  branch: ${{ github.ref_name }}
+  branch: ${{ github.event.pull_request.head.ref }}
   AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
 jobs:
@@ -38,6 +38,8 @@ jobs:
               Write-host $definition
               $definitionId = $definition.id
               Write-Host "Trigger PR $gitPullRequestId def $definitionId for branch $branch"
+              if ($branch -match 'refs/heads/'){
+                   $branch = $branch -replace 'refs/heads/', '' }
               az pipelines run --branch $branch --detect $false --folder-path "\" --id $definitionId --org $organisation --project $project --parameters "prNumber=$gitPullRequestId" #--debug
           } else {
               Write-Error "No Definition found with name $pipelineName in $organisation proj $project "
