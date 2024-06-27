@@ -18,6 +18,9 @@ namespace VideoWeb.UnitTests.Mappings
             cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
             cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate);
+            cachedModel.CurrentRoom.Id.Should().Be(ep.CurrentRoom.Id);
+            cachedModel.CurrentRoom.Label.Should().Be(ep.CurrentRoom.Label);
+            cachedModel.CurrentRoom.Locked.Should().Be(ep.CurrentRoom.Locked);
         }
     }
 }
