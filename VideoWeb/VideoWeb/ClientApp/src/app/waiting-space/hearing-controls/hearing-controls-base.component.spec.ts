@@ -110,6 +110,7 @@ describe('HearingControlsBaseComponent', () => {
             enable_dynamic_evidence_sharing: false
         });
         translateService.instant.calls.reset();
+        focusService.storeFocus.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
@@ -914,6 +915,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should emit when change device button has been clicked', () => {
         spyOn(component.changeDeviceToggle, 'emit');
         component.changeDeviceSelected();
+        expect(focusService.storeFocus).toHaveBeenCalled();
         expect(component.changeDeviceToggle.emit).toHaveBeenCalled();
     });
 
