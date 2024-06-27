@@ -23,6 +23,7 @@ namespace VideoWeb.Common.Caching
             
             return new ConsultationRoom
             {
+                Id = room.Id,
                 Label = room.Label,
                 Locked = room.Locked
             };

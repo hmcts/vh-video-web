@@ -11,7 +11,11 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_endpoint_to_cache_model()
         {
-            var ep = Builder<EndpointResponse>.CreateNew().Build();
+            var ep = Builder<EndpointResponse>.CreateNew()
+                .With(e => e.CurrentRoom = Builder<RoomResponse>.CreateNew()
+                    .With(r => r.Id = 1)
+                    .Build())
+                .Build();
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
