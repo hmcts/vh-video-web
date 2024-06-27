@@ -9,10 +9,10 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantDtoForResponseMapperTests
+    public class ParticipantDtoForUserResponseMapperTests
     {
         protected AutoMock _mocker;
-        protected ParticipantDtoForResponseMapper _sut;
+        protected ParticipantDtoForUserResponseMapper _sut;
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Locked = false
             };
 
-            _sut = _mocker.Create<ParticipantDtoForResponseMapper>();
+            _sut = _mocker.Create<ParticipantDtoForUserResponseMapper>();
         }
 
         [Test]
@@ -76,22 +76,22 @@ namespace VideoWeb.UnitTests.Mappings
                 }
             };
 
-            var mapped = _sut.Map(testParticipant);
+            var mappedUserResponses = _sut.Map(new List<Participant> { testParticipant });
 
-            mapped.DisplayName.Should().Be(testParticipant.DisplayName);
-            mapped.FirstName.Should().Be(testParticipant.FirstName);
-            mapped.HearingRole.Should().Be(testParticipant.HearingRole);
-            mapped.LastName.Should().Be(testParticipant.LastName);
-            mapped.Status.Should().Be(testParticipant.ParticipantStatus);
-            mapped.Representee.Should().Be(testParticipant.Representee);
-            mapped.Role.Should().Be(testParticipant.Role);
-            mapped.Id.Should().Be(testParticipant.Id);
-            mapped.UserName.Should().Be(testParticipant.Username);
-            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse> { linkedParticipantResponse1, linkedParticipantResponse2 });
-            mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
-            mapped.CurrentRoom.Should().NotBeNull();
-            mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
-            mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
+            mappedUserResponses.Should().NotBeNull();
+            
+            foreach (var mapped in mappedUserResponses)
+            {
+                mapped.DisplayName.Should().Be(testParticipant.DisplayName);
+                mapped.Status.Should().Be(testParticipant.ParticipantStatus);
+                mapped.Role.Should().Be(testParticipant.Role);
+                mapped.Id.Should().Be(testParticipant.Id);
+                mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse> { linkedParticipantResponse1, linkedParticipantResponse2 });
+                mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
+                mapped.CurrentRoom.Should().NotBeNull();
+                mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
+                mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
+            }
         }
     }
 }

@@ -864,5 +864,19 @@ describe('Conference Reducer', () => {
 
             expect(result.currentConference.endpoints[0].room).toBeNull();
         });
+
+
+        it('should update the conference state, after host changes their display name', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantDisplayNameSuccess({
+                    participantId: conferenceTestData.participants[0].id,
+                    displayName: 'New Name',
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.currentConference.participants[0].displayName).toBe( 'New Name');
+        });
     });
 });

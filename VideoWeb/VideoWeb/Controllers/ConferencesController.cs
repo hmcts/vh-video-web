@@ -206,8 +206,7 @@ namespace VideoWeb.Controllers
                 var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
                 var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
                 var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
-                var allocatedHearings =
-                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => c.IsWaitingRoomOpen && c.Participants.Exists(e => e.UserRole == UserRole.Judge))
