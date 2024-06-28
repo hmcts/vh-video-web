@@ -7,10 +7,17 @@
       </p>
     </div>
 
-    <div *ngIf="userPrompted && mediaAccepted">
+    <div *ngIf="userPrompted && mediaAccepted && !skipSelfTest">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
         {{ 'switch-on-camera-microphone.camera-and-mic-are-switched-on-you-can-continue-to-video' | translate }}
+      </p>
+    </div>
+
+    <div *ngIf="userPrompted && mediaAccepted && skipSelfTest">
+      <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on' | translate }}</h1>
+      <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+        {{ 'switch-on-camera-microphone.camera-and-mic-are-switched-on-you-can-continue-skip-self-test' | translate }}
       </p>
     </div>
 
@@ -33,7 +40,9 @@
         {{ 'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems' | translate }}
       </p>
 
-      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">{{ 'switch-on-camera-microphone.helpline-contact-phone' | translate: { contactPhone: contact.phone } }}</h3>
+      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+        {{ 'switch-on-camera-microphone.helpline-contact-phone' | translate: { contactPhone: contact.phone } }}
+      </h3>
     </div>
 
     <button
@@ -43,17 +52,27 @@
       data-module="govuk-button"
       (click)="requestMedia()"
     >
-    {{ 'switch-on-camera-microphone.switch-on' | translate }}
+      {{ 'switch-on-camera-microphone.switch-on' | translate }}
     </button>
 
     <button
-      *ngIf="userPrompted && mediaAccepted"
+      *ngIf="userPrompted && mediaAccepted && !skipSelfTest"
       id="watch-video-btn"
       class="govuk-button govuk-!-margin-bottom-9"
       data-module="govuk-button"
       (click)="goVideoTest()"
     >
-    {{ 'switch-on-camera-microphone.watch-the-video' | translate }}
+      {{ 'switch-on-camera-microphone.watch-the-video' | translate }}
+    </button>
+
+    <button
+      *ngIf="userPrompted && mediaAccepted && skipSelfTest"
+      id="skip-self-test-video-btn"
+      class="govuk-button govuk-!-margin-bottom-9"
+      data-module="govuk-button"
+      (click)="goToDeclaration()"
+    >
+      {{ 'switch-on-camera-microphone.next' | translate }}
     </button>
 
     <app-contact-us-folding></app-contact-us-folding>

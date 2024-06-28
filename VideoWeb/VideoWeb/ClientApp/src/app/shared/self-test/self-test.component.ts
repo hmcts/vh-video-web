@@ -267,7 +267,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.selfTestPexipNode,
             `${conferenceAlias};${tokenOptions}`,
             this.selfTestParticipantId,
-            this.maxBandwidth
+            this.maxBandwidth,
+            this.conference?.id
         );
     }
 

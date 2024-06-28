@@ -93,11 +93,22 @@ export class UserMediaService {
         );
     }
 
+    async checkCameraAndMicrophonePresence(): Promise<{ hasACamera: boolean; hasAMicrophone: boolean }> {
+        const devices = await this.navigator.mediaDevices.enumerateDevices();
+        const hasACamera = devices.some(device => device.kind === 'videoinput');
+        const hasAMicrophone = devices.some(device => device.kind === 'audioinput');
+        return { hasACamera, hasAMicrophone };
+    }
+
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
             retry(3),
             take(1),
-            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
+            map(
+                stream =>
+                    (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) ||
+                    stream.getAudioTracks().length > 0
+            ),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
                 if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {

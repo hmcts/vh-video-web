@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
+import { AddMediaEventRequest, ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
@@ -12,6 +12,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { first } from 'rxjs/operators';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -26,9 +27,12 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     participantName: string;
     conferenceId: string;
 
+    skipSelfTest = false;
+
     contact = {
         phone: vhContactDetails.englandAndWales.phoneNumber
     };
+    profile: UserProfileResponse;
 
     constructor(
         private router: Router,
@@ -58,9 +62,9 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
 
     async retrieveProfile(): Promise<void> {
         this.logger.debug('[SwitchOnCameraMicrophone] - Retrieving profile');
-        const profile = await this.profileService.getUserProfile();
-        this.isJudge = profile.roles.includes(Role.Judge);
-        this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
+        this.profile = await this.profileService.getUserProfile();
+        this.isJudge = this.profile.roles.includes(Role.Judge);
+        this.participantName = this.videoWebService.getObfuscatedName(this.profile.first_name + ' ' + this.profile.last_name);
     }
 
     async getConference(): Promise<void> {
@@ -68,6 +72,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         try {
             this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.skipSelfTest = this.isObserver();
         } catch (error) {
             this.logger.error('[SwitchOnCameraMicrophone] - Failed to retrieve conference', error, { conference: this.conferenceId });
             this.errorService.handleApiError(error);
@@ -112,6 +117,11 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         }
     }
 
+    goToDeclaration() {
+        this.logger.debug('[SwitchOnCameraMicrophone] - Navigating to declaration page');
+        this.router.navigate([pageUrls.Declaration, this.conferenceId]);
+    }
+
     async postPermissionDeniedAlert() {
         const payload = {
             conference: this.conferenceId,
@@ -123,5 +133,12 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         } catch (error) {
             this.logger.error('[SwitchOnCameraMicrophone] - Failed to post media permission denied alert', error, payload);
         }
+    }
+
+    private isObserver() {
+        if (this.profile.roles.includes(Role.QuickLinkObserver)) {
+            return true;
+        }
+        return this.conference.participants.some(x => x.user_name === this.profile.username && x.hearing_role === HearingRole.OBSERVER);
     }
 }

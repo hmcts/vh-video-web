@@ -86,25 +86,47 @@ export class UserMediaStreamService {
     }
 
     private initialiseCurrentStream() {
+        this.userMediaService.checkCameraAndMicrophonePresence().then(result => {
+            const hasCameraDevices = result.hasACamera;
+            const hasMicrophoneDevices = result.hasAMicrophone;
+
+            if (hasCameraDevices && hasMicrophoneDevices) {
+                this.initialiseCurrentStreamWithVideoAndAudio();
+            } else if (!hasCameraDevices && hasMicrophoneDevices) {
+                this.initialiseCurrentStreamWithAudio();
+            } else {
+                this.initialiseCurrentStreamWithNoTracks();
+            }
+        });
+    }
+
+    private initialiseCurrentStreamWithNoTracks() {
+        this.logger.debug(`${this.loggerPrefix} Initialising current stream with no tracks.`);
+        this.currentStream = this.mediaStreamService.initialiseNewStream([]);
+        this.currentStreamSubject.next(this.currentStream);
+    }
+
+    private initialiseCurrentStreamWithAudio() {
+        this.logger.debug(`${this.loggerPrefix} Initialising current stream with audio only.`);
+        this.activeMicrophoneStream$.pipe(take(1)).subscribe(microphoneStream => {
+            this.currentStream = this.mediaStreamService.initialiseNewStream(microphoneStream.getAudioTracks());
+            this.currentStreamSubject.next(this.currentStream);
+        });
+    }
+
+    private initialiseCurrentStreamWithVideoAndAudio() {
+        this.logger.debug(`${this.loggerPrefix} Initialising current stream with video and audio.`);
         zip(this.activeCameraStream$, this.activeMicrophoneStream$)
             .pipe(take(1))
             .subscribe(streams => {
                 const cameraStream = streams[0];
                 const microphoneStream = streams[1];
 
-                this.logger.debug(`${this.loggerPrefix} activeCameraStream and activeMicrophoneStream created. Building current stream.`, {
-                    activeCameraStream: cameraStream ?? null,
-                    activeCameraStreamTrackLabel: cameraStream?.getVideoTracks()[0]?.label ?? null,
-                    activeMicrophoneStream: microphoneStream?.getAudioTracks()[0]?.label ?? null
-                });
-
                 this.currentStream = this.mediaStreamService.initialiseNewStream([
                     ...cameraStream.getVideoTracks(),
                     ...microphoneStream.getAudioTracks()
                 ]);
                 this.currentStreamSubject.next(this.currentStream);
-
-                this.logger.debug(`${this.loggerPrefix} current stream built.`);
             });
     }
 

@@ -14,6 +14,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @ViewChild(MuteMicrophoneComponent) muteMicrophoneForm: MuteMicrophoneComponent;
     @Input() hearingStarted = false;
     @Input() hearingId: string;
+    @Input() hasAMicrophone = true;
 
     isMuteMicrophoneEnabled = false;
 
@@ -37,7 +38,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     respondWithYes() {
-        if (this.isMuteMicrophoneEnabled) {
+        if (this.isMuteMicrophoneEnabled && this.hasAMicrophone) {
             this.muteMicrophoneForm.save();
         }
         super.respondWithYes();

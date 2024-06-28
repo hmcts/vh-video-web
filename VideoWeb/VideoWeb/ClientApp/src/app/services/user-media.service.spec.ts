@@ -174,6 +174,15 @@ describe('UserMediaService', () => {
         expect(result.length).toBeGreaterThan(0);
     }));
 
+    it('should return the presence of a camera and a microphone', async () => {
+        spyOn(navigator.mediaDevices as any, 'enumerateDevices').and.resolveTo(testData.getListOfDevices());
+
+        const result = await userMediaService.checkCameraAndMicrophonePresence();
+
+        expect(result.hasACamera).toBeTrue();
+        expect(result.hasAMicrophone).toBeTrue();
+    });
+
     it('should filter devices with device ids of default and communications camera and microphone devices', fakeAsync(() => {
         const deviceList = testData.getListOfDevices();
         deviceList.push(new UserMediaDevice('Default Test', 'default', 'audioinput', Guid.create().toString()));

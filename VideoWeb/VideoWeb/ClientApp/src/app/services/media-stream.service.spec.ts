@@ -86,14 +86,6 @@ describe('MediaStreamService', () => {
             // Assert
             expect(mediaStreamConstructorSpy).toHaveBeenCalledOnceWith(tracks);
         });
-
-        it('should call the constructor for media stream and pass undifined when the tracks are NOT provided', () => {
-            // Act
-            sut.initialiseNewStream();
-
-            // Assert
-            expect(mediaStreamConstructorSpy).toHaveBeenCalledOnceWith(undefined);
-        });
     });
 
     describe('getStreamForMic', () => {

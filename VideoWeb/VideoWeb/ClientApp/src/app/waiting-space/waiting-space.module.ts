@@ -58,7 +58,7 @@ import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-
         WaitingSpaceRoutingModule,
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
-        environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        environment.production ? [] : StoreDevtoolsModule.instrument({ logOnly: !isDevMode() }),
         EffectsModule.forFeature([ConferenceEffectsEffects])
     ],
     declarations: [

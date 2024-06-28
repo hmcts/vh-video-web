@@ -363,12 +363,14 @@
     "helpline-contact-phone": "Llinell gymorth: {{ contactPhone }}",
     "your-camera-and-microphone-are-switched-on": "Mae eich camera a'ch microffon ymlaen",
     "camera-and-mic-are-switched-on-you-can-continue-to-video": "Mae eich camera a'ch microffon ymlaen.  Gallwch nawr wylio'r fideo.",
+    "camera-and-mic-are-switched-on-you-can-continue-skip-self-test": "Mae eich camera a'ch microffon ymlaen. Gallwch nawr symud ymlaen",
     "watch-the-video": "Gwylio'r fideo",
     "your-camera-and-microphone-are-blocked": "Mae eich camera a'ch microffon wedi cael eu blocio",
     "please-unblock-camera-and-mic-or-call-us-if-any-problems": "Ceisiwch ddadflocio'r camera a'r microffon neu ffoniwch ni os oes problem.",
     "sorry-hearing-can-not-go-ahead-if-camera-and-mic-are-blocked": "Yn anffodus, ni allwn barhau â'r gwrandawiad os yw eich camera a'ch microffon wedi'u blocio.",
     "sorry-you-must-use-camera-and-mic": "Mae'n ddrwg gennym, ond ni allwch gymryd rhan yn y gwrandawiad heb ddefnyddio eich camera a'ch microffon.",
-    "stay-close-to-your-phone-we-will-call-in-5-mins": "Arhoswch yn agos at eich ffôn, ac mi wnawn eich ffonio o fewn 5 munud."
+    "stay-close-to-your-phone-we-will-call-in-5-mins": "Arhoswch yn agos at eich ffôn, ac mi wnawn eich ffonio o fewn 5 munud.",
+    "next": "Nesaf"
   },
   "error-service": {
     "camera-mic-blocked": "Mae eich camera a'ch microffon wedi cael eu blocio",

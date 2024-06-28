@@ -415,7 +415,8 @@ describe('SelfTestComponent', () => {
                 expectedSelfTestNode,
                 expectedPexipConferenceAlias,
                 expectedParticipantDisplayName,
-                expectedMaxBandwidth
+                expectedMaxBandwidth,
+                component.conference?.id
             );
         }));
     });

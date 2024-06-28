@@ -318,6 +318,7 @@
     "switch-on-camera-and-mic-to-watch-the-video": "Switch on your camera and microphone to watch the video.",
     "your-camera-and-microphone-are-switched-on": "Your camera and microphone are switched on",
     "camera-and-mic-are-switched-on-you-can-continue-to-video": "Your camera and microphone are switched on. You can now continue to the video.",
+    "camera-and-mic-are-switched-on-you-can-continue-skip-self-test": "Your camera and microphone are switched on. You can now continue.",
     "your-camera-and-microphone-are-blocked": "Your camera and microphone are blocked",
     "sorry-you-must-use-camera-and-mic": "We're sorry, you can't take part in the hearing without using your camera and microphone.",
     "stay-close-to-your-phone-we-will-call-in-5-mins": "Stay close to your phone and we'll call you within 5 minutes.",
@@ -325,7 +326,8 @@
     "please-unblock-camera-and-mic-or-call-us-if-any-problems": "Please unblock the camera and microphone or call us if there is a problem.",
     "helpline-contact-phone": "Helpline: {{ contactPhone }}",
     "switch-on": "Switch on",
-    "watch-the-video": "Watch the video"
+    "watch-the-video": "Watch the video",
+    "next": "Next"
   },
   "video-check": {
     "could-you-see-and-hear-the-video-clearly": "Could you see and hear the video clearly?",
