@@ -1,0 +1,21 @@
+<div id="confirmationDialog" class="vh-popup-overlay">
+    <div class="modal-content">
+      <h1 class="govuk-heading-m">{{'warn-join-hearing-popup.title' | translate}} {{ hearingStartTime | date: 'HH:mm' }}</h1>
+  
+      <p class="govuk-body govuk-!-margin-bottom-9">
+        {{'warn-join-hearing-popup.message' | translate}}
+      </p>
+  
+      <button
+        id="btnOk"
+        class="govuk-button govuk-!-margin-right-1"
+        type="button"
+        data-module="govuk-button"
+        [attr.aria-label]="'warn-join-hearing-popup.submit-button' | translate"
+        (click)="submit()"
+      >
+      {{'warn-join-hearing-popup.submit-button' | translate}}
+      </button>
+    </div>
+  </div>
+  

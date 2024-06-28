@@ -74,7 +74,7 @@ $govuk-global-styles: true;
 .modal-content.negative {
   color: govuk-colour('white');
   background-color: #1e1e1e;
-  border: 1px solid $govuk-border-colour
+  border: 1px solid $govuk-border-colour;
 }
 
 .shadow {
@@ -136,13 +136,17 @@ $govuk-global-styles: true;
 .vh-fade-out {
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s linear 300ms, opacity 300ms;
+  transition:
+    visibility 0s linear 300ms,
+    opacity 300ms;
 }
 
 .vh-fade-in {
   visibility: visible;
   opacity: 1;
-  transition: visibility 0s linear 0s, opacity 300ms;
+  transition:
+    visibility 0s linear 0s,
+    opacity 300ms;
 }
 
 .wrap-anywhere {
@@ -238,11 +242,19 @@ video {
 }
 
 .toast-top-right {
-    top: 122px !important;
-    right: 20px !important;
+  top: 122px !important;
+  right: 20px !important;
 }
 
 .toast-content {
-    display: block;
-    word-wrap: break-word;
+  display: block;
+  word-wrap: break-word;
+}
+
+.vh-pointer {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

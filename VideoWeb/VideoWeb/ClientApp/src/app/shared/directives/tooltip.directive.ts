@@ -5,6 +5,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
     selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnDestroy {
+    @Input() above = false;
     @Output() tooltipShown = new EventEmitter();
 
     _text: string;
@@ -112,10 +113,11 @@ export class TooltipDirective implements OnDestroy {
         const x = $event.clientX;
         const y = $event.clientY;
         const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const defaultPosition = this.above ? -40 : 0;
         if (y < window.innerHeight / 2) {
-            this.tooltip.style.top = y + scrollPos + 'px';
+            this.tooltip.style.top = defaultPosition + y + scrollPos + 'px';
         } else {
-            this.tooltip.style.top = y + scrollPos - this.tooltip.clientHeight + 'px';
+            this.tooltip.style.top = defaultPosition + y + scrollPos - this.tooltip.clientHeight + 'px';
         }
         if (x < window.innerWidth / 2) {
             this.tooltip.style.left = x + 15 + 'px';

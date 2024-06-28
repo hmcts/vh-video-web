@@ -1,0 +1,187 @@
+<!-- Column 1 -->
+<div class="participants-grid">
+  <div
+    [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }"
+    appTooltip
+    [isDesktopOnly]="false"
+    [text]="getPanelRowTooltipText()"
+    [colour]="getPanelRowTooltipColour()"
+  >
+    <span *ngIf="isJudge">
+      <img
+        appCrestLogoImageSource
+        [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+        [sctsAltText]="'participants-panel.scottish-crest' | translate"
+        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+        [hmctsAltText]="'participants-panel.crest' | translate"
+        class="panel-icon panel-icon-crest"
+        alt=""
+      />
+      <br />
+    </span>
+    <span *ngIf="isEndpoint">
+      <fa-icon icon="tv" class="type-icon"> </fa-icon>
+      <br />
+    </span>
+    <span *ngIf="isLinkedParticipantAndAnInterpreter()">
+      <fa-icon icon="language" class="type-icon"> </fa-icon>
+      <br />
+    </span>
+    <span *ngIf="isJudicialOfficeHolder">
+      <img
+        appCrestLogoImageSource
+        [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+        [sctsAltText]="'participants-panel.scottish-crest' | translate"
+        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+        [hmctsAltText]="'participants-panel.crest' | translate"
+        class="panel-icon panel-icon-crest"
+        alt=""
+      />
+      <br />
+    </span>
+    <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
+  </div>
+
+  <ng-container *ngIf="!participant.isDisconnected(); else participantDisconnected">
+    <!-- Column 2 -->
+    <div>
+      <div *ngIf="participant.isInHearing()">
+        <app-participant-alert *ngIf="!isEndpoint" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
+      </div>
+    </div>
+
+    <!-- Column 3 -->
+    <div>
+      <div *ngIf="participant.isInHearing()">
+        <ng-container *ngIf="!isHost">
+          <img
+            *ngIf="participant.isMicRemoteMuted()"
+            appTooltip
+            [text]="participant.isMicRemoteMuted() ? 'participants-panel.unmute-lock' : ('participants-panel.mute-participant' | translate)"
+            colour="grey"
+            [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
+            class="panel-icon"
+            [attr.alt]="
+              (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon') | translate
+            "
+            (click)="toggleParticipantMute(); $event.stopPropagation()"
+            tabindex="0"
+            (keydown.enter)="toggleParticipantMute(); $event.stopPropagation()"
+          />
+          <fa-icon
+            *ngIf="!participant.isMicRemoteMuted()"
+            appTooltip
+            [text]="(participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate"
+            colour="grey"
+            icon="microphone"
+            class="icon-button"
+            [class]="{ red: participant.isLocalMicMuted() }"
+            (click)="toggleParticipantMute(); $event.stopPropagation()"
+            tabindex="0"
+            (keydown.enter)="toggleParticipantMute(); $event.stopPropagation()"
+          >
+          </fa-icon>
+        </ng-container>
+      </div>
+      <div
+        *ngIf="participant.isCallable && !participant.isInHearing()"
+        [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'"
+      >
+        <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
+          <fa-icon
+            *ngIf="!participant.transferringIn"
+            [id]="idPrefix + '-' + participant.id + '-admit-participant-icon'"
+            appTooltip
+            [text]="
+              isWitness
+                ? ('participants-panel.call-witness' | translate)
+                : ('participants-panel.admit-participant'
+                  | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase })
+            "
+            colour="green"
+            class="icon-button"
+            icon="sign-in-alt"
+            (click)="callParticipantIntoHearing(); $event.stopPropagation()"
+            tabindex="0"
+            (keydown.enter)="callParticipantIntoHearing()"
+          >
+          </fa-icon>
+          <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'" *ngIf="participant.transferringIn" class="yellow">
+            {{ 'participants-panel.joining1' | translate }}
+          </div>
+        </ng-container>
+        <ng-template #participantUnavailable>
+          <fa-icon
+            [id]="idPrefix + '-' + participant.id + '-participant-unavailable-icon'"
+            appTooltip
+            [text]="
+              'participants-panel.participant-unavailable'
+                | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }
+            "
+            colour="grey"
+            class="icon-button no-click"
+            icon="question-circle"
+          >
+          </fa-icon>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Column 4 -->
+    <div>
+      <div
+        *ngIf="!isJudge && participant.hasHandRaised()"
+        class="icon-button"
+        appTooltip
+        [text]="'participants-panel.lower-hand' | translate"
+        colour="grey"
+        (click)="lowerParticipantHand(); $event.stopPropagation()"
+        (keydown.enter)="lowerParticipantHand(); $event.stopPropagation()"
+      >
+        <fa-icon [icon]="['far', 'hand-paper']" class="yellow" tabindex="0" (keyup.enter)="lowerParticipantHand()"></fa-icon>
+      </div>
+    </div>
+
+    <!-- Column 5 -->
+    <div>
+      <div
+        *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()"
+        class="icon-button"
+        appTooltip
+        [text]="
+          participant.hasSpotlight()
+            ? participant.displayName + ('participants-panel.remove-spotlight' | translate)
+            : participant.displayName + ('participants-panel.click-to-spotlight' | translate)
+        "
+        colour="blue"
+        (click)="toggleParticipantSpotlight(); $event.stopPropagation()"
+        (keydown.enter)="toggleParticipantSpotlight(); $event.stopPropagation()"
+      >
+        <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }" tabindex="0" (keyup.enter)="toggleParticipantSpotlight()"></fa-icon>
+      </div>
+      <div *ngIf="participant.isInHearing() && participant.isLocalCameraOff()" class="icon-button no-click">
+        <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate" icon="video-slash" class="red"></fa-icon>
+      </div>
+    </div>
+
+    <!-- Column 6 -->
+    <div>
+      <app-judge-context-menu
+        [participantInput]="participant"
+        *ngIf="!isHost"
+        [hidden]="!participant.isInHearing() && !participant.isAvailable()"
+        (toggleMuteParticipantEvent)="toggleParticipantMute()"
+        (toggleSpotlightParticipantEvent)="toggleParticipantSpotlight()"
+        (lowerParticipantHandEvent)="lowerParticipantHand()"
+        (callParticipantIntoHearingEvent)="callParticipantIntoHearing()"
+        (dismissParticipantFromHearingEvent)="dismissParticipantFromHearing()"
+        (toggleLocalMuteParticipantEvent)="toggleParticipantLocalMute()"
+      ></app-judge-context-menu>
+    </div>
+  </ng-container>
+  <ng-template #participantDisconnected>
+    <div class="status-disconnected">
+      <app-participant-alert *ngIf="!isEndpoint" [participant]="mapParticipantToParticipantResponse()"></app-participant-alert>
+    </div>
+  </ng-template>
+</div>

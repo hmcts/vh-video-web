@@ -554,12 +554,15 @@ export class VideoCallService {
 
     private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
         this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
+        this.store.dispatch(ConferenceActions.deletePexipParticipant({ pexipUUID: participantDeleted.uuid }));
         this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
-        ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) });
+        this.store.dispatch(
+            ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
+        );
         this.videoCallEventsService.handleParticipantUpdated(participant);
         this.onParticipantUpdatedSubject.next(participant);
     }

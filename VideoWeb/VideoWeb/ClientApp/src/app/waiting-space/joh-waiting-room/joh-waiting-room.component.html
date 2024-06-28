@@ -230,3 +230,5 @@
     <app-consultation-leave (leave)="onConsultationCancelled()"
                             (closedModal)="closeAllPCModals()"></app-consultation-leave>
 </app-modal>
+
+<app-warn-join-hearing-popup *ngIf="showWarning" [hearingStartTime]="hearing?.scheduledStartTime" (popupAnswered)="dismissWarning()"></app-warn-join-hearing-popup>

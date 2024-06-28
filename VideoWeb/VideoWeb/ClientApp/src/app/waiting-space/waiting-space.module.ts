@@ -49,6 +49,8 @@ import { conferenceFeatureKey, conferenceReducer } from './store/reducers/confer
 import { EffectsModule } from '@ngrx/effects';
 import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
 import { environment } from 'src/environments/environment';
+import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
+import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
 
 @NgModule({
     imports: [
@@ -94,7 +96,9 @@ import { environment } from 'src/environments/environment';
         MuteMicrophoneComponent,
         StartPrivateConsultationComponent,
         JoinPrivateConsultationComponent,
-        PrivateConsultationLegalRepTermsOfServiceComponent
+        PrivateConsultationLegalRepTermsOfServiceComponent,
+        ParticipantsPanelItemComponent,
+        WarnJoinHearingPopupComponent
     ],
     providers: [
         VideoCallService,

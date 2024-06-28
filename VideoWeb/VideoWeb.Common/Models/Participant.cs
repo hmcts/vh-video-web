@@ -60,5 +60,7 @@ namespace VideoWeb.Common.Models
         {
             return IsJudge() || IsStaffMember();
         }
+        
+        public ConsultationRoom CurrentRoom { get; set; }
     }
 }
