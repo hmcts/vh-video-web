@@ -3,6 +3,7 @@ import { ConferenceForHostResponse, ConferenceStatus } from 'src/app/services/cl
 import { Logger } from 'src/app/services/logging/logger-base';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
+import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Component({
     selector: 'app-host-hearing-table',
@@ -29,7 +30,7 @@ export class HostHearingTableComponent implements OnInit {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return convertStringToTranslationId(str);
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {

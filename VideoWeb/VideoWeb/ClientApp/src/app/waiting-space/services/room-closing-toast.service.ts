@@ -16,7 +16,10 @@ export class RoomClosingToastrService {
 
     private readonly loggerPrefix = '[RoomClosingToastrService] -';
 
-    constructor(private logger: Logger, private toastr: ToastrService) {}
+    constructor(
+        private logger: Logger,
+        private toastr: ToastrService
+    ) {}
 
     /**
      * If conditions are met, show the "room closing" notification

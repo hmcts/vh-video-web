@@ -32,7 +32,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class ConferencesController : Controller
+    public class ConferencesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferencesController> _logger;
@@ -72,10 +72,13 @@ namespace VideoWeb.Controllers
                 var conferenceForHostResponseMapper = _mapperFactory.Get<ConfirmedHearingsTodayResponse, List<HostConference>, ConferenceForHostResponse>();
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                var conferencesForHost = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(new GetConferencesByHearingIdsRequest
+                {
+                    HearingRefIds = hearings.Select(x => x.Id).ToArray()
+                });
                 
                 if(conferencesForHost.Count != hearings.Count)
-                    _logger.LogError(@"Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}", 
+                    _logger.LogError("Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}", 
                         hearings.Count, conferencesForHost.Count, username);
                 
                 var response = hearings
@@ -257,14 +260,14 @@ namespace VideoWeb.Controllers
 
                 if (conference == null)
                 {
-                    _logger.LogWarning("Conference details with id: {conferenceId} not found", conferenceId);
+                    _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
 
                     return NoContent();
                 }
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
+                _logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
 
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -272,8 +275,8 @@ namespace VideoWeb.Controllers
             if (!conference.IsWaitingRoomOpen)
             {
                 _logger.LogInformation(
-                    $"Unauthorised to view conference details {conferenceId} because user is not " +
-                    "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
+                    "Unauthorised to view conference details {ConferenceId} because user is not Officer " +
+                    "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
 
                 return Unauthorized();
             }
@@ -337,14 +340,14 @@ namespace VideoWeb.Controllers
 
                 if (conference == null)
                 {
-                    _logger.LogWarning("Conference details with id: {conferenceId} not found", conferenceId);
+                    _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
 
                     return NoContent();
                 }
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
+                _logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
 
@@ -352,8 +355,8 @@ namespace VideoWeb.Controllers
                 (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
-                    $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +
-                    "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
+                    "Unauthorised to view conference details {ConferenceId} because user is neither a VH Officer " +
+                    "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
                 return Unauthorized();
             }
 
@@ -390,7 +393,7 @@ namespace VideoWeb.Controllers
             return StatusCode(e.StatusCode, e.Response);
         }
 
-        private ActionResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
+        private ObjectResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
         {
             _logger.LogError(e, "Unable to get conferences for user");
             return StatusCode(e.StatusCode, e.Response);

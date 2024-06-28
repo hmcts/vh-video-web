@@ -12,7 +12,10 @@ export class ScrollTriggerDirective {
     lastScrollPosition = 0;
     margin = 30;
 
-    constructor(private element: ElementRef, private scroll: WindowScrolling) {}
+    constructor(
+        private element: ElementRef,
+        private scroll: WindowScrolling
+    ) {}
 
     @HostListener('window:scroll', [])
     onWindowScroll() {

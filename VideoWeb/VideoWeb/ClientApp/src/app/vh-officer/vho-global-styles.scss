@@ -1,3 +1,4 @@
+@import 'govuk-frontend/govuk/base';
 $font-size: 1rem;
 
 [class^='govuk-'] {
@@ -11,8 +12,6 @@ h1[class^='govuk-'] {
 h3[class^='govuk-'] {
   font-size: 1.5rem;
 }
-
-@import 'govuk-frontend/govuk/all';
 
 .govuk-button--black {
   border: 2px solid govuk-colour('black');

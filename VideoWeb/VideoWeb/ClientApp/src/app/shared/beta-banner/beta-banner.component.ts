@@ -28,7 +28,11 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
 
     private subscriptions = new Subscription();
 
-    constructor(private router: Router, private eventService: EventsService, private translateService: TranslateService) {
+    constructor(
+        private router: Router,
+        private eventService: EventsService,
+        private translateService: TranslateService
+    ) {
         this.pageUrl = '';
     }
     ngOnInit(): void {

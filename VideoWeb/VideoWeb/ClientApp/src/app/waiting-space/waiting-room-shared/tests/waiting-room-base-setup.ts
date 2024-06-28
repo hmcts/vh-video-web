@@ -1,3 +1,5 @@
+/* tslint:disable */
+/* eslint-disable */
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -25,6 +27,11 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
+import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
+
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -70,10 +77,18 @@ export const jwToken = new TokenResponse({
 export let titleService: jasmine.SpyObj<Title>;
 export let focusService: jasmine.SpyObj<FocusService>;
 
+export let mockConferenceStore: MockStore<ConferenceState>;
+
 export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {
+    mockConferenceStore = createMockStore({
+        initialState: { currentConference: mapConferenceToVHConference(globalConference), availableRooms: [] }
+    });
+
+    mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
+
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
         'HearingVenueFlagsService',
         ['setHearingVenueIsScottish'],
@@ -102,6 +117,7 @@ export function initAllWRDependencies() {
         'getBrowserVersion',
         'isSupportedBrowser',
         'isIpad',
+        'isIphone',
         'isTablet'
     ]);
 

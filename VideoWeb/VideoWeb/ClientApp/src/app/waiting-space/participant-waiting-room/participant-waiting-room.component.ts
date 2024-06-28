@@ -31,6 +31,8 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -44,6 +46,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
+
+    emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
+    showWarning = false;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
@@ -72,7 +77,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected userMediaService: UserMediaService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -94,7 +100,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             hearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            store
         );
     }
 
@@ -322,6 +329,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         ModalTrapFocus.trap('video-container');
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -343,11 +355,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
-            this.registerMediaStatusPublisher();
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+                this.showWarning = true;
+            } else {
+                this.setUpSubscribers();
+            }
         });
+    }
+
+    private setUpSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
+        this.registerMediaStatusPublisher();
     }
 
     private registerMediaStatusPublisher() {

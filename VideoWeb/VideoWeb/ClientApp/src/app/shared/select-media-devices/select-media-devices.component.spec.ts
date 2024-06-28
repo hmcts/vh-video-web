@@ -39,6 +39,9 @@ describe('SelectMediaDevicesComponent', () => {
 
     let activeCameraStreamSubject: Subject<MediaStream>;
     let activeMicrophoneStreamSubject: Subject<MediaStream>;
+
+    const focusServiceSpy = jasmine.createSpyObj('FocusService', ['restoreFocus']);
+
     beforeAll(() => {
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['isFeatureEnabled'], ['onFilterChanged$']);
@@ -57,6 +60,7 @@ describe('SelectMediaDevicesComponent', () => {
         isAudioOnlySubject = new Subject<boolean>();
         filterChangedSubject = new Subject<BackgroundFilter | null>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
+        focusServiceSpy.restoreFocus.calls.reset();
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
@@ -85,7 +89,8 @@ describe('SelectMediaDevicesComponent', () => {
             new MockLogger(),
             translateServiceSpy,
             profileService,
-            videoFilterService
+            videoFilterService,
+            focusServiceSpy
         );
 
         component.availableCameraDevices = testData.getListOfCameras();
@@ -284,6 +289,7 @@ describe('SelectMediaDevicesComponent', () => {
     it('should emit cancelled event onClose', async () => {
         spyOn(component.shouldClose, 'emit');
         component.onClose();
+        expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
         expect(component.shouldClose.emit).toHaveBeenCalled();
     });
 

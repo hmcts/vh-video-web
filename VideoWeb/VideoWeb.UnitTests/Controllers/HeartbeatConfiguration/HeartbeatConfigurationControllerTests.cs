@@ -2,93 +2,102 @@ using System;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Common.Security.Tokens.Base;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 
-namespace VideoWeb.UnitTests.Controllers.HeartbeatConfiguration
+namespace VideoWeb.UnitTests.Controllers.HeartbeatConfiguration;
+
+[TestFixture]
+public class HeartbeatConfigurationControllerTests
 {
-    [TestFixture]
-    public class HeartbeatConfigurationControllerTests
+    private AutoMock _mocker;
+    private HeartbeatConfigurationController _sut;
+    private int _expiresInMinutes = 2;
+    private string _heartbeatUrlBase = "url";
+    private IOptions<KinlyConfiguration> _kinlyConfiguration;
+    private Mock<IJwtTokenProvider> _tokenProviderMock;
+
+    [SetUp]
+    public void Setup()
     {
-        private AutoMock _mocker;
-        private HeartbeatConfigurationController _sut;
-        private int _expiresInMinutes = 2;
-        private string _heartbeatUrlBase = "url";
-        
-        [SetUp]
-        public void Setup()
+        _mocker = AutoMock.GetLoose();
+
+        _kinlyConfiguration = Options.Create(new KinlyConfiguration()
         {
-            _mocker = AutoMock.GetLoose();
-
-            var kinlyConfiguration = new KinlyConfiguration()
-            {
-                ExpiresInMinutes = _expiresInMinutes,
-                HeartbeatUrlBase = _heartbeatUrlBase
-            };
+            ExpiresInMinutes = _expiresInMinutes,
+            HeartbeatUrlBase = _heartbeatUrlBase
+        });
+        _tokenProviderMock = _mocker.Mock<IJwtTokenProvider>();
             
-            _mocker.Mock<IOptions<KinlyConfiguration>>().SetupGet(x => x.Value).Returns(kinlyConfiguration);
+        _mocker.Mock<ISupplierLocator>()
+            .Setup(x => x.GetSupplierConfiguration())
+            .Returns(_kinlyConfiguration);
             
-            _sut = _mocker.Create<HeartbeatConfigurationController>();
-        }
-
-        [Test]
-        public void Should_return_bad_request_when_participant_id_is_wrong()
-        {
-            // Act
-            var response = _sut.GetConfigurationForParticipant(Guid.Empty);
-
-            // Assert
-            var modelState = response.Should().BeAssignableTo<BadRequestObjectResult>().
-                Subject.Value.Should().BeAssignableTo<SerializableError>().Subject;
-            modelState.Count.Should().Be(1);
-            modelState.ContainsKey("participantId").Should().BeTrue();
-        }
-
-        [Test]
-        public void Should_generate_a_jwt_for_the_participant_with_the_correct_parameters()
-        {
-            // Arrange
-            Guid participantId = Guid.NewGuid();
-            const string jwt = "jwt";
+        _mocker.Mock<ISupplierLocator>()
+            .Setup(x => x.GetTokenProvider())
+            .Returns(_tokenProviderMock.Object);
             
-            _mocker.Mock<IKinlyJwtTokenProvider>().Setup(x => x.GenerateToken(
+        _sut = _mocker.Create<HeartbeatConfigurationController>();
+    }
+
+    [Test]
+    public void Should_return_bad_request_when_participant_id_is_wrong()
+    {
+        // Act
+        var response = _sut.GetConfigurationForParticipant(Guid.Empty);
+
+        // Assert
+        var modelState = response.Should().BeAssignableTo<BadRequestObjectResult>().
+            Subject.Value.Should().BeAssignableTo<SerializableError>().Subject;
+        modelState.Count.Should().Be(1);
+        modelState.ContainsKey("participantId").Should().BeTrue();
+    }
+
+    [Test]
+    public void Should_generate_a_jwt_for_the_participant_with_the_correct_parameters()
+    {
+        // Arrange
+        Guid participantId = Guid.NewGuid();
+        const string jwt = "jwt";
+
+        _tokenProviderMock  
+            .Setup(x => x.GenerateToken(
                 It.Is<string>(y => y == participantId.ToString()),
                 It.Is<int>(y => y == _expiresInMinutes))
-                ).Returns(jwt);
+            ).Returns(jwt);
             
-            // Act
-            var response = _sut.GetConfigurationForParticipant(participantId);
+        // Act
+        var response = _sut.GetConfigurationForParticipant(participantId);
 
-            // Assert
-            response.Should().BeAssignableTo<OkObjectResult>()
-                .Subject.Value.Should().BeAssignableTo<HeartbeatConfigurationResponse>()
-                .Subject.HeartbeatJwt.Should().Be(jwt);
+        // Assert
+        response.Should().BeAssignableTo<OkObjectResult>()
+            .Subject.Value.Should().BeAssignableTo<HeartbeatConfigurationResponse>()
+            .Subject.HeartbeatJwt.Should().Be(jwt);
             
-            _mocker.Mock<IKinlyJwtTokenProvider>().Verify(x => x.GenerateToken(
-                It.Is<string>(y => y == participantId.ToString()), 
-                It.Is<int>(y => y == _expiresInMinutes)
-                ), Times.Once);
-        }
+        _mocker.Mock<IJwtTokenProvider>().Verify(x => x.GenerateToken(
+            It.Is<string>(y => y == participantId.ToString()), 
+            It.Is<int>(y => y == _expiresInMinutes)
+        ), Times.Once);
+    }
 
-        [Test]
-        public void Should_set_the_heartbeat_url_base_from_the_config()
-        {
-            // Arrange
-            Guid participantId = Guid.NewGuid();
+    [Test]
+    public void Should_set_the_heartbeat_url_base_from_the_config()
+    {
+        // Arrange
+        Guid participantId = Guid.NewGuid();
 
-            // Act
-            var response = _sut.GetConfigurationForParticipant(participantId);
+        // Act
+        var response = _sut.GetConfigurationForParticipant(participantId);
 
-            // Assert
-            response.Should().BeAssignableTo<OkObjectResult>()
-                .Subject.Value.Should().BeAssignableTo<HeartbeatConfigurationResponse>()
-                .Subject.HeartbeatUrlBase.Should().Be(_heartbeatUrlBase);
-        }
+        // Assert
+        response.Should().BeAssignableTo<OkObjectResult>()
+            .Subject.Value.Should().BeAssignableTo<HeartbeatConfigurationResponse>()
+            .Subject.HeartbeatUrlBase.Should().Be(_heartbeatUrlBase);
     }
 }

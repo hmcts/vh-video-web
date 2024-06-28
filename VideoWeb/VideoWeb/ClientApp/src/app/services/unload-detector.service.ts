@@ -17,7 +17,11 @@ export class UnloadDetectorService {
     private beforeUnloadSubject = new Subject<void>();
     private renderer: Renderer2;
 
-    constructor(deviceDetectorService: DeviceDetectorService, renderer2Factory: RendererFactory2, private logger: Logger) {
+    constructor(
+        deviceDetectorService: DeviceDetectorService,
+        renderer2Factory: RendererFactory2,
+        private logger: Logger
+    ) {
         this.renderer = renderer2Factory.createRenderer(null, null);
         this.initialise(deviceDetectorService.isDesktop());
     }

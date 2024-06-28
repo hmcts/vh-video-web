@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 using VideoWeb.Health;
@@ -30,6 +32,10 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
+            var sdkKey = Configuration["LaunchDarkly:SdkKey"];
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
+
             services.AddSwagger();
             services.AddHsts(options =>
             {
@@ -46,8 +52,8 @@ namespace VideoWeb
                 {
                     opt.Filters.Add(typeof(LoggingMiddleware));
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
-                })
-                .AddFluentValidation();
+                });
+            services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddApplicationInsightsTelemetry();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
@@ -57,16 +63,13 @@ namespace VideoWeb
         {
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
-
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
-
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-
             services.Configure<EJudAdConfiguration>(options =>
             {
                 Configuration.Bind("EJudAd", options);
@@ -81,14 +84,26 @@ namespace VideoWeb
             {
                 Configuration.Bind("QuickLinks", options);
             });
-            
-            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+
+            services.Configure<RedisConfiguration>(options =>
+            {
+                Configuration.Bind("RedisConfiguration", options);
+            });
+
+            var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
-            services.AddSingleton(customTokenSettings);
+            services.AddSingleton(kinlyTokenSettings);
+            
+            var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
+            services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
+            services.AddSingleton(vodafoneTokenSettings);
+
+            var redis = Configuration.GetSection("RedisConfiguration").Get<RedisConfiguration>();
+            services.AddSingleton(redis);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
-            
+  
             services.AddVhHealthChecks();
         }
 
@@ -119,7 +134,10 @@ namespace VideoWeb
             // this is a workaround to set HSTS in a docker
             // reference from https://github.com/dotnet/dotnet-docker/issues/2268#issuecomment-714613811
             app.Use(async (context, next) => {
-                context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+                if (!context.Response.Headers.ContainsKey("Strict-Transport-Security"))
+                {
+                    context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+                }
                 await next.Invoke();
             });
 

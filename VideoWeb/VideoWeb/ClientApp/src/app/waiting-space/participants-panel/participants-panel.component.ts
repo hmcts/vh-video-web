@@ -1,10 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Subject, Subscription, combineLatest } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -33,6 +33,10 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { IndividualPanelModel } from '../models/individual-panel-model';
 
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
@@ -44,6 +48,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     participants: PanelModel[] = [];
     nonEndpointParticipants: PanelModel[] = [];
     endpointParticipants: PanelModel[] = [];
+    totalParticipants: number;
+    totalParticipantsInWaitingRoom: number;
     isMuteAll = false;
     conferenceId: string;
 
@@ -56,6 +62,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     readonly idPrefix = 'participants-panel';
 
     private readonly loggerPrefix = '[ParticipantsPanel] -';
+    private onDestroy$ = new Subject<void>();
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
@@ -65,8 +72,22 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
-        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
+        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        private store: Store<ConferenceState>,
+        private changeDetector: ChangeDetectorRef
     ) {}
+
+    get participantsInHearing() {
+        return this.participants.filter(x => x.isInHearing() && !x.isDisconnected());
+    }
+
+    get participantsInWaitingRoom() {
+        return this.participants.filter(x => x.isAvailable() && !x.isInHearing());
+    }
+
+    get participantsNotConnected() {
+        return this.participants.filter(x => !x.isAvailable() && !x.isInHearing());
+    }
 
     private static showCaseRole(participant: PanelModel) {
         return !(
@@ -91,6 +112,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        const participants$ = this.store.select(ConferenceSelectors.getParticipants);
+        const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
+
+        combineLatest([participants$, endpoints$])
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(([participants, endpoints]) => {
+                this.totalParticipants = participants.length + endpoints.length;
+                this.totalParticipantsInWaitingRoom =
+                    participants.filter(x => x.status === ParticipantStatus.Available).length +
+                    endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
+            });
         this.getParticipantsList().then(() => {
             this.postGetParticipantsListHandler();
             this.setupVideoCallSubscribers();
@@ -155,6 +187,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();
@@ -214,30 +248,35 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getParticipantMediaStatusMessage().subscribe(async message => {
                 this.handleParticipantMediaStatusChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
                 this.handleParticipantHandRaiseChange(message);
+                this.changeDetector.detectChanges();
             })
         );
 
@@ -248,7 +287,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const newlyAddedParticipants = mappedList.filter(
                         ({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId)
                     );
-                    newlyAddedParticipants.forEach(np => this.nonEndpointParticipants.push(np));
+                    newlyAddedParticipants.forEach(np => {
+                        if (
+                            np.role === Role.JudicialOfficeHolder &&
+                            this.nonEndpointParticipants.some(x => x.role === Role.JudicialOfficeHolder)
+                        ) {
+                            return;
+                        }
+                        this.nonEndpointParticipants.push(np);
+                    });
 
                     const nonEndpointParticipantsLinkedParticipantPanelIndex = this.nonEndpointParticipants.findIndex(
                         x => x.role === Role.JudicialOfficeHolder
@@ -263,6 +310,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
                     this.removeParticipantsNotInConference(mappedList);
                     this.updateParticipants();
+                    this.changeDetector.detectChanges();
                 }
             })
         );
@@ -352,6 +400,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
+        if (!updatedParticipant.pexipDisplayName) {
+            return;
+        }
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
             this.logger.info(`${this.loggerPrefix} could NOT update participant in call`, {
@@ -447,6 +498,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
+    }
+
+    scrollToElement(elementId: string) {
+        const element = document.getElementById(elementId);
+        element?.scrollIntoView({ behavior: 'smooth' });
     }
 
     isParticipantInHearing(participant: PanelModel): boolean {

@@ -1,11 +1,10 @@
-using System.Collections.Specialized;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -22,7 +21,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>())
                 .Returns(_mocker.Create<ClientSettingsResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
                 .Returns(_mocker.Create<IdpSettingsResponseMapper>());
@@ -65,21 +64,24 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 EnableDynamicEvidenceSharing = true,
                 BlurRadius = 20
             };
-
+            
             var kinlyConfiguration = new KinlyConfiguration
             {
                 JoinByPhoneFromDate = "2021-02-09"
             };
 
+            var supplierLocatorMock = _mocker.Mock<ISupplierLocator>()
+                .Setup(x => x.GetSupplierConfiguration())
+                .Returns(Options.Create(kinlyConfiguration));
+            
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
-                .AddObject(kinlyConfiguration)
+                .AddObject(supplierLocatorMock)
                 .AddObject(Options.Create(eJudAdConfiguration))
                 .AddObject(Options.Create(dom1AdConfiguration))
                 .Build();
 
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
-            
             
             var result = configSettingsController.GetClientConfigurationSettings();
             result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
@@ -110,10 +112,14 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             {
                 JoinByPhoneFromDate = "2021-02-09"
             };
+            
+            var supplierLocatorMock = _mocker.Mock<ISupplierLocator>()
+                .Setup(x => x.GetSupplierConfiguration())
+                .Returns(Options.Create(kinlyConfiguration));
 
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
-                .AddObject(kinlyConfiguration)
+                .AddObject(supplierLocatorMock)
                 .Build();
 
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);

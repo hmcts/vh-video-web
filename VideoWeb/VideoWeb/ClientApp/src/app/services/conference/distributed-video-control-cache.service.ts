@@ -20,7 +20,10 @@ import {
 export class DistributedVideoControlCacheService implements IVideoControlCacheStorageService {
     private readonly loggerPrefix = '[DistributedVideoControlCacheService] -';
 
-    constructor(private apiClient: ApiClient, private logger: Logger) {}
+    constructor(
+        private apiClient: ApiClient,
+        private logger: Logger
+    ) {}
 
     saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState) {
         const request = this.mapToRequest(hearingControlStates);

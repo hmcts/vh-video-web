@@ -1,31 +1,26 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role } from '../services/clients/api-client';
+import { LaunchDarklyService } from '../services/launch-darkly.service';
 import { Logger } from '../services/logging/logger-base';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
+import { RoleGuard } from './role-guard';
 
 @Injectable({
     providedIn: 'root'
 })
-export class StaffMemberGuard implements CanActivate {
-    constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
+export class StaffMemberGuard extends RoleGuard {
+    protected roles = [Role.StaffMember];
+    protected loggerPrefix = '[StaffMemberGuard]';
 
-    async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        this.logger.debug('[StaffMemberGuard] Checking if user is a Staff Member');
-        try {
-            const profile = await this.userProfileService.getUserProfile();
-            if (profile.roles.includes(Role.StaffMember)) {
-                this.logger.debug('[StaffMemberGuard] User is a StaffMemberGuard.');
-                return true;
-            } else {
-                this.logger.debug('[StaffMemberGuard] User is not a Staff Member. Going back home');
-                this.router.navigate(['/home']);
-                return false;
-            }
-        } catch (err) {
-            this.logger.error('[StaffMemberGuard] Failed to get user profile. Logging out.', err);
-            this.router.navigate(['/logout']);
-            return false;
-        }
+    constructor(
+        securityServiceProviderService: SecurityServiceProvider,
+        userProfileService: ProfileService,
+        router: Router,
+        logger: Logger,
+        ldService: LaunchDarklyService
+    ) {
+        super(securityServiceProviderService, userProfileService, router, logger, ldService);
     }
 }

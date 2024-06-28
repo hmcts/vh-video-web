@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using BookingsApi.Client;
 using Microsoft.AspNetCore.Http;
+using VideoApi.Client;
 using VideoWeb.Common;
 
 namespace VideoWeb.Middleware
@@ -22,6 +25,20 @@ namespace VideoWeb.Middleware
             try
             {
                 await _next(httpContext);
+            }
+            catch (VideoApiException apiException)
+            {
+                var properties = new Dictionary<string, string> { { "response", apiException.Response } };
+                ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Video API Client Exception",
+                    apiException, null, properties);
+                await HandleExceptionAsync(httpContext, (HttpStatusCode) apiException.StatusCode, apiException);
+            }
+            catch (BookingsApiException apiException)
+            {
+                var properties = new Dictionary<string, string> { { "response", apiException.Response } };
+                ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Bookings API Client Exception",
+                    apiException, null, properties);
+                await HandleExceptionAsync(httpContext, (HttpStatusCode) apiException.StatusCode, apiException);
             }
             catch (BadRequestException ex)
             {

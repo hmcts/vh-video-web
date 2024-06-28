@@ -7,6 +7,7 @@ using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             resultParticipant.Id.Should().Be(participant.Id);
             resultParticipant.Username.Should().Be(participant.Username);
-            resultParticipant.Role.Should().Be(participant.UserRole);
+            resultParticipant.Role.Should().Be((Role)participant.UserRole);
             resultParticipant.HearingRole.Should().Be(participant.HearingRole);
             resultParticipant.DisplayName.Should().Be(participant.DisplayName);
             resultParticipant.FirstName.Should().Be(participant.FirstName);
@@ -36,6 +37,9 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.ContactEmail.Should().Be(participant.ContactEmail);
             resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
+            resultParticipant.CurrentRoom.Should().NotBeNull();
+            resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
+            resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
             resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
             resultParticipant.LinkedParticipants[0].LinkType.ToString().Should()
                 .Be(participant.LinkedParticipants[0].Type.ToString());
@@ -49,6 +53,18 @@ namespace VideoWeb.UnitTests.Mappings
             var witness = response.Participants.First(x => x.HearingRole == "Witness");
             witness.IsJudge().Should().BeFalse();
             witness.IsWitness().Should().BeTrue();
+        }
+        
+        [Test]
+        public void Should_map_without_current_room()
+        {
+            var conference = BuildConferenceDetailsResponse();
+            conference.Participants[0].CurrentRoom = null;
+            var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
+            
+            var resultParticipant  = response.Participants[0];
+            
+            resultParticipant.CurrentRoom.Should().BeNull();
         }
 
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
@@ -73,6 +89,12 @@ namespace VideoWeb.UnitTests.Mappings
                 LinkedId = participantB.Id,
                 Type = LinkedParticipantType.Interpreter
             });
+            participantA.CurrentRoom = new RoomResponse
+            {
+                Id = 1,
+                Label = "Room 1",
+                Locked = true
+            };
             
             participantB.LinkedParticipants.Add(new LinkedParticipantResponse
             {

@@ -6,6 +6,7 @@ import {
     CourtRoomsAccountResponse,
     HearingVenueResponse,
     JusticeUserResponse,
+    Role,
     UserProfileResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -61,7 +62,7 @@ describe('VHOfficerVenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
-    const loggedInUser = new UserProfileResponse({ username: 'test-user1@hearings.reform.hmcts.net' });
+    const loggedInUser = new UserProfileResponse({ username: 'test-user1@hearings.reform.hmcts.net', roles: [Role.VideoHearingsOfficer] });
     const cso1 = new JusticeUserResponse({ username: loggedInUser.username, id: 'test-user-1' });
     const cso2 = new JusticeUserResponse({ username: 'test-user2@hearings.reform.hmcts.net', id: 'test-user-2' });
     const csos: JusticeUserResponse[] = [];
@@ -83,7 +84,7 @@ describe('VHOfficerVenueListComponent', () => {
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts', 'getActiveConferences']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
@@ -207,6 +208,13 @@ describe('VHOfficerVenueListComponent', () => {
         expect(result[0]).toBe(venueNames[0].name);
     });
 
+    it('should navigate to admin hearing with list active sessions', fakeAsync(() => {
+        component.activeSessions = true;
+        component.goToHearingList();
+        tick();
+        expect(vhoQueryService.getActiveConferences).toHaveBeenCalled();
+    }));
+
     it('should navigate to admin hearing list, with venues selected', fakeAsync(() => {
         component.selectedVenues = selectedJudgeNames;
         component.selectedCsos = [];
@@ -230,7 +238,7 @@ describe('VHOfficerVenueListComponent', () => {
         component.goToHearingList();
         tick();
         expect(loggerSpy).toHaveBeenCalled();
-        expect(component.errorMessage).toBe('Failed to find venues or csos');
+        expect(component.errorMessage).toBe('Please select a filter to view hearings');
     }));
 
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {

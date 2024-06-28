@@ -1,13 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    LoggedParticipantResponse,
-    ParticipantResponseVho,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -17,6 +11,12 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { FocusService } from 'src/app/services/focus.service';
+import {
+    mapConferenceToVHConference,
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../../store/models/api-contract-to-state-model-mappers';
+import { VHConference, VHParticipant } from '../../store/models/vh-conference';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -26,9 +26,9 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
-    let conference: ConferenceResponse;
-    let participantsObserverPanelMember: ParticipantResponseVho[];
-    let participantsWinger: ParticipantResponseVho[];
+    let conference: VHConference;
+    let participantsObserverPanelMember: VHParticipant[];
+    let participantsWinger: VHParticipant[];
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
@@ -36,9 +36,11 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
     beforeAll(() => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
-        conference = new ConferenceTestData().getConferenceDetailFuture();
-        participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
-        participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailFuture());
+        participantsObserverPanelMember = new ConferenceTestData()
+            .getListOfParticipantsObserverAndPanelMembers()
+            .map(x => mapParticipantToVHParticipant(x));
+        participantsWinger = new ConferenceTestData().getListOfParticipantsWingers().map(x => mapParticipantToVHParticipant(x));
 
         consultationService = consultationServiceSpyFactory();
 
@@ -67,7 +69,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             translateService,
             focusServiceSpy
         );
-        conference = new ConferenceTestData().getConferenceDetailFuture();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailFuture());
         component.conference = conference;
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,
@@ -134,7 +136,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         participantsWinger.forEach(x => {
             component.conference.participants.push(x);
         });
-        const endpoints = new ConferenceTestData().getListOfEndpoints();
+        const endpoints = new ConferenceTestData().getListOfEndpoints().map(x => mapEndpointToVHEndpoint(x));
         conference.endpoints = endpoints;
         component.ngOnInit();
 
@@ -160,7 +162,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     it('should return true if case type is none', () => {
         const participants = component.conference.participants;
         const participant = participants[0];
-        participant.case_type_group = 'None';
+        participant.caseTypeGroup = 'None';
         const isCaseTypeNone = component.isCaseTypeNone(participant);
         expect(isCaseTypeNone).toBe(true);
     });

@@ -18,6 +18,7 @@
   "footer": {
     "privacy-policy": "Privacy policy",
     "accessibility": "Accessibility",
+    "cookies": "Cookies",
     "translate-to": "Gweld y gwasanaeth hwn yn Gymraeg",
     "all-content-availabe-under": "All content is available under the ",
     "open-government-license": "Open Government Licence v3.0",
@@ -131,7 +132,7 @@
     "hm-courts": "HM Courts",
     "tribunals-service": "Tribunals Service",
     "sign-out": "Sign out",
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "account-navigation-label": "Account navigation"
   },
   "not-found": {
@@ -508,7 +509,7 @@
     "browser-support": "Your browser does not support video",
     "lock-the-room": "Lock the room to prevent others joining",
     "invite-others": "Invite others by calling them or unlock the room for others to join",
-    "witness-transferring-warning-image": "Witness transferring warning image",
+    "witness-transferring-warning-img": "Witness transferring warning image",
     "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
     "your-video-hearing": "Your video hearing",
     "choose-camera-and-microphone": "Choose camera and microphone",
@@ -573,6 +574,21 @@
     "unavailable": "Unavailable",
     "in": "In"
   },
+
+  "terms-of-service-consultation": {
+    "header": "Please acknowledge the Terms of Service below:",
+    "para1": "The Legal Representative must make sure that the private consultation with their client remains secure and private, and act in their client’s best interests.",
+    "para2": "The Legal Representative must conduct their private consultation in line with the principles of their profession, and uphold their duty to the court and to the administration of justice.",
+    "para3": "The Legal Representative must not:",
+    "bp1": "Invite other participants who have not been identified to HMCTS or HMPPS (i.e witnesses, observers etc) into the remote consultation",
+    "bp2": "Have unauthorised participants in the physical room from which they are carrying out the consultation",
+    "bp3": "Record this private consultation (by audio or video), take any images (by photo or screenshot), or publish any such recording",
+    "bp4": "Share their screen to show documents or webpages that are not appropriate for the consultation",
+    "bp5": "Be under the influence of alcohol or drugs during the consultation",
+    "bp6": "Be driving a vehicle during the consultation",
+    "btn-acknowledge": "Acknowledge",
+    "btn-cancel": "Cancel"
+  },
   "private-consultation-participants": {
     "calling": "Calling...",
     "declined": "Declined",
@@ -591,7 +607,8 @@
     "red": "red",
     "blue": "blue",
     "grey": "grey",
-    "participants": "Participants",
+    "participants": "All participants",
+    "participants-tooltip": "All participants booked into the hearing",
     "mute-lock": "Mute & lock",
     "mute-tooltip": "Mute all participants and prevent them from unmuting",
     "unmute-lock": "Unlock mute",
@@ -617,7 +634,10 @@
     "mute-all": "Mute all",
     "unmute-all": "Unmute all",
     "mute-all-tooltip": "Mute all participants",
-    "unmute-all-tooltip": "Unmute all participants"
+    "unmute-all-tooltip": "Unmute all participants",
+    "in-waiting-room": "In waiting room",
+    "in-waiting-room-tooltip": "All participants in the waiting room",
+    "not-connected": "Not connected"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",
@@ -847,7 +867,26 @@
     "electronic-communications,-postal-services-&-network-information-systems": "Electronic Communications, Postal Services & Network Information Systems",
     "gangmasters-licensing-appeals": "Gangmasters Licensing Appeals",
     "reserve-forces-appeal-tribunal": "Reserve Forces Appeal Tribunal",
-    "residential-property": "Residential Property"
+    "residential-property": "Residential Property",
+    "family-public-law": "Family Public Law",
+    "court-of-protections": "Court of Protections",
+    "remo": "REMO",
+    "maintenance-enforcement": "Maintenance Enforcement",
+    "probate": "Probate",
+    "transport": "Transport",
+    "pensions": "Pensions",
+    "social-security-and-child-support": "Social Security and Child Support",
+    "civil-enforcement": "Civil Enforcement",
+    "insolvency": "Insolvency",
+    "mortgage-and-landlord-possession-claims": "Mortgage and Landlord Possession Claims",
+    "non-money-claims": "Non-money Claims",
+    "return-of-goods-claims": "Return of Goods Claims",
+    "examination-boards": "Examination Boards",
+    "individual-electoral-registration": "Individual Electoral Registration",
+    "licensing-and-standards": "Licensing and Standards",
+    "primary-health-lists": "Primary Health Lists",
+    "mp-s-expenses": "MP’s Expenses",
+    "agricultural-land-and-drainage": "Agricultural Land and Drainage"
   },
   "case-type-group": {
     "state": "State",
@@ -936,6 +975,11 @@
     "mute-my-microphone": "Mute my microphone",
     "cancel": "Cancel"
   },
+  "warn-join-hearing-popup": {
+    "title": "Your hearing is scheduled to start at",
+    "message": "Please take a moment to prepare.",
+    "submit-button": "OK"
+  },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
     "display-text": "Copy joining by phone details to clipboard",
@@ -1013,10 +1057,11 @@
     "selection-default-text": "Choose lists",
     "selection-button-text": "View hearings",
     "label": "Venue name {{name}}",
-    "allocation-list-label": "Venue allocation list"
+    "allocation-list-label": "Venue allocation list",
+    "cso-selection-default-text": "Choose an officer or officers"
   },
   "accessibility": {
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "content": "",
     "menu": {
       "heading": "Contents",
@@ -1152,7 +1197,7 @@
     "contents": "Contents"
   },
   "privacy-policy": {
-    "crest-image-alt": "HMCTS logo crest image",
+    "crest-img-alt": "HMCTS logo crest image",
     "heading": "Our privacy policy for the video hearings service",
     "print-button": "Print",
     "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
@@ -1382,5 +1427,70 @@
   "false": "No",
   "allocations-toastr": {
     "header": "New hearing(s) allocated"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "intro": "A cookie is a small piece of data that’s stored on your computer, tablet, or phone when you visit a website. Most websites need cookies to work properly.",
+    "uses": "This service uses them to:",
+    "usesList": {
+      "item1": "measure how you use the service so it can be improved",
+      "item2": "temporily store preferences you choose"
+    },
+    "essentialCookiesTitle": "Essential Cookies",
+    "essentialCookiesDesc": "Essential cookies keep your information secure while you use Video Hearings. We do not need to ask permission to use them.",
+    "manageCookiesStart": "Find out more about ",
+    "manageCookiesEnd": "how to manage cookies.",
+    "usageTitle": "How cookies are used in this service",
+    "usageMeasureTitle": "To measure website usage",
+    "usageMeasureDesc": "We use third party services to perform visitor analytics",
+    "usageTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "row1": {
+        "purpose": "Generated session ID for usage tracking (Application Insights)",
+        "expires": "Usage"
+      }
+    },
+    "identifyTitle": "To identify you when you come back to the service",
+    "identifyDesc": "We use authentication cookies to identify you when you return to the service.",
+    "identifyTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "row1": {
+        "name": "__userid__",
+        "purpose": "Your user ID",
+        "expires": "When you close your browser"
+      }
+    },
+    "securityTitle": "To make the service more secure",
+    "securityDesc": "We set cookies which prevent unauthorised access to the service. This makes the service more secure and protects your personal",
+    "securityTable": {
+      "headers": {
+        "name": "Name",
+        "purpose": "Purpose",
+        "expires": "Expires"
+      },
+      "row1": {
+        "name": "vhaad",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      },
+      "row2": {
+        "name": "ejud",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      },
+      "row3": {
+        "name": "dom1",
+        "purpose": "Used to secure communications with HMCTS data services",
+        "expires": "When you close your browser"
+      }
+    }
   }
 }

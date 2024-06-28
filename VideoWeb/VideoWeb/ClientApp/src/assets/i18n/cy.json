@@ -1,6 +1,6 @@
 {
   "privacy-policy": {
-    "crest-image-alt": "Delwedd o arwyddlun logo GLlTEM",
+    "crest-img-alt": "Delwedd o arwyddlun logo GLlTEM",
     "heading": "Ein polisi preifatrwydd ar gyfer y gwasanaeth gwrandawiadau fideo ",
     "print-button": "Argraffu",
     "paragraph1": "Gwasanaeth Llysoedd a Thribiwnlysoedd EM (GLlTEM) sy'n rheoli'r gwasanaeth gwrandawiadau fideo. ",
@@ -93,7 +93,7 @@
     }
   },
   "accessibility": {
-    "crest-image-alt": "Delwedd o arwyddlun logo GLlTEM",
+    "crest-img-alt": "Delwedd o arwyddlun logo GLlTEM",
     "menu": {
       "heading": "Cynnwys",
       "accessibility-statement": {
@@ -258,6 +258,7 @@
   "footer": {
     "privacy-policy": "Polisi preifatrwydd",
     "accessibility": "Hygyrchedd",
+    "cookies": "Cwcis",
     "translate-to": "View this service in English",
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
@@ -544,7 +545,7 @@
     "hearing": "Gwrandawiad",
     "hearing-about-to-start": "Bydd y barnwr yn eich gadael i mewn i'r gwrandawiad pan fyddant yn barod amdanoch. Byddwch yn cael rhybudd clywedol ac yn ymuno â'r gwrandawiad ychydig o eiliadau yn ddiweddarach.",
     "hearing-ready": "Byddwch yn barod <br/> Byddwch yn ymuno â'r gwrandawiad mewn ychydig o eiliadau",
-    "witness-transferring-warning-image": "Delwedd rhybudd tyst yn ymuno",
+    "witness-transferring-warning-img": "Delwedd rhybudd tyst yn ymuno",
     "browser-support": "Ni allwch ddefnyddio'r porwr hwn i wneud galwadau fideo"
   },
   "individual-participant-status-list": {
@@ -601,6 +602,20 @@
     "close": "Cau",
     "in": "Yn",
     "video-access-point": "Pwynt mynediad fideo"
+  },
+  "terms-of-service-consultation": {
+    "header": "Byddwch cystal â Chydnabod y Telerau Gwasanaeth isod",
+    "para1": "Rhaid i'r Cynrychiolydd Cyfreithiol wneud yn siŵr bod yr ymgynghoriad preifat gyda'i gleient yn parhau i fod yn ddiogel ac yn breifat, a’i fod yn gweithredu er budd gorau ei gleient.",
+    "para2": "Rhaid i'r Cynrychiolydd Cyfreithiol gynnal ei ymgynghoriad preifat yn unol ag egwyddorion ei broffesiwn, a chynnal ei ddyletswydd i'r llys ac i weinyddu cyfiawnder.",
+    "para3": "Rhaid i'r Cynrychiolydd Cyfreithiol beidio â:",
+    "bp1": "Gwahodd cyfranogwyr eraill nad ydi GLlTEF neu HMPPS yn ymwybodol ohonynt (h.y tystion, arsylwyr ac ati) i'r ymgynghoriad o bell",
+    "bp2": "Gwahodd unrhyw un anawdurdodedig i’r ystafell tra ei fod yn cynnal yr ymgynghoriad",
+    "bp3": "Recordio’r ymgynghoriad preifat hwn (drwy sain neu fideo), tynnu lluniau (neu screenshot), neu gyhoeddi unrhyw recordiad o'r fath",
+    "bp4": "Rhannu ei sgrin i ddangos dogfennau neu dudalennau gwe nad yw’n briodol ar gyfer yr ymgynghoriad",
+    "bp5": "Bod dan ddylanwad alcohol neu gyffuriau yn ystod yr ymgynghoriad",
+    "bp6": "Gyrru cerbyd yn ystod yr ymgynghoriad",
+    "btn-acknowledge": "Cydnabod",
+    "btn-cancel": "Canslo"
   },
   "join-private-consultation": {
     "join": "Ymuno â chyfarfod preifat",
@@ -881,8 +896,14 @@
     "mute-my-microphone": "Troi fy meicroffôn i ffwrdd",
     "cancel": "Canslo"
   },
+  "warn-join-hearing-popup": {
+    "title": "Disgwylir i'ch gwrandawiad ddechrau ar",
+    "message": "Cymerwch eiliad i baratoi.",
+    "submit-button": "Iawn"
+  },
   "participants-panel": {
     "participants": "Cyfranogwyr",
+    "participants-tooltip": "Rhestr o'r cyfranogwyr sydd yn y gwrandawiad",
     "mute-lock": "Mudo a chloi",
     "mute-tooltip": "Mudo'r holl gyfranogwyr a'u hatal rhag gallu dadfudo eu hunain",
     "unmute-lock": "Datgloi mudo",
@@ -916,7 +937,10 @@
     "mute-all": "Tewi pawb",
     "unmute-all": "Clywed pawb",
     "mute-all-tooltip": "Rhoi yr holl gyfranogwyr ar miwt",
-    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt"
+    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt",
+    "in-waiting-room": "Yn yr ystafell aros",
+    "in-waiting-room-tooltip": "Rhestr o gyfranogwyr yn yr ystafell aros",
+    "not-connected": "Heb gysylltu"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",
@@ -1259,8 +1283,26 @@
     "electronic-communications,-postal-services-&-network-information-systems": "Cyfathrebiadau Electronig, Gwasanaethau Post a Systemau Gwybodaeth Rhwydwaith",
     "gangmasters-licensing-appeals": "Apeliadau Trwyddedu Meistri Gangiau",
     "reserve-forces-appeal-tribunal": "Tribiwnlys Apeliadau y Lluoedd Wrth Gefn",
-    "residential-property": "Eiddo Preswyl"
-
+    "residential-property": "Eiddo Preswyl",
+    "family-public-law": "Cyfraith Deulu Gyhoeddus",
+    "court-of-protections": "Y Llys Gwarchod",
+    "remo": "REMO",
+    "maintenance-enforcement": "Gorfodi Cynhaliaeth",
+    "probate": "Profiant",
+    "transport": "Trafnidiaeth",
+    "pensions": "Pensiynau",
+    "social-security-and-child-support": "Nawdd Cymdeithasol a Chynnal Plant",
+    "civil-enforcement": "Gorfodaeth Sifil",
+    "insolvency": "Ansolfedd",
+    "mortgage-and-landlord-possession-claims": "Hawliadau Morgais a Meddiannaeth Landlord",
+    "non-money-claims": "Hawliadau Anariannol",
+    "return-of-goods-claims": "Hawliadau Dychwelyd Nwyddau",
+    "examination-boards": "Byrddau Arholi",
+    "individual-electoral-registration": "Cofrestru Etholiadol Unigol",
+    "licensing-and-standards": "Trwyddedu a Safonau",
+    "primary-health-lists": "Rhestrau Iechyd Sylfaenol",
+    "mp-s-expenses": "Treuliau ASau",
+    "agricultural-land-and-drainage": "Tir Amaethyddol a Draenio"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
@@ -1295,7 +1337,8 @@
     "selection-default-text": "Dewis rhestr",
     "selection-button-text": "Gweld gwrandawiadau",
     "label": "Enw'r lleoliad {{name}}",
-    "allocation-list-label": "Rhestr lleoliadau"
+    "allocation-list-label": "Rhestr lleoliadau",
+    "cso-selection-default-text": "Dewiswch swyddog neu swyddogion"
   },
   "app": {
     "skip-to-main-content": "Ymlaen i'r prif gynnwys"
@@ -1383,5 +1426,70 @@
   "false": "Naddo",
   "allocations-toastr": {
     "header": "Gwrandawiad newydd wedi'i ddyrannu"
+  },
+  "cookies": {
+    "title": "Cwcis",
+    "intro": "Darn bach o ddata sy'n cael ei storio ar eich cyfrifiadur, eich tabled neu eich ffôn symudol pan fyddwch yn ymweld â gwefan yw cwci. Mae angen cwcis ar y rhan fwyaf o wefannau i weithio'n iawn.",
+    "uses": "Mae’r gwasanaeth hwn yn eu defnyddio i:",
+    "usesList": {
+      "item1": "fesur sut ydych yn defnyddio’r gwasanaeth fel y gallwn ei wella",
+      "item2": "storio eich dewisiadau cwcis dros dro"
+    },
+    "essentialCookiesTitle": "Cwcis hanfodol",
+    "essentialCookiesDesc": "Mae cwcis hanfodol yn cadw eich gwybodaeth yn ddiogel tra rydych yn cymryd rhan mewn Gwrandawiadau Fideo. Nid oes rhaid inni ofyn am ganiatâd i’w defnyddio.",
+    "manageCookiesStart": "Darganfyddwch fwy am ",
+    "manageCookiesEnd": "sut i reoli cwcis.",
+    "usageTitle": "Sut defnyddir cwcis yn y gwasanaeth hwn",
+    "usageMeasureTitle": "I fesur faint o bobl sy’n defnyddio ein gwefan",
+    "usageMeasureDesc": "Rydym yn defnyddio gwasanaethau trydydd parti i ddadansoddi ymweliadau â’r wefan",
+    "usageTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "purpose": "ID defnyddiwr a gynhyrchwyd ar gyfer tracio defnydd (Application Insights)",
+        "expires": "Defnydd"
+      }
+    },
+    "identifyTitle": "Eich adnabod pan fyddwch yn dod yn ôl at y gwasanaeth",
+    "identifyDesc": "Rydym yn defnyddio cwcis dilysu i’ch adnabod pan fyddwch yn dod yn ôl i’r gwasanaeth.",
+    "identifyTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "name": "__userid__",
+        "purpose": "Eich ID defnyddiwr",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      }
+    },
+    "securityTitle": "Gwneud y gwasanaeth yn fwy diogel",
+    "securityDesc": "Rydym yn gosod cwcis sy'n atal mynediad heb awdurdod i'r gwasanaeth. Mae hyn yn gwneud y gwasanaeth yn fwy diogel ac yn diogelu eich gwybodaeth bersonol.",
+    "securityTable": {
+      "headers": {
+        "name": "Enw",
+        "purpose": "Pwrpas",
+        "expires": "Dyddiad dod i ben"
+      },
+      "row1": {
+        "name": "vhaad",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      },
+      "row2": {
+        "name": "ejud",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      },
+      "row3": {
+        "name": "dom1",
+        "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
+        "expires": "Pan fyddwch yn cau eich porwr"
+      }
+    }
   }
 }

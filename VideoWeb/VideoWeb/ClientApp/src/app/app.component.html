@@ -1,13 +1,19 @@
 <div [ngClass]="(hideNonVideoComponents$ | async) ? 'hide-non-video-elements' : ''">
-  <div #skipLink tabindex="0"></div>
-  <div role="navigation">
+  <div #skipLink></div>
+  <nav>
     <a href="javascript:void(0)" class="govuk-skip-link non-video-element" (click)="skipToContent()">{{
       'app.skip-to-main-content' | translate
     }}</a>
-  </div>
-  <header role="banner">
-    <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn"></app-header>
-    <div class="govuk-width-container non-video-element" [ngClass]="(backLinkDetails$ | async)?.className">
+  </nav>
+  <header class="govuk-header" data-module="govuk-header">
+    <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn" [username]="username"></app-header>
+  </header>
+  <div class="govuk-width-container app-width-container--wide" id="master-container">
+    <section
+      aria-label="Beta banner and back navigation container"
+      class="govuk-width-container non-video-element"
+      [ngClass]="(backLinkDetails$ | async)?.className"
+    >
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
       <app-back-navigation
         *ngIf="backLinkDetails$ | async as backLinkDetails"
@@ -15,10 +21,8 @@
         (navigateBack)="navigateBack(backLinkDetails.path)"
         class="non-video-element"
       ></app-back-navigation>
-    </div>
-  </header>
-  <div class="govuk-width-container" id="master-container">
-    <main #maincontent class="govuk-main-wrapper app-width-container--wide" id="main-content" role="main" tabindex="-1">
+    </section>
+    <main #maincontent class="govuk-main-wrapper" id="main-content" role="main" tabindex="-1">
       <router-outlet></router-outlet>
     </main>
   </div>

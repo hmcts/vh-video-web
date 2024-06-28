@@ -26,6 +26,8 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -34,6 +36,7 @@ import { FocusService } from 'src/app/services/focus.service';
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     isParticipantsPanelHidden = false;
+    showWarning = false;
 
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
@@ -62,7 +65,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
         super(
             route,
@@ -84,7 +88,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             hearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            store
         );
     }
 
@@ -142,6 +147,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 
+    dismissWarning() {
+        this.showWarning = false;
+        this.setUpSubscribers();
+    }
+
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -164,10 +174,18 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
+            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+                this.showWarning = true;
+            } else {
+                this.setUpSubscribers();
+            }
         });
+    }
+
+    private setUpSubscribers() {
+        this.subscribeToClock();
+        this.startEventHubSubscribers();
+        this.connectToPexip();
     }
 
     private cleanUp() {

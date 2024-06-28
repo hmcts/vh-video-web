@@ -36,7 +36,11 @@ export class UserMediaService {
     private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
 
-    constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
+    constructor(
+        private errorService: ErrorService,
+        private logger: Logger,
+        private localStorageService: LocalStorageService
+    ) {}
 
     get isAudioOnly$(): Observable<boolean> {
         return this.isAudioOnlySubject.asObservable();

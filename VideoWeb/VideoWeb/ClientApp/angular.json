@@ -28,21 +28,27 @@
               },
               "src/scripts"
             ],
-            "styles": ["src/styles.css", "src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
+            "styles": ["src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
             "stylePreprocessorOptions": {
               "includePaths": ["src/sass"]
             },
             "scripts": [
-              "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
               "src/scripts/IEPF.js",
               "src/scripts/Heartbeat.js",
               "node_modules/govuk-frontend/govuk/all.js",
-              "node_modules/chart.js/dist/chart.min.js",
+              "node_modules/chart.js/dist/chart.umd.js",
               "node_modules/@mediapipe/camera_utils/camera_utils.js",
               "node_modules/@mediapipe/control_utils/control_utils.js",
               "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
               "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "guid-typescript",
+              "sdp",
+              "@mediapipe/camera_utils",
+              "@mediapipe/selfie_segmentation",
+              "moment"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -75,14 +81,14 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "publicHost": "0.0.0.0:0",
-            "browserTarget": "VideoWeb:build"
+            "buildTarget": "VideoWeb:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "VideoWeb:build:production"
+              "buildTarget": "VideoWeb:build:production"
             },
             "development": {
-              "browserTarget": "VideoWeb:build:development"
+              "buildTarget": "VideoWeb:build:development"
             },
             "defaultConfiguration": "development"
           }
@@ -90,7 +96,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "VideoWeb:build"
+            "buildTarget": "VideoWeb:build"
           }
         },
         "test": {
@@ -106,16 +112,16 @@
               "src/app/vh-officer/helper.ts",
               "src/app/services/audio-only-image.service.ts"
             ],
-            "styles": ["src/styles.css", "src/styles.scss"],
+            "styles": ["src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["src/sass"]
             },
             "scripts": [
-              "src/scripts/pexrtc.js",
+              "src/scripts/vodafone/pexrtc.js",
               "src/scripts/EdgePF.js",
               "src/scripts/IEPF.js",
               "src/scripts/Heartbeat.js",
-              "node_modules/chart.js/dist/chart.min.js"
+              "node_modules/chart.js/dist/chart.umd.js"
             ],
             "assets": [
               "src/assets",
@@ -134,21 +140,24 @@
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.server.json",
             "sourceMap": true,
-            "optimization": false
+            "optimization": false,
+            "buildOptimizer": false
           },
           "configurations": {
             "dev": {
               "optimization": true,
               "outputHashing": "all",
               "namedChunks": false,
-              "extractLicenses": true
+              "extractLicenses": true,
+              "buildOptimizer": true
             },
             "production": {
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": true
+              "extractLicenses": true,
+              "buildOptimizer": true
             }
           },
           "defaultConfiguration": ""
@@ -164,6 +173,6 @@
   },
   "cli": {
     "analytics": "d98edcd7-fbf7-457b-8b1a-674a89b98183",
-    "schematicCollections": ["@angular-eslint/schematics"]
+    "schematicCollections": ["@angular-eslint/schematics", "@ngrx/schematics"]
   }
 }

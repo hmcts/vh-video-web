@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 import { ConsultationErrorComponent } from './consultation-modals/consultation-error/consultation-error.component';
@@ -39,9 +39,28 @@ import { PrivateConsultationParticipantDisplayNameComponent } from './participan
 import { FeedbackBannerComponent } from './waiting-room-shared/feedback-banner/feedback-banner.component';
 import { ConfirmJoinHearingPopupComponent } from './confirmation/confirm-join-hearing-popup.component';
 import { MuteMicrophoneComponent } from './mute-microphone/mute-microphone.component';
+import { StartPrivateConsultationComponent } from './participant-waiting-room/start-private-consultation/start-private-consultation.component';
+import { JoinPrivateConsultationComponent } from './participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { PrivateConsultationLegalRepTermsOfServiceComponent } from './participant-waiting-room/private-consultation-legal-rep-terms-of-service/private-consultation-legal-rep-terms-of-service.component';
+import { NgOptimizedImage } from '@angular/common';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { ConferenceEffectsEffects } from './store/effects/conference-effects.effects';
+import { environment } from 'src/environments/environment';
+import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
+import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
 
 @NgModule({
-    imports: [SharedModule, WaitingSpaceRoutingModule],
+    imports: [
+        SharedModule,
+        WaitingSpaceRoutingModule,
+        NgOptimizedImage,
+        StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
+        environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forFeature([ConferenceEffectsEffects])
+    ],
     declarations: [
         JudgeParticipantStatusListComponent,
         IndividualParticipantStatusListComponent,
@@ -74,7 +93,12 @@ import { MuteMicrophoneComponent } from './mute-microphone/mute-microphone.compo
         PrivateConsultationParticipantDisplayNameComponent,
         FeedbackBannerComponent,
         ConfirmJoinHearingPopupComponent,
-        MuteMicrophoneComponent
+        MuteMicrophoneComponent,
+        StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
+        PrivateConsultationLegalRepTermsOfServiceComponent,
+        ParticipantsPanelItemComponent,
+        WarnJoinHearingPopupComponent
     ],
     providers: [
         VideoCallService,

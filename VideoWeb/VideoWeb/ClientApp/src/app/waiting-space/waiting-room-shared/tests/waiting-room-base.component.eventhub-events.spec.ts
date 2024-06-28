@@ -12,7 +12,9 @@ import {
     RoomSummaryResponse,
     HearingLayout,
     Role,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    LinkedParticipantResponse,
+    LinkType
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -60,7 +62,8 @@ import {
     router,
     videoWebService,
     videoCallService,
-    titleService
+    titleService,
+    mockConferenceStore
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -87,6 +90,7 @@ import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-cha
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
 import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -105,6 +109,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+    });
+
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(async () => {
@@ -135,7 +143,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: RoomClosingToastrService, useValue: roomClosingToastrService },
                 { provide: ClockService, useValue: clockService },
                 { provide: ConsultationInvitationService, useValue: consultationInvitiationService },
-                { provide: Title, useValue: titleService }
+                { provide: Title, useValue: titleService },
+                provideMockStore()
             ]
         });
         fixture = TestBed.createComponent(WRTestComponent);
@@ -1505,11 +1514,13 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const testHearing = new Hearing(testConference);
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
+        testParticipant.linked_participants = [];
+        let getLoggedParticipantSpy: jasmine.Spy<() => ParticipantResponse>;
 
         beforeEach(() => {
             component.hearing = testHearing;
             component.conference.participants = [];
-            spyOn(component, 'getLoggedParticipant');
+            getLoggedParticipantSpy = spyOn(component, 'getLoggedParticipant');
         });
 
         describe('when is not correct conference', () => {
@@ -1651,6 +1662,40 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(participants).toEqual(jasmine.arrayContaining(testParticipantMessage.participants));
             }
         });
+
+        describe('when participant is now linked', () => {
+            it('should re-join when participant is now linked', () => {
+                const conference = new ConferenceResponse(Object.assign({}, globalConference));
+                const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
+                spyOn(component, 'callAndUpdateShowVideo');
+                component.hearing = new Hearing(conference);
+                component.conference = conference;
+                component.participant = participant;
+
+                const updatedParticipant = new ParticipantResponse(Object.assign({}, globalParticipant));
+
+                updatedParticipant.linked_participants = [
+                    new LinkedParticipantResponse({
+                        link_type: LinkType.Interpreter,
+                        linked_id: testParticipant.id.toString()
+                    })
+                ];
+                getLoggedParticipantSpy.and.returnValue(updatedParticipant);
+                testParticipant.linked_participants = [
+                    new LinkedParticipantResponse({
+                        link_type: LinkType.Interpreter,
+                        linked_id: updatedParticipant.id.toString()
+                    })
+                ];
+                const testParticipantMessage = new ParticipantsUpdatedMessage(globalConference.id, [
+                    testParticipant,
+                    component.participant
+                ]);
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                expect(component.callAndUpdateShowVideo).toHaveBeenCalled();
+            });
+        });
     });
 
     describe('getEndpointsUpdated', () => {
@@ -1753,22 +1798,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
-            }));
-
-            it('should add new endpoint', fakeAsync(() => {
-                // Arrange
-                const existingEndpointCount = component.conference.endpoints.length;
-                component.participant.status = ParticipantStatus.Available;
-
-                // Act
-                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
-
-                // Assert
-                const addedEndpoint = component.conference.endpoints.find(x => x.id === testAddVideoEndpointResponse.id);
-                expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
-                expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
-                expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
             }));
 
             it('should update existing endpoint', fakeAsync(() => {

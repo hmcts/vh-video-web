@@ -14,7 +14,10 @@ export class HomeComponent implements OnInit {
     securityService: ISecurityService;
     currentIdp: IdpProviders;
 
-    constructor(private securityServiceProviderService: SecurityServiceProvider, private router: Router) {
+    constructor(
+        private securityServiceProviderService: SecurityServiceProvider,
+        private router: Router
+    ) {
         combineLatest([
             this.securityServiceProviderService.currentSecurityService$,
             this.securityServiceProviderService.currentIdp$

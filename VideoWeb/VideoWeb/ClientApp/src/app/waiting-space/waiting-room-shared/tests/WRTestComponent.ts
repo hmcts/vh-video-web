@@ -19,6 +19,8 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { MockStore } from '@ngrx/store/testing';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
 
 @Component({
     selector: 'app-test-waiting-room',
@@ -45,7 +47,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: MockStore<ConferenceState>
     ) {
         super(
             route,
@@ -67,7 +70,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             hearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            store
         );
     }
 }

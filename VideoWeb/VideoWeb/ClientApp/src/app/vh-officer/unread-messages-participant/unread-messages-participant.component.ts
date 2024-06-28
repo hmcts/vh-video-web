@@ -19,7 +19,11 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
 
     unreadMessages: UnreadAdminMessageResponse;
 
-    constructor(private videoWebService: VideoWebService, protected eventsService: EventsService, protected logger: Logger) {
+    constructor(
+        private videoWebService: VideoWebService,
+        protected eventsService: EventsService,
+        protected logger: Logger
+    ) {
         super(eventsService, logger);
     }
 

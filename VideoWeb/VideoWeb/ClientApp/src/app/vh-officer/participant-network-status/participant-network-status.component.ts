@@ -27,7 +27,10 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     timeout: NodeJS.Timer;
     mouseEvent: MouseEvent;
 
-    constructor(private vhoQuery: VhoQueryService, private logger: Logger) {}
+    constructor(
+        private vhoQuery: VhoQueryService,
+        private logger: Logger
+    ) {}
 
     ngOnInit(): void {
         this.displayGraph = false;

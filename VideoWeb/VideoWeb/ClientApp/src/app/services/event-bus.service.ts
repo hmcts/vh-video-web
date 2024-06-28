@@ -29,7 +29,10 @@ export class EventBusService {
 }
 
 export class EmitEvent<T> {
-    constructor(public eventType: VHEventType, public value?: T) {}
+    constructor(
+        public eventType: VHEventType,
+        public value?: T
+    ) {}
 }
 
 export enum VHEventType {

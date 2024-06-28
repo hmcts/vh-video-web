@@ -4,16 +4,13 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AllowedEndpointResponse,
-    ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role,
-    RoomSummaryResponse,
-    VideoEndpointResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
@@ -36,10 +33,12 @@ import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-p
 import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHConference, VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
+import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
-    let conference: ConferenceResponse;
+    let conference: VHConference;
     const mockOidcSecurityService = new MockOidcSecurityService();
     const eventsService = eventsServiceSpy;
     let oidcSecurityService;
@@ -66,7 +65,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     beforeEach(() => {
         consultationService.consultationNameToString.calls.reset();
-        conference = new ConferenceTestData().getConferenceDetailFuture();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailFuture());
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
         });
@@ -74,7 +73,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         logged = new LoggedParticipantResponse({
             participant_id: judge.id,
-            display_name: judge.display_name,
+            display_name: judge.displayName,
             role: Role.Judge
         });
         activatedRoute = <any>{
@@ -142,14 +141,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
-        p.current_room.label = 'test-room';
+        p.room.label = 'test-room';
         expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
     it('should get row classes', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
-        p.current_room.label = 'test-room-two';
+        p.room.label = 'test-room-two';
         expect(component.getRowClasses(p)).toEqual('');
     });
 
@@ -157,7 +156,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
         p.status = ParticipantStatus.Available;
-        p.current_room.label = 'not-test-room';
+        p.room.label = 'not-test-room';
         expect(component.canCallParticipant(p)).toBeTruthy();
     });
 
@@ -165,7 +164,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
         p.status = ParticipantStatus.Disconnected;
-        p.current_room.label = 'test-room';
+        p.room.label = 'test-room';
         expect(component.canCallParticipant(p)).toBeFalsy();
     });
 
@@ -294,9 +293,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         allStatuses.forEach(status => {
             const statusString = status.toString();
             const participantId = 'Participant1';
-            const participant = new ParticipantResponse({
-                id: participantId
-            });
+            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id']);
+            participant.id = participantId;
             component.participantCallStatuses[participantId] = statusString;
 
             const result = component.getParticipantStatus(participant);
@@ -312,9 +310,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         allStatuses.forEach(status => {
             const statusString = status.toString();
             const endpointId = 'Endpoint1';
-            const endpoint = new VideoEndpointResponse({
-                id: endpointId
-            });
+            const endpoint = jasmine.createSpyObj<VHEndpoint>('VHParticipant', ['id']);
+            endpoint.id = endpointId;
             component.participantCallStatuses[endpointId] = statusString;
 
             const result = component.getParticipantStatus(endpoint);
@@ -339,10 +336,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
             [ParticipantStatus.Disconnected, false]
         ];
         statuses.forEach(([status, available]) => {
-            const participant = new ParticipantResponse({
-                id: 'Participant1',
-                status: status as ParticipantStatus
-            });
+            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'status']);
+            participant.id = 'Participant1';
+            participant.status = status as ParticipantStatus;
 
             const result = component.isParticipantAvailable(participant);
 
@@ -353,12 +349,10 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get participant in current room', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse
-        });
+
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'room']);
+        participant.id = 'Participant1';
+        participant.room = { label: 'Room1', locked: false };
 
         const result = component.isParticipantInCurrentRoom(participant);
 
@@ -368,13 +362,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get participant in current different room', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            current_room: {
-                label: 'Room2'
-            } as RoomSummaryResponse
-        });
-
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'room']);
+        participant.id = 'Participant1';
+        participant.room = { label: 'Room2', locked: false };
         const result = component.isParticipantInCurrentRoom(participant);
 
         // Assert
@@ -382,9 +372,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     it('should not get interpreter', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
+        const participants = new ConferenceTestData().getListOfParticipants().map(x => mapParticipantToVHParticipant(x));
         const interpreter = participants[0];
-        interpreter.hearing_role = HearingRole.INTERPRETER;
+        interpreter.hearingRole = HearingRole.INTERPRETER;
         const representative = participants[1];
         component.nonJudgeParticipants = [interpreter, representative];
         expect(component.getConsultationParticipants().length).toBe(1);
@@ -392,9 +382,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should not get witness', () => {
         component.roomLabel = 'participantconsultationroom134';
-        const participants = new ConferenceTestData().getListOfParticipants();
+        const participants = new ConferenceTestData().getListOfParticipants().map(x => mapParticipantToVHParticipant(x));
         const witness = participants[0];
-        witness.hearing_role = HearingRole.WITNESS;
+        witness.hearingRole = HearingRole.WITNESS;
         const representative = participants[1];
         component.nonJudgeParticipants = [witness, representative];
         expect(component.getConsultationParticipants().length).toBe(1);
@@ -402,15 +392,18 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
-        component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.conference.participants = [
+            mapParticipantToVHParticipant(testData.quickLinkParticipant2),
+            mapParticipantToVHParticipant(testData.quickLinkParticipant1)
+        ];
         component.initParticipants();
         const participants = component.getConsultationParticipants();
 
         expect(participants.length).toBe(2);
-        expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
-        expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
-        expect(participants.findIndex(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeLessThan(
-            participants.findIndex(x => x.display_name === testData.quickLinkParticipant2.display_name)
+        expect(participants.find(x => x.displayName === testData.quickLinkParticipant1.display_name)).toBeTruthy();
+        expect(participants.find(x => x.displayName === testData.quickLinkParticipant2.display_name)).toBeTruthy();
+        expect(participants.findIndex(x => x.displayName === testData.quickLinkParticipant1.display_name)).toBeLessThan(
+            participants.findIndex(x => x.displayName === testData.quickLinkParticipant2.display_name)
         );
     });
 
@@ -418,13 +411,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // Not in current room
         component.roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'not-test-room';
+        endpoint.room.label = 'not-test-room';
 
         // Available
         endpoint.status = EndpointStatus.Connected;
 
         // Room doesnt contain another endpount
-        conference.endpoints[1].current_room.label = 'not-test-room';
+        conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
         component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
@@ -436,13 +429,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // Not in current room
         component.roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'test-room';
+        endpoint.room.label = 'test-room';
 
         // Available
         endpoint.status = EndpointStatus.Connected;
 
         // Room doesnt contain another endpount
-        conference.endpoints[1].current_room.label = 'not-test-room';
+        conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
         component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
@@ -454,13 +447,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // Not in current room
         component.roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'not-test-room';
+        endpoint.room.label = 'not-test-room';
 
         // Available
         endpoint.status = EndpointStatus.Disconnected;
 
         // Room doesnt contain another endpount
-        conference.endpoints[1].current_room.label = 'not-test-room';
+        conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
         component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
@@ -472,13 +465,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // In current room
         const roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.current_room.label = roomLabel;
+        component.roomLabel = endpoint.room.label = roomLabel;
 
         // Available
         endpoint.status = EndpointStatus.Connected;
 
         // Room contains another endpount
-        conference.endpoints[1].current_room.label = 'test-room';
+        conference.endpoints[1].room.label = 'test-room';
 
         // Has permissions
         component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
@@ -490,13 +483,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // In current room
         const roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.current_room.label = roomLabel;
+        component.roomLabel = endpoint.room.label = roomLabel;
 
         // Available
         endpoint.status = EndpointStatus.Connected;
 
         // Room contains another endpount
-        conference.endpoints[1].current_room.label = 'test-room';
+        conference.endpoints[1].room.label = 'test-room';
         conference.status = ConferenceStatus.InSession;
 
         // Has permissions
@@ -509,41 +502,47 @@ describe('PrivateConsultationParticipantsComponent', () => {
         // Not in current room
         component.roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'not-test-room';
+        endpoint.room.label = 'not-test-room';
 
         // Available
         endpoint.status = EndpointStatus.Connected;
 
         // Room contains another endpount
-        conference.endpoints[1].current_room.label = 'not-test-room';
+        conference.endpoints[1].room.label = 'not-test-room';
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
 
     it('should return participant status', () => {
-        expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
+        const participantItem = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['status']);
+        participantItem.status = ParticipantStatus.Available;
+        expect(component.trackParticipant(0, participantItem)).toBe(ParticipantStatus.Available);
     });
 
     describe('johGroups', () => {
         it('should return correct participants mapped to ParticipantListItem', () => {
-            const testPanelMember1Data = { id: 'TestPanelMember1Id', name: 'TestPanelMember1Name' };
-            const testPanelMember1 = new ParticipantResponse(testPanelMember1Data);
-            const expectedPanelMember1: ParticipantListItem = { ...testPanelMember1Data };
+            const testPanelMember1 = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
+            testPanelMember1.id = 'TestPanelMember1Id';
+            testPanelMember1.name = 'TestPanelMember1Name';
+            const expectedPanelMember1: ParticipantListItem = { ...testPanelMember1 };
 
-            const testPanelMember2Data = { id: 'TestPanelMember2Id', name: 'TestPanelMember2Name' };
-            const testPanelMember2 = new ParticipantResponse(testPanelMember2Data);
-            const expectedPanelMember2: ParticipantListItem = { ...testPanelMember2Data };
+            const testPanelMember2 = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
+            testPanelMember2.id = 'TestPanelMember2Id';
+            testPanelMember2.name = 'TestPanelMember2Name';
+            const expectedPanelMember2: ParticipantListItem = { ...testPanelMember2 };
 
             const testPanelMembers = [testPanelMember1, testPanelMember2];
             const expectedPanelMembers = [expectedPanelMember1, expectedPanelMember2];
 
-            const testWinger1Data = { id: 'TestWinger1Id', name: 'TestWinger1Name' };
-            const testWinger1 = new ParticipantResponse(testWinger1Data);
-            const expectedWinger1: ParticipantListItem = { ...testWinger1Data };
+            const testWinger1 = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
+            testWinger1.id = 'TestWinger1Id';
+            testWinger1.name = 'TestWinger1Name';
+            const expectedWinger1: ParticipantListItem = { ...testWinger1 };
 
-            const testWinger2Data = { id: 'TestWinger2Id', name: 'TestWinger2Name' };
-            const testWinger2 = new ParticipantResponse(testWinger2Data);
-            const expectedWinger2: ParticipantListItem = { ...testWinger2Data };
+            const testWinger2 = jasmine.createSpyObj<ParticipantListItem>('ParticipantListItem', ['id', 'name']);
+            testWinger2.id = 'TestWinger2Id';
+            testWinger2.name = 'TestWinger2Name';
+            const expectedWinger2: ParticipantListItem = { ...testWinger2 };
 
             const testWingers = [testWinger1, testWinger2];
             const expectedWingers = [expectedWinger1, expectedWinger2];
@@ -629,77 +628,89 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     describe('getObservers', () => {
-        const litigantInPerson = new ParticipantResponse({
-            id: 'litigantInPerson_id',
-            status: ParticipantStatus.Available,
-            display_name: 'litigantInPerson_display_name',
-            role: Role.Individual,
-            representee: 'litigantInPerson_representee',
-            case_type_group: 'litigantInPerson_applicant',
-            tiled_display_name: 'litigantInPerson_tiledDisplayName',
-            hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            linked_participants: []
-        });
+        const litigantInPerson = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'litigantInPerson_id',
+                status: ParticipantStatus.Available,
+                display_name: 'litigantInPerson_display_name',
+                role: Role.Individual,
+                representee: 'litigantInPerson_representee',
+                case_type_group: 'litigantInPerson_applicant',
+                tiled_display_name: 'litigantInPerson_tiledDisplayName',
+                hearing_role: HearingRole.LITIGANT_IN_PERSON,
+                linked_participants: []
+            })
+        );
 
-        const witness1 = new ParticipantResponse({
-            id: 'witness1_id',
-            status: ParticipantStatus.Available,
-            display_name: 'witness1_display_name',
-            role: Role.Individual,
-            representee: 'witness1_representee',
-            case_type_group: 'witness1_applicant',
-            tiled_display_name: 'witness1_tiledDisplayName',
-            hearing_role: HearingRole.WITNESS,
-            linked_participants: []
-        });
+        const witness1 = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'witness1_id',
+                status: ParticipantStatus.Available,
+                display_name: 'witness1_display_name',
+                role: Role.Individual,
+                representee: 'witness1_representee',
+                case_type_group: 'witness1_applicant',
+                tiled_display_name: 'witness1_tiledDisplayName',
+                hearing_role: HearingRole.WITNESS,
+                linked_participants: []
+            })
+        );
 
-        const witness2 = new ParticipantResponse({
-            id: 'witness2_id',
-            status: ParticipantStatus.Available,
-            display_name: 'witness2_display_name',
-            role: Role.Individual,
-            representee: 'witness2_representee',
-            case_type_group: 'witness2_applicant',
-            tiled_display_name: 'witness2_tiledDisplayName',
-            hearing_role: HearingRole.WITNESS,
-            linked_participants: []
-        });
+        const witness2 = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'witness2_id',
+                status: ParticipantStatus.Available,
+                display_name: 'witness2_display_name',
+                role: Role.Individual,
+                representee: 'witness2_representee',
+                case_type_group: 'witness2_applicant',
+                tiled_display_name: 'witness2_tiledDisplayName',
+                hearing_role: HearingRole.WITNESS,
+                linked_participants: []
+            })
+        );
 
-        const regularObserver = new ParticipantResponse({
-            id: 'regularObserver_id',
-            status: ParticipantStatus.Available,
-            display_name: 'regularObserver_display_name',
-            role: Role.Individual,
-            representee: 'regularObserver_representee',
-            case_type_group: 'regularObserver_applicant',
-            tiled_display_name: 'regularObserver_tiledDisplayName',
-            hearing_role: HearingRole.OBSERVER,
-            linked_participants: []
-        });
+        const regularObserver = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'regularObserver_id',
+                status: ParticipantStatus.Available,
+                display_name: 'regularObserver_display_name',
+                role: Role.Individual,
+                representee: 'regularObserver_representee',
+                case_type_group: 'regularObserver_applicant',
+                tiled_display_name: 'regularObserver_tiledDisplayName',
+                hearing_role: HearingRole.OBSERVER,
+                linked_participants: []
+            })
+        );
 
-        const quickLinkObserver1 = new ParticipantResponse({
-            id: 'quickLinkObserver1_id',
-            status: ParticipantStatus.Available,
-            display_name: 'quickLinkObserver1_display_name',
-            role: Role.QuickLinkObserver,
-            representee: 'quickLinkObserver1_representee',
-            case_type_group: 'quickLinkObserver1_applicant',
-            tiled_display_name: 'quickLinkObserver1_tiledDisplayName',
-            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
-            linked_participants: []
-        });
+        const quickLinkObserver1 = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'quickLinkObserver1_id',
+                status: ParticipantStatus.Available,
+                display_name: 'quickLinkObserver1_display_name',
+                role: Role.QuickLinkObserver,
+                representee: 'quickLinkObserver1_representee',
+                case_type_group: 'quickLinkObserver1_applicant',
+                tiled_display_name: 'quickLinkObserver1_tiledDisplayName',
+                hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+                linked_participants: []
+            })
+        );
 
-        const quickLinkObserver2 = new ParticipantResponse({
-            id: 'quickLinkObserver2_id',
-            status: ParticipantStatus.Available,
-            display_name: 'quickLinkObserver2_display_name',
-            role: Role.QuickLinkObserver,
-            representee: 'quickLinkObserver2_representee',
-            case_type_group: 'quickLinkObserver2_applicant',
-            tiled_display_name: 'quickLinkObserver2_tiledDisplayName',
-            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
-            linked_participants: []
-        });
+        const quickLinkObserver2 = mapParticipantToVHParticipant(
+            new ParticipantResponse({
+                id: 'quickLinkObserver2_id',
+                status: ParticipantStatus.Available,
+                display_name: 'quickLinkObserver2_display_name',
+                role: Role.QuickLinkObserver,
+                representee: 'quickLinkObserver2_representee',
+                case_type_group: 'quickLinkObserver2_applicant',
+                tiled_display_name: 'quickLinkObserver2_tiledDisplayName',
+                hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+                linked_participants: []
+            })
+        );
 
         const testParticipants = [litigantInPerson, witness2, witness1];
         const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
@@ -719,9 +730,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getObservers();
 
-            const observer1Index = result.findIndex(x => x.display_name === 'regularObserver_display_name');
-            const qlObserver1Index = result.findIndex(x => x.display_name === 'quickLinkObserver1_display_name');
-            const qlObserver2Index = result.findIndex(x => x.display_name === 'quickLinkObserver2_display_name');
+            const observer1Index = result.findIndex(x => x.displayName === 'regularObserver_display_name');
+            const qlObserver1Index = result.findIndex(x => x.displayName === 'quickLinkObserver1_display_name');
+            const qlObserver2Index = result.findIndex(x => x.displayName === 'quickLinkObserver2_display_name');
 
             expect(observer1Index).toEqual(0);
             expect(qlObserver1Index).toEqual(1);
@@ -733,7 +744,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     describe('getPrivateConsultationParticipants', () => {
         beforeEach(() => {
-            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            conference.participants = new ConferenceTestData()
+                .getFullListOfNonJudgeParticipants()
+                .map(x => mapParticipantToVHParticipant(x));
             component.initParticipants();
         });
 
@@ -771,7 +784,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 role: Role.Individual
             } as LoggedParticipantResponse;
             const participant = {
-                hearing_role: HearingRole.WITNESS
+                hearingRole: HearingRole.WITNESS
             } as ParticipantListItem;
             // act
             const result = component.participantHasInviteRestrictions(participant);
@@ -785,7 +798,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 role: Role.Individual
             } as LoggedParticipantResponse;
             const participant = {
-                hearing_role: HearingRole.APPELLANT
+                hearingRole: HearingRole.APPELLANT
             } as ParticipantListItem;
             // act
             const result = component.participantHasInviteRestrictions(participant);
@@ -797,7 +810,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             // arrange
             // default for this test suit is judge
             const participant = {
-                hearing_role: HearingRole.STAFF_MEMBER
+                hearingRole: HearingRole.STAFF_MEMBER
             } as ParticipantListItem;
             // act
             const result = component.participantHasInviteRestrictions(participant);

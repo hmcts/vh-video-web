@@ -7,7 +7,7 @@
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
         <div class="room-title">
-            <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
+          <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
         </div>
         <div class="room-status">
           <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{
@@ -24,7 +24,14 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false tabindex="0">
+          <div
+            *ngIf="hasCaseNameOverflowed"
+            class="room-title-show-more"
+            appTooltip
+            [text]="getCaseNameAndNumber()"
+            colour="grey"
+            [isDesktopOnly]="false"
+          >
             (show more)
           </div>
         </div>
@@ -51,16 +58,13 @@
   </div>
   <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
-      [conference]="conference"
+      [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
       [roomLabel]="this.participant.current_room?.label"
     >
     </app-private-consultation-participants>
   </div>
-  <div class="video-wrapper"
-       appHookElement
-       [readyElm] = "'videoContainer'"
-       (readyEvent)="setTrapFocus()">
+  <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="setTrapFocus()">
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"
@@ -73,6 +77,7 @@
     <div
       id="secondIncomingFeed"
       *ngIf="presentationStream"
+      (keydown)="switchStreamWindows()"
       (click)="switchStreamWindows()"
       appTooltip
       [text]="'participant-waiting-room.switch-to-main-screen' | translate"
@@ -101,10 +106,10 @@
       <img
         class="transferFeedImage"
         id="transferFeedImage"
-        src="/assets/images/UkGovCrestWhite.png"
-        [attr.alt]="'participant-waiting-room.witness-transferring-warning-image' | translate"
-      />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate"></h2>
+        ngSrc="/assets/images/UkGovCrestWhite.png"
+        [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
+        height="247" width="300" />
+      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">{{emptyString}}</h2>
       <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
@@ -115,22 +120,14 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl">
-        {{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
-        <button
-          id="changeCameraButton"
-          class="govuk-button"
-          data-module="govuk-button"
-          type="button"
-          (click)="showChooseCameraDialog()"
-        >
+        <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
           {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
         </button>
       </div>
@@ -154,11 +151,12 @@
             <strong><app-truncatable-text [text]="hearing.caseName" [maxLimit]="40"></app-truncatable-text></strong>
             ({{ 'case-type.' + stringToTranslateId(conference.case_type) | translate }})
             <br />
-            <span>{{ 'participant-waiting-room.case-number' | translate }}</span>:
+            <span>{{ 'participant-waiting-room.case-number' | translate }}</span
+            >:
             <strong><app-truncatable-text [text]="hearing.caseNumber" [maxLimit]="40"></app-truncatable-text></strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | translateDate  : 'dd MMMM yyyy'  }}
+            {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'participant-waiting-room.to' | translate }}
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -267,6 +265,7 @@
       <details class="govuk-details" data-module="govuk-details">
         <summary
           class="govuk-details__summary"
+          (keydown)="toggleAccordian()"
           (click)="toggleAccordian()"
           tabindex="0"
           role="button"
@@ -294,7 +293,7 @@
 
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body">
-        <strong>{{ 'participant-waiting-room.vh-team'  | translate: { phone: (phoneNumber$ | async)  } }}</strong>
+        <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: (phoneNumber$ | async) } }}</strong>
       </p>
     </div>
   </div>
@@ -302,7 +301,7 @@
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
     <app-individual-participant-status-list
       [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
-      [conference]="conference"
+      [conference]="vhConference"
     >
     </app-individual-participant-status-list>
   </div>
@@ -319,6 +318,7 @@
 
 <app-start-private-consultation
   *ngIf="displayStartPrivateConsultationModal"
+  [loggedInUser]="loggedInUser"
   [participants]="getPrivateConsultationParticipants()"
   [endpoints]="hearing.getEndpoints()"
   [allowedEndpoints]="participantEndpoints"
@@ -338,3 +338,5 @@
 <app-modal id="pc-leave-modal" class="modal clear consultation">
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
 </app-modal>
+
+<app-warn-join-hearing-popup *ngIf="showWarning" [hearingStartTime]="hearing?.scheduledStartTime" (popupAnswered)="dismissWarning()"></app-warn-join-hearing-popup>

@@ -10,7 +10,10 @@ import { IdpProviders } from '../idp-providers';
     styles: []
 })
 export class EjudSignInComponent implements OnInit {
-    constructor(private router: Router, private securityConfigSetupService: SecurityConfigSetupService) {}
+    constructor(
+        private router: Router,
+        private securityConfigSetupService: SecurityConfigSetupService
+    ) {}
 
     ngOnInit(): void {
         this.securityConfigSetupService.setIdp(IdpProviders.ejud);

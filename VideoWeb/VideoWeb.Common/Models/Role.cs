@@ -13,5 +13,6 @@ namespace VideoWeb.Common.Models
         QuickLinkParticipant = 8,
         QuickLinkObserver = 9,
         StaffMember = 10,
+        Administrator = 11
     }
 }

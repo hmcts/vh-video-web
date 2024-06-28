@@ -16,7 +16,11 @@ export class RoomClosingToastComponent extends Toast implements OnInit {
 
     dismiss = new Subject<any>();
 
-    constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage, private clockService: ClockService) {
+    constructor(
+        protected toastrService: ToastrService,
+        public toastPackage: ToastPackage,
+        private clockService: ClockService
+    ) {
         super(toastrService, toastPackage);
     }
 

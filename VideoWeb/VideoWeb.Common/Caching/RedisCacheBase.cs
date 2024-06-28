@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Caching
 
         public virtual async Task WriteToCache(TKey key, TEntry toWrite)
         {
-            if(key == null)
+            if(Equals(key, default(TKey)))
                 throw new ArgumentNullException(nameof(key));
             if (CacheEntryOptions == null)
                 throw new InvalidOperationException($"Cannot write to cache without setting the {nameof(CacheEntryOptions)}");
@@ -56,6 +56,27 @@ namespace VideoWeb.Common.Caching
             {
                 _logger.LogError(ex, "Error reading from cache for key {key}", key);
                 return default(TEntry);
+            }
+        }
+        
+        public virtual async Task<TResult> ReadFromCache<TResult>(TKey key)
+        {
+            try
+            {
+                var data = await _distributedCache.GetAsync(GetKey(key));
+                var profileSerialised = Encoding.UTF8.GetString(data);
+                var layout =
+                    JsonConvert.DeserializeObject<TResult>(profileSerialised,
+                        new JsonSerializerSettings
+                        {
+                            TypeNameHandling = TypeNameHandling.None, Formatting = Formatting.None
+                        });
+                return layout;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error reading from cache for key {key}", key);
+                return default(TResult);
             }
         }
 

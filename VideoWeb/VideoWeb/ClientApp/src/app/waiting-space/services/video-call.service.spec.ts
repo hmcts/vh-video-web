@@ -9,7 +9,7 @@ import {
     SharedParticipantRoom,
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
-import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
+import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -21,11 +21,14 @@ import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-mod
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
+import { SupplierClientService } from '../../services/api/supplier-client.service';
+import { MockStore, createMockStore } from '@ngrx/store/testing';
+import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 
 const config = new ClientSettingsResponse({
-    kinly_turn_server: 'turnserver',
-    kinly_turn_server_user: 'tester1',
-    kinly_turn_server_credential: 'credential'
+    supplier_turn_server: 'turnserver',
+    supplier_turn_server_user: 'tester1',
+    supplier_turn_server_credential: 'credential'
 });
 
 describe('VideoCallService', () => {
@@ -42,11 +45,15 @@ describe('VideoCallService', () => {
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
+    let heartbeatServiceSpy: jasmine.SpyObj<HeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
+    let supplierClientServiceSpy: jasmine.SpyObj<SupplierClientService>;
+    let mockStore: MockStore<ConferenceState>;
 
     beforeEach(fakeAsync(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -79,12 +86,13 @@ describe('VideoCallService', () => {
         getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
-        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
+        heartbeatServiceSpy = jasmine.createSpyObj<HeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
+        supplierClientServiceSpy = jasmine.createSpyObj<SupplierClientService>(['loadSupplierScript']);
 
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
@@ -117,9 +125,10 @@ describe('VideoCallService', () => {
             userMediaStreamService,
             apiClient,
             configServiceSpy,
-            kinlyHeartbeatServiceSpy,
+            heartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy
+            streamMixerServiceSpy,
+            mockStore
         );
 
         currentStreamSubject.next(mockCamStream);
@@ -174,7 +183,7 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
         service.disconnectFromCall();
         expect(pexipSpy.disconnect).toHaveBeenCalled();
-        expect(kinlyHeartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
+        expect(heartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
         expect(setupClientSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -410,9 +419,9 @@ describe('VideoCallService', () => {
             expect(service.onVideoEvidenceShared()).toBeDefined();
             expect(service.onVideoEvidenceStopped()).toBeDefined();
             expect(service.pexipAPI.turn_server).toBeDefined();
-            expect(service.pexipAPI.turn_server.urls).toContain(config.kinly_turn_server);
-            expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
-            expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
+            expect(service.pexipAPI.turn_server.urls).toContain(config.supplier_turn_server);
+            expect(service.pexipAPI.turn_server.username).toContain(config.supplier_turn_server_user);
+            expect(service.pexipAPI.turn_server.credential).toContain(config.supplier_turn_server_credential);
         });
 
         it('should setup the client again when an error occurs', () => {

@@ -36,6 +36,7 @@ import {
     hideComponentsService,
     initAllWRDependencies,
     logger,
+    mockConferenceStore,
     mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
@@ -70,6 +71,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    afterAll(() => {
+        mockConferenceStore.resetSelectors();
+    });
+
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
@@ -94,7 +99,8 @@ describe('WaitingRoomComponent message and clock', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
-            focusService
+            focusService,
+            mockConferenceStore
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -104,6 +110,23 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+    });
+
+    describe('stringToTranslateId', () => {
+        it('should return the correct string to translate id', () => {
+            const result = component.stringToTranslateId('Insolvency');
+            expect(result).toBe('insolvency');
+        });
+
+        it('should return the correct string to translate id with spaces', () => {
+            const result = component.stringToTranslateId('Primary Health Lists');
+            expect(result).toBe('primary-health-lists');
+        });
+
+        it('should return the correct string to translate id with spaces and special characters', () => {
+            const result = component.stringToTranslateId('MP’s Expenses');
+            expect(result).toBe('mp-s-expenses');
+        });
     });
 
     describe('handleParticipantStatusChange', () => {

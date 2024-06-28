@@ -1,8 +1,8 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject, Subscription, of } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -63,6 +63,11 @@ import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { VHConference } from '../store/models/vh-conference';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -77,7 +82,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     errorCount: number;
     hearing: Hearing;
     participant: ParticipantResponse;
-    conference: ConferenceResponse;
+    conference: ConferenceResponse; // Will be removed when migrationg to ngrx store is complete
+    vhConference: VHConference;
     participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
 
@@ -124,6 +130,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
 
+    protected onDestroy$ = new Subject<void>();
+
     private readonly loggerPrefix = '[WR] -';
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
@@ -148,7 +156,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected store: Store<ConferenceState>
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -225,7 +234,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return convertStringToTranslationId(str);
     }
 
     togglePanel(panelName: string) {
@@ -240,6 +249,16 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     async getConference(): Promise<void> {
+        this.store
+            .select(ConferenceSelectors.getActiveConference)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(conf => {
+                this.vhConference = conf;
+                // this does not need to be an observable and we can move away from the flag service
+                this.phoneNumber$ = this.vhConference.isVenueScottish
+                    ? of(this.contactDetails.scotland.phoneNumber)
+                    : of(this.contactDetails.englandAndWales.phoneNumber);
+            });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
             this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);
@@ -1346,7 +1365,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+    private async handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
         this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
 
         if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
@@ -1368,6 +1387,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             );
         });
 
+        const preUpdateLinkCount = this.hearing
+            .getParticipants()
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
+
         const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
@@ -1378,6 +1401,16 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.hearing.getConference().participants = updatedParticipantsList;
         this.participant = this.getLoggedParticipant();
+
+        const postUpdateLinkCount = this.hearing
+            .getParticipants()
+            ?.filter(p => p.linked_participants?.some(lp => lp.linked_id === this.participant.id)).length;
+
+        // if the participant now has a link or no longer has a link, call with new join details
+        if (preUpdateLinkCount !== postUpdateLinkCount) {
+            this.logger.debug('[WR] - Participant has new link (or removed link), calling with new join details');
+            await this.callAndUpdateShowVideo();
+        }
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
         this.logger.debug('[WR] - Endpoints updated message received', {
@@ -1392,7 +1425,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
             this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
-            this.hearing.addEndpoint(endpoint);
         });
 
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {

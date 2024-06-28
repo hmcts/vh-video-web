@@ -30,6 +30,11 @@ import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
 import { catchError, map } from 'rxjs/operators';
 
+import { Store } from '@ngrx/store';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { ConferenceActions } from 'src/app/waiting-space/store/actions/conference.actions';
+import { mapConferenceToVHConference } from '../../waiting-space/store/models/api-contract-to-state-model-mappers';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -38,7 +43,10 @@ export class VideoWebService implements IVideoWebApiService {
     private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
     private readonly venueAllocationStorage: SessionStorage<string[]>;
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private store: Store<ConferenceState>
+    ) {
         this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
         this.venueAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
@@ -57,7 +65,17 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
-        return this.apiClient.getConferenceById(conferenceId).toPromise();
+        return this.apiClient
+            .getConferenceById(conferenceId)
+            .toPromise()
+            .then(conference => {
+                this.store.dispatch(
+                    ConferenceActions.loadConferenceSuccess({
+                        conference: mapConferenceToVHConference(conference)
+                    })
+                );
+                return conference;
+            });
     }
 
     sendEvent(request: ConferenceEventRequest): Promise<void> {

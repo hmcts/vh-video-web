@@ -51,25 +51,36 @@ describe('DeviceType', () => {
     });
 
     const isIpadTestCases = [
-        { isTablet: true, os: 'Mac', browser: 'Safari', expected: true },
-        { isTablet: true, os: 'Mac', browser: 'Chrome', expected: false },
-        { isTablet: true, os: 'Mac', browser: 'Firefox', expected: false },
-        { isTablet: false, os: 'Mac', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Mac', browser: 'Firefox', expected: false },
-        { isTablet: true, os: 'ios', browser: 'Safari', expected: true },
-        { isTablet: true, os: 'ios', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'Firefox', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'MS-Edge-Chromium', expected: false }
+        { isTablet: true, os: 'Mac', expected: true },
+        { isTablet: false, os: 'Mac', expected: false },
+        { isTablet: true, os: 'ios', expected: true },
+        { isTablet: false, os: 'ios', expected: false },
+        { isTablet: false, os: 'Windows', expected: false }
     ];
 
     isIpadTestCases.forEach(test => {
-        it(`should return is iPad: ${test.expected} when tablet is ${test.isTablet}, os is ${test.os} and browser is ${test.browser}`, () => {
+        it(`should return is iPad: ${test.expected} when tablet is ${test.isTablet}, os is ${test.os}`, () => {
             deviceDetectorService.isTablet.and.returnValue(test.isTablet);
             deviceDetectorService.os = test.os;
-            deviceDetectorService.browser = test.browser;
 
             expect(service.isIpad()).toBe(test.expected);
+        });
+    });
+
+    const isIphoneTestCases = [
+        { isMobile: true, os: 'Mac', expected: true },
+        { isMobile: false, os: 'Mac', expected: false },
+        { isMobile: true, os: 'ios', expected: true },
+        { isMobile: false, os: 'ios', expected: false },
+        { isMobile: false, os: 'Windows', expected: false }
+    ];
+
+    isIphoneTestCases.forEach(test => {
+        it(`should return is iPhone: ${test.expected} when mobile is ${test.isMobile}, os is ${test.os}`, () => {
+            deviceDetectorService.isMobile.and.returnValue(test.isMobile);
+            deviceDetectorService.os = test.os;
+
+            expect(service.isIphone()).toBe(test.expected);
         });
     });
 
