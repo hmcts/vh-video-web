@@ -35,6 +35,9 @@
         <li *ngIf="loggedIn" class="govuk-header__navigation-item stay-right">
           <a id="logout-link" class="govuk-header__link" [routerLink]="logoutRoute">{{ 'header.sign-out' | translate }}</a>
         </li>
+        <li class="govuk-header__navigation-item">
+          <span>{{ username }}</span>
+        </li>
       </ul>
     </nav>
   </div>

@@ -627,9 +627,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async callParticipantIntoHearing(participant: PanelModel) {
-        if (!participant.isCallableAndReadyToJoin) {
-            return;
-        }
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
             conference: this.conferenceId,
             participant: participant.id
@@ -664,10 +661,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async dismissParticipantFromHearing(participant: PanelModel) {
-        if (!participant.isCallableAndReadyToBeDismissed) {
-            return;
-        }
-
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss participant from hearing`, {
             conference: this.conferenceId,
             participant: participant.id

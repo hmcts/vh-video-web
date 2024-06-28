@@ -50,7 +50,6 @@
   </ng-container>
 
   <a
-    *ngIf="canCallParticipantIntoHearing()"
     (keyup.enter)="callParticipantIntoHearing()"
     tabindex="0"
     (click)="callParticipantIntoHearing()"
@@ -59,7 +58,6 @@
     <ng-container *ngIf="isWitness; then isWitnessCallContent; else isNotWitnessCallContent"> </ng-container>
   </a>
   <a
-    *ngIf="canDismissParticipantFromHearing()"
     (keyup.enter)="dismissParticipantFromHearing()"
     tabindex="0"
     (click)="dismissParticipantFromHearing()"
@@ -67,7 +65,7 @@
   >
     {{
       'judge-context-menu.dismiss-participant'
-        | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+        | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
     }}
   </a>
   <a
@@ -94,6 +92,6 @@
 <ng-template #isNotWitnessCallContent>
   {{
     'judge-context-menu.admit-participant'
-      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
   }}
 </ng-template>
