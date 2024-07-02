@@ -23,12 +23,7 @@ public class ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryRes
             Role = role,
             DisplayName = participant.DisplayName,
             CurrentRoom = roomResponseMapper.Map(participant.CurrentRoom),
-            InterpreterRoom = roomResponseMapper.Map(participant.CurrentInterpreterRoom),
-            LinkedParticipants = participant.LinkedParticipants.Select(lp => new Contract.Responses.LinkedParticipantResponse
-            {
-                LinkedId = lp.LinkedId,
-                LinkType = (LinkType)lp.Type
-            }).ToList()
+            InterpreterRoom = roomResponseMapper.Map(participant.CurrentInterpreterRoom)
         };
         
         if (role == Role.Judge)

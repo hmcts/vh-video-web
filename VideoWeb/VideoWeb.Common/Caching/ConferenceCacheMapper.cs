@@ -70,17 +70,17 @@ public static class ConferenceCacheMapper
             ParticipantCacheMapper.Map(participant, judiciaryDetails) ??
             ParticipantCacheMapper.Map(participant);
         
-        model.LinkedParticipants = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
+        model.LinkedParticipants = (participantDetails?.LinkedParticipants ?? new List<LinkedParticipantResponseV2>()).Select(MapLinkedParticipantToCacheModel).ToList();
         
         return model;
     }
     
-    private static LinkedParticipant MapLinkedParticipantToCacheModel(LinkedParticipantResponse linkedParticipant)
+    private static LinkedParticipant MapLinkedParticipantToCacheModel(LinkedParticipantResponseV2 linkedParticipant)
     {
         return new LinkedParticipant
         {
             LinkedId = linkedParticipant.LinkedId,
-            LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
+            LinkType = Enum.Parse<LinkType>(linkedParticipant.TypeV2.ToString(), true)
         };
     }
 }

@@ -28,13 +28,7 @@ namespace VideoWeb.Mappings
                     Status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString()),
                     Role = Enum.Parse<Role>(participant.UserRole.ToString()),
                     CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
-                    InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
-                    LinkedParticipants = participant.LinkedParticipants.Select(x =>
-                        new Contract.Responses.LinkedParticipantResponse
-                        {
-                            LinkedId = x.LinkedId,
-                            LinkType = Enum.Parse<LinkType>(x.Type.ToString(), true)
-                        }).ToList()
+                    InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom)
                 })
                 .ToList();
 
