@@ -16,6 +16,12 @@ namespace VideoWeb.UnitTests.Builders
                     : JudiciaryParticipantHearingRoleCode.PanelMember);
         }
         
+        public JudicialParticipantResponseBuilder WithUsername(string username)
+        {
+            _participant.With(x => x.Email = username);
+            return this;
+        }
+        
         public JudiciaryParticipantResponse Build()
         {
             return _participant.Build();

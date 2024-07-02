@@ -28,11 +28,6 @@ namespace VideoWeb.Common.Caching
             await UpdateConferenceAsync(conference);
         }
         
-        public Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
-        {
-            throw new NotImplementedException();
-        }
-        
         public async Task UpdateConferenceAsync(Conference conference)
         {
             await WriteToCache(conference.Id, conference);

@@ -11,9 +11,6 @@ namespace VideoWeb.Mappings;
 
 public class ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper) : IMapTo<ParticipantResponse, ParticipantResponseVho>
 {
-    /// <summary>
-    /// TODO: Properties removed, verify before removing todo
-    /// </summary>
     public ParticipantResponseVho Map(ParticipantResponse participant)
     {
         var status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString());

@@ -57,8 +57,8 @@ public static class ParticipantCacheMapper
         model.FirstName = judiciaryDetails.FirstName;
         model.LastName = judiciaryDetails.LastName;
         model.FullTitledName = judiciaryDetails.FullName;
-        model.ContactEmail = judiciaryDetails.OptionalContactEmail;
-        model.ContactTelephone = judiciaryDetails.OptionalContactTelephone;
+        model.ContactEmail = judiciaryDetails.OptionalContactEmail ?? judiciaryDetails.Email;
+        model.ContactTelephone = judiciaryDetails.OptionalContactTelephone ?? judiciaryDetails.WorkPhone;
         model.DisplayName = participant.DisplayName;
         model.Role = (Role)Enum.Parse(typeof(Role), participant.UserRole.ToString());
         model.HearingRole = judiciaryDetails.HearingRoleCode.ToString();
