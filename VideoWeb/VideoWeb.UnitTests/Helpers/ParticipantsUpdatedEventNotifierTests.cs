@@ -62,9 +62,9 @@ namespace VideoWeb.UnitTests.Helpers
 
             var responseList = new List<ParticipantResponse> { response1, response2 };
 
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conference)).Returns(response1);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conference)).Returns(response2);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Object);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(_participant1)).Returns(response1);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(_participant2)).Returns(response2);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Object);
 
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
@@ -114,12 +114,12 @@ namespace VideoWeb.UnitTests.Helpers
             
             var participantsToNotifyMapped = new List<ParticipantResponse> { participant1ToNotifyMapped, participant2ToNotifyMapped, participant3ToNotifyMapped };
 
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conference)).Returns(participant1Mapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conference)).Returns(participant2Mapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant1ToNotify, _conference)).Returns(participant1ToNotifyMapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant2ToNotify, _conference)).Returns(participant2ToNotifyMapped);
-            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant3ToNotify, _conference)).Returns(participant3ToNotifyMapped);
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Object);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(_participant1)).Returns(participant1Mapped);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(_participant2)).Returns(participant2Mapped);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(participant1ToNotify)).Returns(participant1ToNotifyMapped);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(participant2ToNotify)).Returns(participant2ToNotifyMapped);
+            _mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Setup(x => x.Map(participant3ToNotify)).Returns(participant3ToNotifyMapped);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, ParticipantResponse>>().Object);
 
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
@@ -129,12 +129,14 @@ namespace VideoWeb.UnitTests.Helpers
             await _notifier.PushParticipantsUpdatedEvent(_conference, participantsToNotify);
             
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id 
+                && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
         }
 
         private bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)
         {
-            return list1.Any(x => list2.Any(y => x.Id == y.Id)) && list2.Any(x => list1.Any(y => x.Id == y.Id));
+            return list1.Any(x => list2.Any(y => x.Id == y.Id)) && 
+                   list2.Any(x => list1.Any(y => x.Id == y.Id));
         }
     }
 }

@@ -10,6 +10,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -18,6 +19,7 @@ using VideoWeb.Controllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.QuickLinkController
 {
@@ -30,7 +32,7 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
         public void SetUp()
         {
             _mocker = AutoMock.GetLoose();
-
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(_mocker.Mock<IConferenceCache>().Object);
             _controller = _mocker.Create<QuickLinksController>();
         }
         
@@ -46,24 +48,23 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var jwt = "JWT";
             var conference = new Conference();
             var participant = new Participant();
-            var participantDetails = new ParticipantDetailsResponse();
+            var participantDetails = new ParticipantResponse();
             
             _mocker.Mock<IVideoApiClient>().Setup(x => x.AddQuickLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddQuickLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddQuickLinkParticipantResponse
             {
-                ParticipantDetails = participantDetails,
+                Participant = participantDetails,
                 Token = jwt,
                 ConferenceId = conferenceId
             });
 
-            _mocker.Mock<IConferenceCache>().Setup(x =>
-                x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
 
-            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
-                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == participantDetails)))
+            _mocker.Mock<IMapTo<ParticipantResponse, Participant>>()
+                .Setup(x => x.Map(It.Is<ParticipantResponse>(x => x == participantDetails)))
                 .Returns(participant);
             
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>()).Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantResponse, Participant>()).Returns(_mocker.Mock<IMapTo<ParticipantResponse, Participant>>().Object);
             
             // Act
             var result = await _controller.Join(hearingId, new QuickLinkParticipantJoinRequest
@@ -76,8 +77,7 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             var objectResult = result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<QuickLinkParticipantJoinResponse>().Which;
             objectResult.Jwt.Should().Be(jwt);      
             
-            _mocker.Mock<IConferenceCache>().Verify(x =>
-                x.GetOrAddConferenceAsync(It.Is<Guid>(y => y == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()));
+            _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.Is<Guid>(y => y == conferenceId)));
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddQuickLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddQuickLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);

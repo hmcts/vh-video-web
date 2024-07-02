@@ -21,9 +21,9 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
-using Conference = VideoApi.Contract.Responses.ConferenceForHostResponse;
+using ConferenceForHostVideoApi = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
-using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
+using ParticipantForHostVideoApi = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -82,14 +82,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences()
         {
             var hearingVenueNamesQuery = new List<string>();
-            var participants = new List<Participant>
+            var participants = new List<ParticipantForHostVideoApi>
             {
-                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Judge).Build()
+                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
+                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
+                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Judge).Build()
 
             };
-            var conferences = Builder<Conference>.CreateListOfSize(10).All()
+            var conferences = Builder<ConferenceForHostVideoApi>.CreateListOfSize(10).All()
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
@@ -119,7 +119,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_no_conferences()
         {
             var hearingVenueNamesQuery = new List<string>();
-            var conferences = new List<Conference>();
+            var conferences = new List<ConferenceForHostVideoApi>();
             var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
@@ -148,19 +148,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, VideoWeb.Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
 
             var controller = _mocker.Create<ConferencesController>();
             controller.ControllerContext = context;

@@ -5,7 +5,6 @@ import {
     ConferenceStatus,
     Role
 } from 'src/app/services/clients/api-client';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
 
@@ -60,30 +59,6 @@ export class HearingSummary extends HearingBase {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
         endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
         return endTime;
-    }
-
-    get applicantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === Role.Representative)[0];
-    }
-
-    get defendantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === Role.Representative)[1];
-    }
-
-    get applicants(): ParticipantSummary[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
-    }
-
-    get respondents(): ParticipantSummary[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
-    }
-
-    get appellants(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.APPELLANT || x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
     }
 
     get hearingVenueName(): string {

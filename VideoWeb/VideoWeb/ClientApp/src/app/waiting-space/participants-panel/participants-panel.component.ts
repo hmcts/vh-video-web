@@ -22,7 +22,6 @@ import {
 } from 'src/app/shared/models/participant-event';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
@@ -87,15 +86,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     get participantsNotConnected() {
         return this.participants.filter(x => !x.isAvailable() && !x.isInHearing());
-    }
-
-    private static showCaseRole(participant: PanelModel) {
-        return !(
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
-        );
     }
 
     private static updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
@@ -711,7 +701,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participantResponse.status = participant.status;
         participantResponse.display_name = participant.displayName;
         participantResponse.role = participant.role;
-        participantResponse.case_type_group = participant.caseTypeGroup;
         participantResponse.hearing_role = participant.hearingRole;
         participantResponse.representee = participant.representee;
         return participantResponse;
@@ -742,7 +731,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     getAdditionalText(participant: PanelModel): string {
-        return participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole(participant) + this.getCaseRole(participant) : '';
+        return participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole(participant) : '';
     }
 
     getPanelRowTooltipColour(participant: PanelModel) {
@@ -775,22 +764,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
-        if (participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+        if (participant.role === Role.JudicialOfficeHolder) {
             return '';
         }
         const translatedtext = this.getTranslatedText('for');
         const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
         return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
-    }
-
-    private getCaseRole(participant: PanelModel): string {
-        if (!participant.caseTypeGroup) {
-            return '';
-        }
-        const translatedCaseTypeGroup = this.translateService.instant(
-            'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
-        );
-        return ParticipantsPanelComponent.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
     private updateParticipants() {
@@ -802,10 +781,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         combined.sort((x, z) => {
             if (x.orderInTheList === z.orderInTheList) {
                 // 4 here means regular participants and should be grouped by caseTypeGroup
-                if (x.orderInTheList !== 4 || x.caseTypeGroup === z.caseTypeGroup) {
+                if (x.orderInTheList !== 4 || x.role === z.role) {
                     return x.displayName.localeCompare(z.displayName);
                 }
-                return x.caseTypeGroup.localeCompare(z.caseTypeGroup);
+                return x.role.localeCompare(z.role);
             }
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });

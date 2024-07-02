@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using BookingsApi.Contract.V2.Responses;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
@@ -21,23 +22,24 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
         {
-            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
             await UpdateConferenceAsync(conference);
         }
-
+        
         public async Task UpdateConferenceAsync(Conference conference)
         {
             await WriteToCache(conference.Id, conference);
         }
 
-        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
         {
             var conference = await ReadFromCache(id);
 
             if (conference != null) return conference;
-            conference = ConferenceCacheMapper.MapConferenceToCacheModel(await addConferenceDetailsFactory());
+            var (conferenceResponse, hearingDetailsResponse) = await addConferenceDetailsFactory();
+            conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
 
             await WriteToCache(id, conference);
 

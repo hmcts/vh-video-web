@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers
             _mocker = AutoMock.GetLoose();
             
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
                 .Build();
             
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
@@ -45,7 +45,6 @@ namespace VideoWeb.UnitTests.Controllers
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(new List<AllocatedCsoResponse>{Mock.Of<AllocatedCsoResponse>()});
-
         }
 
         [Test]
@@ -65,17 +64,18 @@ namespace VideoWeb.UnitTests.Controllers
             var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
             courtRoomsAccounts.Should().NotBeNull();
             courtRoomsAccounts.Count.Should().Be(2);
-            courtRoomsAccounts[0].LastNames.Count.Should().Be(3);
-            courtRoomsAccounts[1].LastNames.Count.Should().Be(1);
+            courtRoomsAccounts[0].Rooms.Count.Should().Be(3);
+            courtRoomsAccounts[1].Rooms.Count.Should().Be(2);
 
-            courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
-            courtRoomsAccounts[1].FirstName.Should().Be("FirstName4");
+            courtRoomsAccounts[0].Venue.Should().Be("Venue Name 01");
+            courtRoomsAccounts[1].Venue.Should().Be("Venue Name 02");
 
-            courtRoomsAccounts[0].LastNames[0].Should().Be("LastName1");
-            courtRoomsAccounts[0].LastNames[1].Should().Be("LastName2");
-            courtRoomsAccounts[0].LastNames[2].Should().Be("LastName3");
-
-            courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
+            courtRoomsAccounts[0].Rooms[0].Should().Be("Name1");
+            courtRoomsAccounts[0].Rooms[1].Should().Be("Name2");
+            courtRoomsAccounts[0].Rooms[2].Should().Be("Name3");
+            
+            courtRoomsAccounts[1].Rooms[0].Should().Be("Name4");
+            courtRoomsAccounts[1].Rooms[1].Should().Be("Name5");
         }
         
         [Test]
@@ -142,25 +142,26 @@ namespace VideoWeb.UnitTests.Controllers
             if (!includeUnallocated)
             {
                 courtRoomsAccounts.Count.Should().Be(1);
-                courtRoomsAccounts[0].LastNames.Count.Should().Be(2);
+                courtRoomsAccounts[0].Rooms.Count.Should().Be(2);
 
-                courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
+                courtRoomsAccounts[0].Venue.Should().Be("Venue Name 01");
 
-                courtRoomsAccounts[0].LastNames[0].Should().Be("LastName2");
-                courtRoomsAccounts[0].LastNames[1].Should().Be("LastName3");
+                courtRoomsAccounts[0].Rooms[0].Should().Be("Name2");
+                courtRoomsAccounts[0].Rooms[1].Should().Be("Name3");
             }
             else
             {
                 courtRoomsAccounts.Count.Should().Be(2);
-                courtRoomsAccounts[0].LastNames.Count.Should().Be(2);
-                courtRoomsAccounts[1].LastNames.Count.Should().Be(1);
+                courtRoomsAccounts[0].Rooms.Count.Should().Be(2);
+                courtRoomsAccounts[1].Rooms.Count.Should().Be(2);
 
-                courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
-                courtRoomsAccounts[1].FirstName.Should().Be("FirstName4");
+                courtRoomsAccounts[0].Venue.Should().Be("Venue Name 01");
+                courtRoomsAccounts[1].Venue.Should().Be("Venue Name 02");
 
-                courtRoomsAccounts[0].LastNames[0].Should().Be("LastName2");
-                courtRoomsAccounts[0].LastNames[1].Should().Be("LastName3");
-                courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
+                courtRoomsAccounts[0].Rooms[0].Should().Be("Name2");
+                courtRoomsAccounts[0].Rooms[1].Should().Be("Name3");
+                courtRoomsAccounts[1].Rooms[0].Should().Be("Name4");
+                courtRoomsAccounts[1].Rooms[1].Should().Be("Name5");
             }
         }
 
@@ -196,8 +197,8 @@ namespace VideoWeb.UnitTests.Controllers
             courtRoomsAccounts.Should().NotBeNull();
 
             courtRoomsAccounts.Count.Should().Be(1);
-            courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
-            courtRoomsAccounts[0].LastNames[0].Should().Be("LastName1");
+            courtRoomsAccounts[0].Venue.Should().Be("Venue Name 01");
+            courtRoomsAccounts[0].Rooms[0].Should().Be("Name1");
         }
 
         [Test]

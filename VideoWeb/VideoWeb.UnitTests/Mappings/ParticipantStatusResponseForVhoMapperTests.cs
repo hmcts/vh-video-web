@@ -81,11 +81,9 @@ namespace VideoWeb.UnitTests.Mappings
         {
             response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
-            response.Name.Should().Be(participant.Name);
             response.Role.Should().Be(participant.Role);
             response.HearingRole.Should().Be(participant.HearingRole);
             response.Username.Should().Be(participant.Username);
-            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
             response.FirstName.Should().Be(participant.FirstName);
             response.LastName.Should().Be(participant.LastName);
@@ -102,10 +100,9 @@ namespace VideoWeb.UnitTests.Mappings
         {
             return Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Name = username)
                 .With(x => x.Role = Role.Judge)
                 .With(x => x.Username = username)
-                .With(x => x.CaseTypeGroup == ParticipantStatus.Available.ToString())
+                .With(x => x.ParticipantStatus == ParticipantStatus.Available)
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x=> x.LinkedParticipants = new List<LinkedParticipant>())
                 .With(x => x.DisplayName = $"{username} {username}")

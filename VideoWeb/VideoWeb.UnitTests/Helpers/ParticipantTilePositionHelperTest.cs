@@ -19,14 +19,14 @@ namespace VideoWeb.UnitTests.Helpers
         {
             _participants = new List<ParticipantResponse>
             {
-                new ParticipantResponse{Id= Guid.NewGuid(), Role=Role.Judge,DisplayName = "Judge", HearingRole = "judge"},
-                new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.Individual, DisplayName = "Part1", CaseTypeGroup = "group1", HearingRole = "Applicant"},
-                new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.Representative, DisplayName = "Part2", CaseTypeGroup = "group1", HearingRole = "Applicant"},
-                new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.JudicialOfficeHolder, DisplayName = "Part3", CaseTypeGroup ="group2", HearingRole = "Applicant"},
-                new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part4", CaseTypeGroup = "group1", HearingRole = "Applicant" },
-                new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Representative, DisplayName = "Part5", CaseTypeGroup = "group1", HearingRole = "Applicant" },
-                new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.JudicialOfficeHolder, DisplayName = "Part6", CaseTypeGroup = "group1", HearingRole = "Witness" },
-                new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part7", CaseTypeGroup = "group1", HearingRole = "Applicant" }
+                new (){Id= Guid.NewGuid(), Role=Role.Judge,DisplayName = "Judge", HearingRole = "judge"},
+                new (){Id=Guid.NewGuid(), Role=Role.Individual, DisplayName = "Part1", HearingRole = "Applicant"},
+                new (){Id=Guid.NewGuid(), Role=Role.Representative, DisplayName = "Part2", HearingRole = "Applicant"},
+                new (){Id=Guid.NewGuid(), Role=Role.JudicialOfficeHolder, DisplayName = "Part3", HearingRole = "Applicant"},
+                new (){Id=Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part4", HearingRole = "Applicant" },
+                new (){Id=Guid.NewGuid(), Role = Role.Representative, DisplayName = "Part5", HearingRole = "Applicant" },
+                new (){Id=Guid.NewGuid(), Role = Role.JudicialOfficeHolder, DisplayName = "Part6", HearingRole = "Witness" },
+                new (){Id=Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part7", HearingRole = "Applicant" }
             };
         }
 

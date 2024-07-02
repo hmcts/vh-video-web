@@ -15,6 +15,7 @@ using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.UnitTests.Builders;
@@ -33,11 +34,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
             BuildConferenceForTest();
             _mocker = AutoMock.GetLoose();
 
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(c => c.GetConference(_testConference.Id)).ReturnsAsync(_testConference);
+                
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<SharedParticipantRoomMapper>()
                 .Build();

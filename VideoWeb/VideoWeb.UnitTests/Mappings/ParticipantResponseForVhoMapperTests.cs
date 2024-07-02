@@ -15,18 +15,14 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const ParticipantStatus expectedStatus = ParticipantStatus.Available;
             const Role expectedRole = Role.Individual;
-            var participant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
+            var participant = new ParticipantResponseBuilder(UserRole.Individual)
                 .WithStatus(ParticipantState.Available).Build();
 
             var response = _sut.Map(participant);
             response.Id.Should().Be(participant.Id);
-            response.Name.Should().Be(participant.Name);
             response.Status.Should().Be(expectedStatus);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.Role.Should().Be(expectedRole);
-            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
-            response.Representee.Should().Be(participant.Representee);
-            response.HearingRole.Should().Be(participant.HearingRole);
             response.LinkedParticipants.Count.Should().Be(1);
             
             var actualLp = response.LinkedParticipants[0];

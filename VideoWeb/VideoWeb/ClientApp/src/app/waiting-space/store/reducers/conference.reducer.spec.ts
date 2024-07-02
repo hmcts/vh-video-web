@@ -47,7 +47,6 @@ describe('Conference Reducer', () => {
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
                     room: originalRoom,
-                    caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'John Doe',
                     firstName: 'John',
@@ -63,7 +62,6 @@ describe('Conference Reducer', () => {
                     username: 'judge.fudge@test.com',
                     status: ParticipantStatus.Available,
                     tiledDisplayName: 'JUDGE;HEARTBEAT;Judge Fudge;7b875df1-bf37-4f5a-9d23-d3493f319a08',
-                    caseTypeGroup: 'Judge',
                     displayName: 'Judge Fudge',
                     firstName: 'Judge',
                     lastName: 'Fudge',
@@ -79,7 +77,6 @@ describe('Conference Reducer', () => {
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr Chris Green;729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
                     room: originalRoom,
-                    caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'Chris Green',
                     firstName: 'Chris',
@@ -406,7 +403,6 @@ describe('Conference Reducer', () => {
                     status: ParticipantStatus.InConsultation,
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
                     room: { label: 'Room 1', locked: false },
-                    caseTypeGroup: 'Applicant',
                     representee: '',
                     displayName: 'John Doe',
                     firstName: 'John',
@@ -421,7 +417,6 @@ describe('Conference Reducer', () => {
                     username: 'judge.new@test.com',
                     status: ParticipantStatus.NotSignedIn,
                     tiledDisplayName: 'JUDGE;HEARTBEAT;Judge New;7b875df1-bf37-4f5a-9d23-d3493f319a08',
-                    caseTypeGroup: 'Judge',
                     displayName: 'Judge Fudge',
                     firstName: 'Judge',
                     lastName: 'Fudge',
@@ -868,6 +863,19 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.endpoints[0].room).toBeNull();
+        });
+
+        it('should update the conference state, after host changes their display name', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantDisplayNameSuccess({
+                    participantId: conferenceTestData.participants[0].id,
+                    displayName: 'New Name',
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.currentConference.participants[0].displayName).toBe('New Name');
         });
     });
 });

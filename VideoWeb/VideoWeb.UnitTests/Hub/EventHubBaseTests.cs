@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
@@ -15,8 +14,6 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
-using VideoWeb.Common.Configuration;
-using Microsoft.Extensions.Options;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Common;
 
@@ -33,7 +30,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
-        protected Mock<IConferenceCache> ConferenceCacheMock;
+        protected Mock<IConferenceService> ConferenceServiceMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
         protected Mock<IConferenceVideoControlStatusService> ConferenceVideoControlStatusService;
         protected Mock<IConferenceManagementService> ConferenceManagementServiceMock;
@@ -49,7 +46,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
-            ConferenceCacheMock = new Mock<IConferenceCache>();
+            ConferenceServiceMock = new Mock<IConferenceService>();
             ConferenceVideoControlStatusService = new Mock<IConferenceVideoControlStatusService>();
             ConferenceManagementServiceMock = new Mock<IConferenceManagementService>();
 
@@ -61,10 +58,14 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
                 .Returns("o**** f*****");
 
-            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, AppRoleServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object,
+            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, 
+                AppRoleServiceMock.Object, 
+                VideoApiClientMock.Object,
+                LoggerMock.Object,
+                HeartbeatMapper.Object, 
                 ConferenceVideoControlStatusService.Object,
-                conferenceManagementService: ConferenceManagementServiceMock.Object)
+                ConferenceManagementServiceMock.Object,
+                ConferenceServiceMock.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
@@ -88,10 +89,10 @@ namespace VideoWeb.UnitTests.Hub
 
         protected string[] SetupJudgeConferences(int numOfConferences, int numOfConferencesWithUser)
         {
-            var participantsWithUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
+            var participantsWithUser = Builder<ParticipantResponse>.CreateListOfSize(3)
                 .TheFirst(1).With(x => x.Username = Claims.Identity.Name).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
-            var participantsWithoutUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
+            var participantsWithoutUser = Builder<ParticipantResponse>.CreateListOfSize(3)
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
 

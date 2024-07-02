@@ -12,15 +12,13 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
     {
-        public IEnumerable<ParticipantContactDetailsResponseVho> Map(
-            Conference conference,
-            IEnumerable<ParticipantInHearingResponse> hostsInHearings)
+        public IEnumerable<ParticipantContactDetailsResponseVho> Map(Conference conference, IEnumerable<ParticipantInHearingResponse> hostsInHearings)
         {
             var conferenceId = conference.Id;
             var hearingVenueName = conference.HearingVenueName;
             
             var pats = conference.Participants
-                .OrderBy(x => x.CaseTypeGroup)
+                .OrderBy(x => x.Role)
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
@@ -36,11 +34,10 @@ namespace VideoWeb.Mappings
                     {
                         Id = x.Id,
                         ConferenceId = conferenceId,
-                        Name = x.Name,
+                        Name = x.FullTitledName,
                         Role = x.Role,
                         HearingRole = x.HearingRole,
                         Username = x.Username,
-                        CaseTypeGroup = x.CaseTypeGroup,
                         RefId = x.RefId,
                         FirstName = x.FirstName,
                         LastName = x.LastName,

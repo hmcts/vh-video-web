@@ -12,6 +12,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -29,15 +30,15 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
-        private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceService _conferenceService;
         private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<QuickLinksController> _logger;
 
-        public QuickLinksController(IVideoApiClient videoApiClient, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IConferenceService conferenceService, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
             _mapperFactory = mapperFactory;
             _logger = logger;
         }
@@ -78,8 +79,7 @@ namespace VideoWeb.Controllers
         [AllowAnonymous]
         [SwaggerOperation("joinConferenceAsAQuickLinkUser")]
         [ProducesResponseType(typeof(QuickLinkParticipantJoinResponse), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> Join(Guid hearingId,
-            [FromBody] QuickLinkParticipantJoinRequest joinRequest)
+        public async Task<IActionResult> Join(Guid hearingId, [FromBody] QuickLinkParticipantJoinRequest joinRequest)
         {
             try
             {
@@ -128,15 +128,11 @@ namespace VideoWeb.Controllers
 
         private async Task AddQuickLinkParticipantToConferenceCache(AddQuickLinkParticipantResponse response)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, 
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
-                
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
-            conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
-
+            
+            var conference = await _conferenceService.GetConference(response.ConferenceId); 
+            conference.AddParticipant(ParticipantCacheMapper.Map(response.Participant));
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
-            await _conferenceCache.UpdateConferenceAsync(conference);
-
+            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }
     }

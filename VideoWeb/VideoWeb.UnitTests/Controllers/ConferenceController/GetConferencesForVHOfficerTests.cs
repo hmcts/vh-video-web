@@ -26,7 +26,7 @@ using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using ParticipantResponse = BookingsApi.Contract.V1.Responses.ParticipantResponse;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -176,7 +176,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso(bool includeUnallocated)
         {
             // Arrange
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -287,7 +287,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso_on_unallocated_hearings_only()
         {
             // Arrange
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+            var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
@@ -402,19 +402,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForUserMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForUserResponseMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, VideoWeb.Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
 
             var controller = _mocker.Create<ConferencesController>();
             controller.ControllerContext = context;

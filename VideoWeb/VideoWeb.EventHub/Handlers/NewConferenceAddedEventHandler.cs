@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
@@ -13,13 +14,12 @@ using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class NewConferenceAddedEventHandler : EventHandlerBase
+    public class NewConferenceAddedEventHandler(
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IConferenceService conferenceService,
+        ILogger<EventHandlerBase> logger)
+        : EventHandlerBase(hubContext, conferenceService, logger)
     {
-        public NewConferenceAddedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
-            hubContext, conferenceCache, logger, videoApiClient)
-        {
-        }
 
         public override EventType EventType => EventType.NewConferenceAdded;
 

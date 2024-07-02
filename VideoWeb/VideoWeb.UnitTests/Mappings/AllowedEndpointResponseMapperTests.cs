@@ -14,7 +14,12 @@ namespace VideoWeb.UnitTests.Mappings
         public void Should_map_endpoint_to_allowed_endpoint_response(string defenceAdvocateUsername, string displayName)
         {
             // Arrange
-            var endpoint = new Endpoint { DefenceAdvocateUsername = defenceAdvocateUsername, Id = Guid.NewGuid(), DisplayName = displayName };
+            var endpoint = new Endpoint 
+            { 
+                DefenceAdvocateUsername = defenceAdvocateUsername,
+                Id = Guid.NewGuid(),
+                DisplayName = displayName 
+            };
 
             // Act
             var result = _sut.Map(endpoint);

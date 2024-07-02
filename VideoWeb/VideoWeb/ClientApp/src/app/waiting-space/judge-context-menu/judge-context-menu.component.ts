@@ -10,7 +10,6 @@ import {
     ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { TranslateService } from '@ngx-translate/core';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 
@@ -114,16 +113,6 @@ export class JudgeContextMenuComponent implements OnInit {
             participant: this.participant.id
         });
         this.isDroppedDown = !this.isDroppedDown;
-    }
-
-    showCaseTypeGroup(): boolean {
-        return !this.participant.caseTypeGroup ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.ENDPOINT.toLowerCase()
-            ? false
-            : true;
     }
 
     showHearingRole(): boolean {

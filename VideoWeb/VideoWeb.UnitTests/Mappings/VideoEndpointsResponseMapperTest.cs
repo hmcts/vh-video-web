@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V2.Responses;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoApi.Contract.Enums;
@@ -7,7 +8,7 @@ using VHEndpointStatus = VideoWeb.Common.Models.EndpointStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class EndpointsResponseMapperTest : BaseMockerSutTestSetup<EndpointsResponseMapper>
+    public class VideoEndpointsResponseMapperTest : BaseMockerSutTestSetup<VideoEndpointsResponseMapper>
     {
         [TestCase(EndpointState.Connected, VHEndpointStatus.Connected)]
         [TestCase(EndpointState.Disconnected, VHEndpointStatus.Disconnected)]
@@ -15,14 +16,17 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(EndpointState.NotYetJoined, VHEndpointStatus.NotYetJoined)]
         public void Should_map_user_response_to_court_rooms_account(EndpointState apiState, VHEndpointStatus expected)
         {
-            var endpoint = new EndpointsResponseBuilder().WithStatus(apiState).Build();
-            var result = _sut.Map(endpoint, 1);
+            var defenceAdvocate = "DefenceAdvocate";
+            var endpointBuilder = new EndpointsResponseBuilder();
+            var endpoint = endpointBuilder.WithStatus(apiState).Build();
+            endpoint.DefenceAdvocate = defenceAdvocate;
+            var result = _sut.Map(endpoint);
 
             result.Should().NotBeNull();
             result.DisplayName.Should().Be(endpoint.DisplayName);
             result.Id.Should().Be(endpoint.Id);
             result.Status.ToString().Should().Be(endpoint.Status.ToString());
-            result.DefenceAdvocateUsername.Should().Be(endpoint.DefenceAdvocate);
+            result.DefenceAdvocateUsername.Should().Be(defenceAdvocate);
             result.PexipDisplayName.Should().Be($"PSTN;{endpoint.DisplayName};{endpoint.Id}");
         }
     }

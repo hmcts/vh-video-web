@@ -15,7 +15,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
-import { CaseTypeGroup } from '../models/case-type-group';
 
 import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
@@ -102,10 +101,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         this.sortEndpoints();
     }
 
-    isCaseTypeNone(participant: VHParticipant): boolean {
-        return !participant.caseTypeGroup || participant.caseTypeGroup === 'None';
-    }
-
     executeTeardown(): void {
         this.eventHubSubscriptions$.unsubscribe();
     }
@@ -157,7 +152,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         }
         if (participant.representee) {
             const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
-            const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
+            const hearingRoleText = translatedRepresentative;
             return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
         }
         return `${translatedHearingRole}`;
@@ -178,15 +173,12 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                 x =>
                     x.role !== Role.Judge &&
                     x.role !== Role.JudicialOfficeHolder &&
-                    x.caseTypeGroup !== CaseTypeGroup.OBSERVER &&
                     x.hearingRole !== HearingRole.OBSERVER &&
                     x.role !== Role.QuickLinkObserver &&
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
-            .sort(
-                (a, b) => a.caseTypeGroup.localeCompare(b.caseTypeGroup) || (a.name || a.displayName).localeCompare(b.name || b.displayName)
-            );
+            .sort((a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName));
 
         nonJudgeParts = [
             ...nonJudgeParts,
@@ -211,11 +203,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     protected filterObservers(): void {
         let observers = this._conference.participants
-            .filter(
-                x =>
-                    x.caseTypeGroup === CaseTypeGroup.OBSERVER ||
-                    (x.hearingRole === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
-            )
+            .filter(x => x.hearingRole === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
             .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         observers = [

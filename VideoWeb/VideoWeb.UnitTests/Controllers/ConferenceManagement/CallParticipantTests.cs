@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.V2.Responses;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -48,6 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     x => x.TransferParticipantAsync(TestConference.Id,
                         It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
             }
+            
         }
 
         [Test]
@@ -171,32 +175,23 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
+            
+            
 
             var controller  = SetupControllerWithClaims(user);
-
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id))
-                .ReturnsAsync(new ConferenceDetailsResponse
-                {
-                    Id = TestConference.Id,
-                    Participants = TestConference.Participants.Select(x => new ParticipantDetailsResponse
-                    {
-                        Id = x.Id,
-                        LinkedParticipants = x.LinkedParticipants.Select(y => new LinkedParticipantResponse
-                        {
-                            LinkedId = y.LinkedId
-                        }).ToList()
-                    }).ToList(),
-                    CivilianRooms = TestConference.CivilianRooms.Select(x => new CivilianRoomResponse
-                    {
-                        Id = x.Id,
-                        Participants = x.Participants.ToList()
-                    }).ToList()
-                });
+            
+            var requriedConferenceCache = new Conference
+            {
+                Id = TestConference.Id,
+                Participants = TestConference.Participants,
+                CivilianRooms = [new CivilianRoom { Participants = TestConference.CivilianRooms[0].Participants.Select(p => p).ToList() }]
+            };
             
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
-
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>())).ReturnsAsync(requriedConferenceCache);
+            
             var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult)result;
@@ -219,18 +214,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var controller  = SetupControllerWithClaims(user);
 
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id))
-                .ReturnsAsync(new ConferenceDetailsResponse
-                {
-                    Id = TestConference.Id,
-                    Participants = new List<ParticipantDetailsResponse>(),
-                    CivilianRooms = new List<CivilianRoomResponse>()
-                });
-            
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
-
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>())).ReturnsAsync(TestConference);
+            
             var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
@@ -242,7 +230,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_unauthorised_when_witness_is_called_before_interpreter_joins()
         {
             var judge = TestConference.GetJudge();
-            var interpreterRoom = TestConference.CivilianRooms.First();
+            var interpreterRoom = TestConference.CivilianRooms[0];
             var witnessIds = TestConference.Participants
                 .Where(p => p.IsWitness() && p.LinkedParticipants.Any())
                 .Select(p => p.Id).ToList();
@@ -253,7 +241,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds.First());
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds[0]);
 
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;

@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>()
+                Participants = new List<Participant>
                 {
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
@@ -39,11 +39,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Endpoints = new List<Endpoint>
                 {
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
-                        .With(x=> x.DefenceAdvocateUsername = "rep1@hmcts.net").Build(),
+                        .With(x=> x.DefenceAdvocateUsername =  "rep1@hmcts.net").Build(),
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
-                    .With(x=> x.DefenceAdvocateUsername = "john@hmcts.net").Build(),
+                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net").Build(),
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP3")
-                    .With(x=> x.DefenceAdvocateUsername = "john@hmcts.net").Build()
+                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net").Build(),
                 }
             };
         }

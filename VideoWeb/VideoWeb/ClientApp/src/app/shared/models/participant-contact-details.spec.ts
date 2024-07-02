@@ -1,6 +1,5 @@
 import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { ParticipantContactDetails } from './participant-contact-details';
 
 describe('ParticipantContactDetails', () => {
@@ -16,7 +15,6 @@ describe('ParticipantContactDetails', () => {
         expect(participant.status).toBe(p.status);
         expect(participant.role).toBe(p.role);
         expect(participant.hearing_role).toBe(p.hearingRole);
-        expect(participant.case_type_group).toBe(p.caseGroup);
         expect(participant.display_name).toBe(p.displayName);
         expect(participant.username).toBe(p.username);
         expect(participant.hearing_venue_name).toBe(p.hearingVenueName);
@@ -26,7 +24,6 @@ describe('ParticipantContactDetails', () => {
         expect(participant.ref_id).toBe(p.refId);
         expect(participant.host_in_another_hearing).toBe(p.hostInAnotherHearing);
         expect(p.isJudge).toBe(false);
-        expect(p.showCaseRole).toBe(true);
     });
     it('should map participant info based on hearing role', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
@@ -39,57 +36,7 @@ describe('ParticipantContactDetails', () => {
         const p = new ParticipantContactDetails(participant);
         expect(p.hearingRole).toBe('App Representative for test user');
     });
-    it('should not show case role if case role is none', () => {
-        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-            'C7163972-A362-4167-8D33-77A64674B31C',
-            'MyVenue'
-        );
-        const participant = participants[0];
-        participant.case_type_group = 'None';
-        const p = new ParticipantContactDetails(participant);
-        expect(p.showCaseRole).toBe(false);
-    });
-    it('should not show case role if case role is null', () => {
-        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-            'C7163972-A362-4167-8D33-77A64674B31C',
-            'MyVenue'
-        );
-        const participant = participants[0];
-        participant.case_type_group = null;
-        const p = new ParticipantContactDetails(participant);
-        expect(p.showCaseRole).toBe(false);
-    });
-    it('should not show case role if case role is judge', () => {
-        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-            'C7163972-A362-4167-8D33-77A64674B31C',
-            'MyVenue'
-        );
-        const participant = participants[0];
-        participant.case_type_group = 'Judge';
-        const p = new ParticipantContactDetails(participant);
-        expect(p.showCaseRole).toBe(false);
-    });
-    it('should not show case role if case role is observer', () => {
-        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-            'C7163972-A362-4167-8D33-77A64674B31C',
-            'MyVenue'
-        );
-        const participant = participants[0];
-        participant.case_type_group = 'Observer';
-        const p = new ParticipantContactDetails(participant);
-        expect(p.showCaseRole).toBe(false);
-    });
-    it('should not show case role if case role is staff member', () => {
-        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-            'C7163972-A362-4167-8D33-77A64674B31C',
-            'MyVenue'
-        );
-        const participant = participants[0];
-        participant.case_type_group = CaseTypeGroup.STAFF_MEMBER;
-        const p = new ParticipantContactDetails(participant);
 
-        expect(p.showCaseRole).toBe(false);
-    });
     it('should return true if participant is an interpreter', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
             'C7163972-A362-4167-8D33-77A64674B31C',
@@ -97,7 +44,6 @@ describe('ParticipantContactDetails', () => {
         );
         const participant = participants[0];
         participant.hearing_role = 'Interpreter';
-        participant.case_type_group = 'Applicant';
         const p = new ParticipantContactDetails(participant);
         expect(p.isInterpreterOrInterpretee).toBe(true);
     });
@@ -113,7 +59,6 @@ describe('ParticipantContactDetails', () => {
         _linkedParticipants.push(lp);
         const participant = participants[0];
         participant.hearing_role = 'Litigant in person';
-        participant.case_type_group = 'Applicant';
         participant.linked_participants = _linkedParticipants;
         const p = new ParticipantContactDetails(participant);
         expect(p.isInterpreterOrInterpretee).toBe(true);

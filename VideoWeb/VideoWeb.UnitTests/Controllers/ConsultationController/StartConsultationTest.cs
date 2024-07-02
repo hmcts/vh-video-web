@@ -21,6 +21,7 @@ using VideoWeb.Mappings.Requests;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
 
@@ -51,13 +52,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<StartPrivateConsultationRequest, StartConsultationRequest>())
                 .Returns(_mocker.Create<StartPrivateConsultationRequestMapper>());
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(_mocker.Mock<IConferenceCache>().Object);
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -71,10 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             var conference = new Conference {Id = Guid.NewGuid()};
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
 
             var consultationRequest = Builder<StartPrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
@@ -171,8 +164,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IVideoApiClient>()
                 .Verify(
                     x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id &&
-                        ecr.RequestedById == request.RequestedBy)), Times.Once);
+                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id)), Times.Once);
         }
 
         [Test]
@@ -193,8 +185,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 "", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                    ecr.EndpointId == request.InviteEndpoints[1] && ecr.ConferenceId == _testConference.Id &&
-                    ecr.RequestedById == request.RequestedBy)))
+                    ecr.EndpointId == request.InviteEndpoints[1] && ecr.ConferenceId == _testConference.Id)))
                 .Throws(apiException);
 
             // Act
@@ -218,8 +209,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IVideoApiClient>()
                 .Verify(
                     x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr =>
-                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id &&
-                        ecr.RequestedById == request.RequestedBy)), Times.Exactly(2));
+                        request.InviteEndpoints.Contains(ecr.EndpointId) && ecr.ConferenceId == _testConference.Id)), Times.Exactly(2));
         }
 
         [Test]

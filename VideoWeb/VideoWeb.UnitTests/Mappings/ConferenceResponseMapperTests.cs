@@ -22,8 +22,8 @@ namespace VideoWeb.UnitTests.Mappings
         {
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantDtoForResponseMapper>()
+                .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
         }
@@ -31,29 +31,36 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var participants = new List<ParticipantDetailsResponse>
+            var participants = new List<Participant>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").WithHearingRole("Litigant in person").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").WithHearingRole("Representative").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").WithHearingRole("Judge").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Observer").WithHearingRole("Observer").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Witness").WithHearingRole("Witness").Build()
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
+                new ParticipantBuilder(Role.Representative).WithHearingRole("Representative").Build(),
+                new ParticipantBuilder(Role.Judge).WithHearingRole("Judge").Build(),
+                new ParticipantBuilder(Role.CaseAdmin).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Observer").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Witness").Build()
             };
 
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
-            var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
-
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+            var meetingRoomResponse = Builder<MeetingRoomResponse>.CreateNew().Build();
+            var meetingRoom = new ConferenceMeetingRoom()
+            {
+                ParticipantUri = meetingRoomResponse.ParticipantUri,
+                PexipNode = meetingRoomResponse.PexipNode,
+                PexipSelfTest = meetingRoomResponse.PexipSelfTestNode
+            };
+            
+            
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.MeetingRoom = meetingRoom)
-                .With(x => x.HearingVenueIsScottish = true)
+                .With(x => x.IsScottish = true)
                 .Build();
 
             var response = _sut.Map(conference);
@@ -65,7 +72,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
             response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
-            response.HearingVenueIsScottish.Should().Be(conference.HearingVenueIsScottish);
+            response.HearingVenueIsScottish.Should().Be(conference.IsScottish);
 
 
             var participantsResponse = response.Participants;
@@ -91,15 +98,6 @@ namespace VideoWeb.UnitTests.Mappings
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
             }
-
-            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
-            caseTypeGroups.Count.Should().BeGreaterThan(2);
-            caseTypeGroups[0].Should().Be("Claimant");
-            caseTypeGroups[1].Should().Be("Defendant");
-            caseTypeGroups[2].Should().Be("None");
-            caseTypeGroups[3].Should().Be("Observer");
-            caseTypeGroups[4].Should().Be("Panel Member");
-
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
             response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();

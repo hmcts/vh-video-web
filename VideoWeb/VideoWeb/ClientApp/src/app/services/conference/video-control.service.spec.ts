@@ -3,7 +3,6 @@ import { Guid } from 'guid-typescript';
 import { Observable, of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -34,7 +33,6 @@ describe('VideoControlService', () => {
             display_name: 'Interpreter',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'applicant',
             tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
             hearing_role: HearingRole.INTERPRETER,
             first_name: 'Interpreter',
@@ -87,7 +85,6 @@ describe('VideoControlService', () => {
             'Participant Name',
             'DisplayName',
             `Role;DisplayName;${participantId}`,
-            CaseTypeGroup.JUDGE,
             Role.Judge,
             HearingRole.JUDGE,
             false,
@@ -439,7 +436,6 @@ describe('VideoControlService', () => {
             'Participant Name',
             'DisplayName',
             `Role;DisplayName;${participantId}`,
-            CaseTypeGroup.JUDGE,
             Role.Judge,
             HearingRole.JUDGE,
             false,
