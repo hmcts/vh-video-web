@@ -4,11 +4,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoApi.Contract.Responses;
-using VideoWeb.UnitTests.Builders;
 using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,13 +19,13 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const string loggedInUsername = "test@user.com";
 
-            var participants = new List<ParticipantSummaryResponse>
+            var participants = new List<ParticipantResponse>
             {
-                new ParticipantSummaryResponseBuilder(UserRole.Individual)
+                new ParticipantResponseBuilder(UserRole.Individual)
                     .WithStatus(ParticipantState.Available).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Representative)
+                new ParticipantResponseBuilder(UserRole.Representative)
                     .WithStatus(ParticipantState.Disconnected).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Judge)
+                new ParticipantResponseBuilder(UserRole.Judge)
                     .WithStatus(ParticipantState.NotSignedIn).Build()
             };
             participants[0].Username = loggedInUsername;

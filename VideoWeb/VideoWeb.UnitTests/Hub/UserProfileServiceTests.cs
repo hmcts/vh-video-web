@@ -2,17 +2,16 @@ using System;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using System.Collections.Generic;
 using System.Security.Claims;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -67,7 +66,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_return_quick_link_participant_profile_by_username()
         {
             var quickLinkParticipantUserName = $"{Guid.NewGuid()}@{QuickLinkParticipantConst.Domain}";
-            var profile = Builder<ParticipantSummaryResponse>.CreateNew()
+            var profile = Builder<ParticipantResponse>.CreateNew()
                 .With(x => x.Username = quickLinkParticipantUserName)
                 .With(x => x.Id = Guid.Empty)
                 .With(x => x.UserRole = UserRole.QuickLinkParticipant)
@@ -96,20 +95,19 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_cache_profile_by_username(string appRole, Role userRole)
         {
             var username = "VHO@hmcts.net";
-            var role = Role.Judge.ToString();
             var profile = Builder<UserProfile>.CreateNew()
                 .With(x => x.UserName = username)
                 .With(x => x.Roles = new List<Role> { userRole })
                 .Build();
 
             var identity = new ClaimsIdentity(new List<Claim> { 
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, appRole),
-                new Claim(ClaimTypes.GivenName, profile.FirstName),
-                new Claim(ClaimTypes.Surname, profile.LastName),
-                new Claim(ClaimTypes.Surname, profile.LastName),
-                new Claim(ClaimTypes.Email, username),
-                new Claim(ClaimTypes.NameIdentifier, username)}, "Basic" );
+                new (ClaimTypes.Name, username),
+                new (ClaimTypes.Role, appRole),
+                new (ClaimTypes.GivenName, profile.FirstName),
+                new (ClaimTypes.Surname, profile.LastName),
+                new (ClaimTypes.Surname, profile.LastName),
+                new (ClaimTypes.Email, username),
+                new (ClaimTypes.NameIdentifier, username)}, "Basic" );
 
             var principal = new ClaimsPrincipal(identity);
 

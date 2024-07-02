@@ -41,8 +41,9 @@ namespace VideoWeb.UnitTests.Helpers
                 .AddTypedParameters<RoomSummaryResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>())
-                .Returns(_mocker.Create<EndpointsResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<Endpoint, VideoEndpointResponse>())
+                .Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>(parameters));
 
             _notifier = new EndpointsUpdatedEventNotifier(_eventHelper.EventHubContextMock.Object, _mocker.Create<IMapperFactory>());
         }
@@ -55,7 +56,7 @@ namespace VideoWeb.UnitTests.Helpers
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "NewEndpoint",
-                DefenceAdvocateUsername = "Endpoint1DefenceAdvocateUsername@gmail.com"
+                DefenceAdvocateUsername = "endpointDefenceAdvocate"
             };
             
             var request = new UpdateConferenceEndpointsRequest()
@@ -66,8 +67,7 @@ namespace VideoWeb.UnitTests.Helpers
                     new()
                     {
                         Id = newEndpoint.Id,
-                        DisplayName = newEndpoint.DisplayName,
-                        DefenceAdvocate = newEndpoint.DefenceAdvocateUsername
+                        DisplayName = newEndpoint.DisplayName
                     }
                 },
                 RemovedEndpoints = new List<Guid>()
@@ -77,8 +77,8 @@ namespace VideoWeb.UnitTests.Helpers
             await _notifier.PushEndpointsUpdatedEvent(_conference, request);
 
             // Assert
-            _eventHelper.EventHubClientMock.Verify(
-                x => x.EndpointsUpdated(_conference.Id, It.IsAny<UpdateEndpointsDto>()),
+            _eventHelper.EventHubClientMock.Verify(x
+                => x.EndpointsUpdated(_conference.Id, It.IsAny<UpdateEndpointsDto>()), 
                 Times.Exactly(_conference.Participants.Count));
         }
     }

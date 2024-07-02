@@ -10,20 +10,21 @@ namespace VideoWeb.Common.Models
             LinkedParticipants = new List<LinkedParticipant>();
         }
         public Guid Id { get; set; }
-        public string Name { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FullTitledName { get; set; }
         public string ContactEmail { get; set; }
         public string ContactTelephone { get; set; }
         public string Username { get; set; }
         public Role Role { get; set; }
         public string HearingRole { get; set; }
         public ParticipantStatus ParticipantStatus { get; set; }
+        /// Needs to come from video-api not booking-api, for if the judge updates it within the hearing
         public string DisplayName { get; set; }
-        public string CaseTypeGroup { get; set; }
         public Guid RefId { get; set; }
-        public string Representee { get; set; }
-        
+        public string Representee { get; set; } 
+        public ConsultationRoom CurrentRoom { get; set; }
+        public ConsultationRoom InterpreterRoom { get; set; }
         public List<LinkedParticipant> LinkedParticipants { get; set; }
 
         public bool IsJudge()
@@ -60,7 +61,5 @@ namespace VideoWeb.Common.Models
         {
             return IsJudge() || IsStaffMember();
         }
-        
-        public ConsultationRoom CurrentRoom { get; set; }
     }
 }

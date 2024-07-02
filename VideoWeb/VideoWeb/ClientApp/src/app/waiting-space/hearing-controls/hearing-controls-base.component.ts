@@ -18,7 +18,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
@@ -81,10 +80,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get canShowScreenShareButton(): boolean {
-        const isAllowedRole =
-            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
-            this.participant?.hearing_role !== HearingRole.OBSERVER &&
-            this.participant?.role !== Role.QuickLinkObserver;
+        const isAllowedRole = this.participant?.hearing_role !== HearingRole.OBSERVER && this.participant?.role !== Role.QuickLinkObserver;
         return this.deviceTypeService.isDesktop() && isAllowedRole && !this.sharingDynamicEvidence;
     }
 

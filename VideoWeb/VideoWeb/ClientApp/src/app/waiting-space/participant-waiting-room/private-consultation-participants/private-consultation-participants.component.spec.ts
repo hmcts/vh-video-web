@@ -635,7 +635,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'litigantInPerson_display_name',
                 role: Role.Individual,
                 representee: 'litigantInPerson_representee',
-                case_type_group: 'litigantInPerson_applicant',
                 tiled_display_name: 'litigantInPerson_tiledDisplayName',
                 hearing_role: HearingRole.LITIGANT_IN_PERSON,
                 linked_participants: []
@@ -649,7 +648,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'witness1_display_name',
                 role: Role.Individual,
                 representee: 'witness1_representee',
-                case_type_group: 'witness1_applicant',
                 tiled_display_name: 'witness1_tiledDisplayName',
                 hearing_role: HearingRole.WITNESS,
                 linked_participants: []
@@ -663,7 +661,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'witness2_display_name',
                 role: Role.Individual,
                 representee: 'witness2_representee',
-                case_type_group: 'witness2_applicant',
                 tiled_display_name: 'witness2_tiledDisplayName',
                 hearing_role: HearingRole.WITNESS,
                 linked_participants: []
@@ -677,7 +674,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'regularObserver_display_name',
                 role: Role.Individual,
                 representee: 'regularObserver_representee',
-                case_type_group: 'regularObserver_applicant',
                 tiled_display_name: 'regularObserver_tiledDisplayName',
                 hearing_role: HearingRole.OBSERVER,
                 linked_participants: []
@@ -691,7 +687,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'quickLinkObserver1_display_name',
                 role: Role.QuickLinkObserver,
                 representee: 'quickLinkObserver1_representee',
-                case_type_group: 'quickLinkObserver1_applicant',
                 tiled_display_name: 'quickLinkObserver1_tiledDisplayName',
                 hearing_role: HearingRole.QUICK_LINK_OBSERVER,
                 linked_participants: []
@@ -705,7 +700,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 display_name: 'quickLinkObserver2_display_name',
                 role: Role.QuickLinkObserver,
                 representee: 'quickLinkObserver2_representee',
-                case_type_group: 'quickLinkObserver2_applicant',
                 tiled_display_name: 'quickLinkObserver2_tiledDisplayName',
                 hearing_role: HearingRole.QUICK_LINK_OBSERVER,
                 linked_participants: []

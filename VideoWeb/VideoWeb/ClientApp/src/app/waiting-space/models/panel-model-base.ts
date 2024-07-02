@@ -1,5 +1,4 @@
 import { Role } from '../../services/clients/api-client';
-import { CaseTypeGroup } from './case-type-group';
 import { HearingRole } from './hearing-role-model';
 
 export abstract class PanelModel {
@@ -23,7 +22,6 @@ export abstract class PanelModel {
     public pexipDisplayName: string;
     public orderInTheList: number;
     public role: Role;
-    public caseTypeGroup: string;
     public hearingRole: string;
     public representee: string;
 
@@ -57,19 +55,10 @@ export abstract class PanelModel {
      */
     private isLocalVideoMuted: boolean;
 
-    constructor(
-        id: string,
-        displayName: string,
-        role: Role,
-        caseTypeGroup: string,
-        pexipDisplayName: string,
-        hearingRole: string,
-        representee: string
-    ) {
+    constructor(id: string, displayName: string, role: Role, pexipDisplayName: string, hearingRole: string, representee: string) {
         this.id = id;
         this.displayName = displayName;
         this.role = role;
-        this.caseTypeGroup = role === Role.Judge ? 'judge' : caseTypeGroup;
         this.pexipDisplayName = pexipDisplayName;
         this.hearingRole = hearingRole;
         this.representee = representee;
@@ -164,9 +153,9 @@ export abstract class PanelModel {
             return 3;
         } else if (this.role === Role.QuickLinkParticipant) {
             return 5;
-        } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
+        } else if (this.hearingRole === 'Video access point') {
             return 6;
-        } else if (this.caseTypeGroup === CaseTypeGroup.OBSERVER || this.hearingRole === HearingRole.OBSERVER) {
+        } else if (this.hearingRole === HearingRole.OBSERVER) {
             return 7;
         } else if (this.role === Role.QuickLinkObserver) {
             return 8;

@@ -94,14 +94,13 @@ describe('ParticipantPanelModel', () => {
         const id = 'id';
         const displayName = 'displayName';
         const role = Role.None;
-        const caseTypeGroup = 'caseTypeGroup';
         const pexipDisplayName = 'pexipDisplayName';
         const hearingRole = 'hearingRole';
         const representee = 'representsee';
         const status = ParticipantStatus.None;
 
         beforeEach(() => {
-            model = new ParticipantPanelModel(id, displayName, role, caseTypeGroup, pexipDisplayName, hearingRole, representee, status);
+            model = new ParticipantPanelModel(id, displayName, role, pexipDisplayName, hearingRole, representee, status);
         });
 
         describe('isWitness', () => {

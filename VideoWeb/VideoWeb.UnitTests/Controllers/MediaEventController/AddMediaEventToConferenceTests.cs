@@ -14,6 +14,7 @@ using VideoWeb.Contract.Request;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.MediaEventController
@@ -22,7 +23,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
     {
         private VideoWeb.Controllers.MediaEventController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IConferenceCache> _conferenceCacheMock;
+        private Mock<IConferenceService> _conferenceServiceMock;
         private Mock<ILogger<VideoWeb.Controllers.MediaEventController>> _logger;
         private Conference _testConference;
 
@@ -32,7 +33,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             _testConference = new EventComponentHelper().BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
             
-            _conferenceCacheMock = new Mock<IConferenceCache>();
+            _conferenceServiceMock = new Mock<IConferenceService>();
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _logger = new Mock<ILogger<VideoWeb.Controllers.MediaEventController>>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -45,14 +46,13 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             };
 
             _controller =
-                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _logger.Object, _conferenceCacheMock.Object)
+                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _logger.Object, _conferenceServiceMock.Object)
                 {
                     ControllerContext = context
                 };
             
-            _conferenceCacheMock
-                .Setup(x => x.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            _conferenceServiceMock
+                .Setup(x => x.GetConference(_testConference.Id))
                 .ReturnsAsync(_testConference);
         }
 

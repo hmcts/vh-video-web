@@ -709,6 +709,7 @@
     "mackenzie-friend": "MacKenzie friend",
     "observer": "Observer",
     "panel-member": "Panel Member",
+    "panelmember": "Panel Member",
     "presenting-officer": "Presenting Officer",
     "prosecution": "Prosecution",
     "prosecution-advocate": "Prosecution Advocate",
@@ -1314,8 +1315,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message-without-party": "{{role}} has been added to the hearing.",
-      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+      "message": "{{role}} has been added to the hearing.",
       "dismiss": "OK"
     },
     "endpoint-added": {

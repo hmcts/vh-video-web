@@ -10,9 +10,9 @@ namespace VideoWeb.Mappings
         {
             return new AllowedEndpointResponse
             {
-                DefenceAdvocateUsername = input.DefenceAdvocateUsername,
                 DisplayName = input.DisplayName,
-                Id = input.Id
+                Id = input.Id,
+                DefenceAdvocateUsername = input.DefenceAdvocateUsername,
             };
         }
     }

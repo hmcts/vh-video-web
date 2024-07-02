@@ -3,23 +3,15 @@ using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
-using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceResponseMapper : IMapTo<ConferenceDetailsResponse, ConferenceResponse>
+    public class ConferenceResponseMapper(
+        IMapTo<Participant, ParticipantResponse> participantResponseMapper,
+        IMapTo<Endpoint, VideoEndpointResponse> videoEndpointResponseMapper) : IMapTo<Conference, ConferenceResponse>
     {
-        private readonly IMapTo<ParticipantDetailsResponse, ParticipantResponse> _participantResponseMapper;
-
-        private readonly IMapTo<EndpointResponse, int, VideoEndpointResponse> _videoEndpointResponseMapper;
-
-        public ConferenceResponseMapper(IMapTo<ParticipantDetailsResponse, ParticipantResponse> participantResponseMapper, IMapTo<EndpointResponse, int, VideoEndpointResponse> videoEndpointResponseMapper)
-        {
-            _participantResponseMapper = participantResponseMapper;
-            _videoEndpointResponseMapper = videoEndpointResponseMapper;
-        }
-
-        public ConferenceResponse Map(ConferenceDetailsResponse conference)
+        public ConferenceResponse Map(Conference conference)
         {
             var response = new ConferenceResponse
             {
@@ -35,37 +27,29 @@ namespace VideoWeb.Mappings
                 HearingVenueName = conference.HearingVenueName,
                 AudioRecordingRequired = conference.AudioRecordingRequired,
                 HearingRefId = conference.HearingId,
-                Endpoints = MapEndpoints(conference),
-                HearingVenueIsScottish = conference.HearingVenueIsScottish,
+                Endpoints = conference.Endpoints?.Select(videoEndpointResponseMapper.Map).ToList(),
+                HearingVenueIsScottish = conference.IsScottish,
                 IngestUrl = conference.IngestUrl
             };
 
             if (conference.MeetingRoom != null)
             {
-
                 response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
                 response.PexipNodeUri = conference.MeetingRoom.PexipNode;
-                response.PexipSelfTestNodeUri = conference.MeetingRoom.PexipSelfTestNode;
-
+                response.PexipSelfTestNodeUri = conference.MeetingRoom.PexipSelfTest;
                 ParticipantTilePositionHelper.AssignTilePositions(response.Participants);
             }
 
             return response;
         }
 
-        private List<ParticipantResponse> MapParticipants(ConferenceDetailsResponse conference)
+        private List<ParticipantResponse> MapParticipants(Conference conference)
         {
-            conference.Participants ??= new List<ParticipantDetailsResponse>();
+            conference.Participants ??= new List<Participant>();
             return conference.Participants
-                .OrderBy(x => x.CaseTypeGroup)
-                .Select(_participantResponseMapper.Map)
+                .OrderBy(x => x.Role)
+                .Select(participantResponseMapper.Map)
                 .ToList();
-        }
-
-        private List<VideoEndpointResponse> MapEndpoints(ConferenceDetailsResponse conference)
-        {
-            conference.Endpoints ??= new List<EndpointResponse>();
-            return conference.Endpoints.Select(_videoEndpointResponseMapper.Map).ToList();
         }
     }
 }

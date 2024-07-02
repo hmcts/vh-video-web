@@ -15,7 +15,6 @@ import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import { HearingRole } from '../models/hearing-role-model';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -51,7 +50,6 @@ describe('JudgeContextMenuComponent', () => {
     const testParticipantId = 'id';
     const testParticipantDisplayName = 'displayName';
     const testParticipantRole = Role.None;
-    const testParticipantCaseTypeGroup = 'caseTypeGroup';
     const testParticipantPexipDisplayName = 'pexipDisplayName';
     const testParticipantHearingRole = 'hearingRole';
     const testParticipantRepresentee = 'representsee';
@@ -100,7 +98,6 @@ describe('JudgeContextMenuComponent', () => {
             testParticipantId,
             testParticipantDisplayName,
             testParticipantRole,
-            testParticipantCaseTypeGroup,
             testParticipantPexipDisplayName,
             testParticipantHearingRole,
             testParticipantRepresentee,
@@ -109,32 +106,6 @@ describe('JudgeContextMenuComponent', () => {
         component.participant = testParticipipantPanelModel;
 
         fixture.detectChanges();
-    });
-
-    describe('showCaseRole', () => {
-        const dontShowForCaseTypeGroup = [CaseTypeGroup.NONE, CaseTypeGroup.JUDGE, CaseTypeGroup.OBSERVER, CaseTypeGroup.ENDPOINT];
-        const caseTypeGroups = Object.keys(CaseTypeGroup);
-
-        it('should return false when case type group is null', () => {
-            component.participant.caseTypeGroup = null;
-            expect(component.showCaseTypeGroup()).toBe(false);
-        });
-
-        caseTypeGroups.forEach(caseTypeGroupString => {
-            const testCaseTypeGroup = CaseTypeGroup[caseTypeGroupString];
-            const showFor = !dontShowForCaseTypeGroup.includes(testCaseTypeGroup);
-            it(`should return ${showFor} when case type group role is ${caseTypeGroupString}`, () => {
-                component.participant.caseTypeGroup = testCaseTypeGroup;
-                expect(component.showCaseTypeGroup()).toBe(showFor);
-            });
-        });
-
-        it('should return true when case type group is any other value', () => {
-            const caseTypeGroup = 'AnyOtherValue';
-            component.participant.caseTypeGroup = caseTypeGroup;
-            expect(caseTypeGroups).not.toContain(caseTypeGroup);
-            expect(component.showCaseTypeGroup()).toBe(true);
-        });
     });
 
     describe('showHearingRole', () => {
@@ -565,19 +536,8 @@ describe('JudgeContextMenuComponent', () => {
 
                         describe('when not judge or panel member', () => {
                             beforeEach(() => {
-                                component.participant.caseTypeGroup = CaseTypeGroup.NONE;
                                 fixture.detectChanges();
                                 hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
-                            });
-                            it('should show for non-judge or non-panel member', () => {
-                                const nonJudgePanelMemberCaseTypeGroups = Object.values(CaseTypeGroup).filter(
-                                    group => group !== CaseTypeGroup.JUDGE && group !== CaseTypeGroup.PANEL_MEMBER
-                                );
-                                nonJudgePanelMemberCaseTypeGroups.forEach(group => {
-                                    component.participant.caseTypeGroup = group;
-                                    fixture.detectChanges();
-                                    expect(hearingRoleFullElement).toBeTruthy();
-                                });
                             });
 
                             it('should have correct hearing role', () => {
@@ -620,42 +580,6 @@ describe('JudgeContextMenuComponent', () => {
                                     const representeeElement = fixture.debugElement.query(By.css(`#${representeeElementId}`));
                                     expect(representeeElement).toBeTruthy();
                                     expect(representeeElement.nativeElement.textContent.trim()).toEqual(representeeString);
-                                });
-                            });
-
-                            describe('case type group', () => {
-                                let caseTypeGroupId: string;
-                                beforeEach(() => {
-                                    caseTypeGroupId = fakeGetElementId('case-type-group');
-                                });
-
-                                it('should not display', () => {
-                                    spyOn(component, 'showCaseTypeGroup').and.returnValue(false);
-                                    component.participant.caseTypeGroup = 'anything';
-                                    fixture.detectChanges();
-                                    const caseTypeGroupElement = fixture.debugElement.query(By.css(`#${caseTypeGroupId}`));
-                                    expect(caseTypeGroupElement).toBeFalsy();
-                                });
-
-                                it('should have correct details for case type group', () => {
-                                    spyOn(component, 'showCaseTypeGroup').and.returnValue(true);
-                                    const testCaseTypeGroup = 'Test case type group';
-                                    const testCaseTypeGroupHyphenated = 'test-case-type-group-hyphenated';
-                                    const testCaseTypeGroupHyphenatedWithPrefix = `case-role.${testCaseTypeGroupHyphenated}`;
-                                    const testCaseTypeGroupRoleTranslated = 'case type group translated';
-                                    hyphenateSpy.withArgs(testCaseTypeGroup).and.returnValue(testCaseTypeGroupHyphenated);
-                                    translateSpy
-                                        .withArgs(testCaseTypeGroupHyphenatedWithPrefix)
-                                        .and.returnValue(testCaseTypeGroupRoleTranslated);
-
-                                    component.participant.caseTypeGroup = testCaseTypeGroup;
-                                    fixture.detectChanges();
-                                    const caseTypeGroupElement = fixture.debugElement.query(By.css(`#${caseTypeGroupId}`));
-
-                                    expect(hyphenateSpy).toHaveBeenCalledWith(testCaseTypeGroup);
-                                    expect(translateSpy).toHaveBeenCalledWith(testCaseTypeGroupHyphenatedWithPrefix);
-                                    expect(caseTypeGroupElement).toBeTruthy();
-                                    expect(caseTypeGroupElement.nativeElement.textContent.trim()).toEqual(testCaseTypeGroupRoleTranslated);
                                 });
                             });
                         });

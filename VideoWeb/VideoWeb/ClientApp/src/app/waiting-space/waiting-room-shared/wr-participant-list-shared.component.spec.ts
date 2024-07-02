@@ -2,14 +2,7 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    LoggedParticipantResponse,
-    EndpointStatus,
-    ParticipantStatus,
-    VideoEndpointResponse,
-    Role,
-    LinkType
-} from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, EndpointStatus, ParticipantStatus, Role, LinkType } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -123,18 +116,6 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.displayParticipantList).toBeTrue();
     });
 
-    it('should return true when participant has no case type group', () => {
-        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['caseTypeGroup']);
-        pat.caseTypeGroup = 'None';
-        expect(component.isCaseTypeNone(pat)).toBeTruthy();
-    });
-
-    it('should return false when participant has a case type group', () => {
-        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['caseTypeGroup']);
-        pat.caseTypeGroup = 'Judge';
-        expect(component.isCaseTypeNone(pat)).toBeFalsy();
-    });
-
     it('should return true when participant hearing role is Witness', () => {
         const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['hearingRole']);
         pat.hearingRole = HearingRole.WITNESS;
@@ -153,7 +134,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     participantAvailableTestCases.forEach(test => {
         it(`should return ${test.expected} for 'isParticipantAvailable' when participant status is ${test.status}`, () => {
-            const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'name', 'caseTypeGroup', 'hearingRole']);
+            const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id', 'name', 'hearingRole']);
             pat.status = test.status;
 
             expect(component.isParticipantAvailable(pat)).toBe(test.expected);
@@ -358,7 +339,6 @@ describe('WaitingRoom ParticipantList Base', () => {
                     status: ParticipantStatus.NotSignedIn,
                     displayName: 'A',
                     role: Role.Individual,
-                    caseTypeGroup: 'Applicant',
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
                     hearingRole: HearingRole.LITIGANT_IN_PERSON,
                     firstName: 'Manual',
@@ -378,7 +358,6 @@ describe('WaitingRoom ParticipantList Base', () => {
                     status: ParticipantStatus.NotSignedIn,
                     displayName: 'B',
                     role: Role.Individual,
-                    caseTypeGroup: 'Applicant',
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;B;02778ddf-b472-4e5d-807e-da8248d1b91f',
                     hearingRole: HearingRole.INTERPRETER,
                     firstName: 'Manual',
@@ -398,7 +377,6 @@ describe('WaitingRoom ParticipantList Base', () => {
                     status: ParticipantStatus.NotSignedIn,
                     displayName: 'C',
                     role: Role.Individual,
-                    caseTypeGroup: 'Applicant',
                     tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;C;55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
                     hearingRole: HearingRole.APPELLANT,
                     firstName: 'Manual',
@@ -416,7 +394,6 @@ describe('WaitingRoom ParticipantList Base', () => {
                     lastName: '',
                     username: 'judge@test.com',
                     role: Role.Judge,
-                    caseTypeGroup: 'Judge',
                     tiledDisplayName: 'JUDGE;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
                     hearingRole: HearingRole.JUDGE,
                     linkedParticipants: []
@@ -543,10 +520,12 @@ describe('WaitingRoom ParticipantList Base', () => {
 
             expect(applicant1Index).toEqual(0);
             expect(applicant2Index).toEqual(1);
-            expect(applicant3Index).toEqual(2);
-            expect(respondent1Index).toEqual(3);
-            expect(respondent2Index).toEqual(4);
-            expect(respondent3Index).toEqual(5);
+            // No longer sorting appellants and respondents as caseTypesGroups don't exist (arnt populated in real life) so order is more flexible
+            const suitableIndicies = [2, 3, 4, 5];
+            expect(suitableIndicies.includes(applicant3Index)).toBeTruthy();
+            expect(suitableIndicies.includes(respondent1Index)).toBeTruthy();
+            expect(suitableIndicies.includes(respondent2Index)).toBeTruthy();
+            expect(suitableIndicies.includes(respondent3Index)).toBeTruthy();
             expect(quickLinkParticipant1Index).toEqual(6);
             expect(quickLinkParticipant2Index).toEqual(7);
         });

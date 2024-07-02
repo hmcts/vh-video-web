@@ -8,11 +8,8 @@ describe('Participant', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants.find(x => x.name === 'Mr James Green');
         const participant = new Participant(p);
         expect(participant.id).toBe(p.id);
-        expect(participant.fullName).toBe(p.name);
-        expect(participant.caseGroup).toBe(p.case_type_group);
         expect(participant.status).toBe(p.status);
         expect(participant.role).toBe(p.role);
-        expect(participant.representee).toBe(p.representee);
     });
 
     it('should return true if a judge', () => {

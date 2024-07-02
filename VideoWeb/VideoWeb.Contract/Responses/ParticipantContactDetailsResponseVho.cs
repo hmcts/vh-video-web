@@ -47,11 +47,6 @@ namespace VideoWeb.Contract.Responses
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// The group a participant belongs to in a case
-        /// </summary>
-        public string CaseTypeGroup { get; set; }
-
-        /// <summary>
         /// The participant hearing ref id in a booking
         /// </summary>
         public Guid RefId { get; set; }
@@ -65,7 +60,7 @@ namespace VideoWeb.Contract.Responses
         /// The participant's last name
         /// </summary>
         public string LastName { get; set; }
-
+        
         /// <summary>
         /// The participant's contact email
         /// </summary>
@@ -89,7 +84,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant represented by the representative
         /// </summary>
-        public string Representee { get; set; }    
+        public string Representee { get; set; }
         
         /// <summary>
         /// List of participants linked this participant

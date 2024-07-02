@@ -25,20 +25,26 @@ namespace VideoWeb.Helpers
 
         public async Task PushEndpointsUpdatedEvent(Conference conference, UpdateConferenceEndpointsRequest endpointsToNotify)
         {
-            var videoEndpointResponseMapper = _mapperFactory.Get<VideoApi.Contract.Responses.EndpointResponse, int, VideoEndpointResponse>();
-
+            var videoEndpointResponseMapper = _mapperFactory.Get<Endpoint, VideoEndpointResponse>();
+            
+            var existingEndpoints = conference.Endpoints
+                .Where(e => endpointsToNotify.ExistingEndpoints.Any(x => x.Id == e.Id))
+                .Select(videoEndpointResponseMapper.Map);
+            
+            var newEndpoint = conference.Endpoints
+                .Where(e => endpointsToNotify.NewEndpoints.Any(x => x.Id == e.Id))
+                .Select(videoEndpointResponseMapper.Map);
+            
             var endpoints = new UpdateEndpointsDto
             {
-                ExistingEndpoints = endpointsToNotify.ExistingEndpoints.Select(videoEndpointResponseMapper.Map).ToList(),
-                NewEndpoints = endpointsToNotify.NewEndpoints.Select(videoEndpointResponseMapper.Map).ToList(),
+                ExistingEndpoints = existingEndpoints.ToList(),
+                NewEndpoints = newEndpoint.ToList(),
                 RemovedEndpoints = endpointsToNotify.RemovedEndpoints
             };
 
             foreach (var participant in conference.Participants)
-            {
-                await _hubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .EndpointsUpdated(conference.Id, endpoints);
-            }
+                await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
+            
         }
 
         public async Task PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string jvsEndpointName) => 

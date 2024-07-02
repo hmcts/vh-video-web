@@ -8,15 +8,14 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -43,13 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>()).Returns(_mocker.Create<LeavePrivateConsultationRequestMapper>());
-
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(_testConference.Id,
-                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
             _sut = _mocker.Create<ConsultationsController>();
             _sut.ControllerContext = context;
         }
@@ -62,12 +55,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
             var conference = new Conference { Id = Guid.NewGuid() };
-
-            _mocker.Mock<IConferenceCache>().Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
             var endConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
             var result = await _sut.LeaveConsultationAsync(endConsultationRequest);

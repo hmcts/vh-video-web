@@ -9,6 +9,7 @@ using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -60,10 +61,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Username = ClaimsPrincipalBuilder.Username
             });
             
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
+            
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
 
             JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
             {
@@ -110,11 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Id = Guid.NewGuid(),
                 Username = ClaimsPrincipalBuilder.Username
             });
-            
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId))).ReturnsAsync(conference);
 
             JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
             {
@@ -160,9 +155,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Username = ClaimsPrincipalBuilder.Username
             });
             
-            _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId)))
                 .ThrowsAsync(new VideoApiException("message", expectedStatusCode, "response", null, null));
             
             JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()

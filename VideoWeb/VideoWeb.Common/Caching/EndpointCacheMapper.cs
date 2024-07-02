@@ -12,10 +12,22 @@ namespace VideoWeb.Common.Caching
             {
                 Id = endpointResponse.Id,
                 DisplayName = endpointResponse.DisplayName,
-                EndpointStatus =
-                    (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
-                DefenceAdvocateUsername = endpointResponse.DefenceAdvocate?.ToLower().Trim()
+                EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
+                DefenceAdvocateUsername = endpointResponse.DefenceAdvocate,
+                CurrentRoom = MapRoom(endpointResponse.CurrentRoom)
+            };
+        }
+        private static ConsultationRoom MapRoom(RoomResponse room)
+        {
+            if (room == null) return null;
+            
+            return new ConsultationRoom
+            {
+                Id = room.Id,
+                Label = room.Label,
+                Locked = room.Locked
             };
         }
     }
+    
 }

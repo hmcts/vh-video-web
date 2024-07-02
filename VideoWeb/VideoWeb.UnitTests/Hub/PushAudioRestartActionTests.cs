@@ -17,11 +17,7 @@ public class PushAudioRestartActionTests: EventHubBaseTests
         var hostThatActionedEvent = conference.Participants.First(x => x.IsHost());
         var hosts = conference.Participants.Skip(1).Where(x => x.IsHost()).ToList();
         SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-        ConferenceCacheMock.Setup(cache =>
-                cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-            .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-            .ReturnsAsync(conference);
+        ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
 
         await Hub.PushAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
 

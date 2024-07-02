@@ -16,12 +16,11 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_endpoint_connected_message_to_participants_and_admin()
         {
-            _eventHandler = new EndpointJoinedEventHandler(EventHubContextMock.Object, ConferenceCache,
-                LoggerMock.Object, VideoApiClientMock.Object);
+            _eventHandler = new EndpointJoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
-            var participantForEvent = conference.Endpoints.First();
+            var participantForEvent = conference.Endpoints[0];
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.EndpointJoined,

@@ -9,7 +9,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { HearingRole } from '../../waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
     id: string;
@@ -31,7 +31,6 @@ export interface IParticipantDetails {
     name: string;
     displayName: string;
     pexipDisplayName: PexipDisplayNameModel;
-    caseGroup: string;
     role: Role;
     hearingRole: string;
     status: ParticipantStatus;
@@ -48,7 +47,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public name: string,
         public displayName: string,
         pexipDisplayName: string | PexipDisplayNameModel,
-        public caseGroup: string,
         public role: Role,
         public hearingRole: string,
         public isEndPoint: boolean,
@@ -90,7 +88,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             videoEndpointResponse.pexip_display_name, // same as tiled_display_name
             null,
             null,
-            null,
             true,
             null,
             null,
@@ -102,12 +99,11 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
-            participant.name,
+            null, // participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
-            participant.case_type_group,
             participant.role,
-            participant.hearing_role,
+            null, // participant.hearing_role,
             false,
             participant.interpreter_room,
             participant.linked_participants,
@@ -132,13 +128,7 @@ export class Participant {
         return this.participant.id;
     }
 
-    get fullName() {
-        return this.participant.name;
-    }
-
-    get caseGroup() {
-        return this.participant.case_type_group;
-    }
+    // get fullName() { return this.participant.name; }
 
     get status(): ParticipantStatus {
         return this.participant.status;

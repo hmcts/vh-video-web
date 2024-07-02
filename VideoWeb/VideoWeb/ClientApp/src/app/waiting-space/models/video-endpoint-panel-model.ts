@@ -5,7 +5,7 @@ export class VideoEndpointPanelModel extends IndividualPanelModel {
     public status: EndpointStatus;
 
     constructor(endpoint: VideoEndpointResponse) {
-        super(endpoint.id, endpoint.display_name, Role.Individual, 'Endpoint', endpoint.pexip_display_name, 'Video access point', '');
+        super(endpoint.id, endpoint.display_name, Role.Individual, endpoint.pexip_display_name, 'Video access point', '');
         this.status = endpoint.status;
     }
 
