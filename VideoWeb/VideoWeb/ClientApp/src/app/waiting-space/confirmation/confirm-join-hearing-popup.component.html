@@ -1,7 +1,7 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
     <div class="modal-content">
         <h1 class="govuk-heading-m">{{ 'confirm-join-hearing-popup.about-to-join-hearing' | translate }}</h1>
-        <app-mute-microphone *ngIf="isMuteMicrophoneEnabled" [hearingId]="hearingId"></app-mute-microphone>
+        <app-mute-microphone [hearingId]="hearingId"></app-mute-microphone>
         <div class="govuk-!-margin-bottom-9"></div>
         <button
             id="btnConfirmJoin"

@@ -36,7 +36,7 @@ describe('LaunchDarklyService', () => {
 
     it('should return a given flag', fakeAsync(() => {
         service.client = ldClientSpy;
-        const flagKey = FEATURE_FLAGS.ejudiciarySignIn;
+        const flagKey = FEATURE_FLAGS.vodafone;
         const keyParam = `change:${flagKey}`;
         ldClientSpy.on.withArgs(keyParam, jasmine.anything()).and.returnValue();
         ldClientSpy.waitUntilReady.and.returnValue(Promise.resolve());
