@@ -1,21 +1,25 @@
 <div class="container" *ngIf="totalParticipants > 0">
   <div class="header-row">
-    <p class="govuk-body white" appTooltip above="true" [text]="'participants-panel.participants-tooltip' | translate" colour="grey">
-      {{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})
-    </p>
-    <a
-      id="totalInWrCount"
-      class="govuk-body white vh-pointer"
-      tabindex="0"
-      appTooltip
-      above="true"
-      [text]="'participants-panel.in-waiting-room-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="scrollToElement('panelListNotConnectedHeader')"
-      (click)="scrollToElement('panelListNotConnectedHeader')"
-    >
-      {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
-    </a>
+      <div>
+        <p class="govuk-body white" appTooltip above="true" [text]="'participants-panel.participants-tooltip' | translate" colour="grey">
+          {{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})
+        </p>
+      </div>
+      <div>
+        <a
+          id="totalInWrCount"
+          class="govuk-body white vh-pointer"
+          tabindex="0"
+          appTooltip
+          above="true"
+          [text]="'participants-panel.in-waiting-room-tooltip' | translate"
+          colour="grey"
+          (keydown.enter)="scrollToElement('panelListNotConnectedHeader')"
+          (click)="scrollToElement('panelListNotConnectedHeader')"
+        >
+          {{ 'participants-panel.in-waiting-room' | translate }} ({{totalParticipantsInWaitingRoom}})
+        </a>
+      </div>
   </div>
 
   <div class="button-row">

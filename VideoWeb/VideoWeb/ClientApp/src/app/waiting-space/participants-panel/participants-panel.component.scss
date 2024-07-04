@@ -14,9 +14,10 @@
 }
 
 .header-row {
-  display: grid;
+  display: block;
   grid-template-columns: auto auto;
   width: 100%;
+  margin-bottom: 1em;
 }
 
 .button-row {
