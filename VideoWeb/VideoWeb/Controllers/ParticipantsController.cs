@@ -265,7 +265,33 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-
+        
+        /// <summary>
+        /// Delete a participant from a conference
+        /// </summary>
+        /// <param name="conferenceId"></param>
+        /// <param name="participantId"></param>
+        /// <returns></returns>
+        [HttpDelete("{conferenceId}/participants/{participantId}")]
+        [SwaggerOperation(OperationId = "DeleteParticipantFromConference")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteParticipantFromConferenceAsync(Guid conferenceId, Guid participantId)
+        {
+            try
+            {
+                await videoApiClient.RemoveParticipantFromConferenceAsync(conferenceId, participantId);
+                await UpdateCacheAndPublishUpdate(conferenceId);
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                logger.LogError(e, "Unable to delete participant {ParticipantId} from conference {ConferenceId}", participantId, conferenceId);
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+        
         [HttpPost("{conferenceId}/joinConference")]
         [SwaggerOperation(OperationId = "StaffMemberJoinConference")]
         [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
