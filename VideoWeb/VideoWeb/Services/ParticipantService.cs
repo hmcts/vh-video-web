@@ -22,7 +22,7 @@ namespace VideoWeb.Services
         private readonly ILogger<ParticipantService> _logger;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private const int StartingSoonMinutesThreshold = 30;
-        private const int ClosedMinutesThreshold = 30;
+        public const int ClosedMinutesThreshold = 30;
 
         public ParticipantService(IConferenceService conferenceService, ILogger<ParticipantService> logger,
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
@@ -50,11 +50,19 @@ namespace VideoWeb.Services
 
         public bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference)
         {
-            return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(StartingSoonMinutesThreshold) ||
-                   (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime >
-                       DateTime.UtcNow.AddMinutes(-ClosedMinutesThreshold));
+            // Check if the conference is scheduled to start within the next threshold minutes or has already started
+            var isConferenceStartingSoonOrStarted = originalConference.ScheduledDateTime <
+                                                     DateTime.UtcNow.AddMinutes(StartingSoonMinutesThreshold);
+
+            // Check if the conference has closed within the last threshold minutes
+            var hasConferenceRecentlyClosed = originalConference.ClosedDateTime != null &&
+                                               originalConference?.ClosedDateTime >
+                                               DateTime.UtcNow.AddMinutes(-ClosedMinutesThreshold);
+
+            // A staff member can join the conference if it is starting soon, has already started, or has recently closed
+            return isConferenceStartingSoonOrStarted || hasConferenceRecentlyClosed;
         }
-        
+
         public async Task<Conference> AddParticipantToConferenceCache(Guid conferenceId, ParticipantResponse response)
         {
             var conference = await _conferenceService.GetConference(conferenceId);

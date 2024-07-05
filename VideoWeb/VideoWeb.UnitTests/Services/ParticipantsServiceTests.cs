@@ -42,19 +42,52 @@ public class ParticipantsServiceTests
     }
     
     [Test]
-    public void Should_return_true_when_hearing_is_starting_soon()
+    public void CanStaffMemberJoinConference_ConferenceStartingSoon_ReturnsTrue()
     {
-        _testConferenceResponse.ScheduledDateTime = DateTime.UtcNow;
-        var result = _service.CanStaffMemberJoinConference(_testConferenceResponse);
+        var conference = new ConferenceDetailsResponse
+        {
+            ScheduledDateTime = DateTime.UtcNow.AddMinutes(15) // Conference starting in 15 minutes
+        };
+
+        var result = _service.CanStaffMemberJoinConference(conference);
         result.Should().BeTrue();
     }
     
     [Test]
-    public void Should_return_false_when_hearing_is_starting_soon()
+    public void CanStaffMemberJoinConference_ConferenceAlreadyStarted_ReturnsTrue()
     {
-        _testConferenceResponse.ScheduledDateTime = DateTime.UtcNow.AddHours(1);
-        _testConferenceResponse.ClosedDateTime = DateTime.UtcNow.AddHours(-3);
-        var result = _service.CanStaffMemberJoinConference(_testConferenceResponse);
+        var conference = new ConferenceDetailsResponse
+        {
+            ScheduledDateTime = DateTime.UtcNow.AddMinutes(-10) // Conference started 10 minutes ago
+        };
+
+        var result = _service.CanStaffMemberJoinConference(conference);
+        result.Should().BeTrue();
+    }
+    
+    [Test]
+    public void CanStaffMemberJoinConference_ConferenceRecentlyClosed_ReturnsTrue()
+    {
+        var conference = new ConferenceDetailsResponse
+        {
+            ScheduledDateTime = DateTime.UtcNow.AddHours(-1), // Conference started an hour ago
+            ClosedDateTime = DateTime.UtcNow.AddMinutes(-5) // Conference closed 5 minutes ago
+        };
+
+        var result = _service.CanStaffMemberJoinConference(conference);
+        result.Should().BeTrue();
+    }
+    
+    [Test]
+    public void CanStaffMemberJoinConference_ConferenceNotWithinJoinableTimeframe_ReturnsFalse()
+    {
+        var conference = new ConferenceDetailsResponse
+        {
+            ScheduledDateTime = DateTime.UtcNow.AddHours(1), // Conference starts in an hour
+            ClosedDateTime = DateTime.UtcNow.AddHours(-2) // Conference closed 2 hours ago
+        };
+
+        var result = _service.CanStaffMemberJoinConference(conference);
         result.Should().BeFalse();
     }
     
