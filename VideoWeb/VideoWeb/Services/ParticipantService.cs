@@ -60,7 +60,7 @@ namespace VideoWeb.Services
                                                DateTime.UtcNow.AddMinutes(-ClosedMinutesThreshold);
 
             // A staff member can join the conference if it is starting soon, has already started, or has recently closed
-            return isConferenceStartingSoonOrStarted || hasConferenceRecentlyClosed;
+            return isConferenceStartingSoonOrStarted && originalConference.ClosedDateTime == null || hasConferenceRecentlyClosed;
         }
 
         public async Task<Conference> AddParticipantToConferenceCache(Guid conferenceId, ParticipantResponse response)

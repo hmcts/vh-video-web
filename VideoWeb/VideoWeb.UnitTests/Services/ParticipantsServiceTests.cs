@@ -79,11 +79,24 @@ public class ParticipantsServiceTests
     }
     
     [Test]
-    public void CanStaffMemberJoinConference_ConferenceNotWithinJoinableTimeframe_ReturnsFalse()
+    public void CanStaffMemberJoinConference_ConferenceNotWithinJoinableTimeframeBeforeHearing_ReturnsFalse()
     {
         var conference = new ConferenceDetailsResponse
         {
             ScheduledDateTime = DateTime.UtcNow.AddHours(1), // Conference starts in an hour
+            ClosedDateTime = null
+        };
+
+        var result = _service.CanStaffMemberJoinConference(conference);
+        result.Should().BeFalse();
+    }
+    
+    [Test]
+    public void CanStaffMemberJoinConference_ConferenceNotWithinJoinableTimeframeAfterHearing_ReturnsFalse()
+    {
+        var conference = new ConferenceDetailsResponse
+        {
+            ScheduledDateTime = DateTime.UtcNow.AddHours(-3), // Conference started 2 hours ago
             ClosedDateTime = DateTime.UtcNow.AddHours(-2) // Conference closed 2 hours ago
         };
 
