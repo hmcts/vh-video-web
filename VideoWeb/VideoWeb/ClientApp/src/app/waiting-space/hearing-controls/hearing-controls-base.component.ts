@@ -144,8 +144,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
 
         this.userMediaService.checkCameraAndMicrophonePresence().then(result => {
-            this.hasACamera = result.hasACamera;
-            this.hasAMicrophone = result.hasAMicrophone;
+            if (this.participant.role === Role.QuickLinkObserver || this.participant.hearing_role === HearingRole.OBSERVER) {
+                this.hasACamera = false;
+                this.hasAMicrophone = false;
+            } else {
+                this.hasACamera = result.hasACamera;
+                this.hasAMicrophone = result.hasAMicrophone;
+            }
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {

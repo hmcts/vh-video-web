@@ -549,7 +549,7 @@
         class="icon-button"
         id="toggle-audio-mute-locked-img-desktop"
         appTooltip
-        *ngIf="remoteMuted && !isHost"
+        *ngIf="remoteMuted && !isHost && hasAMicrophone"
         [text]="'private-consultation-room-controls.remote-muted' | translate"
         colour="grey"
       >
