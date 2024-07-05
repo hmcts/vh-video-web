@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using System.Text.Json;
+using VideoWeb.Common;
 using VideoWeb.Helpers.Interfaces;
-using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Request;
 
 namespace VideoWeb.Controllers
@@ -25,32 +24,26 @@ namespace VideoWeb.Controllers
     [Authorize(AuthenticationSchemes = "InternalEvent")]
     public class InternalEventController : ControllerBase
     {
-        private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
+        private readonly IConferenceService _conferenceService;
         private readonly IEndpointsUpdatedEventNotifier _endpointsUpdatedEventNotifier;
         private readonly IAllocationHearingsEventNotifier _allocationHearingsEventNotifier;
-        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
-        private readonly IMapperFactory _mapperFactory;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
 
         public InternalEventController(
-            IVideoApiClient videoApiClient,
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
-            IConferenceCache conferenceCache,
+            IConferenceService conferenceService,
             ILogger<InternalEventController> logger,
-            IMapperFactory mapperFactory,
             INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
             IAllocationHearingsEventNotifier allocationHearingsEventNotifier,
             IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier
             )
         {
-            _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
+            _conferenceService = conferenceService;
             _endpointsUpdatedEventNotifier = endpointsUpdatedEventNotifier;
-            _conferenceCache = conferenceCache;
             _logger = logger;
-            _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
             _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
         }
@@ -73,46 +66,14 @@ namespace VideoWeb.Controllers
         {
             _logger.LogDebug($"ParticipantsUpdated called. ConferenceId: {conferenceId}, Request {JsonSerializer.Serialize(request)}");
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<Participant>, Participant>();
-            var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>();
-
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
-
-                _logger.LogTrace($"Initial conference details: {conference}");
-
-                request.NewParticipants.ToList().ForEach(participant =>
-                {
-                    _logger.LogTrace($"Mapping new participant: {JsonSerializer.Serialize(participant)}");
-                    var mappedParticipant = requestToParticipantMapper.Map(participant, conference.Participants);
-                    _logger.LogTrace($"Adding participant to conference: {JsonSerializer.Serialize(mappedParticipant)}");
-                    conference.AddParticipant(mappedParticipant);
-                });
-
+                var conference = await _conferenceService.GetConference(conferenceId);
                 var removedParticipants = conference.Participants.Where(p => request.RemovedParticipants.Contains(p.Id)).ToList();
                 
-                request.RemovedParticipants.ToList().ForEach(referenceId =>
-                {
-                    _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
-                    conference.RemoveParticipant(referenceId);
-                });
-
-                request.ExistingParticipants.ToList().ForEach(updateRequest =>
-                {
-                    _logger.LogTrace($"Mapping existing participant update: {JsonSerializer.Serialize(updateRequest)}");
-                    var mappedUpdateParticipant = updateParticipantRequestToUpdateParticipantMapper.Map(updateRequest, conference.Participants);
-                    _logger.LogTrace($"Updating existing participant in conference: {JsonSerializer.Serialize(mappedUpdateParticipant)}");
-                    conference.UpdateParticipant(mappedUpdateParticipant);
-                });
-
-                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
-                await _conferenceCache.UpdateConferenceAsync(conference);
-
+                //Will force getting latest added / updated /removed participant changes, no need to manually amend cache anymore
+                conference = await _conferenceService.ForceGetConference(conferenceId);
+                
                 var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
 
                 await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
@@ -137,12 +98,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
-
+                var conference = await _conferenceService.ForceGetConference(conferenceId);
                 _logger.LogTrace("Initial conference details: {Conference}", conference);
 
                 await _endpointsUpdatedEventNotifier.PushEndpointsUpdatedEvent(conference, request);

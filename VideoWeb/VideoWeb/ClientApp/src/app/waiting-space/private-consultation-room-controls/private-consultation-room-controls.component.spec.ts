@@ -35,7 +35,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush } from '@angular/core/testing';
@@ -53,7 +52,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         display_name: 'Interpreter',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
         tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
         hearing_role: HearingRole.INTERPRETER,
         first_name: 'Interpreter',
@@ -766,7 +764,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
                     'Participant Name',
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    CaseTypeGroup.NONE,
                     Role.Individual,
                     HearingRole.LITIGANT_IN_PERSON,
                     false,

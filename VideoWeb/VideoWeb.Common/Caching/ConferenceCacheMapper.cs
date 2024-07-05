@@ -1,86 +1,86 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VideoWeb.Common.Models;
+using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 
-namespace VideoWeb.Common.Caching
+namespace VideoWeb.Common.Caching;
+
+public static class ConferenceCacheMapper
 {
-    public static class ConferenceCacheMapper
+    public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
     {
-        public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse)
-        {
-            var participants = conferenceResponse
-                .Participants
-                .Select(MapParticipantToCacheModel)
-                .ToList();
-
-            var endpoints = conferenceResponse.Endpoints == null
-                ? new List<Endpoint>()
-                : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
-
-            var civilianRooms = conferenceResponse.CivilianRooms == null
-                ? new List<CivilianRoom>()
-                : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
-                    .ToList();
-            
-            var conference = new Conference
-            {
-                Id = conferenceResponse.Id,
-                HearingId = conferenceResponse.HearingId,
-                Participants = participants,
-                HearingVenueName = conferenceResponse.HearingVenueName,
-                Endpoints = endpoints,
-                CivilianRooms = civilianRooms,
-                CurrentStatus = conferenceResponse.CurrentStatus
-            };
-            return conference;
-        }
-
-        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
-        {
-            var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>())
-                .Select(MapLinkedParticipantToCacheModel).ToList();
-            return new Participant
-            {
-                Id = participant.Id,
-                RefId = participant.RefId,
-                Name = participant.Name,
-                FirstName = participant.FirstName,
-                LastName = participant.LastName,
-                ContactEmail = participant.ContactEmail,
-                ContactTelephone = participant.ContactTelephone,
-                DisplayName = participant.DisplayName,
-                Role = Enum.Parse<Role>(participant.UserRole.ToString(), true),
-                HearingRole = participant.HearingRole,
-                ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true),
-                Username = participant.Username,
-                CaseTypeGroup = participant.CaseTypeGroup,
-                Representee = participant.Representee,
-                LinkedParticipants = links,
-                CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom)
-            };
-        }
-
-        private static LinkedParticipant MapLinkedParticipantToCacheModel(
-            LinkedParticipantResponse linkedParticipant)
-        {
-            return new LinkedParticipant
-            {
-                LinkedId = linkedParticipant.LinkedId,
-                LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
-            };
-        }
+        var participants = conferenceResponse
+            .Participants
+            .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse))
+            .ToList();
         
-        private static ConsultationRoom MapRoomToCacheModel(RoomResponse room)
-        {
-            if (room == null) return null;
-            
-            return new ConsultationRoom
+        var endpoints = conferenceResponse.Endpoints == null
+            ? new List<Endpoint>()
+            : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
+        
+        var civilianRooms = conferenceResponse.CivilianRooms == null
+            ? new List<CivilianRoom>()
+            : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
+                .ToList();
+        
+        var meetingRoom = conferenceResponse.MeetingRoom == null
+            ? null
+            : new ConferenceMeetingRoom
             {
-                Label = room.Label,
-                Locked = room.Locked
+                ParticipantUri = conferenceResponse.MeetingRoom.ParticipantUri,
+                PexipNode = conferenceResponse.MeetingRoom.PexipNode,
+                PexipSelfTest = conferenceResponse.MeetingRoom.PexipSelfTestNode,
             };
-        }
+        
+        var conference = new Conference
+        {
+            Id = conferenceResponse.Id,
+            HearingId = conferenceResponse.HearingId,
+            Participants = participants,
+            HearingVenueName = conferenceResponse.HearingVenueName,
+            Endpoints = endpoints,
+            CivilianRooms = civilianRooms,
+            CurrentStatus = conferenceResponse.CurrentStatus,
+            IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen,
+            CaseName = conferenceResponse.CaseName,
+            CaseNumber = conferenceResponse.CaseNumber,
+            CaseType = conferenceResponse.CaseType,
+            ScheduledDateTime = conferenceResponse.ScheduledDateTime,
+            ScheduledDuration = conferenceResponse.ScheduledDuration,
+            ClosedDateTime = conferenceResponse.ClosedDateTime,
+            AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
+            IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
+            IngestUrl = conferenceResponse.IngestUrl,
+            MeetingRoom = meetingRoom
+        };
+        return conference;
+    }
+    
+    private static Participant MapParticipantToCacheModel(ParticipantResponse participant, HearingDetailsResponseV2 hearingDetails)
+    {
+        var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
+        var judiciaryDetails = hearingDetails.JudiciaryParticipants?.SingleOrDefault(x
+            => String.Equals(x.Email, participant.Username, StringComparison.OrdinalIgnoreCase));
+        
+        var model =
+            ParticipantCacheMapper.Map(participant, participantDetails) ??
+            ParticipantCacheMapper.Map(participant, judiciaryDetails) ??
+            ParticipantCacheMapper.Map(participant);
+        
+        model.LinkedParticipants = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>()).Select(MapLinkedParticipantToCacheModel).ToList();
+        
+        return model;
+    }
+    
+    private static LinkedParticipant MapLinkedParticipantToCacheModel(LinkedParticipantResponse linkedParticipant)
+    {
+        return new LinkedParticipant
+        {
+            LinkedId = linkedParticipant.LinkedId,
+            LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
+        };
     }
 }

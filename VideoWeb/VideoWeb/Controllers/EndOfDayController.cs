@@ -54,11 +54,13 @@ public class EndOfDayController : ControllerBase
 
             var allocatedHearings =
                 await _bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId));
-
+            
             var conferenceForVhOfficerResponseMapper = _mapperFactory
                 .Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-            var response = activeConferences.Select(c => conferenceForVhOfficerResponseMapper.Map(c,
-                allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
+            var response = activeConferences
+                .Select(c => conferenceForVhOfficerResponseMapper
+                    .Map(c, allocatedHearings?
+                        .FirstOrDefault(conference => conference.HearingId == c.HearingRefId))).ToList();
             response.Sort(new SortConferenceForVhoOfficerHelper());
             return Ok(response);
         }

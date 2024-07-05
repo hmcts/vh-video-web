@@ -1,5 +1,7 @@
 using FizzWare.NBuilder;
 using System;
+using System.Collections.Generic;
+using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 
@@ -13,7 +15,12 @@ namespace VideoWeb.UnitTests.Builders
         {
             _endpoint = Builder<EndpointResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Status = EndpointState.Connected).Build();
+                .With(x => x.DisplayName = "DisplayName")
+                .With(x => x.Pin = "Pin")
+                .With(x => x.SipAddress = "Sip")
+                .With(x => x.Status = EndpointState.Connected)
+                .Build();
+            
         }
 
         public EndpointsResponseBuilder WithStatus(EndpointState state)

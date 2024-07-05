@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -19,12 +18,8 @@ namespace VideoWeb.UnitTests.Hub
             var isRemoteMuted = true;
 
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             EventHubClientMock.Verify(
@@ -51,12 +46,8 @@ namespace VideoWeb.UnitTests.Hub
             var isRemoteMuted = true;
             
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
             
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             foreach (var joh in allJohs)
@@ -76,11 +67,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var isRemoteMuted = true;
             
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
             
             EventHubClientMock.Verify(

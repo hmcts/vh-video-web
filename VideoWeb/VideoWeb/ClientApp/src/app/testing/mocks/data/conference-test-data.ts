@@ -24,7 +24,6 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
@@ -34,7 +33,7 @@ export class ConferenceTestData {
         status: ParticipantStatus.NotSignedIn,
         display_name: 'QuickLinkParticipant1_display_name',
         role: Role.QuickLinkParticipant,
-        case_type_group: 'QuickLinkParticipant1_case_type_group',
+
         hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
         tiled_display_name: 'QuickLinkParticipant1_tiled_display_name',
         linked_participants: []
@@ -45,7 +44,7 @@ export class ConferenceTestData {
         status: ParticipantStatus.NotSignedIn,
         display_name: 'QuickLinkParticipant2_display_name',
         role: Role.QuickLinkParticipant,
-        case_type_group: 'QuickLinkParticipant2_case_type_group',
+
         hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
         tiled_display_name: 'QuickLinkParticipant2_tiled_display_name',
         linked_participants: []
@@ -206,7 +205,7 @@ export class ConferenceTestData {
             display_name: 'Interpreter',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'applicant',
+
             tiled_display_name: `CIVILIAN;Interpreter;${id1}`,
             hearing_role: HearingRole.INTERPRETER,
             first_name: 'Interpreter',
@@ -220,7 +219,7 @@ export class ConferenceTestData {
             display_name: 'Interpretee',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'applicant',
+
             tiled_display_name: `CIVILIAN;Interpretee;${id2}`,
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Interpretee',
@@ -258,7 +257,7 @@ export class ConferenceTestData {
             display_name: 'Interpreter 2',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'applicant',
+
             tiled_display_name: `CIVILIAN;Interpreter 2;${id3}`,
             hearing_role: HearingRole.INTERPRETER,
             first_name: 'Tim',
@@ -272,7 +271,7 @@ export class ConferenceTestData {
             display_name: 'Interpretee 2',
             role: Role.Individual,
             representee: null,
-            case_type_group: 'applicant',
+
             tiled_display_name: `CIVILIAN;Interpretee 2;${id4}`,
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Bob',
@@ -301,7 +300,7 @@ export class ConferenceTestData {
             display_name: 'C Green',
             role: Role.Representative,
             representee: 'James Green',
-            case_type_group: 'applicant',
+
             tiled_display_name: 'CIVILIAN;Mr Chris Green;1111-1111-1111-1111',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             linked_participants: []
@@ -312,7 +311,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
             role: Role.Individual,
-            case_type_group: 'applicant',
+
             tiled_display_name: 'CIVILIAN;J Green;2222-2222-2222-2222',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             linked_participants: []
@@ -323,7 +322,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
             role: Role.Judge,
-            case_type_group: 'judge',
+
             first_name: 'judge',
             last_name: 'fudge',
             tiled_display_name: 'JUDGE;Judge Fudge;3333-3333-3333-3333',
@@ -337,7 +336,7 @@ export class ConferenceTestData {
             display_name: 'J Doe',
             role: Role.Representative,
             representee: 'J Doe',
-            case_type_group: 'respondent',
+
             tiled_display_name: 'CIVILIAN;J Doe;4444-4444-4444-4444',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             linked_participants: []
@@ -348,7 +347,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             role: Role.Individual,
-            case_type_group: 'respondent',
+
             tiled_display_name: 'CIVILIAN;Ms J Doe;5555-5555-5555-5555',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             linked_participants: []
@@ -359,7 +358,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Observer Doe O',
             role: Role.Individual,
-            case_type_group: 'Observer',
+
             tiled_display_name: 'CIVILIAN;Observer Doe O;6666-6666-6666-6666',
             hearing_role: HearingRole.OBSERVER,
             linked_participants: []
@@ -370,7 +369,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Panel Mem Doe PM',
             role: Role.JudicialOfficeHolder,
-            case_type_group: 'panelmember',
+
             hearing_role: HearingRole.PANEL_MEMBER,
             tiled_display_name: 'CIVILIAN;Panel Mem Doe PM;7777-7777-7777-7777',
             linked_participants: [],
@@ -382,7 +381,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe WINGER',
             role: Role.JudicialOfficeHolder,
-            case_type_group: 'None',
+
             hearing_role: HearingRole.WINGER,
             linked_participants: [],
             interpreter_room: panelMemberRoom
@@ -393,7 +392,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe WITNESS',
             role: Role.Individual,
-            case_type_group: 'None',
+
             hearing_role: HearingRole.WITNESS,
             linked_participants: []
         });
@@ -403,7 +402,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Staff Member Doe PM',
             role: Role.StaffMember,
-            case_type_group: 'staffmember',
+
             hearing_role: HearingRole.STAFF_MEMBER,
             tiled_display_name: 'Staff Member Doe PM;1234-1234-1234-1234',
             linked_participants: []
@@ -417,7 +416,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'QuickLinkObserver_display_name',
             role: Role.QuickLinkObserver,
-            case_type_group: 'QuickLinkObserver_case_type_group',
+
             hearing_role: HearingRole.QUICK_LINK_OBSERVER,
             tiled_display_name: 'QuickLinkParticipant_tiled_display_name',
             linked_participants: []
@@ -428,7 +427,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Medical Member',
             role: Role.JudicialOfficeHolder,
-            case_type_group: CaseTypeGroup.PANEL_MEMBER,
+
             hearing_role: HearingRole.MEDICAL_MEMBER,
             tiled_display_name: 'Medical Member;5555-1111-1234-1234',
             linked_participants: []
@@ -439,7 +438,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Lay Member',
             role: Role.JudicialOfficeHolder,
-            case_type_group: CaseTypeGroup.PANEL_MEMBER,
+
             hearing_role: HearingRole.LAY_MEMBER,
             tiled_display_name: 'Lay Member;5555-1111-1234-1239',
             linked_participants: []
@@ -471,7 +470,7 @@ export class ConferenceTestData {
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
             role: Role.Individual,
-            case_type_group: 'Defendent',
+
             display_name: 'Greeno',
             tiled_display_name: 'CIVILIAN;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
@@ -486,7 +485,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             role: Role.Representative,
             display_name: 'James Green',
-            case_type_group: 'Defendent',
+
             tiled_display_name: 'CIVILIAN;James Green;9F681318-4955-49AF-A887-DED64554429J',
             hearing_role: HearingRole.REPRESENTATIVE,
             current_room: new RoomSummaryResponse(),
@@ -499,7 +498,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             role: Role.Judge,
             display_name: 'Judge Fudge',
-            case_type_group: 'Judge',
+
             tiled_display_name: 'JUDGE;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
             hearing_role: HearingRole.JUDGE,
             current_room: new RoomSummaryResponse(),
@@ -512,7 +511,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             role: Role.StaffMember,
             display_name: 'Staff Member display name',
-            case_type_group: 'Staff Member',
+
             tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,
             current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
@@ -533,7 +532,7 @@ export class ConferenceTestData {
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
             role: Role.Individual,
-            case_type_group: 'Defendent',
+
             display_name: 'Greeno',
             username: 'chris.green@hearings.net',
             conference_id: conferenceId,
@@ -553,7 +552,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             role: Role.Representative,
             display_name: 'James Green',
-            case_type_group: 'Defendent',
+
             username: 'james.green@hearings.net',
             conference_id: conferenceId,
             hearing_venue_name: hearingVenueName,
@@ -573,7 +572,7 @@ export class ConferenceTestData {
             role: Role.Judge,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
-            case_type_group: 'Judge',
+
             conference_id: conferenceId,
             hearing_venue_name: hearingVenueName,
             contact_email: 'judge.fudge@hearings.net',
@@ -593,7 +592,7 @@ export class ConferenceTestData {
             role: Role.Judge,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
-            case_type_group: 'Judge',
+
             conference_id: '6D4F28D0-0638-48F7-9C34-18221C3F87F2',
             hearing_venue_name: hearingVenueName,
             contact_email: 'judge.fudge@hearings.net',
@@ -721,7 +720,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             role: Role.Individual,
             hearing_role: HearingRole.OBSERVER,
-            case_type_group: 'Observer',
+
             display_name: 'Greeno',
             tiled_display_name: 'CIVILIAN;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb',
             linked_participants: []
@@ -735,7 +734,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             hearing_role: HearingRole.OBSERVER,
             display_name: 'James Green',
-            case_type_group: 'Observer',
+
             tiled_display_name: 'CIVILIAN;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595',
             linked_participants: []
         });
@@ -747,7 +746,7 @@ export class ConferenceTestData {
             role: Role.JudicialOfficeHolder,
             hearing_role: HearingRole.PANEL_MEMBER,
             display_name: 'Panel Mem 1',
-            case_type_group: 'PanelMember',
+
             tiled_display_name: 'CIVILIAN;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf',
             linked_participants: []
         });
@@ -765,7 +764,7 @@ export class ConferenceTestData {
             name: 'Mr Chris Winger',
             status: ParticipantStatus.Available,
             role: Role.JudicialOfficeHolder,
-            case_type_group: 'None',
+
             display_name: 'Chris Winger',
             tiled_display_name: 'CIVILIAN;Chris Winger;c8c33015-d164-4a46-a5c9-6b58e892511b',
             hearing_role: HearingRole.WINGER,
@@ -782,7 +781,7 @@ export class ConferenceTestData {
             name: 'Mr Chris Witness',
             status: ParticipantStatus.Available,
             role: Role.Individual,
-            case_type_group: 'None',
+
             display_name: 'Chris Witness',
             tiled_display_name: 'WITNESS;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511a',
             hearing_role: HearingRole.WITNESS,
@@ -817,7 +816,6 @@ export class ConferenceTestData {
     getFullListOfNonJudgeParticipants(): ParticipantResponse[] {
         const participants: ParticipantResponse[] = [];
         const participant1 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'Mr C Smith',
             first_name: null,
@@ -834,7 +832,6 @@ export class ConferenceTestData {
             user_name: '72af1eac-9c38-4b7e-9c20-6ed00f36bd71@quick-link-participant.com'
         });
         const participant2 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'Mr D Smith',
             first_name: null,
@@ -860,7 +857,6 @@ export class ConferenceTestData {
         );
 
         const participant4 = new ParticipantResponse({
-            case_type_group: 'Applicant',
             current_room: undefined,
             display_name: 'B',
             first_name: 'B',
@@ -886,7 +882,6 @@ export class ConferenceTestData {
         );
 
         const participant5 = new ParticipantResponse({
-            case_type_group: 'Applicant',
             current_room: undefined,
             display_name: 'A',
             first_name: 'A',
@@ -904,7 +899,6 @@ export class ConferenceTestData {
         });
 
         const participant6 = new ParticipantResponse({
-            case_type_group: 'Applicant',
             current_room: undefined,
             display_name: 'G',
             first_name: 'G',
@@ -922,7 +916,6 @@ export class ConferenceTestData {
         });
 
         const participant7 = new ParticipantResponse({
-            case_type_group: 'Respondent',
             current_room: undefined,
             display_name: 'E',
             first_name: 'E',
@@ -948,7 +941,6 @@ export class ConferenceTestData {
         );
 
         const participant8 = new ParticipantResponse({
-            case_type_group: 'Respondent',
             current_room: undefined,
             display_name: 'F',
             first_name: 'F',
@@ -974,7 +966,6 @@ export class ConferenceTestData {
         );
 
         const participant9 = new ParticipantResponse({
-            case_type_group: 'Respondent',
             current_room: undefined,
             display_name: 'H',
             first_name: 'H',
@@ -1005,7 +996,6 @@ export class ConferenceTestData {
     getFullListOfPanelMembers(): ParticipantResponse[] {
         const participants: ParticipantResponse[] = [];
         const participant1 = new ParticipantResponse({
-            case_type_group: 'PanelMember',
             current_room: undefined,
             display_name: 'Mr Panel Member B',
             first_name: 'Panel',
@@ -1022,7 +1012,6 @@ export class ConferenceTestData {
             user_name: 'panel.memberb1@hearings.reform.hmcts.net'
         });
         const participant2 = new ParticipantResponse({
-            case_type_group: 'PanelMember',
             current_room: undefined,
             display_name: 'Mr Panel Member A',
             first_name: 'Panel',
@@ -1047,7 +1036,6 @@ export class ConferenceTestData {
     getFullListOfObservers(): ParticipantResponse[] {
         const observers: ParticipantResponse[] = [];
         const qlObserver1 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'QL Observer A',
             first_name: null,
@@ -1064,7 +1052,6 @@ export class ConferenceTestData {
             user_name: 'f565e05c-01b2-4b3a-b2d8-1d79b5d4124c@quick-link-participant.com'
         });
         const observer1 = new ParticipantResponse({
-            case_type_group: 'Observer',
             current_room: undefined,
             display_name: 'Mr Observer B',
             first_name: 'Observer',
@@ -1081,7 +1068,6 @@ export class ConferenceTestData {
             user_name: 'observer.b1@hearings.reform.hmcts.net'
         });
         const observer2 = new ParticipantResponse({
-            case_type_group: 'Observer',
             current_room: undefined,
             display_name: 'Mr Observer A',
             first_name: 'Observer',
@@ -1098,7 +1084,6 @@ export class ConferenceTestData {
             user_name: 'observer.a@hearings.reform.hmcts.net'
         });
         const qlObserver2 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'A QL Observer',
             first_name: null,
@@ -1151,7 +1136,6 @@ export class ConferenceTestData {
     getFullListOfStaffMembers(): ParticipantResponse[] {
         const staffMembers: ParticipantResponse[] = [];
         const staffMember1 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'C StaffMember',
             first_name: 'C',
@@ -1168,7 +1152,6 @@ export class ConferenceTestData {
             user_name: 'c.staffmember@hearings.reform.hmcts.net'
         });
         const staffMember2 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'B StaffMember',
             first_name: 'B',
@@ -1185,7 +1168,6 @@ export class ConferenceTestData {
             user_name: 'b.staffmember@hearings.reform.hmcts.net'
         });
         const staffMember3 = new ParticipantResponse({
-            case_type_group: null,
             current_room: undefined,
             display_name: 'A StaffMember',
             first_name: 'A',
@@ -1211,7 +1193,6 @@ export class ConferenceTestData {
     getFullListOfWingers(): ParticipantResponse[] {
         const wingers: ParticipantResponse[] = [];
         const winger1 = new ParticipantResponse({
-            case_type_group: 'None',
             current_room: undefined,
             display_name: 'B Winger',
             first_name: 'B',
@@ -1228,7 +1209,6 @@ export class ConferenceTestData {
             user_name: 'b.winger@hearings.reform.hmcts.net'
         });
         const winger2 = new ParticipantResponse({
-            case_type_group: 'None',
             current_room: undefined,
             display_name: 'A Winger',
             first_name: 'A',
@@ -1245,7 +1225,6 @@ export class ConferenceTestData {
             user_name: 'a.winger1@hearings.reform.hmcts.net'
         });
         const winger3 = new ParticipantResponse({
-            case_type_group: 'None',
             current_room: undefined,
             display_name: 'C Winger',
             first_name: 'C',

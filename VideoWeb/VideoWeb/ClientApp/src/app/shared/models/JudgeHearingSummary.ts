@@ -1,4 +1,3 @@
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ConferenceForHostResponse, Role } from '../../services/clients/api-client';
 import { HearingSummary } from './hearing-summary';
@@ -23,9 +22,7 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     get observers(): ParticipantSummary[] {
-        return this.participants.filter(
-            x => x.caseGroup === CaseTypeGroup.OBSERVER || x.hearingRole === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver
-        );
+        return this.participants.filter(x => x.hearingRole === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver);
     }
 
     get panelMembers(): ParticipantSummary[] {

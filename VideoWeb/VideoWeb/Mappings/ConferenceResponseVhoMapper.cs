@@ -5,14 +5,15 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Enums;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
     public class ConferenceResponseVhoMapper : IMapTo<ConferenceDetailsResponse, ConferenceResponseVho>
     {
-        private readonly IMapTo<ParticipantDetailsResponse, ParticipantResponseVho> _participantResponseVhoMapper;
+        private readonly IMapTo<ParticipantResponse, ParticipantResponseVho> _participantResponseVhoMapper;
 
-        public ConferenceResponseVhoMapper(IMapTo<ParticipantDetailsResponse, ParticipantResponseVho> participantResponseVhoMapper)
+        public ConferenceResponseVhoMapper(IMapTo<ParticipantResponse, ParticipantResponseVho> participantResponseVhoMapper)
         {
             _participantResponseVhoMapper = participantResponseVhoMapper;
         }
@@ -20,10 +21,10 @@ namespace VideoWeb.Mappings
         public ConferenceResponseVho Map(ConferenceDetailsResponse conference)
         {
 
-            conference.Participants ??= new List<ParticipantDetailsResponse>();
+            conference.Participants ??= new List<ParticipantResponse>();
 
             var participants = conference.Participants
-                .OrderBy(x => x.CaseTypeGroup)
+                .OrderBy(x => x.UserRole)
                 .Select(_participantResponseVhoMapper.Map)
                 .ToList();
 
@@ -58,7 +59,7 @@ namespace VideoWeb.Mappings
             var tiledParticipants = conference.Participants.Where(x =>
                 x.UserRole == UserRole.Individual || x.UserRole == UserRole.Representative).ToList();
 
-            var partyGroups = tiledParticipants.GroupBy(x => x.CaseTypeGroup).ToList();
+            var partyGroups = tiledParticipants.GroupBy(x => x.UserRole).ToList();
             foreach (var group in partyGroups)
             {
                 var pats = @group.ToList();

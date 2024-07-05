@@ -650,8 +650,7 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
-      "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Iawn"
     },
     "endpoint-added": {
@@ -1123,6 +1122,7 @@
     "prosecution": "Yr Erlyniad",
     "presenting-officer": "Swyddog Cyflwyno",
     "panel-member": "Aelod o'r Panel",
+    "panelmember": "Aelod o'r Panel",
     "observer": "Sylwebydd",
     "mackenzie-friend": "Cyfaill Mackenzie",
     "litigant-in-person": "Ymgyfreithiwr drosto'i hun",

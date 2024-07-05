@@ -15,8 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Publish_New_Conference_Added_Event()
         {
-            _eventHandler = new NewConferenceAddedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new NewConferenceAddedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var callbackEvent = new CallbackEvent

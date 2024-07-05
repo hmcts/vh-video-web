@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class When_action_has_participantId_and_conferenceId : CheckParticipantCanAccessConferenceAttributeTest
+    public class WhenActionHasParticipantIdAndConferenceId : CheckParticipantCanAccessConferenceAttributeTest
     {
         [TestCaseSource(nameof(AllNonVhoUsers))]
         public async Task Should_return_404_if_conference_does_not_exist(string appRole)
@@ -24,12 +23,9 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             };
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
-
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                // conference doesn't exist (null)
-                .ReturnsAsync((Conference)null);
+            
+            // conference doesn't exist (null)
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
 
             SetupActionExecutingContext(actionArguments, user);
 
@@ -40,9 +36,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             ActionExecutingContext.Result.Should().BeOfType<NotFoundObjectResult>();
             ActionExecutingContext.ModelState.ErrorCount.Should().Be(1);
             var message404 = $"Conference with id:'{ConferenceId}' not found.";
-            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
-                .Errors.First().ErrorMessage
-                .Should().Be(message404);
+            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"]?.Errors[0].ErrorMessage.Should().Be(message404);
         }
 
 
@@ -57,26 +51,21 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             };
 
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
-
             var conference = new Conference
             {
                 // conference exists...
                 Id = ConferenceId,
                 Participants = new List<Participant>
                 {
-                    new Participant
+                    new()
                     {
-                        // ...but user does not belong to it
-                        Username = "Username",
-                        Id = Guid.NewGuid()
+                        // ...and user is a part of it
+                        Username = "another-user-name",
+                        Id = ParticipantId
                     }
                 }
             };
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
-
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
             SetupActionExecutingContext(actionArguments, user);
 
             // act
@@ -86,9 +75,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             ActionExecutingContext.Result.Should().BeOfType<UnauthorizedObjectResult>();
             ActionExecutingContext.ModelState.ErrorCount.Should().Be(1);
             var message401 = "User does not belong to this conference.";
-            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
-                .Errors.First().ErrorMessage
-                .Should().Be(message401);
+            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"].Errors[0].ErrorMessage.Should().Be(message401);
         }
 
         [TestCaseSource(nameof(AllNonVhoUsers))]
@@ -110,7 +97,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 Id = ConferenceId,
                 Participants = new List<Participant>
                 {
-                    new Participant
+                    new ()
                     {
                         // ...and user is a part of it
                         Username = UserName,
@@ -118,12 +105,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     }
                 }
             };
-
-            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
-
+            
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
             SetupActionExecutingContext(actionArguments, user);
 
             // act

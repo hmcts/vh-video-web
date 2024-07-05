@@ -19,7 +19,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.DisplayName.Should().BeEquivalentTo(participant.DisplayName);
             response.Role.Should().Be((Role)participant.Role);
             response.Representee.Should().BeEquivalentTo(participant.Representee);
-            response.CaseTypeGroup.Should().BeEquivalentTo(participant.CaseTypeGroup);
             response.HearingRole.Should().BeEquivalentTo(participant.HearingRole);
         }
     }

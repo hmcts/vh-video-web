@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 
@@ -7,20 +8,23 @@ namespace VideoWeb.Mappings
 {
     public class CourtRoomsAccountResponseMapper : IMapTo<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>
     {
-        public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForVhOfficerResponse> userResponses)
+        public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForVhOfficerResponse> conferenceForVho)
         {
-
-           var judgeAccounts = userResponses
-                .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").FirstOrDefault()); 
-            
-           var groupedJudges = judgeAccounts
-               .Where(judge => judge != null)
-               .Select(s => new { firstName = s.FirstName, lastName = s.LastName }).Distinct()
-               .GroupBy(x => x.firstName);
-               
-           var accountList = groupedJudges.Select(s => new CourtRoomsAccountResponse(s.Key, s.Select(g => g.lastName).OrderBy(o => o).ToList()))
-                .OrderBy(s => s.FirstName)
+            var venuesAndJudges = conferenceForVho
+                .Where(e => e.Participants.Exists(s => s.Role == Role.Judge))
+                .Select(e => new
+                {
+                    venue = e.HearingVenueName,
+                    judge = e.Participants.Single(s => s.Role == Role.Judge).DisplayName
+                })
+                .GroupBy(e => e.venue)
                 .ToList();
+               
+           var accountList = venuesAndJudges
+               .Select(s => new CourtRoomsAccountResponse(s.Key, 
+                   s.Select(g => g.judge).OrderBy(o => o).ToList()))
+               .OrderBy(s => s.Venue)
+               .ToList();
 
             return accountList; 
         }

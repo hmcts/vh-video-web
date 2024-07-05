@@ -57,7 +57,6 @@ describe('ParticipantsPanelItemComponent', () => {
             expect(result.display_name).toBe(participant.display_name);
             expect(result.role).toBe(participant.role);
             expect(result.hearing_role).toBe(participant.hearing_role);
-            expect(result.case_type_group).toBe(participant.case_type_group);
             expect(result.representee).toBe(participant.representee);
         });
     });
@@ -132,23 +131,6 @@ describe('ParticipantsPanelItemComponent', () => {
 
         it('should return true for linked participant who is an interpreter', () => {
             expect(component.isLinkedParticipantAndAnInterpreter()).toBeTruthy();
-        });
-    });
-
-    describe('Participant is withouta case type group', () => {
-        beforeEach(() => {
-            const individual = conference.participants.find(x => x.role === Role.Individual);
-            individual.case_type_group = null;
-            const item = panelModelMapper.mapFromParticipantUserResponse(individual);
-            component.item = item;
-
-            fixture.detectChanges();
-        });
-
-        it('should return empty string for case type group', () => {
-            expect(component.getPanelRowTooltipText()).toBe(
-                `${component.participant.displayName}: participants-panel.joining<br/>hearing-role.litigant-in-person`
-            );
         });
     });
 

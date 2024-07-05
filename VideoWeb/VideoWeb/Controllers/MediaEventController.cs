@@ -10,6 +10,7 @@ using VideoWeb.Common.Extensions;
 using VideoWeb.Contract.Request;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 
 namespace VideoWeb.Controllers
 {
@@ -20,16 +21,16 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MediaEventController> _logger;
-        private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceService _conferenceService;
 
         public MediaEventController(
             IVideoApiClient videoApiClient,
             ILogger<MediaEventController> logger,
-            IConferenceCache conferenceCache)
+            IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _conferenceCache = conferenceCache;
+            _conferenceService = conferenceService;
         }
 
         [HttpPost("{conferenceId}/mediaevents")]
@@ -95,14 +96,8 @@ namespace VideoWeb.Controllers
 
         private async Task<Guid> GetIdForParticipantByUsernameInConference(Guid conferenceId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
-            var username = User.Identity.Name;
-
+            var conference = await _conferenceService.GetConference(conferenceId);
+            var username = User.Identity?.Name;
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }

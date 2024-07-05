@@ -48,9 +48,6 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { CaseTypeGroup } from '../../models/case-type-group';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -65,7 +62,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
-
         const mockToast = {
             toastRef: {
                 componentInstance: {}
@@ -713,8 +709,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     describe('canStartJoinConsultation', () => {
         it('returns false if the participant has Observer Case Type Group', () => {
             component.participant = new ParticipantResponse({
-                case_type_group: CaseTypeGroup.OBSERVER,
-                hearing_role: HearingRole.APPRAISER,
+                hearing_role: HearingRole.OBSERVER,
                 linked_participants: []
             });
 

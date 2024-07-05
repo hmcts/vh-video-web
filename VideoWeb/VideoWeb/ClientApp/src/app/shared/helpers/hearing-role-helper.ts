@@ -3,6 +3,7 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 export class HearingRoleHelper {
     static panelMemberRoles = [
         HearingRole.PANEL_MEMBER,
+        HearingRole.PANELMEMBER,
         HearingRole.MEDICAL_MEMBER,
         HearingRole.FINANCIAL_MEMBER,
         HearingRole.LEGAL_MEMBER,

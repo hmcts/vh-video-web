@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PanelModel } from '../../models/panel-model-base';
 import { HearingRole } from '../../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
-import { CaseTypeGroup } from '../../models/case-type-group';
 import { LinkedParticipantPanelModel } from '../../models/linked-participant-panel-model';
 import { VideoEndpointPanelModel } from '../../models/video-endpoint-panel-model';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
@@ -117,14 +116,13 @@ export class ParticipantsPanelItemComponent {
         participantResponse.status = participantModelTyped.status;
         participantResponse.display_name = participantModelTyped.displayName;
         participantResponse.role = participantModelTyped.role;
-        participantResponse.case_type_group = participantModelTyped.caseTypeGroup;
         participantResponse.hearing_role = participantModelTyped.hearingRole;
         participantResponse.representee = participantModelTyped.representee;
         return participantResponse;
     }
 
     private getAdditionalText(): string {
-        return this.participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole() + this.getCaseRole() : '';
+        return this.participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole() : '';
     }
 
     private getTranslatedText(key: string): string {
@@ -136,7 +134,7 @@ export class ParticipantsPanelItemComponent {
     }
 
     private getHearingRole(): string {
-        if (this.participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+        if (this.participant.hearingRole === HearingRole.PANEL_MEMBER) {
             return '';
         }
         const translatedtext = this.getTranslatedText('for');
@@ -146,24 +144,5 @@ export class ParticipantsPanelItemComponent {
         return this.participant.representee
             ? `<br/>${hearingRoleText} ${translatedtext} ${this.participant.representee}`
             : `<br/>${hearingRoleText}`;
-    }
-
-    private getCaseRole(): string {
-        if (!this.participant.caseTypeGroup) {
-            return '';
-        }
-        const translatedCaseTypeGroup = this.translateService.instant(
-            'case-type-group.' + this.participant.caseTypeGroup.toLowerCase().split(' ').join('-')
-        );
-        return this.showCaseRole() ? `<br/>${translatedCaseTypeGroup}` : '';
-    }
-
-    private showCaseRole() {
-        return !(
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === 'endpoint'
-        );
     }
 }

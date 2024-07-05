@@ -41,7 +41,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
-import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -62,7 +61,6 @@ describe('HearingControlsBaseComponent', () => {
         display_name: 'Interpreter',
         role: Role.Individual,
         representee: null,
-        case_type_group: 'applicant',
         tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
         hearing_role: HearingRole.INTERPRETER,
         first_name: 'Interpreter',
@@ -845,6 +843,7 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.JUDGE,
             HearingRole.MACKENZIE_FRIEND,
             HearingRole.PANEL_MEMBER,
+            HearingRole.PANELMEMBER,
             HearingRole.PROSECUTION,
             HearingRole.PROSECUTION_ADVOCATE,
             HearingRole.REPRESENTATIVE,
@@ -893,7 +892,6 @@ describe('HearingControlsBaseComponent', () => {
 
         it('returns "false" if user has Observer Case Type Group', () => {
             deviceTypeService.isDesktop.and.returnValue(true);
-            component.participant.case_type_group = CaseTypeGroup.OBSERVER;
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBeFalsy();
         });
@@ -975,7 +973,6 @@ describe('HearingControlsBaseComponent', () => {
                     'Participant Name',
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    CaseTypeGroup.NONE,
                     Role.Individual,
                     HearingRole.LITIGANT_IN_PERSON,
                     false,
@@ -998,7 +995,6 @@ describe('HearingControlsBaseComponent', () => {
                     'Participant Name',
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    CaseTypeGroup.JUDGE,
                     Role.Judge,
                     HearingRole.JUDGE,
                     false,
@@ -1021,7 +1017,6 @@ describe('HearingControlsBaseComponent', () => {
                     'Participant Name',
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    CaseTypeGroup.JUDGE,
                     Role.Judge,
                     HearingRole.JUDGE,
                     false,
@@ -1035,7 +1030,6 @@ describe('HearingControlsBaseComponent', () => {
                     'Participant Name',
                     'DisplayName',
                     'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    CaseTypeGroup.STAFF_MEMBER,
                     Role.StaffMember,
                     HearingRole.STAFF_MEMBER,
                     false,

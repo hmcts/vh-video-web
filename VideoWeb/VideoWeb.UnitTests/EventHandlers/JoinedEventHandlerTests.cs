@@ -7,7 +7,6 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
-using VideoApi.Contract.Responses;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
@@ -21,11 +20,8 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
             MemoryCache.Remove(TestConference.Id);
-            var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
-
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -46,17 +42,14 @@ namespace VideoWeb.UnitTests.EventHandlers
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Available), Times.Exactly(participantCount));
             
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
         }
         [Test]
         public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()
         {
             MemoryCache.Remove(TestConference.Id);
-            var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -78,19 +71,16 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.InHearing), Times.Exactly(participantCount));
-
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+            
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
         }
         
         [Test]
         public async Task Should_send_in_consultation_message_to_participants_and_service_bus_when_participant_joins_consultation()
         {
             MemoryCache.Remove(TestConference.Id);
-            var confDetail = CreateConferenceDetailsResponse();
-            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -113,26 +103,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.InConsultation), Times.Exactly(participantCount));
-
-            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
-        }
-
-        private ConferenceDetailsResponse CreateConferenceDetailsResponse()
-        {
-            var pats = TestConference.Participants.Select(p => new ParticipantDetailsResponse
-            {
-                Id = p.Id,
-                Username = p.Username,
-                DisplayName = p.DisplayName,
-            }).ToList();
-
-            var conference = new ConferenceDetailsResponse
-            {
-                Id = TestConference.Id,
-                HearingId = TestConference.HearingId,
-                Participants = pats
-            };
-            return conference;
+            
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
         }
     }
 }

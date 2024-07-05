@@ -24,6 +24,17 @@ namespace VideoWeb.Common.Models
         public List<ConsultationRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
+        public string CaseName { get; set; }
+        public string CaseNumber { get; set; }
+        public string CaseType { get; set; }
+        public DateTime ScheduledDateTime { get; set; }
+        public int ScheduledDuration { get; set; }
+        public DateTime? ClosedDateTime { get; set; }
+        public bool AudioRecordingRequired {get; set; }
+        public bool IsWaitingRoomOpen { get; set; }
+        public bool IsScottish { get; set; }
+        public string IngestUrl { get; set; }
+        public ConferenceMeetingRoom MeetingRoom { get; set; }
 
         public Participant GetJudge()
         {
@@ -125,7 +136,6 @@ namespace VideoWeb.Common.Models
         {
             var participant = Participants.Find(x => x.RefId == updateParticipant.ParticipantRefId);
             if(participant == null) return;
-            participant.Name = updateParticipant.Fullname;
             participant.FirstName = updateParticipant.FirstName;
             participant.LastName = updateParticipant.LastName;
             participant.DisplayName = updateParticipant.DisplayName;

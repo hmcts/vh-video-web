@@ -85,11 +85,6 @@ namespace VideoWeb.Contract.Responses
         public string Representee { get; set; }
 
         /// <summary>
-        /// The group a participant belongs to
-        /// </summary>
-        public string CaseTypeGroup { get; set; }
-
-        /// <summary>
         /// The participant hearing role in conference
         /// </summary>
         public string HearingRole { get; set; }

@@ -4,38 +4,43 @@ using FizzWare.NBuilder;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 
-namespace VideoWeb.UnitTests.Builders
+namespace VideoWeb.UnitTests.Builders;
+
+public class ParticipantResponseBuilder
 {
-    public class ParticipantDetailsResponseBuilder
+    private readonly ISingleObjectBuilder<ParticipantResponse> _participant;
+    
+    public ParticipantResponseBuilder(UserRole role)
     {
-        private readonly ISingleObjectBuilder<ParticipantDetailsResponse> _participant;
-
-        public ParticipantDetailsResponseBuilder(UserRole role, string caseTypeGroup)
-        {
-            _participant = Builder<ParticipantDetailsResponse>.CreateNew()
-                .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.CurrentStatus = ParticipantState.Available)
-                .With(x => x.CaseTypeGroup = caseTypeGroup)
-                .With(x => x.UserRole = role)
-                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>
-                    { new LinkedParticipantResponse() { LinkedId = Guid.NewGuid(), Type = LinkedParticipantType.Interpreter } });
-        }
-
-        public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)
-        {
-            _participant.With(x => x.CurrentStatus = state);
-            return this;
-        }
-
-        public ParticipantDetailsResponseBuilder WithHearingRole(string hearingRole)
-        {
-            _participant.With(x => x.HearingRole = hearingRole);
-            return this;
-        }
-
-        public ParticipantDetailsResponse Build()
-        {
-            return _participant.Build();
-        }
+        _participant = Builder<ParticipantResponse>.CreateNew()
+            .With(x => x.Id = Guid.NewGuid())
+            .With(x => x.RefId = Guid.NewGuid())
+            .With(x => x.CurrentStatus = ParticipantState.Available)
+            .With(x => x.UserRole = role)
+            .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>
+                { new () { LinkedId = Guid.NewGuid(), Type = LinkedParticipantType.Interpreter } });
+    }
+    
+    public ParticipantResponseBuilder WithUsername(string username)
+    {
+        _participant.With(x => x.Username = username);
+        return this;
+    }
+    
+    public ParticipantResponseBuilder WithRefId(Guid id)
+    {
+        _participant.With(x => x.RefId = id);
+        return this;
+    }
+    
+    public ParticipantResponseBuilder WithStatus(ParticipantState state)
+    {
+        _participant.With(x => x.CurrentStatus = state);
+        return this;
+    }
+    
+    public ParticipantResponse Build()
+    {
+        return _participant.Build();
     }
 }

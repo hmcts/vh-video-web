@@ -26,11 +26,8 @@ namespace VideoWeb.UnitTests.Hub
             };
 
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
+            
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
 
             await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
             
@@ -53,12 +50,7 @@ namespace VideoWeb.UnitTests.Hub
                 IsLocalAudioMuted = false,
                 IsLocalVideoMuted = true
             };
-            
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
             await Hub.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
 
             VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());

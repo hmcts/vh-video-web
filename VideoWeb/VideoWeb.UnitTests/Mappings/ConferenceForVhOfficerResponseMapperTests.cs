@@ -9,6 +9,7 @@ using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -21,7 +22,7 @@ namespace VideoWeb.UnitTests.Mappings
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<ParticipantForUserResponseMapper>().Build();
+            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<ParticipantResponseForUserMapper>().Build();
             _sut = _mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters);
         }
 
@@ -103,13 +104,13 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.HearingRefId = Guid.NewGuid())
                 .Build();
 
-            var participants = new List<ParticipantSummaryResponse>
+            var participants = new List<ParticipantResponse>
             {
-                new ParticipantSummaryResponseBuilder(UserRole.Individual)
+                new ParticipantResponseBuilder(UserRole.Individual)
                     .WithStatus(ParticipantState.Available).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Representative)
+                new ParticipantResponseBuilder(UserRole.Representative)
                     .WithStatus(ParticipantState.Disconnected).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Judge)
+                new ParticipantResponseBuilder(UserRole.Judge)
                     .WithStatus(ParticipantState.NotSignedIn).Build()
             };
 

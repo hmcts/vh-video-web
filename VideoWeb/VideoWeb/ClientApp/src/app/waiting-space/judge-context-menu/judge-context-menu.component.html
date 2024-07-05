@@ -3,8 +3,9 @@
   class="panel-icon"
   (click)="toggleDropdown()"
   [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
-  tabindex="0"
   (keyup.enter)="toggleDropdown()"
+  onKeyUp="toggleDropdown()"
+
 />
 <div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (1 | random)">
   <p class="govuk-body-s dropdown-header">
@@ -23,9 +24,6 @@
           {{ this.participant.representee }}
         </span>
       </ng-container>
-    </span>
-    <span *ngIf="showCaseTypeGroup()" [id]="idPrefix + '-case-type-group-' + (1 | random)">
-      {{ 'case-role.' + (participant.caseTypeGroup | hyphenate) | translate }}
     </span>
   </p>
   <hr />

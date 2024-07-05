@@ -47,10 +47,6 @@ export class ParticipantSummary {
         return this.participant.representee;
     }
 
-    get caseGroup() {
-        return this.participant.case_type_group;
-    }
-
     get isJudge(): boolean {
         return this.participant.role === Role.Judge;
     }

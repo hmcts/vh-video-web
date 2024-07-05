@@ -14,6 +14,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
@@ -54,11 +55,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         {
             var conference = InitConference();
             var messages = InitMessages(conference);
-            mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
                 .ReturnsAsync(conference);
-
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
                 .ReturnsAsync(messages);
 

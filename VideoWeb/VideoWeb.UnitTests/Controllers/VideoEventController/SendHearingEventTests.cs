@@ -14,6 +14,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common;
 using RoomType = VideoApi.Contract.Enums.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
@@ -185,8 +186,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            Mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            Mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
             var request = CreateRequest();
 

@@ -311,16 +311,9 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
-        const showParty = !!participant.case_type_group;
-        const messageBody = this.translateService.instant(
-            showParty
-                ? 'notification-toastr.participant-added.message-with-party'
-                : 'notification-toastr.participant-added.message-without-party',
-            {
-                role: this.translateHearingRole(participant.hearing_role),
-                party: showParty ? this.translateCaseRole(participant.case_type_group) : null
-            }
-        );
+        const messageBody = this.translateService.instant('notification-toastr.participant-added.message', {
+            role: this.translateHearingRole(participant.hearing_role)
+        });
 
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.participant-added.title',
@@ -612,10 +605,6 @@ export class NotificationToastrService {
 
     private translateHearingRole(hearingRole: string) {
         return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRole));
-    }
-
-    private translateCaseRole(caseTypeGroup: string) {
-        return this.translateService.instant('case-type-group.' + this.stringToTranslateId(caseTypeGroup));
     }
 
     private stringToTranslateId(str: string) {

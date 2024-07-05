@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
@@ -29,10 +29,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5).Build().ToList();
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
                 .ReturnsAsync(messages);
-            mocker.Mock<IConferenceCache>()
-               .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-               .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-               .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+                .ReturnsAsync(conference);
 
             var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername));
 
@@ -54,10 +54,11 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var messages = new List<InstantMessageResponse>();
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
                 .ReturnsAsync(messages);
-            mocker.Mock<IConferenceCache>()
-              .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-              .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-              .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+                .ReturnsAsync(conference);
+
             var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername));
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -78,10 +79,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
                 .ReturnsAsync(messages);
-            mocker.Mock<IConferenceCache>()
-             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-             .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+                .ReturnsAsync(conference);
 
             var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id);
 
@@ -112,10 +113,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 "Stacktrace goes here", null, default, null);
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ThrowsAsync(apiException);
-            mocker.Mock<IConferenceCache>()
-             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-             .ReturnsAsync(conference);
+            
+            mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+                .ReturnsAsync(conference);
 
             var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id);
             var typedResult = (ObjectResult)result;

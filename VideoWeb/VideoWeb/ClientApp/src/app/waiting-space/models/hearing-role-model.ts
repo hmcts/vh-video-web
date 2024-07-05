@@ -8,6 +8,7 @@ export enum HearingRole {
     MACKENZIE_FRIEND = 'MacKenzie friend',
     OBSERVER = 'Observer',
     PANEL_MEMBER = 'Panel Member',
+    PANELMEMBER = 'PanelMember',
     PROSECUTION = 'Prosecution',
     PROSECUTION_ADVOCATE = 'Prosecution Advocate',
     REPRESENTATIVE = 'Representative',

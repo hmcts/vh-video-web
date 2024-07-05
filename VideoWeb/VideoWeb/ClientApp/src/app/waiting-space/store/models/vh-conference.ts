@@ -24,7 +24,6 @@ export interface VHParticipant {
     tiledDisplayName: string;
     role: Role;
     hearingRole: string;
-    caseTypeGroup: string;
     representee?: string;
     pexipInfo?: VHPexipParticipant;
     room?: VHRoom;

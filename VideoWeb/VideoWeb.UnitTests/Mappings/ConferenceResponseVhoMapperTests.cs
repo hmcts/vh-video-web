@@ -32,13 +32,13 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var participants = new List<ParticipantDetailsResponse>
+            var participants = new List<ParticipantResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Representative).Build(),
+                new ParticipantResponseBuilder(UserRole.Judge).Build(),
+                new ParticipantResponseBuilder(UserRole.CaseAdmin).Build()
             };
 
             var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
@@ -73,31 +73,23 @@ namespace VideoWeb.UnitTests.Mappings
             participantsResponse.Should().NotBeNullOrEmpty();
             foreach (var participantResponse in participantsResponse)
             {
-                if (participantResponse.Role == Role.Representative)
+                if (participantResponse.Role == Role.Representative || participantResponse.Role == Role.Individual)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("T4").Should().BeTrue();
-
+                    (participantResponse.TiledDisplayName.StartsWith("T1")
+                     || participantResponse.TiledDisplayName.StartsWith("T2")
+                     || participantResponse.TiledDisplayName.StartsWith("T3")
+                     || participantResponse.TiledDisplayName.StartsWith("T4"))
+                        .Should().BeTrue();
                 }
                 if (participantResponse.Role == Role.Judge)
                 {
                     participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
-                }
-                if (participantResponse.Role == Role.Individual)
-                {
-                    (participantResponse.TiledDisplayName.StartsWith("T1") ||
-                        participantResponse.TiledDisplayName.StartsWith("T2")).Should().BeTrue();
                 }
                 if (participantResponse.Role == Role.CaseAdmin)
                 {
                     participantResponse.TiledDisplayName.Should().BeNull();
                 }
             }
-
-            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
-            caseTypeGroups.Count.Should().BeGreaterThan(2);
-            caseTypeGroups[0].Should().Be("Claimant");
-            caseTypeGroups[1].Should().Be("Defendant");
-            caseTypeGroups[2].Should().Be("None");
 
             response.AdminIFrameUri.Should().Be(meetingRoom.AdminUri);
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
@@ -107,7 +99,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties_with_empty_participants_list()
         {
-            var participants = new List<ParticipantDetailsResponse>();
+            var participants = new List<ParticipantResponse>();
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
@@ -175,13 +167,13 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_if_have_not_booking_participants_with_the_same_id()
         {
-            var participants = new List<ParticipantDetailsResponse>
+            var participants = new List<ParticipantResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantResponseBuilder(UserRole.Representative).Build(),
+                new ParticipantResponseBuilder(UserRole.Judge).Build(),
+                new ParticipantResponseBuilder(UserRole.CaseAdmin).Build()
             };
 
             participants[0].RefId = Guid.NewGuid();

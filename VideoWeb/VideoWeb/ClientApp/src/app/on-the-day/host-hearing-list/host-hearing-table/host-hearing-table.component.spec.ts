@@ -21,18 +21,6 @@ describe('HostHearingTableComponent', () => {
         expect(component.selectedConference.emit).toHaveBeenCalled();
     });
 
-    it('should get rep from group of participants', () => {
-        const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
-        const rep = component.getRepresentative(hearing.applicants);
-        expect(rep.representee).toBeDefined();
-    });
-
-    it('should get individual from group of participants', () => {
-        const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
-        const ind = component.getIndividual(hearing.applicants);
-        expect(ind.representee).toBeUndefined();
-    });
-
     const conferenceStatusVisibilityTestCases = [
         { status: ConferenceStatus.Paused, expected: true },
         { status: ConferenceStatus.Suspended, expected: true },

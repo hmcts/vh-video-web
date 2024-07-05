@@ -41,11 +41,6 @@ namespace VideoWeb.Contract.Responses
         public string TiledDisplayName { get; set; }
 
         /// <summary>
-        /// The group a participant belongs to in a case
-        /// </summary>
-        public string CaseTypeGroup { get; set; }
-
-        /// <summary>
         /// The representee the participant is acting on behalf
         /// </summary>
         public string Representee { get; set; }
