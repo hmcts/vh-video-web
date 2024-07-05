@@ -176,7 +176,7 @@ namespace VideoWeb.Controllers
                 {
                     var room = await videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
                     conference.UpsertConsultationRoom(room.Label, room.Locked);
-                    await conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
+                    await conferenceService.UpdateConferenceAsync(conference);
                     await consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
                     {

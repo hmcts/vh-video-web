@@ -10,7 +10,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using Autofac.Extras.Moq;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -32,9 +31,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             };
             
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(TestConference);
-            
-            var cache = _mocker.Mock<IConferenceCache>();
-            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
 
             return sut;
         }
