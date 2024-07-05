@@ -4,7 +4,7 @@
     <button
       class="icon-button dropdown"
       id="toggle-context-menu"
-      colour="grey"
+      [attr.aria-label]="'private-consultation-room-controls.context-menu' | translate"
       [class]="{ 'dropdown-opaque': showContextMenu }"
       (click)="showContextMenu = !showContextMenu"
       (keydown.enter)="$event.preventDefault(); showContextMenu = !showContextMenu"
@@ -296,10 +296,11 @@
     <button
       class="icon-button"
       id="toggle-participants-panel"
-      appTooltip
       *ngIf="canToggleParticipantsPanel"
+      appTooltip
       [text]="'private-consultation-room-controls.participants-panel' | translate"
       colour="grey"
+      [attr.aria-label]="'private-consultation-room-controls.participants-panel' | translate"
       (click)="togglePanelStatus('Participants')"
       (keydown.enter)="$event.preventDefault(); togglePanelStatus('Participants')"
       tabindex="0"
@@ -316,6 +317,7 @@
           appTooltip
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
+          [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
           (click)="displayConfirmationLeaveHearingDialog()"
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           tabindex="0"
@@ -381,6 +383,7 @@
         *ngIf="isHost && !isPrivateConsultation"
         [text]="'private-consultation-room-controls.chat-panel' | translate"
         colour="grey"
+        [attr.aria-label]="'private-consultation-room-controls.chat-panel' | translate"
         (click)="togglePanelStatus('Chat')"
         (keydown.enter)="$event.preventDefault(); togglePanelStatus('Chat')"
         tabindex="0"
@@ -396,6 +399,7 @@
         appTooltip
         [text]="'private-consultation-room-controls.share-my-screen' | translate"
         colour="grey"
+        [attr.aria-label]="'private-consultation-room-controls.share-my-screen' | translate"
         (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
         (keydown.enter)="$event.preventDefault(); showEvidenceContextMenu = !showEvidenceContextMenu"
         (keydown.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
@@ -409,8 +413,9 @@
             (click)="startScreenShareWithMicrophone()"
             disableChildTooltip
             appTooltip
-            [text]="'private-consultation-room-controls.share-video-evidence' | translate"
             [colour]="'grey'"
+            [text]="'private-consultation-room-controls.share-video-evidence' | translate"
+            [attr.aria-label]="'private-consultation-room-controls.share-video-evidence' | translate"
             (keydown.enter)="startScreenShareWithMicrophone()"
             tabindex="0"
           >
@@ -428,8 +433,9 @@
           <div
             id="shareDropdown-unsupportedEvidenceSharing"
             appTooltip
-            [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
             colour="red"
+            [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
+            [attr.aria-label]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
           >
             <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0">
               <fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
@@ -441,8 +447,9 @@
             (click)="startScreenShare()"
             (keydown.enter)="startScreenShare()"
             appTooltip
-            [text]="'private-consultation-room-controls.share-document-evidence' | translate"
             [colour]="'grey'"
+            [text]="'private-consultation-room-controls.share-document-evidence' | translate"
+            [attr.aria-label]="'private-consultation-room-controls.share-document-evidence' | translate"
             tabindex="0"
           >
             <span class="action"
@@ -458,8 +465,9 @@
         class="icon-button"
         id="stop-screenshare-img-desktop"
         appTooltip
-        [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
         colour="red"
+        [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
+        [attr.aria-label]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
         (click)="stopScreenShare()"
         (keydown.enter)="stopScreenShare()"
         tabindex="0"
@@ -473,8 +481,9 @@
         class="icon-button"
         id="toggle-media-device-img-desktop"
         appTooltip
-        [text]="'private-consultation-room-controls.change-camera-mic' | translate"
         colour="grey"
+        [text]="'private-consultation-room-controls.change-camera-mic' | translate"
+        [attr.aria-label]="'private-consultation-room-controls.change-camera-mic' | translate"
         (click)="changeDeviceSelected()"
         (keydown.enter)="changeDeviceSelected()"
         (keydown.space)="changeDeviceSelected()"
@@ -486,15 +495,20 @@
       <button
         class="icon-button"
         id="toggle-self-view-img-desktop"
-        appTooltip
         *ngIf="!audioOnly"
+        appTooltip
+        colour="grey"
         [text]="
           (selfViewOpen
             ? 'private-consultation-room-controls.selfview-toggle-true'
             : 'private-consultation-room-controls.selfview-toggle-false'
           ) | translate
         "
-        colour="grey"
+        [attr.aria-label]="
+          (selfViewOpen
+            ? 'private-consultation-room-controls.selfview-toggle-true'
+            : 'private-consultation-room-controls.selfview-toggle-false'
+          ) | translate"
         (click)="toggleView()"
         (keydown.enter)="$event.preventDefault(); toggleView()"
         (keydown.space)="$event.preventDefault(); toggleView()"
@@ -506,15 +520,20 @@
       <button
         class="icon-button"
         id="toggle-video-mute-img-desktop"
-        appTooltip
         *ngIf="!isJudge && !audioOnly"
+        appTooltip
+        colour="grey"
         [text]="
           (videoMuted
             ? 'private-consultation-room-controls.video-mute-toggle-true'
             : 'private-consultation-room-controls.video-mute-toggle-false'
           ) | translate
         "
-        colour="grey"
+        [attr.aria-label]="
+          (videoMuted
+            ? 'private-consultation-room-controls.video-mute-toggle-true'
+            : 'private-consultation-room-controls.video-mute-toggle-false'
+          ) | translate"
         (click)="toggleVideoMute()"
         (keydown.enter)="$event.preventDefault(); toggleVideoMute()"
         (keydown.space)="$event.preventDefault(); toggleVideoMute()"
@@ -526,15 +545,20 @@
       <button
         class="icon-button"
         id="toggle-audio-mute-img-desktop"
-        appTooltip
         *ngIf="!remoteMuted || isHost"
+        appTooltip
+        colour="grey"
         [text]="
           (audioMuted
             ? 'private-consultation-room-controls.audio-mute-toggle-true'
             : 'private-consultation-room-controls.audio-mute-toggle-false'
           ) | translate
         "
-        colour="grey"
+        [attr.aria-label]="
+          (audioMuted
+            ? 'private-consultation-room-controls.audio-mute-toggle-true'
+            : 'private-consultation-room-controls.audio-mute-toggle-false'
+          ) | translate"
         (click)="toggleMute()"
         (keydown.enter)="$event.preventDefault(); toggleMute()"
         (keydown.space)="$event.preventDefault(); toggleMute()"
@@ -546,26 +570,32 @@
       <div
         class="icon-button"
         id="toggle-audio-mute-locked-img-desktop"
-        appTooltip
         *ngIf="remoteMuted && !isHost"
-        [text]="'private-consultation-room-controls.remote-muted' | translate"
         colour="grey"
+        appTooltip
+        [text]="'private-consultation-room-controls.remote-muted' | translate"
+        [attr.aria-label]="'private-consultation-room-controls.remote-muted' | translate"
       >
         <fa-icon icon="microphone-slash" class="red" tabindex="0"></fa-icon>
       </div>
 
       <button
         class="icon-button"
+        *ngIf="!isPrivateConsultation && !isHost"
         id="toggle-hand-raised-img-desktop"
         appTooltip
-        *ngIf="!isPrivateConsultation && !isHost"
+        colour="grey"
         [text]="
           (handRaised
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false'
           ) | translate
         "
-        colour="grey"
+        [attr.aria-label]="
+          (handRaised
+            ? 'private-consultation-room-controls.hand-raise-toggle-true'
+            : 'private-consultation-room-controls.hand-raise-toggle-false'
+          ) | translate"
         (click)="toggleHandRaised()"
         (keydown.enter)="$event.preventDefault(); toggleHandRaised()"
         (keydown.space)="$event.preventDefault(); toggleHandRaised()"
@@ -583,6 +613,7 @@
           appTooltip
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
+            [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
           tabindex="0"
