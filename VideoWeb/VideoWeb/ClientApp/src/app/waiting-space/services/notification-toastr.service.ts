@@ -318,7 +318,7 @@ export class NotificationToastrService {
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
-                name: participant.name
+                name: participant.name ?? participant.display_name
             }
         )}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
@@ -405,7 +405,7 @@ export class NotificationToastrService {
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.hearing-layout-changed.title',
             {
-                name: participant.name
+                name: participant.name ?? participant.display_name
             }
         )}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
