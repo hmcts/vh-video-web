@@ -56,7 +56,7 @@ namespace VideoWeb.Services
 
             // Check if the conference has closed within the last threshold minutes
             var hasConferenceRecentlyClosed = originalConference.ClosedDateTime != null &&
-                                               originalConference?.ClosedDateTime >
+                                               originalConference.ClosedDateTime >
                                                DateTime.UtcNow.AddMinutes(-ClosedMinutesThreshold);
 
             // A staff member can join the conference if it is starting soon, has already started, or has recently closed
