@@ -762,6 +762,7 @@ describe('NotificationToastrService', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
         const testParticipant = new ParticipantResponse();
+        testParticipant.name = 'A Name';
         testParticipant.display_name = 'TestParticipantDisplayName';
         testParticipant.hearing_role = 'TestParticipantHearingRole';
 
