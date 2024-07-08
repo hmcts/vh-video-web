@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -11,7 +12,6 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
-using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings;
@@ -52,9 +52,12 @@ public class ConferenceCacheMapperTests
                     resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
                     resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
                 }
-                resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
-                resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
-                resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
+                resultParticipant.LinkedParticipants.Count.Should().Be(participantDetails.LinkedParticipants.Count);
+                if (resultParticipant.LinkedParticipants.Count > 0)
+                {
+                    resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participantDetails.LinkedParticipants[0].TypeV2.ToString());
+                    resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participantDetails.LinkedParticipants[0].LinkedId);
+                }
             }
             else if (johDetails != null)
             {
@@ -138,6 +141,11 @@ public class ConferenceCacheMapperTests
             }
         }
         
+        var participantA = participants[0];
+        var participantB = participants[1];
+        participantA.LinkedParticipants.Add(new LinkedParticipantResponseV2 { LinkedId = participantB.Id, TypeV2 = LinkedParticipantTypeV2.Interpreter});
+        participantB.LinkedParticipants.Add(new LinkedParticipantResponseV2 { LinkedId = participantA.Id, TypeV2 = LinkedParticipantTypeV2.Interpreter });
+        
         var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2
         {
             Id = conference.HearingId,
@@ -167,11 +175,10 @@ public class ConferenceCacheMapperTests
             new ParticipantResponseBuilder(UserRole.CaseAdmin).Build(),
             new ParticipantResponseBuilder(UserRole.QuickLinkParticipant).Build()
         };
+        
         var participantA = participants[0];
         var participantB = participants[1];
-        participantA.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantB.Id, Type = LinkedParticipantType.Interpreter});
         participantA.CurrentRoom = new RoomResponse {Id = 1,Label = "Room 1", Locked = true};
-        participantB.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantA.Id, Type = LinkedParticipantType.Interpreter });
         participantB.CurrentRoom = new RoomResponse {Id = 2,Label = "Room 2", Locked = true};
         var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).All().With(e => e.DefenceAdvocate = participantA.Username).Build().ToList();
         var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();

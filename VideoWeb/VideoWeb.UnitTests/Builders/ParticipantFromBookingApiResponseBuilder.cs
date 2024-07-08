@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using VideoApi.Contract.Enums;
@@ -20,7 +21,8 @@ namespace VideoWeb.UnitTests.Builders
                 .With(x => x.LastName = "Doe")
                 .With(x => x.ContactEmail = "john@doe.net")
                 .With(x => x.TelephoneNumber = "0123456789")
-                .With(x => x.Username = "john@username.com");
+                .With(x => x.Username = "john@username.com")
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponseV2>());
             
         }
         
