@@ -1,140 +1,141 @@
 <div class="container" *ngIf="totalParticipants > 0">
-  <div class="header-row">
-    <p class="govuk-body white" appTooltip above="true" [text]="'participants-panel.participants-tooltip' | translate" colour="grey">
-      {{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})
-    </p>
-    <a
-      id="totalInWrCount"
-      class="govuk-body white vh-pointer"
-      tabindex="0"
-      appTooltip
-      above="true"
-      [text]="'participants-panel.in-waiting-room-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="scrollToElement('panelListNotConnectedHeader')"
-      (click)="scrollToElement('panelListNotConnectedHeader')"
+    <div class="header-row">
+        <p class="govuk-body white" appTooltip above="true"
+           [text]="'participants-panel.participants-tooltip' | translate" colour="grey">
+            {{ 'participants-panel.participants' | translate }} ({{ totalParticipants }})
+        </p>
+        <a
+            id="totalInWrCount"
+            class="govuk-body white vh-pointer"
+            tabindex="0"
+            appTooltip
+            above="true"
+            [text]="'participants-panel.in-waiting-room-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="scrollToElement('panelListNotConnectedHeader')"
+            (click)="scrollToElement('panelListNotConnectedHeader')"
+        >
+            {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
+        </a>
+    </div>
+
+    <div class="button-row">
+        <button
+            type="button"
+            class="small-button row1"
+            data-module="govuk-button"
+            appTooltip
+            [text]="'participants-panel.mute-all-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="updateAllParticipantsLocalMuteStatus(true)"
+            (click)="updateAllParticipantsLocalMuteStatus(true)"
+        >
+            {{ 'participants-panel.mute-all' | translate }}
+        </button>
+
+        <button
+            type="button"
+            class="small-button row1"
+            data-module="govuk-button"
+            appTooltip
+            [text]="'participants-panel.unmute-all-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="updateAllParticipantsLocalMuteStatus(false)"
+            (click)="updateAllParticipantsLocalMuteStatus(false)"
+        >
+            {{ 'participants-panel.unmute-all' | translate }}
+        </button>
+
+        <button
+            type="button"
+            class="small-button row2"
+            data-module="govuk-button"
+            appTooltip
+            [text]="'participants-panel.mute-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="muteAndLockAll()"
+            (click)="muteAndLockAll()"
+        >
+            {{ 'participants-panel.mute-lock' | translate }}
+        </button>
+
+        <button
+            type="button"
+            class="small-button row2"
+            data-module="govuk-button"
+            appTooltip
+            [text]="'participants-panel.unmute-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="unlockAll()"
+            (click)="unlockAll()"
+        >
+            {{ 'participants-panel.unmute-lock' | translate }}
+        </button>
+
+        <button
+            type="button"
+            class="small-button row2"
+            data-module="govuk-button"
+            appTooltip
+            [text]="'participants-panel.lower-hands-tooltip' | translate"
+            colour="grey"
+            (keydown.enter)="lowerAllHands()"
+            (click)="lowerAllHands()"
+        >
+            {{ 'participants-panel.lower-hands' | translate }}
+        </button>
+    </div>
+
+    <div class="panel-container-list" id="panelList">
+        <app-participants-panel-item
+            [item]="participant"
+            *ngFor="let participant of participantsInHearing"
+            (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+            (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+            (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+            (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+            (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+            (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+        ></app-participants-panel-item>
+    </div>
+
+    <h3
+        class="govuk-heading-s white govuk-!-margin-top-7"
+        appTooltip
+        [text]="'participants-panel.in-waiting-room-tooltip' | translate"
+        colour="grey"
     >
-      {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
-    </a>
-  </div>
+        {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
+    </h3>
+    <div class="panel-container-list" id="panelListInWaitingRoom">
+        <app-participants-panel-item
+            [item]="participant"
+            *ngFor="let participant of participantsInWaitingRoom"
+            (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+            (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+            (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+            (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+            (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+            (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+        ></app-participants-panel-item>
+    </div>
 
-  <div class="button-row">
-    <button
-      type="button"
-      class="small-button row1"
-      data-module="govuk-button"
-      appTooltip
-      [text]="'participants-panel.mute-all-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="updateAllParticipantsLocalMuteStatus(true)"
-      (click)="updateAllParticipantsLocalMuteStatus(true)"
-    >
-      {{ 'participants-panel.mute-all' | translate }}
-    </button>
-
-    <button
-      type="button"
-      class="small-button row1"
-      data-module="govuk-button"
-      appTooltip
-      [text]="'participants-panel.unmute-all-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="updateAllParticipantsLocalMuteStatus(false)"
-      (click)="updateAllParticipantsLocalMuteStatus(false)"
-    >
-      {{ 'participants-panel.unmute-all' | translate }}
-    </button>
-
-    <button
-      type="button"
-      class="small-button row2"
-      data-module="govuk-button"
-      appTooltip
-      [text]="'participants-panel.mute-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="muteAndLockAll()"
-      (click)="muteAndLockAll()"
-    >
-      {{ 'participants-panel.mute-lock' | translate }}
-    </button>
-
-    <button
-      type="button"
-      class="small-button row2"
-      data-module="govuk-button"
-      appTooltip
-      [text]="'participants-panel.unmute-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="unlockAll()"
-      (click)="unlockAll()"
-    >
-      {{ 'participants-panel.unmute-lock' | translate }}
-    </button>
-
-    <button
-      type="button"
-      class="small-button row2"
-      data-module="govuk-button"
-      appTooltip
-      [text]="'participants-panel.lower-hands-tooltip' | translate"
-      colour="grey"
-      (keydown.enter)="lowerAllHands()"
-      (click)="lowerAllHands()"
-    >
-      {{ 'participants-panel.lower-hands' | translate }}
-    </button>
-  </div>
-
-  <div class="panel-container-list" id="panelList">
-    <app-participants-panel-item
-      [item]="participant"
-      *ngFor="let participant of participantsInHearing"
-      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
-      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
-      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
-      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
-      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
-      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
-    ></app-participants-panel-item>
-  </div>
-
-  <h3
-    class="govuk-heading-s white govuk-!-margin-top-7"
-    appTooltip
-    [text]="'participants-panel.in-waiting-room-tooltip' | translate"
-    colour="grey"
-  >
-    {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
-  </h3>
-  <div class="panel-container-list" id="panelListInWaitingRoom">
-    <app-participants-panel-item
-      [item]="participant"
-      *ngFor="let participant of participantsInWaitingRoom"
-      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
-      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
-      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
-      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
-      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
-      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
-    ></app-participants-panel-item>
-  </div>
-
-  <h3 id="panelListNotConnectedHeader" class="govuk-heading-s white govuk-!-margin-top-7">
-    {{ 'participants-panel.not-connected' | translate }}
-  </h3>
-  <div class="panel-container-list" id="panelListNotConnected">
-    <app-participants-panel-item
-      [item]="participant"
-      *ngFor="let participant of participantsNotConnected"
-      (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
-      (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
-      (participantHandLowered)="lowerParticipantHandEventHandler($event)"
-      (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
-      (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
-      (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
-    ></app-participants-panel-item>
-  </div>
+    <h3 id="panelListNotConnectedHeader" class="govuk-heading-s white govuk-!-margin-top-7">
+        {{ 'participants-panel.not-connected' | translate }}
+    </h3>
+    <div class="panel-container-list" id="panelListNotConnected">
+        <app-participants-panel-item
+            [item]="participant"
+            *ngFor="let participant of participantsNotConnected"
+            (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
+            (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
+            (participantHandLowered)="lowerParticipantHandEventHandler($event)"
+            (participantAdmitted)="callParticipantIntoHearingEventHandler($event)"
+            (participantDismissed)="dismissParticipantFromHearingEventHandler($event)"
+            (participantLocalMuteToggled)="toggleLocalMuteParticipantEventHandler($event)"
+        ></app-participants-panel-item>
+    </div>
 </div>
 <div class="container" *ngIf="totalParticipants == 0">
-  <h4 class="govuk-heading-s white">{{ 'participants-panel.loading-participants' | translate }}</h4>
+    <h4 class="govuk-heading-s white">{{ 'participants-panel.loading-participants' | translate }}</h4>
 </div>
