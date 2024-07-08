@@ -627,7 +627,7 @@ describe('VideoCallService', () => {
 
             // Assert
             expect(result).toBeNull();
-            expect(videoCallEventsServiceSpy.handleParticipantUpdated).not.toHaveBeenCalled;
+            expect(videoCallEventsServiceSpy.handleParticipantUpdated).not.toHaveBeenCalled();
         }));
     });
 
