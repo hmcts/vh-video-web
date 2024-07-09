@@ -42,7 +42,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional) start hearing request details
      * @return Accepted
      */
-    startOrResumeVideoHearing(conferenceId: string, body: StartHearingRequest | undefined): Observable<void> {
+    startOrResumeVideoHearing(conferenceId: string, body: StartOrResumeVideoHearingRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/start';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -7603,59 +7603,6 @@ export interface IParticipantRequest {
     linked_participants?: LinkedParticipantRequest[] | undefined;
 }
 
-export class StartHearingRequest implements IStartHearingRequest {
-    layout?: HearingLayout;
-    participants_to_force_transfer?: string[] | undefined;
-    mute_guests?: boolean | undefined;
-    triggered_by_host_id?: string | undefined;
-
-    constructor(data?: IStartHearingRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.layout = _data['layout'];
-            if (Array.isArray(_data['participants_to_force_transfer'])) {
-                this.participants_to_force_transfer = [] as any;
-                for (let item of _data['participants_to_force_transfer']) this.participants_to_force_transfer!.push(item);
-            }
-            this.mute_guests = _data['mute_guests'];
-            this.triggered_by_host_id = _data['triggered_by_host_id'];
-        }
-    }
-
-    static fromJS(data: any): StartHearingRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new StartHearingRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['layout'] = this.layout;
-        if (Array.isArray(this.participants_to_force_transfer)) {
-            data['participants_to_force_transfer'] = [];
-            for (let item of this.participants_to_force_transfer) data['participants_to_force_transfer'].push(item);
-        }
-        data['mute_guests'] = this.mute_guests;
-        data['triggered_by_host_id'] = this.triggered_by_host_id;
-        return data;
-    }
-}
-
-export interface IStartHearingRequest {
-    layout?: HearingLayout;
-    participants_to_force_transfer?: string[] | undefined;
-    mute_guests?: boolean | undefined;
-    triggered_by_host_id?: string | undefined;
-}
-
 export class UpdateConferenceParticipantsRequest implements IUpdateConferenceParticipantsRequest {
     existing_participants?: UpdateParticipantRequest[] | undefined;
     new_participants?: ParticipantRequest[] | undefined;
@@ -8770,6 +8717,41 @@ export interface ISetConferenceVideoControlStatusesRequest_VideoControlStatusReq
     is_remote_muted?: boolean;
     is_hand_raised?: boolean;
     is_local_video_muted?: boolean;
+}
+
+export class StartOrResumeVideoHearingRequest implements IStartOrResumeVideoHearingRequest {
+    layout?: HearingLayout;
+
+    constructor(data?: IStartOrResumeVideoHearingRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.layout = _data['layout'];
+        }
+    }
+
+    static fromJS(data: any): StartOrResumeVideoHearingRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartOrResumeVideoHearingRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['layout'] = this.layout;
+        return data;
+    }
+}
+
+export interface IStartOrResumeVideoHearingRequest {
+    layout?: HearingLayout;
 }
 
 export class StartPrivateConsultationRequest implements IStartPrivateConsultationRequest {

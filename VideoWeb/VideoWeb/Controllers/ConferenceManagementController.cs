@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,6 +11,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
@@ -50,7 +50,7 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
+        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request)
         {
             var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
             if (validatedRequest != null)
@@ -61,14 +61,15 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await _conferenceService.GetConference(conferenceId);
-                
-                request.ParticipantsToForceTransfer = conference.Participants
-                    .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
-                    .Select(x => x.Id.ToString()).ToList();
+                var triggeredById = conference.GetParticipant(User.Identity?.Name)?.Id;
+                var apiRequest = new StartHearingRequest
+                {
+                    Layout = request.Layout,
+                    MuteGuests = false,
+                    TriggeredByHostId = triggeredById.HasValue ? triggeredById.Value.ToString() : string.Empty
+                };
 
-                request.MuteGuests = false;
-
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -78,7 +79,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
-                
+
         /// <summary>
         /// Returns the active layout for a conference
         /// </summary>
@@ -95,7 +96,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Getting the layout for {conferenceId}", conferenceId);
+                _logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
                 var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
 
                 if (!layout.HasValue) {
@@ -103,7 +104,7 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                _logger.LogTrace("Got Layout ({layout}) for {conferenceId}", layout.Value, conferenceId);
+                _logger.LogTrace("Got Layout ({Layout}) for {ConferenceId}", layout.Value, conferenceId);
                 return Ok(layout);
             }
             catch (VideoApiException exception)
