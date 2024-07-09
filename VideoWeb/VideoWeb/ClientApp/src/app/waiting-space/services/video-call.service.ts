@@ -38,11 +38,11 @@ declare let PexRTC: any;
 export class VideoCallService {
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
-    readonly callTypeAudioOnly = 'audioonly';
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
     wowzaAgentName = 'vh-wowza';
+    deviceAvailability: { hasACamera: boolean; hasAMicrophone: boolean };
 
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
@@ -183,13 +183,41 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
-            pexipNode: pexipNode
-        });
-        this.stopPresentation();
-        this.initCallTag();
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+    async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
+        this.deviceAvailability = await this.userMediaService.checkCameraAndMicrophonePresence();
+        const hasCameraDevices = this.deviceAvailability.hasACamera;
+        const hasMicrophoneDevices = this.deviceAvailability.hasAMicrophone;
+
+        if (hasCameraDevices && hasMicrophoneDevices) {
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        } else if (!hasCameraDevices && hasMicrophoneDevices) {
+            this.pexipAPI.video_source = false;
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        } else {
+            this.pexipAPI.video_source = false;
+            this.pexipAPI.audio_source = false;
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
+        }
+
+        if (conferenceId && !hasMicrophoneDevices) {
+            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
+        }
+    }
+
+    makeReceiveOnlyCall(
+        pexipNode: string,
+        conferenceAlias: string,
+        participantDisplayName: string,
+        maxBandwidth: number,
+        conferenceId: string
+    ) {
+        this.pexipAPI.user_media_stream = new MediaStream([]);
+        this.pexipAPI.video_source = false;
+        this.pexipAPI.audio_source = false;
+        if (conferenceId) {
+            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
+        }
+        this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
     disconnectFromCall() {
@@ -518,6 +546,21 @@ export class VideoCallService {
 
     setParticipantOverlayText(uuid: string, text: string) {
         this.pexipAPI.setParticipantText(uuid, text);
+    }
+
+    private makePexipCall(
+        pexipNode: string,
+        conferenceAlias: string,
+        participantDisplayName: string,
+        maxBandwidth: number,
+        callType?: PexipCallType
+    ) {
+        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.stopPresentation();
+        this.initCallTag();
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
     private handleSetup(stream: MediaStream | URL) {

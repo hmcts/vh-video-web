@@ -36,9 +36,11 @@ declare interface PexRTC {
     PexRTC(): PexipClient;
 }
 
+declare type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none';
+
 declare interface PexipClient {
-    video_source: string;
-    audio_source: string;
+    video_source: string | boolean;
+    audio_source: string | boolean;
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
@@ -93,7 +95,7 @@ declare interface PexipClient {
      */
     onPresentation(setting: boolean, presenter: string, uuid: string);
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
+    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType?: PexipCallType);
     connect(pin: string, extension: string);
 
     /**

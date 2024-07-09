@@ -65,13 +65,17 @@ describe('UserMediaStreamService', () => {
         activeCameraDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
         isAudioOnlySubject = new ReplaySubject<boolean>(1);
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
+            ['checkCameraAndMicrophonePresence'],
+            ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']
+        );
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(
             activeMicrophoneDeviceSubject.asObservable()
         );
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 
@@ -130,6 +134,26 @@ describe('UserMediaStreamService', () => {
             expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
             expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeTruthy();
             expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+
+        it('should init with audio only when no camera is present', fakeAsync(() => {
+            mediaStreamServiceSpy.initialiseNewStream.calls.reset();
+            userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(
+                Promise.resolve({ hasACamera: false, hasAMicrophone: true })
+            );
+            sut = new UserMediaStreamService(loggerSpy, userMediaServiceSpy, mediaStreamServiceSpy, audioOnlyImageServiceSpy);
+            flush();
+            expect(mediaStreamServiceSpy.initialiseNewStream).toHaveBeenCalledWith(microphoneOneStream.getAudioTracks());
+        }));
+
+        it('should init with empty stream when no camera or microphone is present', fakeAsync(() => {
+            mediaStreamServiceSpy.initialiseNewStream.calls.reset();
+            userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(
+                Promise.resolve({ hasACamera: false, hasAMicrophone: false })
+            );
+            sut = new UserMediaStreamService(loggerSpy, userMediaServiceSpy, mediaStreamServiceSpy, audioOnlyImageServiceSpy);
+            flush();
+            expect(mediaStreamServiceSpy.initialiseNewStream).toHaveBeenCalledWith([]);
         }));
     });
 

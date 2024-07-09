@@ -13,6 +13,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @ViewChild(MuteMicrophoneComponent) muteMicrophoneForm: MuteMicrophoneComponent;
     @Input() hearingStarted = false;
     @Input() hearingId: string;
+    @Input() hasAMicrophone = true;
 
     constructor(
         protected translateService: TranslateService,

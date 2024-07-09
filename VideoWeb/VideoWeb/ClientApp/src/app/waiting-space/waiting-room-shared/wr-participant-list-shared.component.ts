@@ -88,7 +88,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
             return;
         }
         this.initParticipants();
-        this.displayParticipantList = this.participantCount > 0;
+        this.displayParticipantList = this.participantCount > 0 || this.endpoints.length > 0;
     }
 
     initParticipants() {

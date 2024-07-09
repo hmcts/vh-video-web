@@ -2307,7 +2307,7 @@
           "Swashbuckle.AspNetCore.Annotations": "[6.6.1, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.6.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "VideoApi.Client": "[2.1.3-pr-0651-0011, )",
+          "VideoApi.Client": "[2.1.3, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"
@@ -2326,7 +2326,7 @@
           "Microsoft.Identity.Client": "[4.61.0, )",
           "StackExchange.Redis": "[2.7.33, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[2.1.3-pr-0651-0011, )"
+          "VideoApi.Client": "[2.1.3, )"
         }
       },
       "videoweb.contract": {
