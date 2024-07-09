@@ -175,7 +175,7 @@ namespace VideoWeb.Controllers
                 default: return;
             }
             
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
+            await _conferenceService.UpdateConferenceAsync(conference);
         }
 
         private async Task GenerateTransferEventOnVmrParticipantJoining(Conference conference, ConferenceEventRequest request)

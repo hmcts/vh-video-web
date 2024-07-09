@@ -7,11 +7,11 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.Services
@@ -20,22 +20,16 @@ namespace VideoWeb.Services
     {
         private readonly IConferenceService _conferenceService;
         private readonly ILogger<ParticipantService> _logger;
-        private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
-        private readonly int startingSoonMinutesThreshold = 30;
-        private readonly int closedMinutesThreshold = 30;
+        private const int StartingSoonMinutesThreshold = 30;
+        public const int ClosedMinutesThreshold = 30;
 
-        public ParticipantService(IConferenceService conferenceService ,ILogger<ParticipantService> logger,
-            IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
+        public ParticipantService(IConferenceService conferenceService, ILogger<ParticipantService> logger,
+            IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
         {
             _conferenceService = conferenceService;
             _logger = logger;
-            _mapperFactory = mapperFactory;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
-        }
-
-        public ParticipantService()
-        {
         }
 
         public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
@@ -56,25 +50,33 @@ namespace VideoWeb.Services
 
         public bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference)
         {
-            return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(startingSoonMinutesThreshold) ||
-                   (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime >
-                       DateTime.UtcNow.AddMinutes(-closedMinutesThreshold));
+            // Check if the conference is scheduled to start within the next threshold minutes or has already started
+            var isConferenceStartingSoonOrStarted = originalConference.ScheduledDateTime <
+                                                     DateTime.UtcNow.AddMinutes(StartingSoonMinutesThreshold);
+
+            // Check if the conference has closed within the last threshold minutes
+            var hasConferenceRecentlyClosed = originalConference.ClosedDateTime != null &&
+                                               originalConference.ClosedDateTime >
+                                               DateTime.UtcNow.AddMinutes(-ClosedMinutesThreshold);
+
+            // A staff member can join the conference if it is starting soon, has already started, or has recently closed
+            return isConferenceStartingSoonOrStarted && originalConference.ClosedDateTime == null || hasConferenceRecentlyClosed;
         }
 
-        public async Task<Conference> AddStaffMemberToConferenceCache(AddStaffMemberResponse response)
+        public async Task<Conference> AddParticipantToConferenceCache(Guid conferenceId, ParticipantResponse response)
         {
-            var conference = await _conferenceService.GetConference(response.ConferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
 
             if (conference == null)
             {
-                throw new ConferenceNotFoundException(response.ConferenceId);
+                throw new ConferenceNotFoundException(conferenceId);
             }
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantResponse, Participant>();
-            conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
+            conference.AddParticipant(ParticipantCacheMapper.Map(response));
 
             _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
+            
+            await _conferenceService.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
             return conference;
         }
