@@ -300,7 +300,7 @@ namespace VideoWeb.Controllers
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
                 var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
-                await participantService.AddStaffMemberToConferenceCache(response);
+                await participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
                 var updatedConference = await conferenceService.GetConference(conferenceId);
                 var conferenceResponseVhoMapper = mapperFactory.Get<Conference, ConferenceResponse>();
                 var mappedUpdatedConference = conferenceResponseVhoMapper.Map(updatedConference);

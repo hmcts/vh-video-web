@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -38,9 +37,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _sut = SetupControllerWithClaims(claimsPrincipal);
-    
-            var cache = _mocker.Mock<IConferenceCache>();
-            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
         [Test]

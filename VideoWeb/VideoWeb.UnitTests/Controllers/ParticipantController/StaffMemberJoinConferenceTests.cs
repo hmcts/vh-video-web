@@ -23,6 +23,7 @@ using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
@@ -75,6 +76,24 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 UserRole = UserRole.StaffMember,
                 ContactEmail = "FirstName_LastName@hmcts.net"
             };
+            var staffMemberResponse = new AddStaffMemberResponse()
+            {
+                ConferenceId = conferenceId,
+                Participant = new ParticipantResponse()
+                {
+                    Id = Guid.NewGuid(),
+                    ContactEmail = addStaffMemberRequest.ContactEmail,
+                    DisplayName = addStaffMemberRequest.DisplayName,
+                    Username = addStaffMemberRequest.Username,
+                    RefId = Guid.NewGuid(),
+                    CurrentRoom = null,
+                    CurrentInterpreterRoom = null,
+                    UserRole = UserRole.StaffMember,
+                    CurrentStatus = ParticipantState.NotSignedIn,
+                    LinkedParticipants = new List<LinkedParticipantResponse>()
+                }
+            };
+
             _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
                 .Returns(true);
             _mocker.Mock<IVideoApiClient>()
@@ -83,8 +102,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId))
                 .ReturnsAsync(CreateConferenceDto());
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), addStaffMemberRequest))
-                .Returns(Task.FromResult(default(AddStaffMemberResponse)));
+                .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>()))
+                .ReturnsAsync(staffMemberResponse);
 
             var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
             var typedResult = (OkObjectResult)result;

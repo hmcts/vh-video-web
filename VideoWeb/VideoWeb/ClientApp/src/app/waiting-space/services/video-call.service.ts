@@ -589,6 +589,9 @@ export class VideoCallService {
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
         this.logger.debug(`${this.loggerPrefix} handling participant created`);
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
+        if (!participant.pexipDisplayName) {
+            return;
+        }
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
         );
@@ -603,6 +606,9 @@ export class VideoCallService {
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
+        if (!participant.pexipDisplayName) {
+            return;
+        }
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
         );

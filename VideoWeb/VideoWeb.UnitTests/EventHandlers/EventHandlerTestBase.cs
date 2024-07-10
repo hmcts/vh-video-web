@@ -7,9 +7,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
-using VideoApi.Client;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 
@@ -39,7 +37,6 @@ public abstract class EventHandlerTestBase
         TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
         MemoryCache.Set(TestConference.Id, TestConference);
         
-        ConferenceServiceMock.Setup(x => x.ConferenceCache).Returns(new ConferenceCache(MemoryCache));
         ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id)).ReturnsAsync(TestConference);
         
         helper.RegisterUsersForHubContext(TestConference.Participants);
