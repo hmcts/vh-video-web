@@ -20,7 +20,7 @@ export class MediaStreamService {
         private videoFilterService: VideoFilterService
     ) {}
 
-    initialiseNewStream(tracks?: MediaStreamTrack[]) {
+    initialiseNewStream(tracks: MediaStreamTrack[]) {
         this.logger.debug(`[MediaStreamTrack] - Returning audio or video tracks: ${tracks}`);
         return new MediaStream(tracks);
     }

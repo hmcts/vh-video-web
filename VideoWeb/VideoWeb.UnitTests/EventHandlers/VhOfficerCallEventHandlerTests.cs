@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,7 +12,6 @@ using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
 using EventType = VideoWeb.EventHub.Enums.EventType;
@@ -34,9 +32,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IConferenceService>()
-                .Setup(x => x.ConferenceCache)
-                .Returns(new ConferenceCache(_memoryCache));
             _eventHandler = _mocker.Create<VhOfficerCallEventHandler>();
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(_conference);
         }

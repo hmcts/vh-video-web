@@ -116,10 +116,15 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             'clearHandRaiseStatusForAll',
             'setHandRaiseStatus'
         ]);
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['getConferenceSetting'], ['isAudioOnly$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['getConferenceSetting', 'checkCameraAndMicrophonePresence'],
+            ['isAudioOnly$']
+        );
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
         userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
+        userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
