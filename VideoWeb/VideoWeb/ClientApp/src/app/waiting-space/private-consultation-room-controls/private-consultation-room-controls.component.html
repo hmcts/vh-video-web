@@ -61,6 +61,7 @@
           </span>
         </button>
         <button
+          *ngif="hasAMicrophone || hasACamera"
           id="toggle-media-device-img"
           colour="grey"
           (click)="changeDeviceSelected()"
@@ -74,7 +75,7 @@
         </button>
         <button
           id="toggle-self-view-img"
-          *ngIf="!audioOnly"
+          *ngIf="!audioOnly && hasACamera"
           colour="grey"
           (click)="toggleView()"
           (keydown.enter)="toggleView()"
@@ -475,9 +476,10 @@
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </button>
 
-      <div class="flexBar"></div>
+      <div *ngif="hasAMicrophone || hasACamera" class="flexBar"></div>
 
       <button
+        *ngif="hasAMicrophone || hasACamera"
         class="icon-button"
         id="toggle-media-device-img-desktop"
         appTooltip
@@ -495,9 +497,8 @@
       <button
         class="icon-button"
         id="toggle-self-view-img-desktop"
-        *ngIf="!audioOnly"
+        *ngIf="!audioOnly && hasACamera"
         appTooltip
-        colour="grey"
         [text]="
           (selfViewOpen
             ? 'private-consultation-room-controls.selfview-toggle-true'
@@ -520,7 +521,7 @@
       <button
         class="icon-button"
         id="toggle-video-mute-img-desktop"
-        *ngIf="!isJudge && !audioOnly"
+        *ngIf="!isJudge && !audioOnly && hasACamera"
         appTooltip
         colour="grey"
         [text]="
@@ -545,7 +546,7 @@
       <button
         class="icon-button"
         id="toggle-audio-mute-img-desktop"
-        *ngIf="!remoteMuted || isHost"
+        *ngIf="(!remoteMuted || isHost) && hasAMicrophone"
         appTooltip
         colour="grey"
         [text]="
@@ -570,7 +571,7 @@
       <div
         class="icon-button"
         id="toggle-audio-mute-locked-img-desktop"
-        *ngIf="remoteMuted && !isHost"
+        *ngIf="remoteMuted && !isHost && hasAMicrophone"
         colour="grey"
         appTooltip
         [text]="'private-consultation-room-controls.remote-muted' | translate"

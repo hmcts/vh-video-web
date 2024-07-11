@@ -39,6 +39,7 @@ import { ConferenceState } from '../waiting-space/store/reducers/conference.redu
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
 import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -105,6 +106,7 @@ export class EventsService {
             const message = new ConferenceStatusMessage(conferenceId, status);
             this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
             this.store.dispatch(ConferenceActions.updateActiveConferenceStatus({ conferenceId, status }));
+
             this.hearingStatusSubject.next(message);
         },
 
@@ -431,15 +433,19 @@ export class EventsService {
     }
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
-        return this.hearingStatusSubject.asObservable();
+        return this.hearingStatusSubject
+            .asObservable()
+            .pipe(distinctUntilChanged((a, b) => a.conferenceId === b.conferenceId && a.status === b.status));
     }
 
     getEndpointStatusMessage(): Observable<EndpointStatusMessage> {
-        return this.endpointStatusSubject.asObservable();
+        return this.endpointStatusSubject
+            .asObservable()
+            .pipe(distinctUntilChanged((a, b) => a.endpointId === b.endpointId && a.status === b.status));
     }
 
     getHearingCountdownCompleteMessage(): Observable<string> {
-        return this.hearingCountdownCompleteSubject.asObservable();
+        return this.hearingCountdownCompleteSubject.asObservable().pipe(distinctUntilChanged());
     }
 
     getRequestedConsultationMessage(): Observable<RequestedConsultationMessage> {

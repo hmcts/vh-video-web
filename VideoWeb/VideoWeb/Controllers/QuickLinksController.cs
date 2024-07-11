@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,14 +10,10 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
+using VideoWeb.Services;
 
 namespace VideoWeb.Controllers
 {
@@ -29,18 +24,15 @@ namespace VideoWeb.Controllers
     public class QuickLinksController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
-        private readonly IConferenceService _conferenceService;
-        private readonly IMapperFactory _mapperFactory;
+        private readonly IParticipantService _participantService;
         private readonly ILogger<QuickLinksController> _logger;
 
-        public QuickLinksController(IVideoApiClient videoApiClient, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IConferenceService conferenceService, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient,
+            IParticipantService participantService, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
-            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
-            _conferenceService = conferenceService;
-            _mapperFactory = mapperFactory;
             _logger = logger;
+            _participantService = participantService;
         }
 
         [HttpGet("GetQuickLinkParticipantRoles")]
@@ -99,7 +91,7 @@ namespace VideoWeb.Controllers
                 
                 var response = await _videoApiClient.AddQuickLinkParticipantAsync(hearingId, request);
 
-                await AddQuickLinkParticipantToConferenceCache(response);
+                await _participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
 
                 return Ok(new QuickLinkParticipantJoinResponse
                 {
@@ -124,16 +116,6 @@ namespace VideoWeb.Controllers
         public IActionResult IsAuthorised()
         {
             return Ok();
-        }
-
-        private async Task AddQuickLinkParticipantToConferenceCache(AddQuickLinkParticipantResponse response)
-        {
-            
-            var conference = await _conferenceService.GetConference(response.ConferenceId); 
-            conference.AddParticipant(ParticipantCacheMapper.Map(response.Participant));
-            _logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
-            await _conferenceService.ConferenceCache.UpdateConferenceAsync(conference);
-            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }
     }
 }

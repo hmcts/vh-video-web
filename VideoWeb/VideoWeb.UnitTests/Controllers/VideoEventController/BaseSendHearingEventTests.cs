@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
@@ -121,7 +120,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<Conference>()))
                 .Callback<Conference>(updatedConference => { TestConference = updatedConference; });
             Mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(Mocker.Mock<IEventHandler>().Object);
-            Mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(Mocker.Mock<IConferenceCache>().Object);
         }
     }
 }

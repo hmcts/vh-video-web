@@ -39,6 +39,7 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
     [
         'setupClient',
         'makeCall',
+        'makeReceiveOnlyCall',
         'disconnectFromCall',
         'connect',
         'onCallSetup',
