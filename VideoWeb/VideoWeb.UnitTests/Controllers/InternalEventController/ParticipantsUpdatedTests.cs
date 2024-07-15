@@ -10,7 +10,6 @@ using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
@@ -60,12 +59,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConferenceId)))
                 .ReturnsAsync(_mockConference.Object);
             
-            _mocker.Mock<IConferenceService>()
-                .Setup(x => x.ConferenceCache)
-                .Returns(_mocker.Mock<IConferenceCache>().Object);
-            
             _mocker.Mock<IParticipantsUpdatedEventNotifier>();
-            
         }
 
         [Test]

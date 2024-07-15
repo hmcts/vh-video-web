@@ -134,7 +134,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 UpdateConsultationRoomForEndpoint(endpointToTransfer, roomTransfer.ToRoom, roomTransfer.FromRoom);
             }
             
-            await conferenceService.ConferenceCache.UpdateConferenceAsync(SourceConference);
+            await conferenceService.UpdateConferenceAsync(SourceConference);
         }
 
         private void UpdateConsultationRoomForParticipant(Participant participant, string toRoom, string fromRoom)

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -36,9 +35,6 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
                 .ReturnsAsync(_testConference);
 
             _controller = _mocker.Create<EndpointsController>();
-            
-            var cache = _mocker.Mock<IConferenceCache>();
-            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
         private void SetupLoginAs(string username)

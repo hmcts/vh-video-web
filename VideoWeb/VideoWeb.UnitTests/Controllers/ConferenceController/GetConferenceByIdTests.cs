@@ -22,7 +22,6 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -64,9 +63,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             _controller = _mocker.Create<ConferencesController>();
             _controller.ControllerContext = context;
-            var cache = _mocker.Mock<IConferenceCache>();
              _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>()));
-            _mocker.Mock<IConferenceService>().Setup(x => x.ConferenceCache).Returns(cache.Object);
         }
 
 
