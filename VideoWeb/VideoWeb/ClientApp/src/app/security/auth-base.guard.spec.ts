@@ -49,4 +49,43 @@ describe('authguard', () => {
             expect(result).toBeTruthy();
         }));
     });
+
+    describe('when login failed with unsuccessful authentication', () => {
+        const testcases = [{ flag: true, routePath: `/${pageUrls.IdpSelection}` }];
+        it(`canActivate should return false and navigate to /${pageUrls.IdpSelection} when multi-idp-selection`, fakeAsync(() => {
+            // Arrange
+            const isAuthenticatedSubject = new Subject<boolean>();
+            securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+
+            // Act
+            let result = true;
+            authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
+            isAuthenticatedSubject.next(false);
+            tick();
+
+            // Assert
+            expect(result).toBeFalsy();
+            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
+        }));
+
+        testcases.forEach(test => {
+            it(`canActivate should return false and navigate to ${test.routePath} when multi-idp-selection feature flag set to ${
+                test.flag ? 'on' : 'off'
+            }`, fakeAsync(() => {
+                // Arrange
+                const isAuthenticatedSubject = new Subject<boolean>();
+                securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+
+                // Act
+                let result = true;
+                authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
+                isAuthenticatedSubject.next(false);
+                tick();
+
+                // Assert
+                expect(result).toBeFalsy();
+                expect(router.navigate).toHaveBeenCalledWith([test.routePath]);
+            }));
+        });
+    });
 });
