@@ -224,6 +224,7 @@ export class ConferenceTestData {
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Interpretee',
             last_name: 'Doe',
+            name: 'Interpretee',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
             interpreter_room: room
         });
