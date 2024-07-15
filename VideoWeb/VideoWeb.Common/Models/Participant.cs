@@ -25,6 +25,7 @@ namespace VideoWeb.Common.Models
         public string Representee { get; set; } 
         public ConsultationRoom CurrentRoom { get; set; }
         public ConsultationRoom InterpreterRoom { get; set; }
+        public InterpreterLanguage InterpreterLanguage { get; set; }
         public List<LinkedParticipant> LinkedParticipants { get; set; }
 
         public bool IsJudge()

@@ -1,4 +1,6 @@
 using System;
+using BookingsApi.Contract.V1.Enums;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using VideoApi.Contract.Enums;
@@ -46,6 +48,17 @@ namespace VideoWeb.UnitTests.Builders
         {
             _participant.With(x => x.HearingRoleName = (userRole == "Individual") ? "Witness" : userRole);
             _participant.With(x => x.UserRoleName = userRole);
+            return this;
+        }
+        
+        public ParticipantFromBookingApiResponseBuilder WithInterpreterLanguage(string code, string value, InterpreterType type)
+        {
+            _participant.With(x => x.InterpreterLanguage = new InterpreterLanguagesResponse
+            {
+                Code = code,
+                Value = value,
+                Type = type
+            });
             return this;
         }
         

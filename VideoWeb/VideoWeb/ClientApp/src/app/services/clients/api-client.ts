@@ -9957,6 +9957,54 @@ export interface IIdpSettingsResponse {
     post_logout_redirect_uri?: string | undefined;
 }
 
+export class InterpreterLanguageResponse implements IInterpreterLanguageResponse {
+    code?: string | undefined;
+    description?: string | undefined;
+    type?: InterpreterType;
+
+    constructor(data?: IInterpreterLanguageResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data['code'];
+            this.description = _data['description'];
+            this.type = _data['type'];
+        }
+    }
+
+    static fromJS(data: any): InterpreterLanguageResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new InterpreterLanguageResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['code'] = this.code;
+        data['description'] = this.description;
+        data['type'] = this.type;
+        return data;
+    }
+}
+
+export interface IInterpreterLanguageResponse {
+    code?: string | undefined;
+    description?: string | undefined;
+    type?: InterpreterType;
+}
+
+export enum InterpreterType {
+    Sign = 'Sign',
+    Verbal = 'Verbal'
+}
+
 export class LinkedParticipantResponse implements ILinkedParticipantResponse {
     /** The id of the participant linked to */
     linked_id?: string;
@@ -10262,6 +10310,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
 
@@ -10288,6 +10337,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
+            this.interpreter_language = _data['interpreter_language']
+                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
+                : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
@@ -10317,6 +10369,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
+        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
@@ -10348,6 +10401,7 @@ export interface IParticipantForUserResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
 }
@@ -10376,6 +10430,7 @@ export class ParticipantResponse implements IParticipantResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
 
@@ -10402,6 +10457,9 @@ export class ParticipantResponse implements IParticipantResponse {
             this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
+            this.interpreter_language = _data['interpreter_language']
+                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
+                : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
@@ -10431,6 +10489,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
+        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
@@ -10463,6 +10522,7 @@ export interface IParticipantResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
 }
@@ -10927,6 +10987,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -10945,6 +11006,9 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.pexip_display_name = _data['pexip_display_name'];
             this.is_current_user = _data['is_current_user'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
+            this.interpreter_language = _data['interpreter_language']
+                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
+                : <any>undefined;
         }
     }
 
@@ -10964,6 +11028,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['pexip_display_name'] = this.pexip_display_name;
         data['is_current_user'] = this.is_current_user;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
+        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -10980,6 +11045,7 @@ export interface IVideoEndpointResponse {
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
+    interpreter_language?: InterpreterLanguageResponse;
 }
 
 export class ApiException extends Error {

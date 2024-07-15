@@ -37,6 +37,7 @@ public static class ParticipantCacheMapper
         model.Representee = hearingDetails.Representee;
         model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
         model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
+        model.InterpreterLanguage = hearingDetails.InterpreterLanguage?.Map();
         return model;
     }
     
@@ -66,6 +67,7 @@ public static class ParticipantCacheMapper
         model.Username = judiciaryDetails.Email;
         model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
         model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
+        model.InterpreterLanguage = judiciaryDetails.InterpreterLanguage?.Map();
         return model;
     }
     

@@ -9,5 +9,6 @@ namespace VideoWeb.Common.Models
         public EndpointStatus EndpointStatus { get; set; }
         public string DefenceAdvocateUsername { get; set; }
         public ConsultationRoom CurrentRoom { get; set; }
+        public InterpreterLanguage InterpreterLanguage { get; set; }
     }
 }

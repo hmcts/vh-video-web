@@ -23,6 +23,7 @@ namespace VideoWeb.Mappings
                 PexipDisplayName = pexipDisplayName,
                 CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
                 DefenceAdvocateUsername = endpoint.DefenceAdvocateUsername,
+                InterpreterLanguage = endpoint.InterpreterLanguage?.Map()
             };
         }
         
