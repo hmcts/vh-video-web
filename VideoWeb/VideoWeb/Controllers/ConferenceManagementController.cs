@@ -50,6 +50,7 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request)
         {
             var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
@@ -66,7 +67,7 @@ namespace VideoWeb.Controllers
                 {
                     Layout = request.Layout,
                     MuteGuests = false,
-                    TriggeredByHostId = triggeredById.HasValue ? triggeredById.Value.ToString() : string.Empty
+                    TriggeredByHostId = triggeredById ?? Guid.Empty
                 };
 
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest);

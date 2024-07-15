@@ -114,6 +114,15 @@ export class ApiClient extends ApiClientBase {
                     return _observableOf<void>(null as any);
                 })
             );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
