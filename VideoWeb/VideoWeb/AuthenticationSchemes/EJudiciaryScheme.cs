@@ -15,9 +15,8 @@ namespace VideoWeb.AuthenticationSchemes
 
         public override AuthProvider Provider => AuthProvider.EJudiciary;
 
-        public override async Task GetClaimsPostTokenValidation(TokenValidatedContext context, JwtBearerOptions options)
+        public override Task GetClaimsPostTokenValidation(TokenValidatedContext context, JwtBearerOptions options)
         {
-            await base.GetClaimsPostTokenValidation(context, options);
             if (context.SecurityToken is JwtSecurityToken or JsonWebToken)
             {
                 // TODO: Make call to api to get the users roles and groups.
@@ -27,6 +26,8 @@ namespace VideoWeb.AuthenticationSchemes
                 claimsIdentity?.AddClaim(new Claim(claimsIdentity.RoleClaimType, "Judge"));
                 claimsIdentity?.AddClaim(new Claim(claimsIdentity.RoleClaimType, "JudicialOfficeHolder"));
             }
+
+            return Task.CompletedTask;
         }
     }
 }
