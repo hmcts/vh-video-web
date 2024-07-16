@@ -67,9 +67,9 @@ namespace VideoWeb.AuthenticationSchemes
         /// </summary>
         /// <param name="principal"></param>
         /// <returns></returns>
-        private static bool DoesNotNeedAdditionalClaims( ClaimsPrincipal principal)
+        private bool DoesNotNeedAdditionalClaims( ClaimsPrincipal principal)
         {
-            return principal.IsInRole(AppRoles.CitizenRole) || principal.IsInRole(AppRoles.JudgeRole) ||
+            return Provider == AuthProvider.EJudiciary || principal.IsInRole(AppRoles.CitizenRole) || principal.IsInRole(AppRoles.JudgeRole) ||
                    principal.IsInRole(AppRoles.RepresentativeRole) ||
                    principal.IsInRole(AppRoles.QuickLinkObserver) || principal.IsInRole(AppRoles.QuickLinkParticipant);
         }
