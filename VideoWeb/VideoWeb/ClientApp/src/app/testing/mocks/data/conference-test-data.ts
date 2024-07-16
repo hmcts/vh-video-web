@@ -8,6 +8,8 @@ import {
     ConferenceResponseVho,
     ConferenceStatus,
     EndpointStatus,
+    InterpreterLanguageResponse,
+    InterpreterType,
     LinkedParticipantResponse,
     LinkType,
     ParticipantContactDetailsResponseVho,
@@ -464,9 +466,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantDetails(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
@@ -476,10 +478,15 @@ export class ConferenceTestData {
             tiled_display_name: 'CIVILIAN;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             current_room: new RoomSummaryResponse(),
+            interpreter_language: new InterpreterLanguageResponse({
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            }),
             linked_participants: []
         });
 
-        const participant2 = new ParticipantResponseVho({
+        const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             representee: 'Chris Green',
@@ -493,7 +500,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant3 = new ParticipantResponseVho({
+        const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
@@ -506,7 +513,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant4 = new ParticipantResponseVho({
+        const participant4 = new ParticipantResponse({
             id: '9F681318-4965-49AF-A887-DED64554429T',
             name: 'Staff Member name',
             status: ParticipantStatus.Available,
