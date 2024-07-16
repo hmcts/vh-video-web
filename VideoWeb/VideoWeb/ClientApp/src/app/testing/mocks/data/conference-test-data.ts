@@ -814,7 +814,12 @@ export class ConferenceTestData {
             id: '123232355',
             defence_advocate_username: 'john.doe@hearings.net',
             pexip_display_name: 'PSTN;DispName2;123232355',
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            interpreter_language: new InterpreterLanguageResponse({
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            })
         });
         endpoints.push(point1);
         endpoints.push(point2);
