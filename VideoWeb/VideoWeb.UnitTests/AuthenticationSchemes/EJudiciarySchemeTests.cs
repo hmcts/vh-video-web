@@ -1,4 +1,3 @@
-using Autofac;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Moq;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common;
@@ -153,6 +153,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
             AssertClaimsAdded(identity);
+            _mocker.Mock<IAppRoleService>().Verify(x=> x.GetClaimsForUserAsync(It.IsAny<string>()), Times.Never);
         }
         
         [Test]
@@ -188,6 +189,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
             AssertClaimsAdded(identity);
+            _mocker.Mock<IAppRoleService>().Verify(x=> x.GetClaimsForUserAsync(It.IsAny<string>()), Times.Never);
         }
         
         private static void AssertClaimsAdded(ClaimsIdentity identity)
