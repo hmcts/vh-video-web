@@ -485,7 +485,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
                 const hearingRoleText = component.getHearingRole(interpreter);
 
-                expect(hearingRoleText).toEqual(`hearing-role.interpreter`);
+                expect(hearingRoleText).toEqual('hearing-role.interpreter');
             });
         });
 
