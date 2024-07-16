@@ -68,7 +68,7 @@
       </div>
       <div class="govuk-grid-row">
         <span class="govuk-body-s govuk-!-margin-bottom-0">
-          {{ judge.interpreterLanguage?.description }}
+          {{ 'interpreter-language.' + stringToTranslateId(judge.interpreterLanguage?.description) | translate }}
         </span>
       </div>
     </span>
@@ -139,7 +139,7 @@
           </dt>
           
           <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ participant.interpreterLanguage?.description }}
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -259,7 +259,7 @@
           ></dd>
 
           <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ participant.interpreterLanguage?.description }}
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -295,7 +295,7 @@
           </dt>
 
           <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ endpoint.interpreterLanguage?.description }}
+            {{ 'interpreter-language.' + stringToTranslateId(endpoint.interpreterLanguage?.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -332,7 +332,7 @@
           </dt>
 
           <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ participant.interpreterLanguage?.description }}
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
