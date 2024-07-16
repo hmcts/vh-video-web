@@ -62,7 +62,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await _conferenceService.GetConference(conferenceId);
-                var triggeredById = conference.GetParticipant(User.Identity?.Name)?.Id;
+                var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
                 var apiRequest = new StartHearingRequest
                 {
                     Layout = request.Layout,
@@ -115,7 +115,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Could not get layout for {ConferenceId} an unkown exception was thrown", conferenceId);
+                _logger.LogError(exception, "Could not get layout for {ConferenceId} an unknown exception was thrown", conferenceId);
                 throw new InvalidOperationException("There was an unexpected error when getting the layout", exception);
             }
         }
@@ -159,7 +159,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Could not update layout for {ConferenceId} an unkown exception was thrown", conferenceId);
+                _logger.LogError(exception, "Could not update layout for {ConferenceId} an unknown exception was thrown", conferenceId);
                 throw new InvalidOperationException("There was an unexpected error when updating the layout", exception);
             }
         }
