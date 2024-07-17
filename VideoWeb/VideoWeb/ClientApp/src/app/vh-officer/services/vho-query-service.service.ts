@@ -53,6 +53,10 @@ export class VhoQueryService {
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
+    getQueryResults() {
+        return this.vhoConferencesSubject.asObservable();
+    }
+
     getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]> {
         this.venueNames = venueNames;
         return this.vhoConferencesSubject.asObservable();

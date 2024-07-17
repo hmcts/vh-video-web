@@ -1,7 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ClientSettingsResponse, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import {
+    ClientSettingsResponse,
+    ConferenceForVhOfficerResponse,
+    CourtRoomsAccountResponse,
+    Role
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -26,6 +31,7 @@ import { NewAllocationMessage } from '../../services/models/new-allocation-messa
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { catchError } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-centre',
@@ -231,7 +237,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     async refreshConferenceDataDuringDisconnect() {
         this.logger.warn(`${this.loggerPrefix} EventHub refresh pending...`);
-        this.retrieveHearingsForVhOfficer(true);
+        this.queryService.runQuery();
         if (this.selectedHearing) {
             await this.retrieveConferenceDetails(this.selectedHearing.id);
         }
@@ -239,7 +245,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
-        this.loadCourtRoomsAccountFilters();
+        // this.loadCourtRoomsAccountFilters();
         this.loadCsoFilter();
         this.queryService.startQuery(
             this.venueAllocations,
@@ -255,9 +261,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.venueAllocations = venues; // .map(v => v.name);
     }
 
-    loadCourtRoomsAccountFilters(): void {
-        this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
-    }
+    // loadCourtRoomsAccountFilters(): void {
+    //     // this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
+    // }
 
     loadCsoFilter(): void {
         this.csoFilter = this.csoAllocationStorage.get();
@@ -265,8 +271,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForVhOfficer(reload: boolean) {
         this.loadingData = reload;
-        this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
-            async (data: ConferenceForVhOfficerResponse[]) => {
+        this.conferencesSubscription = this.queryService
+            .getQueryResults()
+            .pipe(
+                catchError(error => {
+                    this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
+                    this.loadingData = false;
+                    this.errorService.handleApiError(error);
+                    return [];
+                })
+            )
+            .subscribe(data => {
                 this.hearings = data.map(c => {
                     const h = new HearingSummary(c);
                     h.isJoinByPhone = this.isJoinByPhone(h);
@@ -277,6 +292,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 });
 
                 if (this.hearings) {
+                    this.getFiltersCourtRoomsAccounts(this.mapConferencesToCourtRoomsAccountResponses(data));
                     this.applyFilterInit();
                 }
 
@@ -285,13 +301,23 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 }
 
                 this.loadingData = false;
-            },
-            error => {
-                this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
+            });
+    }
+
+    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
+            const courtroomAccount = this.courtRoomsAccountsFilters.find(x => x.venue === filterVenue.venue);
+            if (courtroomAccount) {
+                courtroomAccount.selected = filterVenue.selected;
+                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
             }
-        );
+        };
+        this.courtRoomsAccountsFilters = response.map(x => new CourtRoomsAccounts(x.venue, x.rooms, true));
+        const previousFilter = this.courtAccountsAllocationStorage.get();
+        if (previousFilter) {
+            previousFilter.forEach(x => updateFilterSelection(x));
+        }
+        this.courtAccountsAllocationStorage.set(this.courtRoomsAccountsFilters);
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
@@ -326,6 +352,32 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         if (filter && !filter.every(x => x.selected)) {
             this.hearingsFiltering(filter);
         }
+    }
+
+    mapConferencesToCourtRoomsAccountResponses(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccountResponse[] {
+        const venuesAndJudges = conferences
+            .filter(e => e.participants.some(s => s.role === Role.Judge))
+            .map(e => ({
+                venue: e.hearing_venue_name,
+                judge: e.participants.find(s => s.role === Role.Judge)!.display_name
+            }))
+            .reduce((acc: { [key: string]: string[] }, { venue, judge }) => {
+                if (!acc[venue]) {
+                    acc[venue] = [];
+                }
+                acc[venue].push(judge);
+                return acc;
+            }, {});
+
+        return Object.entries(venuesAndJudges)
+            .map(
+                ([venue, judges]) =>
+                    new CourtRoomsAccountResponse({
+                        rooms: judges.sort(),
+                        venue: venue
+                    })
+            )
+            .sort((a, b) => a.venue.localeCompare(b.venue));
     }
 
     isCurrentConference(conferenceId: string): boolean {

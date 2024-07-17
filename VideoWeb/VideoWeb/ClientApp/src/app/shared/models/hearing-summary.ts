@@ -120,4 +120,8 @@ export class HearingSummary extends HearingBase {
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
     }
+
+    get hearingRefId(): string {
+        return this.conference.hearing_ref_id;
+    }
 }

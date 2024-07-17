@@ -7,6 +7,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
 import { Subscription } from 'rxjs';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-tasks-table',
@@ -14,7 +15,7 @@ import { VhoStorageKeys } from '../services/models/session-keys';
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit, OnDestroy {
-    @Input() conferenceId: string;
+    @Input() hearing: Hearing;
 
     loading: boolean;
     tasks: TaskResponse[];
@@ -31,17 +32,20 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.loading = true;
         this.setupSubscribers();
-        this.retrieveConference(this.conferenceId)
-            .then(async conference => {
-                this.conference = conference;
-                this.logger.debug('[TasksTable] - Getting tasks for conference', { conference: this.conferenceId });
-                this.tasks = await this.retrieveTasksForConference(this.conference.id);
-                this.loading = false;
+        this.conference = this.hearing.getConference();
+        this.logger.debug('[TasksTable] - Getting tasks for conference', { conference: this.conference.id });
+        this.retrieveTasksForConference(this.conference.id)
+            .then(tasks => {
+                this.tasks = tasks;
+                // this.loading = false;
             })
             .catch(err => {
-                this.logger.error(`[TasksTable] - Failed to init tasks list for conference ${this.conferenceId}`, err, {
-                    conference: this.conferenceId
+                this.logger.error(`[TasksTable] - Failed to init tasks list for conference ${this.conference.id}`, err, {
+                    conference: this.conference.id
                 });
+            })
+            .finally(() => {
+                this.loading = false;
             });
     }
 
@@ -59,10 +63,6 @@ export class TasksTableComponent implements OnInit, OnDestroy {
         } else {
             return '';
         }
-    }
-
-    retrieveConference(conferenceId): Promise<ConferenceResponse> {
-        return this.vhoQueryService.getConferenceByIdVHO(conferenceId);
     }
 
     retrieveTasksForConference(conferenceId: string): Promise<TaskResponse[]> {

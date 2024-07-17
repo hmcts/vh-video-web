@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
-import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
     selector: 'app-copy-quick-link',
@@ -9,21 +8,18 @@ import { VhoQueryService } from '../services/vho-query-service.service';
 })
 export class CopyQuickLinkComponent implements OnInit {
     @Input() conferenceId: string;
-    hearingId: string;
+    @Input() hearingId: string;
     tooltip: string;
     propertyIdName = 'copy-quick-link';
 
     constructor(
         private clipBoardService: ClipboardService,
-        private vhoQueryService: VhoQueryService,
         private translateService: TranslateService
     ) {}
 
     async ngOnInit() {
         this.propertyIdName = this.propertyIdName + '-' + this.conferenceId;
         this.tooltip = this.translateService.instant('copy-quick-link.display-text');
-        const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
-        this.hearingId = response?.hearing_id;
     }
 
     copyToClipboard() {
