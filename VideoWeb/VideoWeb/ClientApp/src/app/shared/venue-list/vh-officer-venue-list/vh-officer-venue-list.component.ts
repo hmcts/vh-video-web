@@ -68,22 +68,12 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             this.selectedVenues = [];
             this.csoAllocationStorage.clear();
             this.judgeAllocationStorage.clear();
-            // await this.vhoQueryService.getActiveConferences();
         } else {
             if (this.csosSelected) {
                 await this.updateCsoSelection();
             } else {
                 this.updateVenueSelection();
             }
-
-            // const csoFilter = this.csoAllocationStorage.get();
-            // const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(
-            //     this.selectedVenues,
-            //     csoFilter?.allocatedCsoIds ?? [],
-            //     csoFilter?.includeUnallocated ?? false
-            // );
-
-            // this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
         }
 
         if (!this.venuesSelected && !this.csosSelected && !this.activeSessions) {

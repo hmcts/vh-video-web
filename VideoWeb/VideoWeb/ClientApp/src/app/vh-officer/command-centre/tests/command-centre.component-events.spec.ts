@@ -70,7 +70,9 @@ describe('CommandCentreComponent - Events', () => {
 
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'startQuery',
+            'runQuery',
             'stopQuery',
+            'getQueryResults',
             'getConferencesForVHOfficer',
             'getConferenceByIdVHO'
         ]);

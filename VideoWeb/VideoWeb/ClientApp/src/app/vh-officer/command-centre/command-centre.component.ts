@@ -261,10 +261,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.venueAllocations = venues; // .map(v => v.name);
     }
 
-    // loadCourtRoomsAccountFilters(): void {
-    //     // this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
-    // }
-
     loadCsoFilter(): void {
         this.csoFilter = this.csoAllocationStorage.get();
     }

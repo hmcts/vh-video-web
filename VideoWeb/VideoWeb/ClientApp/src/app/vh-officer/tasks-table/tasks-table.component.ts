@@ -37,7 +37,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
         this.retrieveTasksForConference(this.conference.id)
             .then(tasks => {
                 this.tasks = tasks;
-                // this.loading = false;
+                this.loading = false;
             })
             .catch(err => {
                 this.logger.error(`[TasksTable] - Failed to init tasks list for conference ${this.conference.id}`, err, {

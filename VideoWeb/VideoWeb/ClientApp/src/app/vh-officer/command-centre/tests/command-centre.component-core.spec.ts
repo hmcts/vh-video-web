@@ -50,6 +50,7 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'startQuery',
             'stopQuery',
+            'getQueryResults',
             'getConferencesForVHOfficer',
             'getConferenceByIdVHO'
         ]);
@@ -77,6 +78,7 @@ describe('CommandCentreComponent - Core', () => {
 
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        vhoQueryService.getQueryResults.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
@@ -126,11 +128,6 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.venueAllocations).toBeDefined();
     });
 
-    it('should load filter for venue selection', () => {
-        component.loadCourtRoomsAccountFilters();
-        expect(component.courtRoomsAccountsFilters).toBeDefined();
-    });
-
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
@@ -139,7 +136,7 @@ describe('CommandCentreComponent - Core', () => {
 
     it('should handle api error when retrieving conference list fails', fakeAsync(() => {
         const error = { status: 404, isApiException: true };
-        vhoQueryService.getConferencesForVHOfficer.and.returnValue(throwError(error));
+        vhoQueryService.getQueryResults.and.returnValue(throwError(error));
         errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });
@@ -294,12 +291,20 @@ describe('CommandCentreComponent - Core', () => {
             const activeSessionsOnly = false;
             component.activeSessionsOnly = activeSessionsOnly;
             expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated, activeSessionsOnly);
-            expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
         });
 
         afterAll(() => {
             TestFixtureHelper.setupVenues();
             TestFixtureHelper.clearCsoAllocations();
+        });
+    });
+
+    describe('retrieveHearingsForVhOfficer', () => {
+        it('should populate courtRoomsAccountsFilters when hearing is retrieved', () => {
+            component.retrieveHearingsForVhOfficer(true);
+            expect(component.courtRoomsAccountsFilters.length).toBeGreaterThan(0);
+            expect(component.courtRoomsAccountsFilters[0].venue).toBe('Birmingham');
+            expect(component.courtRoomsAccountsFilters[0].courtsRooms[0].courtRoom).toBe('Judge Fudge');
         });
     });
 });
