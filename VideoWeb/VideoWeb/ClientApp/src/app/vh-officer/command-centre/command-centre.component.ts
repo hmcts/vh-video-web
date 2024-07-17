@@ -304,22 +304,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             });
     }
 
-    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
-        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
-            const courtroomAccount = this.courtRoomsAccountsFilters.find(x => x.venue === filterVenue.venue);
-            if (courtroomAccount) {
-                courtroomAccount.selected = filterVenue.selected;
-                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
-            }
-        };
-        this.courtRoomsAccountsFilters = response.map(x => new CourtRoomsAccounts(x.venue, x.rooms, true));
-        const previousFilter = this.courtAccountsAllocationStorage.get();
-        if (previousFilter) {
-            previousFilter.forEach(x => updateFilterSelection(x));
-        }
-        this.courtAccountsAllocationStorage.set(this.courtRoomsAccountsFilters);
-    }
-
     isJoinByPhone(hearing: HearingSummary): boolean {
         if (!this.configSettings) {
             this.logger.warn(`${this.loggerPrefix} (isJoinByPhone) config settings is falsey`);
@@ -352,32 +336,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         if (filter && !filter.every(x => x.selected)) {
             this.hearingsFiltering(filter);
         }
-    }
-
-    mapConferencesToCourtRoomsAccountResponses(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccountResponse[] {
-        const venuesAndJudges = conferences
-            .filter(e => e.participants.some(s => s.role === Role.Judge))
-            .map(e => ({
-                venue: e.hearing_venue_name,
-                judge: e.participants.find(s => s.role === Role.Judge)!.display_name
-            }))
-            .reduce((acc: { [key: string]: string[] }, { venue, judge }) => {
-                if (!acc[venue]) {
-                    acc[venue] = [];
-                }
-                acc[venue].push(judge);
-                return acc;
-            }, {});
-
-        return Object.entries(venuesAndJudges)
-            .map(
-                ([venue, judges]) =>
-                    new CourtRoomsAccountResponse({
-                        rooms: judges.sort(),
-                        venue: venue
-                    })
-            )
-            .sort((a, b) => a.venue.localeCompare(b.venue));
     }
 
     isCurrentConference(conferenceId: string): boolean {
@@ -446,5 +404,47 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         if (allocationHearingMessage.hearingDetails.length > 0) {
             this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
         }
+    }
+
+    private mapConferencesToCourtRoomsAccountResponses(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccountResponse[] {
+        const venuesAndJudges = conferences
+            .filter(e => e.participants.some(s => s.role === Role.Judge))
+            .map(e => ({
+                venue: e.hearing_venue_name,
+                judge: e.participants.find(s => s.role === Role.Judge).display_name
+            }))
+            .reduce((acc: { [key: string]: string[] }, { venue, judge }) => {
+                if (!acc[venue]) {
+                    acc[venue] = [];
+                }
+                acc[venue].push(judge);
+                return acc;
+            }, {});
+
+        return Object.entries(venuesAndJudges)
+            .map(
+                ([venue, judges]) =>
+                    new CourtRoomsAccountResponse({
+                        rooms: judges.sort(),
+                        venue: venue
+                    })
+            )
+            .sort((a, b) => a.venue.localeCompare(b.venue));
+    }
+
+    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
+            const courtroomAccount = this.courtRoomsAccountsFilters.find(x => x.venue === filterVenue.venue);
+            if (courtroomAccount) {
+                courtroomAccount.selected = filterVenue.selected;
+                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+            }
+        };
+        this.courtRoomsAccountsFilters = response.map(x => new CourtRoomsAccounts(x.venue, x.rooms, true));
+        const previousFilter = this.courtAccountsAllocationStorage.get();
+        if (previousFilter) {
+            previousFilter.forEach(x => updateFilterSelection(x));
+        }
+        this.courtAccountsAllocationStorage.set(this.courtRoomsAccountsFilters);
     }
 }
