@@ -54,7 +54,7 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reading from cache for key {key}", key);
+                _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}",this.GetType().Name, key);
                 return default(TEntry);
             }
         }
@@ -75,7 +75,7 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reading from cache for key {key}", key);
+                _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}",this.GetType().Name, key);
                 return default(TResult);
             }
         }
