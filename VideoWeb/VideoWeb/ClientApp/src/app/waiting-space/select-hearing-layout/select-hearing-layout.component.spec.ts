@@ -69,7 +69,7 @@ describe('SelectHearingLayoutComponent', () => {
         it('should call updateCurrentLayout in hearingLayoutService with the selected layout', () => {
             // Arrange
             const expectedLayout = HearingLayout.OnePlus7;
-            const callbackSpy = jasmine.createSpy("callback", () => {});
+            const callbackSpy = jasmine.createSpy('callback', () => {});
 
             // Act
             component.updateSelectedLayout(expectedLayout, callbackSpy);

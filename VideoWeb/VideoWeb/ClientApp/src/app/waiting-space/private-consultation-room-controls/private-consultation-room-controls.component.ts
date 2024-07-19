@@ -2,12 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import {
-    ConferenceResponse,
-    ConferenceStatus,
-    HearingLayout,
-    ParticipantStatus
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
