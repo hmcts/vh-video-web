@@ -51,6 +51,7 @@ import { ConferenceEffects } from './store/effects/conference.effects';
 import { environment } from 'src/environments/environment';
 import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
+import {ChangeHearingLayoutPopupComponent} from "./change-hearing-layout-popup/change-hearing-layout.component";
 
 @NgModule({
     imports: [
@@ -98,7 +99,8 @@ import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-
         JoinPrivateConsultationComponent,
         PrivateConsultationLegalRepTermsOfServiceComponent,
         ParticipantsPanelItemComponent,
-        WarnJoinHearingPopupComponent
+        WarnJoinHearingPopupComponent,
+        ChangeHearingLayoutPopupComponent
     ],
     providers: [
         VideoCallService,

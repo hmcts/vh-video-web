@@ -145,6 +145,8 @@ declare interface PexipClient {
 
     // Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
     dialOut(destination, protocol, role, cb, user_params);
+
+    transformLayout(transforms: any);
 }
 
 declare interface TurnServer {

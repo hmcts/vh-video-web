@@ -10,6 +10,7 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() conference: ConferenceResponse;
+    @Input() callback: Function;
 
     availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
     accordionOpenAllElement: HTMLButtonElement;
@@ -87,7 +88,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         }
     }
 
-    updateSelectedLayout(layout: HearingLayout) {
+    updateSelectedLayout(layout: HearingLayout, callback: Function) {
         this.hearingLayoutService.updateCurrentLayout(layout);
+        if (callback) {
+            callback(layout);
+        }
     }
 }

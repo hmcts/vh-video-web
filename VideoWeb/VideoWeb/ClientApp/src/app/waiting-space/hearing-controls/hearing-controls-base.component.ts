@@ -58,6 +58,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     hasAMicrophone = true;
 
     sharingDynamicEvidence: boolean;
+    displayChangeLayoutPopup: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
     protected readonly loggerPrefix = '[HearingControlsBase] -';
