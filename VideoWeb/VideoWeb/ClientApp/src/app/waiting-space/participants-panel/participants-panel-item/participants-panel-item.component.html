@@ -62,7 +62,8 @@
             [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
             class="panel-icon"
             [attr.alt]="
-              (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon') | translate
+              (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
+                | translate
             "
             (click)="toggleParticipantMute(); $event.stopPropagation()"
             tabindex="0"
@@ -71,7 +72,9 @@
           <fa-icon
             *ngIf="!participant.isMicRemoteMuted()"
             appTooltip
-            [text]="(participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate"
+            [text]="
+              (participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant') | translate
+            "
             colour="grey"
             icon="microphone"
             class="icon-button"
@@ -84,7 +87,7 @@
         </ng-container>
       </div>
       <div
-        *ngIf="participant.isCallable && !participant.isInHearing()"
+        *ngIf="(participant.isCallable || vodafoneEnabled) && !participant.isInHearing()"
         [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'"
       >
         <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
@@ -157,7 +160,12 @@
         (click)="toggleParticipantSpotlight(); $event.stopPropagation()"
         (keydown.enter)="toggleParticipantSpotlight(); $event.stopPropagation()"
       >
-        <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }" tabindex="0" (keyup.enter)="toggleParticipantSpotlight()"></fa-icon>
+        <fa-icon
+          icon="thumbtack"
+          [class]="{ yellow: participant.hasSpotlight() }"
+          tabindex="0"
+          (keyup.enter)="toggleParticipantSpotlight()"
+        ></fa-icon>
       </div>
       <div *ngIf="participant.isInHearing() && participant.isLocalCameraOff()" class="icon-button no-click">
         <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate" icon="video-slash" class="red"></fa-icon>
@@ -168,6 +176,7 @@
     <div>
       <app-judge-context-menu
         [participantInput]="participant"
+        [vodafoneEnabled]="vodafoneEnabled"
         *ngIf="!isHost"
         [hidden]="!participant.isInHearing() && !participant.isAvailable()"
         (toggleMuteParticipantEvent)="toggleParticipantMute()"
