@@ -19,6 +19,8 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
     styleUrls: ['./judge-context-menu.component.scss']
 })
 export class JudgeContextMenuComponent implements OnInit {
+    @Input() vodafoneEnabled = false;
+
     @Output() toggleMuteParticipantEvent = new EventEmitter<ToggleMuteParticipantEvent>();
     @Output() toggleSpotlightParticipantEvent = new EventEmitter<ToggleSpotlightParticipantEvent>();
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
@@ -142,10 +144,10 @@ export class JudgeContextMenuComponent implements OnInit {
     }
 
     canCallParticipantIntoHearing(): boolean {
-        return this.participant.isCallableAndReadyToJoin;
+        return this.vodafoneEnabled ? !this.participant.isInHearing() : this.participant.isCallableAndReadyToJoin;
     }
 
     canDismissParticipantFromHearing(): boolean {
-        return this.participant.isCallableAndReadyToBeDismissed;
+        return this.vodafoneEnabled ? this.participant.isInHearing() : this.participant.isCallableAndReadyToBeDismissed;
     }
 }
