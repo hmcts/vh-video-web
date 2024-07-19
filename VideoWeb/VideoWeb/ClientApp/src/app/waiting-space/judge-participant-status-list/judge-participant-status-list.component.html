@@ -66,9 +66,9 @@
           </div>
         </span>
       </div>
-      <div class="govuk-grid-row">
+      <div class="govuk-grid-row" *ngIf="judge.interpreterLanguage">
         <span class="govuk-body-s govuk-!-margin-bottom-0">
-          {{ 'interpreter-language.' + stringToTranslateId(judge.interpreterLanguage?.description) | translate }}
+          {{ 'interpreter-language.' + stringToTranslateId(judge.interpreterLanguage.description) | translate }}
         </span>
       </div>
     </span>
@@ -138,8 +138,8 @@
             {{ participant.name ?? participant.displayName }}
           </dt>
           
-          <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -258,8 +258,8 @@
             [innerHtml]="getHearingRole(participant)"
           ></dd>
 
-          <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -294,8 +294,8 @@
             {{ endpoint.displayName }}
           </dt>
 
-          <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ 'interpreter-language.' + stringToTranslateId(endpoint.interpreterLanguage?.description) | translate }}
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="endpoint.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(endpoint.interpreterLanguage.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
@@ -331,8 +331,8 @@
             {{ participant.name ?? participant.displayName }}
           </dt>
 
-          <dd class="govuk-body-m govuk-!-margin-bottom-3">
-            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage?.description) | translate }}
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
           </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
