@@ -28,18 +28,20 @@ namespace VideoWeb.Controllers
         private readonly IHearingLayoutService _hearingLayoutService;
         private readonly IConferenceManagementService _conferenceManagementService;
         private readonly IConferenceService _conferenceService;
+        private readonly IFeatureToggles _featureToggles;
         
         public ConferenceManagementController(IVideoApiClient videoApiClient,
             ILogger<ConferenceManagementController> logger,
             IHearingLayoutService hearingLayoutService, 
             IConferenceManagementService conferenceManagementService,
-            IConferenceService conferenceService)
+            IConferenceService conferenceService, IFeatureToggles featureToggles)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _hearingLayoutService = hearingLayoutService;
             _conferenceManagementService = conferenceManagementService;
             _conferenceService = conferenceService;
+            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -285,7 +287,7 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Call a witness into a video hearing
+        /// Admit a participant into an active video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
         /// <param name="participantId">witness id</param>
@@ -295,23 +297,14 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId, cancellationToken);
+            var validatedRequest = await ValidateParticipantInConferenceAndIsCallable(conferenceId, participantId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
             }
 
-            try
-            {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
-                return Accepted();
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, "Unable to call witness {Participant} into video hearing {Conference}",
-                    participantId, conferenceId);
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
+            await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
+            return Accepted();
         }
 
         /// <summary>
@@ -354,36 +347,18 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId, cancellationToken);
+            var validatedRequest = await ValidateParticipantInConferenceAndIsCallable(conferenceId, participantId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
             }
 
-            try
-            {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
-                // reset hand raise on dismiss
-                await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
-                    false, cancellationToken);
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, "Unable to dismiss participant {Participant} from video hearing {Conference}",
-                    participantId, conferenceId);
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
+            await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
+            // reset hand raise on dismiss
+            await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+                false, cancellationToken);
 
-            try
-            {
-                await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, "Unable to add a dismiss participant alert for {Participant} in video hearing {Conference}",
-                    participantId, conferenceId);
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
+            await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
             return Accepted();
         }
 
@@ -429,12 +404,14 @@ namespace VideoWeb.Controllers
             return Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}.");
         }
 
-        private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+        private async Task<IActionResult> ValidateParticipantInConferenceAndIsCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
+            // ensure the invoker is a host of the given conference id
             var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantCallable(conferenceId, participantId, cancellationToken))
+            // ensure the participant exists in said conference and is callable
+            if (await ValidateParticipantIsInConferenceAndCallable(conferenceId, participantId, cancellationToken))
             {
                 return null;
             }
@@ -449,9 +426,8 @@ namespace VideoWeb.Controllers
             return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
-        private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+        private async Task<bool> ValidateParticipantIsInConferenceAndCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            
             var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
 
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
@@ -460,6 +436,10 @@ namespace VideoWeb.Controllers
             {
                 return false;
             }
+            
+            // Vodafone feature toggle is enabled, all participants are callable.
+            // VMRs will not be used so the below is not required if the toggle is on
+            if (_featureToggles.Vodafone()) return true;
 
             if (participant.LinkedParticipants.Count == 0)
             {

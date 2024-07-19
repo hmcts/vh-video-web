@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -13,7 +11,6 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -49,6 +46,34 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                         It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
             }
             
+        }
+
+        [Test]
+        public async Task
+            should_return_accepted_if_participant_is_not_a_witness_or_quick_link_user_when_vodafone_toggle_is_on()
+        {
+            // arrange
+            var judge = TestConference.GetJudge();
+            var nonWitnessOrQlParticipants = TestConference.Participants.Where(x =>
+                !x.IsJudge() && !x.IsWitness() && !x.IsQuickLinkUser() && x.LinkedParticipants.Count == 0);
+
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            var controller = SetupControllerWithClaims(user);
+            _mocker.Mock<IFeatureToggles>().Setup(x => x.Vodafone()).Returns(true);
+            
+            // act & assert
+            foreach (var participant in nonWitnessOrQlParticipants)
+            {
+                var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id, CancellationToken.None);
+                result.Should().BeOfType<AcceptedResult>();
+
+                _mocker.Mock<IVideoApiClient>().Verify(
+                    x => x.TransferParticipantAsync(TestConference.Id,
+                        It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Once);
+            }
         }
 
         [Test]
@@ -91,33 +116,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
-        }
-
-        [Test]
-        public async Task should_return_video_api_error()
-        {
-            var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.IsWitness());
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(judge.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not start transfer participant";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-
-            _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.TransferParticipantAsync(TestConference.Id,
-                    It.IsAny<TransferParticipantRequest>(), It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
-
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
-            result.Should().BeOfType<ObjectResult>();
-            var typedResult = (ObjectResult)result;
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         [Test]
