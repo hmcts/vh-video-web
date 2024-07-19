@@ -162,7 +162,7 @@ namespace VideoWeb.UnitTests.Services
             // arrange
             var defaultClaimForNonExistentJusticeUser = new List<Claim>()
             {
-                new Claim(ClaimTypes.Role, "EmptyClaimToAvoidDefaultListValue")
+                new (ClaimTypes.Role, "EmptyClaimToAvoidDefaultListValue")
             };
             var username = "random@claims.com";
             var apiException = new BookingsApiException<string>("Conflict", (int) HttpStatusCode.NotFound,

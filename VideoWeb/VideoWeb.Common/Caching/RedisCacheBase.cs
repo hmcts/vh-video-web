@@ -37,7 +37,7 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error writing to cache for key {key}", key);
+                _logger.LogError(ex, "Error writing to cache for key {Key}", key);
             }
         }
 
@@ -54,8 +54,8 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}",this.GetType().Name, key);
-                return default(TEntry);
+                _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}", GetType().Name, key);
+                return default;
             }
         }
         
@@ -76,7 +76,7 @@ namespace VideoWeb.Common.Caching
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}",this.GetType().Name, key);
-                return default(TResult);
+                return default;
             }
         }
 
@@ -88,7 +88,7 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error removing from cache for key {key}", key);
+                _logger.LogError(ex, "Error removing from cache for key {Key}", key);
             }
             
         }

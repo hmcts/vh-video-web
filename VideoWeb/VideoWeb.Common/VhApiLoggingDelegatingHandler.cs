@@ -21,8 +21,6 @@ public class VhApiLoggingDelegatingHandler(
             Timestamp = DateTimeOffset.Now
         };
 
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
         // Log request body if it exists
         if (request.Content != null)
         {
@@ -30,7 +28,7 @@ public class VhApiLoggingDelegatingHandler(
             requestTelemetry.Properties.Add("VHApiRequestBody", requestBody);
             logger.LogInformation("Request to {RequestUri}: {RequestBody}", request.RequestUri, requestBody);
         }
-
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         // Proceed with the request
         var response = await base.SendAsync(request, cancellationToken);
 
