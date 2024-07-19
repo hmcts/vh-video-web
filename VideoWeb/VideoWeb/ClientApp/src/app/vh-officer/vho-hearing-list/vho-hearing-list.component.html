@@ -3,6 +3,7 @@
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
     *ngFor="let conference of conferences; trackBy: trackConference"
+    (keydown.enter)="selectConference(conference)"
     (click)="selectConference(conference)"
     id="{{ conference.id }}-summary"
   >

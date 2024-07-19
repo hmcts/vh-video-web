@@ -22,7 +22,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { MenuOption } from '../models/menus-options';
 import { VhoStorageKeys } from '../services/models/session-keys';
-import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -257,8 +257,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     loadVenueSelection(): void {
-        const venues = this.judgeAllocationStorage.get();
-        this.venueAllocations = venues; // .map(v => v.name);
+        this.venueAllocations = this.judgeAllocationStorage.get();
     }
 
     loadCsoFilter(): void {
@@ -421,7 +420,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             .map(
                 ([venue, judges]) =>
                     new CourtRoomsAccountResponse({
-                        rooms: judges.sort(),
+                        rooms: judges.sort((a, b) => a.localeCompare(b)),
                         venue: venue
                     })
             )
