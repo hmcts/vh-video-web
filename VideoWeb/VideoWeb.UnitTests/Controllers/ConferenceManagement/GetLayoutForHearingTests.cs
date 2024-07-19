@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Services;
 
@@ -87,7 +86,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .Throws<Exception>();
 
             // Act
-            Assert.ThrowsAsync<Exception>(async () => await _sut.GetLayoutForHearing(conferenceId));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.GetLayoutForHearing(conferenceId));
         }
     }
 }
