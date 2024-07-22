@@ -123,6 +123,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
             services.AddScoped<ISupplierLocator, SupplierLocator>();
             services.AddScoped<IConferenceService, ConferenceService>();
+            services.AddTransient<VhApiLoggingDelegatingHandler>();
             
             RegisterMappers(services);
 
@@ -131,12 +132,14 @@ namespace VideoWeb.Extensions
 
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler<BookingsApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration))
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();

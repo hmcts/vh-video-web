@@ -37,46 +37,40 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error writing to cache for key {key}", key);
+                _logger.LogError(ex, "Error writing to cache for key {Key}", GetKey(key));
             }
         }
 
         public virtual async Task<TEntry> ReadFromCache(TKey key)
         {
-            try
-            {
-                var data = await _distributedCache.GetAsync(GetKey(key));
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var layout =
-                    JsonConvert.DeserializeObject<TEntry>(profileSerialised,
-                        CachingHelper.SerializerSettings);
-                return layout;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error reading from cache for key {key}", key);
-                return default(TEntry);
-            }
+            return await ReadFromCacheWithType<TEntry>(key);
         }
         
         public virtual async Task<TResult> ReadFromCache<TResult>(TKey key)
         {
+            return await ReadFromCacheWithType<TResult>(key);
+        }
+
+        private async Task<TResult> ReadFromCacheWithType<TResult>(TKey key)
+        {
             try
             {
                 var data = await _distributedCache.GetAsync(GetKey(key));
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var layout =
-                    JsonConvert.DeserializeObject<TResult>(profileSerialised,
+                if(data == null) return default;
+                
+                var dataAsString = Encoding.UTF8.GetString(data);
+                var deserialisedObject =
+                    JsonConvert.DeserializeObject<TResult>(dataAsString,
                         new JsonSerializerSettings
                         {
                             TypeNameHandling = TypeNameHandling.None, Formatting = Formatting.None
                         });
-                return layout;
+                return deserialisedObject;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reading from cache for key {key}", key);
-                return default(TResult);
+                _logger.LogError(ex, "Error reading from cache {CacheName} for key {Key}",this.GetType().Name, GetKey(key));
+                return default;
             }
         }
 
@@ -88,7 +82,7 @@ namespace VideoWeb.Common.Caching
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error removing from cache for key {key}", key);
+                _logger.LogError(ex, "Error removing from cache for key {Key}", GetKey(key));
             }
             
         }
