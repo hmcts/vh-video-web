@@ -157,9 +157,13 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task should_return_an_empty_list_of_claims_if_no_justice_user_is_found()
+        public async Task should_return_a_non_default_list_of_claims_if_no_justice_user_is_found()
         {
             // arrange
+            var defaultClaimForNonExistentJusticeUser = new List<Claim>()
+            {
+                new (ClaimTypes.Role, "EmptyClaimToAvoidDefaultListValue")
+            };
             var username = "random@claims.com";
             var apiException = new BookingsApiException<string>("Conflict", (int) HttpStatusCode.NotFound,
                 "Conflict", null, null, null);
@@ -170,7 +174,7 @@ namespace VideoWeb.UnitTests.Services
             var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
-            claims.Should().BeEmpty();
+            claims.Should().BeEquivalentTo(defaultClaimForNonExistentJusticeUser);
         }
 
         private static JusticeUserResponse InitJusticeUser(List<JusticeUserRole> justiceUserRoles, string username)
