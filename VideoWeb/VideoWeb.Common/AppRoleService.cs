@@ -54,7 +54,10 @@ namespace VideoWeb.Common
 
             if (user == null)
             {
-                claims = new List<Claim>();
+                claims =
+                [
+                    new Claim(ClaimTypes.Role, "EmptyClaimToAvoidDefaultListValue")
+                ];
             }
             else
             {
