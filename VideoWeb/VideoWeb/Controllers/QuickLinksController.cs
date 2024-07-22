@@ -17,7 +17,6 @@ using VideoWeb.Services;
 
 namespace VideoWeb.Controllers
 {
-    
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
