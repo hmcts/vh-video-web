@@ -11,8 +11,12 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() conference: ConferenceResponse;
     @Input() callback: Function;
+    @Input() onHostToolBar = false;
 
-    availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    private availableLayoutsWR = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
+    availableLayouts: HearingLayout[];
+
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
 
@@ -36,6 +40,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.availableLayouts = this.onHostToolBar ? this.availableLayoutHostToolBar : this.availableLayoutsWR;
         const headingElement = document.getElementById('accordion-choose-layout-heading');
         headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
