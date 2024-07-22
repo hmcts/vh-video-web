@@ -6,14 +6,14 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedUserProfileCache : RedisCacheBase<string, UserProfile>, IUserProfileCache
+    public sealed class DistributedUserProfileCache : RedisCacheBase<string, UserProfile>, IUserProfileCache
     {
         private readonly string _entryPrefix = "userprofile_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
         public DistributedUserProfileCache(
             IDistributedCache distributedCache,
-            ILogger<RedisCacheBase<string, UserProfile>> logger) : base(distributedCache, logger)
+            ILogger<DistributedUserProfileCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
