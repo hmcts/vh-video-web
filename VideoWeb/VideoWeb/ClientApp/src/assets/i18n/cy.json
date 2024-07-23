@@ -727,7 +727,8 @@
     "leave-hearing": "Gadael y gwrandawiad",
     "share-video-evidence": "Rhannu fideo neu sain",
     "share-document-evidence": "Rhannu dogfennau",
-    "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn"
+    "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn",
+    "change-hearing-layout": "Change Layout"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
