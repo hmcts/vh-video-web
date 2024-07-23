@@ -98,6 +98,7 @@ export class ConferenceTestData {
             scheduled_date_time: pastDate,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
+            hearing_venue_name: 'Manchester',
             participants: this.getListOfParticipants(),
             telephone_conference_id: '0345855',
             telephone_conference_numbers: '+441234567890',

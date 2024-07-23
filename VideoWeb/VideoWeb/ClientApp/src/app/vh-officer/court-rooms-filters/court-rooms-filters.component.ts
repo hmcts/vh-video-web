@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
     selector: 'app-court-rooms-filters',
@@ -11,7 +11,7 @@ export class CourtRoomsFiltersComponent {
     @Input() courtRoomsAccountsFilters: CourtRoomsAccounts[];
     disableFilterApply = true;
 
-    constructor(private eventBusService: EventBusService) {}
+    constructor(private vhoQueryService: VhoQueryService) {}
 
     allRoomOptionSelected(venueIndex: number) {
         const venue = this.courtRoomsAccountsFilters[venueIndex];
@@ -30,7 +30,7 @@ export class CourtRoomsFiltersComponent {
 
     applyFilters() {
         this.disableFilterApply = true;
-        this.eventBusService.emit(new EmitEvent(VHEventType.ApplyCourtAccountFilter, this.courtRoomsAccountsFilters));
+        this.vhoQueryService.updateCourtRoomsAccountFilters(this.courtRoomsAccountsFilters);
     }
 
     cancelFilters() {
