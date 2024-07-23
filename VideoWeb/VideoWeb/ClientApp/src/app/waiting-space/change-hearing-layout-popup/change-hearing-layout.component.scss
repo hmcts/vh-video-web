@@ -1,15 +1,15 @@
 .modal {
-    display: block;
-    position: fixed;
-    z-index: 999;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50%;
-    height: 50%;
-    background-color: rgba(0, 0, 0, 0.9);
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 .modal-content {
-    padding: 20px;
+  padding: 20px;
 }

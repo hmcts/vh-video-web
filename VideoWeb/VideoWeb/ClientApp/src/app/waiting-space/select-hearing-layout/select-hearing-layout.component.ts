@@ -13,14 +13,15 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() callback: Function;
     @Input() onHostToolBar = false;
 
-    private availableLayoutsWR = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
-    private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
     availableLayouts: HearingLayout[];
 
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
 
     subscriptions = new Subscription();
+
+    private availableLayoutsWR = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
 
     constructor(
         private hearingLayoutService: HearingLayoutService,

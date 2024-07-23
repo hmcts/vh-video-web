@@ -1,9 +1,9 @@
 <div class="govuk-accordion" data-module="govuk-accordion" id="select-hearing-container">
   <div class="govuk-accordion__section" id="accordian-container">
     <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
+      <div class="govuk-accordion__section-heading">
           <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"></span>
-      </h2>
+      </div>
     </div>
     <div *ngIf="!isAccordianOpen">
       <app-hearing-layout [layout]="currentLayout$ | async" [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)" [showInput]="false"></app-hearing-layout>
