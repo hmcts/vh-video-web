@@ -25,6 +25,7 @@ namespace VideoWeb.Mappings
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
             response.CurrentRoom = Map(participant.CurrentRoom);
             response.InterpreterRoom  = Map(participant.InterpreterRoom);
+            response.InterpreterLanguage = participant.InterpreterLanguage?.Map();
 
             return response;
         }

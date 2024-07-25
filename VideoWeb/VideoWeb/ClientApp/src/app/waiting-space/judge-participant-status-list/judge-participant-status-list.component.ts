@@ -14,6 +14,7 @@ import { VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
+import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -151,6 +152,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     cancelJudgeDisplayName() {
         this.showChangeJudgeDisplayName = false;
         this.focusService.restoreFocus();
+    }
+
+    stringToTranslateId(str: string) {
+        return convertStringToTranslationId(str);
     }
 
     private filterRepresentatives(): void {

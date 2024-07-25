@@ -1,4 +1,4 @@
-import { ConferenceStatus, EndpointStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, InterpreterType, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 
 export interface VHConference {
     id: string;
@@ -27,6 +27,7 @@ export interface VHParticipant {
     representee?: string;
     pexipInfo?: VHPexipParticipant;
     room?: VHRoom;
+    interpreterLanguage?: VHInterpreterLanguage;
     linkedParticipants: Array<VHLinkedParticipant>;
 }
 
@@ -37,6 +38,7 @@ export interface VHEndpoint {
     defenceAdvocate: string | undefined;
     room: VHRoom;
     pexipInfo?: VHPexipParticipant;
+    interpreterLanguage?: VHInterpreterLanguage;
 }
 
 export interface VHPexipParticipant {
@@ -58,4 +60,10 @@ export interface VHRoom {
 export interface VHLinkedParticipant {
     linkedId?: string;
     linkedType?: LinkType;
+}
+
+export interface VHInterpreterLanguage {
+    code: string;
+    description: string;
+    type: InterpreterType;
 }
