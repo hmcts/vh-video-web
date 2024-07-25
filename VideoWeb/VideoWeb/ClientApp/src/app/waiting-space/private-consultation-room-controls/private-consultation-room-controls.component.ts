@@ -93,6 +93,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         return this.isHost && !this.isPrivateConsultation;
     }
 
+    get canDisplayChangeLayoutPopup(): boolean {
+        return this.displayChangeLayoutPopup && this.isHost;
+    }
+
     get canJoinHearingFromConsultation(): boolean {
         return (
             this.conferenceStatus?.newStatus === ConferenceStatus.InSession &&

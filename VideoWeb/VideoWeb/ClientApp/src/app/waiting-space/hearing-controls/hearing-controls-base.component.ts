@@ -53,12 +53,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
+    displayChangeLayoutPopup = false;
 
     hasACamera = true;
     hasAMicrophone = true;
 
     sharingDynamicEvidence: boolean;
-    displayChangeLayoutPopup: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
     protected readonly loggerPrefix = '[HearingControlsBase] -';

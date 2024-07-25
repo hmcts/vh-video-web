@@ -606,13 +606,10 @@
       </button>
 
       <ng-container *ngIf="canShowLeaveButton">
-          <div id='change-hearing-layout' class="icon-button" appTooltip colour='grey' [text]="'private-consultation-room-controls.change-hearing-layout' | translate">
-              <fa-icon icon="th-large" flip="horizontal" tabindex="0"
-                       (keyup.enter)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
-                       (keyup.space)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
-                       (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
-              ></fa-icon>
-          </div>
+          <button id='change-hearing-layout' class="icon-button" appTooltip colour='grey' [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
+                  tabindex="0" (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup">
+              <fa-icon icon="th-large" flip="horizontal" ></fa-icon>
+          </button>
 
         <button
           id="leave-hearing-desktop"
@@ -715,5 +712,5 @@
 
 <app-confirm-close-hearing-popup *ngIf="canShowCloseHearingPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>
 
-<app-change-hearing-layout-popup *ngIf='displayChangeLayoutPopup' [conference]="conference" [onLayoutUpdate]="onLayoutUpdate"></app-change-hearing-layout-popup>
+<app-change-hearing-layout-popup *ngIf='canDisplayChangeLayoutPopup' [conference]="conference" [onLayoutUpdate]="onLayoutUpdate"></app-change-hearing-layout-popup>
 
