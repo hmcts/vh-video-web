@@ -114,6 +114,9 @@ describe('VideoCallService', () => {
             'disconnectParticipant',
             'setParticipantText',
             'transformLayout'
+            'setParticipantText',
+            'setSendToAudioMixes',
+            'setReceiveFromAudioMix'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -824,6 +827,26 @@ describe('VideoCallService', () => {
             const layout = HearingLayout.TwoPlus21;
             service.transformLayout(layout);
             expect(pexipSpy.transformLayout).toHaveBeenCalledOnceWith({ layout: layout });
+        });
+    });
+
+    describe('sendParticipantAudioToMixes', () => {
+        it('should call pexip sendParticipantAudioToMixes', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixes = [{ mix_name: 'main', prominent: false }];
+            service.sendParticipantAudioToMixes(mixes, uuid);
+            expect(pexipSpy.setSendToAudioMixes).toHaveBeenCalledWith(mixes, uuid);
+        });
+    });
+
+    describe('receiveAudioFromMix', () => {
+        it('should call pexip receiveAudioFromMix', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixName = 'main';
+            service.receiveAudioFromMix(mixName, uuid);
+            expect(pexipSpy.setReceiveFromAudioMix).toHaveBeenCalledWith(mixName, uuid);
         });
     });
 });
