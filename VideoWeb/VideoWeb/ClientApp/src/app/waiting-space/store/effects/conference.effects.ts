@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { concatLatestFrom } from '@ngrx/operators';
-import { NEVER, of } from 'rxjs';
-import { catchError, switchMap, map, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, switchMap, map } from 'rxjs/operators';
 import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
-import { ConferenceState } from '../reducers/conference.reducer';
-import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { Store } from '@ngrx/store';
-import { VideoCallService } from '../../services/video-call.service';
-import { HearingRole } from '../../models/hearing-role-model';
 
 @Injectable()
 export class ConferenceEffects {
