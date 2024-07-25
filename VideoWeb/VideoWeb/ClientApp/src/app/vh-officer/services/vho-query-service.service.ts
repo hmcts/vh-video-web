@@ -31,6 +31,8 @@ export class VhoQueryService {
     private readonly courtAccountsFilterStorage: SessionStorage<CourtRoomsAccounts[]>;
     private readonly csoFilterStorage: SessionStorage<CsoFilter>;
 
+    private readonly pollingInterval = 300000; // 5 minutes
+
     constructor(private apiClient: ApiClient) {
         this.csoFilterStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.courtAccountsFilterStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -46,8 +48,8 @@ export class VhoQueryService {
         this.activeSessionsOnly = activeSessionsOnly;
         this.runQuery();
         this.interval = setInterval(async () => {
-            this.runQuery();
-        }, 30000);
+            await this.runQuery();
+        }, this.pollingInterval);
     }
 
     stopQuery() {
