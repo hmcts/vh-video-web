@@ -148,7 +148,10 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
         if (participant.hearingRole === HearingRole.INTERPRETER) {
             const interpreteeName = this.getInterpreteeName(participant.id);
-            return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
+            if (interpreteeName) {
+                return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
+            }
+            return translatedHearingRole;
         }
         if (participant.representee) {
             const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
@@ -164,6 +167,9 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        if (!interpreter.linkedParticipants || interpreter.linkedParticipants.length === 0) {
+            return null;
+        }
         return this.nonJudgeParticipants.find(x => x.id === interpreter.linkedParticipants[0].linkedId).name;
     }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using InterpreterType = VideoWeb.Common.Models.InterpreterType;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -48,7 +49,41 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_correctly()
         {
-            var testParticipant = new Participant()
+            var testParticipant = CreateParticipant();
+
+            var mapped = _sut.Map(testParticipant);
+
+            mapped.DisplayName.Should().Be(testParticipant.DisplayName);
+            mapped.FirstName.Should().Be(testParticipant.FirstName);
+            mapped.HearingRole.Should().Be(testParticipant.HearingRole);
+            mapped.LastName.Should().Be(testParticipant.LastName);
+            mapped.Status.Should().Be(testParticipant.ParticipantStatus);
+            mapped.Representee.Should().Be(testParticipant.Representee);
+            mapped.Role.Should().Be(testParticipant.Role);
+            mapped.Id.Should().Be(testParticipant.Id);
+            mapped.UserName.Should().Be(testParticipant.Username);
+            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse> { linkedParticipantResponse1, linkedParticipantResponse2 });
+            mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
+            mapped.CurrentRoom.Should().NotBeNull();
+            mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
+            mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
+            mapped.InterpreterLanguage.Should().BeEquivalentTo(testParticipant.InterpreterLanguage.Map());
+        }
+
+        [Test]
+        public void should_map_correctly_without_interpreter_language()
+        {
+            var participant = CreateParticipant();
+            participant.InterpreterLanguage = null;
+            
+            var mapped = _sut.Map(participant);
+
+            mapped.InterpreterLanguage.Should().BeNull();
+        }
+
+        private Participant CreateParticipant()
+        {
+            return new Participant
             {
                 ContactEmail = "TestContactEmail",
                 ContactTelephone = "TestContactTelephone",
@@ -73,25 +108,14 @@ namespace VideoWeb.UnitTests.Mappings
                     Id = long.Parse(roomSummaryResponse.Id),
                     Label = roomSummaryResponse.Label,
                     Locked = roomSummaryResponse.Locked
+                },
+                InterpreterLanguage = new InterpreterLanguage
+                {
+                    Code = "spa",
+                    Description = "Spanish",
+                    Type = InterpreterType.Verbal
                 }
             };
-
-            var mapped = _sut.Map(testParticipant);
-
-            mapped.DisplayName.Should().Be(testParticipant.DisplayName);
-            mapped.FirstName.Should().Be(testParticipant.FirstName);
-            mapped.HearingRole.Should().Be(testParticipant.HearingRole);
-            mapped.LastName.Should().Be(testParticipant.LastName);
-            mapped.Status.Should().Be(testParticipant.ParticipantStatus);
-            mapped.Representee.Should().Be(testParticipant.Representee);
-            mapped.Role.Should().Be(testParticipant.Role);
-            mapped.Id.Should().Be(testParticipant.Id);
-            mapped.UserName.Should().Be(testParticipant.Username);
-            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse> { linkedParticipantResponse1, linkedParticipantResponse2 });
-            mapped.InterpreterRoom.Should().BeEquivalentTo(roomSummaryResponse);
-            mapped.CurrentRoom.Should().NotBeNull();
-            mapped.CurrentRoom.Label.Should().Be(testParticipant.CurrentRoom.Label);
-            mapped.CurrentRoom.Locked.Should().Be(testParticipant.CurrentRoom.Locked);
         }
     }
 }

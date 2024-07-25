@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V1.Responses;
@@ -10,7 +11,9 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
+using VideoWeb.Mappings;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
+using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
@@ -52,6 +55,7 @@ public class ConferenceCacheMapperTests
                     resultParticipant.CurrentRoom.Label.Should().Be(participant.CurrentRoom.Label);
                     resultParticipant.CurrentRoom.Locked.Should().Be(participant.CurrentRoom.Locked);
                 }
+                resultParticipant.InterpreterLanguage.Should().BeEquivalentTo(participantDetails.InterpreterLanguage.Map());
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
@@ -67,6 +71,7 @@ public class ConferenceCacheMapperTests
                 resultParticipant.LastName.Should().Be(johDetails.LastName);
                 resultParticipant.ContactEmail.Should().Be(johDetails.OptionalContactEmail);
                 resultParticipant.ContactTelephone.Should().Be(johDetails.OptionalContactTelephone);
+                resultParticipant.InterpreterLanguage.Should().BeEquivalentTo(johDetails.InterpreterLanguage.Map());
             }
             else
             {
@@ -95,6 +100,8 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.DisplayName).Should().Contain(endpoint.DisplayName);
             conference.Endpoints.Select(x => x.Status).Should().Contain((EndpointState)endpoint.EndpointStatus);
             conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
+            var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
+            endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
         }
     }
     
@@ -111,11 +118,39 @@ public class ConferenceCacheMapperTests
         
         resultParticipant.CurrentRoom.Should().BeNull();
     }
+
+    [Test]
+    public void Should_map_without_interpreter_language()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        var participant = hearing.Participants[0];
+        participant.InterpreterLanguage = null;
+        var judiciaryParticipant = hearing.JudiciaryParticipants[0];
+        judiciaryParticipant.InterpreterLanguage = null;
+        var endpoint = hearing.Endpoints[0];
+        endpoint.InterpreterLanguage = null;
+        
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+        
+        var resultParticipant  = response.Participants.Find(p => p.Username == participant.Username);
+        resultParticipant.InterpreterLanguage.Should().BeNull();
+        var resultJudiciaryParticipant = response.Participants.Find(p => p.Username == judiciaryParticipant.Email);
+        resultJudiciaryParticipant.InterpreterLanguage.Should().BeNull();
+        var resultEndpoint = response.Endpoints.Find(e => e.Id == endpoint.Id);
+        resultEndpoint.InterpreterLanguage.Should().BeNull();
+    }
     
     private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
     {
         var participants = new List<ParticipantResponseV2>();
         var joh = new List<JudiciaryParticipantResponse>();
+        var interpreterLanguage = new InterpreterLanguagesResponse
+        {
+            Code = "spa",
+            Value = "Spanish",
+            Type = InterpreterType.Verbal
+        };
         
         foreach (var participant in conference.Participants)
         {
@@ -125,6 +160,7 @@ public class ConferenceCacheMapperTests
                 case UserRole.JudicialOfficeHolder:
                     joh.Add( new JudicialParticipantResponseBuilder(participant.UserRole == UserRole.Judge)
                         .WithUsername(participant.Username)
+                        .WithInterpreterLanguage(interpreterLanguage.Code, interpreterLanguage.Value, interpreterLanguage.Type)
                         .Build());
                     break;
                 case UserRole.QuickLinkObserver:
@@ -133,6 +169,8 @@ public class ConferenceCacheMapperTests
                 default:
                     participants.Add(new ParticipantFromBookingApiResponseBuilder(participant.RefId)
                         .WithRoles(participant.UserRole.ToString())
+                        .WithInterpreterLanguage(interpreterLanguage.Code, interpreterLanguage.Value, interpreterLanguage.Type)
+                        .WithUsername(participant.Username)
                         .Build());
                     break;
             }
@@ -140,11 +178,12 @@ public class ConferenceCacheMapperTests
         
         var endpoints = conference.Endpoints.Select(x => new EndpointResponseV2
         {
-            Id = conference.HearingId,
+            Id = x.Id,
             DisplayName = x.DisplayName,
             Sip = x.SipAddress,
             Pin = x.Pin,
             DefenceAdvocateId = conference.Participants.First(p => p.Username == x.DefenceAdvocate).RefId,
+            InterpreterLanguage = interpreterLanguage
         }).ToList();
         
         return Builder<HearingDetailsResponseV2>.CreateNew()
@@ -159,13 +198,13 @@ public class ConferenceCacheMapperTests
     {
         var participants = new List<ParticipantResponse>
         {
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Representative).Build(),
+            new ParticipantResponseBuilder(UserRole.Individual).WithUsername(Faker.Internet.Email()).Build(),
+            new ParticipantResponseBuilder(UserRole.Individual).WithUsername(Faker.Internet.Email()).Build(),
+            new ParticipantResponseBuilder(UserRole.Representative).WithUsername(Faker.Internet.Email()).Build(),
             new ParticipantResponseBuilder(UserRole.Judge).WithUsername("Judge1").Build(),
             new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).WithUsername("Joh1").Build(),
-            new ParticipantResponseBuilder(UserRole.CaseAdmin).Build(),
-            new ParticipantResponseBuilder(UserRole.QuickLinkParticipant).Build()
+            new ParticipantResponseBuilder(UserRole.CaseAdmin).WithUsername(Faker.Internet.Email()).Build(),
+            new ParticipantResponseBuilder(UserRole.QuickLinkParticipant).WithUsername(Faker.Internet.Email()).Build()
         };
         var participantA = participants[0];
         var participantB = participants[1];
@@ -173,7 +212,12 @@ public class ConferenceCacheMapperTests
         participantA.CurrentRoom = new RoomResponse {Id = 1,Label = "Room 1", Locked = true};
         participantB.LinkedParticipants.Add(new LinkedParticipantResponse { LinkedId = participantA.Id, Type = LinkedParticipantType.Interpreter });
         participantB.CurrentRoom = new RoomResponse {Id = 2,Label = "Room 2", Locked = true};
-        var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).All().With(e => e.DefenceAdvocate = participantA.Username).Build().ToList();
+        var endpoints = Builder<EndpointResponse>.CreateListOfSize(2)
+            .All()
+            .With(e => e.DefenceAdvocate = participantA.Username)
+            .With(e => e.Id = Guid.NewGuid())
+            .Build()
+            .ToList();
         var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
         var conference = Builder<ConferenceDetailsResponse>.CreateNew()
             .With(x => x.CurrentStatus = ConferenceState.Suspended)

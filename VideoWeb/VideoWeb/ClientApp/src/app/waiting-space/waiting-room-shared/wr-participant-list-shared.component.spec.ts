@@ -449,7 +449,19 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(interpreteeName).toEqual(interpretee.name);
         });
 
-        it('getHearingRole should return contain Interpreter for when displaying an Interpreter', () => {
+        it('getInterpreteeName should return null when interpreter has no linked participants', () => {
+            const interpreter = component.nonJudgeParticipants.find(
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
+            );
+
+            [null, []].forEach(linkedParticipants => {
+                interpreter.linkedParticipants = linkedParticipants;
+                const interpreteeName = component.getInterpreteeName(interpreter.id);
+                expect(interpreteeName).toBeNull();
+            });
+        });
+
+        it('getHearingRole should return Interpreter for when displaying an Interpreter with an Interpretee', () => {
             const interpreter = component.nonJudgeParticipants.find(
                 x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
             );
@@ -461,6 +473,20 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(hearingRoleText).toEqual(
                 `hearing-role.interpreter wr-participant-list-shared.for <br><strong>${interpretee.name}</strong>`
             );
+        });
+
+        it('getHearingRole should return Interpreter when displaying an Interpreter without an Interpretee', () => {
+            const interpreter = component.nonJudgeParticipants.find(
+                x => x.hearingRole === HearingRole.INTERPRETER && x.displayName === 'Interpreter'
+            );
+
+            [null, []].forEach(linkedParticipants => {
+                interpreter.linkedParticipants = linkedParticipants;
+
+                const hearingRoleText = component.getHearingRole(interpreter);
+
+                expect(hearingRoleText).toEqual('hearing-role.interpreter');
+            });
         });
 
         it('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
