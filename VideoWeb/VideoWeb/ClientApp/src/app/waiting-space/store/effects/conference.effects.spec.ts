@@ -10,7 +10,6 @@ import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { VideoCallService } from '../../services/video-call.service';
-import { provideMockStore } from '@ngrx/store/testing';
 
 describe('ConferenceEffectsEffects', () => {
     let actions$: Observable<any>;
@@ -23,13 +22,7 @@ describe('ConferenceEffectsEffects', () => {
         videoCallService = jasmine.createSpyObj('VideoCallService', ['receiveAudioFromMix', 'sendParticipantAudioToMixes']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                ConferenceEffects,
-                provideMockStore(),
-                provideMockActions(() => actions$),
-                { provide: ApiClient, useValue: apiClient },
-                { provide: VideoCallService, useValue: videoCallService }
-            ]
+            providers: [ConferenceEffects, provideMockActions(() => actions$), { provide: ApiClient, useValue: apiClient }]
         });
 
         effects = TestBed.inject(ConferenceEffects);
