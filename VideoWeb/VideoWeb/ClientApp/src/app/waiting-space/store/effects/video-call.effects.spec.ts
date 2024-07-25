@@ -15,7 +15,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallEffects } from './video-call.effects';
 import { InterpreterType } from 'src/app/services/clients/api-client';
 
-fdescribe('ConferenceEffectsEffects', () => {
+describe('ConferenceEffectsEffects', () => {
     let actions$: Observable<any>;
     let effects: VideoCallEffects;
     let videoCallService: jasmine.SpyObj<VideoCallService>;
