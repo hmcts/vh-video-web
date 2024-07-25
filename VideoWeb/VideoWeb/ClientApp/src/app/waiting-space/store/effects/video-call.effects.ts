@@ -8,6 +8,7 @@ import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { Store } from '@ngrx/store';
 import { VideoCallService } from '../../services/video-call.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { InterpreterType } from 'src/app/services/clients/api-client';
 
 @Injectable()
 export class VideoCallEffects {
@@ -25,19 +26,13 @@ export class VideoCallEffects {
                         return;
                     }
 
-                    // TODO: check if participant.interpreterLanguage is not null or endpoint.interpreterLanguage is not null
-                    const hasInterpretationLanguage = true;
-                    if (!hasInterpretationLanguage) {
+                    const interpreterLanguage = participant ? participant.interpreterLanguage : endpoint.interpreterLanguage;
+                    if (!interpreterLanguage || interpreterLanguage.type !== InterpreterType.Verbal) {
                         return;
                     }
 
-                    // const languageDescription = null;
-                    // if (!languageDescription){
-                    //     return;
-                    // }
-
                     const participantUuid = participant ? participant.pexipInfo.uuid : endpoint.pexipInfo.uuid;
-                    const languageDescription = 'Spanish';
+                    const languageDescription = interpreterLanguage.description;
                     const audioMixes: PexipAudioMix[] = [
                         {
                             mix_name: 'main',

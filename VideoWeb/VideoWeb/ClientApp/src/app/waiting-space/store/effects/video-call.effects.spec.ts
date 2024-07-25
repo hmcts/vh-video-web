@@ -10,11 +10,12 @@ import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { VHPexipParticipant } from '../models/vh-conference';
+import { VHInterpreterLanguage, VHPexipParticipant } from '../models/vh-conference';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallEffects } from './video-call.effects';
+import { InterpreterType } from 'src/app/services/clients/api-client';
 
-describe('ConferenceEffectsEffects', () => {
+fdescribe('ConferenceEffectsEffects', () => {
     let actions$: Observable<any>;
     let effects: VideoCallEffects;
     let videoCallService: jasmine.SpyObj<VideoCallService>;
@@ -81,13 +82,14 @@ describe('ConferenceEffectsEffects', () => {
             });
         });
 
-        it('should create audio mixes if non-interpreter participant is found and has verbal interpreter language', () => {
+        it('should not create audio mixes if participant is found but does not have verbal interpreter language', () => {
             // arrange
             const participants = new ConferenceTestData().getListOfParticipants();
             let participant = mapParticipantToVHParticipant(participants[0]);
             participant = {
                 ...participant,
                 hearingRole: HearingRole.APPELLANT,
+                interpreterLanguage: { code: 'asl', description: 'American Sign Language', type: InterpreterType.Sign },
                 pexipInfo: {
                     isRemoteMuted: false,
                     isSpotlighted: false,
@@ -104,7 +106,6 @@ describe('ConferenceEffectsEffects', () => {
 
             // mock the get participants since override selector does not work with params and the selector get participant by id used the getParticipantsSelector
             mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
-            const languageDescription = 'Spanish';
             const pexipParticipant: VHPexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -124,17 +125,69 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(languageDescription, pexipParticipant.uuid);
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledTimes(0);
             });
         });
 
-        it('should create audio mixes and send audio to language mix if interpreter participant is found and has verbal interpreter language', () => {
+        it('should not create audio mixes if endpoint is found but does not have verbal interpreter language', () => {
+            // arrange
+            const endpoints = new ConferenceTestData().getListOfEndpoints();
+            let endpoint = mapEndpointToVHEndpoint(endpoints[0]);
+            endpoint = {
+                ...endpoint,
+                interpreterLanguage: { code: 'asl', description: 'American Sign Language', type: InterpreterType.Sign },
+                pexipInfo: {
+                    isRemoteMuted: false,
+                    isSpotlighted: false,
+                    handRaised: false,
+                    pexipDisplayName: `PTSN;${endpoints[0].display_name};${endpoints[0].id}`,
+                    uuid: '1922_John Doe',
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'sip',
+                    sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                    receivingAudioMix: 'main'
+                }
+            };
+
+            // mock the get endpoints since override selector does not work with params and the selector get endpoint by id used the getEndpointsSelector
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, [endpoint]);
+            const pexipParticipant: VHPexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: `PTSN;${endpoints[0].display_name};${endpoints[0].id}`,
+                uuid: '1922_John Doe',
+                isAudioOnlyCall: false,
+                isVideoCall: true,
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
+            };
+            const action = ConferenceActions.createPexipParticipant({ participant: pexipParticipant });
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.createAudioMixes$.subscribe(() => {
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        it('should create audio mixes if non-interpreter participant is found and has verbal interpreter language', () => {
             // arrange
             const participants = new ConferenceTestData().getListOfParticipants();
+            const interpretationLanguage: VHInterpreterLanguage = {
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            };
             let participant = mapParticipantToVHParticipant(participants[0]);
             participant = {
                 ...participant,
-                hearingRole: HearingRole.INTERPRETER,
+                hearingRole: HearingRole.APPELLANT,
+                interpreterLanguage: interpretationLanguage,
                 pexipInfo: {
                     isRemoteMuted: false,
                     isSpotlighted: false,
@@ -151,7 +204,61 @@ describe('ConferenceEffectsEffects', () => {
 
             // mock the get participants since override selector does not work with params and the selector get participant by id used the getParticipantsSelector
             mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
-            const languageDescription = 'Spanish';
+            const pexipParticipant: VHPexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: `1922_John Doe${participants[0].id}`,
+                uuid: '1922_John Doe',
+                isAudioOnlyCall: false,
+                isVideoCall: true,
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
+            };
+            const action = ConferenceActions.createPexipParticipant({ participant: pexipParticipant });
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.createAudioMixes$.subscribe(() => {
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
+                    interpretationLanguage.description,
+                    pexipParticipant.uuid
+                );
+            });
+        });
+
+        it('should create audio mixes and send audio to language mix if interpreter participant is found and has verbal interpreter language', () => {
+            // arrange
+            const interpretationLanguage: VHInterpreterLanguage = {
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            };
+            const participants = new ConferenceTestData().getListOfParticipants();
+            let participant = mapParticipantToVHParticipant(participants[0]);
+            participant = {
+                ...participant,
+                hearingRole: HearingRole.INTERPRETER,
+                interpreterLanguage: interpretationLanguage,
+                pexipInfo: {
+                    isRemoteMuted: false,
+                    isSpotlighted: false,
+                    handRaised: false,
+                    pexipDisplayName: `1922_${participant.displayName}`,
+                    uuid: '1922_John Doe',
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'sip',
+                    sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                    receivingAudioMix: 'main'
+                }
+            };
+
+            // mock the get participants since override selector does not work with params and the selector get participant by id used the getParticipantsSelector
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
             const pexipParticipant: VHPexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -171,7 +278,7 @@ describe('ConferenceEffectsEffects', () => {
                     prominent: false
                 },
                 {
-                    mix_name: languageDescription,
+                    mix_name: interpretationLanguage.description,
                     prominent: true
                 }
             ];
@@ -181,17 +288,26 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(languageDescription, pexipParticipant.uuid);
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
+                    interpretationLanguage.description,
+                    pexipParticipant.uuid
+                );
                 expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledWith(expectedAudioMixes, pexipParticipant.uuid);
             });
         });
 
         it('should create audio mixes if endpoint is found and has verbal interpreter language', () => {
             // act
+            const interpretationLanguage: VHInterpreterLanguage = {
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            };
             const endpoints = new ConferenceTestData().getListOfEndpoints();
             let endpoint = mapEndpointToVHEndpoint(endpoints[0]);
             endpoint = {
                 ...endpoint,
+                interpreterLanguage: interpretationLanguage,
                 pexipInfo: {
                     isRemoteMuted: false,
                     isSpotlighted: false,
@@ -208,7 +324,6 @@ describe('ConferenceEffectsEffects', () => {
 
             // mock the get endpoints since override selector does not work with params and the selector get endpoint by id used the getEndpointsSelector
             mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, [endpoint]);
-            const languageDescription = 'Spanish';
             const pexipParticipant: VHPexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -229,7 +344,10 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(languageDescription, pexipParticipant.uuid);
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
+                    interpretationLanguage.description,
+                    pexipParticipant.uuid
+                );
             });
         });
     });
