@@ -606,15 +606,13 @@
       </button>
 
       <ng-container *ngIf="canShowLeaveButton">
-          <button id='change-hearing-layout' class="icon-button" appTooltip colour='grey'
-               tabindex="0"
-               [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
-               (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
-               (keyup.enter)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
-               (keyup.space)="displayChangeLayoutPopup = !displayChangeLayoutPopup">
-              <fa-icon icon="th-large" flip="horizontal"
-                       tabindex="0" (keyup.enter)="displayChangeLayoutPopup = !displayChangeLayoutPopup"></fa-icon>
-          </button>
+          <div id='change-hearing-layout' class="icon-button" appTooltip colour='grey' [text]="'private-consultation-room-controls.change-hearing-layout' | translate">
+              <fa-icon icon="th-large" flip="horizontal" tabindex="0"
+                       (keyup.enter)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
+                       (keyup.space)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
+                       (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
+              ></fa-icon>
+          </div>
 
         <button
           id="leave-hearing-desktop"
