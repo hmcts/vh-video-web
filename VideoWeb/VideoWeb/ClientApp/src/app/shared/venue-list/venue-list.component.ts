@@ -7,7 +7,6 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HearingVenueResponse, JusticeUserResponse, Role } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
@@ -22,7 +21,6 @@ export abstract class VenueListComponentDirective implements OnInit {
     selectedCsos: string[];
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
     errorMessage: string | null;
-    vhoWorkAllocationFeatureFlag: boolean;
     activeSessions: boolean;
     isAdministrator: boolean;
 
@@ -36,7 +34,6 @@ export abstract class VenueListComponentDirective implements OnInit {
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
-        protected ldService: LaunchDarklyService,
         protected profileService: ProfileService
     ) {
         this.selectedVenues = [];
@@ -121,10 +118,6 @@ export abstract class VenueListComponentDirective implements OnInit {
     }
 
     private setupSubscribers() {
-        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
-            this.vhoWorkAllocationFeatureFlag = value;
-        });
-
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();
