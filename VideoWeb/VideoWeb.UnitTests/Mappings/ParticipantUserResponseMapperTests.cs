@@ -9,10 +9,10 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantDtoForUserResponseMapperTests
+    public class ParticipantUserResponseMapperTests
     {
         protected AutoMock _mocker;
-        protected ParticipantDtoForUserResponseMapper _sut;
+        protected ParticipantUserResponseMapper _sut;
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Locked = false
             };
 
-            _sut = _mocker.Create<ParticipantDtoForUserResponseMapper>();
+            _sut = _mocker.Create<ParticipantUserResponseMapper>();
         }
 
         [Test]

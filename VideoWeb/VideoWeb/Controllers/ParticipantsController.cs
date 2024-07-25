@@ -14,12 +14,12 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
+using VideoWeb.Mappings;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
 using ParticipantResponse = VideoWeb.Contract.Responses.ParticipantResponse;
@@ -33,7 +33,6 @@ namespace VideoWeb.Controllers
         IVideoApiClient videoApiClient,
         IEventHandlerFactory eventHandlerFactory,
         ILogger<ParticipantsController> logger,
-        IMapperFactory mapperFactory,
         IParticipantService participantService,
         IConferenceService conferenceService)
         : ControllerBase
@@ -48,7 +47,6 @@ namespace VideoWeb.Controllers
         {
             var conference = await conferenceService.GetConference(conferenceId);
             var participantId = GetIdForParticipantByUsernameInConference(conference);
-            var eventTypeMapper = mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
                 ConferenceId = conferenceId.ToString(),
@@ -56,11 +54,10 @@ namespace VideoWeb.Controllers
                 EventId = Guid.NewGuid().ToString(),
                 EventType = updateParticipantStatusEventRequest.EventType,
                 TimeStampUtc = DateTime.UtcNow,
-                Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
+                Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEventMapper = mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
-            var callbackEvent = callbackEventMapper.Map(conferenceEventRequest, conference);
+            var callbackEvent = CallbackEventMapper.Map(conferenceEventRequest, conference);
             var handler = eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
@@ -140,8 +137,7 @@ namespace VideoWeb.Controllers
         private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
         {
             var conference = await conferenceService.ForceGetConference(conferenceId);
-            var participantResponseMapper = mapperFactory.Get<Participant, ParticipantResponse>();
-            var mappedParticipants = conference.Participants.Select(participantResponseMapper.Map).ToList();
+            var mappedParticipants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
             await eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
             {
                 Participants = mappedParticipants,
@@ -180,8 +176,7 @@ namespace VideoWeb.Controllers
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 
                 var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync();
-                var participantContactDetailsResponseVhoMapper = mapperFactory.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
-                var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
+                var response = ParticipantStatusResponseForVhoMapper.Map(conference, hostsInHearingsToday);
 
                 return Ok(response);
             }
@@ -203,8 +198,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await conferenceService.GetConference(conferenceId);
-                var participantMapper = mapperFactory.Get<Participant, ParticipantResponse>();
-                var participants = conference.Participants.Select(participantMapper.Map).ToList();
+                var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
                 return Ok(participants);
             }
             catch (VideoApiException e)
@@ -233,9 +227,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var claimsPrincipalToUserProfileResponseMapper =
-                    mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var profile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+                var profile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
                 var response = new LoggedParticipantResponse
                 {
                     AdminUsername = User.Identity?.Name,
@@ -294,16 +286,13 @@ namespace VideoWeb.Controllers
                 }
                 
                 logger.LogDebug("Attempting to assign {StaffMember} to conference {ConferenceId}", username, conferenceId);
-
-                var claimsPrincipalToUserProfileResponseMapper =
-                    mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+                
+                var staffMemberProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
 
                 var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
                 await participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
                 var updatedConference = await conferenceService.GetConference(conferenceId);
-                var conferenceResponseVhoMapper = mapperFactory.Get<Conference, ConferenceResponse>();
-                var mappedUpdatedConference = conferenceResponseVhoMapper.Map(updatedConference);
+                var mappedUpdatedConference = ConferenceResponseMapper.Map(updatedConference);
                 return Ok(mappedUpdatedConference);
             }
             catch (VideoApiException e)

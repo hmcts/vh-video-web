@@ -406,7 +406,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<VideoEndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantDtoForUserResponseMapper>()
+                .AddTypedParameters<ParticipantUserResponseMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
 
