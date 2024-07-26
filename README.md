@@ -28,4 +28,4 @@ Open a terminal at the ClientApp folder and run the following command
 nvm use
 ```
 
-> You will need Node Version Manager installed  to run the above command 
+> You will need Node Version Manager installed to run the above command 
