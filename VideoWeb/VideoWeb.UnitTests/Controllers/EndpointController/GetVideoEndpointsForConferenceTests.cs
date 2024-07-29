@@ -11,7 +11,6 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
@@ -27,7 +26,6 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, VideoEndpointResponse>()).Returns(_mocker.Create<VideoEndpointsResponseDtoMapper>());
             _controller = _mocker.Create<EndpointsController>();
         }
         

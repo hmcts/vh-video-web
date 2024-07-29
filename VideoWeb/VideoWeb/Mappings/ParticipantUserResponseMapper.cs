@@ -24,7 +24,7 @@ public static class ParticipantUserResponseMapper
         userResponse.CurrentRoom = RoomSummaryResponseMapper.Map(participant.CurrentRoom);
         userResponse.InterpreterRoom = RoomSummaryResponseMapper.Map(participant.InterpreterRoom);
         userResponse.LinkedParticipants = participant.LinkedParticipants.Select(LinkedParticipantResponseMapper.Map).ToList();
-        ParticipantTilePositionHelper.GetTiledDisplayName(userResponse);
+        userResponse.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(userResponse);
         
         return userResponse;
     }
@@ -44,7 +44,7 @@ public static class ParticipantUserResponseMapper
         userResponse.CurrentRoom = RoomSummaryResponseMapper.Map(participant.CurrentRoom);
         userResponse.InterpreterRoom = RoomSummaryResponseMapper.Map(participant.CurrentInterpreterRoom);
         userResponse.LinkedParticipants = participant.LinkedParticipants.Select(LinkedParticipantResponseMapper.Map).ToList();
-        ParticipantTilePositionHelper.GetTiledDisplayName(userResponse);
+        userResponse.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(userResponse);
         return userResponse;
     }
 }

@@ -127,7 +127,7 @@ public class InstantMessagesController(
                 return Ok(new UnreadAdminMessageResponse());
             }
             
-            var response = UnreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
+            var response = UnreadAdminMessageResponseMapper.Map(conference, messages.ToList());
             
             return Ok(response);
         }
