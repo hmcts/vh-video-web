@@ -5,8 +5,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingsApi.Client;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Contract.V2.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -195,25 +195,56 @@ namespace VideoWeb.Controllers
         /// <returns>List of conferences, if any</returns>
         [HttpGet("vhofficer")]
         [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
         [Authorize(AppRoles.VhOfficerRole)]
         public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync([FromQuery] VhoConferenceFilterQuery query)
         {
             _logger.LogDebug("GetConferencesForVhOfficer");
+            const string filterMissingMessage = "Please provide a filter for hearing venue names or allocated CSOs";
+            if (query == null)
+            {
+                ModelState.AddModelError(nameof(query), filterMissingMessage);
+                return ValidationProblem(ModelState);
+            }
+            
             try
             {
-                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+                ICollection<HearingDetailsResponse> hearingsForToday = new List<HearingDetailsResponse>();
+                
+                
+                if(query.HearingVenueNames.Any())
+                {
+                    hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+                } 
+                else if (query.AllocatedCsoIds.Any() || query.IncludeUnallocated)
+                {
+                    hearingsForToday = await _bookingApiClient.GetHearingsForTodayByCsosAsync(new HearingsForTodayByAllocationRequest()
+                    {
+                        CsoIds = query.AllocatedCsoIds.ToList(),
+                        Unallocated = query.IncludeUnallocated
+                    });
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(query), filterMissingMessage);
+                    return ValidationProblem(ModelState);
+                }
+                
                 var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
                 var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
-                var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
-                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-                var responses = conferences
-                    .Where(c => c.IsWaitingRoomOpen && c.Participants.Exists(e => e.UserRole == UserRole.Judge))
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
-                    .ApplyCsoFilter(query)
-                    .ToList();
-
+                var responses = new List<ConferenceForVhOfficerResponse>();
+                foreach (var hearingDetailsResponse in hearingsForToday)
+                {
+                    var conference = conferences.FirstOrDefault(c => c.HearingRefId == hearingDetailsResponse.Id);
+                    if (conference == null)
+                    {
+                        continue;
+                    }
+                    var response = HearingToConferenceToVhOfficerResponseMapper.MapToVhOfficerResponse(hearingDetailsResponse, conference);
+                    responses.Add(response);
+                }
                 // display conferences in order of scheduled date time and then by case name. if a conference if closed then it should be at the bottom of the list. if a conference is closed at the same time then order by case name
                 responses.Sort(new SortConferenceForVhoOfficerHelper());
                 return Ok(responses);

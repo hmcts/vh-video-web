@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using Faker;
 using FizzWare.NBuilder;
@@ -48,6 +49,34 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
+        public async Task should_return_validation_error_when_no_query_filter_is_provided_as_null()
+        {
+            var result = await _controller.GetConferencesForVhOfficerAsync(null);
+
+            var objectResult = result.Result.As<ObjectResult>();
+            objectResult.Should().NotBeNull();
+            objectResult.Value.Should().BeOfType<ValidationProblemDetails>();
+
+            objectResult.Value.Should().BeOfType<ValidationProblemDetails>()
+                .Which.Errors.Should().ContainKey("query")
+                .WhoseValue.Contains("Please provide a filter for hearing venue names or allocated CSOs").Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task should_return_validation_error_when_no_query_filter_is_provided()
+        {
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
+
+            var objectResult = result.Result.As<ObjectResult>();
+            objectResult.Should().NotBeNull();
+            objectResult.Value.Should().BeOfType<ValidationProblemDetails>();
+
+            objectResult.Value.Should().BeOfType<ValidationProblemDetails>()
+                .Which.Errors.Should().ContainKey("query")
+                .WhoseValue.Contains("Please provide a filter for hearing venue names or allocated CSOs").Should().BeTrue();
+        }
+        
+        [Test]
         public async Task Should_forward_error_when_video_api_returns_error()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
@@ -57,7 +86,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery()
+            {
+                HearingVenueNames = new List<string> { "Venue1", "Venue2" }
+            });
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -71,10 +103,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .Setup(x => x.GetHearingsForTodayByCsosAsync(It.IsAny<HearingsForTodayByAllocationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery()
+            {
+                IncludeUnallocated = true
+            });
 
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
@@ -120,10 +155,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
-
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
-                .ReturnsAsync(allocatedCsoResponses);
             
             var conferenceWithMessages = conferences[0];
             var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
