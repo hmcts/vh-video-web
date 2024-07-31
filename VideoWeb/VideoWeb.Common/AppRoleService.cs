@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -24,6 +25,8 @@ namespace VideoWeb.Common
         private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<AppRoleService> _logger;
 
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> Semaphores = new();
+        
         public AppRoleService(IUserClaimsCache cache, IBookingsApiClient bookingsApiClient, ILogger<AppRoleService> logger)
         {
             _userClaimscache = cache;
@@ -38,10 +41,30 @@ namespace VideoWeb.Common
             {
                 return claims;
             }
+            var semaphore = Semaphores.GetOrAdd(username, _ => new SemaphoreSlim(3, 3));
+            await semaphore.WaitAsync();
+            try{
+                claims = await _userClaimscache.GetAsync(username);
+                if (claims != null)
+                {
+                    return claims;
+                }
+                claims = await ConvertJusticeUserToClaimsAndCache(username);
+                return claims;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
 
+        private async Task<List<Claim>> ConvertJusticeUserToClaimsAndCache(string username)
+        {
+            List<Claim> claims;
             JusticeUserResponse user = null;
             try
             {
+                Console.WriteLine(username);
                 user = await _bookingsApiClient!.GetJusticeUserByUsernameAsync(username);
             }
             catch (BookingsApiException ex)
