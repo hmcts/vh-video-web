@@ -4,7 +4,10 @@ import { ApiClient, CourtRoomsAccountResponse } from '../../services/clients/api
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { take } from 'rxjs/operators';
+import { take, takeLast } from 'rxjs/operators';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { CsoFilter } from './models/cso-filter';
+import { VhoStorageKeys } from './models/session-keys';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
@@ -96,7 +99,7 @@ describe('VhoQueryService', () => {
 
         await service.runQuery();
 
-        const courtRooms = new CourtRoomsAccounts('Birminghm', ['Judge Fudge'], false);
+        const courtRooms = new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], false);
         courtRooms.updateRoomSelection([new CourtRoomFilter('Judge Fudge', false)]);
         service.updateCourtRoomsAccountFilters([courtRooms]);
         expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
@@ -125,14 +128,17 @@ describe('VhoQueryService', () => {
             expect(result).toEqual(data);
         });
 
-        service.getAvailableCourtRoomFilters().subscribe(result => {
-            expect(result[0].venue).toEqual('Birmingham');
-            expect(result[0].selected).toBeTrue();
-            expect(result[0].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
-            expect(result[1].venue).toEqual('Manchester');
-            expect(result[1].selected).toBeTrue();
-            expect(result[1].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
-        });
+        service
+            .getAvailableCourtRoomFilters()
+            .pipe(takeLast(1))
+            .subscribe(result => {
+                expect(result[0].venue).toEqual('Birmingham');
+                expect(result[0].selected).toBeTrue();
+                expect(result[0].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
+                expect(result[1].venue).toEqual('Manchester');
+                expect(result[1].selected).toBeTrue();
+                expect(result[1].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
+            });
 
         service.updateCourtRoomsAccountFilters([
             new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true),
@@ -175,7 +181,6 @@ describe('VhoQueryService', () => {
 
         service.getAvailableCourtRoomFilters().subscribe(result => {
             expect(result.length).toBe(1);
-            console.log(result);
             expect(result[0].venue).toEqual('Birmingham');
             expect(result[0].selected).toBeTrue();
             expect(result[0].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
@@ -253,6 +258,7 @@ describe('VhoQueryService', () => {
         const result = await service.getParticipantHeartbeats(confId, participantId);
         expect(result).toBe(data);
     });
+
     it('should get court rooms filter', async () => {
         const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
         const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
@@ -266,6 +272,7 @@ describe('VhoQueryService', () => {
         expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames, [], false);
         expect(result).toBe(courtAccounts);
     });
+
     it('should get court rooms filter when querying by csos', async () => {
         const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
         const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
@@ -278,5 +285,19 @@ describe('VhoQueryService', () => {
         const result = await service.getCourtRoomsAccounts(null, allocatedCsoIds, true);
         expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith([], allocatedCsoIds, true);
         expect(result).toBe(courtAccounts);
+    });
+
+    it('should get cso filters from storage', async () => {
+        // arrange
+        const storage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
+        const filter = new CsoFilter(['test-cso-1', 'test-cso-2'], true);
+        storage.set(filter);
+
+        // act
+        const actual = service.getCsoFilterFromStorage();
+
+        // assert
+        expect(actual.allocatedCsoIds).toEqual(filter.allocatedCsoIds);
+        expect(actual.includeUnallocated).toEqual(filter.includeUnallocated);
     });
 });
