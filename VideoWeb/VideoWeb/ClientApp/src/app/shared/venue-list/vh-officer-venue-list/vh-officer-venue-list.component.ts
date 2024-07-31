@@ -105,21 +105,4 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             selectCso(VhOfficerVenueListComponent.UNALLOCATED);
         }
     }
-
-    // private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
-    //     const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
-    //         const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
-    //         if (courtroomAccount) {
-    //             courtroomAccount.selected = filterVenue.selected;
-    //             courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
-    //         }
-    //     };
-    //     this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.rooms, true));
-    //     const previousFilter = this.courtAccountsAllocationStorage.get();
-    //     if (previousFilter) {
-    //         previousFilter.forEach(x => updateFilterSelection(x));
-    //     }
-    //     this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-    //     this.logger.debug('[VenueList] - Venue selection is changed');
-    // }
 }

@@ -86,7 +86,7 @@ export class VhoQueryService {
             switchMap(filterCriteria =>
                 this.vhoConferencesSubject.pipe(
                     map(conferences => {
-                        if (!filterCriteria) {
+                        if (!filterCriteria || filterCriteria.length === 0) {
                             return conferences;
                         }
                         const matchingConferences: ConferenceForVhOfficerResponse[] = [];
@@ -123,6 +123,7 @@ export class VhoQueryService {
                 const courtRooms = response.map(courtRoom => new CourtRoomsAccounts(courtRoom.venue, courtRoom.rooms, true));
                 // update the court room to match existing filters
                 const previousFilter = this.courtRoomsAccountsFilters;
+
                 if (previousFilter) {
                     previousFilter.forEach(filter => {
                         const courtRoom = courtRooms.find(c => c.venue === filter.venue);

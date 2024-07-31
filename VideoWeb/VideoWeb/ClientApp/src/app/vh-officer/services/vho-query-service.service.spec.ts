@@ -4,6 +4,7 @@ import { ApiClient, CourtRoomsAccountResponse } from '../../services/clients/api
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
+import { take } from 'rxjs/operators';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
@@ -61,7 +62,55 @@ describe('VhoQueryService', () => {
         expect(clearInterval).toHaveBeenCalledWith(interval);
     }));
 
-    it('should get conferences for vh officer', async () => {
+    it('should get conferences for vh officer with no filter', async () => {
+        service.updateCourtRoomsAccountFilters([]);
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        const venueNames = ['venue1', 'venue2'];
+        service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
+
+        await service.runQuery();
+
+        service.updateCourtRoomsAccountFilters([]);
+        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
+
+        service.getQueryResults().subscribe(result => {
+            expect(result).toEqual(data);
+        });
+
+        service.getFilteredQueryResults().subscribe(result => {
+            expect(result).toEqual(data);
+        });
+    });
+
+    it('should ignore conferences when filter is not selected', async () => {
+        service.updateCourtRoomsAccountFilters([]);
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        const venueNames = ['venue1', 'venue2'];
+        service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
+
+        await service.runQuery();
+
+        const courtRooms = new CourtRoomsAccounts('Birminghm', ['Judge Fudge'], false);
+        courtRooms.updateRoomSelection([new CourtRoomFilter('Judge Fudge', false)]);
+        service.updateCourtRoomsAccountFilters([courtRooms]);
+        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
+
+        service.getQueryResults().subscribe(result => {
+            expect(result).toEqual(data);
+        });
+
+        service.getFilteredQueryResults().subscribe(result => {
+            expect(result).toEqual([]);
+        });
+    });
+
+    it('should get conferences for vh officer with filtered', async () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         const venueNames = ['venue1', 'venue2'];
@@ -93,6 +142,43 @@ describe('VhoQueryService', () => {
             expect(result.length).toBe(1);
             expect(result[0].hearing_venue_name).toEqual('Birmingham');
             expect(result.some(conference => conference.hearing_venue_name === 'Manchester')).toBeFalse();
+        });
+    });
+
+    it('should retain previous filters when new data is emitted', async () => {
+        service.updateCourtRoomsAccountFilters([]);
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        const venueNames = ['venue1', 'venue2'];
+        service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
+
+        await service.runQuery();
+
+        service
+            .getAvailableCourtRoomFilters()
+            .pipe(take(1))
+            .subscribe(result => {
+                expect(result[0].venue).toEqual('Birmingham');
+                expect(result[0].selected).toBeTrue();
+                expect(result[0].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
+                expect(result[1].venue).toEqual('Manchester');
+                expect(result[1].selected).toBeTrue();
+                expect(result[1].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
+            });
+
+        const bhamOnly = data.filter(x => x.hearing_venue_name === 'Birmingham');
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(bhamOnly));
+
+        await service.runQuery();
+
+        service.getAvailableCourtRoomFilters().subscribe(result => {
+            expect(result.length).toBe(1);
+            console.log(result);
+            expect(result[0].venue).toEqual('Birmingham');
+            expect(result[0].selected).toBeTrue();
+            expect(result[0].courtsRooms[0]).toEqual(new CourtRoomFilter('Judge Fudge', true));
         });
     });
 
