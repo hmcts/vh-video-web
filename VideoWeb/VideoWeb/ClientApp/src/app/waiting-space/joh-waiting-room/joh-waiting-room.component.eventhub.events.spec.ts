@@ -14,7 +14,6 @@ import {
     eventsService,
     focusService,
     globalConference,
-    globalJudge,
     globalParticipant,
     heartbeatModelMapper,
     hideComponentsService,
@@ -28,15 +27,16 @@ import {
     router,
     titleService,
     videoCallService,
+    launchDarklyService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
-import { RoomTransfer } from '../../shared/models/room-transfer';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('JohWaitingRoomComponent eventhub events', () => {
     let component: JohWaitingRoomComponent;
@@ -52,6 +52,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
     });
 
     beforeEach(async () => {
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
         shouldUnloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
@@ -81,6 +82,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

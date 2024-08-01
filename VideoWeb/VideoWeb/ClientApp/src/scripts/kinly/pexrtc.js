@@ -4795,6 +4795,6 @@ PexRTCStatistics.prototype.getStats = function () {
 };
 
 //for debug purposes
-currentPexrtc = function() {
+currentPexrtc = function () {
     return 'kinly';
-}
+};
