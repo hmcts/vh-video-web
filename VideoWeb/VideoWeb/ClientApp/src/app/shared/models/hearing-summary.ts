@@ -31,6 +31,10 @@ export class HearingSummary extends HearingBase {
         return this.conference.id;
     }
 
+    get hearingRefId(): string {
+        return this.conference.hearing_ref_id;
+    }
+
     get caseNumber(): string {
         return this.conference.case_number;
     }
