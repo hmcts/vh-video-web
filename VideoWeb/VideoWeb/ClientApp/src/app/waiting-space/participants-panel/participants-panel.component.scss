@@ -33,7 +33,7 @@
 }
 
 .small-button {
-  @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
+  @include govuk-font(16, $weight: 'regular', $tabular: false, $line-height: false);
   color: #ffffff;
   cursor: pointer;
   padding: 6px 10px;
