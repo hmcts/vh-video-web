@@ -164,7 +164,7 @@
 }
 .listItemGreySmall {
   color: govuk-colour('dark-grey');
-  @include govuk-font(14, $weight: 'regular', $line-height: 1.11111);
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 .started {

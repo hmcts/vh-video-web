@@ -12,7 +12,7 @@
   align-self: center;
 }
 .status-button {
-  @include govuk-font(14, $weight: 'bold', $tabular: false, $line-height: false);
+  @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
   padding: 3px 8px 3px 8px;
   border-radius: 2px;
   float: right;
