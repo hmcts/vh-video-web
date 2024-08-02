@@ -50,6 +50,8 @@ export interface VHPexipParticipant {
     isAudioOnlyCall: boolean;
     isVideoCall: boolean;
     protocol: string;
+    receivingAudioMix: string;
+    sentAudioMixes: Array<PexipAudioMix>;
 }
 
 export interface VHRoom {

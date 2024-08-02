@@ -142,7 +142,9 @@ describe('Conference Reducer', () => {
                             uuid: '1922_John Doe',
                             isAudioOnlyCall: false,
                             isVideoCall: true,
-                            protocol: 'sip'
+                            protocol: 'sip',
+                            sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                            receivingAudioMix: 'main'
                         }
                     },
                     conferenceTestData.participants[1]
@@ -612,7 +614,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -631,7 +635,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -650,7 +656,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -678,7 +686,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
@@ -708,7 +718,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
@@ -738,7 +750,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
