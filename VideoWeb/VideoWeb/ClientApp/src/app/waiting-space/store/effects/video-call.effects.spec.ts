@@ -15,7 +15,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallEffects } from './video-call.effects';
 import { InterpreterType } from 'src/app/services/clients/api-client';
 
-describe('ConferenceEffectsEffects', () => {
+describe('VideoCallEffects', () => {
     let actions$: Observable<any>;
     let effects: VideoCallEffects;
     let videoCallService: jasmine.SpyObj<VideoCallService>;
@@ -223,10 +223,7 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
-                    interpretationLanguage.description,
-                    pexipParticipant.uuid
-                );
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith('main.spanish', pexipParticipant.uuid);
             });
         });
 
@@ -275,11 +272,11 @@ describe('ConferenceEffectsEffects', () => {
             const expectedAudioMixes = [
                 {
                     mix_name: 'main',
-                    prominent: false
+                    prominent: true
                 },
                 {
-                    mix_name: interpretationLanguage.description,
-                    prominent: true
+                    mix_name: 'main.spanish',
+                    prominent: false
                 }
             ];
 
@@ -288,10 +285,7 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
-                    interpretationLanguage.description,
-                    pexipParticipant.uuid
-                );
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith('main', pexipParticipant.uuid);
                 expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledWith(expectedAudioMixes, pexipParticipant.uuid);
             });
         });
@@ -344,10 +338,7 @@ describe('ConferenceEffectsEffects', () => {
 
             // assert
             effects.createAudioMixes$.subscribe(() => {
-                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith(
-                    interpretationLanguage.description,
-                    pexipParticipant.uuid
-                );
+                expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith('main.spanish', pexipParticipant.uuid);
             });
         });
     });
