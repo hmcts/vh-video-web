@@ -21,31 +21,52 @@ export class VideoCallEffects {
                     this.store.select(ConferenceSelectors.getEndpointByPexipId(action.participant.uuid))
                 ]),
                 tap(([action, participant, endpoint]) => {
-                    // get participant or endpoint where action.participant.uuid === participant.pexipId
+                    // filter non vh participant (i.e. countdown or wowza)
                     if (!participant && !endpoint) {
                         return;
                     }
 
+                    // only need to set up audio mixes for if a participant has a verbal interpreter
                     const interpreterLanguage = participant ? participant.interpreterLanguage : endpoint.interpreterLanguage;
                     if (!interpreterLanguage || interpreterLanguage.type !== InterpreterType.Verbal) {
+                        // defaults the participant to the 'main' stream
                         return;
                     }
 
+                    // this represents both a participant and an endpoint
                     const participantUuid = participant ? participant.pexipInfo.uuid : endpoint.pexipInfo.uuid;
-                    const languageDescription = interpreterLanguage.description;
-                    const audioMixes: PexipAudioMix[] = [
-                        {
-                            mix_name: 'main',
-                            prominent: false
-                        },
-                        {
-                            mix_name: languageDescription,
-                            prominent: true
-                        }
-                    ];
-                    this.videoCallService.receiveAudioFromMix(languageDescription, participantUuid);
-                    if (participant && participant.hearingRole === HearingRole.INTERPRETER) {
+                    const mainCourtAudioMixName = 'main';
+                    const languageAudioMixName = `main.${interpreterLanguage.description.toLowerCase()}`; // e.g. main.french or main.spanish
+                    const isAnInterpreter = participant && participant.hearingRole === HearingRole.INTERPRETER;
+
+                    if (isAnInterpreter) {
+                        // send audio to main and to main.<language> (aka languageAudioMixName)
+                        const audioMixes: PexipAudioMix[] = [
+                            {
+                                mix_name: mainCourtAudioMixName,
+                                prominent: true
+                            },
+                            {
+                                mix_name: languageAudioMixName,
+                                prominent: false
+                            }
+                        ];
                         this.videoCallService.sendParticipantAudioToMixes(audioMixes, participantUuid);
+                        this.videoCallService.receiveAudioFromMix(mainCourtAudioMixName, participantUuid);
+                    } else {
+                        // send audio to main court and to main.<language> (aka languageAudioMixName)
+                        const audioMixes: PexipAudioMix[] = [
+                            {
+                                mix_name: mainCourtAudioMixName,
+                                prominent: true
+                            },
+                            {
+                                mix_name: languageAudioMixName,
+                                prominent: true
+                            }
+                        ];
+                        this.videoCallService.sendParticipantAudioToMixes(audioMixes, participantUuid);
+                        this.videoCallService.receiveAudioFromMix(languageAudioMixName, participantUuid);
                     }
                 })
             ),
