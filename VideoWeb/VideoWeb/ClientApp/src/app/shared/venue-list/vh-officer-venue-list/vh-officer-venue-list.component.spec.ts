@@ -211,15 +211,13 @@ describe('VHOfficerVenueListComponent', () => {
     it('should navigate to admin hearing with list active sessions', fakeAsync(() => {
         component.activeSessions = true;
         component.goToHearingList();
-        tick();
-        expect(vhoQueryService.getActiveConferences).toHaveBeenCalled();
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
     it('should navigate to admin hearing list, with venues selected', fakeAsync(() => {
         component.selectedVenues = selectedJudgeNames;
         component.selectedCsos = [];
         component.goToHearingList();
-        tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
@@ -239,50 +237,6 @@ describe('VHOfficerVenueListComponent', () => {
         tick();
         expect(loggerSpy).toHaveBeenCalled();
         expect(component.errorMessage).toBe('Please select a filter to view hearings');
-    }));
-
-    it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
-        component.selectedVenues = selectedJudgeNames;
-        component.goToHearingList();
-        tick();
-        expect(component.filterCourtRoomsAccounts.length).toBe(2);
-        const result = roomSessionStorage.get();
-        expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
-        expect(result[0].selected).toBeTrue();
-        expect(result[0].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[0].courtsRooms[0].selected).toBeTrue();
-        expect(result[0].courtsRooms[1].selected).toBeTrue();
-
-        expect(result[1].venue).toBe(courtRoomsAccounts2.venue);
-        expect(result[1].selected).toBeTrue();
-        expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[1].courtsRooms[0].selected).toBeTrue();
-        expect(result[1].courtsRooms[1].selected).toBeTrue();
-    }));
-    it('should update filter records with select options from filter in storage', fakeAsync(() => {
-        const currentStorage = roomSessionStorage.get();
-        component.selectedVenues = selectedJudgeNames;
-        venueAccounts[0].courtsRooms[0].selected = false;
-        venueAccounts[1].courtsRooms[0].selected = false;
-
-        roomSessionStorage.set(venueAccounts);
-
-        component.goToHearingList();
-        tick();
-        expect(component.filterCourtRoomsAccounts.length).toBe(2);
-        const result = roomSessionStorage.get();
-        expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
-        expect(result[0].selected).toBeFalse();
-        expect(result[0].courtsRooms[0].selected).toBeFalse();
-        expect(result[0].courtsRooms[1].selected).toBeTrue();
-
-        expect(result[1].selected).toBeFalse();
-        expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[1].courtsRooms[0].selected).toBeFalse();
-        expect(result[1].courtsRooms[1].selected).toBeTrue();
-        roomSessionStorage.set(currentStorage);
     }));
 
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {

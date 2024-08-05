@@ -28,6 +28,7 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -66,6 +67,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
+        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
         super(
@@ -89,6 +91,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             store
         );
     }

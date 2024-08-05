@@ -1,7 +1,7 @@
 import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActiveToast } from 'ngx-toastr';
-import { Subject, Subscription } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -39,6 +39,7 @@ import {
     roomClosingToastrService,
     router,
     titleService,
+    launchDarklyService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -48,6 +49,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -85,6 +87,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
             [],
@@ -135,6 +138,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
 

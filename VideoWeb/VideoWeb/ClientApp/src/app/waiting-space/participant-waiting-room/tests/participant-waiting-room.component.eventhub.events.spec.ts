@@ -28,15 +28,17 @@ import {
     router,
     titleService,
     videoCallService,
+    launchDarklyService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -56,6 +58,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     });
 
     beforeEach(() => {
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
 
@@ -88,6 +91,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
 
