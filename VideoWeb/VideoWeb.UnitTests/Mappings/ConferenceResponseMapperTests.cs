@@ -31,17 +31,24 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
+            var interpreterLanguage = new InterpreterLanguage
+            {
+                Code = "spa",
+                Description = "Spanish",
+                Type = InterpreterType.Verbal
+            };
+            
             var participants = new List<Participant>
             {
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").Build(),
-                new ParticipantBuilder(Role.Representative).WithHearingRole("Representative").Build(),
-                new ParticipantBuilder(Role.Judge).WithHearingRole("Judge").Build(),
-                new ParticipantBuilder(Role.CaseAdmin).Build(),
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Observer").Build(),
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").Build(),
-                new ParticipantBuilder(Role.Individual).WithHearingRole("Witness").Build()
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Litigant in person").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Representative).WithHearingRole("Representative").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Judge).WithHearingRole("Judge").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.CaseAdmin).WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Observer").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Panel Member").WithInterpreterLanguage(interpreterLanguage).Build(),
+                new ParticipantBuilder(Role.Individual).WithHearingRole("Witness").WithInterpreterLanguage(interpreterLanguage).Build()
             };
 
 
@@ -97,6 +104,8 @@ namespace VideoWeb.UnitTests.Mappings
                     participantResponse.TiledDisplayName.StartsWith("WITNESS").Should().BeTrue();
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
+                var participant = participants.Find(p => p.Id == participantResponse.Id);
+                participantResponse.InterpreterLanguage.Should().BeEquivalentTo(participant.InterpreterLanguage.Map());
             }
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
             response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);

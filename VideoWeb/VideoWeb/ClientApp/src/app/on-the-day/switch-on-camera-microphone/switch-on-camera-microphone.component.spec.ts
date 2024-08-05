@@ -202,7 +202,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     describe('Participant is an observer', () => {
         beforeEach(() => {
             profile.roles = [Role.Individual];
-            console.log(conference.participants);
             const individual = conference.participants.find(x => x.role === Role.Individual);
             individual.hearing_role = 'Observer';
             profile.username = individual.user_name;

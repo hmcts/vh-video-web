@@ -21,6 +21,7 @@ import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { MockStore } from '@ngrx/store/testing';
 import { ConferenceState } from '../../store/reducers/conference.reducer';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-test-waiting-room',
@@ -48,6 +49,7 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
+        protected launchDarklyService: LaunchDarklyService,
         protected store: MockStore<ConferenceState>
     ) {
         super(
@@ -71,6 +73,7 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             store
         );
     }

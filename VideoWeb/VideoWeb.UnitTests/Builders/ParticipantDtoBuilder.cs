@@ -32,6 +32,12 @@ namespace VideoWeb.UnitTests.Builders
             _participant.With(x => x.HearingRole = hearingRole);
             return this;
         }
+        
+        public ParticipantBuilder WithInterpreterLanguage(InterpreterLanguage interpreterLanguage)
+        {
+            _participant.With(x => x.InterpreterLanguage = interpreterLanguage);
+            return this;
+        }
 
         public Participant Build()
         {

@@ -75,6 +75,11 @@ namespace VideoWeb.Contract.Responses
         public RoomSummaryResponse InterpreterRoom { get; set; }
         
         /// <summary>
+        /// The participant's interpreter language, if applicable
+        /// </summary>
+        public InterpreterLanguageResponse InterpreterLanguage { get; set; }
+        
+        /// <summary>
         /// List of participants linked this participant
         /// </summary>
         public List<LinkedParticipantResponse> LinkedParticipants { get; set; }

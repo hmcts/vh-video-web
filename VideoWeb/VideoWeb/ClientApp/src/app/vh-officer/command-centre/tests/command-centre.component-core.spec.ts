@@ -1,10 +1,10 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { EventBusService } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -45,12 +45,20 @@ describe('CommandCentreComponent - Core', () => {
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
-            'startQuery',
-            'stopQuery',
-            'getConferencesForVHOfficer',
-            'getConferenceByIdVHO'
-        ]);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>(
+            'VhoQueryService',
+            [
+                'startQuery',
+                'stopQuery',
+                'getFilteredQueryResults',
+                'getConferencesForVHOfficer',
+                'getConferenceByIdVHO',
+                'getCsoFilterFromStorage',
+                'getAvailableCourtRoomFilters',
+                'getCsoFilterFromStorage'
+            ],
+            ['courtRoomFilterChanged$']
+        );
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -74,6 +82,15 @@ describe('CommandCentreComponent - Core', () => {
 
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        vhoQueryService.getFilteredQueryResults.and.returnValue(of(conferences));
+
+        const courtRoomAccounts: CourtRoomsAccounts[] = [];
+        courtRoomAccounts.push(new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true));
+        vhoQueryService.getAvailableCourtRoomFilters.and.returnValue(of(courtRoomAccounts));
+        spyOnProperty(vhoQueryService, 'courtRoomFilterChanged$').and.returnValue(
+            new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts)
+        );
+
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         component = new CommandCentreComponent(
@@ -95,14 +112,12 @@ describe('CommandCentreComponent - Core', () => {
     it('should go fullscreen on init', fakeAsync(() => {
         component.loadingData = false;
         component.hearings = undefined;
-        component.conferencesSubscription = undefined;
 
         component.ngOnInit();
         tick();
 
         expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(true);
         expect(component.hearings.length).toBeGreaterThan(0);
-        expect(component.conferencesSubscription).toBeDefined();
     }));
 
     it('should remove fullscreen on destroy', () => {
@@ -120,11 +135,6 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.venueAllocations).toBeDefined();
     });
 
-    it('should load filter for venue selection', () => {
-        component.loadCourtRoomsAccountFilters();
-        expect(component.courtRoomsAccountsFilters).toBeDefined();
-    });
-
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
@@ -133,7 +143,7 @@ describe('CommandCentreComponent - Core', () => {
 
     it('should handle api error when retrieving conference list fails', fakeAsync(() => {
         const error = { status: 404, isApiException: true };
-        vhoQueryService.getConferencesForVHOfficer.and.returnValue(throwError(error));
+        vhoQueryService.getFilteredQueryResults.and.returnValue(throwError(error));
         errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });
@@ -196,12 +206,6 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.selectedMenu).toBe(menu);
     });
 
-    it('should emit event to apply court room accounts filter', () => {
-        const eventbus = new EventBusService();
-        component.setupFilterSubscribers();
-        eventbus.emit(new EmitEvent<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, null));
-        expect(component.displayFilters).toBeFalse();
-    });
     it('should filter hearings by selected court rooms, all venues and rooms are selected', () => {
         const filter = [new CourtRoomsAccounts('judge', ['fudge'], true), new CourtRoomsAccounts('manual', ['manual1', 'manual2'], true)];
         const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -255,45 +259,10 @@ describe('CommandCentreComponent - Core', () => {
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(0);
     });
-    it('should not filter hearings if all options selected to show all hearings for selected venues on init', () => {
-        const filter = [new CourtRoomsAccounts('judge', ['fudge'], true), new CourtRoomsAccounts('manual', ['manual1', 'manual2'], true)];
-        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
-        courtAccountsAllocationStorage.set(filter);
-        const numberHearing = component.hearings.length;
-
-        hearings.forEach(x => component.originalHearings.push(x));
-
-        component.applyFilterInit();
-        expect(component.hearings.length).toBe(numberHearing);
-    });
     it('should convert string to date', () => {
         const dateFrom = component.getDateFromString('2021-02-09');
         expect(dateFrom.getFullYear()).toEqual(2021);
         expect(dateFrom.getMonth()).toEqual(1);
         expect(dateFrom.getDay()).toEqual(2);
-    });
-
-    describe('filtering by cso', () => {
-        beforeAll(() => {
-            TestFixtureHelper.clearVenues();
-            TestFixtureHelper.setupCsoAllocations();
-        });
-
-        it('should retrieve hearings filtered by cso', () => {
-            component.getConferenceForSelectedAllocations();
-            const csoFilter = TestFixtureHelper.getCsoAllocations();
-            const venues = null;
-            const allocatedCsoIds = csoFilter.allocatedCsoIds;
-            const includeUnallocated = csoFilter.includeUnallocated;
-            const activeSessionsOnly = false;
-            component.activeSessionsOnly = activeSessionsOnly;
-            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated, activeSessionsOnly);
-            expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
-        });
-
-        afterAll(() => {
-            TestFixtureHelper.setupVenues();
-            TestFixtureHelper.clearCsoAllocations();
-        });
     });
 });

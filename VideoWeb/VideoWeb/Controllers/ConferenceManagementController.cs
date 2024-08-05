@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,6 +11,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
@@ -50,7 +50,8 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request)
         {
             var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
             if (validatedRequest != null)
@@ -61,14 +62,15 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await _conferenceService.GetConference(conferenceId);
-                
-                request.ParticipantsToForceTransfer = conference.Participants
-                    .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
-                    .Select(x => x.Id.ToString()).ToList();
+                var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
+                var apiRequest = new StartHearingRequest
+                {
+                    Layout = request.Layout,
+                    MuteGuests = false,
+                    TriggeredByHostId = triggeredById ?? Guid.Empty
+                };
 
-                request.MuteGuests = false;
-
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -78,7 +80,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
-                
+
         /// <summary>
         /// Returns the active layout for a conference
         /// </summary>
@@ -95,26 +97,26 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Getting the layout for {conferenceId}", conferenceId);
+                _logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
                 var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
 
                 if (!layout.HasValue) {
-                    _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
+                    _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {ConferenceId}", conferenceId);
                     return NotFound();
                 }
 
-                _logger.LogTrace("Got Layout ({layout}) for {conferenceId}", layout.Value, conferenceId);
+                _logger.LogTrace("Got Layout ({Layout}) for {ConferenceId}", layout.Value, conferenceId);
                 return Ok(layout);
             }
             catch (VideoApiException exception)
             {
-                _logger.LogError(exception, "Could not get layout for {conferenceId} a video api exception was thrown", conferenceId);
+                _logger.LogError(exception, "Could not get layout for {ConferenceId} a video api exception was thrown", conferenceId);
                 return StatusCode(exception.StatusCode, exception.Response);
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Could not get layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                throw;
+                _logger.LogError(exception, "Could not get layout for {ConferenceId} an unknown exception was thrown", conferenceId);
+                throw new InvalidOperationException("There was an unexpected error when getting the layout", exception);
             }
         }
 
@@ -135,30 +137,30 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Attempting to update layout to {layout} for conference {conferenceId}", layout, conferenceId);
+                _logger.LogDebug("Attempting to update layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
 
-                var participant = await GetParticipant(conferenceId, User.Identity.Name);
+                var participant = await GetParticipant(conferenceId, User.Identity!.Name);
 
                 if (participant == null)
                 {
-                    _logger.LogWarning("Could not update layout to {layout} for hearing as participant with the name {username} was not found in conference {conferenceId}", layout, User.Identity.Name, conferenceId);
+                    _logger.LogWarning("Could not update layout to {Layout} for hearing as participant with the name {Username} was not found in conference {ConferenceId}", layout, User.Identity.Name, conferenceId);
                     return NotFound(nameof(participant));
                 }
 
                 await _hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout);
 
-                _logger.LogInformation("Updated layout to {layout} for conference {conferenceId}", layout, conferenceId);
+                _logger.LogInformation("Updated layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
                 return Ok();
             }
             catch (VideoApiException exception)
             {
-                _logger.LogError(exception, "Could not update layout for {conferenceId} a video api exception was thrown", conferenceId);
+                _logger.LogError(exception, "Could not update layout for {ConferenceId} a video api exception was thrown", conferenceId);
                 return StatusCode(exception.StatusCode, exception.Response);
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Could not update layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                throw;
+                _logger.LogError(exception, "Could not update layout for {ConferenceId} an unknown exception was thrown", conferenceId);
+                throw new InvalidOperationException("There was an unexpected error when updating the layout", exception);
             }
         }
 
@@ -178,19 +180,19 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Attempting get recommended layout  for conference {conferenceId}", conferenceId);
+                _logger.LogDebug("Attempting get recommended layout  for conference {ConferenceId}", conferenceId);
                 var conference = await _conferenceService.GetConference(conferenceId);
                 return Ok(conference.GetRecommendedLayout());
             }
             catch (VideoApiException exception)
             {
-                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} a video api exception was thrown", conferenceId);
+                _logger.LogError(exception, "Could not get recommended layout for {ConferenceId}. A video api exception was thrown", conferenceId);
                 return StatusCode(exception.StatusCode, exception.Response);
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                throw;
+                _logger.LogError(exception, "Could not get recommended layout for {ConferenceId}. an unknown exception was thrown", conferenceId);
+                throw new InvalidOperationException("There was an unexpected error when getting the recommended layout", exception);
             }
         }
 
@@ -422,7 +424,7 @@ namespace VideoWeb.Controllers
                 return null;
             }
 
-            _logger.LogWarning($"{AppRoles.JudgeRole} or {AppRoles.StaffMember} may control hearings.");
+            _logger.LogWarning("{JudgeRole} or {StaffMember} may control hearings", AppRoles.JudgeRole, AppRoles.StaffMember);
             return Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}.");
         }
 
@@ -436,7 +438,7 @@ namespace VideoWeb.Controllers
                 return null;
             }
 
-            _logger.LogWarning($"Participant {participantId} is not a callable participant in {conferenceId}");
+            _logger.LogWarning("Participant {ParticipantId} is not a callable participant in {ConferenceId}", participantId, conferenceId);
             return Unauthorized("Participant is not callable");
         }
 
@@ -458,7 +460,7 @@ namespace VideoWeb.Controllers
                 return false;
             }
 
-            if (!participant.LinkedParticipants.Any())
+            if (participant.LinkedParticipants.Count == 0)
             {
                 return participant.IsCallable();
             }
@@ -532,7 +534,7 @@ namespace VideoWeb.Controllers
                 participantId, conferenceId);
 
             var participant = await GetParticipant(conferenceId, participantId);
-            var dismisser = await GetParticipant(conferenceId, User.Identity.Name);
+            var dismisser = await GetParticipant(conferenceId, User.Identity!.Name);
 
             await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
             {

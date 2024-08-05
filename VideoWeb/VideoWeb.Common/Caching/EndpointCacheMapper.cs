@@ -1,4 +1,5 @@
 using System;
+using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
 
@@ -6,7 +7,7 @@ namespace VideoWeb.Common.Caching
 {
     public static class EndpointCacheMapper
     {
-        public static Endpoint MapEndpointToCacheModel(EndpointResponse endpointResponse)
+        public static Endpoint MapEndpointToCacheModel(EndpointResponse endpointResponse, EndpointResponseV2 endpointForHearingResponse)
         {
             return new Endpoint
             {
@@ -14,7 +15,8 @@ namespace VideoWeb.Common.Caching
                 DisplayName = endpointResponse.DisplayName,
                 EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
                 DefenceAdvocateUsername = endpointResponse.DefenceAdvocate,
-                CurrentRoom = MapRoom(endpointResponse.CurrentRoom)
+                CurrentRoom = MapRoom(endpointResponse.CurrentRoom),
+                InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map()
             };
         }
         private static ConsultationRoom MapRoom(RoomResponse room)

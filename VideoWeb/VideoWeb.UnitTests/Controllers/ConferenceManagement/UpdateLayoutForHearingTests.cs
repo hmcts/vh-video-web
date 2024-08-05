@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using FluentAssertions;
@@ -123,7 +121,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .ThrowsAsync(new Exception());
 
             // Act
-            Assert.ThrowsAsync<Exception>(async () =>
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout));
 
             // Assert
