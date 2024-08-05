@@ -31,6 +31,7 @@ import { ConferenceState } from '../../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 const conferenceTestData = new ConferenceTestData();
 
@@ -76,6 +77,7 @@ export const jwToken = new TokenResponse({
 });
 export let titleService: jasmine.SpyObj<Title>;
 export let focusService: jasmine.SpyObj<FocusService>;
+export let launchDarklyService: jasmine.SpyObj<LaunchDarklyService>;
 
 export let mockConferenceStore: MockStore<ConferenceState>;
 
@@ -165,4 +167,5 @@ export function initAllWRDependencies() {
     titleService = jasmine.createSpyObj<Title>(['setTitle']);
 
     focusService = jasmine.createSpyObj<FocusService>(['storeFocus', 'restoreFocus']);
+    launchDarklyService = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
 }

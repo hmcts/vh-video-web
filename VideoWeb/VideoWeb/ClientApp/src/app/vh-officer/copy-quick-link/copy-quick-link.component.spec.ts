@@ -17,19 +17,18 @@ describe('CopyQuickLinkComponent', () => {
     let vhoQueryService: any;
     let translateService: any;
     const testConferenceId = 'test';
+    const testHearingId = 'testHearingId';
     const elementName = `#copy-quick-link-${testConferenceId}`;
     let copyLinkElement: DebugElement;
 
     beforeEach(async () => {
-        const coursesServiceSpy = jasmine.createSpyObj('ClipboardService', ['copyFromContent']);
-        const vhoQueryServiceSpy = jasmine.createSpyObj('VhoQueryService', ['getConferenceByIdVHO']);
+        const clipboardServiceSpy = jasmine.createSpyObj('ClipboardService', ['copyFromContent']);
         const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant']);
 
         await TestBed.configureTestingModule({
             declarations: [CopyQuickLinkComponent, TranslatePipeMock, MockComponent(FaIconComponent)],
             providers: [
-                { provide: ClipboardService, useValue: coursesServiceSpy },
-                { provide: VhoQueryService, useValue: vhoQueryServiceSpy },
+                { provide: ClipboardService, useValue: clipboardServiceSpy },
                 { provide: TranslateService, useValue: translateServiceSpy }
             ]
         }).compileComponents();
@@ -39,20 +38,15 @@ describe('CopyQuickLinkComponent', () => {
         fixture = TestBed.createComponent(CopyQuickLinkComponent);
         component = fixture.componentInstance;
         component.conferenceId = testConferenceId;
+        component.hearingId = testHearingId;
         fixture.detectChanges();
         clipboardService = TestBed.inject(ClipboardService);
-        vhoQueryService = TestBed.inject(VhoQueryService);
         translateService = TestBed.inject(TranslateService);
-        const conferenceData = new ConferenceResponseVho({
-            hearing_id: '555555'
-        });
-        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceData));
 
         copyLinkElement = fixture.debugElement.query(By.css(elementName));
     });
 
     afterEach(() => {
-        vhoQueryService.getConferenceByIdVHO.calls.reset();
         translateService.instant.calls.reset();
     });
 
@@ -74,22 +68,6 @@ describe('CopyQuickLinkComponent', () => {
         const result = component.getbaseUrl();
         fixture.detectChanges();
         expect(result).toBe(window.location.origin);
-    });
-
-    it('populates the hearing id once component is mounted', async () => {
-        const expectedHearingId = '1234-4564';
-        const conferenceData = new ConferenceResponseVho({
-            hearing_id: expectedHearingId
-        });
-        component.conferenceId = 'conferenceId';
-        fixture.detectChanges();
-        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceData));
-        fixture.detectChanges();
-        component.ngOnInit();
-        fixture.detectChanges();
-        await fixture.whenStable();
-        expect(vhoQueryService.getConferenceByIdVHO).toHaveBeenCalledWith(component.conferenceId);
-        expect(component.hearingId).toBe(expectedHearingId);
     });
 
     it('updates tooltip text when copy to clipboard is invoked', () => {

@@ -13,6 +13,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const hearing = new HearingSummary(c);
         expect(hearing.id).toBe(c.id);
+        expect(hearing.hearingRefId).toBe(c.hearing_ref_id);
         expect(hearing.status).toBe(c.status);
         expect(hearing.caseName).toBe(c.case_name);
         expect(hearing.caseType).toBe(c.case_type);

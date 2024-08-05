@@ -32,6 +32,7 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -77,6 +78,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
+        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
         super(
@@ -100,6 +102,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             store
         );
     }
