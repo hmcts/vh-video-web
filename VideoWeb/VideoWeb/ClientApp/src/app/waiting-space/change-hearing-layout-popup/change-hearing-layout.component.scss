@@ -1,0 +1,14 @@
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 60%;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+  padding: 20px;
+}
