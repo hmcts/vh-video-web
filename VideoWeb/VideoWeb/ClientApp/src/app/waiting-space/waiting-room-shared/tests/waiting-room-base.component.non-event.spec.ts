@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ActiveToast } from 'ngx-toastr';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -43,6 +43,7 @@ import {
     roomClosingToastrService,
     router,
     titleService,
+    launchDarklyService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
@@ -51,6 +52,7 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { CallError } from '../../models/video-call-models';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -79,6 +81,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeEach(() => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -100,6 +103,7 @@ describe('WaitingRoomComponent message and clock', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
 
@@ -734,6 +738,43 @@ describe('WaitingRoomComponent message and clock', () => {
                     component.participant.tiled_display_name,
                     component.maxBandwidth,
                     component.conferenceId
+                );
+            });
+        });
+
+        describe('when the vodafone toggle is enabled', () => {
+            beforeEach(() => {
+                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+                component.vodafoneEnabled = true;
+            });
+
+            it('should use standard conferene room when when paticipant is a joh', async () => {
+                component.participant.role = Role.JudicialOfficeHolder;
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    component.conference.pexip_node_uri,
+                    component.conference.participant_uri,
+                    component.participant.tiled_display_name,
+                    component.maxBandwidth,
+                    component.conference.id
+                );
+            });
+
+            it('should use standard conference room when when paticipant or links is a witness', async () => {
+                component.participant.linked_participants = [
+                    new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+                ];
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    component.conference.pexip_node_uri,
+                    component.conference.participant_uri,
+                    component.participant.tiled_display_name,
+                    component.maxBandwidth,
+                    component.conference.id
                 );
             });
         });

@@ -3,6 +3,7 @@
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
     *ngFor="let conference of conferences; trackBy: trackConference"
+    (keydown.enter)="selectConference(conference)"
     (click)="selectConference(conference)"
     id="{{ conference.id }}-summary"
   >
@@ -11,7 +12,7 @@
         <fa-icon icon="link" class="copy-links-wrapper" aria-hidden="true"></fa-icon>
         <span class="copyTooltipText" id="{{ conference.id }}-copyTooltipText">
           <div><app-copy-id [conference]="conference"></app-copy-id></div>
-          <div><app-copy-quick-link [conferenceId]="conference.id"></app-copy-quick-link></div>
+          <div><app-copy-quick-link [conferenceId]="conference.id" [hearingId]="conference.hearingRefId"></app-copy-quick-link></div>
           <div *ngIf="conference.isJoinByPhone">
             <app-copy-telephone-id
               [telephoneId]="conference.telephoneConferenceId"

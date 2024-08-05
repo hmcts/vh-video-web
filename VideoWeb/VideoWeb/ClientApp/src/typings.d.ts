@@ -122,6 +122,8 @@ declare interface PexipClient {
     clearAllBuzz(): () => void;
     getMediaStatistics(): any;
     setParticipantText(uuid: string, text: string);
+    setSendToAudioMixes(mix: string, uuid: string);
+    setReceiveFromAudioMix(mix: string, uuid: string);
 
     /**
      * Activate or stop screen capture sharing.

@@ -1,6 +1,6 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
@@ -53,9 +53,11 @@ import {
     router,
     titleService,
     videoCallService,
+    launchDarklyService,
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
@@ -87,6 +89,8 @@ describe('WaitingRoomComponent Video Call', () => {
 
         initAllWRDependencies();
 
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -108,6 +112,7 @@ describe('WaitingRoomComponent Video Call', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
 
