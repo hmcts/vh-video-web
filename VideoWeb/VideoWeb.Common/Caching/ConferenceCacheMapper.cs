@@ -19,6 +19,8 @@ public static class ConferenceCacheMapper
 
         var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
+        var caseInformation = hearingDetailsResponse.Cases[0];
+        
         var endpoints = conferenceResponse.Endpoints == null
             ? new List<Endpoint>()
             : conferenceResponse.Endpoints.Select(e => EndpointCacheMapper.MapEndpointToCacheModel(e, endpointsForHearing.Find(x => x.DisplayName == e.DisplayName))).ToList();
@@ -42,14 +44,14 @@ public static class ConferenceCacheMapper
             Id = conferenceResponse.Id,
             HearingId = conferenceResponse.HearingId,
             Participants = participants,
-            HearingVenueName = conferenceResponse.HearingVenueName,
+            HearingVenueName = hearingDetailsResponse.HearingVenueName,
             Endpoints = endpoints,
             CivilianRooms = civilianRooms,
             CurrentStatus = conferenceResponse.CurrentStatus,
             IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen,
-            CaseName = conferenceResponse.CaseName,
-            CaseNumber = conferenceResponse.CaseNumber,
-            CaseType = conferenceResponse.CaseType,
+            CaseName = caseInformation.Name,
+            CaseNumber = caseInformation.Number,
+            CaseType = hearingDetailsResponse.ServiceName,
             ScheduledDateTime = conferenceResponse.ScheduledDateTime,
             ScheduledDuration = conferenceResponse.ScheduledDuration,
             ClosedDateTime = conferenceResponse.ClosedDateTime,

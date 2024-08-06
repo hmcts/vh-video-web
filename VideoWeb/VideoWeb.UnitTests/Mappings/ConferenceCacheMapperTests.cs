@@ -29,7 +29,9 @@ public class ConferenceCacheMapperTests
         
         response.Id.Should().Be(conference.Id);
         response.HearingId.Should().Be(conference.HearingId);
-        
+        response.HearingVenueName.Should().Be(hearingResponse.HearingVenueName);
+        response.CaseName.Should().Be(hearingResponse.Cases[0].Name);
+        response.CaseNumber.Should().Be(hearingResponse.Cases[0].Number);
         response.Participants.Count.Should().Be(conference.Participants.Count);
         
         foreach (var resultParticipant in response.Participants)
@@ -190,6 +192,8 @@ public class ConferenceCacheMapperTests
             .With(x => x.Endpoints = endpoints)
             .With(x => x.Participants = participants)
             .With(x => x.JudiciaryParticipants = joh)
+            .With(x => x.HearingVenueName = "Venue")
+            .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
             .Build();
     }
     
