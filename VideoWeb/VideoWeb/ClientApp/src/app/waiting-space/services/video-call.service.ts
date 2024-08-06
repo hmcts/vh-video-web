@@ -548,6 +548,9 @@ export class VideoCallService {
         this.pexipAPI.setParticipantText(uuid, text);
     }
 
+    transformLayout(layout: string) {
+        return this.pexipAPI.transformLayout({ layout: layout });
+    }
     private makePexipCall(
         pexipNode: string,
         conferenceAlias: string,

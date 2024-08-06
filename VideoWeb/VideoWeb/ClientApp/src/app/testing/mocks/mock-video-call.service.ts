@@ -90,7 +90,8 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'connectWowzaAgent',
         'disconnectWowzaAgent',
         'onConferenceAdjourned',
-        'setParticipantOverlayText'
+        'setParticipantOverlayText',
+        'transformLayout'
     ],
     {
         pexipAPI: pexipApiMock,
@@ -115,3 +116,4 @@ videoCallServiceSpy.onPresentationDisconnected.and.returnValue(onPresentationDis
 videoCallServiceSpy.onPresentation.and.returnValue(onPresentationMock.asObservable());
 videoCallServiceSpy.onVideoEvidenceShared.and.returnValue(onVideoEvidenceSharedMock.asObservable());
 videoCallServiceSpy.onVideoEvidenceStopped.and.returnValue(onVideoEvidenceStoppedMock.asObservable());
+videoCallServiceSpy.transformLayout.and.returnValue(Promise.resolve());
