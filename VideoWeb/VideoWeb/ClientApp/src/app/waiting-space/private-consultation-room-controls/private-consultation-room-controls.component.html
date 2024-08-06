@@ -61,7 +61,7 @@
           </span>
         </button>
         <button
-          *ngif="hasAMicrophone || hasACamera"
+          *ngIf="hasAMicrophone || hasACamera"
           id="toggle-media-device-img"
           colour="grey"
           (click)="changeDeviceSelected()"
@@ -476,10 +476,10 @@
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </button>
 
-      <div *ngif="hasAMicrophone || hasACamera" class="flexBar"></div>
+      <div *ngIf="hasAMicrophone || hasACamera" class="flexBar"></div>
 
       <button
-        *ngif="hasAMicrophone || hasACamera"
+        *ngIf="hasAMicrophone || hasACamera"
         class="icon-button"
         id="toggle-media-device-img-desktop"
         appTooltip
