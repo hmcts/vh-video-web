@@ -11,7 +11,8 @@ export const FEATURE_FLAGS = {
     multiIdpSelection: 'multi-idp-selection',
     wowzaKillButton: 'wowza-listener-kill-switch',
     hostMuteMicrophone: 'host-mute-microphone',
-    vodafone: 'vodafone'
+    vodafone: 'vodafone',
+    activeSessionFilter: 'active-sessions-filter'
 };
 
 @Injectable({
