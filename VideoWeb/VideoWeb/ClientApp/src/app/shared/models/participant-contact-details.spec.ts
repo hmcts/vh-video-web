@@ -1,6 +1,11 @@
-import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantContactDetails } from './participant-contact-details';
+import {
+    LinkedParticipantResponse,
+    LinkType,
+    ParticipantContactDetailsResponseVho,
+    Role
+} from 'src/app/services/clients/api-client';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {ParticipantContactDetails} from './participant-contact-details';
 
 describe('ParticipantContactDetails', () => {
     it('should map participant info', () => {
@@ -82,6 +87,19 @@ describe('ParticipantContactDetails', () => {
                 const p = new ParticipantContactDetails(participant);
                 expect(p.isQuickLinkUser).toBe(expectation);
             });
+        });
+    });
+
+    describe('isStaffMember', () => {
+        it('should return true if participant is a staff member', () => {
+            const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+                'C7163972-A362-4167-8D33-77A64674B31C',
+                'MyVenue'
+            );
+            const participant = participants[0];
+            participant.role = Role.StaffMember;
+            const p = new ParticipantContactDetails(participant);
+            expect(p.isStaffMember).toBeTrue();
         });
     });
 });
