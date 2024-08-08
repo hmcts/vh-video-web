@@ -1,5 +1,5 @@
-import { ParticipantStatus, Role, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import {ParticipantContactDetailsResponseVho, ParticipantStatus, Role} from 'src/app/services/clients/api-client';
+import {HearingRole} from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantContactDetails {
     private participant: ParticipantContactDetailsResponseVho;
@@ -61,6 +61,10 @@ export class ParticipantContactDetails {
 
     get isJudge(): boolean {
         return this.participant.role === Role.Judge;
+    }
+
+    get isStaffMember(): boolean {
+        return this.participant.role === Role.StaffMember;
     }
 
     get isQuickLinkUser(): boolean {
