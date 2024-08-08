@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
@@ -30,6 +31,11 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
+            var sdkKey = Configuration["LaunchDarkly:SdkKey"];
+            var featureToggles = new FeatureToggles(sdkKey, envName);
+            services.AddSingleton<IFeatureToggles>(featureToggles);
+
             services.AddSwagger();
             services.AddHsts(options =>
             {
@@ -49,6 +55,11 @@ namespace VideoWeb
                 })
                 .AddFluentValidation();
             services.AddApplicationInsightsTelemetry();
+            if (featureToggles.AppInsightsProfilingEnabled())
+            {
+                services.AddServiceProfiler();
+            }
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
