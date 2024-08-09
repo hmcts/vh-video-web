@@ -175,7 +175,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await conferenceService.ForceGetConference(conferenceId);
+                var conference = await conferenceService.GetConference(conferenceId);
 
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 
