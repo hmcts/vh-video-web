@@ -1,5 +1,5 @@
-import {ParticipantContactDetailsResponseVho, ParticipantStatus, Role} from 'src/app/services/clients/api-client';
-import {HearingRole} from 'src/app/waiting-space/models/hearing-role-model';
+import { ParticipantContactDetailsResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantContactDetails {
     private participant: ParticipantContactDetailsResponseVho;

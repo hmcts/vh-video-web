@@ -1,11 +1,6 @@
-import {
-    LinkedParticipantResponse,
-    LinkType,
-    ParticipantContactDetailsResponseVho,
-    Role
-} from 'src/app/services/clients/api-client';
-import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
-import {ParticipantContactDetails} from './participant-contact-details';
+import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { ParticipantContactDetails } from './participant-contact-details';
 
 describe('ParticipantContactDetails', () => {
     it('should map participant info', () => {
