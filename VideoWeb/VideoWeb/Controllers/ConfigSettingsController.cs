@@ -11,62 +11,48 @@ using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
-namespace VideoWeb.Controllers
+namespace VideoWeb.Controllers;
+
+[Produces("application/json")]
+[ApiController]
+[Route("config")]
+public class ConfigSettingsController(
+    IOptions<AzureAdConfiguration> azureAdConfiguration,
+    IOptions<EJudAdConfiguration> ejudAdConfiguration,
+    IOptions<HearingServicesConfiguration> servicesConfiguration,
+    IOptions<Dom1AdConfiguration> dom1AdConfiguration,
+    ISupplierLocator supplierLocator,
+    ILogger<ConfigSettingsController> logger)
+    : BaseNoCacheController
 {
-    [Produces("application/json")]
-    [ApiController]
-    [Route("config")]
-    public class ConfigSettingsController : BaseNoCacheController
+    private readonly AzureAdConfiguration _azureAdConfiguration = azureAdConfiguration.Value;
+    private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
+    private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
+    private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
+    private readonly SupplierConfiguration _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
+    
+    
+    /// <summary>
+    /// GetClientConfigurationSettings the configuration settings for client
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+    [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
+    public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
     {
-        private readonly AzureAdConfiguration _azureAdConfiguration;
-        private readonly EJudAdConfiguration _ejudAdConfiguration;
-        private readonly Dom1AdConfiguration _dom1AdConfiguration;
-        private readonly HearingServicesConfiguration _servicesConfiguration;
-        private readonly ILogger<ConfigSettingsController> _logger;
-        private readonly IMapperFactory _mapperFactory;
-        private readonly SupplierConfiguration _supplierConfiguration;
-
-        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
-            IOptions<EJudAdConfiguration> ejudAdConfiguration,
-            IOptions<HearingServicesConfiguration> servicesConfiguration,
-            IOptions<Dom1AdConfiguration> dom1AdConfiguration,
-            ISupplierLocator supplierLocator,
-            ILogger<ConfigSettingsController> logger,
-            IMapperFactory mapperFactory)
+        try
         {
-            _azureAdConfiguration = azureAdConfiguration.Value;
-            _ejudAdConfiguration = ejudAdConfiguration.Value;
-            _servicesConfiguration = servicesConfiguration.Value;
-            _logger = logger;
-            _mapperFactory = mapperFactory;
-            _dom1AdConfiguration = dom1AdConfiguration.Value;
-            _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
+            var supplierName = supplierLocator.GetSupplierName();
+            var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, _supplierConfiguration, supplierName);
+            return Ok(clientSettings);
         }
-
-
-        /// <summary>
-        /// GetClientConfigurationSettings the configuration settings for client
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
-        public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
+        catch (Exception e)
         {
-            try
-            {
-                var clientSettingsResponseMapper = _mapperFactory
-                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>();
-                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, _supplierConfiguration);
-                return Ok(response);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to retrieve client configuration settings");
-                return BadRequest(e.Message);
-            }
+            logger.LogError(e, "Unable to retrieve client configuration settings");
+            return BadRequest(e.Message);
         }
     }
 }

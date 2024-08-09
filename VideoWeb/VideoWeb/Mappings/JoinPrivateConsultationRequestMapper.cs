@@ -1,21 +1,19 @@
 ﻿using VideoApi.Contract.Requests;
 using VideoWeb.Contract.Request;
-using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class JoinPrivateConsultationRequestMapper
 {
-    public class JoinPrivateConsultationRequestMapper : IMapTo<JoinPrivateConsultationRequest, ConsultationRequestResponse>
+    public static ConsultationRequestResponse Map(JoinPrivateConsultationRequest request)
     {
-        public ConsultationRequestResponse Map(JoinPrivateConsultationRequest request)
+        return new ConsultationRequestResponse
         {
-            return new ConsultationRequestResponse
-            {
-                ConferenceId = request.ConferenceId,
-                RequestedBy = request.ParticipantId,
-                RequestedFor = request.ParticipantId,
-                RoomLabel = request.RoomLabel,
-                Answer = ConsultationAnswer.Accepted
-            };
-        }
+            ConferenceId = request.ConferenceId,
+            RequestedBy = request.ParticipantId,
+            RequestedFor = request.ParticipantId,
+            RoomLabel = request.RoomLabel,
+            Answer = ConsultationAnswer.Accepted
+        };
     }
 }

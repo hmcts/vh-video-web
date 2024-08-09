@@ -15,21 +15,8 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("profile")]
-    public class ProfilesController : ControllerBase
+    public class ProfilesController(ILogger<ProfilesController> logger, IUserProfileService userProfileService) : ControllerBase
     {
-        private readonly ILogger<ProfilesController> _logger;
-        private readonly IMapperFactory _mapperFactory;
-        private readonly IUserProfileService _userProfileService;
-
-        public ProfilesController(
-            ILogger<ProfilesController> logger,
-            IMapperFactory mapperFactory, IUserProfileService userProfileService)
-        {
-            _logger = logger;
-            _mapperFactory = mapperFactory;
-            _userProfileService = userProfileService;
-        }
-
         /// <summary>
         /// Get profile for logged in user
         /// </summary>
@@ -41,15 +28,12 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var claimsPrincipalToUserProfileResponseMapper =
-                    _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var response = claimsPrincipalToUserProfileResponseMapper.Map(User);
-                return Ok(response);
+                return Ok(ClaimsPrincipalToUserProfileResponseMapper.Map(User));
             }
             catch (Exception e)
             {
                 const string message = "User does not have permission";
-                _logger.LogError(e, message);
+                logger.LogError(e, message);
                 return Unauthorized(message);
             }
         }
@@ -67,11 +51,10 @@ namespace VideoWeb.Controllers
         {
             var usernameClean = username.ToLower().Trim();
 
-            var userProfile = await _userProfileService.GetUserAsync(usernameClean);
+            var userProfile = await userProfileService.GetUserAsync(usernameClean);
             if (userProfile == null) return NotFound();
 
-            var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
-            var response = userProfileToUserProfileResponseMapper.Map(userProfile);
+            var response = UserProfileToUserProfileResponseMapper.Map(userProfile);
 
             return Ok(response);
 

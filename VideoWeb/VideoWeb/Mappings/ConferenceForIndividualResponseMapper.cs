@@ -1,25 +1,23 @@
 using System;
 using VideoWeb.Common.Models;
-using VideoWeb.Mappings.Interfaces;
 using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class ConferenceForIndividualResponseMapper
 {
-    public class ConferenceForIndividualResponseMapper : IMapTo<Conference, ConferenceForIndividualResponse>
+    public static ConferenceForIndividualResponse Map(Conference conference)
     {
-        public ConferenceForIndividualResponse Map(Conference conference)
+        return new ConferenceForIndividualResponse
         {
-            return new ConferenceForIndividualResponse
-            {
-                Id = conference.Id,
-                CaseName = conference.CaseName,
-                CaseNumber = conference.CaseNumber,
-                ScheduledDateTime = conference.ScheduledDateTime,
-                Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                ClosedDateTime = conference.ClosedDateTime,
-                HearingVenueIsScottish = conference.HearingVenueIsScottish
-            };
-        }
+            Id = conference.Id,
+            CaseName = conference.CaseName,
+            CaseNumber = conference.CaseNumber,
+            ScheduledDateTime = conference.ScheduledDateTime,
+            Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
+            ClosedDateTime = conference.ClosedDateTime,
+            HearingVenueIsScottish = conference.HearingVenueIsScottish
+        };
     }
 }

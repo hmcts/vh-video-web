@@ -1,22 +1,20 @@
 using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class IdpSettingsResponseMapper
 {
-    public class IdpSettingsResponseMapper : IMapTo<IdpConfiguration, IdpSettingsResponse>
+    public static IdpSettingsResponse Map(IdpConfiguration input)
     {
-        public IdpSettingsResponse Map(IdpConfiguration input)
+        return new IdpSettingsResponse
         {
-            return new IdpSettingsResponse
-            {
-                ConfigId = input.ConfigId,
-                ClientId = input.ClientId,
-                TenantId = input.TenantId,
-                RedirectUri = input.RedirectUri,
-                PostLogoutRedirectUri = input.PostLogoutRedirectUri,
-                ResourceId = input.ResourceId
-            };
-        }
+            ConfigId = input.ConfigId,
+            ClientId = input.ClientId,
+            TenantId = input.TenantId,
+            RedirectUri = input.RedirectUri,
+            PostLogoutRedirectUri = input.PostLogoutRedirectUri,
+            ResourceId = input.ResourceId
+        };
     }
 }

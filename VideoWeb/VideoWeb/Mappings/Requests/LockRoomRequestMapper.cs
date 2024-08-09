@@ -1,19 +1,17 @@
 ﻿using VideoWeb.Contract.Request;
-using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Requests;
 
-namespace VideoWeb.Mappings.Requests
+namespace VideoWeb.Mappings.Requests;
+
+public static class LockRoomRequestMapper
 {
-    public class LockRoomRequestMapper : IMapTo<LockConsultationRoomRequest, LockRoomRequest>
+    public static LockRoomRequest Map(LockConsultationRoomRequest input)
     {
-        public LockRoomRequest Map(LockConsultationRoomRequest input)
+        return new LockRoomRequest
         {
-            return new LockRoomRequest
-            {
-                ConferenceId = input.ConferenceId,
-                Lock = input.Lock,
-                RoomLabel = input.RoomLabel
-            };
-        }
+            ConferenceId = input.ConferenceId,
+            Lock = input.Lock,
+            RoomLabel = input.RoomLabel
+        };
     }
 }

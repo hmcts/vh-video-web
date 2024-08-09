@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class UnreadAdminMessageResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>
+    public static class UnreadAdminMessageResponseMapper
     {
-        public UnreadAdminMessageResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
+        public static UnreadAdminMessageResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadAdminMessageResponse
             {
@@ -20,7 +19,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
+        private static int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -32,7 +31,7 @@ namespace VideoWeb.Mappings
             return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
-        private bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
+        private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
             return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }

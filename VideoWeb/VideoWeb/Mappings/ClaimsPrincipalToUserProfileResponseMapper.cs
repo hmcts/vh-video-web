@@ -4,12 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings;
-public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal, UserProfileResponse>
+
+public static class ClaimsPrincipalToUserProfileResponseMapper
 {
-    public UserProfileResponse Map(ClaimsPrincipal user)
+    public static UserProfileResponse Map(ClaimsPrincipal user)
     {   
         var response = new UserProfileResponse
         {

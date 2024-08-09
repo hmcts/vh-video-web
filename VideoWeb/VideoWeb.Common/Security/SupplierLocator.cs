@@ -12,6 +12,7 @@ public interface ISupplierLocator
 {
     IJwtTokenProvider GetTokenProvider();
     IOptions<SupplierConfiguration> GetSupplierConfiguration();
+    public string GetSupplierName();
 }
 
 public class SupplierLocator : ISupplierLocator
@@ -39,4 +40,5 @@ public class SupplierLocator : ISupplierLocator
     public IOptions<SupplierConfiguration> GetSupplierConfiguration() =>
         _featureToggles.Vodafone() ? _vodafoneConfigOptions : _kinlyConfigOptions;
     
+    public string GetSupplierName() => _featureToggles.Vodafone() ? "vodafone" : "kinly";
 }

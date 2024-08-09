@@ -14,8 +14,6 @@ using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.SelfTestController
@@ -31,9 +29,6 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PexipConfigResponse, SelfTestPexipResponse>())
-                .Returns(_mocker.Create<PexipServiceConfigurationResponseMapper>());
             
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             _testCallCache = new TestCallCache(memoryCache);

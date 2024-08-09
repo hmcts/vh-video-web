@@ -1,31 +1,48 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
-
 using VideoApi.Contract.Responses;
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class VideoEndpointsResponseMapper
 {
-    public class VideoEndpointsResponseMapper : IMapTo<EndpointResponse, VideoEndpointResponse>
+    /// <summary>
+    /// Mapped from video api response
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <returns></returns>
+    public static VideoEndpointResponse Map(EndpointResponse endpoint)
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
-        public VideoEndpointsResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
+        var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
+        return new VideoEndpointResponse
         {
-            _roomResponseMapper = roomResponseMapper;
-        }
-        public VideoEndpointResponse Map(EndpointResponse endpoint)
+            DisplayName = endpoint.DisplayName,
+            Id = endpoint.Id,
+            Status = status,
+            PexipDisplayName = pexipDisplayName,
+            CurrentRoom = RoomSummaryResponseMapper.Map(endpoint.CurrentRoom),
+            DefenceAdvocateUsername = endpoint.DefenceAdvocate,
+        };
+    }
+    
+    /// <summary>
+    /// Mapped from dto
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <returns></returns>
+    public static VideoEndpointResponse Map(Endpoint endpoint)
+    {
+        var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
+        return new VideoEndpointResponse
         {
-            var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
-            var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
-            return new VideoEndpointResponse
-            {
-                DisplayName = endpoint.DisplayName,
-                Id = endpoint.Id,
-                Status = status,
-                PexipDisplayName = pexipDisplayName,
-                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom),
-                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
-            };
-        }
+            DisplayName = endpoint.DisplayName,
+            Id = endpoint.Id,
+            Status = endpoint.EndpointStatus,
+            PexipDisplayName = pexipDisplayName,
+            CurrentRoom = RoomSummaryResponseMapper.Map(endpoint.CurrentRoom),
+            DefenceAdvocateUsername = endpoint.DefenceAdvocateUsername,
+            InterpreterLanguage = endpoint.InterpreterLanguage?.Map()
+        };
     }
 }

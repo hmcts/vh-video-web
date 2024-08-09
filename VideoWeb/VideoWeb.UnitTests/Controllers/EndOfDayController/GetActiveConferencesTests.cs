@@ -18,7 +18,6 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
@@ -47,19 +46,7 @@ public class GetActiveConferencesTests
                     User = claimsPrincipal
                 }
             };
-
-            var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantDtoForResponseMapper>()
-                .AddTypedParameters<ParticipantForHostResponseMapper>()
-                .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantResponseForUserMapper>()
-                .AddTypedParameters<ConferenceForHostResponseMapper>()
-                .Build();
             
-            _mocker.Mock<IMapperFactory>()
-                .Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>())
-                .Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
-
             var controller = _mocker.Create<VideoWeb.Controllers.EndOfDayController>();
             controller.ControllerContext = context;
             return controller;
@@ -153,5 +140,4 @@ public class GetActiveConferencesTests
         typedResult.StatusCode.Should().Be(500);
         typedResult.Value.Should().Be("Internal server error");
     }
-    
 }

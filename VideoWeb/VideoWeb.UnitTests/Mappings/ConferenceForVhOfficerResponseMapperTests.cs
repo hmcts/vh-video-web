@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Autofac.Extras.Moq;
 using BookingsApi.Contract.V1.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -15,23 +14,12 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceForVhOfficerResponseMapperTests
     {
-        private ConferenceForVhOfficerResponseMapper _sut;
-        private AutoMock _mocker;
-
-        [SetUp]
-        public void Setup()
-        {
-            _mocker = AutoMock.GetLoose();
-            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<ParticipantResponseForUserMapper>().Build();
-            _sut = _mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters);
-        }
-
         [Test]
         public void Should_map_all_properties()
         {
             var conference = BuildConferenceForTest();
 
-            var response = _sut.Map(conference, null);
+            var response = ConferenceForVhOfficerResponseMapper.Map(conference, null);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.CaseName);
@@ -59,7 +47,7 @@ namespace VideoWeb.UnitTests.Mappings
                 SupportsWorkAllocation = true
             };
             
-            var response = _sut.Map(conference, allocatedCsoResponse);
+            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
             
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
         }
@@ -78,7 +66,7 @@ namespace VideoWeb.UnitTests.Mappings
                 }
             };
             
-            var response = _sut.Map(conference, allocatedCsoResponse);
+            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
             
             response.AllocatedCso.Should().Be(fullName);
         }
@@ -92,7 +80,7 @@ namespace VideoWeb.UnitTests.Mappings
                 SupportsWorkAllocation = false
             };
             
-            var response = _sut.Map(conference, allocatedCsoResponse);
+            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
             
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotRequired);
         }
