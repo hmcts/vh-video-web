@@ -84,4 +84,17 @@ describe('ParticipantContactDetails', () => {
             });
         });
     });
+
+    describe('isStaffMember', () => {
+        it('should return true if participant is a staff member', () => {
+            const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+                'C7163972-A362-4167-8D33-77A64674B31C',
+                'MyVenue'
+            );
+            const participant = participants[0];
+            participant.role = Role.StaffMember;
+            const p = new ParticipantContactDetails(participant);
+            expect(p.isStaffMember).toBeTrue();
+        });
+    });
 });
