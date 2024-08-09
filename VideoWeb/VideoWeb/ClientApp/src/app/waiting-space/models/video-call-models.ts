@@ -27,6 +27,8 @@ export class ParticipantUpdated {
     public isAudioOnlyCall: boolean;
     public isVideoCall: boolean;
     public protocol: string;
+    public receivingAudioMix: string;
+    public sentAudioMixes: PexipAudioMix[];
 
     private constructor(
         isRemoteMuted: string,
@@ -36,7 +38,9 @@ export class ParticipantUpdated {
         spotlightTime: number,
         isAudioOnlyCall: string,
         isVideoCall: string,
-        protocol: string
+        protocol: string,
+        receivingAudioMix?: string,
+        sentAudioMixes?: PexipAudioMix[]
     ) {
         this.isRemoteMuted = isRemoteMuted?.toUpperCase() === 'YES';
         this.isSpotlighted = spotlightTime !== 0;
@@ -46,6 +50,8 @@ export class ParticipantUpdated {
         this.isAudioOnlyCall = isAudioOnlyCall?.toUpperCase() === 'YES';
         this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
         this.protocol = protocol;
+        this.receivingAudioMix = receivingAudioMix;
+        this.sentAudioMixes = sentAudioMixes;
     }
 
     static fromPexipParticipant(pexipParticipant: PexipParticipant) {
@@ -57,7 +63,9 @@ export class ParticipantUpdated {
             pexipParticipant.spotlight,
             pexipParticipant.is_audio_only_call,
             pexipParticipant.is_video_call,
-            pexipParticipant.protocol
+            pexipParticipant.protocol,
+            pexipParticipant.receive_from_audio_mix,
+            pexipParticipant.send_to_audio_mixes
         );
     }
 }

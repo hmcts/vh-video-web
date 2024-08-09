@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { addMatchers, cold, hot, initTestScheduler } from 'jasmine-marbles';
+import { cold, hot } from 'jasmine-marbles';
 import { Observable, of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing'; // import this
 
@@ -9,14 +9,17 @@ import { ApiClient } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
+import { VideoCallService } from '../../services/video-call.service';
 
 describe('ConferenceEffectsEffects', () => {
     let actions$: Observable<any>;
     let effects: ConferenceEffects;
     let apiClient: jasmine.SpyObj<ApiClient>;
+    let videoCallService: jasmine.SpyObj<VideoCallService>;
 
     beforeEach(() => {
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById']);
+        videoCallService = jasmine.createSpyObj('VideoCallService', ['receiveAudioFromMix', 'sendParticipantAudioToMixes']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [ConferenceEffects, provideMockActions(() => actions$), { provide: ApiClient, useValue: apiClient }]

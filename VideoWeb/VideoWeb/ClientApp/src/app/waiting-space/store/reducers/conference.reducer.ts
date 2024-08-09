@@ -158,7 +158,7 @@ export const conferenceReducer = createReducer(
 
         return { ...state, currentConference: { ...conference, endpoints: updatedList } };
     }),
-    on(ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
+    on(ConferenceActions.createPexipParticipant, ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
         const conference = state.currentConference;
         const participants = conference.participants.map(p =>
             participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p

@@ -113,7 +113,10 @@ describe('VideoCallService', () => {
             'dialOut',
             'disconnectParticipant',
             'setParticipantText',
-            'transformLayout'
+            'transformLayout',
+            'setParticipantText',
+            'setSendToAudioMixes',
+            'setReceiveFromAudioMix'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -514,7 +517,14 @@ describe('VideoCallService', () => {
                 call_tag: 'call_tag',
                 is_audio_only_call: 'is_audio_only_call',
                 is_video_call: 'is_video_call',
-                protocol: 'protocol'
+                protocol: 'protocol',
+                disconnect_supported: 'Yes',
+                transfer_supported: 'Yes',
+                is_main_video_dropped_out: false,
+                is_video_muted: false,
+                is_streaming_conference: false,
+                send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+                receive_from_audio_mix: 'main'
             };
 
             const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -548,7 +558,14 @@ describe('VideoCallService', () => {
                 call_tag: undefined,
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
-                protocol: undefined
+                protocol: undefined,
+                disconnect_supported: undefined,
+                transfer_supported: undefined,
+                is_main_video_dropped_out: undefined,
+                is_video_muted: undefined,
+                is_streaming_conference: undefined,
+                send_to_audio_mixes: undefined,
+                receive_from_audio_mix: undefined
             };
 
             // Act
@@ -581,7 +598,14 @@ describe('VideoCallService', () => {
                 call_tag: 'call_tag',
                 is_audio_only_call: 'is_audio_only_call',
                 is_video_call: 'is_video_call',
-                protocol: 'protocol'
+                protocol: 'protocol',
+                disconnect_supported: 'Yes',
+                transfer_supported: 'Yes',
+                is_main_video_dropped_out: false,
+                is_video_muted: false,
+                is_streaming_conference: false,
+                send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+                receive_from_audio_mix: 'main'
             };
 
             const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -616,7 +640,14 @@ describe('VideoCallService', () => {
                 call_tag: undefined,
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
-                protocol: undefined
+                protocol: undefined,
+                disconnect_supported: undefined,
+                transfer_supported: undefined,
+                is_main_video_dropped_out: undefined,
+                is_video_muted: undefined,
+                is_streaming_conference: undefined,
+                send_to_audio_mixes: undefined,
+                receive_from_audio_mix: undefined
             };
 
             // Act
@@ -796,6 +827,26 @@ describe('VideoCallService', () => {
             const layout = HearingLayout.TwoPlus21;
             service.transformLayout(layout);
             expect(pexipSpy.transformLayout).toHaveBeenCalledOnceWith({ layout: layout });
+        });
+    });
+
+    describe('sendParticipantAudioToMixes', () => {
+        it('should call pexip sendParticipantAudioToMixes', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixes = [{ mix_name: 'main', prominent: false }];
+            service.sendParticipantAudioToMixes(mixes, uuid);
+            expect(pexipSpy.setSendToAudioMixes).toHaveBeenCalledWith(mixes, uuid);
+        });
+    });
+
+    describe('receiveAudioFromMix', () => {
+        it('should call pexip receiveAudioFromMix', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixName = 'main';
+            service.receiveAudioFromMix(mixName, uuid);
+            expect(pexipSpy.setReceiveFromAudioMix).toHaveBeenCalledWith(mixName, uuid);
         });
     });
 });
