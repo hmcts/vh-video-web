@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/base';
+@import 'govuk-frontend/dist/govuk/base';
 @import 'abstracts';
 $govuk-show-breakpoints: true;
 
@@ -205,10 +205,10 @@ $govuk-show-breakpoints: true;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 30vw;
-  @include govuk-media-query(1180) {
+  @include govuk-media-query(1180px) {
     max-width: 30vw;
   }
-  @include govuk-media-query(1600) {
+  @include govuk-media-query(1600px) {
     max-width: 100vw;
   }
 }

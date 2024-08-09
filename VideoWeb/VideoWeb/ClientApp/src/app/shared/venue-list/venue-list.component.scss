@@ -1,6 +1,5 @@
-@import 'govuk-frontend/govuk/base';
-@import 'govuk-frontend/govuk/core/all';
-@import 'govuk-frontend/govuk/components/all';
+@import 'govuk-frontend/dist/govuk/base';
+@import 'govuk-frontend/dist/govuk/core/index';
 
 .selection-list {
   @extend .govuk-body;
