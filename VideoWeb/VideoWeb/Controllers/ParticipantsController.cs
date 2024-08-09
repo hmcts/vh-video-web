@@ -75,9 +75,6 @@ namespace VideoWeb.Controllers
             try
             {
                 await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest);
-                
-                // Refresh the conference in the cache
-                await conferenceService.ForceGetConference(conferenceId);
 
                 return NoContent();
             }
@@ -178,7 +175,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await conferenceService.GetConference(conferenceId);
+                var conference = await conferenceService.ForceGetConference(conferenceId);
 
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 
@@ -205,7 +202,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await conferenceService.GetConference(conferenceId);
+                var conference = await conferenceService.ForceGetConference(conferenceId);
                 var participantMapper = mapperFactory.Get<Participant, ParticipantResponse>();
                 var participants = conference.Participants.Select(participantMapper.Map).ToList();
                 return Ok(participants);

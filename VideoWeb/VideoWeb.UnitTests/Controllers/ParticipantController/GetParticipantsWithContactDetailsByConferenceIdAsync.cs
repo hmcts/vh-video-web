@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 new () { Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
             };
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conference.Id)).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(conference.Id)).ReturnsAsync(conference);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetHostsInHearingsTodayAsync())
                 .ReturnsAsync(judgesInHearings);
@@ -110,7 +110,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId)).ThrowsAsync(apiException);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(conferenceId)).ThrowsAsync(apiException);
             var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
