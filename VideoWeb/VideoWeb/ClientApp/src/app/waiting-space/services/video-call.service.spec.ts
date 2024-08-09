@@ -113,7 +113,7 @@ describe('VideoCallService', () => {
             'dialOut',
             'disconnectParticipant',
             'setParticipantText',
-            'transformLayout'
+            'transformLayout',
             'setParticipantText',
             'setSendToAudioMixes',
             'setReceiveFromAudioMix'
