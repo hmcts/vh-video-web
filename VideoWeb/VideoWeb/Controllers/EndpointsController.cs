@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
@@ -19,7 +18,6 @@ namespace VideoWeb.Controllers;
 [Route("video-endpoints")]
 public class EndpointsController(
     ILogger<EndpointsController> logger,
-    IMapperFactory mapperFactory,
     IConferenceService conferenceService)
     : ControllerBase
 {
@@ -31,8 +29,7 @@ public class EndpointsController(
         try
         {
             var conference = await conferenceService.GetConference(conferenceId);
-            var videoEndpointResponseMapper = mapperFactory.Get<Endpoint, VideoEndpointResponse>();
-            return Ok(conference.Endpoints.Select(videoEndpointResponseMapper.Map).ToList());
+            return Ok(conference.Endpoints.Select(VideoEndpointsResponseMapper.Map).ToList());
         }
         catch (VideoApiException e)
         {
@@ -60,8 +57,7 @@ public class EndpointsController(
                     ep.DefenceAdvocateUsername != null &&
                     ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
             
-            var allowedEndpointResponseMapper = mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
-            var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
+            var response = usersEndpoints.Select(AllowedEndpointResponseMapper.Map).ToList();
             return Ok(response);
         }
     }

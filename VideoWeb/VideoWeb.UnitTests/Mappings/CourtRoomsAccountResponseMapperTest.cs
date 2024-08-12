@@ -5,48 +5,47 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Mappings
+namespace VideoWeb.UnitTests.Mappings;
+
+public class CourtRoomsAccountResponseMapperTest
 {
-    public class CourtRoomsAccountResponseMapperTest : BaseMockerSutTestSetup<CourtRoomsAccountResponseMapper>
+    [Test]
+    public void Should_map_user_response_to_court_rooms_account()
     {
-        [Test]
-        public void Should_map_user_response_to_court_rooms_account()
-        {
-            var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
-            var result = _sut.Map(conferences);
-
-            result.Should().NotBeNull();
-            result.Count.Should().Be(2);
-            result[0].Rooms.Count.Should().Be(3);
-            result[1].Rooms.Count.Should().Be(1);
-
-            result[0].Venue.Should().Be("Venue Name 01");
-            result[1].Venue.Should().Be("Venue Name 02");
-
-            result[0].Rooms[0].Should().Be("Alpha");
-            result[0].Rooms[1].Should().Be("Beta");
-            result[0].Rooms[2].Should().Be("Gamma");
-
-            result[1].Rooms[0].Should().Be("Gamma");
-
-        }
+        var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
+        var result = CourtRoomsAccountResponseMapper.Map(conferences);
         
-        [Test]
-        public void Should_map_user_response_to_court_rooms_account_but_exclude_hearings_without_judge()
+        result.Should().NotBeNull();
+        result.Count.Should().Be(2);
+        result[0].Rooms.Count.Should().Be(3);
+        result[1].Rooms.Count.Should().Be(1);
+        
+        result[0].Venue.Should().Be("Venue Name 01");
+        result[1].Venue.Should().Be("Venue Name 02");
+        
+        result[0].Rooms[0].Should().Be("Alpha");
+        result[0].Rooms[1].Should().Be("Beta");
+        result[0].Rooms[2].Should().Be("Gamma");
+        
+        result[1].Rooms[0].Should().Be("Gamma");
+        
+    }
+    
+    [Test]
+    public void Should_map_user_response_to_court_rooms_account_but_exclude_hearings_without_judge()
+    {
+        var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
+        conferences.ForEach(e => e.Participants.RemoveAll(x => x.Role == Role.Judge) );
+        conferences[0].Participants.Add(new ParticipantForUserResponse
         {
-            var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
-            conferences.ForEach(e => e.Participants.RemoveAll(x => x.Role == Role.Judge) );
-            conferences[0].Participants.Add(new ParticipantForUserResponse
-                {
-                    Role = Role.Judge,
-                    HearingRole = "Judge", 
-                    FirstName = "JudgeFName", 
-                    LastName = "JudgeLName"
-                });
-            var result = _sut.Map(conferences);
-
-            result.Should().NotBeNull();
-            result.Count.Should().Be(1);
-        }
+            Role = Role.Judge,
+            HearingRole = "Judge",
+            FirstName = "JudgeFName",
+            LastName = "JudgeLName"
+        });
+        var result = CourtRoomsAccountResponseMapper.Map(conferences);
+        
+        result.Should().NotBeNull();
+        result.Count.Should().Be(1);
     }
 }
