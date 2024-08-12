@@ -202,7 +202,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await conferenceService.GetConference(conferenceId);
+                var conference = await conferenceService.ForceGetConference(conferenceId);
                 var participantMapper = mapperFactory.Get<Participant, ParticipantResponse>();
                 var participants = conference.Participants.Select(participantMapper.Map).ToList();
                 return Ok(participants);
