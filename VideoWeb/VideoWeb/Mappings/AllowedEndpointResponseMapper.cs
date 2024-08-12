@@ -1,19 +1,17 @@
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class AllowedEndpointResponseMapper
 {
-    public class AllowedEndpointResponseMapper : IMapTo<Endpoint, AllowedEndpointResponse>
+    public static AllowedEndpointResponse Map(Endpoint input)
     {
-        public AllowedEndpointResponse Map(Endpoint input)
+        return new AllowedEndpointResponse
         {
-            return new AllowedEndpointResponse
-            {
-                DisplayName = input.DisplayName,
-                Id = input.Id,
-                DefenceAdvocateUsername = input.DefenceAdvocateUsername,
-            };
-        }
+            DisplayName = input.DisplayName,
+            Id = input.Id,
+            DefenceAdvocateUsername = input.DefenceAdvocateUsername,
+        };
     }
 }
