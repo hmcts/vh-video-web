@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,6 @@ using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Enums;
 using VideoWeb.Common;
 using VideoWeb.Mappings;
 using VideoWeb.Middleware;
@@ -200,7 +198,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await conferenceService.GetConference(conferenceId);
+                var conference = await conferenceService.ForceGetConference(conferenceId);
                 var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
                 return Ok(participants);
             }
