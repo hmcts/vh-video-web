@@ -36,7 +36,7 @@ public class GetParticipantsByConferenceIdTest
         var response = CreateValidParticipantConferenceDto();
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
             .ReturnsAsync(response);
         
         var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId);
@@ -55,7 +55,7 @@ public class GetParticipantsByConferenceIdTest
             "Please provide a valid conference Id", null, default, null);
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
             .Throws(apiException);
         
         var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId);

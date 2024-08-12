@@ -70,6 +70,7 @@ import {
     faSignInAlt,
     faSignOutAlt,
     faSlidersH,
+    faThLarge,
     faThumbtack,
     faTv,
     faUser as faUserSolid,
@@ -249,7 +250,8 @@ export class SharedModule {
             faUserRegular,
             faUserSolid,
             faVideo,
-            faVideoSlash
+            faVideoSlash,
+            faThLarge
         );
     }
 }

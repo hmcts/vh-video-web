@@ -10,12 +10,18 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() conference: ConferenceResponse;
+    @Input() callback: Function;
+    @Input() onHostToolBar = false;
 
-    availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    availableLayouts: HearingLayout[];
+
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
 
     subscriptions = new Subscription();
+
+    private availableLayoutsWR = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
 
     constructor(
         private hearingLayoutService: HearingLayoutService,
@@ -35,6 +41,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.availableLayouts = this.onHostToolBar ? this.availableLayoutHostToolBar : this.availableLayoutsWR;
         const headingElement = document.getElementById('accordion-choose-layout-heading');
         headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
@@ -87,7 +94,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         }
     }
 
-    updateSelectedLayout(layout: HearingLayout) {
+    updateSelectedLayout(layout: HearingLayout, callback: Function) {
         this.hearingLayoutService.updateCurrentLayout(layout);
+        if (callback) {
+            callback(layout);
+        }
     }
 }
