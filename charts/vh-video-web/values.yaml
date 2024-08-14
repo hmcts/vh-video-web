@@ -38,6 +38,7 @@ java:
         - azuread--clientsecret
         - customtoken--secret
         - customtoken--thirdpartysecret
+        #kinly configuration
         - kinlyconfiguration--apisecret
         - kinlyconfiguration--callbacksecret
         - kinlyconfiguration--conferencephonenumber
@@ -47,6 +48,22 @@ java:
         - kinlyconfiguration--turnserver
         - kinlyconfiguration--turnservercredential
         - kinlyconfiguration--turnserveruser
+        #vodafone configuration
+        - vodafoneconfiguration--apisecret
+        - vodafoneconfiguration--callbacksecret
+        - name: kinlyconfiguration--conferencephonenumber
+          alias: vodafoneconfiguration--conferencephonenumber
+        - vodafoneconfiguration--heartbeaturlbase
+        - name: kinlyconfiguration--joinbyphonefromdate
+          alias: vodafoneconfiguration--joinbyphonefromdate
+        - vodafoneconfiguration--selftestapisecret
+        - name: kinlyconfiguration--turnserver
+          alias: vodafoneconfiguration--turnserver
+        - name: kinlyconfiguration--turnservercredential
+          alias: vodafoneconfiguration--turnservercredential
+        - name: kinlyconfiguration--turnserveruser
+          alias: vodafoneconfiguration--turnserveruser
+
         - quicklinks--issuer
         - quicklinks--rsapublickey
         - quicklinks--validaudience
@@ -56,6 +73,8 @@ java:
         - ejudad--tenantid
         - name: azuread--identifieruri
           alias: azuread--resourceid
+        - redisconfiguration--endpoint
+        - redisconfiguration--password
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -82,7 +101,7 @@ java:
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     EJUDAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
-    EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/ejud-signin
+    EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     DOM1__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     DOM1__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     DISABLEHTTPSREDIRECTION: true
@@ -97,4 +116,3 @@ java:
     VHSERVICES__ENABLEVIDEOFILTERS: true
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net/
-    
