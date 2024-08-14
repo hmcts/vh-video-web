@@ -95,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
             .pipe(first())
             .subscribe({
                 next: config => {
-                    this.supplierClientService.loadSupplierScript(config.supplier);
+                    this.supplierClientService.loadSupplierScript(config.supplier); // TODO move this to where we fetch a conference
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);

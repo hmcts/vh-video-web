@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common.Enums;
 
 namespace VideoWeb.Common.Models
 {
@@ -35,6 +36,7 @@ namespace VideoWeb.Common.Models
         public bool IsScottish { get; set; }
         public string IngestUrl { get; set; }
         public ConferenceMeetingRoom MeetingRoom { get; set; }
+        public Supplier Supplier { get; set; }
 
         public Participant GetJudge()
         {

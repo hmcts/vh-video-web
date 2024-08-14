@@ -3128,8 +3128,10 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
-        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
+    getHeartbeatConfigForParticipant(conferenceId: string, participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/conferences/{conferenceId}/GetHeartbeatConfigForParticipant/{participantId}';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');

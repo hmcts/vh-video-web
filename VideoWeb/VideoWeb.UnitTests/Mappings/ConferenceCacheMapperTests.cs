@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -10,6 +11,7 @@ using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
@@ -30,6 +32,7 @@ public class ConferenceCacheMapperTests
         
         response.Id.Should().Be(conference.Id);
         response.HearingId.Should().Be(conference.HearingId);
+        response.Supplier.Should().Be((Supplier)hearingResponse.BookingSupplier);
         
         response.Participants.Count.Should().Be(conference.Participants.Count);
         
@@ -191,6 +194,7 @@ public class ConferenceCacheMapperTests
             .With(x => x.Endpoints = endpoints)
             .With(x => x.Participants = participants)
             .With(x => x.JudiciaryParticipants = joh)
+            .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
             .Build();
     }
     

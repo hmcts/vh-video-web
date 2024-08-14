@@ -38,7 +38,7 @@ export class HeartbeatService {
             this.currentConference = details.conference;
             this.currentParticipant = details.participant;
 
-            this.apiClient.getHeartbeatConfigForParticipant(this.currentParticipant.id).subscribe({
+            this.apiClient.getHeartbeatConfigForParticipant(this.currentConference.id, this.currentParticipant.id).subscribe({
                 next: heartbeatConfiguration => {
                     this.logger.info(`${this.loggerPrefix} got heartbeat configuration`, {
                         heartbeatBaseUrl: heartbeatConfiguration.heartbeat_url_base,
