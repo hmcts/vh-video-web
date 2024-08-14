@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -47,11 +48,11 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetProfileByUsername")]
         [ProducesResponseType(typeof(UserProfileResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetProfileByUsernameAsync([FromQuery] string username)
+        public async Task<IActionResult> GetProfileByUsernameAsync([FromQuery] string username, CancellationToken cancellationToken)
         {
             var usernameClean = username.ToLower().Trim();
 
-            var userProfile = await userProfileService.GetUserAsync(usernameClean);
+            var userProfile = await userProfileService.GetUserAsync(usernameClean, cancellationToken);
             if (userProfile == null) return NotFound();
 
             var response = UserProfileToUserProfileResponseMapper.Map(userProfile);

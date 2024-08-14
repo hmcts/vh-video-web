@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -20,8 +21,9 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
             MemoryCache.Remove(TestConference.Id);
-            
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
+
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object,
+                LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -39,17 +41,21 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
+                    _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Available), Times.Exactly(participantCount));
-            
-            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
+
         [Test]
         public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()
         {
             MemoryCache.Remove(TestConference.Id);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object,
+                LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -69,18 +75,22 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
+                    _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.InHearing), Times.Exactly(participantCount));
-            
-            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
-        
+
         [Test]
-        public async Task Should_send_in_consultation_message_to_participants_and_service_bus_when_participant_joins_consultation()
+        public async Task
+            Should_send_in_consultation_message_to_participants_and_service_bus_when_participant_joins_consultation()
         {
             MemoryCache.Remove(TestConference.Id);
 
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object,
+                LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
@@ -101,10 +111,12 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
+                    _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.InConsultation), Times.Exactly(participantCount));
-            
-            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
     }
 }

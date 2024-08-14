@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
             
             // conference doesn't exist (null)
-            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync((Conference)null);
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Conference)null);
 
             SetupActionExecutingContext(actionArguments, user);
 
@@ -65,7 +66,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     }
                 }
             };
-            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             SetupActionExecutingContext(actionArguments, user);
 
             // act
@@ -105,8 +107,9 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     }
                 }
             };
-            
-            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(conference);
+
+            ConferenceService.Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             SetupActionExecutingContext(actionArguments, user);
 
             // act

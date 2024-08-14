@@ -5,13 +5,13 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
@@ -133,7 +133,8 @@ public class ParticipantsServiceTests
     [Test]
     public void AddParticipantToConferenceCache_when_conference_is_null()
     {
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).Returns(Task.FromResult(null as Conference));
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(null as Conference));
         var addStaffMemberResponse = new AddStaffMemberResponse
         {
             ConferenceId = Guid.NewGuid(),
@@ -148,7 +149,9 @@ public class ParticipantsServiceTests
     [Test]
     public async Task AddParticipantToConferenceCache_when_conference_is_in_cache()
     {
-        _mocker.Mock<IConferenceService>().Setup(x=> x.GetConference(_testConferenceResponse.Id)).ReturnsAsync(_testConferenceCache);
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(_testConferenceResponse.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_testConferenceCache);
         var staffMember = new ParticipantResponseBuilder(UserRole.StaffMember).Build();
         
         var addStaffMemberResponse = new AddStaffMemberResponse
@@ -160,7 +163,7 @@ public class ParticipantsServiceTests
         await _service.AddParticipantToConferenceCache(addStaffMemberResponse.ConferenceId,
             addStaffMemberResponse.Participant);
         
-        _mocker.Mock<IConferenceService>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == _testConferenceCache)), Times.Once());
+        _mocker.Mock<IConferenceService>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == _testConferenceCache), It.IsAny<CancellationToken>()), Times.Once());
         _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == _testConferenceCache), _testConferenceCache.Participants), Times.Once());
     }
 

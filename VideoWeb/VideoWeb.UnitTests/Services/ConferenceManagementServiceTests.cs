@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
@@ -8,9 +9,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
@@ -43,7 +42,8 @@ public class ConferenceManagementServiceTests
             builder.RegisterInstance(EventHubClientMock.Object);
         });
 
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conference.Id)).ReturnsAsync(_conference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conference.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_conference);
         RegisterUsersForHubContext(_conference.Participants);
         
         _sut = _mocker.Create<ConferenceManagementService>();

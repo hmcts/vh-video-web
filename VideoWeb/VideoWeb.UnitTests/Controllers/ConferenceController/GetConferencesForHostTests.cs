@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -48,7 +49,7 @@ public class GetConferencesForHostTests
         _controller = _mocker.Create<ConferencesController>();
         _controller.ControllerContext = context;
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<ConfirmedHearingsTodayResponse>());
         
     }
@@ -84,14 +85,14 @@ public class GetConferencesForHostTests
         }
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(bookings);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (OkObjectResult) result.Result;
         typedResult.Should().NotBeNull();
@@ -139,14 +140,14 @@ public class GetConferencesForHostTests
         
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(bookings);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (OkObjectResult) result.Result;
         typedResult.Should().NotBeNull();
@@ -168,13 +169,13 @@ public class GetConferencesForHostTests
         var conferences = new List<ConferenceVideoApi>();
         var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(bookingException);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (OkObjectResult) result.Result;
         typedResult.Should().NotBeNull();
@@ -189,10 +190,10 @@ public class GetConferencesForHostTests
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
             "Please provide a valid email", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (ObjectResult) result.Result;
         typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
@@ -205,10 +206,10 @@ public class GetConferencesForHostTests
             (int) HttpStatusCode.Unauthorized,
             "Invalid Client ID", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (ObjectResult) result.Result;
         typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
@@ -217,15 +218,14 @@ public class GetConferencesForHostTests
     [Test]
     public async Task Should_forward_error_when_video_api_returns_error()
     {
-        
         var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
             (int) HttpStatusCode.InternalServerError,
             "Stacktrace goes here", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+            .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         var typedResult = result.Value;
         typedResult.Should().BeNull();
     }
@@ -238,10 +238,10 @@ public class GetConferencesForHostTests
             "Stacktrace goes here", null, default, null);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferencesForHostAsync();
+        var result = await _controller.GetConferencesForHostAsync(CancellationToken.None);
         
         var typedResult = (ObjectResult)result.Result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

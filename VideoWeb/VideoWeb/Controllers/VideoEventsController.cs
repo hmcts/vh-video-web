@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,7 @@ public class VideoEventsController(
             telemetryClient.TrackCustomEvent("KinlyCallback", request);
             
             var conferenceId = Guid.Parse(request.ConferenceId);
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);
             
             var events = new List<ConferenceEventRequest>() {request};

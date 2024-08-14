@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -47,7 +48,7 @@ public class RespondToConsultationTests
         
         _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
         _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id), It.IsAny<CancellationToken>())).ReturnsAsync(_testConference);
         
         _controller = _mocker.Create<ConsultationsController>();
         _controller.ControllerContext = context;
@@ -59,13 +60,13 @@ public class RespondToConsultationTests
         // Arrange
         var conference = new Conference {Id = Guid.NewGuid()};
         
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id), It.IsAny<CancellationToken>())).ReturnsAsync(conference);
         
         var consultationRequest = Builder<PrivateConsultationRequest>.CreateNew()
             .With(x => x.ConferenceId = conference.Id).Build();
         
         // Act
-        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -79,7 +80,7 @@ public class RespondToConsultationTests
         
         // Act
         var result =
-            await _controller.RespondToConsultationRequestAsync(request);
+            await _controller.RespondToConsultationRequestAsync(request, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -103,7 +104,7 @@ public class RespondToConsultationTests
             .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);
         
         // Act
-        var result = await _controller.RespondToConsultationRequestAsync(request);
+        var result = await _controller.RespondToConsultationRequestAsync(request, CancellationToken.None);
         
         // Assert
         var typedResult = (ObjectResult) result;
@@ -124,7 +125,7 @@ public class RespondToConsultationTests
             .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);
         
         // Act
-        var result = await _controller.RespondToConsultationRequestAsync(request);
+        var result = await _controller.RespondToConsultationRequestAsync(request, CancellationToken.None);
         
         // Assert
         var typedResult = (ObjectResult) result;
@@ -141,7 +142,7 @@ public class RespondToConsultationTests
         consultationRequest.Answer = answer;
         
         // Act
-        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -164,7 +165,7 @@ public class RespondToConsultationTests
         _testConference.Participants[1].Id = findId;
         
         Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _controller.RespondToConsultationRequestAsync(consultationRequest));
+            _controller.RespondToConsultationRequestAsync(consultationRequest, CancellationToken.None));
     }
     
     [Test]
@@ -181,7 +182,7 @@ public class RespondToConsultationTests
         }
         
         
-        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest, CancellationToken.None);
         result.Should().BeOfType<NotFoundResult>();
     }
     
@@ -195,7 +196,7 @@ public class RespondToConsultationTests
         _mocker.Mock<IConsultationInvitationTracker>().Setup(x => x.HaveAllParticipantsAccepted(It.IsAny<Guid>())).ReturnsAsync(true);
         
         // Act
-        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+        var result = await _controller.RespondToConsultationRequestAsync(consultationRequest, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();

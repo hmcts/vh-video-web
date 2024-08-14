@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -41,22 +42,22 @@ public class InstantMessagesController(
     [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistoryForParticipant")]
     [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId, Guid participantId)
+    public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
     {
         logger.LogDebug($"GetMessages for {conferenceId}");
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             var participant = conference.Participants.Single(x => x.Id == participantId);
             
             var messages =
-                await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);
+                await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username, cancellationToken);
             if (messages== null || !messages.Any())
             {
                 return Ok(new List<ChatResponse>());
             }
             
-            var response = await MapMessages(messages.ToList(), conferenceId);
+            var response = await MapMessages(messages.ToList(), conferenceId, cancellationToken);
             response = response.OrderBy(r => r.Timestamp).ToList();
             
             return Ok(response);
@@ -77,18 +78,18 @@ public class InstantMessagesController(
     [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConference")]
     [ProducesResponseType(typeof(UnreadInstantMessageConferenceCountResponse), (int)HttpStatusCode.OK)]
     [Authorize(AppRoles.VhOfficerRole)]
-    public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId)
+    public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         logger.LogDebug($"GetMessages for {conferenceId}");
         try
         {
-            var messages = await videoApiClient.GetInstantMessageHistoryAsync(conferenceId);
+            var messages = await videoApiClient.GetInstantMessageHistoryAsync(conferenceId, cancellationToken);
             if (messages.IsNullOrEmpty())
             {
                 return Ok(new UnreadInstantMessageConferenceCountResponse());
             }
             
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             
             var response = UnreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
             
@@ -111,17 +112,17 @@ public class InstantMessagesController(
     [HttpGet("{conferenceId}/instantmessages/unread/participant/{participantId}")]
     [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConferenceByParticipant")]
     [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, Guid participantId)
+    public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
     {
-        logger.LogDebug($"GetMessages for {conferenceId}");
+        logger.LogDebug("GetMessages for {Conference}", conferenceId);
         try
         {
             
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             var participant = conference.Participants.Single(x => x.Id == participantId);
             
             var messages =
-                await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);
+                await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username, cancellationToken);
             if (messages.IsNullOrEmpty())
             {
                 return Ok(new UnreadAdminMessageResponse());
@@ -133,12 +134,12 @@ public class InstantMessagesController(
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, $"Unable to get messages for conference {conferenceId}");
+            logger.LogError(e, "Unable to get messages for conference {Conference}", conferenceId);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
     
-    private async Task<List<ChatResponse>> MapMessages(IList<InstantMessageResponse> messages, Guid conferenceId)
+    private async Task<List<ChatResponse>> MapMessages(IList<InstantMessageResponse> messages, Guid conferenceId, CancellationToken cancellationToken)
     {
         var response = new List<ChatResponse>();
         
@@ -147,7 +148,7 @@ public class InstantMessagesController(
             return response;
         }
         
-        var conference = await conferenceService.GetConference(conferenceId);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         
         var username = User.Identity?.Name;
         
