@@ -23,19 +23,19 @@ namespace VideoWeb
         {
             Configuration = configuration;
         }
-
+        
         public IConfiguration Configuration { get; }
-
+        
         private Settings Settings { get; set; }
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
+            var envName = Configuration["AzureAd:PostLogoutRedirectUri"];
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
             var featureToggles = new FeatureToggles(sdkKey, envName);
             services.AddSingleton<IFeatureToggles>(featureToggles);
-
+            
             services.AddSwagger();
             services.AddHsts(options =>
             {
@@ -44,9 +44,9 @@ namespace VideoWeb
             });
             services.AddJsonOptions();
             RegisterSettings(services);
-
+            
             services.AddCustomTypes();
-
+            
             services.RegisterAuthSchemes(Configuration);
             services.AddMvc(opt =>
                 {
@@ -55,54 +55,47 @@ namespace VideoWeb
                 })
                 .AddFluentValidation();
             services.AddApplicationInsightsTelemetry();
+            
             if (featureToggles.AppInsightsProfilingEnabled())
-            {
                 services.AddServiceProfiler();
-            }
-
+            
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
-
+        
         private void RegisterSettings(IServiceCollection services)
         {
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
-
+            
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
-
+            
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-
-            services.Configure<EJudAdConfiguration>(options =>
-            {
-                Configuration.Bind("EJudAd", options);
-            });
+            
+            services.Configure<EJudAdConfiguration>(options => { Configuration.Bind("EJudAd", options); });
             
             services.Configure<Dom1AdConfiguration>(options =>
             {
                 Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
             });
-
-            services.Configure<QuickLinksConfiguration>(options =>
-            {
-                Configuration.Bind("QuickLinks", options);
-            });
+            
+            services.Configure<QuickLinksConfiguration>(options => { Configuration.Bind("QuickLinks", options); });
             
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(customTokenSettings);
-
+            
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
             
             services.AddVhHealthChecks();
         }
-
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -111,7 +104,7 @@ namespace VideoWeb
                 app.UseSwagger();
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video Web App API V1"); });
             }
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -119,51 +112,53 @@ namespace VideoWeb
             else
             {
                 app.UseExceptionHandler("/Error");
-
+                
                 if (!Settings.DisableHttpsRedirection)
                 {
                     app.UseHttpsRedirection();
                 }
             }
-
+            
             app.UseHsts();
             // this is a workaround to set HSTS in a docker
             // reference from https://github.com/dotnet/dotnet-docker/issues/2268#issuecomment-714613811
-            app.Use(async (context, next) => {
+            app.Use(async (context, next) =>
+            {
                 context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
                 await next.Invoke();
             });
-
+            
             if (!env.IsDevelopment() || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
             }
+            
             IdentityModelEventSource.ShowPII = true;
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-
+                
                 var hubPath = Configuration.GetValue<string>("VhServices:EventHubPath");
                 endpoints.MapHub<EventHub.Hub.EventHub>(hubPath, options =>
                 {
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;
                 });
-
+                
                 endpoints.AddVhHealthCheckRouteMaps();
             });
-
+            
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
-
+                
                 if (env.IsDevelopment() && !Settings.ZapScan)
                 {
                     var ngBaseUri = Configuration.GetValue<string>("VhServices:NgBaseUri");
