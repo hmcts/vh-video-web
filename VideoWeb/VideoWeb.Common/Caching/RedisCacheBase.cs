@@ -2,6 +2,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +22,7 @@ namespace VideoWeb.Common.Caching
             _logger = logger;
         }
 
-        public virtual async Task WriteToCache(TKey key, TEntry toWrite)
+        public virtual async Task WriteToCache(TKey key, TEntry toWrite,  CancellationToken cancellationToken = default)
         {
             if(Equals(key, default(TKey)))
                 throw new ArgumentNullException(nameof(key));
@@ -33,7 +34,7 @@ namespace VideoWeb.Common.Caching
 
             try
             {
-                await _distributedCache.SetAsync(GetKey(key), data, CacheEntryOptions);
+                await _distributedCache.SetAsync(GetKey(key), data, CacheEntryOptions, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -41,21 +42,21 @@ namespace VideoWeb.Common.Caching
             }
         }
 
-        public virtual async Task<TEntry> ReadFromCache(TKey key)
+        public virtual async Task<TEntry> ReadFromCache(TKey key, CancellationToken cancellationToken = default)
         {
-            return await ReadFromCacheWithType<TEntry>(key);
+            return await ReadFromCacheWithType<TEntry>(key, cancellationToken);
         }
         
-        public virtual async Task<TResult> ReadFromCache<TResult>(TKey key)
+        public virtual async Task<TResult> ReadFromCache<TResult>(TKey key, CancellationToken cancellationToken = default)
         {
-            return await ReadFromCacheWithType<TResult>(key);
+            return await ReadFromCacheWithType<TResult>(key, cancellationToken);
         }
 
-        private async Task<TResult> ReadFromCacheWithType<TResult>(TKey key)
+        private async Task<TResult> ReadFromCacheWithType<TResult>(TKey key, CancellationToken cancellationToken = default)
         {
             try
             {
-                var data = await _distributedCache.GetAsync(GetKey(key));
+                var data = await _distributedCache.GetAsync(GetKey(key), cancellationToken);
                 if(data == null) return default;
                 
                 var dataAsString = Encoding.UTF8.GetString(data);
@@ -74,11 +75,11 @@ namespace VideoWeb.Common.Caching
             }
         }
 
-        protected virtual async Task RemoveFromCache(TKey key)
+        protected virtual async Task RemoveFromCache(TKey key, CancellationToken cancellationToken = default)
         {
             try
             {
-                await _distributedCache.RemoveAsync(GetKey(key));
+                await _distributedCache.RemoveAsync(GetKey(key), cancellationToken);
             }
             catch (Exception ex)
             {

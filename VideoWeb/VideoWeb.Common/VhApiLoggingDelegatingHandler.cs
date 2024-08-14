@@ -12,7 +12,7 @@ public class VhApiLoggingDelegatingHandler(
     TelemetryClient telemetryClient)
     : DelegatingHandler
 {
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
     {
         var requestTelemetry = new Microsoft.ApplicationInsights.DataContracts.RequestTelemetry
         {

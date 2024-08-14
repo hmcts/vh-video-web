@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ public interface IConferenceManagementService
     /// <param name="participantId"></param>
     /// <param name="isRaised"></param>
     /// <returns></returns>
-    Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised);
+    Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised, CancellationToken cancellationToken = default);
 }
 
 public class ConferenceManagementService(
@@ -29,9 +30,9 @@ public class ConferenceManagementService(
     ILogger<ConferenceManagementService> logger)
     : IConferenceManagementService
 {
-    public async Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised)
+    public async Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised, CancellationToken cancellationToken = default)
     {
-        var conference = await conferenceService.GetConference(conferenceId);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Find(x => x.Id == participantId);
         if (participant == null) throw new ParticipantNotFoundException(conferenceId, participantId);
         var linkedParticipants = GetLinkedParticipants(conference, participant);

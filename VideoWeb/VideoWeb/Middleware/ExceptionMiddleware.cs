@@ -31,19 +31,26 @@ namespace VideoWeb.Middleware
                 var properties = new Dictionary<string, string> { { "response", apiException.Response } };
                 ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Video API Client Exception",
                     apiException, null, properties);
-                await HandleExceptionAsync(httpContext, (HttpStatusCode) apiException.StatusCode, apiException);
+                await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException);
             }
             catch (BookingsApiException apiException)
             {
                 var properties = new Dictionary<string, string> { { "response", apiException.Response } };
                 ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Bookings API Client Exception",
                     apiException, null, properties);
-                await HandleExceptionAsync(httpContext, (HttpStatusCode) apiException.StatusCode, apiException);
+                await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException);
             }
             catch (BadRequestException ex)
             {
-                ApplicationLogger.TraceException(TraceCategory.AppException.ToString(), "400 Exception", ex, null, null);
+                ApplicationLogger.TraceException(TraceCategory.AppException.ToString(), "400 Exception", ex, null,
+                    null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, ex);
+            }
+            catch (OperationCanceledException ex)
+            {
+                ApplicationLogger.TraceException(TraceCategory.OperationCancelled.ToString(), "Operation Cancelled Exception",
+                    ex, httpContext.User, null);
+                await HandleExceptionAsync(httpContext, HttpStatusCode.RequestTimeout, ex);
             }
             catch (Exception ex)
             {

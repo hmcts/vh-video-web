@@ -15,13 +15,13 @@ namespace VideoWeb.UnitTests.Common.Caching
     {
         private Mock<IDistributedCache> _distributedCacheMock;
         private DistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
-        private Mock<ILogger<RedisCacheBase<string, bool>>> _loggerMock;
+        private Mock<ILogger<DistributedJOHConsultationRoomLockCache>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _loggerMock = new Mock<ILogger<RedisCacheBase<string, bool>>>();
+            _loggerMock = new Mock<ILogger<DistributedJOHConsultationRoomLockCache>>();
             _distributedJohConsultationRoomLockCache =
                 new DistributedJOHConsultationRoomLockCache(_distributedCacheMock.Object, _loggerMock.Object);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -43,7 +44,7 @@ public class GetConferenceByIdTests
         
         _controller = _mocker.Create<ConferencesController>();
         _controller.ControllerContext = context;
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>()));
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>(),It.IsAny<CancellationToken>()));
     }
     
     
