@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace VideoWeb.Contract.Responses
 {
     /// <summary>
@@ -14,25 +15,6 @@ namespace VideoWeb.Contract.Responses
         /// The eventhub path
         /// </summary>
         public string EventHubPath { get; set; }
-        /// <summary>
-        /// The date to set option ON to display functionality to join hearing by phone
-        /// </summary>
-        public string JoinByPhoneFromDate { get; set; }
-
-        /// <summary>
-        /// The turn server
-        /// </summary>
-        public string SupplierTurnServer { get; set; }
-
-        /// <summary>
-        /// The turn server username
-        /// </summary>
-        public string SupplierTurnServerUser { get; set; }
-
-        /// <summary>
-        /// The turn server password
-        /// </summary>
-        public string SupplierTurnServerCredential { get; set; }
 
         /// <summary>
         /// The EJudiciary IDP Settings
@@ -83,10 +65,10 @@ namespace VideoWeb.Contract.Responses
         /// Launch Darkly Client for feature toggling
         /// </summary>
         public string LaunchDarklyClientId { get; set; }
-        
+
         /// <summary>
-        /// Supplier
+        /// Config settings for the suppliers
         /// </summary>
-        public string Supplier { get; set; }
+        public List<SupplierClientSettingsResponse> SupplierSettings { get; set; } = new();
     }
 }

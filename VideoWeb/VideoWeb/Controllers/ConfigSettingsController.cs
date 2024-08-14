@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Common.Security;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -24,13 +27,13 @@ namespace VideoWeb.Controllers
         private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly SupplierConfiguration _supplierConfiguration;
+        private readonly ISupplierPlatformServiceFactory _supplierPlatformServiceFactory;
 
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
             IOptions<EJudAdConfiguration> ejudAdConfiguration,
             IOptions<HearingServicesConfiguration> servicesConfiguration,
             IOptions<Dom1AdConfiguration> dom1AdConfiguration,
-            ISupplierLocator supplierLocator,
+            ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
             ILogger<ConfigSettingsController> logger,
             IMapperFactory mapperFactory)
         {
@@ -40,7 +43,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _dom1AdConfiguration = dom1AdConfiguration.Value;
-            _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
+            _supplierPlatformServiceFactory = supplierPlatformServiceFactory;
         }
 
 
@@ -57,9 +60,15 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                var suppliers = Enum.GetValues(typeof(Supplier)).Cast<Supplier>().ToList();
+                var supplierConfigurations = suppliers
+                    .Select(supplier => _supplierPlatformServiceFactory.Create(supplier))
+                    .Select(platformService => platformService.GetSupplierConfiguration())
+                    .ToList();
+
                 var clientSettingsResponseMapper = _mapperFactory
-                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>();
-                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, _supplierConfiguration);
+                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, List<SupplierConfiguration>, ClientSettingsResponse>();
+                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, supplierConfigurations);
                 return Ok(response);
             }
             catch (Exception e)

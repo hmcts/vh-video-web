@@ -1,4 +1,5 @@
-using VideoWeb.Common;
+using System.Collections.Generic;
+using System.Linq;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
@@ -7,20 +8,18 @@ using VideoWeb.Mappings.Interfaces;
 namespace VideoWeb.Mappings
 {
     public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration,
-        HearingServicesConfiguration, SupplierConfiguration, ClientSettingsResponse>
+        HearingServicesConfiguration, List<SupplierConfiguration>, ClientSettingsResponse>
     {
         private readonly IMapperFactory _mapperFactory;
-        private readonly IFeatureToggles _featureToggles;
 
-        public ClientSettingsResponseMapper(IMapperFactory mapperFactory, IFeatureToggles featureToggles)
+        public ClientSettingsResponseMapper(IMapperFactory mapperFactory)
         {
             _mapperFactory = mapperFactory;
-            _featureToggles = featureToggles;
         }
 
         public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration,
             EJudAdConfiguration eJudAdConfiguration, Dom1AdConfiguration dom1AdConfiguration,
-            HearingServicesConfiguration servicesConfiguration, SupplierConfiguration supplierConfiguration)
+            HearingServicesConfiguration servicesConfiguration, List<SupplierConfiguration> supplierConfigurations)
         {
             var mapper = _mapperFactory.Get<IdpConfiguration, IdpSettingsResponse>();
             var ejudSettings = mapper.Map(eJudAdConfiguration);
@@ -30,11 +29,9 @@ namespace VideoWeb.Mappings
             {
                 AppInsightsConnectionString = azureAdConfiguration.ApplicationInsights.ConnectionString,
                 EventHubPath = servicesConfiguration.EventHubPath,
-                JoinByPhoneFromDate = supplierConfiguration.JoinByPhoneFromDate,
-                SupplierTurnServer = supplierConfiguration.TurnServer,
-                SupplierTurnServerUser = supplierConfiguration.TurnServerUser,
-                SupplierTurnServerCredential = supplierConfiguration.TurnServerCredential,
-                Supplier = _featureToggles.Vodafone() ? "vodafone" : "kinly",
+                SupplierSettings = supplierConfigurations
+                    .Select(c => c.Map())
+                    .ToList(),
                 EJudIdpSettings = ejudSettings,
                 Dom1IdpSettings = dom1Settings,
                 VHIdpSettings = vhAdSettings,
