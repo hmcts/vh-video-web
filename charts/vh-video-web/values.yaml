@@ -63,7 +63,7 @@ java:
           alias: vodafoneconfiguration--turnservercredential
         - name: kinlyconfiguration--turnserveruser
           alias: vodafoneconfiguration--turnserveruser
-        
+
         - quicklinks--issuer
         - quicklinks--rsapublickey
         - quicklinks--validaudience
