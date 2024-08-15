@@ -120,6 +120,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
             services.AddScoped<ISupplierLocator, SupplierLocator>();
             services.AddScoped<IConferenceService, ConferenceService>();
+            services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddTransient<VhApiLoggingDelegatingHandler>();
 
             var container = services.BuildServiceProvider();

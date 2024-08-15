@@ -728,7 +728,9 @@
     "share-video-evidence": "Rhannu fideo neu sain",
     "share-document-evidence": "Rhannu dogfennau",
     "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn",
-    "change-hearing-layout": "Newid cynllun"
+    "change-hearing-layout": "Newid cynllun",
+    "change-interpreting-language": "Newid iaith dehongli",
+    "interpreting-for": "Dehongli ar gyfer"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -1494,6 +1496,10 @@
         "expires": "Pan fyddwch yn cau eich porwr"
       }
     }
+  },
+  "audio-mix-selection": {
+    "court": "Llys",
+    "interpret-for": "Dehongli ar gyfer"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",

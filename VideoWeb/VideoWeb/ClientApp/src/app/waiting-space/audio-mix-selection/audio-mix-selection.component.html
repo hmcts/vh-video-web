@@ -1,0 +1,36 @@
+<!-- The Modal -->
+<div id="change-language-modal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="govuk-width-container">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+            {{ 'audio-mix-selection.interpret-for' | translate }}
+          </h2>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <select
+            class="govuk-select"
+            id="audioMixLanguages"
+            name="audioMixLanguages"
+            (change)="onAudioLanguageSelectionChanged($event.target.value)"
+          >
+            <option [value]="'main'">{{ 'audio-mix-selection.court' | translate }}</option>
+
+            <option *ngFor="let language of bookedLanguages" [value]="language.code">
+              {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
+            </option>
+
+            <option disabled>──────────</option>
+            <option *ngFor="let language of nonBookedLanguages" [value]="language.code">
+              {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

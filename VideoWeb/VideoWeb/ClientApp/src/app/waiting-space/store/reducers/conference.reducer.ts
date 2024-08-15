@@ -7,11 +7,13 @@ export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
+    loggedInParticipant?: VHParticipant;
     availableRooms: VHRoom[];
 }
 
 export const initialState: ConferenceState = {
     currentConference: undefined,
+    loggedInParticipant: undefined,
     availableRooms: []
 };
 
@@ -288,6 +290,10 @@ export const conferenceReducer = createReducer(
 
         const updatedConference: VHConference = { ...conference, participants: participants };
         return { ...state, currentConference: updatedConference };
+    }),
+
+    on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => {
+        return { ...state, loggedInParticipant: participant };
     })
 );
 

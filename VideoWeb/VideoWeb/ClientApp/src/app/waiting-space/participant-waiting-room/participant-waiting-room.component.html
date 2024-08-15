@@ -50,6 +50,7 @@
           (leaveConsultation)="showLeaveConsultationModal()"
           (lockConsultation)="setRoomLock($event)"
           (changeDeviceToggle)="showChooseCameraDialog()"
+          (changeLanguageSelected)="showLanguageChangeModal()"
           (togglePanel)="toggleParticipantsPanel()"
         >
         </app-private-consultation-room-controls>
@@ -108,8 +109,12 @@
         id="transferFeedImage"
         ngSrc="/assets/images/UkGovCrestWhite.png"
         [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
-        height="247" width="300" />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">{{emptyString}}</h2>
+        height="247"
+        width="300"
+      />
+      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
+        {{ emptyString }}
+      </h2>
       <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
@@ -339,4 +344,10 @@
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
 </app-modal>
 
-<app-warn-join-hearing-popup *ngIf="showWarning" [hearingStartTime]="hearing?.scheduledStartTime" (popupAnswered)="dismissWarning()"></app-warn-join-hearing-popup>
+<app-audio-mix-selection *ngIf="displayLanguageModal" (audioLanguageSelectionChanged)="closeLanageChangeModal()"></app-audio-mix-selection>
+
+<app-warn-join-hearing-popup
+  *ngIf="showWarning"
+  [hearingStartTime]="hearing?.scheduledStartTime"
+  (popupAnswered)="dismissWarning()"
+></app-warn-join-hearing-popup>
