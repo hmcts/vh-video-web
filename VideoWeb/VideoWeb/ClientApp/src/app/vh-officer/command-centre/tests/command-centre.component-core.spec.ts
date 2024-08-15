@@ -1,26 +1,26 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ScreenHelper } from 'src/app/shared/screen-helper';
-import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { SessionStorage } from '../../../services/session-storage';
-import { MenuOption } from '../../models/menus-options';
-import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
-import { VhoStorageKeys } from '../../services/models/session-keys';
-import { VhoQueryService } from '../../services/vho-query-service.service';
-import { CommandCentreComponent } from '../command-centre.component';
-import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {Router} from '@angular/router';
+import {BehaviorSubject, of, throwError} from 'rxjs';
+import {ConfigService} from 'src/app/services/api/config.service';
+import {ClientSettingsResponse, ConferenceResponse} from 'src/app/services/clients/api-client';
+import {ErrorService} from 'src/app/services/error.service';
+import {EventBusService} from 'src/app/services/event-bus.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {Hearing} from 'src/app/shared/models/hearing';
+import {HearingSummary} from 'src/app/shared/models/hearing-summary';
+import {pageUrls} from 'src/app/shared/page-url.constants';
+import {ScreenHelper} from 'src/app/shared/screen-helper';
+import {TestFixtureHelper} from 'src/app/testing/Helper/test-fixture-helper';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {eventsServiceSpy} from 'src/app/testing/mocks/mock-events-service';
+import {MockLogger} from 'src/app/testing/mocks/mock-logger';
+import {SessionStorage} from '../../../services/session-storage';
+import {MenuOption} from '../../models/menus-options';
+import {CourtRoomsAccounts} from '../../services/models/court-rooms-accounts';
+import {VhoStorageKeys} from '../../services/models/session-keys';
+import {VhoQueryService} from '../../services/vho-query-service.service';
+import {CommandCentreComponent} from '../command-centre.component';
+import {NotificationToastrService} from '../../../waiting-space/services/notification-toastr.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -45,12 +45,20 @@ describe('CommandCentreComponent - Core', () => {
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
-            'startQuery',
-            'stopQuery',
-            'getConferencesForVHOfficer',
-            'getConferenceByIdVHO'
-        ]);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>(
+            'VhoQueryService',
+            [
+                'startQuery',
+                'stopQuery',
+                'getFilteredQueryResults',
+                'getConferencesForVHOfficer',
+                'getConferenceByIdVHO',
+                'getCsoFilterFromStorage',
+                'getAvailableCourtRoomFilters',
+                'getCsoFilterFromStorage'
+            ],
+            ['courtRoomFilterChanged$']
+        );
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -74,6 +82,15 @@ describe('CommandCentreComponent - Core', () => {
 
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        vhoQueryService.getFilteredQueryResults.and.returnValue(of(conferences));
+
+        const courtRoomAccounts: CourtRoomsAccounts[] = [];
+        courtRoomAccounts.push(new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true));
+        vhoQueryService.getAvailableCourtRoomFilters.and.returnValue(of(courtRoomAccounts));
+        spyOnProperty(vhoQueryService, 'courtRoomFilterChanged$').and.returnValue(
+            new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts)
+        );
+
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         component = new CommandCentreComponent(
@@ -95,14 +112,12 @@ describe('CommandCentreComponent - Core', () => {
     it('should go fullscreen on init', fakeAsync(() => {
         component.loadingData = false;
         component.hearings = undefined;
-        component.conferencesSubscription = undefined;
 
         component.ngOnInit();
         tick();
 
         expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(true);
         expect(component.hearings.length).toBeGreaterThan(0);
-        expect(component.conferencesSubscription).toBeDefined();
     }));
 
     it('should remove fullscreen on destroy', () => {
