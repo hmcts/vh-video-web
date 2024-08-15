@@ -28,6 +28,7 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly ISupplierPlatformServiceFactory _supplierPlatformServiceFactory;
+        private readonly IFeatureToggles _featureToggles;
 
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
             IOptions<EJudAdConfiguration> ejudAdConfiguration,
@@ -35,7 +36,8 @@ namespace VideoWeb.Controllers
             IOptions<Dom1AdConfiguration> dom1AdConfiguration,
             ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
             ILogger<ConfigSettingsController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IFeatureToggles featureToggles)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
             _ejudAdConfiguration = ejudAdConfiguration.Value;
@@ -44,6 +46,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
             _dom1AdConfiguration = dom1AdConfiguration.Value;
             _supplierPlatformServiceFactory = supplierPlatformServiceFactory;
+            _featureToggles = featureToggles;
         }
 
 
@@ -60,7 +63,14 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var suppliers = Enum.GetValues(typeof(Supplier)).Cast<Supplier>().ToList();
+                var suppliers = new List<Supplier>
+                {
+                    Supplier.Kinly
+                };
+                if (_featureToggles.Vodafone())
+                {
+                    suppliers.Add(Supplier.Vodafone);
+                }
                 var supplierConfigurations = suppliers
                     .Select(supplier => _supplierPlatformServiceFactory.Create(supplier))
                     .Select(platformService => platformService.GetSupplierConfiguration())

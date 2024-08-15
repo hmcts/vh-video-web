@@ -27,10 +27,14 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 .Returns(_mocker.Create<ClientSettingsResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
                 .Returns(_mocker.Create<IdpSettingsResponseMapper>());
+            _mocker.Mock<IFeatureToggles>()
+                .Setup(x => x.Vodafone())
+                .Returns(true);
         }
         
-        [Test]
-        public void Should_return_response_with_settings()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Should_return_response_with_settings(bool vodafoneEnabled)
         {
             var securitySettings = new AzureAdConfiguration
             {
@@ -79,14 +83,22 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 
             var supplierConfigurations = new List<SupplierConfiguration>
             {
-                kinlyConfiguration,
-                vodafoneConfiguration
+                kinlyConfiguration
             };
+
+            if (vodafoneEnabled)
+            {
+                supplierConfigurations.Add(vodafoneConfiguration);
+            }
 
             foreach (var supplierConfiguration in supplierConfigurations)
             {
                 SetUpPlatformService(supplierConfiguration);
             }
+
+            _mocker.Mock<IFeatureToggles>()
+                .Setup(x => x.Vodafone())
+                .Returns(vodafoneEnabled);
 
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
