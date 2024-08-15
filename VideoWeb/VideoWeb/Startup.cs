@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 using VideoWeb.Health;
@@ -33,8 +34,7 @@ namespace VideoWeb
         {
             var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
-            var featureToggles = new FeatureToggles(sdkKey, envName);
-            services.AddSingleton<IFeatureToggles>(featureToggles);
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
 
             services.AddSwagger();
             services.AddHsts(options =>
@@ -55,11 +55,6 @@ namespace VideoWeb
                 })
                 .AddFluentValidation();
             services.AddApplicationInsightsTelemetry();
-            if (featureToggles.AppInsightsProfilingEnabled())
-            {
-                services.AddServiceProfiler();
-            }
-
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
