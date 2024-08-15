@@ -611,7 +611,9 @@ describe('HearingControlsBaseComponent', () => {
             uuid: undefined,
             isAudioOnlyCall: false,
             isVideoCall: false,
-            protocol: ''
+            protocol: '',
+            receivingAudioMix: 'main',
+            sentAudioMixes: [{ mix_name: 'main', prominent: false }]
         };
         component.audioMuted = true;
 

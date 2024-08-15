@@ -122,8 +122,8 @@ declare interface PexipClient {
     clearAllBuzz(): () => void;
     getMediaStatistics(): any;
     setParticipantText(uuid: string, text: string);
-    setSendToAudioMixes(mix: string, uuid: string);
-    setReceiveFromAudioMix(mix: string, uuid: string);
+    setSendToAudioMixes(mixes: PexipAudioMix[], uuid: string);
+    setReceiveFromAudioMix(mixName: string, uuid: string);
 
     /**
      * Activate or stop screen capture sharing.
@@ -208,8 +208,29 @@ declare interface PexipParticipant {
     /** Set to "YES" if the call has video capability. */
     is_video_call: string;
 
+    /** Boolean indicating whether this participant has muted their video. */
+    is_video_muted: boolean;
+
     /** The call protocol. Values: "api", "webrtc", "sip", "rtmp", "h323" or "mssip" */
     protocol: string;
+
+    /** Set to "YES" if this participant can be transferred into another VMR; "NO" if not. */
+    transfer_supported: string;
+
+    /** Set to "YES" if the participant can be disconnected, "NO" if not. */
+    disconnect_supported: string;
+
+    /** Boolean indicating if video from the user has been lost. */
+    is_main_video_dropped_out: boolean;
+
+    /** Boolean indicating whether this is a streaming/recording participant. */
+    is_streaming_conference: boolean;
+
+    /** list of mixes to be sent participant audio */
+    send_to_audio_mixes: PexipAudioMix[];
+
+    /** the name of the audio a participant is receiving a mix */
+    receive_from_audio_mix: string;
 }
 
 declare interface PexipConference {
@@ -233,4 +254,11 @@ declare interface PexRTCCall {
     recv_video: boolean;
     video_source: string;
     audio_source: string;
+}
+
+declare interface PexipAudioMix {
+    /** The name of of the mix. Will be the participant language in VH */
+    mix_name: string;
+    /** Should the audio be prominent. If false the volume will be lowered when other participants receive the audio */
+    prominent: boolean;
 }

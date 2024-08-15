@@ -149,7 +149,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         protocol: '',
         spotlight: 0,
         start_time: 0,
-        uuid: 'wowza_id'
+        uuid: 'wowza_id',
+        disconnect_supported: 'Yes',
+        transfer_supported: 'Yes',
+        is_main_video_dropped_out: false,
+        is_video_muted: false,
+        is_streaming_conference: false,
+        send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+        receive_from_audio_mix: 'main'
     };
 
     const wowzaParticipantFailed: PexipParticipant = {
@@ -167,7 +174,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         protocol: '',
         spotlight: 0,
         start_time: 0,
-        uuid: 'wowza_id'
+        uuid: 'wowza_id',
+        disconnect_supported: 'Yes',
+        transfer_supported: 'Yes',
+        is_main_video_dropped_out: false,
+        is_video_muted: false,
+        is_streaming_conference: false,
+        send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+        receive_from_audio_mix: 'main'
     };
 
     let component: JudgeWaitingRoomComponent;
@@ -339,7 +353,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         uuid: Guid.create().toString(),
         spotlight: 0,
         external_node_uuid: null,
-        protocol: 'webrtc'
+        protocol: 'webrtc',
+        disconnect_supported: 'Yes',
+        transfer_supported: 'Yes',
+        is_main_video_dropped_out: false,
+        is_video_muted: false,
+        is_streaming_conference: false,
+        send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+        receive_from_audio_mix: 'main'
     };
 
     it('should call assignPexipId when uuid and pexip id contains in the participantDisplayName', () => {
