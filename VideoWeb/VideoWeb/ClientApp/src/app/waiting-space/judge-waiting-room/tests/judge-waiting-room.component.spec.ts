@@ -281,7 +281,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
 
         component = new JudgeWaitingRoomComponent(
@@ -1329,20 +1328,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         it('should display join hearing popup when mute microphone feature is enabled', fakeAsync(() => {
-            launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
             component.ngOnInit();
             tick();
             component.joinHearingClicked();
             expect(component.displayJoinHearingPopup).toBeTruthy();
-        }));
-
-        it('should join hearing when mute microphone feature is disabled', fakeAsync(() => {
-            launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(false));
-            component.ngOnInit();
-            tick();
-            expect(component.isMuteMicrophoneEnabled).toBeFalsy();
-            component.joinHearingClicked();
-            expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
     });
 
