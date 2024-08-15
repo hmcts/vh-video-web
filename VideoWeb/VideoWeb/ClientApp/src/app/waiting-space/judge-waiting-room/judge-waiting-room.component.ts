@@ -99,7 +99,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
         super(
@@ -123,7 +122,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             titleService,
             hideComponentsService,
             focusService,
-            launchDarklyService,
             store
         );
         this.displayConfirmStartHearingPopup = false;

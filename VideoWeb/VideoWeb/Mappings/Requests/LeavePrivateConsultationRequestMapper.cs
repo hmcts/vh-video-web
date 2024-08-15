@@ -1,18 +1,16 @@
 using VideoWeb.Contract.Request;
-using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Requests;
 
-namespace VideoWeb.Mappings.Requests
+namespace VideoWeb.Mappings.Requests;
+
+public static class LeavePrivateConsultationRequestMapper
 {
-    public class LeavePrivateConsultationRequestMapper : IMapTo<LeavePrivateConsultationRequest, LeaveConsultationRequest>
+    public static LeaveConsultationRequest Map(LeavePrivateConsultationRequest request)
     {
-        public LeaveConsultationRequest Map(LeavePrivateConsultationRequest request)
+        return new LeaveConsultationRequest
         {
-            return new LeaveConsultationRequest
-            {
-                ConferenceId = request.ConferenceId,
-                ParticipantId = request.ParticipantId
-            };
-        }
+            ConferenceId = request.ConferenceId,
+            ParticipantId = request.ParticipantId
+        };
     }
 }

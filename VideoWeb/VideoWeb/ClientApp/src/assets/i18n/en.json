@@ -673,7 +673,8 @@
     "leave-hearing": "Leave Hearing",
     "share-video-evidence": "Share video or audio",
     "share-document-evidence": "Share documents",
-    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser"
+    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser",
+    "change-hearing-layout": "Change Layout"
   },
   "chat-panel": {
     "heading": "VH Officer messages",

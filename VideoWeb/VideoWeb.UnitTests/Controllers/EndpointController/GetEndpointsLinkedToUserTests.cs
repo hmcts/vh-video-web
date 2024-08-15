@@ -10,11 +10,9 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Mappings;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.UnitTests.Controllers.ConsultationController;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.EndpointController
 {
@@ -28,7 +26,6 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, AllowedEndpointResponse>()).Returns(_mocker.Create<AllowedEndpointResponseMapper>());
             _testConference = ConsultationHelper.BuildConferenceForTest();
             _mocker.Mock<IConferenceService>()
                 .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConference.Id)))

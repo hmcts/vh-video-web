@@ -33,7 +33,8 @@ namespace VideoWeb
         {
             var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
-            services.AddSingleton<IFeatureToggles>(new FeatureToggles(sdkKey, envName));
+            var featureToggles = new FeatureToggles(sdkKey, envName);
+            services.AddSingleton<IFeatureToggles>(featureToggles);
 
             services.AddSwagger();
             services.AddHsts(options =>
@@ -54,6 +55,11 @@ namespace VideoWeb
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddApplicationInsightsTelemetry();
+            if (featureToggles.AppInsightsProfilingEnabled())
+            {
+                services.AddServiceProfiler();
+            }
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }

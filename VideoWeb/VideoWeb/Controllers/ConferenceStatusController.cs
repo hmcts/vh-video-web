@@ -10,92 +10,81 @@ using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Mappings;
 
-namespace VideoWeb.Controllers
+namespace VideoWeb.Controllers;
+
+[Produces("application/json")]
+[ApiController]
+[Route("conferences")]
+public class ConferenceStatusController(
+    ILogger<ConferenceManagementController> logger,
+    IConferenceVideoControlStatusService conferenceVideoControlStatusService)
+    : ControllerBase
 {
-    [Produces("application/json")]
-    [ApiController]
-    [Route("conferences")]
-    public class ConferenceStatusController : ControllerBase
+    /// <summary>
+    /// Updates the video control statuses for the conference
+    /// </summary>
+    /// <param name="conferenceId">conference id</param>
+    /// <param name="setVideoControlStatusesRequest">Request object to set Video Control Staus</param>
+    /// <returns>Ok status</returns>
+    /// <returns>Forbidden status</returns>
+    /// <returns>Not Found status</returns>
+    [HttpPut("{conferenceId}/setVideoControlStatuses")]
+    [SwaggerOperation(OperationId = "SetVideoControlStatusesForConference")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> SetVideoControlStatusesForConference(Guid conferenceId, [FromBody]SetConferenceVideoControlStatusesRequest setVideoControlStatusesRequest)
     {
-        private readonly ILogger<ConferenceManagementController> _logger;
-        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
-        private readonly IMapperFactory _mapperFactory;
-
-        public ConferenceStatusController(ILogger<ConferenceManagementController> logger, 
-            IConferenceVideoControlStatusService conferenceVideoControlStatusService, IMapperFactory mapperFactory)
+        try
         {
-            _logger = logger;
-            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
-            _mapperFactory = mapperFactory;
+            var videoControlStatuses = SetConferenceVideoControlStatusesRequestMapper.Map(setVideoControlStatusesRequest);
+            
+            logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+            logger.LogTrace($"Updating conference videoControlStatuses in cache: {JsonSerializer.Serialize(videoControlStatuses)}");
+            
+            await conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
+            
+            logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+            return Accepted();
         }
-
-        /// <summary>
-        /// Updates the video control statuses for the conference
-        /// </summary>
-        /// <param name="conferenceId">conference id</param>
-        /// <param name="setVideoControlStatusesRequest">Request object to set Video Control Staus</param>
-        /// <returns>Ok status</returns>
-        /// <returns>Forbidden status</returns>
-        /// <returns>Not Found status</returns>
-        [HttpPut("{conferenceId}/setVideoControlStatuses")]
-        [SwaggerOperation(OperationId = "SetVideoControlStatusesForConference")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> SetVideoControlStatusesForConference(Guid conferenceId, [FromBody]SetConferenceVideoControlStatusesRequest setVideoControlStatusesRequest)
+        catch (Exception exception)
         {
-            try
+            logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+            throw;
+        }
+    }
+    
+    /// <summary>
+    /// Returns the video control statuses for the conference
+    /// </summary>
+    /// <param name="conferenceId">conference id</param>
+    /// <returns>Ok status</returns>
+    /// <returns>Forbidden status</returns>
+    /// <returns>Not Found status</returns>
+    [HttpGet("{conferenceId}/getVideoControlStatuses")]
+    [SwaggerOperation(OperationId = "GetVideoControlStatusesForConference")]
+    [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
+    {
+        try
+        {
+            logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
+            var videoControlStatuses = await conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
+            
+            if (videoControlStatuses == null)
             {
-                var mapper = _mapperFactory.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>();
-                var videoControlStatuses = mapper.Map(setVideoControlStatusesRequest);
+                logger.LogWarning("video control statuses with id: {conferenceId} not found", conferenceId);
                 
-                _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
-                _logger.LogTrace($"Updating conference videoControlStatuses in cache: {JsonSerializer.Serialize(videoControlStatuses)}");
-
-                await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
-
-                _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
-                return Accepted();
+                return NoContent();
             }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
-                throw;
-            }
+            
+            logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+            return Ok(videoControlStatuses);
         }
-        
-        /// <summary>
-        /// Returns the video control statuses for the conference
-        /// </summary>
-        /// <param name="conferenceId">conference id</param>
-        /// <returns>Ok status</returns>
-        /// <returns>Forbidden status</returns>
-        /// <returns>Not Found status</returns>
-        [HttpGet("{conferenceId}/getVideoControlStatuses")]
-        [SwaggerOperation(OperationId = "GetVideoControlStatusesForConference")]
-        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
+        catch (Exception exception)
         {
-            try
-            {
-                _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
-                var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
-
-                if (videoControlStatuses == null) 
-                {
-                    _logger.LogWarning("video control statuses with id: {conferenceId} not found", conferenceId);
-
-                    return NoContent();
-                }
-
-                _logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
-                return Ok(videoControlStatuses);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
-                throw;
-            }
+            logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+            throw;
         }
     }
 }

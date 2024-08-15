@@ -15,6 +15,7 @@ import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.s
 import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { VenueListComponentDirective } from './venue-list.component';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { fakeAsync, tick } from '@angular/core/testing';
@@ -32,6 +33,7 @@ describe('VenueListComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     const logger: Logger = new MockLogger();
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
@@ -89,6 +91,7 @@ describe('VenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -97,9 +100,17 @@ describe('VenueListComponent', () => {
     });
 
     beforeEach(() => {
-        component = new MockedVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, profileServiceSpy);
+        component = new MockedVenueListComponent(
+            videoWebServiceSpy,
+            router,
+            vhoQueryService,
+            logger,
+            launchDarklyServiceSpy,
+            profileServiceSpy
+        );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
         component.csos = csos;
         venueSessionStorage.clear();

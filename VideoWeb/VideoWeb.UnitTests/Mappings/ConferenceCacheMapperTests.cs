@@ -11,7 +11,6 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
-using VideoWeb.Mappings;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;

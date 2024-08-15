@@ -548,6 +548,18 @@ export class VideoCallService {
         this.pexipAPI.setParticipantText(uuid, text);
     }
 
+    transformLayout(layout: string) {
+        return this.pexipAPI.transformLayout({ layout: layout });
+    }
+
+    sendParticipantAudioToMixes(mixes: PexipAudioMix[], uuid: string) {
+        this.pexipAPI.setSendToAudioMixes(mixes, uuid);
+    }
+
+    receiveAudioFromMix(mixName: string, uuid: string) {
+        this.pexipAPI.setReceiveFromAudioMix(mixName, uuid);
+    }
+
     private makePexipCall(
         pexipNode: string,
         conferenceAlias: string,
@@ -593,7 +605,7 @@ export class VideoCallService {
             return;
         }
         this.store.dispatch(
-            ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
+            ConferenceActions.createPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
         );
         this.onParticipantCreatedSubject.next(participant);
     }
