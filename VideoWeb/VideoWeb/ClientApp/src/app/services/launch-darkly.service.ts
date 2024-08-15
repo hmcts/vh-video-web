@@ -7,7 +7,6 @@ import { first, map } from 'rxjs/operators';
 export const FEATURE_FLAGS = {
     dom1SignIn: 'dom1',
     wowzaKillButton: 'wowza-listener-kill-switch',
-    hostMuteMicrophone: 'host-mute-microphone',
     vodafone: 'vodafone',
     activeSessionFilter: 'active-sessions-filter'
 };

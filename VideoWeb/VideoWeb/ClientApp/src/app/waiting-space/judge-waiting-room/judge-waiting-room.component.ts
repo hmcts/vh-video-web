@@ -40,6 +40,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
+import { LaunchDarklyService } from "../../services/launch-darkly.service";
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -99,6 +100,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
+        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
         super(
@@ -122,6 +124,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             store
         );
         this.displayConfirmStartHearingPopup = false;
