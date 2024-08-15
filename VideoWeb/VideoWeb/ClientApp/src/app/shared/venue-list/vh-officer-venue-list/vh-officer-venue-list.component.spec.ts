@@ -18,6 +18,7 @@ import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-ro
 import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
 import { VhOfficerVenueListComponent } from './vh-officer-venue-list.component';
 import { By } from '@angular/platform-browser';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VenueListComponentDirective } from '../venue-list.component';
@@ -29,6 +30,7 @@ describe('VHOfficerVenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -83,6 +85,7 @@ describe('VHOfficerVenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts', 'getActiveConferences']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -91,10 +94,18 @@ describe('VHOfficerVenueListComponent', () => {
     });
 
     beforeEach(() => {
-        component = new VhOfficerVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, profileServiceSpy);
+        component = new VhOfficerVenueListComponent(
+            videoWebServiceSpy,
+            router,
+            vhoQueryService,
+            logger,
+            launchDarklyServiceSpy,
+            profileServiceSpy
+        );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
         venueSessionStorage.clear();
         csoSessionStorage.clear();
@@ -200,15 +211,13 @@ describe('VHOfficerVenueListComponent', () => {
     it('should navigate to admin hearing with list active sessions', fakeAsync(() => {
         component.activeSessions = true;
         component.goToHearingList();
-        tick();
-        expect(vhoQueryService.getActiveConferences).toHaveBeenCalled();
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
     it('should navigate to admin hearing list, with venues selected', fakeAsync(() => {
         component.selectedVenues = selectedJudgeNames;
         component.selectedCsos = [];
         component.goToHearingList();
-        tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
@@ -230,50 +239,6 @@ describe('VHOfficerVenueListComponent', () => {
         expect(component.errorMessage).toBe('Please select a filter to view hearings');
     }));
 
-    it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
-        component.selectedVenues = selectedJudgeNames;
-        component.goToHearingList();
-        tick();
-        expect(component.filterCourtRoomsAccounts.length).toBe(2);
-        const result = roomSessionStorage.get();
-        expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
-        expect(result[0].selected).toBeTrue();
-        expect(result[0].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[0].courtsRooms[0].selected).toBeTrue();
-        expect(result[0].courtsRooms[1].selected).toBeTrue();
-
-        expect(result[1].venue).toBe(courtRoomsAccounts2.venue);
-        expect(result[1].selected).toBeTrue();
-        expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[1].courtsRooms[0].selected).toBeTrue();
-        expect(result[1].courtsRooms[1].selected).toBeTrue();
-    }));
-    it('should update filter records with select options from filter in storage', fakeAsync(() => {
-        const currentStorage = roomSessionStorage.get();
-        component.selectedVenues = selectedJudgeNames;
-        venueAccounts[0].courtsRooms[0].selected = false;
-        venueAccounts[1].courtsRooms[0].selected = false;
-
-        roomSessionStorage.set(venueAccounts);
-
-        component.goToHearingList();
-        tick();
-        expect(component.filterCourtRoomsAccounts.length).toBe(2);
-        const result = roomSessionStorage.get();
-        expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
-        expect(result[0].selected).toBeFalse();
-        expect(result[0].courtsRooms[0].selected).toBeFalse();
-        expect(result[0].courtsRooms[1].selected).toBeTrue();
-
-        expect(result[1].selected).toBeFalse();
-        expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
-        expect(result[1].courtsRooms[0].selected).toBeFalse();
-        expect(result[1].courtsRooms[1].selected).toBeTrue();
-        roomSessionStorage.set(currentStorage);
-    }));
-
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
         component.selectedVenues = null;
         spyOn(logger, 'warn');
@@ -293,6 +258,7 @@ describe('VHOfficerVenueListComponent', () => {
                     { provide: Router, useValue: router },
                     { provide: VhoQueryService, useValue: vhoQueryService },
                     { provide: Logger, useValue: logger },
+                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy },
                     { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             });

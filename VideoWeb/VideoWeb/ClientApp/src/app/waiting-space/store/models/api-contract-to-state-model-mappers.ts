@@ -1,5 +1,11 @@
-import { ConferenceResponse, ParticipantResponse, RoomSummaryResponse, VideoEndpointResponse } from '../../../services/clients/api-client';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from './vh-conference';
+import {
+    ConferenceResponse,
+    InterpreterLanguageResponse,
+    ParticipantResponse,
+    RoomSummaryResponse,
+    VideoEndpointResponse
+} from '../../../services/clients/api-client';
+import { VHConference, VHEndpoint, VHInterpreterLanguage, VHParticipant, VHPexipParticipant, VHRoom } from './vh-conference';
 import { ParticipantUpdated } from '../../models/video-call-models';
 
 export function mapConferenceToVHConference(conference: ConferenceResponse): VHConference {
@@ -32,6 +38,9 @@ export function mapParticipantToVHParticipant(participant: ParticipantResponse):
         representee: participant.representee,
         pexipInfo: null,
         room: participant.current_room ? mapRoomToVHRoom(participant.current_room) : null,
+        interpreterLanguage: participant.interpreter_language
+            ? mapInterpeterLanguageToVHInterpreterLanguage(participant.interpreter_language)
+            : null,
         linkedParticipants:
             participant?.linked_participants?.map(lp => ({
                 linkedId: lp.linked_id,
@@ -46,7 +55,10 @@ export function mapEndpointToVHEndpoint(endpoint: VideoEndpointResponse): VHEndp
         displayName: endpoint.display_name,
         status: endpoint.status,
         defenceAdvocate: endpoint.defence_advocate_username,
-        room: endpoint.current_room ? mapRoomToVHRoom(endpoint.current_room) : null
+        room: endpoint.current_room ? mapRoomToVHRoom(endpoint.current_room) : null,
+        interpreterLanguage: endpoint.interpreter_language
+            ? mapInterpeterLanguageToVHInterpreterLanguage(endpoint.interpreter_language)
+            : null
     };
 }
 
@@ -61,4 +73,12 @@ export function mapPexipParticipantToVHPexipParticipant(pexipParticipant: Partic
     return {
         ...pexipParticipant
     } as VHPexipParticipant;
+}
+
+export function mapInterpeterLanguageToVHInterpreterLanguage(interpreterLanguage: InterpreterLanguageResponse): VHInterpreterLanguage {
+    return {
+        code: interpreterLanguage.code,
+        description: interpreterLanguage.description,
+        type: interpreterLanguage.type
+    };
 }

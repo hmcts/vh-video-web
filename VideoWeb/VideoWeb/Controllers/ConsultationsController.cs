@@ -10,12 +10,13 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
+using VideoWeb.Mappings;
+using VideoWeb.Mappings.Requests;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
 namespace VideoWeb.Controllers
@@ -27,7 +28,6 @@ namespace VideoWeb.Controllers
         IVideoApiClient videoApiClient,
         IConferenceService conferenceService,
         ILogger<ConsultationsController> logger,
-        IMapperFactory mapperFactory,
         IConsultationNotifier consultationNotifier,
         IConsultationInvitationTracker consultationInvitationTracker,
         IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
@@ -50,8 +50,7 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var leaveConsultationRequestMapper = mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
-                var mappedRequest = leaveConsultationRequestMapper.Map(request);
+                var mappedRequest = LeavePrivateConsultationRequestMapper.Map(request);
                 await videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return NoContent();
@@ -86,8 +85,7 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
-            var adminConsultationRequestMapper = mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
-            var mappedRequest = adminConsultationRequestMapper.Map(request);
+            var mappedRequest = PrivateConsultationRequestMapper.Map(request);
 
             try
             {
@@ -134,8 +132,7 @@ namespace VideoWeb.Controllers
                     return NotFound("Couldn't find participant.");
                 }
 
-                var consultationRequestMapper = mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
-                var mappedRequest = consultationRequestMapper.Map(request);
+                var mappedRequest = JoinPrivateConsultationRequestMapper.Map(request);
 
                 await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 await consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
@@ -169,8 +166,7 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var consultationRequestMapper = mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
-                var mappedRequest = consultationRequestMapper.Map(request);
+                var mappedRequest = StartPrivateConsultationRequestMapper.Map(request);
 
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
@@ -251,8 +247,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conference = await conferenceService.GetConference(request.ConferenceId);
-                var lockRequestMapper = mapperFactory.Get<LockConsultationRoomRequest, LockRoomRequest>();
-                var mappedRequest = lockRequestMapper.Map(request);
+                var mappedRequest = LockRoomRequestMapper.Map(request);
                 await videoApiClient.LockRoomAsync(mappedRequest);
 
                 await consultationNotifier.NotifyRoomUpdateAsync(conference,

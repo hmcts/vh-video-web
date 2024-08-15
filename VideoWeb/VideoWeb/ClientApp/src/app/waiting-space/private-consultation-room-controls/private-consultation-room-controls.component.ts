@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
@@ -36,6 +36,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
     @Input() public wowzaUUID: string;
+    @Input() public conference: ConferenceResponse;
 
     showContextMenu = false;
     enableDynamicEvidenceSharing = false;
@@ -79,6 +80,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
         ldService.getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false).subscribe(value => (this.isWowzaKillButtonEnabled = value));
+
+        // Needed to prevent 'this' being undefined in the callback
+        this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -87,6 +91,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     get canShowLeaveButton(): boolean {
         return this.isHost && !this.isPrivateConsultation;
+    }
+
+    get canDisplayChangeLayoutPopup(): boolean {
+        return this.displayChangeLayoutPopup && this.isHost;
     }
 
     get canJoinHearingFromConsultation(): boolean {
@@ -115,5 +123,27 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     killWowza() {
         this.videoCallService.disconnectWowzaAgent(this.wowzaUUID);
+    }
+
+    onLayoutUpdate(layout: HearingLayout) {
+        const mappedLayout = this.mapLayout(layout);
+        this.videoCallService.transformLayout(mappedLayout);
+    }
+
+    mapLayout(layout: HearingLayout) {
+        // See https://docs.pexip.com/api_client/api_pexrtc.htm#transformlayout
+        let mappedLayout = '';
+        switch (layout) {
+            case HearingLayout.OnePlus7:
+                mappedLayout = '1:7';
+                break;
+            case HearingLayout.TwoPlus21:
+                mappedLayout = '2:21';
+                break;
+            case HearingLayout.Dynamic:
+                mappedLayout = 'ac';
+                break;
+        }
+        return mappedLayout;
     }
 }

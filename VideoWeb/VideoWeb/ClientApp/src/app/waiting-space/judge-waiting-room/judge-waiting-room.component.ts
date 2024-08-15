@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Subject, Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { take, takeUntil, tap } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -70,7 +70,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     dialOutUUID = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
-    private destroyedSubject = new Subject();
 
     constructor(
         protected route: ActivatedRoute,
@@ -497,12 +496,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private init() {
-        this.destroyedSubject = new Subject();
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.initConferenceStatusLogic();
@@ -510,7 +508,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.videoCallService
             .onParticipantCreated()
             .pipe(
-                takeUntil(this.destroyedSubject),
+                takeUntil(this.onDestroy$),
                 tap(createdParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
                         pexipId: createdParticipant.uuid,
@@ -528,7 +526,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.videoCallService
             .onParticipantUpdated()
             .pipe(
-                takeUntil(this.destroyedSubject),
+                takeUntil(this.onDestroy$),
                 tap(updatedParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
                         pexipId: updatedParticipant.uuid,
@@ -548,12 +546,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.videoCallService
             .onConferenceAdjourned()
-            .pipe(takeUntil(this.destroyedSubject))
+            .pipe(takeUntil(this.onDestroy$))
             .subscribe(() => this.cleanupDialOutConnections());
 
         this.eventService
             .getParticipantMediaStatusMessage()
-            .pipe(takeUntil(this.destroyedSubject))
+            .pipe(takeUntil(this.onDestroy$))
             .subscribe(participantStatusMessage => {
                 if (participantStatusMessage.conferenceId === this.conference.id) {
                     this.participantRemoteMuteStoreService.updateLocalMuteStatus(
@@ -583,7 +581,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.eventService
             .getAudioRestartActioned()
-            .pipe(takeUntil(this.destroyedSubject))
+            .pipe(takeUntil(this.onDestroy$))
             .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
@@ -652,8 +650,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private cleanUp() {
-        this.onDestroy$.next();
-        this.onDestroy$.complete();
         this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
         });
@@ -661,8 +657,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
-        this.destroyedSubject.next();
-        this.destroyedSubject.complete();
     }
 
     private cleanupDialOutConnections() {

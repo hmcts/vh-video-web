@@ -9,7 +9,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ChatResponseMapperTests : BaseMockerSutTestSetup<ChatResponseMapper>
+    public class ChatResponseMapperTests
     {
         [Test]
         public void Should_map_all_properties()
@@ -23,8 +23,8 @@ namespace VideoWeb.UnitTests.Mappings
                 Id = Guid.NewGuid(),
                 Participants = new List<Participant>
                 {
-                    new Participant { Id = Guid.NewGuid(), Username = senderUsername },
-                    new Participant { Id = Guid.NewGuid(), Username = recipientUsername }
+                    new () { Id = Guid.NewGuid(), Username = senderUsername },
+                    new () { Id = Guid.NewGuid(), Username = recipientUsername }
                 }
             };
 
@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Mappings
                 TimeStamp = DateTime.Now.AsUtc()
             };
 
-            var response = _sut.Map(message, fromDisplayName, true, conference);
+            var response = ChatResponseMapper.Map(message, fromDisplayName, true, conference);
 
             response.From.Should().Be(conference.Participants[0].Id.ToString());
             response.FromDisplayName.Should().Be(fromDisplayName);

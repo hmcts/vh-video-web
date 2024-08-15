@@ -1,14 +1,16 @@
+using System.Collections.Concurrent;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.JsonWebTokens;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
-using VideoWeb.Services;
 
 namespace VideoWeb.AuthenticationSchemes
 {
@@ -44,8 +46,7 @@ namespace VideoWeb.AuthenticationSchemes
                 }
 
                 var usernameClaim = jwtToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
-                var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
-                var claims = await appRoleService!.GetClaimsForUserAsync(usernameClaim.Value);
+                var claims = await GetAdditionalClaimsForUserByUsername(context, usernameClaim);
                 context.Principal!.AddIdentity(new ClaimsIdentity(claims));
             }
             
@@ -56,12 +57,23 @@ namespace VideoWeb.AuthenticationSchemes
                     return;
                 }
                 var usernameClaim = jsonWebToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
-                var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
-                var claims = await appRoleService!.GetClaimsForUserAsync(usernameClaim.Value);
+                var claims = await GetAdditionalClaimsForUserByUsername(context, usernameClaim);
                 context.Principal!.AddIdentity(new ClaimsIdentity(claims));
             }
         }
-        
+
+        private static async Task<List<Claim>> GetAdditionalClaimsForUserByUsername(TokenValidatedContext context,
+            Claim usernameClaim)
+        {
+            var username = usernameClaim.Value;
+
+            var appRoleService =
+                context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
+            var claims = await appRoleService!.GetClaimsForUserAsync(username);
+            return claims;
+
+        }
+
         /// <summary>
         /// Not all users will need to query bookings api for additional claims
         /// </summary>

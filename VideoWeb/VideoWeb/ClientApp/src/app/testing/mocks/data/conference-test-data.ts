@@ -8,6 +8,8 @@ import {
     ConferenceResponseVho,
     ConferenceStatus,
     EndpointStatus,
+    InterpreterLanguageResponse,
+    InterpreterType,
     LinkedParticipantResponse,
     LinkType,
     ParticipantContactDetailsResponseVho,
@@ -96,6 +98,7 @@ export class ConferenceTestData {
             scheduled_date_time: pastDate,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
+            hearing_venue_name: 'Manchester',
             participants: this.getListOfParticipants(),
             telephone_conference_id: '0345855',
             telephone_conference_numbers: '+441234567890',
@@ -224,6 +227,7 @@ export class ConferenceTestData {
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Interpretee',
             last_name: 'Doe',
+            name: 'Interpretee',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
             interpreter_room: room
         });
@@ -463,9 +467,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantDetails(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
@@ -475,10 +479,15 @@ export class ConferenceTestData {
             tiled_display_name: 'CIVILIAN;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
             current_room: new RoomSummaryResponse(),
+            interpreter_language: new InterpreterLanguageResponse({
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            }),
             linked_participants: []
         });
 
-        const participant2 = new ParticipantResponseVho({
+        const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             representee: 'Chris Green',
@@ -492,7 +501,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant3 = new ParticipantResponseVho({
+        const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
@@ -505,7 +514,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant4 = new ParticipantResponseVho({
+        const participant4 = new ParticipantResponse({
             id: '9F681318-4965-49AF-A887-DED64554429T',
             name: 'Staff Member name',
             status: ParticipantStatus.Available,
@@ -806,7 +815,12 @@ export class ConferenceTestData {
             id: '123232355',
             defence_advocate_username: 'john.doe@hearings.net',
             pexip_display_name: 'PSTN;DispName2;123232355',
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            interpreter_language: new InterpreterLanguageResponse({
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            })
         });
         endpoints.push(point1);
         endpoints.push(point2);

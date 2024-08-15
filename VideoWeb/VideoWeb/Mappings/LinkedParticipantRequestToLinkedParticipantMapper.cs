@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
-using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings;
+
+public static class LinkedParticipantRequestToLinkedParticipantMapper
 {
-    public class LinkedParticipantRequestToLinkedParticipantMapper : IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>
+    public static LinkedParticipant Map(LinkedParticipantRequest linkedParticipant, IEnumerable<Participant> existingParticipants)
     {
-        public LinkedParticipant Map(LinkedParticipantRequest linkedParticipant, IEnumerable<Participant> existingParticipants)
+        var existingParticipantId = existingParticipants.FirstOrDefault(x => x.RefId == linkedParticipant.LinkedRefId)?.Id;
+        var mappedId = existingParticipantId ?? linkedParticipant.LinkedRefId;
+        
+        return new LinkedParticipant
         {
-            var existingParticipantId = existingParticipants.FirstOrDefault(x => x.RefId == linkedParticipant.LinkedRefId)?.Id;
-            var mappedId = existingParticipantId != null ? existingParticipantId : linkedParticipant.LinkedRefId;
-
-            return new LinkedParticipant()
-            {
-                LinkedId = (Guid)mappedId,
-                LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString())
-            };
-        }
+            LinkedId = mappedId,
+            LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString())
+        };
     }
 }

@@ -25,9 +25,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.Helpers;
-using VideoWeb.Mappings;
-using VideoWeb.Mappings.Decorators;
-using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
@@ -123,20 +120,21 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
             services.AddScoped<ISupplierLocator, SupplierLocator>();
             services.AddScoped<IConferenceService, ConferenceService>();
-            
-            RegisterMappers(services);
+            services.AddTransient<VhApiLoggingDelegatingHandler>();
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
 
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler<BookingsApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration))
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
@@ -188,46 +186,6 @@ namespace VideoWeb.Extensions
                 };
             });
             return services;
-        }
-
-        private static void RegisterMappers(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddScoped<IMapperFactory, MapperFactory>();
-
-            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,>))
-                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,>))
-                    .Where(_ => !_.IsGenericType))
-                .AsImplementedInterfaces()
-                .WithTransientLifetime());
-            serviceCollection.TryDecorate(typeof(IMapTo<,>), typeof(MapperLoggingDecorator<,>));
-
-            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,>))
-                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,>))
-                    .Where(_ => !_.IsGenericType))
-                .AsImplementedInterfaces()
-                .WithTransientLifetime());
-            serviceCollection.TryDecorate(typeof(IMapTo<,,>), typeof(MapperLoggingDecorator<,,>));
-
-            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,>))
-                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,>))
-                    .Where(_ => !_.IsGenericType))
-                .AsImplementedInterfaces()
-                .WithTransientLifetime());
-            serviceCollection.TryDecorate(typeof(IMapTo<,,,>), typeof(MapperLoggingDecorator<,,,>));
-
-            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,>))
-                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,>))
-                    .Where(_ => !_.IsGenericType))
-                .AsImplementedInterfaces()
-                .WithTransientLifetime());
-            serviceCollection.TryDecorate(typeof(IMapTo<,,,,>), typeof(MapperLoggingDecorator<,,,,>));
-
-            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,,>))
-                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,,>))
-                    .Where(_ => !_.IsGenericType))
-                .AsImplementedInterfaces()
-                .WithTransientLifetime());
-            serviceCollection.TryDecorate(typeof(IMapTo<,,,,,>), typeof(MapperLoggingDecorator<,,,,,>));
         }
 
         private static void RegisterEventHandlers(IServiceCollection serviceCollection)

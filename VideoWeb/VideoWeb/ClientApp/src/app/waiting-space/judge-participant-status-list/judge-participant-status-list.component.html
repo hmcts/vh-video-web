@@ -15,53 +15,62 @@
     </div>
 
     <span class="govuk-grid-column-two-thirds participant-details" role="presentation">
-      <span class="govuk-heading-m govuk-!-margin-bottom-0">
-        <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
-        <span *ngIf="isUserJudge"
-          ><a id="edit-judge-link" href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10"
-            >{{ 'judge-participant-status-list.edit' | translate }}
-            <span class="govuk-visually-hidden-focusable">
-              {{ 'judge-participant-status-list.your-name' | translate }} {{ judge.displayName }}</span
-            ></a
-          ></span
-        >
-      </span>
-      <span class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
-        <strong>{{ judge.displayName }}</strong>
-      </span>
-
-      <span *ngIf="showChangeJudgeDisplayName">
-        <div class="govuk-form-group vh-mt10">
-          <input
-            type="text"
-            id="new-judge-name"
-            #judgeInputName
-            (blur)="onEnterJudgeDisplayName(judgeInputName.value)"
-            value="{{ newJudgeDisplayName }}"
-            class="govuk-input govuk-input--width-20"
-          />
-        </div>
-        <div class="vh-mt10">
-          <span>
+      <div class="govuk-grid-row">
+        <span class="govuk-heading-m govuk-!-margin-bottom-0">
+          <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
+          <span *ngIf="isUserJudge"
+            ><a id="edit-judge-link" href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10"
+              >{{ 'judge-participant-status-list.edit' | translate }}
+              <span class="govuk-visually-hidden-focusable">
+                {{ 'judge-participant-status-list.your-name' | translate }} {{ judge.displayName }}</span
+              ></a
+            ></span
+          >
+        </span>
+      </div>
+      <div class="govuk-grid-row">
+        <span class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
+          <strong>{{ judge.displayName }}</strong>
+        </span>
+  
+        <span *ngIf="showChangeJudgeDisplayName">
+          <div class="govuk-form-group vh-mt10">
             <input
-              type="button"
-              id="editJudgeDisplayName"
-              (click)="saveJudgeDisplayName()"
-              value="{{ 'judge-participant-status-list.save' | translate }}"
-              class="govuk-button"
+              type="text"
+              id="new-judge-name"
+              #judgeInputName
+              (blur)="onEnterJudgeDisplayName(judgeInputName.value)"
+              value="{{ newJudgeDisplayName }}"
+              class="govuk-input govuk-input--width-20"
             />
-          </span>
-          <span>
-            <input
-              type="button"
-              id="cancelJudgeDisplayName"
-              (click)="cancelJudgeDisplayName()"
-              value="{{ 'judge-participant-status-list.cancel' | translate }}"
-              class="govuk-button vh-ml10 govuk-button--secondary"
-            />
-          </span>
-        </div>
-      </span>
+          </div>
+          <div class="vh-mt10">
+            <span>
+              <input
+                type="button"
+                id="editJudgeDisplayName"
+                (click)="saveJudgeDisplayName()"
+                value="{{ 'judge-participant-status-list.save' | translate }}"
+                class="govuk-button"
+              />
+            </span>
+            <span>
+              <input
+                type="button"
+                id="cancelJudgeDisplayName"
+                (click)="cancelJudgeDisplayName()"
+                value="{{ 'judge-participant-status-list.cancel' | translate }}"
+                class="govuk-button vh-ml10 govuk-button--secondary"
+              />
+            </span>
+          </div>
+        </span>
+      </div>
+      <div class="govuk-grid-row" *ngIf="judge.interpreterLanguage">
+        <span class="govuk-body-s govuk-!-margin-bottom-0">
+          {{ 'interpreter-language.' + stringToTranslateId(judge.interpreterLanguage.description) | translate }}
+        </span>
+      </div>
     </span>
   </div>
 
@@ -128,6 +137,11 @@
           <dt id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>
+          
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
+          </dd>
+
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
               id="p-{{ participant.id }}-status-panel-member"
@@ -244,6 +258,10 @@
             [innerHtml]="getHearingRole(participant)"
           ></dd>
 
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
+          </dd>
+
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
               id="p-{{ participant.id }}-status-participant"
@@ -275,6 +293,10 @@
           <dt id="p-{{ endpoint.id }}-name-endpoint" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ endpoint.displayName }}
           </dt>
+
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="endpoint.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(endpoint.interpreterLanguage.description) | translate }}
+          </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
@@ -308,6 +330,10 @@
           <dt id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>
+
+          <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
+            {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
+          </dd>
 
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span

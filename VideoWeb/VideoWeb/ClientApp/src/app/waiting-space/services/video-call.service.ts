@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, HearingLayout, SharedParticipantRoom, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -378,7 +378,7 @@ export class VideoCallService {
 
     startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
-        const request = new StartHearingRequest({
+        const request = new StartOrResumeVideoHearingRequest({
             layout: layout
         });
         return this.apiClient.startOrResumeVideoHearing(conferenceId, request).toPromise();
@@ -548,6 +548,9 @@ export class VideoCallService {
         this.pexipAPI.setParticipantText(uuid, text);
     }
 
+    transformLayout(layout: string) {
+        return this.pexipAPI.transformLayout({ layout: layout });
+    }
     private makePexipCall(
         pexipNode: string,
         conferenceAlias: string,

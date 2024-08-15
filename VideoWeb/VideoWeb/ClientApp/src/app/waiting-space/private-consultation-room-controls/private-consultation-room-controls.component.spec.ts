@@ -3,6 +3,7 @@ import {
     ClientSettingsResponse,
     ConferenceResponse,
     ConferenceStatus,
+    HearingLayout,
     ParticipantForUserResponse,
     ParticipantStatus,
     Role,
@@ -786,6 +787,34 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             component.wowzaUUID = '1234';
             component.killWowza();
             expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('1234');
+        });
+    });
+
+    describe('onLayoutUpdate', () => {
+        it('should call video-call service updateCurrentLayout', () => {
+            const layout = HearingLayout.Dynamic;
+            component.onLayoutUpdate(layout);
+            expect(videoCallService.transformLayout).toHaveBeenCalledWith('ac');
+        });
+    });
+
+    describe('mapLayout', () => {
+        it('should return 1:7 when layout is OnePlus7', () => {
+            const layout = HearingLayout.OnePlus7;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('1:7');
+        });
+
+        it('should return 2:21 when layout is TwoPlus21', () => {
+            const layout = HearingLayout.TwoPlus21;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('2:21');
+        });
+
+        it('should return ac when layout is Dynamic', () => {
+            const layout = HearingLayout.Dynamic;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('ac');
         });
     });
 });

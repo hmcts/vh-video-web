@@ -36,4 +36,9 @@ public class VideoEndpointResponse
     /// Current conference room
     /// </summary>
     public RoomSummaryResponse CurrentRoom { get; set; }
+    
+    /// <summary>
+    /// The endpoint's interpreter language, if applicable
+    /// </summary>
+    public InterpreterLanguageResponse InterpreterLanguage { get; set; }
 }

@@ -31,14 +31,16 @@ import {
     router,
     titleService,
     videoCallService,
+    launchDarklyService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
@@ -77,6 +79,7 @@ describe('JohWaitingRoomComponent', () => {
     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(async () => {
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
             activatedRoute,
@@ -101,6 +104,7 @@ describe('JohWaitingRoomComponent', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

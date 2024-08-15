@@ -16,10 +16,12 @@ public static class ConferenceCacheMapper
             .Participants
             .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse))
             .ToList();
+
+        var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
         var endpoints = conferenceResponse.Endpoints == null
             ? new List<Endpoint>()
-            : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
+            : conferenceResponse.Endpoints.Select(e => EndpointCacheMapper.MapEndpointToCacheModel(e, endpointsForHearing.Find(x => x.DisplayName == e.DisplayName))).ToList();
         
         var civilianRooms = conferenceResponse.CivilianRooms == null
             ? new List<CivilianRoom>()

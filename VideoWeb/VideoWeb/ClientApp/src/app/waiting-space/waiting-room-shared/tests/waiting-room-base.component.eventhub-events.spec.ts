@@ -63,7 +63,8 @@ import {
     videoWebService,
     videoCallService,
     titleService,
-    mockConferenceStore
+    mockConferenceStore,
+    launchDarklyService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -91,6 +92,8 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
 import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
 import { provideMockStore } from '@ngrx/store/testing';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { of } from 'rxjs';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -116,6 +119,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     });
 
     beforeEach(async () => {
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -144,6 +148,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: ClockService, useValue: clockService },
                 { provide: ConsultationInvitationService, useValue: consultationInvitiationService },
                 { provide: Title, useValue: titleService },
+                { provide: LaunchDarklyService, useValue: launchDarklyService },
                 provideMockStore()
             ]
         });

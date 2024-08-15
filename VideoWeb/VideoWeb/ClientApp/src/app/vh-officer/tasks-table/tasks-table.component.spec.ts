@@ -10,6 +10,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table.component';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
@@ -22,12 +23,7 @@ describe('TasksTableComponent', () => {
 
     beforeAll(() => {
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
-            'getConferenceByIdVHO',
-            'getTasksForConference',
-            'completeTask'
-        ]);
-        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conference));
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getTasksForConference', 'completeTask']);
         vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
         vhoQueryService.completeTask.and.returnValue(Promise.resolve(completedTask));
 
@@ -36,8 +32,9 @@ describe('TasksTableComponent', () => {
 
     beforeEach(() => {
         component = new TasksTableComponent(vhoQueryService, logger, eventBusServiceSpy);
-        component.conferenceId = conference.id;
-        component.conference = Object.assign(conference);
+        const conferenceClone = Object.assign(conference);
+        component.conference = conferenceClone;
+        component.hearing = new Hearing(conferenceClone);
         // 1 To-Do & 2 Done
         component.tasks = Object.assign(allTasks);
 
@@ -60,19 +57,17 @@ describe('TasksTableComponent', () => {
 
     it('should log error when unable to init', fakeAsync(() => {
         const error = new Error('failed to find conference');
-        vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
+        vhoQueryService.getTasksForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.tasks = undefined;
-        component.conference = undefined;
 
         component.ngOnInit();
         tick();
 
-        expect(component.loading).toBeTruthy();
+        expect(component.loading).toBeFalsy();
         expect(spy.calls.mostRecent().args[0]).toMatch('Failed to init tasks list for conference');
         expect(spy.calls.mostRecent().args[1]).toBe(error);
         expect(component.tasks).toBeUndefined();
-        expect(component.conference).toBeUndefined();
     }));
 
     it('should set task to done', () => {

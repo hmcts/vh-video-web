@@ -1,4 +1,4 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -7,11 +7,14 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HearingVenueResponse, JusticeUserResponse, Role } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Directive()
-export abstract class VenueListComponentDirective implements OnInit {
+export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
     static readonly ALLOCATED_TO_ME = 'AllocatedToMe';
     static readonly UNALLOCATED = 'Unallocated';
 
@@ -21,6 +24,8 @@ export abstract class VenueListComponentDirective implements OnInit {
     selectedCsos: string[];
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
     errorMessage: string | null;
+    vhoWorkAllocationFeatureFlag: boolean;
+    activeSessionsFeatureFlag = false;
     activeSessions: boolean;
     isAdministrator: boolean;
 
@@ -29,11 +34,14 @@ export abstract class VenueListComponentDirective implements OnInit {
     protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
     protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
+    private onDestroy$ = new Subject<void>();
+
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
+        protected ldService: LaunchDarklyService,
         protected profileService: ProfileService
     ) {
         this.selectedVenues = [];
@@ -61,6 +69,11 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.profileService.getUserProfile().then(user => {
             this.isAdministrator = user.roles.includes(Role.Administrator);
         });
+    }
+
+    ngOnDestroy(): void {
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
     }
 
     updateVenueSelection() {
@@ -118,6 +131,13 @@ export abstract class VenueListComponentDirective implements OnInit {
     }
 
     private setupSubscribers() {
+        this.ldService
+            .getFlag<boolean>(FEATURE_FLAGS.activeSessionFilter, false)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(value => {
+                this.activeSessionsFeatureFlag = value;
+            });
+
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();

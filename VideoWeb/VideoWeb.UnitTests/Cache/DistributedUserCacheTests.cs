@@ -11,18 +11,18 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 
-namespace VideoWeb.UnitTests
+namespace VideoWeb.UnitTests.Cache
 {
     public class DistributedUserCacheTests
     {
         private Mock<IDistributedCache> _distributedCacheMock;
-        private Mock<ILogger<RedisCacheBase<string, UserProfile>>> _loggerMock;
+        private Mock<ILogger<DistributedUserProfileCache>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _loggerMock = new Mock<ILogger<RedisCacheBase<string, UserProfile>>>();
+            _loggerMock = new Mock<ILogger<DistributedUserProfileCache>>();
         }
 
         [Test]

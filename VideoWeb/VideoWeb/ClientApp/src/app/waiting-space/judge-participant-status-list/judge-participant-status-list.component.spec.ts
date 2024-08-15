@@ -337,4 +337,21 @@ describe('JudgeParticipantStatusListComponent', () => {
         component.ngOnInit();
         expect(component.isUserJudge).toBeTruthy();
     }));
+
+    describe('stringToTranslateId', () => {
+        it('should return the correct string to translate id', () => {
+            const result = component.stringToTranslateId('Spanish');
+            expect(result).toBe('spanish');
+        });
+
+        it('should return the correct string to translate id with spaces', () => {
+            const result = component.stringToTranslateId('Deaf Relay');
+            expect(result).toBe('deaf-relay');
+        });
+
+        it('should return the correct string to translate id with spaces and special characters', () => {
+            const result = component.stringToTranslateId('International Sign (IS)');
+            expect(result).toBe('international-sign-(is)');
+        });
+    });
 });

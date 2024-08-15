@@ -23,15 +23,17 @@ import {
     router,
     titleService,
     videoCallService,
+    launchDarklyService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -54,6 +56,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
         shouldUnloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
@@ -81,6 +84,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             titleService,
             hideComponentsService,
             focusService,
+            launchDarklyService,
             mockConferenceStore
         );
     });

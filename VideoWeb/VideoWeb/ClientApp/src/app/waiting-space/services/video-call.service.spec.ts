@@ -7,7 +7,7 @@ import {
     ClientSettingsResponse,
     HearingLayout,
     SharedParticipantRoom,
-    StartHearingRequest
+    StartOrResumeVideoHearingRequest
 } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -112,7 +112,8 @@ describe('VideoCallService', () => {
             'renegotiate',
             'dialOut',
             'disconnectParticipant',
-            'setParticipantText'
+            'setParticipantText',
+            'transformLayout'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -265,7 +266,7 @@ describe('VideoCallService', () => {
         const conferenceId = Guid.create().toString();
         const layout = HearingLayout.TwoPlus21;
         await service.startHearing(conferenceId, layout);
-        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartHearingRequest({ layout }));
+        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartOrResumeVideoHearingRequest({ layout }));
     });
 
     it('should make api pause call on pause hearing', async () => {
@@ -786,6 +787,15 @@ describe('VideoCallService', () => {
             const text = 'text';
             service.setParticipantOverlayText(uuid, text);
             expect(pexipSpy.setParticipantText).toHaveBeenCalledWith(uuid, text);
+        });
+    });
+
+    describe('transformLayout', () => {
+        it('should return the correct layout for a given hearing layout', () => {
+            service.pexipAPI = pexipSpy;
+            const layout = HearingLayout.TwoPlus21;
+            service.transformLayout(layout);
+            expect(pexipSpy.transformLayout).toHaveBeenCalledOnceWith({ layout: layout });
         });
     });
 });

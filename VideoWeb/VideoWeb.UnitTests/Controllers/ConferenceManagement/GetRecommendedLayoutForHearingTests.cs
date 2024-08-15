@@ -5,8 +5,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using FluentAssertions;
@@ -93,7 +91,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id))).ThrowsAsync(new Exception());
 
             // Act
-            Assert.ThrowsAsync<Exception>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id));
         }
     }
 }

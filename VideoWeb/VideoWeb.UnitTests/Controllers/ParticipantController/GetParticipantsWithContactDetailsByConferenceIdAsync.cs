@@ -15,15 +15,11 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
-using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -167,11 +163,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                     User = claimsPrincipal
                 }
             };
-
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantResponseForUserMapper>());
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
             var parameters = new ParameterBuilder(_mocker)
