@@ -1500,7 +1500,9 @@
   },
   "audio-mix-selection": {
     "court": "Court",
-    "interpret-for": "Interpret for"
+    "change-audio-header": "Change your language audio",
+    "change-audio-hint": "Interpret for",
+    "cancel": "Cancel"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",

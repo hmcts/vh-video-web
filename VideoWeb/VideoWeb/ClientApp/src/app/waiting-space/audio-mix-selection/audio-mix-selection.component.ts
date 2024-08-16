@@ -20,6 +20,7 @@ import { convertStringToTranslationId } from 'src/app/shared/translation-id-conv
 })
 export class AudioMixSelectionComponent implements OnInit, OnDestroy {
     @Output() audioLanguageSelectionChanged = new EventEmitter();
+    @Output() audioLanguageSelectionCancelled = new EventEmitter();
 
     bookedLanguages: VHInterpreterLanguage[];
     nonBookedLanguages: VHInterpreterLanguage[];
@@ -56,6 +57,7 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
                     );
                 // Remove duplicates based on the 'code' property
                 const uniqueBookedLanguages = Array.from(new Map(allBookedLanguages.map(lang => [lang.code, lang])).values());
+                uniqueBookedLanguages.sort((a, b) => a.description.localeCompare(b.description));
                 this.bookedLanguages = uniqueBookedLanguages;
 
                 this.nonBookedLanguages = languages.filter(
@@ -90,6 +92,10 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
             })
         );
         this.audioLanguageSelectionChanged.emit();
+    }
+
+    onCancel() {
+        this.audioLanguageSelectionCancelled.emit();
     }
 
     stringToTranslateId(str: string) {

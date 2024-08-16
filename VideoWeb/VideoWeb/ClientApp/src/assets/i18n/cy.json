@@ -1499,7 +1499,9 @@
   },
   "audio-mix-selection": {
     "court": "Llys",
-    "interpret-for": "Dehongli ar gyfer"
+    "change-audio-header": "Newidiwch eich dewis sain",
+    "change-audio-hint": "Dehongli ar gyfer",
+    "cancel": "Canslo"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",

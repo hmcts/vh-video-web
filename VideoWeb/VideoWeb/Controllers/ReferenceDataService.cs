@@ -26,6 +26,7 @@ public class ReferenceDataController(IReferenceDataService referenceDataService)
     public async Task<ActionResult<List<InterpreterLanguageResponse>>> GetAvailableInterpreterLanguages(CancellationToken cancellationToken)
     {
         var languages = await referenceDataService.GetInterpreterLanguagesAsync(cancellationToken);
-        return Ok(languages.Select(x =>x.Map()).ToList());
+        languages = languages.OrderBy(x => x.Description).ToList();
+        return Ok(languages.Select(x => x.Map()).ToList());
     }
 }

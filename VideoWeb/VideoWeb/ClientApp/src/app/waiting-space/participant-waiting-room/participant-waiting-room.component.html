@@ -344,7 +344,11 @@
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
 </app-modal>
 
-<app-audio-mix-selection *ngIf="displayLanguageModal" (audioLanguageSelectionChanged)="closeLanageChangeModal()"></app-audio-mix-selection>
+<app-audio-mix-selection
+  *ngIf="displayLanguageModal"
+  (audioLanguageSelectionChanged)="closeLanageChangeModal()"
+  (audioLanguageSelectionCancelled)="closeLanageChangeModal()"
+></app-audio-mix-selection>
 
 <app-warn-join-hearing-popup
   *ngIf="showWarning"
