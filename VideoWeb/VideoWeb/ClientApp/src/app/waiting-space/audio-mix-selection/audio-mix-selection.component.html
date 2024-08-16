@@ -19,6 +19,7 @@
             class="govuk-select"
             id="audioMixLanguages"
             name="audioMixLanguages"
+            [attr.aria-label]="'audio-mix-selection.change-audio-label' | translate"
             (change)="onAudioLanguageSelectionChanged($event.target.value)"
           >
             <option [value]="'main'">{{ 'audio-mix-selection.court' | translate }}</option>

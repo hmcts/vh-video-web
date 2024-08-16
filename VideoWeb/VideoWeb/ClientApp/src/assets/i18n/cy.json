@@ -1500,6 +1500,7 @@
   "audio-mix-selection": {
     "court": "Llys",
     "change-audio-header": "Newidiwch eich dewis sain",
+    "change-audio-label": "Dewiswch eich dewis sain",
     "change-audio-hint": "Dehongli ar gyfer",
     "cancel": "Canslo"
   },
