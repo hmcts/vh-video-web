@@ -28,7 +28,7 @@ namespace VideoWeb.Common.Security.Tokens.Base
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var token = await GetServiceToServiceToken();
             request.Headers.Add("Authorization", $"Bearer {token}");
