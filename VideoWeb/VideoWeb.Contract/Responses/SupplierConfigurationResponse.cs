@@ -1,3 +1,5 @@
+using VideoWeb.Common.Enums;
+
 namespace VideoWeb.Contract.Responses
 {
     public class SupplierConfigurationResponse
@@ -5,7 +7,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// Supplier
         /// </summary>
-        public string Supplier { get; set; }
+        public Supplier Supplier { get; set; }
         
         /// <summary>
         /// The date to set option ON to display functionality to join hearing by phone

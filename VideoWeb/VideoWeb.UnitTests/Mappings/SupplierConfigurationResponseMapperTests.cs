@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.TurnServer.Should().Be(config.TurnServer);
             result.TurnServerUser.Should().Be(config.TurnServerUser);
             result.TurnServerCredential.Should().Be(config.TurnServerCredential);
-            result.Supplier.Should().Be(config.Supplier.ToString().ToLower());
+            result.Supplier.Should().Be(config.Supplier);
         }
     }
 }

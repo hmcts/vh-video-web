@@ -30,13 +30,13 @@ const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
     supplier_configurations: [
         new SupplierConfigurationResponse({
-            supplier: 'kinly',
+            supplier: Supplier.Kinly,
             turn_server: 'turnserver',
             turn_server_user: 'tester1',
             turn_server_credential: 'credential'
         }),
         new SupplierConfigurationResponse({
-            supplier: 'vodafone',
+            supplier: Supplier.Vodafone,
             turn_server: 'turnserver',
             turn_server_user: 'tester1',
             turn_server_credential: 'credential'

@@ -2,7 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ClientSettingsResponse, ConferenceResponse, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, ConferenceResponse, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventBusService } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -73,8 +73,8 @@ describe('CommandCentreComponent - Core', () => {
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [
-                new SupplierConfigurationResponse({ supplier: 'kinly', join_by_phone_from_date: '2020-09-01' }),
-                new SupplierConfigurationResponse({ supplier: 'vodafone', join_by_phone_from_date: '2020-09-01' })
+                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
+                new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
             ]
         });
         configService.getClientSettings.and.returnValue(of(config));

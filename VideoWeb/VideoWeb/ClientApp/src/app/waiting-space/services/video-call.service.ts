@@ -662,6 +662,6 @@ export class VideoCallService {
     }
 
     private getSupplierConfig(config: ClientSettingsResponse) {
-        return config.supplier_configurations.find(x => x.supplier === this.supplier.toLowerCase());
+        return config.supplier_configurations.find(x => x.supplier === this.supplier);
     }
 }

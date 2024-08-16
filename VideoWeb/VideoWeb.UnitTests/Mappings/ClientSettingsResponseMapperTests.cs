@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.SupplierConfigurations.Count.Should().Be(supplierConfigs.Count);
             foreach (var supplierConfigResponse in response.SupplierConfigurations)
             {
-                var supplierConfig = supplierConfigs.Find(x => x.Supplier.ToString().ToLower() == supplierConfigResponse.Supplier);
+                var supplierConfig = supplierConfigs.Find(x => x.Supplier == supplierConfigResponse.Supplier);
                 supplierConfig.Should().NotBeNull();
                 supplierConfigResponse.Should().BeEquivalentTo(supplierConfig.Map());
             }

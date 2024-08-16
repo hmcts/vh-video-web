@@ -110,7 +110,7 @@ public class GetClientConfigurationSettingsTests
         clientSettings.SupplierConfigurations.Count.Should().Be(supplierConfigurations.Count);
         foreach (var supplierConfigResponse in clientSettings.SupplierConfigurations)
         {
-            var supplierConfig = supplierConfigurations.Find(x => x.Supplier.ToString().ToLower() == supplierConfigResponse.Supplier);
+            var supplierConfig = supplierConfigurations.Find(x => x.Supplier == supplierConfigResponse.Supplier);
             supplierConfig.Should().NotBeNull();
             supplierConfigResponse.Should().BeEquivalentTo(supplierConfig.Map());
         }

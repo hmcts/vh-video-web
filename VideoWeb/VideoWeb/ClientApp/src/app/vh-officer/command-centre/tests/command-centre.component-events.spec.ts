@@ -9,6 +9,7 @@ import {
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
+    Supplier,
     SupplierConfigurationResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -90,8 +91,8 @@ describe('CommandCentreComponent - Events', () => {
 
         const config = new ClientSettingsResponse({
             supplier_configurations: [
-                new SupplierConfigurationResponse({ supplier: 'kinly', join_by_phone_from_date: '' }),
-                new SupplierConfigurationResponse({ supplier: 'vodafone', join_by_phone_from_date: '' })
+                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '' }),
+                new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '' })
             ]
         });
         configService.getClientSettings.and.returnValue(of(config));

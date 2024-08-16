@@ -1,5 +1,6 @@
 import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Supplier } from '../clients/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -16,13 +17,13 @@ export class SupplierClientService {
         this.renderer = rendererFactory.createRenderer(null, null);
     }
 
-    loadSupplierScript(supplier: string) {
+    loadSupplierScript(supplier: Supplier) {
         const script = this.renderer.createElement('script');
         switch (supplier) {
-            case 'vodafone':
+            case Supplier.Vodafone:
                 script.src = this.vodafone;
                 break;
-            case 'kinly':
+            case Supplier.Kinly:
                 script.src = this.kinly;
                 break;
             default:

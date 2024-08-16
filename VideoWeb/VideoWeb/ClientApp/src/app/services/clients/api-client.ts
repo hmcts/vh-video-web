@@ -10780,8 +10780,7 @@ export interface ISharedParticipantRoom {
 }
 
 export class SupplierConfigurationResponse implements ISupplierConfigurationResponse {
-    /** Supplier */
-    supplier?: string | undefined;
+    supplier?: Supplier;
     /** The date to set option ON to display functionality to join hearing by phone */
     join_by_phone_from_date?: string | undefined;
     /** The turn server */
@@ -10828,8 +10827,7 @@ export class SupplierConfigurationResponse implements ISupplierConfigurationResp
 }
 
 export interface ISupplierConfigurationResponse {
-    /** Supplier */
-    supplier?: string | undefined;
+    supplier?: Supplier;
     /** The date to set option ON to display functionality to join hearing by phone */
     join_by_phone_from_date?: string | undefined;
     /** The turn server */

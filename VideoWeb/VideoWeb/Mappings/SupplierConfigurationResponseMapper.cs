@@ -12,7 +12,7 @@ namespace VideoWeb.Mappings
                 TurnServer = configuration.TurnServer,
                 TurnServerUser = configuration.TurnServerUser,
                 TurnServerCredential = configuration.TurnServerCredential,
-                Supplier = configuration.Supplier.ToString().ToLower()
+                Supplier = configuration.Supplier
             };
     }
 }
