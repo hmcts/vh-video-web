@@ -99,14 +99,14 @@
         ></app-participants-panel-item>
     </div>
 
-    <h3
+    <h2
         class="govuk-heading-s white govuk-!-margin-top-7"
         appTooltip
         [text]="'participants-panel.in-waiting-room-tooltip' | translate"
         colour="grey"
     >
         {{ 'participants-panel.in-waiting-room' | translate }} ({{ totalParticipantsInWaitingRoom }})
-    </h3>
+    </h2>
     <div class="panel-container-list" id="panelListInWaitingRoom">
         <app-participants-panel-item
             [item]="participant"
