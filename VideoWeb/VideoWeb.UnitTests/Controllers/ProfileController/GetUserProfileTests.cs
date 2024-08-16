@@ -9,9 +9,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
-using UserProfile = VideoWeb.Common.Models.UserProfile;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
@@ -76,8 +74,6 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UserProfile, UserProfileResponse>()).Returns(_mocker.Create<UserProfileToUserProfileResponseMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>()).Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
             var controller = _mocker.Create<ProfilesController>();
             controller.ControllerContext = context;
             return controller;

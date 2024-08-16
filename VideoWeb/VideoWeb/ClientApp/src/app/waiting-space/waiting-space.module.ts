@@ -52,6 +52,7 @@ import { environment } from 'src/environments/environment';
 import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
 import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup/change-hearing-layout.component';
+import { VideoCallEffects } from './store/effects/video-call.effects';
 
 @NgModule({
     imports: [
@@ -60,7 +61,7 @@ import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,

@@ -1,21 +1,18 @@
-using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ClientSettingsResponseMapperTests : BaseMockerSutTestSetup<ClientSettingsResponseMapper>
+    public class ClientSettingsResponseMapperTests 
     {
-        [Test]
-        public void Should_map_all_properties()
+        [TestCase("kinly")]
+        [TestCase("vodafone")]
+        public void Should_map_all_properties(string supplier)
         {
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
-                .Returns(_mocker.Create<IdpSettingsResponseMapper>());
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
                 .Build();
@@ -27,26 +24,20 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
 
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
-            var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
-            var vodafoneConfiguration = Builder<VodafoneConfiguration>.CreateNew().Build();
-            var supplierConfigs = new List<SupplierConfiguration>
-            {
-                kinlyConfiguration,
-                vodafoneConfiguration
-            };
+            
+            SupplierConfiguration supplierConfiguration = supplier == "kinly"
+                ? Builder<KinlyConfiguration>.CreateNew().Build()
+                : Builder<VodafoneConfiguration>.CreateNew().Build();
 
-            var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfigs);
+            var response = ClientSettingsResponseMapper.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfiguration, supplier);
 
             response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
-            response.SupplierSettings.Should().NotBeNull();
-            response.SupplierSettings.Count.Should().Be(supplierConfigs.Count);
-            foreach (var supplierConfigResponse in response.SupplierSettings)
-            {
-                var supplierConfig = supplierConfigs.Find(x => x.Supplier.ToString().ToLower() == supplierConfigResponse.Supplier);
-                supplierConfig.Should().NotBeNull();
-                supplierConfigResponse.Should().BeEquivalentTo(supplierConfig.Map());
-            }
+            response.SupplierTurnServer.Should().Be(supplierConfiguration.TurnServer);
+            response.SupplierTurnServerUser.Should().Be(supplierConfiguration.TurnServerUser);
+            response.SupplierTurnServerCredential.Should().Be(supplierConfiguration.TurnServerCredential);
+            response.JoinByPhoneFromDate.Should().Be(supplierConfiguration.JoinByPhoneFromDate);
+            response.Supplier.Should().Be(supplier);
         }
     }
 }

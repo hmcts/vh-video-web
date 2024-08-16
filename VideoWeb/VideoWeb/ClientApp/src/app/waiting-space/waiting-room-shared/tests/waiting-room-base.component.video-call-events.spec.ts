@@ -174,7 +174,14 @@ describe('WaitingRoomComponent Video Call', () => {
                 protocol: '',
                 spotlight: 0,
                 start_time: 0,
-                uuid: ''
+                uuid: '',
+                disconnect_supported: 'Yes',
+                transfer_supported: 'Yes',
+                is_main_video_dropped_out: false,
+                is_video_muted: false,
+                is_streaming_conference: false,
+                send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+                receive_from_audio_mix: 'main'
             })
         );
         flush();
