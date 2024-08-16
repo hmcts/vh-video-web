@@ -46,7 +46,7 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(([languages, participants, endpoints, loggedInParticipant]) => {
                 this.loggedInParticipant = loggedInParticipant;
-                this.allLanguages = languages;
+                this.allLanguages = languages.filter(lang => lang.type === InterpreterType.Verbal);
                 const allBookedLanguages = participants
                     .filter(p => p.interpreterLanguage && p.interpreterLanguage.type === InterpreterType.Verbal)
                     .map(p => p.interpreterLanguage)
@@ -60,9 +60,7 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
                 uniqueBookedLanguages.sort((a, b) => a.description.localeCompare(b.description));
                 this.bookedLanguages = uniqueBookedLanguages;
 
-                this.nonBookedLanguages = languages.filter(
-                    lang => lang.type === InterpreterType.Verbal && !this.bookedLanguages.some(b => b.code === lang.code)
-                );
+                this.nonBookedLanguages = this.allLanguages.filter(lang => !this.bookedLanguages.some(b => b.code === lang.code));
             });
     }
 

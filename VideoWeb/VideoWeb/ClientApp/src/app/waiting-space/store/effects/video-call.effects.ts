@@ -108,9 +108,7 @@ export class VideoCallEffects {
                                 prominent: false
                             });
                         }
-                    }
-
-                    if (action.interpreterLanguage) {
+                    } else if (action.interpreterLanguage) {
                         const languageAudioMixName = `main.${action.interpreterLanguage.description.toLowerCase()}`; // e.g. main.french or main.spanish
                         audioMixes = [
                             {

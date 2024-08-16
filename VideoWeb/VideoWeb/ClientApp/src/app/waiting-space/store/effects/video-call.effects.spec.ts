@@ -10,7 +10,7 @@ import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { VHInterpreterLanguage, VHPexipParticipant } from '../models/vh-conference';
+import { VHInterpreterLanguage, VHParticipant, VHPexipParticipant } from '../models/vh-conference';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallEffects } from './video-call.effects';
 import { InterpreterType } from 'src/app/services/clients/api-client';
@@ -339,6 +339,144 @@ describe('VideoCallEffects', () => {
             // assert
             effects.createAudioMixes$.subscribe(() => {
                 expect(videoCallService.receiveAudioFromMix).toHaveBeenCalledWith('main.spanish', pexipParticipant.uuid);
+            });
+        });
+    });
+
+    describe('updateAudioMixes$', () => {
+        let participants: VHParticipant[];
+        let participant: VHParticipant;
+        beforeEach(() => {
+            videoCallService.receiveAudioFromMix.calls.reset();
+            videoCallService.sendParticipantAudioToMixes.calls.reset();
+
+            const participantsResponse = new ConferenceTestData().getListOfParticipants();
+            participants = participantsResponse.map(mapParticipantToVHParticipant);
+            participants.forEach(p => {
+                p.pexipInfo = {
+                    isRemoteMuted: false,
+                    isSpotlighted: false,
+                    handRaised: false,
+                    pexipDisplayName: '1922_John Doe',
+                    uuid: '1922_John Doe',
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'sip',
+                    sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                    receivingAudioMix: 'main'
+                } as VHPexipParticipant;
+            });
+            participant = participants[0];
+        });
+
+        afterEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should not update audio mixes if participant is not found', () => {
+            // arrange
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, []);
+            const action = ConferenceActions.updateAudioMix({
+                interpreterLanguage: undefined,
+                mainCourt: true,
+                participant: participant
+            });
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.updateAudioMixes$.subscribe(() => {
+                expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        it('should not update audio mixes if participant is found but is not an interpreter', () => {
+            // arrange
+            participant = {
+                ...participant,
+                hearingRole: HearingRole.APPELLANT,
+                interpreterLanguage: { code: 'asl', description: 'American Sign Language', type: InterpreterType.Sign }
+            };
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
+            const action = ConferenceActions.updateAudioMix({
+                interpreterLanguage: undefined,
+                mainCourt: true,
+                participant: participant
+            });
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.updateAudioMixes$.subscribe(() => {
+                expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        it('should update audio mixes to main if participant is found and is an interpreter', () => {
+            // arrange
+            participant = {
+                ...participant,
+                hearingRole: HearingRole.INTERPRETER,
+                interpreterLanguage: { code: 'spa', description: 'Spanish', type: InterpreterType.Verbal }
+            };
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
+            const action = ConferenceActions.updateAudioMix({
+                interpreterLanguage: undefined,
+                mainCourt: true,
+                participant: participant
+            });
+            const expectedAudioMixes = [
+                {
+                    mix_name: 'main',
+                    prominent: true
+                },
+                {
+                    mix_name: 'main.spanish',
+                    prominent: false
+                }
+            ];
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.updateAudioMixes$.subscribe(() => {
+                expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledWith(expectedAudioMixes, participant.pexipInfo.uuid);
+            });
+        });
+
+        it('should update audio mixes to main and main.<language> if participant is found and is an interpreter', () => {
+            // arrange
+            participant = {
+                ...participant,
+                hearingRole: HearingRole.INTERPRETER,
+                interpreterLanguage: { code: 'spa', description: 'Spanish', type: InterpreterType.Verbal }
+            };
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, [participant]);
+            const action = ConferenceActions.updateAudioMix({
+                interpreterLanguage: participant.interpreterLanguage,
+                mainCourt: false,
+                participant: participant
+            });
+            const expectedAudioMixes = [
+                {
+                    mix_name: 'main',
+                    prominent: false
+                },
+                {
+                    mix_name: 'main.spanish',
+                    prominent: true
+                }
+            ];
+
+            // act
+            actions$ = of(action);
+
+            // assert
+            effects.updateAudioMixes$.subscribe(() => {
+                expect(videoCallService.sendParticipantAudioToMixes).toHaveBeenCalledWith(expectedAudioMixes, participant.pexipInfo.uuid);
             });
         });
     });

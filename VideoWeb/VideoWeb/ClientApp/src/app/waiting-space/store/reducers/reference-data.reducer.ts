@@ -15,12 +15,10 @@ export const initialState: ReferenceDataState = {
 
 export const referenceDataReducer = createReducer(
     initialState,
-    on(ReferenceActions.loadInterpreterLanguagesSuccess, (state, { languages }) => {
-        return {
-            ...state,
-            availableLanguages: languages
-        };
-    })
+    on(ReferenceActions.loadInterpreterLanguagesSuccess, (state, { languages }) => ({
+        ...state,
+        availableLanguages: languages
+    }))
 );
 
 export const referenceDataFeature = createFeatureSelector<ReferenceDataState>(referenceDataFeatureKey);

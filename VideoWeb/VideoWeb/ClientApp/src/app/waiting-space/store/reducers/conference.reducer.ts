@@ -291,10 +291,10 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, participants: participants };
         return { ...state, currentConference: updatedConference };
     }),
-
-    on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => {
-        return { ...state, loggedInParticipant: participant };
-    })
+    on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => ({
+        ...state,
+        loggedInParticipant: participant
+    }))
 );
 
 export const activeConferenceFeature = createFeatureSelector<ConferenceState>(conferenceFeatureKey);
