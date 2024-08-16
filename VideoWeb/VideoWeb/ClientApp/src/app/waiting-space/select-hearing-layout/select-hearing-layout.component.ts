@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
-import { initAll } from 'govuk-frontend';
 
 @Component({
     selector: 'app-select-hearing-layout',
@@ -46,7 +45,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         const headingElement = document.getElementById('accordion-choose-layout-heading');
         headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
-        initAll();
+        (<any>window).GOVUKFrontend.initAll();
         headingElement.onclick = e => this.setAccordionText(e);
         const sectionHeadingElement = document.getElementsByClassName('govuk-accordion__section-button').item(0) as HTMLButtonElement;
         sectionHeadingElement.onclick = e => this.setAccordionText(e);
