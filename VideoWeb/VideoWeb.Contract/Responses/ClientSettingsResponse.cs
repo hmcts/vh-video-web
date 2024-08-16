@@ -67,8 +67,8 @@ namespace VideoWeb.Contract.Responses
         public string LaunchDarklyClientId { get; set; }
 
         /// <summary>
-        /// Config settings for the suppliers
+        /// Configurations for the suppliers
         /// </summary>
-        public List<SupplierClientSettingsResponse> SupplierSettings { get; set; } = new();
+        public List<SupplierConfigurationResponse> SupplierConfigurations { get; set; } = [];
     }
 }

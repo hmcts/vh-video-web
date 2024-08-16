@@ -3,9 +3,9 @@ using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public static class SupplierClientSettingsResponseMapper
+    public static class SupplierConfigurationResponseMapper
     {
-        public static SupplierClientSettingsResponse Map(this SupplierConfiguration configuration) =>
+        public static SupplierConfigurationResponse Map(this SupplierConfiguration configuration) =>
             new()
             {
                 JoinByPhoneFromDate = configuration.JoinByPhoneFromDate,

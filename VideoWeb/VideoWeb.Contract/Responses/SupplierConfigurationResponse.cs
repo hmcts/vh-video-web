@@ -1,6 +1,6 @@
 namespace VideoWeb.Contract.Responses
 {
-    public class SupplierClientSettingsResponse
+    public class SupplierConfigurationResponse
     {
         /// <summary>
         /// Supplier

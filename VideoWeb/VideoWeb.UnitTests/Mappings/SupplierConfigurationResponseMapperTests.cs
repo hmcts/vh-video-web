@@ -5,7 +5,7 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class SupplierClientSettingsResponseMapperTests
+    public class SupplierConfigurationResponseMapperTests
     {
         [Test]
         public void Should_map()

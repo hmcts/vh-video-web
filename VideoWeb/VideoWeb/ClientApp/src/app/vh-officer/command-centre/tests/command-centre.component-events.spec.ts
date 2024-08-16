@@ -8,7 +8,8 @@ import {
     ConferenceStatus,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role
+    Role,
+    SupplierConfigurationResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventBusService } from 'src/app/services/event-bus.service';
@@ -87,7 +88,12 @@ describe('CommandCentreComponent - Events', () => {
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
-        const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
+        const config = new ClientSettingsResponse({
+            supplier_configurations: [
+                new SupplierConfigurationResponse({ supplier: 'kinly', join_by_phone_from_date: '' }),
+                new SupplierConfigurationResponse({ supplier: 'vodafone', join_by_phone_from_date: '' })
+            ]
+        });
         configService.getClientSettings.and.returnValue(of(config));
     });
 

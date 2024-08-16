@@ -107,8 +107,8 @@ public class GetClientConfigurationSettingsTests
         result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
         var okObjectResult = (OkObjectResult)result.Result;
         var clientSettings = (ClientSettingsResponse)okObjectResult.Value;
-        clientSettings.SupplierSettings.Count.Should().Be(supplierConfigurations.Count);
-        foreach (var supplierConfigResponse in clientSettings.SupplierSettings)
+        clientSettings.SupplierConfigurations.Count.Should().Be(supplierConfigurations.Count);
+        foreach (var supplierConfigResponse in clientSettings.SupplierConfigurations)
         {
             var supplierConfig = supplierConfigurations.Find(x => x.Supplier.ToString().ToLower() == supplierConfigResponse.Supplier);
             supplierConfig.Should().NotBeNull();

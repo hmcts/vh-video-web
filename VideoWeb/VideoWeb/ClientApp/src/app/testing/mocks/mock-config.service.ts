@@ -1,4 +1,4 @@
-import { ClientSettingsResponse, IdpSettingsResponse } from '../../services/clients/api-client';
+import { ClientSettingsResponse, IdpSettingsResponse, SupplierConfigurationResponse } from '../../services/clients/api-client';
 import { Observable, of } from 'rxjs';
 
 export class MockConfigService {
@@ -28,7 +28,7 @@ export class MockConfigService {
         vh_idp_settings: this.vhAdSettings,
         dom1_idp_settings: this.dom1Settings,
         event_hub_path: 'evenhub',
-        join_by_phone_from_date: '2020-09-01',
+        supplier_configurations: [new SupplierConfigurationResponse({ supplier: 'vodafone', join_by_phone_from_date: '2020-09-01' })],
         app_insights_connection_string: 'InstrumentationKey=appinsights'
     });
 

@@ -37,8 +37,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
-            response.SupplierSettings.Count.Should().Be(supplierConfigs.Count);
-            foreach (var supplierConfigResponse in response.SupplierSettings)
+            response.SupplierConfigurations.Count.Should().Be(supplierConfigs.Count);
+            foreach (var supplierConfigResponse in response.SupplierConfigurations)
             {
                 var supplierConfig = supplierConfigs.Find(x => x.Supplier.ToString().ToLower() == supplierConfigResponse.Supplier);
                 supplierConfig.Should().NotBeNull();

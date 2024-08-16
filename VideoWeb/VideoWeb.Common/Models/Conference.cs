@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Enums;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.Common.Models
 {

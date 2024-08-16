@@ -22,7 +22,7 @@ public static class ClientSettingsResponseMapper{
         {
             AppInsightsConnectionString = azureAdConfiguration.ApplicationInsights.ConnectionString,
             EventHubPath = servicesConfiguration.EventHubPath,
-            SupplierSettings = supplierConfigurations
+            SupplierConfigurations = supplierConfigurations
                 .Select(c => c.Map())
                 .ToList(),
             EJudIdpSettings = ejudSettings,

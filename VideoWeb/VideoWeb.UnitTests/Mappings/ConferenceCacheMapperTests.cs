@@ -11,12 +11,12 @@ using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
-using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.UnitTests.Mappings;
 
