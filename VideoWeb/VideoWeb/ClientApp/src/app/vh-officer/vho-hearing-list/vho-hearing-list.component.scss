@@ -1,4 +1,4 @@
-@import 'govuk-frontend/govuk/base';
+@import 'govuk-frontend/dist/govuk/base';
 
 .vh-width-main {
   width: 85% !important;
@@ -164,7 +164,7 @@
 }
 .listItemGreySmall {
   color: govuk-colour('dark-grey');
-  @include govuk-font(14, $weight: 'regular', $line-height: 1.11111);
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 .started {
