@@ -11,9 +11,14 @@ interface Console {
     defaultWarn;
 }
 
-declare interface HeartbeatFactory {
-    HeartbeatFactory(): HeartbeatClient;
-}
+declare type HeartbeatFactory = new (
+    pexipApi: PexipClient,
+    url: string,
+    conferenceId: string,
+    participantId: string,
+    token: string,
+    handleHeartbeat: () => void
+) => HeartbeatClient;
 
 declare class HeartbeatClient {
     logHeartbeat: boolean;
