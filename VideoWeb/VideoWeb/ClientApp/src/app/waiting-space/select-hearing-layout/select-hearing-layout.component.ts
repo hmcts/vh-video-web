@@ -45,7 +45,6 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         const headingElement = document.getElementById('accordion-choose-layout-heading');
         headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
-        (<any>window).GOVUKFrontend.initAll();
         headingElement.onclick = e => this.setAccordionText(e);
         const sectionHeadingElement = document.getElementsByClassName('govuk-accordion__section-button').item(0) as HTMLButtonElement;
         sectionHeadingElement.onclick = e => this.setAccordionText(e);
