@@ -25,4 +25,19 @@ describe('convertStringToTranslationId', () => {
         const result = convertStringToTranslationId('MP’s Expenses');
         expect(result).toBe('mp-s-expenses');
     });
+
+    it('should return correct string to translate id with forward slash', () => {
+        const result = convertStringToTranslationId('Benin/Edo');
+        expect(result).toBe('benin-edo');
+    });
+
+    it('should return correct string to translate id with comma and spaces', () => {
+        const result = convertStringToTranslationId('Kosli, Sambalpuri');
+        expect(result).toBe('kosli--sambalpuri');
+    });
+
+    it('should return correct string to translate id with slash and spaces', () => {
+        const result = convertStringToTranslationId('Palantypist / Speech to text');
+        expect(result).toBe('palantypist---speech-to-text');
+    });
 });
