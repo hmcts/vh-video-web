@@ -30,23 +30,31 @@ export class SupplierClientService {
                 throw new Error('Invalid supplier');
         }
 
-        // Check if any existing script ends with 'pexrtc.js' and is not the current one
-        const existingScripts = this.document.querySelectorAll('script[src$="pexrtc.js"]');
-        for (const s of Array.from(existingScripts) as HTMLScriptElement[]) {
-            const scriptExistsForDifferentSupplier = s.getAttribute('src') !== scriptSrc;
-            if (scriptExistsForDifferentSupplier) {
-                this.renderer.removeChild(this.document.body, s);
-            }
-        }
+        this.removeExistingScripts(scriptSrc);
 
-        const existingScript = this.document.querySelector(`script[src="${scriptSrc}"]`);
-        if (existingScript) {
+        if (this.isScriptAlreadyLoaded(scriptSrc)) {
             return;
         }
 
+        this.loadNewScript(scriptSrc);
+    }
+
+    private removeExistingScripts(currentScriptSrc: string) {
+        const existingScripts = this.document.querySelectorAll('script[src$="pexrtc.js"]');
+        for (const script of Array.from(existingScripts) as HTMLScriptElement[]) {
+            if (script.getAttribute('src') !== currentScriptSrc) {
+                this.renderer.removeChild(this.document.body, script);
+            }
+        }
+    }
+
+    private isScriptAlreadyLoaded(scriptSrc: string): boolean {
+        return !!this.document.querySelector(`script[src="${scriptSrc}"]`);
+    }
+
+    private loadNewScript(scriptSrc: string) {
         const script = this.renderer.createElement('script');
         script.src = scriptSrc;
-
         this.renderer.appendChild(this.document.body, script);
     }
 }
