@@ -33,32 +33,40 @@ namespace VideoWeb.UnitTests.Common
             _serviceProvider.Setup(x => x.GetService(typeof(IOptions<VodafoneConfiguration>))).Returns(vodafoneConfigOptions.Object);
         }
         
-        [TestCase(Supplier.Kinly)]
-        [TestCase(Supplier.Vodafone)]
-        public void Should_create_supplier_platform_service(Supplier supplier)
+        [Test]
+        public void Should_create_supplier_platform_service_for_kinly()
         {
             // Arrange
             var sut = new SupplierPlatformServiceFactory(_serviceProvider.Object);
 
             // Act
-            var service = sut.Create(supplier);
+            var service = sut.Create(Supplier.Kinly);
 
             // Assert
             service.Should().BeOfType<SupplierPlatformService>();
             service.Should().NotBeNull();
             var tokenProvider = service.GetTokenProvider();
             var supplierConfiguration = service.GetSupplierConfiguration();
-            switch (supplier)
-            {
-                case Supplier.Kinly:
-                    tokenProvider.Should().BeAssignableTo<IKinlyJwtTokenProvider>();
-                    supplierConfiguration.Should().BeAssignableTo<KinlyConfiguration>();
-                    break;
-                case Supplier.Vodafone:
-                    tokenProvider.Should().BeAssignableTo<IVodafoneJwtTokenProvider>();
-                    supplierConfiguration.Should().BeAssignableTo<VodafoneConfiguration>();
-                    break;
-            }
+            tokenProvider.Should().BeAssignableTo<IKinlyJwtTokenProvider>();
+            supplierConfiguration.Should().BeAssignableTo<KinlyConfiguration>();
+        }
+        
+        [Test]
+        public void Should_create_supplier_platform_service_for_vodafone()
+        {
+            // Arrange
+            var sut = new SupplierPlatformServiceFactory(_serviceProvider.Object);
+
+            // Act
+            var service = sut.Create(Supplier.Vodafone);
+
+            // Assert
+            service.Should().BeOfType<SupplierPlatformService>();
+            service.Should().NotBeNull();
+            var tokenProvider = service.GetTokenProvider();
+            var supplierConfiguration = service.GetSupplierConfiguration();
+            tokenProvider.Should().BeAssignableTo<IVodafoneJwtTokenProvider>();
+            supplierConfiguration.Should().BeAssignableTo<VodafoneConfiguration>();
         }
     }
 }
