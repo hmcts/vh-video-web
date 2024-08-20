@@ -194,7 +194,7 @@ public class GetClientConfigurationSettingsTests
             .Returns(platformService.Object);
     }
 
-    private void AssertResponse(ActionResult<ClientSettingsResponse> response, List<SupplierConfiguration> supplierConfigurations)
+    private static void AssertResponse(ActionResult<ClientSettingsResponse> response, List<SupplierConfiguration> supplierConfigurations)
     {
         response.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
         var okObjectResult = (OkObjectResult)response.Result;
