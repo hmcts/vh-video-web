@@ -18,17 +18,35 @@ export class SupplierClientService {
     }
 
     loadSupplierScript(supplier: Supplier) {
-        const script = this.renderer.createElement('script');
+        let scriptSrc: string;
         switch (supplier) {
             case Supplier.Vodafone:
-                script.src = this.vodafone;
+                scriptSrc = this.vodafone;
                 break;
             case Supplier.Kinly:
-                script.src = this.kinly;
+                scriptSrc = this.kinly;
                 break;
             default:
                 throw new Error('Invalid supplier');
         }
+
+        // Check if any existing script ends with 'pexrtc.js' and is not the current one
+        const existingScripts = this.document.querySelectorAll('script[src$="pexrtc.js"]');
+        for (const s of Array.from(existingScripts) as HTMLScriptElement[]) {
+            const scriptExistsForDifferentSupplier = s.getAttribute('src') !== scriptSrc;
+            if (scriptExistsForDifferentSupplier) {
+                this.renderer.removeChild(this.document.body, s);
+            }
+        }
+
+        const existingScript = this.document.querySelector(`script[src="${scriptSrc}"]`);
+        if (existingScript) {
+            return;
+        }
+
+        const script = this.renderer.createElement('script');
+        script.src = scriptSrc;
+
         this.renderer.appendChild(this.document.body, script);
     }
 }
