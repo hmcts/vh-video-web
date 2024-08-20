@@ -47,13 +47,7 @@ describe('SupplierClientService', () => {
         existingScript.src = 'scripts/vodafone/pexrtc.js';
 
         spyOn(document, 'querySelector').and.returnValue(existingScript);
-        spyOn(document, 'querySelectorAll').and.returnValue({
-            length: 1,
-            item: () => existingScript,
-            [Symbol.iterator]: function* () {
-                yield existingScript;
-            }
-        } as unknown as NodeListOf<HTMLScriptElement>);
+        spyOn(document, 'querySelectorAll').and.returnValue([existingScript] as unknown as NodeListOf<HTMLScriptElement>);
 
         service.loadSupplierScript(Supplier.Vodafone);
 

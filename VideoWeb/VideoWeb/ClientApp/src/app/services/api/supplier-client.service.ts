@@ -40,12 +40,12 @@ export class SupplierClientService {
     }
 
     private removeExistingScripts(currentScriptSrc: string) {
-        const existingScripts = this.document.querySelectorAll('script[src$="pexrtc.js"]');
-        for (const script of Array.from(existingScripts) as HTMLScriptElement[]) {
+        const existingScripts = Array.from(this.document.querySelectorAll('script[src$="pexrtc.js"]')) as HTMLScriptElement[];
+        existingScripts.forEach(script => {
             if (script.getAttribute('src') !== currentScriptSrc) {
                 this.renderer.removeChild(this.document.body, script);
             }
-        }
+        });
     }
 
     private isScriptAlreadyLoaded(scriptSrc: string): boolean {

@@ -93,11 +93,6 @@ export class AppComponent implements OnInit, OnDestroy {
             .pipe(first())
             .subscribe({
                 next: () => {
-                    // config.supplier_configurations.forEach(configuration => {
-                    //     if (configuration.supplier === Supplier.Vodafone) {
-                    //         this.supplierClientService.loadSupplierScript(configuration.supplier);
-                    //     }
-                    // });
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
