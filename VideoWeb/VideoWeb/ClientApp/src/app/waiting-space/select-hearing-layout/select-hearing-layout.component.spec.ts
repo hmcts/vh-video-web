@@ -33,8 +33,6 @@ describe('SelectHearingLayoutComponent', () => {
                 return textButton;
             }
         });
-
-        (<any>window).GOVUKFrontend = { initAll() {} };
     });
 
     describe('currentLayout$', () => {
