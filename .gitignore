@@ -350,3 +350,5 @@ Coverage/
 **/SpecFlow/userid
 .angular/
 .nx/
+nuget.config
+VideoWeb/nuget.config

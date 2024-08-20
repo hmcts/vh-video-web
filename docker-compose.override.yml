@@ -1,0 +1,22 @@
+services:
+  videoweb:
+
+    image: ${DOCKER_REGISTRY-}videoweb
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp-vh.pfx
+    ports:
+      - 5801:80
+      - 5800:443
+    build:
+      context: .
+      dockerfile: ./VideoWeb/VideoWeb/Dockerfile
+      args:
+        - skip_client_build=false
+    volumes:
+      - ~/.microsoft/usersecrets/:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/DataProtection-Keys:/root/.aspnet/DataProtection-Keys
+      - ~/.aspnet/https:/https:ro

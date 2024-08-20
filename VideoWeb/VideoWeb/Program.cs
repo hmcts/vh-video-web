@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using VH.Core.Configuration;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace VideoWeb
 {
@@ -29,6 +30,7 @@ namespace VideoWeb
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
                 {
+                    configBuilder.AddUserSecrets<Startup>();
                     foreach (var keyVault in keyVaults)
                     {
                         configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
