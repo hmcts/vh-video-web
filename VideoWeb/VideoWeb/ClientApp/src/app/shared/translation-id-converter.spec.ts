@@ -35,4 +35,9 @@ describe('convertStringToTranslationId', () => {
         const result = convertStringToTranslationId('Kosli, Sambalpuri');
         expect(result).toBe('kosli--sambalpuri');
     });
+
+    it('should return correct string to translate id with slash and spaces', () => {
+        const result = convertStringToTranslationId('Palantypist / Speech to text');
+        expect(result).toBe('palantypist---speech-to-text');
+    });
 });
