@@ -40,7 +40,7 @@ export class SupplierClientService {
     }
 
     private removeExistingScripts(currentScriptSrc: string) {
-        const existingScripts = Array.from(this.document.querySelectorAll('script[src$="pexrtc.js"]')) as HTMLScriptElement[];
+        const existingScripts = this.document.querySelectorAll('script[src$="pexrtc.js"]') as HTMLScriptElement[];
         existingScripts.forEach(script => {
             if (script.getAttribute('src') !== currentScriptSrc) {
                 this.renderer.removeChild(this.document.body, script);
