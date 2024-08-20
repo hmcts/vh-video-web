@@ -87,7 +87,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotRequired);
         }
 
-        private ConferenceForAdminResponse BuildConferenceForTest()
+        private static ConferenceForAdminResponse BuildConferenceForTest()
         {
             var conference = Builder<ConferenceForAdminResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())

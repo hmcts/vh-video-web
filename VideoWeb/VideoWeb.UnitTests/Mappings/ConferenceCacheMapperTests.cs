@@ -143,7 +143,7 @@ public class ConferenceCacheMapperTests
         resultEndpoint.InterpreterLanguage.Should().BeNull();
     }
     
-    private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
+    private static HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
     {
         var participants = new List<ParticipantResponseV2>();
         var joh = new List<JudiciaryParticipantResponse>();
