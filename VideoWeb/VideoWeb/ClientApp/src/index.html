@@ -35,8 +35,9 @@
 
   <body class="govuk-template__body app-body-class">
     <script>
-      document.body.className = document.body.className ? document.body.className + ' js-enabled' : 'js-enabled';
+      document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
     </script>
+    <script type="module" src="scripts/Heartbeat.js"></script>
     <app-root></app-root>
   </body>
 </html>

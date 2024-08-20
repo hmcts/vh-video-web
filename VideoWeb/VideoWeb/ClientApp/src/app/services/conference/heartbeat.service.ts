@@ -11,9 +11,6 @@ import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 import { environment } from 'src/environments/environment';
 
-/* eslint-disable @typescript-eslint/naming-convention */
-declare let HeartbeatFactory: any;
-
 @Injectable({
     providedIn: 'root'
 })
