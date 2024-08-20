@@ -48,3 +48,4 @@ public class FeatureToggles : IFeatureToggles
         return _ldClient.BoolVariation(key, _context);
     }
 }
+
