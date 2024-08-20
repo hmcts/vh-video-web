@@ -36,20 +36,6 @@ describe('ConferenceEffectsEffects', () => {
         effects = TestBed.inject(ConferenceEffects);
     });
 
-    // beforeEach(() => {
-    //     supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
-
-    //     TestBed.configureTestingModule({
-    //         providers: [
-    //             ConferenceEffects,
-    //             provideMockActions(() => actions$),
-    //             { provide: SupplierClientService, useValue: supplierClientService }
-    //         ]
-    //     });
-
-    //     effects = TestBed.inject(ConferenceEffects);
-    // });
-
     it('should be created', () => {
         expect(effects).toBeTruthy();
     });
