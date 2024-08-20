@@ -27,12 +27,12 @@ public class FeatureToggles : IFeatureToggles
         _context = Context.Builder(LdUser).Name(environmentName).Build();
         _ldClient = new LdClient(config);
     }
-    
+
     public bool Vodafone()
     {
         return GetBoolValueWithKey(VodafoneToggleKey);
     }
-
+    
     public bool AppInsightsProfilingEnabled()
     {
         return GetBoolValueWithKey(ProfilingKey);
@@ -48,4 +48,3 @@ public class FeatureToggles : IFeatureToggles
         return _ldClient.BoolVariation(key, _context);
     }
 }
-
