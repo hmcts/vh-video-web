@@ -14,38 +14,52 @@
         </div>
       </div>
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <select
-            class="govuk-select"
-            id="audioMixLanguages"
-            name="audioMixLanguages"
-            [attr.aria-label]="'audio-mix-selection.change-audio-label' | translate"
-            (change)="onAudioLanguageSelectionChanged($event.target.value)"
-          >
-            <option [value]="'main'">{{ 'audio-mix-selection.court' | translate }}</option>
+        <form [formGroup]="languageSelectionForm" (ngSubmit)="updateLanguageAudioMix()">
+          <div class="govuk-grid-column-full">
+            <select
+              class="govuk-select"
+              formControlName="languageCode"
+              id="audioMixLanguages"
+              name="audioMixLanguages"
+              [attr.aria-label]="'audio-mix-selection.change-audio-label' | translate"
+              (change)="onAudioLanguageSelectionChanged($event.target.value)"
+            >
+              <option [value]="'main'">{{ 'audio-mix-selection.court' | translate }}</option>
 
-            <option *ngFor="let language of bookedLanguages" [value]="language.code">
-              {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
-            </option>
+              <option *ngFor="let language of bookedLanguages" [value]="language.code">
+                {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
+              </option>
 
-            <option disabled>──────────</option>
-            <option *ngFor="let language of nonBookedLanguages" [value]="language.code">
-              {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="govuk-!-margin-top-3">
-        <button
-          id="btnCancelClose"
-          class="govuk-button govuk-button--secondary"
-          type="button"
-          data-module="govuk-button"
-          [attr.aria-label]="'audio-mix-selection.cancel' | translate"
-          (click)="onCancel()"
-        >
-          {{ 'audio-mix-selection.cancel' | translate }}
-        </button>
+              <option disabled>──────────</option>
+              <option *ngFor="let language of nonBookedLanguages" [value]="language.code">
+                {{ 'interpreter-language.' + stringToTranslateId(language.description) | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="govuk-grid-column-full govuk-!-margin-top-3">
+            <div class="govuk-button-group">
+              <button
+                id="btnContinueLanguageChange"
+                type="submit"
+                class="govuk-button"
+                data-module="govuk-button"
+                [attr.aria-label]="'audio-mix-selection.button-continue' | translate"
+              >
+                {{ 'audio-mix-selection.button-continue' | translate }}
+              </button>
+              <button
+                id="btnCancelClose"
+                type="submit"
+                class="govuk-button govuk-button--secondary"
+                data-module="govuk-button"
+                [attr.aria-label]="'audio-mix-selection.button-cancel' | translate"
+                (click)="onCancel()"
+              >
+                {{ 'audio-mix-selection.button-cancel' | translate }}
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -17,6 +17,7 @@ import * as ReferenceDataSelectors from '../store/selectors/reference-data.selec
 import { TranslatePipe } from '@ngx-translate/core';
 import { MockPipe } from 'ng-mocks';
 import { InterpreterType } from 'src/app/services/clients/api-client';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('AudioMixSelectionComponent', () => {
     const testData = new ConferenceTestData();
@@ -39,7 +40,7 @@ describe('AudioMixSelectionComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [AudioMixSelectionComponent, MockPipe(TranslatePipe, translateSpy)],
-            providers: [provideMockStore()]
+            providers: [provideMockStore(), ReactiveFormsModule]
         }).compileComponents();
 
         fixture = TestBed.createComponent(AudioMixSelectionComponent);
@@ -86,6 +87,7 @@ describe('AudioMixSelectionComponent', () => {
         const dispatchSpy = spyOn(mockConferenceStore, 'dispatch');
         const emitSpy = spyOn(component.audioLanguageSelectionChanged, 'emit');
         component.onAudioLanguageSelectionChanged('main');
+        component.updateLanguageAudioMix();
 
         expect(dispatchSpy).toHaveBeenCalledTimes(1);
         expect(emitSpy).toHaveBeenCalledTimes(1);
@@ -95,6 +97,7 @@ describe('AudioMixSelectionComponent', () => {
         const dispatchSpy = spyOn(mockConferenceStore, 'dispatch');
         const emitSpy = spyOn(component.audioLanguageSelectionChanged, 'emit');
         component.onAudioLanguageSelectionChanged('en');
+        component.updateLanguageAudioMix();
 
         expect(dispatchSpy).toHaveBeenCalledTimes(1);
         expect(emitSpy).toHaveBeenCalledTimes(1);

@@ -294,7 +294,29 @@ export const conferenceReducer = createReducer(
     on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => ({
         ...state,
         loggedInParticipant: participant
-    }))
+    })),
+    on(ConferenceActions.updateAudioMix, (state, { participant, interpreterLanguage, mainCourt }) => {
+        const conference = state.currentConference;
+        if (!conference) {
+            return state;
+        }
+
+        const participantId = participant.id;
+        const participants = conference.participants.map(p => {
+            if (participant.id === participantId) {
+                const updatedP: VHParticipant = {
+                    ...p,
+                    currentAudioMix: mainCourt ? 'main' : interpreterLanguage?.code
+                };
+                return updatedP;
+            } else {
+                return p;
+            }
+        });
+
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    })
 );
 
 export const activeConferenceFeature = createFeatureSelector<ConferenceState>(conferenceFeatureKey);

@@ -108,7 +108,7 @@
               "src/app/vh-officer/helper.ts",
               "src/app/services/audio-only-image.service.ts"
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [],
             "stylePreprocessorOptions": {
               "includePaths": ["src/sass"]
             },

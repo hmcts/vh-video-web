@@ -1503,7 +1503,8 @@
     "change-audio-header": "Change your language audio",
     "change-audio-label": "Select your language",
     "change-audio-hint": "Interpret for",
-    "cancel": "Cancel"
+    "button-cancel": "Cancel",
+    "button-continue": " Continue"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",

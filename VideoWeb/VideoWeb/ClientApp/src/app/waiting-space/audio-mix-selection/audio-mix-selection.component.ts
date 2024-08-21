@@ -12,6 +12,7 @@ import * as ReferenceDataSelectors from '../store/selectors/reference-data.selec
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { InterpreterType } from 'src/app/services/clients/api-client';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
     selector: 'app-audio-mix-selection',
@@ -24,15 +25,27 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
 
     bookedLanguages: VHInterpreterLanguage[];
     nonBookedLanguages: VHInterpreterLanguage[];
+    languageSelectionForm: FormGroup<LanguageSelectionForm>;
+
+    selectedAudioMixCode = 'main';
 
     private loggedInParticipant: VHParticipant;
     private allLanguages: VHInterpreterLanguage[] = [];
     private onDestroy$ = new Subject<void>();
 
     constructor(
+        private formBuilder: FormBuilder,
         private conferenceStore: Store<ConferenceState>,
         private refDataStore: Store<ReferenceDataState>
-    ) {}
+    ) {
+        this.createForm();
+    }
+
+    createForm() {
+        this.languageSelectionForm = this.formBuilder.group({
+            languageCode: new FormControl<string | null>(this.selectedAudioMixCode)
+        });
+    }
 
     ngOnInit(): void {
         this.refDataStore.dispatch(ReferenceActions.loadInterpreterLanguages());
@@ -46,6 +59,8 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(([languages, participants, endpoints, loggedInParticipant]) => {
                 this.loggedInParticipant = loggedInParticipant;
+                this.selectedAudioMixCode = this.loggedInParticipant.currentAudioMix || 'main';
+                this.languageSelectionForm.setValue({ languageCode: this.selectedAudioMixCode });
                 this.allLanguages = languages.filter(lang => lang.type === InterpreterType.Verbal);
                 const allBookedLanguages = participants
                     .filter(p => p.interpreterLanguage && p.interpreterLanguage.type === InterpreterType.Verbal)
@@ -70,7 +85,11 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
     }
 
     onAudioLanguageSelectionChanged(audioMixCode: string) {
-        if (audioMixCode === 'main') {
+        this.selectedAudioMixCode = audioMixCode;
+    }
+
+    updateLanguageAudioMix() {
+        if (this.selectedAudioMixCode === 'main') {
             this.conferenceStore.dispatch(
                 ConferenceActions.updateAudioMix({
                     participant: this.loggedInParticipant,
@@ -81,7 +100,7 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
             this.audioLanguageSelectionChanged.emit();
             return;
         }
-        const language = this.allLanguages.find(l => l.code === audioMixCode);
+        const language = this.allLanguages.find(l => l.code === this.selectedAudioMixCode);
         this.conferenceStore.dispatch(
             ConferenceActions.updateAudioMix({
                 participant: this.loggedInParticipant,
@@ -99,4 +118,8 @@ export class AudioMixSelectionComponent implements OnInit, OnDestroy {
     stringToTranslateId(str: string) {
         return convertStringToTranslationId(str);
     }
+}
+
+interface LanguageSelectionForm {
+    languageCode: FormControl<string | null>;
 }
