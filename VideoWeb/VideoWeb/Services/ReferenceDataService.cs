@@ -19,7 +19,8 @@ public interface IReferenceDataService
     
 }
 
-public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryCache memoryCache): IReferenceDataService
+public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryCache memoryCache)
+    : IReferenceDataService
 {
     private const string InterpreterLanguagesKey = "RefData_InterpreterLanguages";
     private const string HearingVenuesKey = "RefData_HearingVenues";
@@ -29,24 +30,33 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
         await GetInterpreterLanguagesAsync();
         await GetHearingVenuesForTodayAsync();
     }
-    public async Task<List<InterpreterLanguage>> GetInterpreterLanguagesAsync(CancellationToken cancellationToken = default)
+    public async Task<List<InterpreterLanguage>> GetInterpreterLanguagesAsync(
+        CancellationToken cancellationToken = default)
     {
-        return await memoryCache.GetOrCreateAsync(InterpreterLanguagesKey, async entry =>
+        return await GetOrCreateCacheAsync(InterpreterLanguagesKey, async token =>
         {
-            entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(3);
-            var interpreterLanguages = await bookingsApiClient.GetAvailableInterpreterLanguagesAsync(cancellationToken);
-            var languages = interpreterLanguages.Select(x=> x.Map()).ToList();
-            return languages;
-        });
+            var interpreterLanguages = await bookingsApiClient.GetAvailableInterpreterLanguagesAsync(token);
+            return interpreterLanguages.Select(x => x.Map()).ToList();
+        }, cancellationToken);
     }
 
-    public async Task<List<HearingVenueResponse>> GetHearingVenuesForTodayAsync(CancellationToken cancellationToken = default)
+    public async Task<List<HearingVenueResponse>> GetHearingVenuesForTodayAsync(
+        CancellationToken cancellationToken = default)
     {
-        return await memoryCache.GetOrCreateAsync(HearingVenuesKey, async entry =>
+        return await GetOrCreateCacheAsync(HearingVenuesKey, async token =>
+        {
+            var hearingVenues = await bookingsApiClient.GetHearingVenuesForHearingsTodayAsync(token);
+            return hearingVenues.ToList();
+        }, cancellationToken);
+    }
+
+    private async Task<List<T>> GetOrCreateCacheAsync<T>(string cacheKey,
+        Func<CancellationToken, Task<List<T>>> fetchFunction, CancellationToken cancellationToken)
+    {
+        return await memoryCache.GetOrCreateAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(3);
-            var hearingVenues = await bookingsApiClient.GetHearingVenuesForHearingsTodayAsync(cancellationToken);
-            return hearingVenues.ToList();
+            return await fetchFunction(cancellationToken);
         });
     }
 }
