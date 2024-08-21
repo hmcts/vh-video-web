@@ -21,7 +21,8 @@ public interface IReferenceDataService
 
 public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryCache memoryCache): IReferenceDataService
 {
-    private readonly string _interpreterLanguagesKey = "RefData_InterpreterLanguages";
+    private const string InterpreterLanguagesKey = "RefData_InterpreterLanguages";
+    private const string HearingVenuesKey = "RefData_HearingVenues";
 
     public async Task InitialiseCache()
     {
@@ -30,7 +31,7 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
     }
     public async Task<List<InterpreterLanguage>> GetInterpreterLanguagesAsync(CancellationToken cancellationToken = default)
     {
-        return await memoryCache.GetOrCreateAsync(_interpreterLanguagesKey, async entry =>
+        return await memoryCache.GetOrCreateAsync(InterpreterLanguagesKey, async entry =>
         {
             entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(3);
             var interpreterLanguages = await bookingsApiClient.GetAvailableInterpreterLanguagesAsync(cancellationToken);
@@ -41,7 +42,7 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
 
     public async Task<List<HearingVenueResponse>> GetHearingVenuesForTodayAsync(CancellationToken cancellationToken = default)
     {
-        return await memoryCache.GetOrCreateAsync("RefData_HearingVenues", async entry =>
+        return await memoryCache.GetOrCreateAsync(HearingVenuesKey, async entry =>
         {
             entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(3);
             var hearingVenues = await bookingsApiClient.GetHearingVenuesForHearingsTodayAsync(cancellationToken);
