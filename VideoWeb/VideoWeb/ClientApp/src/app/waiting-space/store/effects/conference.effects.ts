@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, switchMap, map } from 'rxjs/operators';
+import { catchError, switchMap, map, tap } from 'rxjs/operators';
 import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-
 import * as ConferenceSelectors from '../selectors/conference.selectors';
+import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -34,6 +34,17 @@ export class ConferenceEffects {
                 )
             )
         )
+    );
+
+    loadConferenceSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.loadConferenceSuccess),
+                tap(action => {
+                    this.supplierClientService.loadSupplierScript(action.conference.supplier);
+                })
+            ),
+        { dispatch: false }
     );
 
     updateHostDisplayName$ = createEffect(() =>
@@ -62,6 +73,7 @@ export class ConferenceEffects {
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
-        private apiClient: ApiClient
+        private apiClient: ApiClient,
+        private supplierClientService: SupplierClientService
     ) {}
 }

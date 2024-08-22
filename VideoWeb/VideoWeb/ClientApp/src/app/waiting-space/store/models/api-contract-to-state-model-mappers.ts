@@ -19,7 +19,8 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         status: conference.status,
         isVenueScottish: conference.hearing_venue_is_scottish,
         participants: conference.participants.map(p => mapParticipantToVHParticipant(p)),
-        endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e))
+        endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e)),
+        supplier: conference.supplier
     };
 }
 

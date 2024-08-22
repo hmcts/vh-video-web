@@ -3128,8 +3128,10 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
-        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
+    getHeartbeatConfigForParticipant(conferenceId: string, participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/conferences/{conferenceId}/GetHeartbeatConfigForParticipant/{participantId}';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');
@@ -8126,6 +8128,11 @@ export interface ITestCallScoreResponse {
     passed?: boolean;
 }
 
+export enum Supplier {
+    Kinly = 'Kinly',
+    Vodafone = 'Vodafone'
+}
+
 export enum ConferenceStatus {
     NotStarted = 'NotStarted',
     InSession = 'InSession',
@@ -9176,14 +9183,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    /** The date to set option ON to display functionality to join hearing by phone */
-    join_by_phone_from_date?: string | undefined;
-    /** The turn server */
-    supplier_turn_server?: string | undefined;
-    /** The turn server username */
-    supplier_turn_server_user?: string | undefined;
-    /** The turn server password */
-    supplier_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
@@ -9201,8 +9200,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
-    /** Supplier */
-    supplier?: string | undefined;
+    /** Configurations for the suppliers */
+    supplier_configurations?: SupplierConfigurationResponse[] | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -9216,10 +9215,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         if (_data) {
             this.app_insights_connection_string = _data['app_insights_connection_string'];
             this.event_hub_path = _data['event_hub_path'];
-            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
-            this.supplier_turn_server = _data['supplier_turn_server'];
-            this.supplier_turn_server_user = _data['supplier_turn_server_user'];
-            this.supplier_turn_server_credential = _data['supplier_turn_server_credential'];
             this.e_jud_idp_settings = _data['e_jud_idp_settings']
                 ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
                 : <any>undefined;
@@ -9232,7 +9227,11 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
             this.launch_darkly_client_id = _data['launch_darkly_client_id'];
-            this.supplier = _data['supplier'];
+            if (Array.isArray(_data['supplier_configurations'])) {
+                this.supplier_configurations = [] as any;
+                for (let item of _data['supplier_configurations'])
+                    this.supplier_configurations!.push(SupplierConfigurationResponse.fromJS(item));
+            }
         }
     }
 
@@ -9247,10 +9246,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data = typeof data === 'object' ? data : {};
         data['app_insights_connection_string'] = this.app_insights_connection_string;
         data['event_hub_path'] = this.event_hub_path;
-        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
-        data['supplier_turn_server'] = this.supplier_turn_server;
-        data['supplier_turn_server_user'] = this.supplier_turn_server_user;
-        data['supplier_turn_server_credential'] = this.supplier_turn_server_credential;
         data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
         data['dom1_idp_settings'] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
@@ -9261,7 +9256,10 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         data['launch_darkly_client_id'] = this.launch_darkly_client_id;
-        data['supplier'] = this.supplier;
+        if (Array.isArray(this.supplier_configurations)) {
+            data['supplier_configurations'] = [];
+            for (let item of this.supplier_configurations) data['supplier_configurations'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -9272,14 +9270,6 @@ export interface IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    /** The date to set option ON to display functionality to join hearing by phone */
-    join_by_phone_from_date?: string | undefined;
-    /** The turn server */
-    supplier_turn_server?: string | undefined;
-    /** The turn server username */
-    supplier_turn_server_user?: string | undefined;
-    /** The turn server password */
-    supplier_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
@@ -9297,8 +9287,8 @@ export interface IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
-    /** Supplier */
-    supplier?: string | undefined;
+    /** Configurations for the suppliers */
+    supplier_configurations?: SupplierConfigurationResponse[] | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {
@@ -9513,6 +9503,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
+    supplier?: Supplier;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -9544,6 +9535,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.hearing_ref_id = _data['hearing_ref_id'];
             this.allocated_cso = _data['allocated_cso'];
             this.allocated_cso_id = _data['allocated_cso_id'];
+            this.supplier = _data['supplier'];
         }
     }
 
@@ -9576,6 +9568,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['hearing_ref_id'] = this.hearing_ref_id;
         data['allocated_cso'] = this.allocated_cso;
         data['allocated_cso_id'] = this.allocated_cso_id;
+        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -9614,6 +9607,7 @@ export interface IConferenceForVhOfficerResponse {
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
+    supplier?: Supplier;
 }
 
 /** Detailed information about a conference */
@@ -9653,6 +9647,7 @@ export class ConferenceResponse implements IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
+    supplier?: Supplier;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -9688,6 +9683,7 @@ export class ConferenceResponse implements IConferenceResponse {
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
             this.ingest_url = _data['ingest_url'];
+            this.supplier = _data['supplier'];
         }
     }
 
@@ -9724,6 +9720,7 @@ export class ConferenceResponse implements IConferenceResponse {
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
         data['ingest_url'] = this.ingest_url;
+        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -9765,6 +9762,7 @@ export interface IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
+    supplier?: Supplier;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -10874,6 +10872,65 @@ export interface ISharedParticipantRoom {
     participant_join_uri?: string | undefined;
     display_name?: string | undefined;
     tile_display_name?: string | undefined;
+}
+
+export class SupplierConfigurationResponse implements ISupplierConfigurationResponse {
+    supplier?: Supplier;
+    /** The date to set option ON to display functionality to join hearing by phone */
+    join_by_phone_from_date?: string | undefined;
+    /** The turn server */
+    turn_server?: string | undefined;
+    /** The turn server username */
+    turn_server_user?: string | undefined;
+    /** The turn server password */
+    turn_server_credential?: string | undefined;
+
+    constructor(data?: ISupplierConfigurationResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.supplier = _data['supplier'];
+            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
+            this.turn_server = _data['turn_server'];
+            this.turn_server_user = _data['turn_server_user'];
+            this.turn_server_credential = _data['turn_server_credential'];
+        }
+    }
+
+    static fromJS(data: any): SupplierConfigurationResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SupplierConfigurationResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['supplier'] = this.supplier;
+        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
+        data['turn_server'] = this.turn_server;
+        data['turn_server_user'] = this.turn_server_user;
+        data['turn_server_credential'] = this.turn_server_credential;
+        return data;
+    }
+}
+
+export interface ISupplierConfigurationResponse {
+    supplier?: Supplier;
+    /** The date to set option ON to display functionality to join hearing by phone */
+    join_by_phone_from_date?: string | undefined;
+    /** The turn server */
+    turn_server?: string | undefined;
+    /** The turn server username */
+    turn_server_user?: string | undefined;
+    /** The turn server password */
+    turn_server_credential?: string | undefined;
 }
 
 export class TokenResponse implements ITokenResponse {

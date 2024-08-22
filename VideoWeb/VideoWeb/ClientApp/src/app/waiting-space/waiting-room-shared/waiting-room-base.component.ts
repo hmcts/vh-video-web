@@ -772,7 +772,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 .subscribe(discconnectedPresentation => this.handlePresentationDisonnected(discconnectedPresentation))
         );
 
-        await this.videoCallService.setupClient();
+        await this.videoCallService.setupClient(this.conference.supplier);
     }
 
     handlePresentationStatusChange(presentation: Presentation): void {

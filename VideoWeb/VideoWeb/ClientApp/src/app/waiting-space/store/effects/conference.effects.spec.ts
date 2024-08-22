@@ -14,6 +14,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { VHParticipant } from '../models/vh-conference';
+import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -21,17 +22,20 @@ describe('ConferenceEffects', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     let videoCallService: jasmine.SpyObj<VideoCallService>;
     let mockConferenceStore: MockStore<ConferenceState>;
+    let supplierClientService: jasmine.SpyObj<SupplierClientService>;
 
     beforeEach(() => {
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById']);
         videoCallService = jasmine.createSpyObj('VideoCallService', ['receiveAudioFromMix', 'sendParticipantAudioToMixes']);
+        supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
                 ConferenceEffects,
                 provideMockStore(),
                 provideMockActions(() => actions$),
-                { provide: ApiClient, useValue: apiClient }
+                { provide: ApiClient, useValue: apiClient },
+                { provide: SupplierClientService, useValue: supplierClientService }
             ]
         });
 
@@ -97,6 +101,22 @@ describe('ConferenceEffects', () => {
             // assert
             const expected = cold('-b', { b: ConferenceActions.loadLoggedInParticipantSuccess({ participant: vhParticipants[0] }) });
             expect(effects.loadLoggedInParticipant$).toBeObservable(expected);
+        });
+    });
+
+    describe('loadSupplierScript$', () => {
+        it('should call loadSupplierScript with the correct supplier when loadConferenceSuccess action is dispatched', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const action = ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(conference) });
+
+            actions$ = hot('-a', { a: action });
+
+            // act
+            effects.loadConferenceSuccess$.subscribe(() => {
+                // assert
+                expect(supplierClientService.loadSupplierScript).toHaveBeenCalledWith(conference.supplier);
+            });
         });
     });
 });

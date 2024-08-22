@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
@@ -21,16 +25,15 @@ public class ConfigSettingsController(
     IOptions<EJudAdConfiguration> ejudAdConfiguration,
     IOptions<HearingServicesConfiguration> servicesConfiguration,
     IOptions<Dom1AdConfiguration> dom1AdConfiguration,
-    ISupplierLocator supplierLocator,
-    ILogger<ConfigSettingsController> logger)
+    ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
+    ILogger<ConfigSettingsController> logger,
+    IFeatureToggles featureToggles)
     : BaseNoCacheController
 {
     private readonly AzureAdConfiguration _azureAdConfiguration = azureAdConfiguration.Value;
     private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
     private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
     private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
-    private readonly SupplierConfiguration _supplierConfiguration = supplierLocator.GetSupplierConfiguration().Value;
-    
     
     /// <summary>
     /// GetClientConfigurationSettings the configuration settings for client
@@ -45,8 +48,17 @@ public class ConfigSettingsController(
     {
         try
         {
-            var supplierName = supplierLocator.GetSupplierName();
-            var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, _supplierConfiguration, supplierName);
+            var suppliers = new List<Supplier>
+            {
+                Supplier.Kinly
+            };
+            if (featureToggles.Vodafone())
+                suppliers.Add(Supplier.Vodafone);
+            var supplierConfigurations = suppliers
+                .Select(supplierPlatformServiceFactory.Create)
+                .Select(platformService => platformService.GetSupplierConfiguration())
+                .ToList();
+            var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, supplierConfigurations);
             return Ok(clientSettings);
         }
         catch (Exception e)

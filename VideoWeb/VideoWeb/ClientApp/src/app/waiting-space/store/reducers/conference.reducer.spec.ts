@@ -1,4 +1,4 @@
-import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
@@ -102,7 +102,8 @@ describe('Conference Reducer', () => {
                     defenceAdvocate: null,
                     room: null
                 }
-            ]
+            ],
+            supplier: Supplier.Vodafone
         };
         existingInitialState = {
             currentConference: conferenceTestData,

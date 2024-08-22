@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -97,5 +98,10 @@ namespace VideoWeb.Contract.Responses
         /// Property to indicate whether wowza recording is via single app setup or bespoke hearing setup
         /// </summary>
         public string IngestUrl { get; set; }
+
+        /// <summary>
+        /// The supplier that the conference is booked with
+        /// </summary>
+        public Supplier Supplier { get; set; }
     }
 }

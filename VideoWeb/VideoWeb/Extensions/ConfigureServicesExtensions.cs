@@ -118,7 +118,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IParticipantService, ParticipantService>();
             services.AddScoped<IDistributedJOHConsultationRoomLockCache, DistributedJOHConsultationRoomLockCache>();
             services.AddScoped<IConferenceManagementService, ConferenceManagementService>();
-            services.AddScoped<ISupplierLocator, SupplierLocator>();
+            services.AddScoped<ISupplierPlatformServiceFactory, SupplierPlatformServiceFactory>();
             services.AddScoped<IConferenceService, ConferenceService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddTransient<VhApiLoggingDelegatingHandler>();

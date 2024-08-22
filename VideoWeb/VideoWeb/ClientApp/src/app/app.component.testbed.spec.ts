@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
-import { ClientSettingsResponse, Role, UserProfileResponse } from './services/clients/api-client';
+import { ClientSettingsResponse, Role, Supplier, SupplierConfigurationResponse, UserProfileResponse } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
 import { PageTrackerService } from './services/page-tracker.service';
@@ -41,7 +41,10 @@ describe('AppComponent - Testbed', () => {
 
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
-        join_by_phone_from_date: '2020-09-01',
+        supplier_configurations: [
+            new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
+            new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
+        ],
         app_insights_connection_string: 'InstrumentationKey=appinsights'
     });
 
