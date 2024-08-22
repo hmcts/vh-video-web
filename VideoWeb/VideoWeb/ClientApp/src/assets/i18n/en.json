@@ -674,7 +674,9 @@
     "share-video-evidence": "Share video or audio",
     "share-document-evidence": "Share documents",
     "unsupported-dynamic-evidence": "Video sharing is not supported on this browser",
-    "change-hearing-layout": "Change Layout"
+    "change-hearing-layout": "Change Layout",
+    "change-interpreting-language": "Change Interpreting Language",
+    "interpreting-for": "Interpreting for"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -1495,6 +1497,14 @@
         "expires": "When you close your browser"
       }
     }
+  },
+  "audio-mix-selection": {
+    "court": "Court",
+    "change-audio-header": "Change your language audio",
+    "change-audio-label": "Select your language",
+    "change-audio-hint": "Interpret for",
+    "button-cancel": "Cancel",
+    "button-continue": " Continue"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",

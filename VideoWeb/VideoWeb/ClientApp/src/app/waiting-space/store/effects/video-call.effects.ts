@@ -73,6 +73,61 @@ export class VideoCallEffects {
         { dispatch: false }
     );
 
+    updateAudioMixes$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateAudioMix),
+                concatLatestFrom(action => [
+                    this.store.select(ConferenceSelectors.getParticipantByPexipId(action.participant.pexipInfo.uuid))
+                ]),
+                tap(([action, participant]) => {
+                    // filter non vh participant (i.e. countdown or wowza)
+                    if (!participant) {
+                        return;
+                    }
+
+                    const isAnInterpreter = participant && participant.hearingRole === HearingRole.INTERPRETER;
+                    if (!isAnInterpreter) {
+                        // only interpreters will have the means to change their audio mix
+                        return;
+                    }
+
+                    const mainCourtAudioMixName = 'main';
+                    const participantUuid = participant.pexipInfo.uuid;
+                    let audioMixes: PexipAudioMix[];
+                    if (action.mainCourt) {
+                        audioMixes = [
+                            {
+                                mix_name: mainCourtAudioMixName,
+                                prominent: true
+                            }
+                        ];
+                        if (participant.interpreterLanguage) {
+                            audioMixes.push({
+                                mix_name: `main.${participant.interpreterLanguage.description.toLowerCase()}`,
+                                prominent: false
+                            });
+                        }
+                    } else if (action.interpreterLanguage) {
+                        const languageAudioMixName = `main.${action.interpreterLanguage.description.toLowerCase()}`; // e.g. main.french or main.spanish
+                        audioMixes = [
+                            {
+                                mix_name: mainCourtAudioMixName,
+                                prominent: false
+                            },
+                            {
+                                mix_name: languageAudioMixName,
+                                prominent: true
+                            }
+                        ];
+                    }
+
+                    this.videoCallService.sendParticipantAudioToMixes(audioMixes, participantUuid);
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,

@@ -29,7 +29,7 @@ import { FocusService } from 'src/app/services/focus.service';
         'showConsultationControls',
         'unreadMessageCount'
     ],
-    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing']
+    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing', 'changeLanguageSelected']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     @Input() public canToggleParticipantsPanel: boolean;

@@ -28,6 +28,7 @@ export interface VHParticipant {
     pexipInfo?: VHPexipParticipant;
     room?: VHRoom;
     interpreterLanguage?: VHInterpreterLanguage;
+    currentAudioMix?: string;
     linkedParticipants: Array<VHLinkedParticipant>;
 }
 
