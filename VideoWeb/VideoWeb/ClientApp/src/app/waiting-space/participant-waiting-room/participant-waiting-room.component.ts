@@ -49,6 +49,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
     showWarning = false;
+    displayLanguageModal: boolean;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
@@ -262,6 +263,14 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     openJoinConsultationModal() {
         this.displayJoinPrivateConsultationModal = true;
+    }
+
+    showLanguageChangeModal() {
+        this.displayLanguageModal = true;
+    }
+
+    closeLanageChangeModal() {
+        this.displayLanguageModal = false;
     }
 
     getPrivateConsultationParticipants(): ParticipantResponse[] {

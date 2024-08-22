@@ -38,9 +38,6 @@ import { ConferenceActions } from '../store/actions/conference.actions';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-contract-to-state-model-mappers';
 
-/* eslint-disable @typescript-eslint/naming-convention */
-declare let PexRTC: any;
-
 @Injectable()
 export class VideoCallService {
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';

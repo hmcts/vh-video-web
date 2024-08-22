@@ -1261,6 +1261,41 @@ export class ConferenceTestData {
         return wingers;
     }
 
+    getInterpreterLanguageResponse(): InterpreterLanguageResponse[] {
+        return [
+            new InterpreterLanguageResponse({
+                code: 'afr',
+                description: 'Afrikaans',
+                type: InterpreterType.Verbal
+            }),
+            new InterpreterLanguageResponse({
+                code: 'ase',
+                description: 'American Sign Language (ASL)',
+                type: InterpreterType.Sign
+            }),
+            new InterpreterLanguageResponse({
+                code: 'ils',
+                description: 'International Sign (IS)',
+                type: InterpreterType.Sign
+            }),
+            new InterpreterLanguageResponse({
+                code: 'spa',
+                description: 'Spanish',
+                type: InterpreterType.Verbal
+            }),
+            new InterpreterLanguageResponse({
+                code: 'jpn',
+                description: 'Japanese',
+                type: InterpreterType.Verbal
+            }),
+            new InterpreterLanguageResponse({
+                code: 'zul',
+                description: 'Zulu',
+                type: InterpreterType.Verbal
+            })
+        ];
+    }
+
     private initConferenceDetails(scheduledDateTime): ConferenceResponse {
         const participants = this.getListOfParticipantDetails();
         const endpoints = this.getListOfEndpoints();

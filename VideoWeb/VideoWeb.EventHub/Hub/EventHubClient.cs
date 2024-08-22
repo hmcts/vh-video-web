@@ -30,7 +30,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly IConferenceManagementService _conferenceManagementService;
         private readonly IConferenceService _conferenceService;
-        
+
         public EventHub(IUserProfileService userProfileService,
             IAppRoleService appRoleService,
             IVideoApiClient videoApiClient,
@@ -94,9 +94,10 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var username = Context.User.Identity.Name.ToLowerInvariant();
+            var username = Context.User.Identity?.Name?.ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(username)) return;
             var obfuscatedUsername = GetObfuscatedUsernameAsync(username);
-            
+
             if (exception == null)
             {
                 _logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
@@ -150,7 +151,7 @@ namespace VideoWeb.EventHub.Hub
         {
             return Context.User.IsInRole(AppRoles.VhOfficerRole);
         }
-        
+
         private string GetObfuscatedUsernameAsync(string username)
         {
             return _userProfileService.GetObfuscatedUsername(username);
@@ -234,7 +235,7 @@ namespace VideoWeb.EventHub.Hub
                 .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
         }
-        
+
         public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
         {
             try
@@ -324,7 +325,7 @@ namespace VideoWeb.EventHub.Hub
                 await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId,
                     participant.Id.ToString(), mediaStatus);
 
-                var groupNames = new List<string> {VhOfficersGroupName};
+                var groupNames = new List<string> { VhOfficersGroupName };
                 groupNames.AddRange(conference.Participants.Where(x => x.IsHost())
                     .Select(h => h.Username.ToLowerInvariant()));
                 foreach (var groupName in groupNames)
@@ -495,6 +496,6 @@ namespace VideoWeb.EventHub.Hub
                     .Contains(p.Id)
                 ).ToList();
         }
-        
+
     }
 }

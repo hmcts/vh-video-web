@@ -5806,6 +5806,101 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * Get available interpreter languages
+     * @return OK
+     */
+    getAvailableInterpreterLanguages(): Observable<InterpreterLanguageResponse[]> {
+        let url_ = this.baseUrl + '/api/reference-data/interpreter-languages';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetAvailableInterpreterLanguages(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetAvailableInterpreterLanguages(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<InterpreterLanguageResponse[]>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<InterpreterLanguageResponse[]>;
+                })
+            );
+    }
+
+    protected processGetAvailableInterpreterLanguages(response: HttpResponseBase): Observable<InterpreterLanguageResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                  ? (response as any).error
+                  : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(InterpreterLanguageResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<InterpreterLanguageResponse[]>(null as any);
+    }
+
+    /**
      * Get the Pexip self test node.
      * @return OK
      */

@@ -5,6 +5,9 @@ import { catchError, switchMap, map, tap } from 'rxjs/operators';
 import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
+import { ConferenceState } from '../reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
 
 @Injectable()
@@ -16,6 +19,18 @@ export class ConferenceEffects {
                 this.apiClient.getConferenceById(action.conferenceId).pipe(
                     map(conference => ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(conference) })),
                     catchError(error => of(ConferenceActions.loadConferenceFailure({ error })))
+                )
+            )
+        )
+    );
+
+    loadLoggedInParticipant$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.loadLoggedInParticipant),
+            switchMap(action =>
+                this.store.select(ConferenceSelectors.getParticipants).pipe(
+                    map(participants => participants.filter(p => p.id === action.participantId)),
+                    map(participant => ConferenceActions.loadLoggedInParticipantSuccess({ participant: participant[0] }))
                 )
             )
         )
@@ -57,6 +72,7 @@ export class ConferenceEffects {
 
     constructor(
         private actions$: Actions,
+        private store: Store<ConferenceState>,
         private apiClient: ApiClient,
         private supplierClientService: SupplierClientService
     ) {}

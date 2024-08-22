@@ -7,11 +7,13 @@ export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
+    loggedInParticipant?: VHParticipant;
     availableRooms: VHRoom[];
 }
 
 export const initialState: ConferenceState = {
     currentConference: undefined,
+    loggedInParticipant: undefined,
     availableRooms: []
 };
 
@@ -283,6 +285,32 @@ export const conferenceReducer = createReducer(
                 return updatedP;
             } else {
                 return participant;
+            }
+        });
+
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    }),
+    on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => ({
+        ...state,
+        loggedInParticipant: participant
+    })),
+    on(ConferenceActions.updateAudioMix, (state, { participant, interpreterLanguage, mainCourt }) => {
+        const conference = state.currentConference;
+        if (!conference) {
+            return state;
+        }
+
+        const participantId = participant.id;
+        const participants = conference.participants.map(p => {
+            if (participant.id === participantId) {
+                const updatedP: VHParticipant = {
+                    ...p,
+                    currentAudioMix: mainCourt ? 'main' : interpreterLanguage?.code
+                };
+                return updatedP;
+            } else {
+                return p;
             }
         });
 

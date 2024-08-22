@@ -1,5 +1,5 @@
 import { createActionGroup, props } from '@ngrx/store';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHInterpreterLanguage, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
 import {
     ConferenceStatus,
     ConsultationAnswer,
@@ -21,6 +21,9 @@ export const ConferenceActions = createActionGroup({
         'Update Active Conference Status': props<{ conferenceId: string; status: ConferenceStatus }>(),
         'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus }>(),
         'Update Endpoint Status': props<{ conferenceId: string; endpointId: string; status: EndpointStatus }>(),
+
+        'Load Logged In Participant': props<{ participantId: string }>(),
+        'Load Logged In Participant Success': props<{ participant: VHParticipant }>(),
 
         'Update Participant List': props<{ conferenceId: string; participants: VHParticipant[] }>(),
         'Add New Endpoints': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
@@ -74,6 +77,8 @@ export const ConferenceActions = createActionGroup({
         }>(),
         'Update Judge Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
         'Update StaffMember Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
-        'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>()
+        'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),
+
+        'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>()
     }
 });
