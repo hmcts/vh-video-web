@@ -3,7 +3,8 @@ import {
     ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
-    Role
+    Role,
+    Supplier
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
@@ -107,6 +108,10 @@ export class HearingSummary extends HearingBase {
 
     get allocatedCso(): string {
         return this.conference.allocated_cso;
+    }
+
+    get supplier(): Supplier {
+        return this.conference.supplier;
     }
 
     set status(status: ConferenceStatus) {

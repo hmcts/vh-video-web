@@ -149,7 +149,7 @@ describe('HeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeTruthy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(conference.id, participant.id);
 
             // Cleanup
             sut.heartbeat?.kill();
@@ -172,7 +172,7 @@ describe('HeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(conference.id, participant.id);
         }));
     });
 

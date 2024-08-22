@@ -1,4 +1,5 @@
-using VideoWeb.Common;
+using System.Collections.Generic;
+using System.Linq;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
@@ -12,8 +13,7 @@ public static class ClientSettingsResponseMapper{
         EJudAdConfiguration eJudAdConfiguration, 
         Dom1AdConfiguration dom1AdConfiguration,
         HearingServicesConfiguration servicesConfiguration, 
-        SupplierConfiguration supplierConfiguration,
-        string supplierName)
+        List<SupplierConfiguration> supplierConfigurations)
     {
         var ejudSettings = IdpSettingsResponseMapper.Map(eJudAdConfiguration);
         var vhAdSettings = IdpSettingsResponseMapper.Map(azureAdConfiguration);
@@ -22,14 +22,12 @@ public static class ClientSettingsResponseMapper{
         {
             AppInsightsConnectionString = azureAdConfiguration.ApplicationInsights.ConnectionString,
             EventHubPath = servicesConfiguration.EventHubPath,
-            JoinByPhoneFromDate = supplierConfiguration.JoinByPhoneFromDate,
-            SupplierTurnServer = supplierConfiguration.TurnServer,
-            SupplierTurnServerUser = supplierConfiguration.TurnServerUser,
-            SupplierTurnServerCredential = supplierConfiguration.TurnServerCredential,
+            SupplierConfigurations = supplierConfigurations
+                .Select(c => c.Map())
+                .ToList(),
             EJudIdpSettings = ejudSettings,
             Dom1IdpSettings = dom1Settings,
             VHIdpSettings = vhAdSettings,
-            Supplier = supplierName,
             EnableVideoFilters = servicesConfiguration.EnableVideoFilters,
             EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
             EnableIOSMobileSupport = servicesConfiguration.EnableIOSMobileSupport,
