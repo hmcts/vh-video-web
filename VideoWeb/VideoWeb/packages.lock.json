@@ -240,9 +240,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[2.2.6-pr-0667-0002, )",
-        "resolved": "2.2.6-pr-0667-0002",
-        "contentHash": "0XIHfIJh24MAVomQe8gijXDSVZO72kvr2eLnOErQcbjosTnpQ+ZGRMKxdWQXu5Mu2R2eTfRYNkKiTYznSzvueA==",
+        "requested": "[2.2.8, )",
+        "resolved": "2.2.8",
+        "contentHash": "dCYMCd+YSXMP8Ew1RQOmFow1r3SopysqMqE6noSugyY/S60CSlimQkRBwabuYFJ11tYSQHuvFkqqV2t2yVhjzA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "13.0.3"
@@ -1918,7 +1918,7 @@
           "Microsoft.Identity.Client": "[4.61.0, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[2.2.6-pr-0667-0002, )"
+          "VideoApi.Client": "[2.2.8, )"
         }
       },
       "videoweb.contract": {
