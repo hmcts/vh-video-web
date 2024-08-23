@@ -1,12 +1,10 @@
 import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { LowerCasePipe } from '@angular/common';
-import { DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
-import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
-import { Subject } from 'rxjs';
+import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
+import { of, Subject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -86,7 +84,7 @@ import {
     mapParticipantToVHParticipant
 } from '../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { CrestLogoImageSourceDirective } from 'src/app/shared/directives/crest-logo-image-source.directive';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -110,6 +108,7 @@ describe('ParticipantsPanelComponent', () => {
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let participantPanelModelMapperSpy: jasmine.SpyObj<ParticipantPanelModelMapper>;
     let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     let component: ParticipantsPanelComponent;
     let fixture: ComponentFixture<ParticipantsPanelComponent>;
@@ -137,6 +136,9 @@ describe('ParticipantsPanelComponent', () => {
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
+
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone).and.returnValue(of(false));
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setHandRaiseStatusById',
@@ -211,6 +213,10 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantRemoteMuteStoreService,
                     useValue: remoteMuteServiceSpy
+                },
+                {
+                    provide: LaunchDarklyService,
+                    useValue: launchDarklyServiceSpy
                 },
                 provideMockStore()
             ]
