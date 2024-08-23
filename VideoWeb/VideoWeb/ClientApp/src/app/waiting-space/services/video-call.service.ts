@@ -3,7 +3,14 @@ import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ApiClient, HearingLayout, SharedParticipantRoom, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
+import {
+    ApiClient,
+    ClientSettingsResponse,
+    HearingLayout,
+    SharedParticipantRoom,
+    StartOrResumeVideoHearingRequest,
+    Supplier
+} from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -30,9 +37,6 @@ import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-contract-to-state-model-mappers';
-
-/* eslint-disable @typescript-eslint/naming-convention */
-declare let PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
@@ -72,6 +76,7 @@ export class VideoCallService {
     private justRenegotiated = false;
 
     private _displayStream: MediaStream;
+    private supplier: Supplier;
 
     constructor(
         private logger: Logger,
@@ -95,9 +100,10 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient(): Promise<void> {
+    async setupClient(supplier: Supplier): Promise<void> {
         this.logger.debug(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
+        this.supplier = supplier;
 
         const self = this;
         this.pexipAPI = new PexRTC();
@@ -171,10 +177,11 @@ export class VideoCallService {
 
     initTurnServer() {
         const config = this.configService.getConfig();
+        const supplierConfig = this.getSupplierConfig(config);
         const turnServerObj = {
-            urls: `turn:${config.supplier_turn_server}`,
-            username: config.supplier_turn_server_user,
-            credential: config.supplier_turn_server_credential
+            urls: `turn:${supplierConfig.turn_server}`,
+            username: supplierConfig.turn_server_user,
+            credential: supplierConfig.turn_server_credential
         };
         this.pexipAPI.turn_server = turnServerObj;
     }
@@ -648,6 +655,10 @@ export class VideoCallService {
         this.hasDisconnected$.next();
         this.hasDisconnected$.complete();
         this.heartbeatService.stopHeartbeat();
-        this.setupClient();
+        this.setupClient(this.supplier);
+    }
+
+    private getSupplierConfig(config: ClientSettingsResponse) {
+        return config.supplier_configurations.find(x => x.supplier === this.supplier);
     }
 }

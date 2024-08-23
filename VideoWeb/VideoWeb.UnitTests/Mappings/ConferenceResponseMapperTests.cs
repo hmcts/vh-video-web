@@ -94,5 +94,6 @@ public class ConferenceResponseMapperTests
         response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
         response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
         response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
+        response.Supplier.Should().Be(conference.Supplier);
     }
 }

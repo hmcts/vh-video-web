@@ -33,10 +33,6 @@
               "includePaths": ["src/sass"]
             },
             "scripts": [
-              "src/scripts/EdgePF.js",
-              "src/scripts/IEPF.js",
-              "src/scripts/Heartbeat.js",
-              "node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js",
               "node_modules/chart.js/dist/chart.umd.js",
               "node_modules/@mediapipe/camera_utils/camera_utils.js",
               "node_modules/@mediapipe/control_utils/control_utils.js",
@@ -112,17 +108,11 @@
               "src/app/vh-officer/helper.ts",
               "src/app/services/audio-only-image.service.ts"
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [],
             "stylePreprocessorOptions": {
               "includePaths": ["src/sass"]
             },
-            "scripts": [
-              "src/scripts/vodafone/pexrtc.js",
-              "src/scripts/EdgePF.js",
-              "src/scripts/IEPF.js",
-              "src/scripts/Heartbeat.js",
-              "node_modules/chart.js/dist/chart.umd.js"
-            ],
+            "scripts": ["src/scripts/vodafone/pexrtc.js", "src/scripts/Heartbeat.js", "node_modules/chart.js/dist/chart.umd.js"],
             "assets": [
               "src/assets",
               {

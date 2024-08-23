@@ -206,7 +206,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
 
-        await this.videoCallService.setupClient();
+        await this.videoCallService.setupClient(this.conference.supplier);
     }
 
     handleCallSetup(callSetup: CallSetup) {

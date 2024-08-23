@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 
@@ -56,7 +57,8 @@ public static class ConferenceCacheMapper
             AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
             IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
             IngestUrl = conferenceResponse.IngestUrl,
-            MeetingRoom = meetingRoom
+            MeetingRoom = meetingRoom,
+            Supplier = (Supplier)hearingDetailsResponse.BookingSupplier
         };
         return conference;
     }

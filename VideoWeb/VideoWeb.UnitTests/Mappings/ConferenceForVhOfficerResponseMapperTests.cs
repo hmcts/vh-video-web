@@ -9,6 +9,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -36,6 +37,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.TelephoneConferenceNumbers.Should().Be(conference.TelephoneConferenceNumbers);
             response.CreatedDateTime.Should().Be(conference.CreatedDateTime);
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
+            response.Supplier.Should().Be((Supplier)conference.Supplier);
         }
 
         [Test]
@@ -85,7 +87,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotRequired);
         }
 
-        private ConferenceForAdminResponse BuildConferenceForTest()
+        private static ConferenceForAdminResponse BuildConferenceForTest()
         {
             var conference = Builder<ConferenceForAdminResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())

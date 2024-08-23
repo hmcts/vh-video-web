@@ -26,7 +26,8 @@ public static class ConferenceResponseMapper
             HearingRefId = conference.HearingId,
             Endpoints = conference.Endpoints?.Select(VideoEndpointsResponseMapper.Map).ToList(),
             HearingVenueIsScottish = conference.IsScottish,
-            IngestUrl = conference.IngestUrl
+            IngestUrl = conference.IngestUrl,
+            Supplier = conference.Supplier
         };
         
         if (conference.MeetingRoom != null)

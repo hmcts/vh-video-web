@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -89,5 +90,10 @@ namespace VideoWeb.Contract.Responses
         /// Allocated Cso Id
         /// </summary>
         public Guid? AllocatedCsoId { get; set; }
+        
+        /// <summary>
+        /// The supplier that the conference is booked with
+        /// </summary>
+        public Supplier Supplier { get; set; }
     }
 }

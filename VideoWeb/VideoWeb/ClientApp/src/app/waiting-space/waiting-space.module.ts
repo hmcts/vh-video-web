@@ -53,6 +53,9 @@ import { ParticipantsPanelItemComponent } from './participants-panel/participant
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
 import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup/change-hearing-layout.component';
 import { VideoCallEffects } from './store/effects/video-call.effects';
+import { AudioMixSelectionComponent } from './audio-mix-selection/audio-mix-selection.component';
+import { ReferenceDataEffects } from './store/effects/reference-data.effects';
+import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/reference-data.reducer';
 
 @NgModule({
     imports: [
@@ -60,8 +63,9 @@ import { VideoCallEffects } from './store/effects/video-call.effects';
         WaitingSpaceRoutingModule,
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
+        StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
@@ -82,6 +86,7 @@ import { VideoCallEffects } from './store/effects/video-call.effects';
         ConfirmLeaveHearingPopupComponent,
         ConfirmCloseHearingPopupComponent,
         ConfirmStartHearingPopupComponent,
+        AudioMixSelectionComponent,
         HearingLayoutComponent,
         JudgeContextMenuComponent,
         JohWaitingRoomComponent,

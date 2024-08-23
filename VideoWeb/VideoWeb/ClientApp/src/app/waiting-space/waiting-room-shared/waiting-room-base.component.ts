@@ -169,6 +169,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(flag => {
                 this.vodafoneEnabled = flag;
             });
+        this.launchDarklyService
+            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(flag => {
+                this.vodafoneEnabled = flag;
+            });
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
@@ -766,7 +772,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 .subscribe(discconnectedPresentation => this.handlePresentationDisonnected(discconnectedPresentation))
         );
 
-        await this.videoCallService.setupClient();
+        await this.videoCallService.setupClient(this.conference.supplier);
     }
 
     handlePresentationStatusChange(presentation: Presentation): void {

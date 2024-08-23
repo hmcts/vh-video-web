@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,9 +10,8 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ClientSettingsResponseMapperTests 
     {
-        [TestCase("kinly")]
-        [TestCase("vodafone")]
-        public void Should_map_all_properties(string supplier)
+        [Test]
+        public void Should_map_all_properties()
         {
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
@@ -25,19 +25,25 @@ namespace VideoWeb.UnitTests.Mappings
 
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
             
-            SupplierConfiguration supplierConfiguration = supplier == "kinly"
-                ? Builder<KinlyConfiguration>.CreateNew().Build()
-                : Builder<VodafoneConfiguration>.CreateNew().Build();
+            var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
+            var vodafoneConfiguration = Builder<VodafoneConfiguration>.CreateNew().Build();
+            var supplierConfigs = new List<SupplierConfiguration>
+            {
+                kinlyConfiguration,
+                vodafoneConfiguration
+            };
 
-            var response = ClientSettingsResponseMapper.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfiguration, supplier);
+            var response = ClientSettingsResponseMapper.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfigs);
 
             response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
-            response.SupplierTurnServer.Should().Be(supplierConfiguration.TurnServer);
-            response.SupplierTurnServerUser.Should().Be(supplierConfiguration.TurnServerUser);
-            response.SupplierTurnServerCredential.Should().Be(supplierConfiguration.TurnServerCredential);
-            response.JoinByPhoneFromDate.Should().Be(supplierConfiguration.JoinByPhoneFromDate);
-            response.Supplier.Should().Be(supplier);
+            response.SupplierConfigurations.Count.Should().Be(supplierConfigs.Count);
+            foreach (var supplierConfigResponse in response.SupplierConfigurations)
+            {
+                var supplierConfig = supplierConfigs.Find(x => x.Supplier == supplierConfigResponse.Supplier);
+                supplierConfig.Should().NotBeNull();
+                supplierConfigResponse.Should().BeEquivalentTo(supplierConfig.Map());
+            }
         }
     }
 }

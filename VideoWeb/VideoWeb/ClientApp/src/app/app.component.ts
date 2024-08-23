@@ -21,7 +21,6 @@ import { NoSleepService } from './services/no-sleep.service';
 import { HideComponentsService } from './waiting-space/services/hide-components.service';
 import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
-import { SupplierClientService } from './services/api/supplier-client.service';
 
 @Component({
     selector: 'app-root',
@@ -67,8 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private location: Location,
         private noSleepService: NoSleepService,
         private logger: Logger,
-        private hideBackgroundService: HideComponentsService,
-        private supplierClientService: SupplierClientService
+        private hideBackgroundService: HideComponentsService
     ) {
         this.isRepresentativeOrIndividual = false;
 
@@ -94,8 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
             .getClientSettings()
             .pipe(first())
             .subscribe({
-                next: config => {
-                    this.supplierClientService.loadSupplierScript(config.supplier);
+                next: () => {
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);

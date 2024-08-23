@@ -8,7 +8,9 @@ import {
     ConferenceStatus,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role
+    Role,
+    Supplier,
+    SupplierConfigurationResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventBusService } from 'src/app/services/event-bus.service';
@@ -85,7 +87,12 @@ describe('CommandCentreComponent - Events', () => {
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
-        const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
+        const config = new ClientSettingsResponse({
+            supplier_configurations: [
+                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '' }),
+                new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '' })
+            ]
+        });
         configService.getClientSettings.and.returnValue(of(config));
     });
 

@@ -37,6 +37,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public lockConsultation = new EventEmitter<boolean>();
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
+    @Output() public changeLanguageSelected = new EventEmitter();
     @Output() public leaveHearing = new EventEmitter();
 
     audioOnly = false;
@@ -112,6 +113,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     get isJOHRoom(): boolean {
         return this.participant?.current_room?.label.startsWith('JudgeJOH');
+    }
+
+    get isInterpreter(): boolean {
+        return this.participant.hearing_role === HearingRole.INTERPRETER;
     }
 
     get logPayload() {
@@ -430,6 +435,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.handRaised = !this.handRaised;
         this.videoControlService.setHandRaiseStatusById(this.participant.id, this.handRaised);
         this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
+    }
+
+    displayLanguageChange() {
+        this.focusService.storeFocus();
+        this.changeLanguageSelected.emit();
     }
 
     pause() {

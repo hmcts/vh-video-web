@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
-import { ClientSettingsResponse, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import { Subject } from 'rxjs';
+import { ClientSettingsResponse, ConferenceForVhOfficerResponse, Supplier } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -25,7 +25,7 @@ import { NewAllocationMessage } from '../../services/models/new-allocation-messa
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
-import { takeUntil } from 'rxjs/operators';
+import { catchError, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-centre',
@@ -41,10 +41,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     activeSessionsOnly: boolean;
 
     selectedMenu: MenuOption;
-
-    conferencesSubscription: Subscription;
-    eventHubSubscriptions: Subscription = new Subscription();
-    filterSubcription: Subscription;
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
@@ -100,70 +96,71 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.queryService.stopQuery();
         this.screenHelper.enableFullScreen(false);
-        if (this.conferencesSubscription) {
-            this.conferencesSubscription.unsubscribe();
-        }
-        if (this.filterSubcription) {
-            this.filterSubcription.unsubscribe();
-        }
-        this.eventHubSubscriptions.unsubscribe();
+
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     setupEventHubSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
-        this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe(message => {
+        this.eventService
+            .getHearingStatusMessage()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(message => {
                 this.handleConferenceStatusChange(message);
-            })
-        );
+            });
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to participant status changes...`);
-        this.eventHubSubscriptions.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
+        this.eventService
+            .getParticipantStatusMessage()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(message => {
                 this.handleParticipantStatusChange(message);
-            })
-        );
+            });
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub disconnects`);
-        this.eventHubSubscriptions.add(
-            this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
+        this.eventService
+            .getServiceDisconnected()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
                     this.logger.debug(`${this.loggerPrefix} EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
                 } else {
                     this.errorService.goToServiceError('Your connection was lost');
                 }
-            })
-        );
+            });
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
-        this.eventHubSubscriptions.add(
-            this.eventService.getServiceConnected().subscribe(async () => {
+        this.eventService
+            .getServiceConnected()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(async () => {
                 this.logger.debug(`${this.loggerPrefix} EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
-            })
-        );
+            });
 
-        this.eventHubSubscriptions.add(
-            this.eventService.getHeartbeat().subscribe(heartbeat => {
+        this.eventService
+            .getHeartbeat()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(heartbeat => {
                 this.logger.debug(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
-            })
-        );
+            });
 
         this.logger.debug('[WR] - Subscribing to participants update complete message');
-        this.eventHubSubscriptions.add(
-            this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
+        this.eventService
+            .getParticipantsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(async participantsUpdatedMessage => {
                 this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
-            })
-        );
+            });
 
-        this.eventHubSubscriptions.add(
-            this.eventService
-                .getAllocationMessage()
-                .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage))
-        );
+        this.eventService
+            .getAllocationMessage()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage));
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -262,8 +259,26 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForVhOfficer(reload: boolean) {
         this.loadingData = reload;
-        this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
-            async (data: ConferenceForVhOfficerResponse[]) => {
+
+        this.queryService
+            .getAvailableCourtRoomFilters()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(data => {
+                this.courtRoomsAccountsFilters = data;
+            });
+
+        this.queryService
+            .getFilteredQueryResults()
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError(error => {
+                    this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
+                    this.loadingData = false;
+                    this.errorService.handleApiError(error);
+                    return [];
+                })
+            )
+            .subscribe(data => {
                 this.hearings = data.map(c => {
                     const h = new HearingSummary(c);
                     h.isJoinByPhone = this.isJoinByPhone(h);
@@ -273,22 +288,12 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     return h;
                 });
 
-                if (this.hearings) {
-                    this.applyFilterInit();
-                }
-
                 if (this.selectedHearing) {
                     this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
                 }
 
                 this.loadingData = false;
-            },
-            error => {
-                this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
-            }
-        );
+            });
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
@@ -296,7 +301,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.logger.warn(`${this.loggerPrefix} (isJoinByPhone) config settings is falsey`);
         }
 
-        const datePhone = this.configSettings?.join_by_phone_from_date;
+        const supplierConfig = this.getSupplierConfiguration(hearing.supplier);
+        const datePhone = supplierConfig?.join_by_phone_from_date;
         this.logger.debug(`${this.loggerPrefix} Join by date from settings is: ${datePhone}`);
 
         if (!datePhone || datePhone.length === 0) {
@@ -387,5 +393,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         if (allocationHearingMessage.hearingDetails.length > 0) {
             this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
         }
+    }
+
+    private getSupplierConfiguration(supplier: Supplier) {
+        return this.configSettings?.supplier_configurations.find(x => x.supplier === supplier);
     }
 }

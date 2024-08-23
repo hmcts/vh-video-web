@@ -1,7 +1,10 @@
+using VideoWeb.Common.Enums;
+
 namespace VideoWeb.Common.Security.HashGen
 {
-    public abstract class SupplierConfiguration
+    public abstract class SupplierConfiguration(Supplier supplier)
     {
+        public Supplier Supplier { get; private set; } = supplier;
         public string CallbackSecret { get; set; }
         public string Audience { get; set; }
         public string Issuer { get; set; }
