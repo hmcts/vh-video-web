@@ -71,9 +71,6 @@ namespace VideoWeb.Controllers
             try
             {
                 await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest, cancellationToken);
-                
-                // Refresh the conference in the cache
-                await conferenceService.ForceGetConference(conferenceId, cancellationToken);
 
                 return NoContent();
             }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Enums;
@@ -47,6 +48,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Available);
         }
 
         [Test]
@@ -81,6 +83,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.InHearing);
         }
 
         [Test]
@@ -117,6 +120,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.InConsultation);
         }
     }
 }

@@ -1,8 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -37,6 +38,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, EndpointState.Connected),
                 Times.Exactly(participantCount));
+            TestConference.Endpoints.Find(x => x.Id == participantForEvent.Id).EndpointStatus.Should().Be(EndpointStatus.Connected);
         }
     }
 }

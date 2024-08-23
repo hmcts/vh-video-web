@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 using EventType = VideoWeb.EventHub.Enums.EventType;
@@ -16,10 +17,10 @@ namespace VideoWeb.UnitTests.EventHandlers
     {
         private EndpointTransferEventHandler _eventHandler;
 
-        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, EndpointState.Connected)]
+        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, EndpointState.Connected, EndpointStatus.Connected)]
+        [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, EndpointState.Connected, EndpointStatus.Connected)]
         public async Task Should_send_endpoint_status_messages_to_clients(RoomType from, RoomType to,
-            EndpointState status)
+            EndpointState endpointState, EndpointStatus expectedEndpointStatus)
         {
             _eventHandler = new EndpointTransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
             
@@ -39,8 +40,9 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
             
             await _eventHandler.HandleAsync(callbackEvent);
-            EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, status),
+            EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, endpointState),
                 Times.Exactly(participantCount));
+            TestConference.Endpoints.Find(x => x.Id == participantForEvent.Id).EndpointStatus.Should().Be(expectedEndpointStatus);
         }
 
         [Test]
@@ -201,7 +203,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 TimeStampUtc = DateTime.UtcNow
             };
 
-            Assert.ThrowsAsync<ArgumentException>(() => _eventHandler.HandleAsync(callbackEvent)).Message.Should()
+            Assert.ThrowsAsync<ArgumentException>(() => _eventHandler.HandleAsync(callbackEvent))!.Message.Should()
                 .Be($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided (Parameter '{nameof(callbackEvent.TransferTo)}')");
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, It.IsAny<EndpointState>()),
                 Times.Never);

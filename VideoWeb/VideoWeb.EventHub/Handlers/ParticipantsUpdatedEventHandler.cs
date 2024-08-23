@@ -1,12 +1,7 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers;

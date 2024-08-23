@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.EventHub.Services
 {
