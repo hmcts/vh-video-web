@@ -10,6 +10,7 @@ using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
+using VideoWeb.Common.Enums;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
@@ -50,9 +51,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
         [Test]
         public async Task
-            should_return_accepted_if_participant_is_not_a_witness_or_quick_link_user_when_vodafone_toggle_is_on()
+            should_return_accepted_if_participant_is_not_a_witness_or_quick_link_user_when_vodafone_is_supplier()
         {
             // arrange
+            TestConference.Supplier = Supplier.Vodafone;
             var judge = TestConference.GetJudge();
             var nonWitnessOrQlParticipants = TestConference.Participants.Where(x =>
                 !x.IsJudge() && !x.IsWitness() && !x.IsQuickLinkUser() && x.LinkedParticipants.Count == 0);
@@ -62,7 +64,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
 
             var controller = SetupControllerWithClaims(user);
-            _mocker.Mock<IFeatureToggles>().Setup(x => x.Vodafone()).Returns(true);
             
             // act & assert
             foreach (var participant in nonWitnessOrQlParticipants)
@@ -70,9 +71,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id, CancellationToken.None);
                 result.Should().BeOfType<AcceptedResult>();
 
-                _mocker.Mock<IVideoApiClient>().Verify(
-                    x => x.TransferParticipantAsync(TestConference.Id,
-                        It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Once);
+                _mocker.Mock<IVideoApiClient>()
+                    .Verify(
+                        x => x.TransferParticipantAsync(TestConference.Id,
+                            It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id),
+                            It.IsAny<CancellationToken>()), Times.Once);
             }
         }
 

@@ -14,6 +14,7 @@ using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.Controllers
 {
@@ -28,20 +29,18 @@ namespace VideoWeb.Controllers
         private readonly IHearingLayoutService _hearingLayoutService;
         private readonly IConferenceManagementService _conferenceManagementService;
         private readonly IConferenceService _conferenceService;
-        private readonly IFeatureToggles _featureToggles;
         
         public ConferenceManagementController(IVideoApiClient videoApiClient,
             ILogger<ConferenceManagementController> logger,
             IHearingLayoutService hearingLayoutService, 
             IConferenceManagementService conferenceManagementService,
-            IConferenceService conferenceService, IFeatureToggles featureToggles)
+            IConferenceService conferenceService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _hearingLayoutService = hearingLayoutService;
             _conferenceManagementService = conferenceManagementService;
             _conferenceService = conferenceService;
-            _featureToggles = featureToggles;
         }
 
         /// <summary>
@@ -437,9 +436,9 @@ namespace VideoWeb.Controllers
                 return false;
             }
             
-            // Vodafone feature toggle is enabled, all participants are callable.
-            // VMRs will not be used so the below is not required if the toggle is on
-            if (_featureToggles.Vodafone()) return true;
+            // Vodafone is the supplier, all participants are callable.
+            // VMRs will not be used so the below is not required if the supplier is Vodafone
+            if (conference.Supplier == Supplier.Vodafone) return true;
 
             if (participant.LinkedParticipants.Count == 0)
             {
