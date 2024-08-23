@@ -36,7 +36,6 @@ public class VideoEventsController(
     [SwaggerOperation(OperationId = "SendEvent")]
     [ProducesResponseType((int) HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-    [AllowAnonymous]
     public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
     {
         try
