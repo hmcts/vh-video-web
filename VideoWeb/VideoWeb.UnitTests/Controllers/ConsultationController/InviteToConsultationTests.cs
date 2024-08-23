@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -8,12 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
@@ -35,7 +34,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(_testConference);
 
             _sut = SetupControllerWithClaims(null);
         }
@@ -56,7 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.InviteToConsultationAsync(request);
+            var result = await _sut.InviteToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -78,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.InviteToConsultationAsync(request);
+            var result = await _sut.InviteToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();
@@ -104,7 +105,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.InviteToConsultationAsync(request);
+            var result = await _sut.InviteToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();

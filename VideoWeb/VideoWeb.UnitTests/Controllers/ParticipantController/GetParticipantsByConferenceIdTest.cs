@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
@@ -36,10 +37,10 @@ public class GetParticipantsByConferenceIdTest
         var response = CreateValidParticipantConferenceDto();
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
         
-        var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId);
+        var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId, CancellationToken.None);
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
         var participants = (List<ParticipantResponse>)typedResult.Value;
@@ -55,10 +56,10 @@ public class GetParticipantsByConferenceIdTest
             "Please provide a valid conference Id", null, default, null);
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .Throws(apiException);
         
-        var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId);
+        var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         

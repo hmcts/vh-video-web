@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -18,7 +18,8 @@ namespace VideoWeb.UnitTests.Hub
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var isLocalMuted = true;
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             await Hub.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
 
             EventHubClientMock.Verify(
@@ -35,7 +36,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var localMute = true;
             
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             await Hub.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
 
             EventHubClientMock.Verify(

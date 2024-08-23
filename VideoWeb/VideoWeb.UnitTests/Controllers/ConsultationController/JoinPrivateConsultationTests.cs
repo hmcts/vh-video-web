@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -57,9 +58,11 @@ public class JoinPrivateConsultationTests
             Id = expectedParticipantId,
             Username = ClaimsPrincipalBuilder.Username
         });
-        
-        
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
+
+
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conference);
         
         JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
         {
@@ -69,7 +72,7 @@ public class JoinPrivateConsultationTests
         };
         
         // Act
-        var result = await _consultationsController.JoinPrivateConsultation(request);
+        var result = await _consultationsController.JoinPrivateConsultation(request, CancellationToken.None);
         
         // Assert
         result.Should().BeAssignableTo<AcceptedResult>();
@@ -84,7 +87,7 @@ public class JoinPrivateConsultationTests
             y.ConferenceId == expectedConferenceId &&
             y.RequestedBy == expectedParticipantId &&
             y.RequestedFor == expectedParticipantId &&
-            y.RoomLabel == expectedRoomLabel)), Times.Once);
+            y.RoomLabel == expectedRoomLabel), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Test]
@@ -102,7 +105,7 @@ public class JoinPrivateConsultationTests
             Id = Guid.NewGuid(),
             Username = ClaimsPrincipalBuilder.Username
         });
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId))).ReturnsAsync(conference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId), It.IsAny<CancellationToken>())).ReturnsAsync(conference);
         
         JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
         {
@@ -112,7 +115,7 @@ public class JoinPrivateConsultationTests
         };
         
         // Act
-        var result = await _consultationsController.JoinPrivateConsultation(request);
+        var result = await _consultationsController.JoinPrivateConsultation(request, CancellationToken.None);
         
         // Assert
         result.Should().BeAssignableTo<NotFoundObjectResult>();
@@ -149,7 +152,7 @@ public class JoinPrivateConsultationTests
         });
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId)))
+            .Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new VideoApiException("message", expectedStatusCode, "response", null, null));
         
         JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
@@ -160,7 +163,7 @@ public class JoinPrivateConsultationTests
         };
         
         // Act
-        var result = await _consultationsController.JoinPrivateConsultation(request);
+        var result = await _consultationsController.JoinPrivateConsultation(request, CancellationToken.None);
         
         // Assert
         result.Should().BeAssignableTo<StatusCodeResult>();

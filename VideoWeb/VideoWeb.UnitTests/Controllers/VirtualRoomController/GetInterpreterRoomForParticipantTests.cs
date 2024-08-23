@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -31,8 +32,10 @@ public class GetInterpreterRoomForParticipantTests
     {
         BuildConferenceForTest();
         _mocker = AutoMock.GetLoose();
-        
-        _mocker.Mock<IConferenceService>().Setup(c => c.GetConference(_testConference.Id)).ReturnsAsync(_testConference);
+
+        _mocker.Mock<IConferenceService>()
+            .Setup(c => c.GetConference(_testConference.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_testConference);
         
         var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
         var context = new ControllerContext

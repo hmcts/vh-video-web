@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
@@ -89,15 +90,15 @@ public class GetActiveConferencesTests
         allocatedCsoResponses[0].Cso = null; //on unallocated hearing 
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetActiveConferencesAsync())
+            .Setup(x => x.GetActiveConferencesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
+            .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(allocatedCsoResponses);
         
         // act
-        var result = await _sut.GetActiveConferences();
+        var result = await _sut.GetActiveConferences(CancellationToken.None);
         
         // assert
         var typedResult = (OkObjectResult) result.Result;
@@ -110,11 +111,11 @@ public class GetActiveConferencesTests
     {
         // arrange
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetActiveConferencesAsync())
+            .Setup(x => x.GetActiveConferencesAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new VideoApiException("Not found", 404, "Not found", null, null));
 
         // act
-        var result = await _sut.GetActiveConferences();
+        var result = await _sut.GetActiveConferences(CancellationToken.None);
         
         // assert
         var typedResult = (OkObjectResult) result.Result;
@@ -128,11 +129,11 @@ public class GetActiveConferencesTests
     {
         // arrange
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetActiveConferencesAsync())
+            .Setup(x => x.GetActiveConferencesAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new VideoApiException("Internal server error", 500, "Internal server error", null, null));
         
         // act
-        var result = await _sut.GetActiveConferences();
+        var result = await _sut.GetActiveConferences(CancellationToken.None);
         
         // assert
         var typedResult = (ObjectResult) result.Result;

@@ -1,6 +1,6 @@
-using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             _testParticipant.Username = ClaimsPrincipalBuilder.Username;
             
             _conferenceServiceMock
-                .Setup(x => x.GetConference(_testConference.Id))
+                .Setup(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_testConference);
             
             var context = new ControllerContext
@@ -99,7 +99,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         public async Task Should_call_api_when_cache_is_empty()
         {
             _conferenceServiceMock
-                .Setup(x => x.GetConference(_testConference.Id))
+                .Setup(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_testConference);
             
             _videoApiClientMock
@@ -112,7 +112,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
-            _conferenceServiceMock.Verify(x => x.GetConference(_testConference.Id), Times.Once);
+            _conferenceServiceMock.Verify(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

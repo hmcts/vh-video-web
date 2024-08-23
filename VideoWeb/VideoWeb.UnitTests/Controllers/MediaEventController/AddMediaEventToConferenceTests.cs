@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -8,11 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
@@ -52,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 };
             
             _conferenceServiceMock
-                .Setup(x => x.GetConference(_testConference.Id))
+                .Setup(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_testConference);
         }
 

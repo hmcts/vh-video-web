@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
@@ -37,7 +36,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
+            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId, CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -56,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
+            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId, CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -80,10 +79,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 (int)HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.TransferParticipantAsync(TestConference.Id, It.IsAny<TransferParticipantRequest>()))
+                .Setup(x => x.TransferParticipantAsync(TestConference.Id, It.IsAny<TransferParticipantRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
-            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
+            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be(responseMessage);
@@ -101,11 +100,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
+            var result = await Controller.JoinHearingInSession(TestConference.Id, participantId, CancellationToken.None);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.TransferParticipantAsync(TestConference.Id,It.Is<TransferParticipantRequest>(request => request.ParticipantId == participantId && request.TransferType == TransferType.Call)), Times.Once);
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(
+                    x => x.TransferParticipantAsync(TestConference.Id,
+                        It.Is<TransferParticipantRequest>(request =>
+                            request.ParticipantId == participantId && request.TransferType == TransferType.Call), It.IsAny<CancellationToken>()),
+                    Times.Once);
         }
     }
 }

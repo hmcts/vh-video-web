@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -27,14 +27,14 @@ namespace VideoWeb.UnitTests.Hub
 
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
             await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
             
             VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
             ConferenceVideoControlStatusService.Verify(
                 x => x.UpdateMediaStatusForParticipantInConference(conferenceId, participant.Id.ToString(),
-                    deviceStatus), Times.Once);
+                    deviceStatus, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.Hub
                 IsLocalAudioMuted = false,
                 IsLocalVideoMuted = true
             };
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             await Hub.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
 
             VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());

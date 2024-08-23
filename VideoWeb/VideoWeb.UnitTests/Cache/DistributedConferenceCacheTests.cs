@@ -1,32 +1,26 @@
-using System;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BookingsApi.Contract.V2.Responses;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Cache
 {
     public class DistributedConferenceCacheTests : CacheTestBase
     {
         private Mock<IDistributedCache> _distributedCacheMock;
-        private Mock<ILogger<RedisCacheBase<Guid, Conference>>> _loggerMock;
+        private Mock<ILogger<DistributedConferenceCache>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _loggerMock = new Mock<ILogger<RedisCacheBase<Guid, Conference>>>();
+            _loggerMock = new Mock<ILogger<DistributedConferenceCache>>();
         }
         
         [Test]

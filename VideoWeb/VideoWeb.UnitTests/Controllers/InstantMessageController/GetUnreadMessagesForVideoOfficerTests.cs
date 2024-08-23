@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Faker;
 using FizzWare.NBuilder;
@@ -29,7 +30,7 @@ public class GetUnreadMessagesForVideoOfficerTests : InstantMessageControllerTes
         Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
             .ThrowsAsync(apiException);
         
-        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conferenceId);
+        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conferenceId, CancellationToken.None);
         var typedResult = (ObjectResult) result;
         typedResult.Should().NotBeNull();
     }
@@ -41,7 +42,7 @@ public class GetUnreadMessagesForVideoOfficerTests : InstantMessageControllerTes
         Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
             .ReturnsAsync(new List<InstantMessageResponse>());
         
-        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conferenceId);
+        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conferenceId, CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
@@ -55,12 +56,12 @@ public class GetUnreadMessagesForVideoOfficerTests : InstantMessageControllerTes
         var conference = InitConference();
         var messages = InitMessages(conference);
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
-        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(messages);
         
-        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conference.Id);
+        var result = await Sut.GetUnreadMessagesForVideoOfficerAsync(conference.Id, CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();

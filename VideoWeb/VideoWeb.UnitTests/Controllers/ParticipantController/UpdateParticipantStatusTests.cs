@@ -17,6 +17,7 @@ using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using Autofac.Extras.Moq;
 using VideoWeb.Mappings;
 using System.Collections.Generic;
+using System.Threading;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
 using VideoApi.Contract.Enums;
@@ -54,7 +55,9 @@ public class UpdateParticipantStatusTests
         
         _sut = _mocker.Create<ParticipantsController>();
         _sut.ControllerContext = context;
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_testConference.Id)).ReturnsAsync(_testConference);
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_testConference);
     }
     
     [Test]
@@ -69,7 +72,7 @@ public class UpdateParticipantStatusTests
             .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
             .Returns(Task.FromResult(default(object)));
         
-        var result = await _sut.UpdateParticipantStatusAsync(conferenceId, request);
+        var result = await _sut.UpdateParticipantStatusAsync(conferenceId, request, CancellationToken.None);
         var typedResult = (NoContentResult) result;
         typedResult.Should().NotBeNull();
     }
@@ -86,8 +89,8 @@ public class UpdateParticipantStatusTests
             .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
             .Returns(Task.FromResult(default(object)));
         
-        await _sut.UpdateParticipantStatusAsync(conferenceId, request);
-        _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(_testConference.Id), Times.Once);
+        await _sut.UpdateParticipantStatusAsync(conferenceId, request, CancellationToken.None);
+        _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Test]
@@ -101,10 +104,10 @@ public class UpdateParticipantStatusTests
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
             "Please provide a valid conference Id", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+            .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.UpdateParticipantStatusAsync(conferenceId, request);
+        var result = await _sut.UpdateParticipantStatusAsync(conferenceId, request, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }

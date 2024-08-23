@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -43,7 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             _controller.ControllerContext = context;
 
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conference.Id)))
+                .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conference.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_conference);
         }
 
@@ -115,13 +116,13 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             
             
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id)))
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_conference);
 
             var result = await _controller.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
 
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conference.Id), Times.Once);
+            _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conference.Id,It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

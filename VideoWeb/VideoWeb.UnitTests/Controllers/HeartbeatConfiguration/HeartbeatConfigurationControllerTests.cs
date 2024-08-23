@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -57,7 +58,7 @@ public class HeartbeatConfigurationControllerTests
             .Returns(kinlyPlatformServiceMock.Object);
 
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.IsAny<Guid>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_conference);
         
         _sut = _mocker.Create<HeartbeatConfigurationController>();

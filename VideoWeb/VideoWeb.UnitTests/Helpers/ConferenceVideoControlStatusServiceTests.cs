@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -36,7 +37,7 @@ namespace VideoWeb.UnitTests.Helpers
             await _sut.SetVideoControlStateForConference(conferenceId, conferenceVideoControlStatuses);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, conferenceVideoControlStatuses), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, conferenceVideoControlStatuses, It.IsAny<CancellationToken>()), Times.Once);
         } 
         
         [Test]
@@ -49,7 +50,8 @@ namespace VideoWeb.UnitTests.Helpers
             await _sut.SetVideoControlStateForConference(conferenceId, null);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, null), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>()
+                .Verify(x => x.WriteToCache(conferenceId, null, It.IsAny<CancellationToken>()), Times.Once);
         } 
 
         
@@ -59,15 +61,17 @@ namespace VideoWeb.UnitTests.Helpers
             // Arrange
             Guid conferenceId = Guid.NewGuid();
             ConferenceVideoControlStatuses conferenceVideoControlStatuses = new ConferenceVideoControlStatuses();
-            
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId)).ReturnsAsync(conferenceVideoControlStatuses);
+
+            _mocker.Mock<IConferenceVideoControlStatusCache>()
+                .Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conferenceVideoControlStatuses);
 
             
             // Act
             var result = await _sut.GetVideoControlStateForConference(conferenceId);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.ReadFromCache(conferenceId), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
             result.Should().Be(conferenceVideoControlStatuses);
         } 
         
@@ -77,14 +81,14 @@ namespace VideoWeb.UnitTests.Helpers
             // Arrange
             Guid conferenceId = Guid.NewGuid();
             
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId)).ReturnsAsync((ConferenceVideoControlStatuses?)null);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>())).ReturnsAsync((ConferenceVideoControlStatuses?)null);
 
             
             // Act
             var result = await _sut.GetVideoControlStateForConference(conferenceId);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.ReadFromCache(conferenceId), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
             result.Should().BeNull();
         }
 
@@ -121,14 +125,17 @@ namespace VideoWeb.UnitTests.Helpers
             });
             
 
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId))
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingConferenceVideoControlStatuses);
 
             // Act
             await _sut.UpdateMediaStatusForParticipantInConference(conferenceId, participantId, participantMediaStatus);
             
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0)), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(
+                x => x.WriteToCache(conferenceId,
+                    It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Test]
@@ -156,14 +163,17 @@ namespace VideoWeb.UnitTests.Helpers
             });
             
 
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId))
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingConferenceVideoControlStatuses);
 
             // Act
             await _sut.UpdateMediaStatusForParticipantInConference(conferenceId, participantId, participantMediaStatus);
             
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0)), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(
+                x => x.WriteToCache(conferenceId,
+                    It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Test]
@@ -190,14 +200,17 @@ namespace VideoWeb.UnitTests.Helpers
             
 
             ConferenceVideoControlStatuses existingConferenceVideoControlStatuses = null;
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId))
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingConferenceVideoControlStatuses);
 
             // Act
             await _sut.UpdateMediaStatusForParticipantInConference(conferenceId, participantId, participantMediaStatus);
             
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0)), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(
+                x => x.WriteToCache(conferenceId,
+                    It.Is<ConferenceVideoControlStatuses>(y => expectedConferenceVideoControlStatuses.CompareTo(y) > 0),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

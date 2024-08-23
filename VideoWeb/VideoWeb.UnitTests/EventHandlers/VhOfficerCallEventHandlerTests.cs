@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -33,7 +34,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _mocker = AutoMock.GetLoose();
             _eventHandler = _mocker.Create<VhOfficerCallEventHandler>();
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(_conference);
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(_conference);
         }
         
         [TestCase(null)]

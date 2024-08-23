@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,11 +25,11 @@ public class EndpointsController(
     [HttpGet("{conferenceId}/participants")]
     [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
     [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId)
+    public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             return Ok(conference.Endpoints.Select(VideoEndpointsResponseMapper.Map).ToList());
         }
         catch (VideoApiException e)
@@ -42,24 +43,22 @@ public class EndpointsController(
     [SwaggerOperation(OperationId = "AllowedVideoCallEndpoints")]
     [ProducesResponseType(typeof(IList<AllowedEndpointResponse>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId)
+    public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId, CancellationToken cancellationToken)
     {
-        {
-            var username = User.Identity?.Name?.Trim() ??
+        var username = User.Identity?.Name?.Trim() ??
                            throw new UnauthorizedAccessException("No username found in claims");
-            var conference = await conferenceService.GetConference(conferenceId);
-            var isHostOrJoh = conference.Participants.Exists(x =>
-                (x.IsHost() || x.IsJudicialOfficeHolder()) && x.Username.Equals(User.Identity.Name?.Trim(),
-                    StringComparison.InvariantCultureIgnoreCase));
-            var usersEndpoints = conference.Endpoints;
-            if (!isHostOrJoh)
-                usersEndpoints = usersEndpoints.Where(ep =>
-                    ep.DefenceAdvocateUsername != null &&
-                    ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var isHostOrJoh = conference.Participants.Exists(x =>
+            (x.IsHost() || x.IsJudicialOfficeHolder()) && x.Username.Equals(User.Identity.Name?.Trim(),
+                StringComparison.InvariantCultureIgnoreCase));
+        var usersEndpoints = conference.Endpoints;
+        if (!isHostOrJoh)
+            usersEndpoints = usersEndpoints.Where(ep =>
+                ep.DefenceAdvocateUsername != null &&
+                ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
             
-            var response = usersEndpoints.Select(AllowedEndpointResponseMapper.Map).ToList();
-            return Ok(response);
-        }
+        var response = usersEndpoints.Select(AllowedEndpointResponseMapper.Map).ToList();
+        return Ok(response);
     }
     
 }

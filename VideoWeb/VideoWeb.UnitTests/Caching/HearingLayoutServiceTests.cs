@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
@@ -51,8 +52,8 @@ namespace VideoWeb.UnitTests.Caching
                 Id = conferenceId
             };
 
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).ReturnsAsync(expectedLayout);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>())).ReturnsAsync(expectedLayout);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId), It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
             // Act
             var layout = await _sut.GetCurrentLayout(conferenceId);
@@ -73,8 +74,8 @@ namespace VideoWeb.UnitTests.Caching
             };
             var expectedLayout = conference.GetRecommendedLayout();
 
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).Returns(Task.FromResult<HearingLayout?>(null));
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId,It.IsAny<CancellationToken>())).Returns(Task.FromResult<HearingLayout?>(null));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
             // Act
             var layout = await _sut.GetCurrentLayout(conferenceId);
@@ -90,7 +91,7 @@ namespace VideoWeb.UnitTests.Caching
             var conferenceId = Guid.NewGuid();
 
             var exception = new VideoApiException("message", 404, null, null, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ThrowsAsync(exception);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ThrowsAsync(exception);
 
             // Act
             var layout = await _sut.GetCurrentLayout(conferenceId);
@@ -106,7 +107,7 @@ namespace VideoWeb.UnitTests.Caching
             var conferenceId = Guid.NewGuid();
 
             var exception = new VideoApiException("message", 403, null, null, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ThrowsAsync(exception);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ThrowsAsync(exception);
 
             // Act && Assert
             Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
@@ -120,7 +121,7 @@ namespace VideoWeb.UnitTests.Caching
             var conferenceId = Guid.NewGuid();
 
             var exception = new Exception();
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ThrowsAsync(exception);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ThrowsAsync(exception);
 
             // Act && Assert
             Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
@@ -144,8 +145,8 @@ namespace VideoWeb.UnitTests.Caching
                 Participants = participants
             };
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(conference);
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ReturnsAsync(defaultLayout);
 
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -158,7 +159,7 @@ namespace VideoWeb.UnitTests.Caching
             await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
-            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout,It.IsAny<CancellationToken>()), Times.Once);
             _mocker.Mock<IHubClients<IEventHubClient>>().Verify(x => x.Groups(It.Is<IReadOnlyList<string>>(groups => groups.All(group => expectedHostGroups.Contains(group)))), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
@@ -182,8 +183,8 @@ namespace VideoWeb.UnitTests.Caching
             var defaultLayout = conference.GetRecommendedLayout();
             var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(conference);
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>() )).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).Returns(Task.FromResult<HearingLayout?>(null));
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
@@ -195,7 +196,7 @@ namespace VideoWeb.UnitTests.Caching
             await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
-            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout,It.IsAny<CancellationToken>()), Times.Once);
             _mocker.Mock<IHubClients<IEventHubClient>>().Verify(x => x.Groups(It.Is<IReadOnlyList<string>>(groups => groups.All(group => expectedHostGroups.Contains(group)))), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
@@ -212,14 +213,14 @@ namespace VideoWeb.UnitTests.Caching
 
 
             var exception = new VideoApiException("message", 403, null, null, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(x => x == conferenceId))).ThrowsAsync(exception);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ThrowsAsync(exception);
 
             // Act
             Func<Task> action = async () => await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
             (await action.Should().ThrowExactlyAsync<VideoApiException>()).Which.Should().Be(exception);
-            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never);
+            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>(),It.IsAny<CancellationToken>()), Times.Never);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),
                 Times.Never);
