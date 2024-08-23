@@ -109,7 +109,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             .getFlag<boolean>(FEATURE_FLAGS.vodafone)
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(flag => {
-                this.vodafoneEnabled = true;
+                this.vodafoneEnabled = flag;
             });
 
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -628,7 +628,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async callParticipantIntoHearing(participant: PanelModel) {
-        if (!participant.isCallableAndReadyToJoin) {
+        if (!this.vodafoneEnabled && !participant.isCallableAndReadyToJoin) {
             return;
         }
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {

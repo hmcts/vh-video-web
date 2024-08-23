@@ -111,6 +111,7 @@
     <div class="panel-container-list" id="panelListInWaitingRoom">
         <app-participants-panel-item
             [item]="participant"
+            [vodafoneEnabled]="vodafoneEnabled"
             *ngFor="let participant of participantsInWaitingRoom"
             (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
             (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
@@ -127,6 +128,7 @@
     <div class="panel-container-list" id="panelListNotConnected">
         <app-participants-panel-item
             [item]="participant"
+            [vodafoneEnabled]="vodafoneEnabled"
             *ngFor="let participant of participantsNotConnected"
             (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
             (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"

@@ -5,7 +5,6 @@
   [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
   (keyup.enter)="toggleDropdown()"
   onKeyUp="toggleDropdown()"
-
 />
 <div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (1 | random)">
   <p class="govuk-body-s dropdown-header">
@@ -65,7 +64,7 @@
   >
     {{
       'judge-context-menu.dismiss-participant'
-        | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+        | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
     }}
   </a>
   <a
@@ -92,6 +91,6 @@
 <ng-template #isNotWitnessCallContent>
   {{
     'judge-context-menu.admit-participant'
-      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
   }}
 </ng-template>
