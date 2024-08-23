@@ -1,12 +1,9 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VideoWeb.Common;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
@@ -43,15 +40,19 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await PublishStatusAsync(callbackEvent);
         }
-        
+
 
         /// <summary>
         ///     Publish a participant event to all participants in conference to those connected to the HubContext
         /// </summary>
         /// <param name="participantState">Participant status event to publish</param>
+        /// <param name="newStatus"></param>
         /// <returns></returns>
-        protected async Task PublishParticipantStatusMessage(ParticipantState participantState)
+        protected async Task PublishParticipantStatusMessage(ParticipantState participantState,
+            ParticipantStatus newStatus)
         {
+            SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus);
+            await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
@@ -78,6 +79,8 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
+            SourceConference.UpdateConferenceStatus((ConferenceState)hearingEventStatus);
+            await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant()).ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
@@ -90,8 +93,10 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
         }
 
-        protected async Task PublishEndpointStatusMessage(EndpointState endpointState)
+        protected async Task PublishEndpointStatusMessage(EndpointState endpointState, EndpointStatus newStatus)
         {
+            SourceConference.UpdateEndpointStatus(SourceEndpoint, newStatus);
+            await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())

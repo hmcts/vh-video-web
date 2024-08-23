@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,11 +8,9 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
-using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Common;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -52,7 +49,7 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnConnectedAsync()
         {
-            if (!Context.User.Identity.IsAuthenticated) return;
+            if (Context.User.Identity is not { IsAuthenticated: true }) return;
             var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
             var isAdmin = IsSenderAdmin();

@@ -1,14 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
-using VideoApi.Client;
-using VideoWeb.Common;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using RoomType = VideoWeb.Common.Models.RoomType;
@@ -25,32 +19,32 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
+            var participantStatusTuple = DeriveParticipantStatusForTransferEvent(callbackEvent);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
-            await PublishParticipantStatusMessage(participantStatus);
+            await PublishParticipantStatusMessage(participantStatusTuple.state, participantStatusTuple.status);
         }
 
-        private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
+        private static (ParticipantState state, ParticipantStatus status) DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
         {
             var isRoomToEnum = Enum.TryParse<RoomType>(callbackEvent.TransferTo, out var transferTo);
             if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {
-                return ParticipantState.InConsultation;
+                return (ParticipantState.InConsultation, ParticipantStatus.InConsultation);
             }
 
             if (transferTo == RoomType.WaitingRoom)
             {
-                return ParticipantState.Available;
+                return (ParticipantState.Available, ParticipantStatus.Available);
             }
 
             if (transferTo == RoomType.HearingRoom)
             {
-                return ParticipantState.InHearing;
+                return (ParticipantState.InHearing, ParticipantStatus.InHearing);
             }
 
             if (transferTo == RoomType.ConsultationRoom)
             {
-                return ParticipantState.InConsultation;
+                return (ParticipantState.InConsultation, ParticipantStatus.InConsultation);
             }
 
             throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);

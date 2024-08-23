@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Enums;
@@ -43,6 +44,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                     ParticipantState.Available), Times.Exactly(participantCount));
             
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Available);
         }
         [Test]
         public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()
@@ -73,6 +75,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                     ParticipantState.InHearing), Times.Exactly(participantCount));
             
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.InHearing);
         }
         
         [Test]
@@ -105,6 +108,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                     ParticipantState.InConsultation), Times.Exactly(participantCount));
             
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id), Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.InConsultation);
         }
     }
 }

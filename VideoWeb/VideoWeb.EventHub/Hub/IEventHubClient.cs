@@ -5,7 +5,6 @@ using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.EventHub.Hub
 {
