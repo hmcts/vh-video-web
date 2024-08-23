@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -27,14 +28,14 @@ public class GetConferenceInstantMessageHistoryTests : InstantMessageControllerT
         var conferenceId = conference.Id;
         var participantUsername = conference.Participants[0].Id.ToString();
         var messages = Builder<InstantMessageResponse>.CreateListOfSize(5).Build().ToList();
-        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
+        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username, It.IsAny<CancellationToken>()))
             .ReturnsAsync(messages);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername));
+        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername), CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
@@ -56,10 +57,10 @@ public class GetConferenceInstantMessageHistoryTests : InstantMessageControllerT
             .ReturnsAsync(messages);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername));
+        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, Guid.Parse(participantUsername), CancellationToken.None);
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
         var responseModel = typedResult.Value as List<ChatResponse>;
@@ -77,14 +78,14 @@ public class GetConferenceInstantMessageHistoryTests : InstantMessageControllerT
             .With(x => x.From = "someOther@hmcts.net")
             .Build().ToList();
         
-        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
+        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username, It.IsAny<CancellationToken>()))
             .ReturnsAsync(messages);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id);
+        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id, CancellationToken.None);
         
         Mocker.Mock<IMessageDecoder>().Verify(x => x.IsMessageFromUser(
                 It.Is<InstantMessageResponse>(m => m.From == conference.Participants[0].Username), conference.Participants[0].Username),
@@ -115,10 +116,10 @@ public class GetConferenceInstantMessageHistoryTests : InstantMessageControllerT
             .ThrowsAsync(apiException);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id);
+        var result = await Sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Id, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.Should().NotBeNull();
     }

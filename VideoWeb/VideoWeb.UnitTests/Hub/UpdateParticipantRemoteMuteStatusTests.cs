@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -18,8 +19,9 @@ namespace VideoWeb.UnitTests.Hub
             var isRemoteMuted = true;
 
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
-            
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             EventHubClientMock.Verify(
@@ -47,7 +49,7 @@ namespace VideoWeb.UnitTests.Hub
             
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
             
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             foreach (var joh in allJohs)
@@ -66,8 +68,9 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = conference.Id;
             var participantId = Guid.NewGuid();
             var isRemoteMuted = true;
-            
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
             
             EventHubClientMock.Verify(

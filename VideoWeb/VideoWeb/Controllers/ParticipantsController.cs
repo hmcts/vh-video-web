@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +42,9 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
+        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest, CancellationToken cancellationToken)
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             var participantId = GetIdForParticipantByUsernameInConference(conference);
             var conferenceEventRequest = new ConferenceEventRequest
             {
@@ -69,10 +70,10 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest);
+                await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest, cancellationToken);
                 
                 // Refresh the conference in the cache
-                await conferenceService.ForceGetConference(conferenceId);
+                await conferenceService.ForceGetConference(conferenceId, cancellationToken);
 
                 return NoContent();
             }
@@ -85,7 +86,7 @@ namespace VideoWeb.Controllers
 
         private Guid GetIdForParticipantByUsernameInConference(Conference conference)
         {
-            var username = User.Identity.Name;
+            var username = User.Identity!.Name;
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
@@ -95,11 +96,11 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
         [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+                var response = await videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, cancellationToken);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -115,14 +116,14 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest, CancellationToken cancellationToken)
         {
             try
             {
                 await videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, new UpdateParticipantRequest
                 {
                     DisplayName = participantRequest.DisplayName
-                });
+                }, cancellationToken);
                 await UpdateCacheAndPublishUpdate(conferenceId);
             }
             catch (VideoApiException ex)
@@ -161,7 +162,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
         [Authorize(AppRoles.VhOfficerRole)]
-        public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
+        public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
             if (conferenceId == Guid.Empty)
             {
@@ -172,11 +173,11 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await conferenceService.GetConference(conferenceId);
+                var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
 
                 logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
                 
-                var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync();
+                var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync(cancellationToken);
                 var response = ParticipantStatusResponseForVhoMapper.Map(conference, hostsInHearingsToday);
 
                 return Ok(response);
@@ -194,11 +195,11 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId)
+        public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
             try
             {
-                var conference = await conferenceService.ForceGetConference(conferenceId);
+                var conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
                 var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
                 return Ok(participants);
             }
@@ -213,7 +214,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetCurrentParticipant")]
         [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId)
+        public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
             var participantsRoles = new List<Role>
             {
@@ -238,13 +239,13 @@ namespace VideoWeb.Controllers
 
                 if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
                 {
-                    var conference = await conferenceService.GetConference(conferenceId);
+                    var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
                     var participantFromCache = conference.Participants
                         .SingleOrDefault(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
 
                     if (participantFromCache == null)
                     {
-                        conference = await conferenceService.ForceGetConference(conferenceId);
+                        conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
                         participantFromCache = conference.Participants
                             .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
                     }
@@ -272,12 +273,12 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.StaffMember)]
-        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId)
+        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
             try
             {
-                var username = User.Identity.Name.ToLower().Trim();
-                var originalConference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                var username = User.Identity!.Name!.ToLower().Trim();
+                var originalConference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
 
                 if (!participantService.CanStaffMemberJoinConference(originalConference))
                 {
@@ -290,9 +291,9 @@ namespace VideoWeb.Controllers
                 
                 var staffMemberProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
 
-                var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username));
+                var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username), cancellationToken);
                 await participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
-                var updatedConference = await conferenceService.GetConference(conferenceId);
+                var updatedConference = await conferenceService.GetConference(conferenceId, cancellationToken);
                 var mappedUpdatedConference = ConferenceResponseMapper.Map(updatedConference);
                 return Ok(mappedUpdatedConference);
             }

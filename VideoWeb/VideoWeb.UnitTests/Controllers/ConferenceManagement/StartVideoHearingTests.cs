@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var controller = SetupControllerWithClaims(user);
 
             var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest() {Layout = HearingLayout.Dynamic});
+                new StartOrResumeVideoHearingRequest() {Layout = HearingLayout.Dynamic}, CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var controller = SetupControllerWithClaims(user);
 
             var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic});
+                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -80,11 +80,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()))
+                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic});
+                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be(responseMessage);
@@ -103,12 +103,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var controller = SetupControllerWithClaims(user);
 
             var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic});
+                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic)), Times.Once);
+                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

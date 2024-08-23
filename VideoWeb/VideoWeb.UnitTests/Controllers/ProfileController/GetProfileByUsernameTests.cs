@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -30,10 +31,10 @@ public class GetProfileByUsernameTests
         // Arrange
         var username = "johndoe";
         var profile = new UserProfile() {UserName = username, FirstName = "John", LastName = "Doe", Email = username};
-        _mocker.Mock<IUserProfileService>().Setup(x => x.GetUserAsync(username)).ReturnsAsync(profile);
+        _mocker.Mock<IUserProfileService>().Setup(x => x.GetUserAsync(username, It.IsAny<CancellationToken>())).ReturnsAsync(profile);
 
         // Act
-        var result = await _controller.GetProfileByUsernameAsync(username);
+        var result = await _controller.GetProfileByUsernameAsync(username, CancellationToken.None);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -48,10 +49,10 @@ public class GetProfileByUsernameTests
     {
         // Arrange
         var username = "johndoe";
-        _mocker.Mock<IUserProfileService>().Setup(x => x.GetUserAsync(username)).ReturnsAsync((UserProfile) null);
+        _mocker.Mock<IUserProfileService>().Setup(x => x.GetUserAsync(username, It.IsAny<CancellationToken>())).ReturnsAsync((UserProfile) null);
 
         // Act
-        var result = await _controller.GetProfileByUsernameAsync(username);
+        var result = await _controller.GetProfileByUsernameAsync(username, CancellationToken.None);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();

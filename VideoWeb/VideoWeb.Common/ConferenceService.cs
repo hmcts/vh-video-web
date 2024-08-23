@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V2.Responses;
@@ -11,9 +12,9 @@ namespace VideoWeb.Common;
 
 public interface IConferenceService
 {
-    public Task<Conference> GetConference(Guid conferenceId);
-    public Task<Conference> ForceGetConference(Guid conferenceId);
-    public Task UpdateConferenceAsync(Conference conference);
+    public Task<Conference> GetConference(Guid conferenceId, CancellationToken cancellationToken = default);
+    public Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default);
+    public Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
 }
 
 public class ConferenceService(
@@ -22,9 +23,9 @@ public class ConferenceService(
     IBookingsApiClient bookingApiClient)
     : IConferenceService
 {
-    public async Task<Conference> GetConference(Guid conferenceId)
+    public async Task<Conference> GetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
-        var conference = await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback);
+        var conference = await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback, cancellationToken);
         return conference;
         
         async Task<(ConferenceDetailsResponse conferenceDetails, HearingDetailsResponseV2 hearingDetails)> ConferenceDetailsCallback()
@@ -40,16 +41,16 @@ public class ConferenceService(
     /// </summary>
     /// <param name="conferenceId"></param>
     /// <returns></returns>
-    public async Task<Conference> ForceGetConference(Guid conferenceId)
+    public async Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
-        var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-        var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId);
-        await conferenceCache.AddConferenceAsync(conferenceDetails, hearingDetails);
-        return await GetConference(conferenceId);
+        var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
+        var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId, cancellationToken);
+        await conferenceCache.AddConferenceAsync(conferenceDetails, hearingDetails, cancellationToken);
+        return await GetConference(conferenceId, cancellationToken);
     }
 
-    public async Task UpdateConferenceAsync(Conference conference)
+    public async Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
     {
-        await conferenceCache.UpdateConferenceAsync(conference);
+        await conferenceCache.UpdateConferenceAsync(conference, cancellationToken);
     }
 }

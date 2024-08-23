@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Responses;
 using Microsoft.Extensions.Caching.Distributed;
@@ -8,13 +9,13 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
+    public sealed class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
     {
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
         public DistributedConferenceCache(
             IDistributedCache distributedCache, 
-            ILogger<RedisCacheBase<Guid, Conference>> logger) : base(distributedCache, logger)
+            ILogger<DistributedConferenceCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -22,26 +23,26 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse, CancellationToken cancellationToken = default)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
-            await UpdateConferenceAsync(conference);
+            await UpdateConferenceAsync(conference, cancellationToken);
         }
         
-        public async Task UpdateConferenceAsync(Conference conference)
+        public async Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
         {
-            await WriteToCache(conference.Id, conference);
+            await WriteToCache(conference.Id, conference, cancellationToken);
         }
 
-        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory, CancellationToken cancellationToken = default)
         {
-            var conference = await ReadFromCache(id);
+            var conference = await ReadFromCache(id, cancellationToken);
 
             if (conference != null) return conference;
             var (conferenceResponse, hearingDetailsResponse) = await addConferenceDetailsFactory();
             conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
 
-            await WriteToCache(id, conference);
+            await WriteToCache(id, conference, cancellationToken);
 
             return conference;
         }

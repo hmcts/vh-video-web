@@ -1,6 +1,6 @@
-using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +12,6 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
-using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -34,7 +33,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id, CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -60,9 +59,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 responseMessage, null, default, null);
 
             _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.SuspendHearingAsync(TestConference.Id)).ThrowsAsync(apiException);
+                x => x.SuspendHearingAsync(TestConference.Id, It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id, CancellationToken.None);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
@@ -79,12 +78,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id);
+            var result = await Controller.SuspendVideoHearingAsync(TestConference.Id, CancellationToken.None);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IVideoApiClient>().Verify(
-                x => x.SuspendHearingAsync(TestConference.Id), Times.Once);
+                x => x.SuspendHearingAsync(TestConference.Id, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
-using BookingsApi.Client;
-using BookingsApi.Contract.V2.Responses;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +11,6 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -41,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             foreach(var participant in invalidParticipants)
             {
-                var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id);
+                var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id, CancellationToken.None);
                 result.Should().BeOfType<UnauthorizedObjectResult>();
                 var typedResult = (UnauthorizedObjectResult)result;
                 typedResult.Should().NotBeNull();
@@ -64,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var controller = SetupControllerWithClaims(user);
 
-            var result = await controller.CallParticipantAsync(TestConference.Id, Guid.NewGuid());
+            var result = await controller.CallParticipantAsync(TestConference.Id, Guid.NewGuid(), CancellationToken.None);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -85,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var controller = SetupControllerWithClaims(user);
 
-            var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, participant.Id, CancellationToken.None);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -114,9 +111,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             _mocker.Mock<IVideoApiClient>().Setup(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
+                    It.IsAny<TransferParticipantRequest>(), It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
 
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
@@ -134,7 +131,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var controller = SetupControllerWithClaims(user);
 
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
@@ -142,7 +139,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -156,7 +153,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var controller  = SetupControllerWithClaims(user);
 
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
@@ -164,7 +161,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -190,9 +187,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>())).ReturnsAsync(requriedConferenceCache);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requriedConferenceCache);
             
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
@@ -200,7 +197,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -217,9 +214,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>())).ReturnsAsync(TestConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
             
-            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -241,7 +238,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds[0]);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds[0], CancellationToken.None);
 
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
@@ -262,7 +259,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallParticipantAsync(TestConference.Id, quickLinkUser.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, quickLinkUser.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
@@ -270,7 +267,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.ParticipantId == quickLinkUser.Id && r.TransferType == TransferType.Call)), Times.Once);
+                        r.ParticipantId == quickLinkUser.Id && r.TransferType == TransferType.Call), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

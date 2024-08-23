@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             _mocker = AutoMock.GetLoose();
             _testConference = ConsultationHelper.BuildConferenceForTest();
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConference.Id)))
+                .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConference.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_testConference);
 
             _controller = _mocker.Create<EndpointsController>();
@@ -57,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             SetupLoginAs("NoEndpointUser@hmcts.net");
 
             // Act
-            var result = await _controller.GetEndpointsLinkedToUser(conferenceId);
+            var result = await _controller.GetEndpointsLinkedToUser(conferenceId, CancellationToken.None);
 
             // Assert
             var typedResult = (OkObjectResult)result;
@@ -78,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             SetupLoginAs(username);
 
             // Act
-            var result = await _controller.GetEndpointsLinkedToUser(conferenceId);
+            var result = await _controller.GetEndpointsLinkedToUser(conferenceId, CancellationToken.None);
 
             // Assert
             var typedResult = (OkObjectResult)result;
@@ -92,7 +93,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         {
             var context = new ControllerContext { HttpContext = new DefaultHttpContext() };
             _controller.ControllerContext = context;
-            Func<Task> action = async () => await _controller.GetEndpointsLinkedToUser(Guid.NewGuid());
+            Func<Task> action = async () => await _controller.GetEndpointsLinkedToUser(Guid.NewGuid(), CancellationToken.None);
             await action.Should().ThrowAsync<UnauthorizedAccessException>();
         }
     }

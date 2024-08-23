@@ -10,6 +10,7 @@ using VideoWeb.Helpers;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace VideoWeb.UnitTests.Mappings;
 
@@ -92,7 +93,7 @@ public class MessageFromDecoderTests
         {
             From = nonParticipantUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
         };
-        _userProfileServiceMock.Setup(x => x.GetUserAsync(nonParticipantUsername)).ReturnsAsync(userProfile);
+        _userProfileServiceMock.Setup(x => x.GetUserAsync(nonParticipantUsername, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
         var result = await _decoder.GetMessageOriginatorAsync(conference, message);
         result.Should().BeEquivalentTo(userProfile.FirstName);
     }

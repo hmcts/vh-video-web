@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Responses;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,13 +10,13 @@ namespace VideoWeb.Common.Caching
 {
     public class ConferenceCache(IMemoryCache memoryCache) : IConferenceCache
     {
-        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse, CancellationToken cancellationToken = default)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
-            await UpdateConferenceAsync(conference);
+            await UpdateConferenceAsync(conference, cancellationToken);
         }
  
-        public async Task UpdateConferenceAsync(Conference conference)
+        public async Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
         {
             await memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
@@ -24,12 +25,12 @@ namespace VideoWeb.Common.Caching
             });
         }
 
-        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory, CancellationToken cancellationToken = default)
         {
             var conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             if (conference != null) return conference;
             var (conferenceDetails, hearingDetailsResponse) = await addConferenceDetailsFactory();
-            await AddConferenceAsync(conferenceDetails, hearingDetailsResponse);
+            await AddConferenceAsync(conferenceDetails, hearingDetailsResponse, cancellationToken);
             conference = await Task.FromResult(memoryCache.Get<Conference>(id));
             return conference;
         }

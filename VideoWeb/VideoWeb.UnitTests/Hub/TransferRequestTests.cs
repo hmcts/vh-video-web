@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = participant.Id;
             var transferDirection = TransferDirection.In;
             
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
@@ -47,8 +47,9 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = conference.Id;
             var participantId = Guid.NewGuid();
             var transferDirection = TransferDirection.In;
-            
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
@@ -75,7 +76,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.Empty;
             var transferDirection = TransferDirection.In;
             
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
             await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);

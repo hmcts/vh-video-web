@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -12,7 +13,6 @@ using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventController;
@@ -49,7 +49,7 @@ public class ParticipantsUpdatedTests
         _mockConference.Object.Id = _testConferenceId;
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConferenceId)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == _testConferenceId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_mockConference.Object);
         
         _mocker.Mock<IParticipantsUpdatedEventNotifier>();
@@ -71,7 +71,7 @@ public class ParticipantsUpdatedTests
         };
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _testConferenceId)))
+            .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _testConferenceId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(updateConference);
         // Act
         var result = await _controller.ParticipantsUpdated(_testConferenceId, updateParticipantsRequest);
@@ -80,10 +80,10 @@ public class ParticipantsUpdatedTests
         result.Should().BeOfType<NoContentResult>();
         
         _mocker.Mock<IConferenceService>().Verify(x
-            => x.GetConference(It.IsAny<Guid>()), Times.Once);
+            => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         
         _mocker.Mock<IConferenceService>().Verify(x
-            => x.ForceGetConference(It.IsAny<Guid>()), Times.Once);
+            => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
         
         _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(
             It.IsAny<Conference>(),

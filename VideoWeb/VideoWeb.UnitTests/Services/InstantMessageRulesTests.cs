@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -49,7 +50,8 @@ public class InstantMessageRulesTests
 
             conference.AddParticipant(new Participant { Id = Guid.Parse(to), Username = "participant1" });
 
-            _userProfileServiceMock.Setup(x => x.GetUserAsync(from)).ReturnsAsync(new UserProfile { IsAdmin = true });
+            _userProfileServiceMock.Setup(x => x.GetUserAsync(from, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UserProfile { IsAdmin = true });
 
             // Act
             var result = await _instantMessageRules.CanExchangeMessage(conference, to, from);
@@ -101,7 +103,8 @@ public class InstantMessageRulesTests
             var participantId = Guid.NewGuid();
 
             var fromUser = new UserProfile { FirstName = "Admin" };
-            _userProfileServiceMock.Setup(x => x.GetUserAsync(username)).ReturnsAsync(fromUser);
+            _userProfileServiceMock.Setup(x => x.GetUserAsync(username, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fromUser);
 
             var participant = new Participant { Id = participantId, Username = "participant1" };
             conference.AddParticipant(participant);
