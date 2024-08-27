@@ -192,19 +192,21 @@
           </span>
         </button>
 
-        <button
-          *ngIf="isInterpreter"
-          id="changeLanguageBtn"
-          colour="grey"
-          tabindex="0"
-          (click)="displayLanguageChange()"
-          (keydown.enter)="displayLanguageChange()"
-        >
-          <span>
-            <fa-icon icon="language" (click)="displayLanguageChange()" (keydown.enter)="displayLanguageChange()"></fa-icon><
-            <span class="context-item"> {{ 'private-consultation-room-controls.interpreting-for' | translate }}</span>
-          </span>
-        </button>
+        <ng-container *appFeatureFlag="featureFlags.interpreterEnhancements">
+          <button
+            *ngIf="isInterpreter"
+            id="changeLanguageBtn"
+            colour="grey"
+            tabindex="0"
+            (click)="displayLanguageChange()"
+            (keydown.enter)="displayLanguageChange()"
+          >
+            <span>
+              <fa-icon icon="language" (click)="displayLanguageChange()" (keydown.enter)="displayLanguageChange()"></fa-icon><
+              <span class="context-item"> {{ 'private-consultation-room-controls.interpreting-for' | translate }}</span>
+            </span>
+          </button>
+        </ng-container>
 
         <button
           *ngIf="!isPrivateConsultation && isHost"
@@ -509,22 +511,23 @@
         <fa-icon icon="sliders-h"></fa-icon>
       </button>
 
-      <button
-        *ngIf="isInterpreter"
-        class="icon-button"
-        id="change-Language-img-desktop"
-        appTooltip
-        colour="grey"
-        [text]="'private-consultation-room-controls.change-interpreting-language' | translate"
-        [attr.aria-label]="'private-consultation-room-controls.change-interpreting-language' | translate"
-        (click)="displayLanguageChange()"
-        (keydown.enter)="displayLanguageChange()"
-        (keydown.space)="displayLanguageChange()"
-        tabindex="0"
-      >
-        <fa-icon icon="language"></fa-icon>
-      </button>
-
+      <ng-container *appFeatureFlag="featureFlags.interpreterEnhancements">
+        <button
+          *ngIf="isInterpreter"
+          class="icon-button"
+          id="change-Language-img-desktop"
+          appTooltip
+          colour="grey"
+          [text]="'private-consultation-room-controls.change-interpreting-language' | translate"
+          [attr.aria-label]="'private-consultation-room-controls.change-interpreting-language' | translate"
+          (click)="displayLanguageChange()"
+          (keydown.enter)="displayLanguageChange()"
+          (keydown.space)="displayLanguageChange()"
+          tabindex="0"
+        >
+          <fa-icon icon="language"></fa-icon>
+        </button>
+      </ng-container>
       <button
         class="icon-button"
         id="toggle-self-view-img-desktop"
