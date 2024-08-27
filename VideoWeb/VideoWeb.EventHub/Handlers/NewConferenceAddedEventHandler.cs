@@ -20,6 +20,12 @@ namespace VideoWeb.EventHub.Handlers
         }
         private async Task PublishNewConferenceAddedMessage(Guid conferenceId)
         {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .NewConferenceAddedMessage(SourceConference.Id);
+            }
+            
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .NewConferenceAddedMessage(conferenceId);
         }

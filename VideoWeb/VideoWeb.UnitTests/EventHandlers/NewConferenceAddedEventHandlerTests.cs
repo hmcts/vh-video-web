@@ -27,8 +27,9 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
-
-            EventHubClientMock.Verify(x => x.NewConferenceAddedMessage(callbackEvent.ConferenceId), Times.Once);
+            
+            const int vhoCount = 1;
+            EventHubClientMock.Verify(x => x.NewConferenceAddedMessage(callbackEvent.ConferenceId), Times.Exactly(TestConference.Participants.Count + vhoCount));
         } 
     }
 }
