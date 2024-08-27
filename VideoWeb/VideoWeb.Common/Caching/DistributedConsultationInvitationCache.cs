@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -6,13 +7,13 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConsultationInvitationCache : RedisCacheBase<Guid, ConsultationInvitation>, IConsultationInvitationCache
+    public sealed class DistributedConsultationInvitationCache : RedisCacheBase<Guid, ConsultationInvitation>, IConsultationInvitationCache
     {
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
         public DistributedConsultationInvitationCache(
             IDistributedCache distributedCache,
-            ILogger<RedisCacheBase<Guid, ConsultationInvitation>> logger) : base(distributedCache, logger)
+            ILogger<DistributedConsultationInvitationCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -20,9 +21,9 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public async Task WriteToCache(ConsultationInvitation consultationInvitation)
+        public async Task WriteToCache(ConsultationInvitation consultationInvitation, CancellationToken cancellationToken = default)
         {
-            await base.WriteToCache(consultationInvitation.InvitationId, consultationInvitation); 
+            await base.WriteToCache(consultationInvitation.InvitationId, consultationInvitation, cancellationToken); 
         }
 
         protected override string GetKey(Guid key)

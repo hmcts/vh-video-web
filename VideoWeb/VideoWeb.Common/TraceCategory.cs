@@ -4,6 +4,7 @@
     {
         AppException,
         Dependency,
-        EventHub
+        EventHub,
+        OperationCancelled,
     }
 }

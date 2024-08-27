@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -39,7 +40,7 @@ public class EndConsultationTest
             }
         };
         
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id),It.IsAny<CancellationToken>())).ReturnsAsync(_testConference);
         _sut = _mocker.Create<ConsultationsController>();
         _sut.ControllerContext = context;
     }
@@ -52,11 +53,13 @@ public class EndConsultationTest
             .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
             .Returns(Task.FromResult(default(object)));
         var conference = new Conference { Id = Guid.NewGuid() };
-        
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id))).ReturnsAsync(conference);
+
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(It.Is<Guid>(y => y == conference.Id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conference);
         var endConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
             .With(x => x.ConferenceId = conference.Id).Build();
-        var result = await _sut.LeaveConsultationAsync(endConsultationRequest);
+        var result = await _sut.LeaveConsultationAsync(endConsultationRequest, CancellationToken.None);
         
         var typedResult = (NotFoundResult)result;
         typedResult.Should().NotBeNull();
@@ -70,7 +73,7 @@ public class EndConsultationTest
             .Returns(Task.FromResult(default(object)));
         
         var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
-        var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
+        var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest, CancellationToken.None);
         
         result.Should().BeOfType<NoContentResult>();
     }
@@ -82,12 +85,12 @@ public class EndConsultationTest
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
             "Please provide a valid conference Id", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+            .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
         var result =
             await _sut.LeaveConsultationAsync(
-                ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+                ConsultationHelper.GetLeaveConsultationRequest(_testConference), CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }
@@ -99,12 +102,12 @@ public class EndConsultationTest
             (int)HttpStatusCode.InternalServerError,
             "Stacktrace goes here", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+            .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
         var result =
             await _sut.LeaveConsultationAsync(
-                ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+                ConsultationHelper.GetLeaveConsultationRequest(_testConference), CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
     }

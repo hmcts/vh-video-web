@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -40,15 +41,17 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Disconnected), Times.Exactly(participantCount));
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Disconnected);
         }
 
-        [TestCase(ParticipantStatus.Available)]
-        [TestCase(ParticipantStatus.Disconnected)]
-        [TestCase(ParticipantStatus.Joining)]
-        [TestCase(ParticipantStatus.None)]
-        [TestCase(ParticipantStatus.NotSignedIn)]
-        [TestCase(ParticipantStatus.UnableToJoin)]
-        public async Task Should_NOT_send_available_message_to_participants_and_service_bus_when_participant_leaves_if_they_were_NOT_in_consultation_or_hearing(ParticipantStatus currentStatus)
+        [TestCase(ParticipantStatus.Available, ParticipantStatus.Available)]
+        [TestCase(ParticipantStatus.Disconnected, ParticipantStatus.Disconnected)]
+        [TestCase(ParticipantStatus.Joining, ParticipantStatus.Joining)]
+        [TestCase(ParticipantStatus.None, ParticipantStatus.None)]
+        [TestCase(ParticipantStatus.NotSignedIn, ParticipantStatus.NotSignedIn)]
+        [TestCase(ParticipantStatus.UnableToJoin, ParticipantStatus.UnableToJoin)]
+        public async Task Should_NOT_send_available_message_to_participants_and_service_bus_when_participant_leaves_if_they_were_NOT_in_consultation_or_hearing(
+            ParticipantStatus currentStatus, ParticipantStatus expectedStatus)
         {
             _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
@@ -70,6 +73,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Disconnected), Times.Never);
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(expectedStatus);
         }
     }
 }

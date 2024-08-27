@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
@@ -63,10 +64,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
+                .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(responses);
 
-            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, CancellationToken.None);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(responses);
@@ -80,10 +81,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
+                .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, It.IsAny<CancellationToken>()))
                 .Throws(apiException);
 
-            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

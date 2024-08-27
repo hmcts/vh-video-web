@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
@@ -85,15 +86,15 @@ public class StaffMemberJoinConferenceTests
         _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
             .Returns(true);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_testConference);
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId))
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateConferenceDto());
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>()))
+            .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(staffMemberResponse);
         
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
+        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
     }
@@ -108,14 +109,14 @@ public class StaffMemberJoinConferenceTests
         _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
             .Returns(true);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_testConference);
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>()))
+            .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(videoApiException);
         
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
+        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         typedResult.Value.Should().Be(errorResponse);
@@ -130,9 +131,9 @@ public class StaffMemberJoinConferenceTests
             errorResponse, null, default, null);
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(videoApiException);
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
+        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         typedResult.Value.Should().Be(errorResponse);
@@ -149,7 +150,7 @@ public class StaffMemberJoinConferenceTests
         _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
             .Returns(false);
         
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
+        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }

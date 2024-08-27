@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -39,10 +40,10 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
                 .With(x => x.Endpoints = endpoints)
                 .With(x => x.Id = Guid.NewGuid()).Build();
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(conferenceId))
+                .Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId);
+            var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId, CancellationToken.None);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             var videoEndpointResponses = typedResult.Value.As<List<VideoEndpointResponse>>();
@@ -58,10 +59,10 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
                 "Please provide a valid conference Id", null, default, null);
             
             _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(conferenceId))
+                .Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId);
+            var result = await _controller.GetVideoEndpointsForConferenceAsync(conferenceId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
 

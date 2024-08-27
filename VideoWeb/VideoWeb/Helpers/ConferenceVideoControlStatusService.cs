@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -17,7 +18,7 @@ namespace VideoWeb.Helpers
         }
 
         public async Task UpdateMediaStatusForParticipantInConference(Guid conferenceId, string participantId,
-            ParticipantMediaStatus mediaStatus)
+            ParticipantMediaStatus mediaStatus, CancellationToken cancellationToken = default)
         {
             var conferenceVideoControlStatuses = await _conferenceVideoControlStatusCache.ReadFromCache(conferenceId) ?? new ConferenceVideoControlStatuses();
 
@@ -40,12 +41,12 @@ namespace VideoWeb.Helpers
         }
         
         public async Task SetVideoControlStateForConference(Guid conferenceId,
-            ConferenceVideoControlStatuses? conferenceVideoControlStatuses)
+            ConferenceVideoControlStatuses? conferenceVideoControlStatuses, CancellationToken cancellationToken = default)
         {
             await _conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses);
         }
         
-        public async Task<ConferenceVideoControlStatuses?> GetVideoControlStateForConference(Guid conferenceId)
+        public async Task<ConferenceVideoControlStatuses?> GetVideoControlStateForConference(Guid conferenceId, CancellationToken cancellationToken = default)
         {
             return await _conferenceVideoControlStatusCache.ReadFromCache(conferenceId);
         }

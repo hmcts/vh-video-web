@@ -127,7 +127,7 @@ export class AppInsightsLoggerService implements LogAdapter {
                     userId = userData?.preferred_username.toLowerCase();
                 }
 
-                if (this.currentIdp === IdpProviders.quickLink) {
+                if (this.currentIdp === IdpProviders.quickLink && userData?.preferred_username) {
                     const participantId = userData.preferred_username.split('@')[0];
                     userId = `${userData.unique_name.toLowerCase()}_${participantId}`;
                 }

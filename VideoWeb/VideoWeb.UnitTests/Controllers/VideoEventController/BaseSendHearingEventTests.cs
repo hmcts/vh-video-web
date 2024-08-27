@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
@@ -15,8 +16,6 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
 
@@ -111,13 +110,14 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             Sut.ControllerContext = context;
 
             var conference = CreateValidConferenceResponse(null);
+            
             Mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conference);
-            Mocker.Mock<IConferenceService>().Setup(c => c.GetConference(TestConference.Id))
+            Mocker.Mock<IConferenceService>().Setup(c => c.GetConference(TestConference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(TestConference);
-            Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<Conference>()))
-                .Callback<Conference>(updatedConference => { TestConference = updatedConference; });
+            Mocker.Mock<IConferenceCache>().Setup(cache => cache.UpdateConferenceAsync(It.IsAny<Conference>(), It.IsAny<CancellationToken>()))
+                .Callback<Conference, CancellationToken>((updatedConference, token) => { TestConference = updatedConference; });
             Mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(Mocker.Mock<IEventHandler>().Object);
         }
     }

@@ -14,13 +14,13 @@ public class DistributedTestCallCacheTests
 {
     private Mock<IDistributedCache> _distributedCacheMock;
     private DistributedTestCallCache _sut;
-    private Mock<ILogger<RedisCacheBase<string, bool>>> _loggerMock;
+    private Mock<ILogger<DistributedTestCallCache>> _loggerMock;
 
     [SetUp]
     public void Setup()
     {
         _distributedCacheMock = new Mock<IDistributedCache>();
-        _loggerMock = new Mock<ILogger<RedisCacheBase<string, bool>>>();
+        _loggerMock = new Mock<ILogger<DistributedTestCallCache>>();
         _sut = new DistributedTestCallCache(_distributedCacheMock.Object, _loggerMock.Object);
     }
     

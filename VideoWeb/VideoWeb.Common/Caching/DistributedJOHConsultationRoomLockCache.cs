@@ -1,15 +1,16 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedJOHConsultationRoomLockCache : RedisCacheBase<string , bool>,IDistributedJOHConsultationRoomLockCache
+    public sealed class DistributedJOHConsultationRoomLockCache : RedisCacheBase<string , bool>,IDistributedJOHConsultationRoomLockCache
     {
         public DistributedJOHConsultationRoomLockCache(
             IDistributedCache distributedCache,
-            ILogger<RedisCacheBase<string, bool>> logger) : base(distributedCache, logger)
+            ILogger<DistributedJOHConsultationRoomLockCache> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -23,14 +24,14 @@ namespace VideoWeb.Common.Caching
             return key;
         }
 
-        public async Task UpdateJohConsultationRoomLockStatus(bool isLocked, string keyName)
+        public async Task UpdateJohConsultationRoomLockStatus(bool isLocked, string keyName, CancellationToken cancellationToken = default)
         {
-            await base.WriteToCache(keyName,isLocked);
+            await WriteToCache(keyName,isLocked, cancellationToken);
         }
 
-        public async Task<bool> IsJOHRoomLocked(string johConsultationRoomKey)
+        public async Task<bool> IsJOHRoomLocked(string johConsultationRoomKey, CancellationToken cancellationToken = default)
         {
-            return await base.ReadFromCache(johConsultationRoomKey);
+            return await ReadFromCache(johConsultationRoomKey, cancellationToken);
         }
     }
 }

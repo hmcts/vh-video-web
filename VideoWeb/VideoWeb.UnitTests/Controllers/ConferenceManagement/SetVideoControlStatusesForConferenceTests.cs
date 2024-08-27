@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -35,10 +36,12 @@ public class SetVideoControlStatusesForConferenceTests
         };
         
         // Act
-        var response = await _sut.SetVideoControlStatusesForConference(conferenceId, conferenceVideoControlStatusesRequest);
+        var response = await _sut.SetVideoControlStatusesForConference(conferenceId, conferenceVideoControlStatusesRequest, CancellationToken.None);
         
         // Assert
-        _mocker.Mock<IConferenceVideoControlStatusService>().Verify(x => x.SetVideoControlStateForConference(conferenceId, It.IsAny<ConferenceVideoControlStatuses>()), Times.Once);
+        _mocker.Mock<IConferenceVideoControlStatusService>().Verify(
+            x => x.SetVideoControlStateForConference(conferenceId, It.IsAny<ConferenceVideoControlStatuses>(),
+                It.IsAny<CancellationToken>()), Times.Once);
         response.Should().BeAssignableTo<AcceptedResult>();
     }
     
@@ -49,10 +52,11 @@ public class SetVideoControlStatusesForConferenceTests
         var conferenceId = Guid.NewGuid();
         
         // Act
-        var response = await _sut.SetVideoControlStatusesForConference(conferenceId, null);
+        var response = await _sut.SetVideoControlStatusesForConference(conferenceId, null, CancellationToken.None);
         
         // Assert
-        _mocker.Mock<IConferenceVideoControlStatusService>().Verify(x => x.SetVideoControlStateForConference(conferenceId, null), Times.Once);
+        _mocker.Mock<IConferenceVideoControlStatusService>().Verify(
+            x => x.SetVideoControlStateForConference(conferenceId, null, It.IsAny<CancellationToken>()), Times.Once);
         response.Should().BeAssignableTo<AcceptedResult>();
     }
     
@@ -61,10 +65,13 @@ public class SetVideoControlStatusesForConferenceTests
     {
         // Arrange
         var conferenceId = Guid.NewGuid();
-        
-        _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.SetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<ConferenceVideoControlStatuses>())).Throws<Exception>();
+
+        _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x =>
+            x.SetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<ConferenceVideoControlStatuses>(),
+                It.IsAny<CancellationToken>())).Throws<Exception>();
         
         // Act
-        Assert.ThrowsAsync<Exception>(async () => await _sut.SetVideoControlStatusesForConference(conferenceId, null));
+        Assert.ThrowsAsync<Exception>(async () =>
+            await _sut.SetVideoControlStatusesForConference(conferenceId, null, CancellationToken.None));
     }
 }

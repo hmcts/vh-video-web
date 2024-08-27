@@ -124,6 +124,22 @@ namespace VideoWeb.UnitTests.Middleware
             ClassicAssert.AreEqual(bookingsApiException.StatusCode, _HttpContext.Response.StatusCode);
             _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
+
+        [Test]
+        public async Task should_return_request_timeout_when_operationcancelled_exception_is_thrown()
+        {
+            var exception = new OperationCanceledException("This is a test timeout exception");
+            RequestDelegateMock
+                .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
+                .Returns(Task.FromException(exception));
+            
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
+            
+            await ExceptionMiddleware.InvokeAsync(_HttpContext);
+            _HttpContext.Response.StatusCode.Should().Be((int)HttpStatusCode.RequestTimeout);
+            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
+            
+        }
         
         public interface IDelegateMock
         {

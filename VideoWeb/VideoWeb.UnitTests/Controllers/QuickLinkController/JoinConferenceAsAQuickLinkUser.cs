@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -96,7 +97,7 @@ public class JoinConferenceAsAQuickLinkUser
         var objectResult = result.Should().BeAssignableTo<ObjectResult>().Which;
         objectResult.StatusCode.Should().Be(statusCode);
         objectResult.Value.Should().BeAssignableTo<string>().Which.Should().Be(response);
-        _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never());
+        _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>(), It.IsAny<CancellationToken>()), Times.Never());
         _mocker.Mock<IVideoApiClient>().Verify(x => x.AddQuickLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
             It.Is<AddQuickLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
     }
@@ -127,7 +128,7 @@ public class JoinConferenceAsAQuickLinkUser
         var objectResult = result.Should().BeAssignableTo<ObjectResult>().Which;
         objectResult.StatusCode.Should().Be(statusCode);
         objectResult.Value.Should().BeAssignableTo<string>().Which.Should().NotBeEmpty();
-        _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never());
+        _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>(), It.IsAny<CancellationToken>()), Times.Never());
         _mocker.Mock<IVideoApiClient>().Verify(x => x.AddQuickLinkParticipantAsync(It.IsAny<Guid>(),
             It.IsAny<AddQuickLinkParticipantRequest>()), Times.Never);
     }

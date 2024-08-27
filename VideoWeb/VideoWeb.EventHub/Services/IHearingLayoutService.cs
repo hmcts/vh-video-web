@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
 
@@ -8,8 +7,8 @@ namespace VideoWeb.EventHub.Services
 {
     public interface IHearingLayoutService
     {
-        Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout);
-        Task<HearingLayout?> GetCurrentLayout(Guid conferenceId);
+        Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout, CancellationToken cancellationToken = default);
+        Task<HearingLayout?> GetCurrentLayout(Guid conferenceId, CancellationToken cancellationToken = default);
     }
 
 }

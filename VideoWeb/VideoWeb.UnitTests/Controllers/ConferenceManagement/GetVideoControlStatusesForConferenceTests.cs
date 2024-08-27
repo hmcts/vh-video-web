@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -32,8 +33,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var conferenceVideoControlStatuses = new ConferenceVideoControlStatuses();
-                
-            _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId))).ReturnsAsync(conferenceVideoControlStatuses);
+
+            _mocker.Mock<IConferenceVideoControlStatusService>()
+                .Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId),
+                    It.IsAny<CancellationToken>())).ReturnsAsync(conferenceVideoControlStatuses);
 
             // Act
             var response = await _sut.GetVideoControlStatusesForConference(_conferenceId);
@@ -47,7 +50,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
 
             _mocker.Mock<IConferenceVideoControlStatusService>()
-                .Setup(x => x.GetVideoControlStateForConference(It.IsAny<Guid>()))
+                .Setup(x => x.GetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => default);
 
             var response = await _sut.GetVideoControlStatusesForConference(_conferenceId) as NoContentResult;
@@ -61,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Arrange
 
             _mocker.Mock<IConferenceVideoControlStatusService>()
-                .Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId)))
+                .Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId), It.IsAny<CancellationToken>()))
                 .Throws<Exception>();
 
             // Act

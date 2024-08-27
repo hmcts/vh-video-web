@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +30,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     User = claimsPrincipal
                 }
             };
-            
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>())).ReturnsAsync(TestConference);
+
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(TestConference);
 
             return sut;
         }

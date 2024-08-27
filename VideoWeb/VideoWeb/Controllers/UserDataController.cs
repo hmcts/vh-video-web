@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
@@ -34,13 +35,13 @@ public class UserDataController(
     [HttpGet("courtrooms", Name = "GetCourtRoomAccounts")]
     [ProducesResponseType(typeof(IList<CourtRoomsAccountResponse>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts([FromQuery] VhoConferenceFilterQuery query)
+    public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts([FromQuery] VhoConferenceFilterQuery query, CancellationToken cancellationToken)
     {
-        var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
+        var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames, cancellationToken);
         if (allocatedHearings == null || !allocatedHearings.Any())
             return new List<CourtRoomsAccountResponse>();
         var request = new GetConferencesByHearingIdsRequest { HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
-        var conferences = await videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
+        var conferences = await videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request, cancellationToken);
         
         if(conferences.Count != allocatedHearings.Count)
             logger.LogError(@"Allocated hearings count {HearingCount} does not match conferences count {ConferenceCount}", allocatedHearings.Count, conferences.Count);
@@ -63,5 +64,5 @@ public class UserDataController(
     /// </summary>
     [HttpGet("csos", Name = "GetCSOs")]
     [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await bookingApiClient.GetJusticeUserListAsync(string.Empty, null));
+    public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers(CancellationToken cancellationToken) =>Ok(await bookingApiClient.GetJusticeUserListAsync(string.Empty, null, cancellationToken));
 }

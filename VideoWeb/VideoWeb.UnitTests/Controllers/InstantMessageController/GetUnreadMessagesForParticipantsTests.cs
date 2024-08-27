@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Faker;
 using FizzWare.NBuilder;
@@ -33,10 +34,10 @@ public class GetUnreadMessagesForParticipantsTests : InstantMessageControllerTes
             .ThrowsAsync(apiException);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conferenceId)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conferenceId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
+        var result = await Sut.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername, CancellationToken.None);
         var typedResult = (ObjectResult)result;
         typedResult.Should().NotBeNull();
     }
@@ -52,10 +53,10 @@ public class GetUnreadMessagesForParticipantsTests : InstantMessageControllerTes
             .ReturnsAsync(new List<InstantMessageResponse>());
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await Sut.GetUnreadMessagesForParticipantAsync(conferenceId, Guid.Parse(participantUsername.ToString()));
+        var result = await Sut.GetUnreadMessagesForParticipantAsync(conferenceId, Guid.Parse(participantUsername.ToString()), CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
@@ -70,15 +71,15 @@ public class GetUnreadMessagesForParticipantsTests : InstantMessageControllerTes
         var messages = InitMessages(conference);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
         var judgeParticipant = conference.Participants.Single(x => x.Role == Role.Judge);
-        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, judgeParticipant.Username))
+        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, judgeParticipant.Username, It.IsAny<CancellationToken>()))
             .ReturnsAsync(messages);
         
         // check judge messages
-        var result = await Sut.GetUnreadMessagesForParticipantAsync(conference.Id, judgeParticipant.Id);
+        var result = await Sut.GetUnreadMessagesForParticipantAsync(conference.Id, judgeParticipant.Id, CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
@@ -94,15 +95,15 @@ public class GetUnreadMessagesForParticipantsTests : InstantMessageControllerTes
         var messages = InitMessagesRepresentative(conference);
         
         Mocker.Mock<IConferenceService>()
-            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id)))
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
         var representativeParticipant = conference.Participants.First(x => x.Role == Role.Representative);
-        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, representativeParticipant.Username))
+        Mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, representativeParticipant.Username, It.IsAny<CancellationToken>()))
             .ReturnsAsync(messages);
         
         // check representative messages
-        var result = await Sut.GetUnreadMessagesForParticipantAsync(conference.Id, representativeParticipant.Id);
+        var result = await Sut.GetUnreadMessagesForParticipantAsync(conference.Id, representativeParticipant.Id, CancellationToken.None);
         
         var typedResult = (OkObjectResult)result;
         typedResult.Should().NotBeNull();
