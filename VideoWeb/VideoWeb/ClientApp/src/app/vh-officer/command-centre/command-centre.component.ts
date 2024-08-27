@@ -55,12 +55,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
-    private destroy$ = new Subject<void>();
-
     private readonly loggerPrefix = '[CommandCentre] -';
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
+
+    private destroy$ = new Subject<void>();
 
     constructor(
         private queryService: VhoQueryService,
@@ -75,8 +73,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
-        this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
-        this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
         this.activeSessionsOnly = this.activeSessionsStorage.get() ?? false;
     }
@@ -225,7 +221,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     async refreshConferenceDataDuringDisconnect() {
         this.logger.warn(`${this.loggerPrefix} EventHub refresh pending...`);
-        this.retrieveHearingsForVhOfficer(true);
+        this.queryService.runQuery();
         if (this.selectedHearing) {
             await this.retrieveConferenceDetails(this.selectedHearing.id);
         }
@@ -233,7 +229,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
-        this.loadCourtRoomsAccountFilters();
         this.loadCsoFilter();
         this.queryService.startQuery(
             this.venueAllocations,
@@ -245,16 +240,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     loadVenueSelection(): void {
-        const venues = this.judgeAllocationStorage.get();
-        this.venueAllocations = venues; // .map(v => v.name);
-    }
-
-    loadCourtRoomsAccountFilters(): void {
-        this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
+        this.venueAllocations = this.judgeAllocationStorage.get();
     }
 
     loadCsoFilter(): void {
-        this.csoFilter = this.csoAllocationStorage.get();
+        this.csoFilter = this.queryService.getCsoFilterFromStorage();
     }
 
     retrieveHearingsForVhOfficer(reload: boolean) {
@@ -320,15 +310,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     getDateFromString(datePhone: string): Date {
         const dateParts = datePhone.split('-');
         return new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
-    }
-
-    applyFilterInit() {
-        this.originalHearings.length = 0;
-        this.hearings.forEach(x => this.originalHearings.push(x));
-        const filter = this.courtAccountsAllocationStorage.get();
-        if (filter && !filter.every(x => x.selected)) {
-            this.hearingsFiltering(filter);
-        }
     }
 
     isCurrentConference(conferenceId: string): boolean {

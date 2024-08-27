@@ -148,7 +148,7 @@ describe('CommandCentreComponent - Core', () => {
 
     it('should handle api error when retrieving conference list fails', fakeAsync(() => {
         const error = { status: 404, isApiException: true };
-        vhoQueryService.getConferencesForVHOfficer.and.returnValue(throwError(error));
+        vhoQueryService.getFilteredQueryResults.and.returnValue(throwError(error));
         errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });
@@ -264,35 +264,10 @@ describe('CommandCentreComponent - Core', () => {
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(0);
     });
-
     it('should convert string to date', () => {
         const dateFrom = component.getDateFromString('2021-02-09');
         expect(dateFrom.getFullYear()).toEqual(2021);
         expect(dateFrom.getMonth()).toEqual(1);
         expect(dateFrom.getDay()).toEqual(2);
-    });
-
-    describe('filtering by cso', () => {
-        beforeAll(() => {
-            TestFixtureHelper.clearVenues();
-            TestFixtureHelper.setupCsoAllocations();
-        });
-
-        it('should retrieve hearings filtered by cso', () => {
-            component.getConferenceForSelectedAllocations();
-            const csoFilter = TestFixtureHelper.getCsoAllocations();
-            const venues = null;
-            const allocatedCsoIds = csoFilter.allocatedCsoIds;
-            const includeUnallocated = csoFilter.includeUnallocated;
-            const activeSessionsOnly = false;
-            component.activeSessionsOnly = activeSessionsOnly;
-            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated, activeSessionsOnly);
-            expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
-        });
-
-        afterAll(() => {
-            TestFixtureHelper.setupVenues();
-            TestFixtureHelper.clearCsoAllocations();
-        });
     });
 });
