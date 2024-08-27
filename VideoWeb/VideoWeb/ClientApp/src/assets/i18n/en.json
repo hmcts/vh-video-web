@@ -1323,6 +1323,11 @@
       "message": "{{role}} has been added to the hearing.",
       "dismiss": "OK"
     },
+    "participant-left-hearing": {
+      "title": "Left hearing",
+      "message": "{{name}} has left the hearing.",
+      "dismiss": "OK"
+    },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Video Access Point has been added to the hearing",

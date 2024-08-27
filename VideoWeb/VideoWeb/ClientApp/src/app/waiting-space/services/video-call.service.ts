@@ -408,6 +408,11 @@ export class VideoCallService {
         return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
     }
 
+    nonHostleaveHearing(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId, participant: participantId });
+        return this.apiClient.nonHostLeaveHearing(conferenceId, participantId);
+    }
+
     endHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         return this.apiClient.endVideoHearing(conferenceId).toPromise();

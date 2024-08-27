@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { of } from 'rxjs';
 import { catchError, switchMap, map, tap } from 'rxjs/operators';
 import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
@@ -66,6 +67,21 @@ export class ConferenceEffects {
                             })
                         )
                     )
+            )
+        )
+    );
+
+    participantLeaveHearingRoom$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.participantLeaveHearingRoom),
+            concatLatestFrom(action => [
+                this.store.select(ConferenceSelectors.getActiveConference),
+                this.store.select(ConferenceSelectors.getParticipantById(action.participantId))
+            ]),
+            switchMap(([action, conference, participant]) =>
+                this.apiClient
+                    .leaveHearing(action.conferenceId, action.participantId)
+                    .pipe(map(() => ConferenceActions.participantLeaveHearingRoomSuccess({ conference, participant })))
             )
         )
     );

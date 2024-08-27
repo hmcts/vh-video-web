@@ -476,6 +476,18 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
+    nonHostLeave(confirmation: boolean) {
+        this.displayLeaveHearingPopup = false;
+        if (confirmation) {
+            this.videoCallService
+                .nonHostleaveHearing(this.conferenceId, this.participant.id)
+                .pipe(takeUntil(this.destroyedSubject))
+                .subscribe();
+        } else {
+            this.focusService.restoreFocus();
+        }
+    }
+
     displayConfirmationDialog() {
         this.focusService.storeFocus();
         this.displayConfirmPopup = true;
