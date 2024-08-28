@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Services;
@@ -44,13 +45,13 @@ public class ConferenceManagementServiceTests
 
         _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(_conference.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_conference);
-        RegisterUsersForHubContext(_conference.Participants);
+        RegisterUsersForHubContext(_conference.Id, _conference.Participants);
         
         _sut = _mocker.Create<ConferenceManagementService>();
     }
     
     [Test]
-    public void should_not_send_message_when_participant_does_not_exist()
+    public void UpdateParticipantHandStatusInConference_should_not_send_message_when_participant_does_not_exist()
     {
         var conferenceId = _conference.Id;
         var participantId = Guid.NewGuid();
@@ -66,7 +67,7 @@ public class ConferenceManagementServiceTests
     }
     
     [Test]
-    public async Task should_publish_hand_raised_to_participants_and_linked_and_judge()
+    public async Task UpdateParticipantHandStatusInConference_should_publish_hand_raised_to_participants_and_linked_and_judge()
     {
         var conferenceId = _conference.Id;
         var participant = _conference.Participants.First(x => !x.IsJudge());
@@ -95,7 +96,7 @@ public class ConferenceManagementServiceTests
     }
     
     [Test]
-    public async Task should_publish_hand_raised_to_all_johs_when_one_joh_is_is_raised()
+    public async Task UpdateParticipantHandStatusInConference_should_publish_hand_raised_to_all_johs_when_one_joh_is_is_raised()
     {
         var conferenceId = _conference.Id;
         var allJohs = _conference.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
@@ -118,7 +119,34 @@ public class ConferenceManagementServiceTests
         }
     }
 
-    private void RegisterUsersForHubContext(List<Participant> participants)
+    [Test]
+    public async Task ParticipantLeaveConferenceAsync_should_throw_exception_when_participant_does_not_exist()
+    {
+        var conferenceId = _conference.Id;
+        var participantId = "non-existent-participant";
+        
+        var action = async () => await _sut.ParticipantLeaveConferenceAsync(conferenceId, participantId);
+        await action.Should().ThrowAsync<ParticipantNotFoundException>();
+        
+        EventHubClientMock.Verify(
+            x => x.NonHostTransfer(conferenceId, It.IsAny<Guid>(), TransferDirection.Out), Times.Never);
+    }
+    
+    [Test]
+    public async Task ParticipantLeaveConferenceAsync_should_publish_non_host_transfer_message()
+    {
+        var conferenceId = _conference.Id;
+        var participant = _conference.Participants.First(x => !x.IsJudge());
+        
+        await _sut.ParticipantLeaveConferenceAsync(conferenceId, participant.Username);
+        
+        
+        EventHubContextMock.Verify(
+            x => x.Clients.Group(conferenceId.ToString())
+                .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out), Times.Once);
+    }
+    
+    private void RegisterUsersForHubContext(Guid conferenceId, List<Participant> participants)
     {
         foreach (var participant in participants)
         {
@@ -127,6 +155,9 @@ public class ConferenceManagementServiceTests
         }
 
         EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+            .Returns(new Mock<IEventHubClient>().Object);
+
+        EventHubContextMock.Setup(x => x.Clients.Group(conferenceId.ToString()))
             .Returns(new Mock<IEventHubClient>().Object);
     }
 }
