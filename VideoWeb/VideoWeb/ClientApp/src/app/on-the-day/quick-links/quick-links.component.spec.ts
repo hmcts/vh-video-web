@@ -15,6 +15,7 @@ import { By } from '@angular/platform-browser';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LoadingComponent } from 'src/app/shared/loading/loading.component';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
+import { EventsHubService } from 'src/app/services/events-hub.service';
 
 describe('QuickLinksComponent', () => {
     const quickLinkParticipantRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
@@ -25,12 +26,14 @@ describe('QuickLinksComponent', () => {
     let quickLinksServiceSpy: jasmine.SpyObj<QuickLinksService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
 
     let validateQuickLinkSubject: Subject<boolean>;
 
     const testHearingId = 'testHearingId';
 
     beforeEach(async () => {
+        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['configureConnection']);
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
 
         errorServiceSpy = jasmine.createSpyObj('errorServiceSpy', {
@@ -96,7 +99,8 @@ describe('QuickLinksComponent', () => {
                 {
                     provide: SecurityConfigSetupService,
                     useValue: securityConfigSetupServiceSpy
-                }
+                },
+                { provide: EventsHubService, useValue: eventsHubServiceSpy }
             ],
             imports: [ReactiveFormsModule, RouterTestingModule]
         }).compileComponents();
@@ -253,6 +257,7 @@ describe('QuickLinksComponent', () => {
                     hearingJoinedSubject.next(true);
                     flush();
 
+                    expect(eventsHubServiceSpy.configureConnection).toHaveBeenCalled();
                     expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
                 }));
 

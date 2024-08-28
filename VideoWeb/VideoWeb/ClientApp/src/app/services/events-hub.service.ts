@@ -33,17 +33,16 @@ export class EventsHubService implements OnDestroy {
         private logger: Logger,
         private errorService: ErrorService
     ) {
+        connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
+        configService.getClientSettings().subscribe(clientSettings => {
+            this._connection = this.buildConnection(clientSettings.event_hub_path);
+        });
         combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$])
             .pipe(takeUntil(this.destroyed$))
             .subscribe(([service, idp]) => {
                 this.securityService = service;
                 this.currentIdp = idp;
             });
-        configService.getClientSettings().subscribe(clientSettings => {
-            this._connection = this.buildConnection(clientSettings.event_hub_path);
-            this.configureConnection();
-            connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
-        });
     }
 
     get onEventsHubReady(): Observable<void> {

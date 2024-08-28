@@ -21,6 +21,7 @@ import { NoSleepService } from './services/no-sleep.service';
 import { HideComponentsService } from './waiting-space/services/hide-components.service';
 import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
+import { EventsHubService } from './services/events-hub.service';
 
 @Component({
     selector: 'app-root',
@@ -66,7 +67,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private location: Location,
         private noSleepService: NoSleepService,
         private logger: Logger,
-        private hideBackgroundService: HideComponentsService
+        private hideBackgroundService: HideComponentsService,
+        private eventhubService: EventsHubService
     ) {
         this.isRepresentativeOrIndividual = false;
 
@@ -96,6 +98,10 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
+
+                        if (isAuthenticated) {
+                            this.eventhubService.configureConnection();
+                        }
 
                         if (this.currentIdp !== 'quickLink') {
                             this.eventService
