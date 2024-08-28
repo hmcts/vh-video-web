@@ -83,6 +83,11 @@ public class ConferenceManagementService(
         }, cancellationToken);
 
         logger.LogTrace("Participant left conference: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}", participant.Id, conferenceId);
+        foreach (var conferenceParticipant in conference.Participants)
+        {
+            await hubContext.Clients.Group(conferenceParticipant.Username.ToLowerInvariant())
+                .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out);
+        }
         await hubContext.Clients.Group(conferenceId.ToString())
             .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out);
     }

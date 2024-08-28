@@ -19,7 +19,7 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">conference id</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Accepted status</returns>
-        [HttpPost("{conferenceId}/participant/{participantId}/non-host-leave")]
+        [HttpPost("{conferenceId}/non-host-leave")]
         [SwaggerOperation(OperationId = "NonHostLeaveHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> NonHostLeaveHearingAsync(Guid conferenceId,
