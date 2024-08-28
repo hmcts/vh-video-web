@@ -1,4 +1,4 @@
-import { ConferenceStatus, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
@@ -102,7 +102,8 @@ describe('Conference Reducer', () => {
                     defenceAdvocate: null,
                     room: null
                 }
-            ]
+            ],
+            supplier: Supplier.Vodafone
         };
         existingInitialState = {
             currentConference: conferenceTestData,
@@ -142,7 +143,9 @@ describe('Conference Reducer', () => {
                             uuid: '1922_John Doe',
                             isAudioOnlyCall: false,
                             isVideoCall: true,
-                            protocol: 'sip'
+                            protocol: 'sip',
+                            sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                            receivingAudioMix: 'main'
                         }
                     },
                     conferenceTestData.participants[1]
@@ -612,7 +615,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -631,7 +636,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -650,7 +657,9 @@ describe('Conference Reducer', () => {
                 uuid: '1922_John Doe',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
-                protocol: 'sip'
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -678,7 +687,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
@@ -708,7 +719,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
@@ -738,7 +751,9 @@ describe('Conference Reducer', () => {
                                 uuid: '1922_John Doe',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
-                                protocol: 'sip'
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
                             }
                         }
                     ]
@@ -876,6 +891,46 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].displayName).toBe('New Name');
+        });
+    });
+
+    describe('loadLoggedInParticipantSuccess action', () => {
+        it('should set the logged in participant', () => {
+            const participant = conferenceTestData.participants[0];
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.loadLoggedInParticipantSuccess({ participant: participant })
+            );
+
+            expect(result.loggedInParticipant).toEqual(participant);
+        });
+    });
+
+    describe('updateAudioMix action', () => {
+        it('should update the audio mix of the participant to main court', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateAudioMix({
+                    participant: conferenceTestData.participants[0],
+                    mainCourt: true,
+                    interpreterLanguage: undefined
+                })
+            );
+
+            expect(result.currentConference.participants[0].currentAudioMix).toEqual('main');
+        });
+
+        it('should update the audio mix of the participant to a specific language', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateAudioMix({
+                    participant: conferenceTestData.participants[0],
+                    mainCourt: false,
+                    interpreterLanguage: { code: 'en', description: 'English', type: InterpreterType.Verbal }
+                })
+            );
+
+            expect(result.currentConference.participants[0].currentAudioMix).toEqual('en');
         });
     });
 });

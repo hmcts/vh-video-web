@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
@@ -153,7 +153,8 @@ namespace VideoWeb.UnitTests.Hub
             var toParticipantId = Guid.NewGuid().ToString();
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
-            UserProfileServiceMock.Setup(x => x.GetUserAsync("")).ReturnsAsync(new UserProfile { IsAdmin = false});
+            UserProfileServiceMock.Setup(x => x.GetUserAsync("", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UserProfile { IsAdmin = false });
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
@@ -233,7 +234,7 @@ namespace VideoWeb.UnitTests.Hub
             IndividualUserProfile = InitProfile(IndividualUsername, Role.Individual.ToString());
             RepresentativeUserProfile = InitProfile(RepresentativeUsername, Role.Representative.ToString());
             
-            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id)).ReturnsAsync(Conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(Conference);
 
             ConferenceGroupChannel = new Mock<IEventHubClient>(); // only admins register to this
             JudgeGroupChannel = new Mock<IEventHubClient>();
@@ -242,11 +243,11 @@ namespace VideoWeb.UnitTests.Hub
             AdminGroupChannel = new Mock<IEventHubClient>();
             ConferenceCache = new Mock<IConferenceCache>();
 
-            UserProfileServiceMock.Setup(x => x.GetUserAsync(JudgeUsername)).ReturnsAsync(JudgeUserProfile);
-            UserProfileServiceMock.Setup(x => x.GetUserAsync(IndividualUsername)).ReturnsAsync(IndividualUserProfile);
-            UserProfileServiceMock.Setup(x => x.GetUserAsync(RepresentativeUsername))
+            UserProfileServiceMock.Setup(x => x.GetUserAsync(JudgeUsername, It.IsAny<CancellationToken>())).ReturnsAsync(JudgeUserProfile);
+            UserProfileServiceMock.Setup(x => x.GetUserAsync(IndividualUsername, It.IsAny<CancellationToken>())).ReturnsAsync(IndividualUserProfile);
+            UserProfileServiceMock.Setup(x => x.GetUserAsync(RepresentativeUsername, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(RepresentativeUserProfile);
-            UserProfileServiceMock.Setup(x => x.GetUserAsync(AdminUsername)).ReturnsAsync(AdminUserProfile);
+            UserProfileServiceMock.Setup(x => x.GetUserAsync(AdminUsername, It.IsAny<CancellationToken>())).ReturnsAsync(AdminUserProfile);
 
             var judge = Conference.GetJudge();
             var individual = Conference.Participants.First(p => p.Role == Role.Individual);
@@ -265,7 +266,7 @@ namespace VideoWeb.UnitTests.Hub
             EventHubClientMock.Setup(x => x.Group(representative.Username.ToLowerInvariant()))
                 .Returns(RepresentativeGroupChannel.Object);
             
-            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id)).ReturnsAsync(Conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(Conference);
         }
 
         private Conference InitConference()

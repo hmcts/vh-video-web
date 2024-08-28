@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Services;
 
@@ -28,17 +28,17 @@ namespace VideoWeb.Helpers
             _hubContext = hubContext;
         }
         
-        private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout)
+        private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout, CancellationToken cancellationToken = default)
         {
-            await _hearingLayoutCache.WriteToCache(conferenceId, newLayout);
+            await _hearingLayoutCache.WriteToCache(conferenceId, newLayout, cancellationToken);
         }
 
-        private async Task<HearingLayout?> GetHearingLayoutFromCache(Guid conferenceId)
+        private async Task<HearingLayout?> GetHearingLayoutFromCache(Guid conferenceId, CancellationToken cancellationToken = default)
         {
             return await _hearingLayoutCache.ReadFromCache(conferenceId);
         }
 
-        public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId)
+        public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace VideoWeb.Helpers
             return null;
         }
 
-        public async Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout)
+        public async Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Attempting to change layout for {conferenceId} to {newLayout} by participant with the ID {changedById}.", conferenceId, newLayout, changedById);
             

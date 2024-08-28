@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,9 +52,9 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request)
+        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -61,7 +62,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceService.GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
                 var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
                 var apiRequest = new StartHearingRequest
                 {
@@ -70,7 +71,7 @@ namespace VideoWeb.Controllers
                     TriggeredByHostId = triggeredById ?? Guid.Empty
                 };
 
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest);
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -93,12 +94,12 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId)
+        public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
-                var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
+                var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId, cancellationToken);
 
                 if (!layout.HasValue) {
                     _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {ConferenceId}", conferenceId);
@@ -133,13 +134,13 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout)
+        public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogDebug("Attempting to update layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
 
-                var participant = await GetParticipant(conferenceId, User.Identity!.Name);
+                var participant = await GetParticipant(conferenceId, User.Identity!.Name, cancellationToken);
 
                 if (participant == null)
                 {
@@ -147,7 +148,7 @@ namespace VideoWeb.Controllers
                     return NotFound(nameof(participant));
                 }
 
-                await _hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout);
+                await _hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout, cancellationToken);
 
                 _logger.LogInformation("Updated layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
                 return Ok();
@@ -176,12 +177,12 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId)
+        public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogDebug("Attempting get recommended layout  for conference {ConferenceId}", conferenceId);
-                var conference = await _conferenceService.GetConference(conferenceId);
+                var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
                 return Ok(conference.GetRecommendedLayout());
             }
             catch (VideoApiException exception)
@@ -204,9 +205,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/pause")]
         [SwaggerOperation(OperationId = "PauseVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
+        public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -214,7 +215,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.PauseVideoHearingAsync(conferenceId);
+                await _videoApiClient.PauseVideoHearingAsync(conferenceId, cancellationToken);
                 _logger.LogDebug("Sent request to pause conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -233,9 +234,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/suspend")]
         [SwaggerOperation(OperationId = "SuspendVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> SuspendVideoHearingAsync(Guid conferenceId)
+        public async Task<IActionResult> SuspendVideoHearingAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -243,7 +244,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.SuspendHearingAsync(conferenceId);
+                await _videoApiClient.SuspendHearingAsync(conferenceId, cancellationToken);
                 _logger.LogDebug("Sent request to suspend conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -262,9 +263,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/end")]
         [SwaggerOperation(OperationId = "EndVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
+        public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -272,7 +273,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.EndVideoHearingAsync(conferenceId);
+                await _videoApiClient.EndVideoHearingAsync(conferenceId, cancellationToken);
                 _logger.LogDebug("Sent request to end conference {Conference}", conferenceId);
                 return Accepted();
             }
@@ -292,9 +293,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/call")]
         [SwaggerOperation(OperationId = "CallParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -302,7 +303,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -322,16 +323,16 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/join-hearing")]
         [SwaggerOperation(OperationId = "JoinHearingInSession")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
             }
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -351,9 +352,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
         [SwaggerOperation(OperationId = "DismissParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -361,10 +362,10 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
                 // reset hand raise on dismiss
                 await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
-                    false);
+                    false, cancellationToken);
             }
             catch (VideoApiException ex)
             {
@@ -375,7 +376,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await AddDismissTaskAsync(conferenceId, participantId);
+                await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
             }
             catch (VideoApiException ex)
             {
@@ -395,9 +396,9 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/leave")]
         [SwaggerOperation(OperationId = "LeaveHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> LeaveHearingAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> LeaveHearingAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -405,7 +406,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
             }
             catch (VideoApiException ex)
             {
@@ -417,9 +418,9 @@ namespace VideoWeb.Controllers
             return Accepted();
         }
 
-        private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceId)
+        private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceId, CancellationToken cancellationToken)
         {
-            if (await IsConferenceHost(conferenceId))
+            if (await IsConferenceHost(conferenceId, cancellationToken))
             {
                 return null;
             }
@@ -428,12 +429,12 @@ namespace VideoWeb.Controllers
             return Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}.");
         }
 
-        private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId)
+        private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId);
+            var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantCallable(conferenceId, participantId))
+            if (await IsParticipantCallable(conferenceId, participantId, cancellationToken))
             {
                 return null;
             }
@@ -442,16 +443,16 @@ namespace VideoWeb.Controllers
             return Unauthorized("Participant is not callable");
         }
 
-        private async Task<bool> IsConferenceHost(Guid conferenceId)
+        private async Task<bool> IsConferenceHost(Guid conferenceId, CancellationToken cancellationToken)
         {
-            var conference = await _conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
             return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
-        private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
+        private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
             
-            var conference = await _conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
 
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
 
@@ -465,7 +466,7 @@ namespace VideoWeb.Controllers
                 return participant.IsCallable();
             }
 
-            var witnessRoom = await GetWitnessRoom(conference, participantId);
+            var witnessRoom = await GetWitnessRoom(conference, participantId, cancellationToken);
 
             if (witnessRoom == null)
             {
@@ -477,13 +478,13 @@ namespace VideoWeb.Controllers
             return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
         }
 
-        private async Task<CivilianRoom> GetWitnessRoom(Conference conference, Guid participantId)
+        private async Task<CivilianRoom> GetWitnessRoom(Conference conference, Guid participantId, CancellationToken cancellationToken)
         {
             var witnessRoom = GetRoomForParticipant(conference, participantId);
 
             if (witnessRoom != null) return witnessRoom;
             
-            conference = await _conferenceService.ForceGetConference(conference.Id);
+            conference = await _conferenceService.ForceGetConference(conference.Id, cancellationToken);
         
             witnessRoom = GetRoomForParticipant(conference, participantId);
 
@@ -493,15 +494,15 @@ namespace VideoWeb.Controllers
         private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
             conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
         
-        private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId)
+        private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
-            var conference = await _conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
             return conference.Participants.SingleOrDefault(x => x.Id == participantId);
         }
 
-        private async Task<Participant> GetParticipant(Guid conferenceId, string username)
+        private async Task<Participant> GetParticipant(Guid conferenceId, string username, CancellationToken cancellationToken)
         {
-            var conference = await _conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
             return conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username.Trim(), StringComparison.InvariantCultureIgnoreCase));
         }
 
@@ -519,29 +520,29 @@ namespace VideoWeb.Controllers
 
         }
 
-        private Task TransferParticipantAsync(Guid conferenceId, Guid participantId, TransferType transferType)
+        private Task TransferParticipantAsync(Guid conferenceId, Guid participantId, TransferType transferType, CancellationToken cancellationToken)
         {
             return _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
             {
                 ParticipantId = participantId,
                 TransferType = transferType
-            });
+            }, cancellationToken);
         }
 
-        private async Task AddDismissTaskAsync(Guid conferenceId, Guid participantId)
+        private async Task AddDismissTaskAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
         {
             _logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
                 participantId, conferenceId);
 
-            var participant = await GetParticipant(conferenceId, participantId);
-            var dismisser = await GetParticipant(conferenceId, User.Identity!.Name);
+            var participant = await GetParticipant(conferenceId, participantId, cancellationToken);
+            var dismisser = await GetParticipant(conferenceId, User.Identity!.Name, cancellationToken);
 
             await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
             {
                 ParticipantId = participantId,
                 Body = $"{GetParticipantRoleString(participant)} dismissed by {GetParticipantRoleString(dismisser)}",
                 TaskType = TaskType.Participant
-            });
+            }, cancellationToken);
         }
     }
 }

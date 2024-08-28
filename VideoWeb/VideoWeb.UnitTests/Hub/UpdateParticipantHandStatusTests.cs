@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 
 namespace VideoWeb.UnitTests.Hub
@@ -19,7 +17,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             ConferenceManagementServiceMock.Setup(x =>
-                    x.UpdateParticipantHandStatusInConference(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>()))
+                    x.UpdateParticipantHandStatusInConference(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new ParticipantNotFoundException(conferenceId, participantId));
 
             // act / assert
@@ -37,8 +35,10 @@ namespace VideoWeb.UnitTests.Hub
             const bool handRaised = true;
             
             await Hub.UpdateParticipantHandStatus(conferenceId, participantId, handRaised);
-            
-            ConferenceManagementServiceMock.Verify(x => x.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised), Times.Once);
+
+            ConferenceManagementServiceMock.Verify(
+                x => x.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised,
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

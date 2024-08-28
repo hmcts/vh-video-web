@@ -1,7 +1,7 @@
 import { VHConference, VHRoom } from '../models/vh-conference';
 import { ConferenceState, initialState } from '../reducers/conference.reducer';
 import { getActiveConference, getEndpoints, getParticipants } from './conference.selectors';
-import { ConferenceStatus, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, EndpointStatus, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
 
 describe('Conference Selectors', () => {
@@ -82,7 +82,8 @@ describe('Conference Selectors', () => {
                     defenceAdvocate: null,
                     room: null
                 }
-            ]
+            ],
+            supplier: Supplier.Vodafone
         };
         existingInitialState = {
             currentConference: conferenceTestData,

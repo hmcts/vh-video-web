@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -15,6 +16,7 @@ using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.UnitTests.Mappings;
 
@@ -29,6 +31,8 @@ public class ConferenceCacheMapperTests
         
         response.Id.Should().Be(conference.Id);
         response.HearingId.Should().Be(conference.HearingId);
+        response.Supplier.Should().Be((Supplier)hearingResponse.BookingSupplier);
+        
         response.HearingVenueName.Should().Be(hearingResponse.HearingVenueName);
         response.CaseName.Should().Be(hearingResponse.Cases[0].Name);
         response.CaseNumber.Should().Be(hearingResponse.Cases[0].Number);
@@ -192,6 +196,7 @@ public class ConferenceCacheMapperTests
             .With(x => x.Endpoints = endpoints)
             .With(x => x.Participants = participants)
             .With(x => x.JudiciaryParticipants = joh)
+            .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
             .With(x => x.HearingVenueName = "Venue")
             .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
             .Build();

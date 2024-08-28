@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -43,7 +44,7 @@ public class GetConferenceByIdTests
         
         _controller = _mocker.Create<ConferencesController>();
         _controller.ControllerContext = context;
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>()));
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>(),It.IsAny<CancellationToken>()));
     }
     
     
@@ -53,9 +54,9 @@ public class GetConferenceByIdTests
         var conference = CreateValidConferenceResponse();
         conference.Participants[0].Role = Role.Individual;
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
-        var result = await _controller.GetConferenceByIdAsync(conference.Id);
+        var result = await _controller.GetConferenceByIdAsync(conference.Id, It.IsAny<CancellationToken>());
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
         
@@ -77,10 +78,10 @@ public class GetConferenceByIdTests
     {
         var conference = CreateValidConferenceResponse(null);
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await _controller.GetConferenceByIdAsync(conference.Id);
+        var result = await _controller.GetConferenceByIdAsync(conference.Id, It.IsAny<CancellationToken>());
         var typedResult = (UnauthorizedResult) result.Result;
         typedResult.Should().NotBeNull();
     }
@@ -92,10 +93,10 @@ public class GetConferenceByIdTests
         conference.CurrentStatus = ConferenceState.Closed;
         conference.IsWaitingRoomOpen = false;
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await _controller.GetConferenceByIdAsync(conference.Id);
+        var result = await _controller.GetConferenceByIdAsync(conference.Id, CancellationToken.None);
         var typedResult = (UnauthorizedResult)result.Result;
         typedResult.Should().NotBeNull();
     }
@@ -109,7 +110,7 @@ public class GetConferenceByIdTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferenceByIdAsync(Guid.Empty);
+        var result = await _controller.GetConferenceByIdAsync(Guid.Empty, CancellationToken.None);
         
         var typedResult = (BadRequestObjectResult) result.Result;
         typedResult.Should().NotBeNull();
@@ -122,10 +123,10 @@ public class GetConferenceByIdTests
             (int) HttpStatusCode.Unauthorized,
             "Invalid Client ID", null, default, null);
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>()))
+            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
+        var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid(), CancellationToken.None);
         
         var typedResult = (ObjectResult) result.Result;
         typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
@@ -141,7 +142,7 @@ public class GetConferenceByIdTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(apiException);
         
-        var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
+        var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid(), CancellationToken.None);
         var typedResult = result.Value;
         typedResult.Should().BeNull();
     }
@@ -155,7 +156,7 @@ public class GetConferenceByIdTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(() => default);
         
-        var response = (await _controller.GetConferenceByIdAsync(conferenceId)).Result as NoContentResult;
+        var response = (await _controller.GetConferenceByIdAsync(conferenceId, CancellationToken.None)).Result as NoContentResult;
         
         ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -17,7 +18,7 @@ public class PushAudioRestartActionTests: EventHubBaseTests
         var hostThatActionedEvent = conference.Participants.First(x => x.IsHost());
         var hosts = conference.Participants.Skip(1).Where(x => x.IsHost()).ToList();
         SetupEventHubClientsForAllParticipantsInConference(conference, false);
-        ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+        ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
         await Hub.PushAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
 

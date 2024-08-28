@@ -191,6 +191,21 @@
             >
           </span>
         </button>
+
+        <button
+          *ngIf="isInterpreter"
+          id="changeLanguageBtn"
+          colour="grey"
+          tabindex="0"
+          (click)="displayLanguageChange()"
+          (keydown.enter)="displayLanguageChange()"
+        >
+          <span>
+            <fa-icon icon="language" (click)="displayLanguageChange()" (keydown.enter)="displayLanguageChange()"></fa-icon><
+            <span class="context-item"> {{ 'private-consultation-room-controls.interpreting-for' | translate }}</span>
+          </span>
+        </button>
+
         <button
           *ngIf="!isPrivateConsultation && isHost"
           id="leave-hearing"
@@ -495,6 +510,22 @@
       </button>
 
       <button
+        *ngIf="isInterpreter"
+        class="icon-button"
+        id="change-Language-img-desktop"
+        appTooltip
+        colour="grey"
+        [text]="'private-consultation-room-controls.change-interpreting-language' | translate"
+        [attr.aria-label]="'private-consultation-room-controls.change-interpreting-language' | translate"
+        (click)="displayLanguageChange()"
+        (keydown.enter)="displayLanguageChange()"
+        (keydown.space)="displayLanguageChange()"
+        tabindex="0"
+      >
+        <fa-icon icon="language"></fa-icon>
+      </button>
+
+      <button
         class="icon-button"
         id="toggle-self-view-img-desktop"
         *ngIf="!audioOnly && hasACamera"
@@ -509,7 +540,8 @@
           (selfViewOpen
             ? 'private-consultation-room-controls.selfview-toggle-true'
             : 'private-consultation-room-controls.selfview-toggle-false'
-          ) | translate"
+          ) | translate
+        "
         (click)="toggleView()"
         (keydown.enter)="$event.preventDefault(); toggleView()"
         (keydown.space)="$event.preventDefault(); toggleView()"
@@ -534,7 +566,8 @@
           (videoMuted
             ? 'private-consultation-room-controls.video-mute-toggle-true'
             : 'private-consultation-room-controls.video-mute-toggle-false'
-          ) | translate"
+          ) | translate
+        "
         (click)="toggleVideoMute()"
         (keydown.enter)="$event.preventDefault(); toggleVideoMute()"
         (keydown.space)="$event.preventDefault(); toggleVideoMute()"
@@ -559,7 +592,8 @@
           (audioMuted
             ? 'private-consultation-room-controls.audio-mute-toggle-true'
             : 'private-consultation-room-controls.audio-mute-toggle-false'
-          ) | translate"
+          ) | translate
+        "
         (click)="toggleMute()"
         (keydown.enter)="$event.preventDefault(); toggleMute()"
         (keydown.space)="$event.preventDefault(); toggleMute()"
@@ -596,7 +630,8 @@
           (handRaised
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false'
-          ) | translate"
+          ) | translate
+        "
         (click)="toggleHandRaised()"
         (keydown.enter)="$event.preventDefault(); toggleHandRaised()"
         (keydown.space)="$event.preventDefault(); toggleHandRaised()"
@@ -606,10 +641,18 @@
       </button>
 
       <ng-container *ngIf="canShowLeaveButton">
-          <button id='change-hearing-layout' class="icon-button" appTooltip colour='grey' [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
-                  tabindex="0" (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup">
-              <fa-icon icon="th-large" flip="horizontal" ></fa-icon>
-          </button>
+        <button
+          id="change-hearing-layout"
+          class="icon-button"
+          appTooltip
+          colour="grey"
+          [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
+          [attr.aria-label]="'private-consultation-room-controls.change-hearing-layout' | translate"
+          tabindex="0"
+          (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
+        >
+          <fa-icon icon="th-large" flip="horizontal"></fa-icon>
+        </button>
 
         <button
           id="leave-hearing-desktop"
@@ -617,7 +660,7 @@
           appTooltip
           colour="grey"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
-            [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
+          [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
           tabindex="0"
@@ -712,5 +755,8 @@
 
 <app-confirm-close-hearing-popup *ngIf="canShowCloseHearingPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>
 
-<app-change-hearing-layout-popup *ngIf='canDisplayChangeLayoutPopup' [conference]="conference" [onLayoutUpdate]="onLayoutUpdate"></app-change-hearing-layout-popup>
-
+<app-change-hearing-layout-popup
+  *ngIf="canDisplayChangeLayoutPopup"
+  [conference]="conference"
+  [onLayoutUpdate]="onLayoutUpdate"
+></app-change-hearing-layout-popup>

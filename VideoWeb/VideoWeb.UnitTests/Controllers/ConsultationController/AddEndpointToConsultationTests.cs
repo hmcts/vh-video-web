@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -36,8 +37,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-            
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+
+            _mocker.Mock<IConferenceService>()
+                .Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(_testConference);
 
             _sut = _mocker.Create<ConsultationsController>();
         }
@@ -55,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.AddEndpointToConsultationAsync(request);
+            var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();
@@ -72,7 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.AddEndpointToConsultationAsync(request);
+            var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -91,13 +94,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             // Act
-            var result = await _sut.AddEndpointToConsultationAsync(request);
+            var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId)), Times.Once);
-            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(
+                    x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
+                        r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId), It.IsAny<CancellationToken>()), Times.Once);
+            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
+                Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
         }
 
         [Test]
@@ -115,11 +122,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 "Please provide a valid conference Id", null, default, null);
             _mocker.Mock<IVideoApiClient>().Setup(x =>
                     x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
-                        r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId)))
+                        r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId), It.IsAny<CancellationToken>()))
                 .Throws(apiException);
 
             // Act
-            var result = await _sut.AddEndpointToConsultationAsync(request);
+            var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<StatusCodeResult>();
@@ -128,7 +135,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
-                    r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId)), Times.Once);
+                    r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId), It.IsAny<CancellationToken>()), Times.Once);
 
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
                 Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));

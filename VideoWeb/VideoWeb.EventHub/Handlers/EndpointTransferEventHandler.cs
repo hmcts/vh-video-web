@@ -1,14 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Exceptions;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
-using VideoApi.Client;
-using VideoWeb.Common;
+using VideoWeb.Common.Models;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using VHRoom = VideoWeb.Common.Models.RoomType;
@@ -28,10 +22,10 @@ namespace VideoWeb.EventHub.Handlers
         {
             var endpointStatus = DeriveEndpointStatusForTransferEvent(callbackEvent);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
-            await PublishEndpointStatusMessage(endpointStatus);
+            await PublishEndpointStatusMessage(endpointStatus.state, endpointStatus.newStatus);
         }
 
-        private static EndpointState DeriveEndpointStatusForTransferEvent(CallbackEvent callbackEvent)
+        private static (EndpointState state, EndpointStatus newStatus) DeriveEndpointStatusForTransferEvent(CallbackEvent callbackEvent)
         {
             if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
             {
@@ -41,17 +35,17 @@ namespace VideoWeb.EventHub.Handlers
             var isRoomToEnum = Enum.TryParse<VHRoom>(callbackEvent.TransferTo, out var transferTo);
             if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {
-                return EndpointState.InConsultation;
+                return (EndpointState.InConsultation, EndpointStatus.InConsultation);
             }
 
             if (transferTo == VHRoom.WaitingRoom || transferTo == VHRoom.HearingRoom)
             {
-                return EndpointState.Connected;
+                return (EndpointState.Connected, EndpointStatus.Connected);
             }
 
             if (transferTo == VHRoom.ConsultationRoom)
             {
-                return EndpointState.InConsultation;
+                return (EndpointState.InConsultation, EndpointStatus.InConsultation);
             }
 
             throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.Common.Models
 {
@@ -38,7 +39,8 @@ namespace VideoWeb.Common.Models
         public DateTime CreatedDateTime { get; set; }
         public string TelephoneConferenceId { get; set; }
         public string TelephoneConferenceNumbers { get; set; }
-        
+        public Supplier Supplier { get; set; }
+
         public Participant GetJudge()
         {
             return Participants.SingleOrDefault(x => x.IsJudge());
@@ -135,18 +137,18 @@ namespace VideoWeb.Common.Models
             return Participants.Find(p => p.Id == id);
         }
 
-        public void UpdateParticipant(UpdateParticipant updateParticipant)
+        public void UpdateParticipantStatus(Participant participant, ParticipantStatus status)
         {
-            var participant = Participants.Find(x => x.RefId == updateParticipant.ParticipantRefId);
-            if(participant == null) return;
-            participant.FirstName = updateParticipant.FirstName;
-            participant.LastName = updateParticipant.LastName;
-            participant.DisplayName = updateParticipant.DisplayName;
-            participant.Representee = updateParticipant.Representee;
-            participant.ContactEmail = updateParticipant.ContactEmail;
-            participant.ContactTelephone = updateParticipant.ContactTelephone;
-            participant.Username = updateParticipant.Username;
-            participant.LinkedParticipants = updateParticipant.LinkedParticipants;
+            var participantToUpdate = Participants.Find(p => p.Id == participant.Id);
+            if (participantToUpdate == null) return;
+            participantToUpdate.ParticipantStatus = status;
+        }
+        
+        public void UpdateEndpointStatus(Endpoint endpoint, EndpointStatus status)
+        {
+            var endpointToUpdate = Endpoints.Find(p => p.Id == endpoint.Id);
+            if (endpointToUpdate == null) return;
+            endpointToUpdate.EndpointStatus = status;
         }
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
@@ -186,6 +188,11 @@ namespace VideoWeb.Common.Models
 
             consultationRoom.Locked = roomLocked;
             return consultationRoom;
+        }
+
+        public void UpdateConferenceStatus(ConferenceState newState)
+        {
+            CurrentStatus = newState;
         }
     }
 }

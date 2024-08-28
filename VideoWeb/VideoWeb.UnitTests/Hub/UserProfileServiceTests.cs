@@ -11,6 +11,7 @@ using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
@@ -56,7 +57,8 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Roles = new List<Role> { Role.VideoHearingsOfficer })
                 .Build();
 
-            _userCacheMock.Setup(x => x.GetOrAddAsync(username, null)).ReturnsAsync(It.IsAny<UserProfile>());
+            _userCacheMock.Setup(x => x.GetOrAddAsync(username, null, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UserProfile>());
 
             var emptyResult = await _userProfileService.GetUserAsync("doesNot@Exist.com");
             emptyResult.Should().BeNull();
@@ -75,7 +77,8 @@ namespace VideoWeb.UnitTests.Hub
             var userProfile = new UserProfile { UserName = quickLinkParticipantUserName, 
                 Roles = new List<Role> { Role.QuickLinkParticipant }, DisplayName = profile.DisplayName };
 
-            _userCacheMock.Setup(x => x.GetAsync(quickLinkParticipantUserName)).ReturnsAsync(userProfile);
+            _userCacheMock.Setup(x => x.GetAsync(quickLinkParticipantUserName, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfile);
             var result = await _userProfileService.GetUserAsync(quickLinkParticipantUserName);
 
             result.Roles.Should().Contain(Role.QuickLinkParticipant);

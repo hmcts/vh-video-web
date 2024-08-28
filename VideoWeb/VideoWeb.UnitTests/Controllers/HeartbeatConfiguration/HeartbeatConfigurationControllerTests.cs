@@ -1,11 +1,15 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Security;
+using VideoWeb.Common;
+using VideoWeb.Common.Enums;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.Security.Tokens.Base;
 using VideoWeb.Contract.Responses;
@@ -22,6 +26,7 @@ public class HeartbeatConfigurationControllerTests
     private string _heartbeatUrlBase = "url";
     private IOptions<KinlyConfiguration> _kinlyConfiguration;
     private Mock<IJwtTokenProvider> _tokenProviderMock;
+    private Conference _conference;
 
     [SetUp]
     public void Setup()
@@ -34,23 +39,36 @@ public class HeartbeatConfigurationControllerTests
             HeartbeatUrlBase = _heartbeatUrlBase
         });
         _tokenProviderMock = _mocker.Mock<IJwtTokenProvider>();
-            
-        _mocker.Mock<ISupplierLocator>()
+        _conference = new Conference
+        {
+            Id = Guid.NewGuid(),
+            Supplier = Supplier.Kinly
+        };
+
+        var kinlyPlatformServiceMock = new Mock<ISupplierPlatformService>();
+        kinlyPlatformServiceMock
             .Setup(x => x.GetSupplierConfiguration())
-            .Returns(_kinlyConfiguration);
-            
-        _mocker.Mock<ISupplierLocator>()
+            .Returns(_kinlyConfiguration.Value);
+        kinlyPlatformServiceMock
             .Setup(x => x.GetTokenProvider())
             .Returns(_tokenProviderMock.Object);
-            
+
+        _mocker.Mock<ISupplierPlatformServiceFactory>()
+            .Setup(x => x.Create(Supplier.Kinly))
+            .Returns(kinlyPlatformServiceMock.Object);
+
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_conference);
+        
         _sut = _mocker.Create<HeartbeatConfigurationController>();
     }
 
     [Test]
-    public void Should_return_bad_request_when_participant_id_is_wrong()
+    public async Task Should_return_bad_request_when_participant_id_is_wrong()
     {
         // Act
-        var response = _sut.GetConfigurationForParticipant(Guid.Empty);
+        var response = await _sut.GetConfigurationForParticipant(Guid.Empty, Guid.Empty);
 
         // Assert
         var modelState = response.Should().BeAssignableTo<BadRequestObjectResult>().
@@ -60,10 +78,11 @@ public class HeartbeatConfigurationControllerTests
     }
 
     [Test]
-    public void Should_generate_a_jwt_for_the_participant_with_the_correct_parameters()
+    public async Task Should_generate_a_jwt_for_the_participant_with_the_correct_parameters()
     {
         // Arrange
-        Guid participantId = Guid.NewGuid();
+        var conferenceId = _conference.Id;
+        var participantId = Guid.NewGuid();
         const string jwt = "jwt";
 
         _tokenProviderMock  
@@ -73,7 +92,7 @@ public class HeartbeatConfigurationControllerTests
             ).Returns(jwt);
             
         // Act
-        var response = _sut.GetConfigurationForParticipant(participantId);
+        var response = await _sut.GetConfigurationForParticipant(conferenceId, participantId);
 
         // Assert
         response.Should().BeAssignableTo<OkObjectResult>()
@@ -87,13 +106,14 @@ public class HeartbeatConfigurationControllerTests
     }
 
     [Test]
-    public void Should_set_the_heartbeat_url_base_from_the_config()
+    public async Task Should_set_the_heartbeat_url_base_from_the_config()
     {
         // Arrange
-        Guid participantId = Guid.NewGuid();
+        var conferenceId = _conference.Id;
+        var participantId = Guid.NewGuid();
 
         // Act
-        var response = _sut.GetConfigurationForParticipant(participantId);
+        var response = await _sut.GetConfigurationForParticipant(conferenceId, participantId);
 
         // Assert
         response.Should().BeAssignableTo<OkObjectResult>()

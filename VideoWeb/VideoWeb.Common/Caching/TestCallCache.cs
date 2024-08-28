@@ -1,9 +1,10 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace VideoWeb.Common.Caching;
 
-public class TestCallCache : ITestCallCache
+public sealed class TestCallCache : ITestCallCache
 {
     private readonly IMemoryCache _memoryCache;
     private static string CacheKeySuffix => "_TestCallCache";
@@ -13,14 +14,13 @@ public class TestCallCache : ITestCallCache
         _memoryCache = memoryCache;
     }
 
-    public Task AddTestCompletedForTodayAsync(string username)
+    public async Task AddTestCompletedForTodayAsync(string username, CancellationToken cancellationToken = default)
     {
-        _memoryCache.Set($"{username}{CacheKeySuffix}", true);
-        return Task.CompletedTask;
+        await Task.Run(() => _memoryCache.Set($"{username}{CacheKeySuffix}", true), cancellationToken);
     }
 
-    public Task<bool> HasUserCompletedATestToday(string username)
+    public Task<bool> HasUserCompletedATestToday(string username, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_memoryCache.Get<bool>(($"{username}{CacheKeySuffix}")));
+        return Task.Run(() => _memoryCache.Get<bool>($"{username}{CacheKeySuffix}"), cancellationToken);
     }
 }

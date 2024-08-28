@@ -7,7 +7,9 @@ import {
     ClientSettingsResponse,
     HearingLayout,
     SharedParticipantRoom,
-    StartOrResumeVideoHearingRequest
+    StartOrResumeVideoHearingRequest,
+    Supplier,
+    SupplierConfigurationResponse
 } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -24,10 +26,22 @@ import { VideoCallService } from './video-call.service';
 import { MockStore, createMockStore } from '@ngrx/store/testing';
 import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 
+const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
-    supplier_turn_server: 'turnserver',
-    supplier_turn_server_user: 'tester1',
-    supplier_turn_server_credential: 'credential'
+    supplier_configurations: [
+        new SupplierConfigurationResponse({
+            supplier: Supplier.Kinly,
+            turn_server: 'turnserver',
+            turn_server_user: 'tester1',
+            turn_server_credential: 'credential'
+        }),
+        new SupplierConfigurationResponse({
+            supplier: Supplier.Vodafone,
+            turn_server: 'turnserver',
+            turn_server_user: 'tester1',
+            turn_server_credential: 'credential'
+        })
+    ]
 });
 
 describe('VideoCallService', () => {
@@ -113,7 +127,10 @@ describe('VideoCallService', () => {
             'dialOut',
             'disconnectParticipant',
             'setParticipantText',
-            'transformLayout'
+            'transformLayout',
+            'setParticipantText',
+            'setSendToAudioMixes',
+            'setReceiveFromAudioMix'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -132,7 +149,7 @@ describe('VideoCallService', () => {
 
         currentStreamSubject.next(mockCamStream);
 
-        service.setupClient();
+        service.setupClient(supplier);
         flush();
     }));
 
@@ -430,7 +447,7 @@ describe('VideoCallService', () => {
 
     describe('SetupClient', () => {
         it('should init pexip and set pexip client', async () => {
-            await service.setupClient();
+            await service.setupClient(supplier);
             expect(service.pexipAPI).toBeDefined();
             expect(service.onCallSetup()).toBeDefined();
             expect(service.onCallConnected()).toBeDefined();
@@ -448,9 +465,9 @@ describe('VideoCallService', () => {
             expect(service.onVideoEvidenceShared()).toBeDefined();
             expect(service.onVideoEvidenceStopped()).toBeDefined();
             expect(service.pexipAPI.turn_server).toBeDefined();
-            expect(service.pexipAPI.turn_server.urls).toContain(config.supplier_turn_server);
-            expect(service.pexipAPI.turn_server.username).toContain(config.supplier_turn_server_user);
-            expect(service.pexipAPI.turn_server.credential).toContain(config.supplier_turn_server_credential);
+            expect(service.pexipAPI.turn_server.urls).toContain(config.supplier_configurations[0].turn_server);
+            expect(service.pexipAPI.turn_server.username).toContain(config.supplier_configurations[0].turn_server_user);
+            expect(service.pexipAPI.turn_server.credential).toContain(config.supplier_configurations[0].turn_server_credential);
         });
 
         it('should setup the client again when an error occurs', () => {
@@ -475,7 +492,7 @@ describe('VideoCallService', () => {
 
         it('should update user_media_stream', fakeAsync(() => {
             service.pexipAPI.user_media_stream = mockMicStream;
-            service.setupClient();
+            service.setupClient(supplier);
             currentStreamSubject.next(mockCamStream);
             flush();
             expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
@@ -485,7 +502,7 @@ describe('VideoCallService', () => {
             spyOn<any>(service, 'renegotiateCall').and.callThrough();
             service.pexipAPI.user_media_stream = mockMicStream;
 
-            service.setupClient();
+            service.setupClient(supplier);
             currentStreamSubject.next(mockCamStream);
             currentStreamSubject.next(mockCamStream);
             service.pexipAPI.user_media_stream = mockMicStream;
@@ -514,7 +531,14 @@ describe('VideoCallService', () => {
                 call_tag: 'call_tag',
                 is_audio_only_call: 'is_audio_only_call',
                 is_video_call: 'is_video_call',
-                protocol: 'protocol'
+                protocol: 'protocol',
+                disconnect_supported: 'Yes',
+                transfer_supported: 'Yes',
+                is_main_video_dropped_out: false,
+                is_video_muted: false,
+                is_streaming_conference: false,
+                send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+                receive_from_audio_mix: 'main'
             };
 
             const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -548,7 +572,14 @@ describe('VideoCallService', () => {
                 call_tag: undefined,
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
-                protocol: undefined
+                protocol: undefined,
+                disconnect_supported: undefined,
+                transfer_supported: undefined,
+                is_main_video_dropped_out: undefined,
+                is_video_muted: undefined,
+                is_streaming_conference: undefined,
+                send_to_audio_mixes: undefined,
+                receive_from_audio_mix: undefined
             };
 
             // Act
@@ -581,7 +612,14 @@ describe('VideoCallService', () => {
                 call_tag: 'call_tag',
                 is_audio_only_call: 'is_audio_only_call',
                 is_video_call: 'is_video_call',
-                protocol: 'protocol'
+                protocol: 'protocol',
+                disconnect_supported: 'Yes',
+                transfer_supported: 'Yes',
+                is_main_video_dropped_out: false,
+                is_video_muted: false,
+                is_streaming_conference: false,
+                send_to_audio_mixes: [{ mix_name: 'main', prominent: false }],
+                receive_from_audio_mix: 'main'
             };
 
             const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -616,7 +654,14 @@ describe('VideoCallService', () => {
                 call_tag: undefined,
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
-                protocol: undefined
+                protocol: undefined,
+                disconnect_supported: undefined,
+                transfer_supported: undefined,
+                is_main_video_dropped_out: undefined,
+                is_video_muted: undefined,
+                is_streaming_conference: undefined,
+                send_to_audio_mixes: undefined,
+                receive_from_audio_mix: undefined
             };
 
             // Act
@@ -796,6 +841,26 @@ describe('VideoCallService', () => {
             const layout = HearingLayout.TwoPlus21;
             service.transformLayout(layout);
             expect(pexipSpy.transformLayout).toHaveBeenCalledOnceWith({ layout: layout });
+        });
+    });
+
+    describe('sendParticipantAudioToMixes', () => {
+        it('should call pexip sendParticipantAudioToMixes', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixes = [{ mix_name: 'main', prominent: false }];
+            service.sendParticipantAudioToMixes(mixes, uuid);
+            expect(pexipSpy.setSendToAudioMixes).toHaveBeenCalledWith(mixes, uuid);
+        });
+    });
+
+    describe('receiveAudioFromMix', () => {
+        it('should call pexip receiveAudioFromMix', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            const mixName = 'main';
+            service.receiveAudioFromMix(mixName, uuid);
+            expect(pexipSpy.setReceiveFromAudioMix).toHaveBeenCalledWith(mixName, uuid);
         });
     });
 });

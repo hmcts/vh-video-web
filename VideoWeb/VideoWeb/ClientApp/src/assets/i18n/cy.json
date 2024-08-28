@@ -728,7 +728,9 @@
     "share-video-evidence": "Rhannu fideo neu sain",
     "share-document-evidence": "Rhannu dogfennau",
     "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn",
-    "change-hearing-layout": "Newid cynllun"
+    "change-hearing-layout": "Newid cynllun",
+    "change-interpreting-language": "Newid iaith dehongli",
+    "interpreting-for": "Dehongli ar gyfer"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -1495,6 +1497,14 @@
       }
     }
   },
+  "audio-mix-selection": {
+    "court": "Llys",
+    "change-audio-header": "Newidiwch eich dewis sain",
+    "change-audio-label": "Dewiswch eich dewis sain",
+    "change-audio-hint": "Dehongli ar gyfer",
+    "button-cancel": "Canslo",
+    "button-continue": " Parhau"
+  },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",
     "british-sign-language-(bsl)": "Iaith Arwyddion Prydain (BSL)",
@@ -1505,7 +1515,7 @@
     "lipspeaker": "Gwefuslefarydd",
     "makaton": "Makaton",
     "notetaker": "Ysgrifennwr Nodiadau",
-    "palantypist-speech-to-text": "Palanteipydd / Llais-i-destun",
+    "palantypist---speech-to-text": "Palanteipydd / Llais-i-destun",
     "speech-supported-english-(sse)": "Cefnogaeth Lleferydd Saesneg (SSE)",
     "visual-frame-signing": "Arwyddo Gweledol",
     "brong": "Brong",
@@ -1674,7 +1684,7 @@
     "soninke": "Soninke",
     "somali": "Somali",
     "spanish": "Spanish",
-    "kosli-sambalpuri": "Kosli, Sambalpuri",
+    "kosli--sambalpuri": "Kosli, Sambalpuri",
     "albanian": "Albanian",
     "susu": "Susu",
     "swahili": "Swahili",

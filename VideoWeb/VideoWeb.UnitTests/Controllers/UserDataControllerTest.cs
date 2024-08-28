@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
@@ -33,23 +34,25 @@ public class UserDataControllerTest
         _sut = _mocker.Create<UserDataController>();
         _query = new VhoConferenceFilterQuery { HearingVenueNames = new List<string> { "Venue Name 01", "Venue Name 02" } };
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<AllocatedCsoResponse>{Mock.Of<AllocatedCsoResponse>()});
         _logger = _mocker.Mock<ILogger<UserDataController>>().SetupAllProperties();
     }
-    
+
     [Test]
     public async Task Should_return_list_of_court_rooms_accounts_with_status_ok()
     {
         var conferences = ConferenceForAdminResponseBuilder.BuildData();
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
-            .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse{HearingId = c.HearingRefId}).ToList());
-        
-        _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
-        
-        var result = await _sut.GetCourtRoomsAccounts(_query);
-        
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse { HearingId = c.HearingRefId }).ToList());
+
+        _mocker.Mock<IVideoApiClient>()
+            .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conferences);
+
+        var result = await _sut.GetCourtRoomsAccounts(_query, CancellationToken.None);
+
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
         var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
@@ -57,55 +60,60 @@ public class UserDataControllerTest
         courtRoomsAccounts.Count.Should().Be(2);
         courtRoomsAccounts[0].Rooms.Count.Should().Be(3);
         courtRoomsAccounts[1].Rooms.Count.Should().Be(2);
-        
+
         courtRoomsAccounts[0].Venue.Should().Be("Venue Name 01");
         courtRoomsAccounts[1].Venue.Should().Be("Venue Name 02");
-        
+
         courtRoomsAccounts[0].Rooms[0].Should().Be("Name1");
         courtRoomsAccounts[0].Rooms[1].Should().Be("Name2");
         courtRoomsAccounts[0].Rooms[2].Should().Be("Name3");
-        
+
         courtRoomsAccounts[1].Rooms[0].Should().Be("Name4");
         courtRoomsAccounts[1].Rooms[1].Should().Be("Name5");
     }
-    
+
     [Test]
-    public async Task Should_return_list_of_court_rooms_accounts_where_hearings_match_conferences_and_log_errors_where_appropriate()
+    public async Task
+        Should_return_list_of_court_rooms_accounts_where_hearings_match_conferences_and_log_errors_where_appropriate()
     {
         var conferences = ConferenceForAdminResponseBuilder.BuildData();
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
-            .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse{HearingId = c.HearingRefId}).ToList());
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse { HearingId = c.HearingRefId }).ToList());
         //remove one conference to test logging
         conferences.RemoveAt(0);
         //remove a judge from a conference to test logging
         conferences[0].Participants.RemoveAt(0);
-        
-        _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
-        
-        var result = await _sut.GetCourtRoomsAccounts(_query);
-        
+
+        _mocker.Mock<IVideoApiClient>()
+            .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conferences);
+
+        var result = await _sut.GetCourtRoomsAccounts(_query, CancellationToken.None);
+
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
         var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
         courtRoomsAccounts.Should().NotBeNull();
         courtRoomsAccounts.Count.Should().Be(2);
-        _logger.Verify(x 
-            => x.Log(LogLevel.Error, 
-                It.IsAny<EventId>(), 
-                It.IsAny<It.IsAnyType>(), 
-                It.IsAny<Exception>(), 
+        _logger.Verify(x
+            => x.Log(LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Exactly(2));
     }
-    
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task Should_return_list_of_court_rooms_accounts_with_status_ok_when_querying_by_cso(bool includeUnallocated)
     {
         // Arrange
         var conferences = ConferenceForAdminResponseBuilder.BuildData();
-        
-        _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
+
+        _mocker.Mock<IVideoApiClient>()
+            .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(),
+                It.IsAny<CancellationToken>())).ReturnsAsync(conferences);
         
         var allocatedCsoResponses = conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId}).ToList();
         var allocatedCsoIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
@@ -120,7 +128,7 @@ public class UserDataControllerTest
         }
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(allocatedCsoResponses);
         
         // Act
@@ -128,7 +136,7 @@ public class UserDataControllerTest
         {
             AllocatedCsoIds = allocatedCsoIds,
             IncludeUnallocated = includeUnallocated
-        });
+        }, CancellationToken.None);
         
         // Assert
         var typedResult = (OkObjectResult)result.Result;
@@ -168,23 +176,23 @@ public class UserDataControllerTest
         var conferences = ConferenceForAdminResponseBuilder.BuildData();
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<AllocatedCsoResponse>{Mock.Of<AllocatedCsoResponse>()});
-        _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
+        _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(conferences);
         
         var allocatedCsoResponses =
             conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
         var unallocatedHearing = allocatedCsoResponses.First();
         unallocatedHearing.Cso = null;
         
-        _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(allocatedCsoResponses);
+        _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(allocatedCsoResponses);
         
         // Act
         var result = await _sut.GetCourtRoomsAccounts(new VhoConferenceFilterQuery
         {
             AllocatedCsoIds = new List<Guid>(),
             IncludeUnallocated = true
-        });
+        }, CancellationToken.None);
         
         // Assert
         var typedResult = (OkObjectResult)result.Result;
@@ -201,9 +209,9 @@ public class UserDataControllerTest
     public async Task Should_empty_list_if_no_hearings_found_for_venues()
     {
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+            .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<AllocatedCsoResponse>());
-        var result = await _sut.GetCourtRoomsAccounts(_query);
+        var result = await _sut.GetCourtRoomsAccounts(_query, CancellationToken.None);
         var courtRoomsAccountResponses = result.Value as List<CourtRoomsAccountResponse>;
         courtRoomsAccountResponses.Should().BeEmpty();
     }
@@ -217,8 +225,10 @@ public class UserDataControllerTest
             Mock.Of<JusticeUserResponse>(),
             Mock.Of<JusticeUserResponse>(),
         };
-        _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(string.Empty, null)).ReturnsAsync(csos);
-        var result = await _sut.GetJusticeUsers();
+        _mocker.Mock<IBookingsApiClient>()
+            .Setup(x => x.GetJusticeUserListAsync(string.Empty, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(csos);
+        var result = await _sut.GetJusticeUsers(CancellationToken.None);
         var objectResult = result.Result as OkObjectResult;
         objectResult.Should().NotBeNull();
         objectResult?.StatusCode.Should().Be(200);

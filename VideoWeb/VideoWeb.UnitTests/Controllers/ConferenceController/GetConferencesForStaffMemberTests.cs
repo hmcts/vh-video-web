@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
@@ -34,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<HearingDetailsResponse>{Mock.Of<HearingDetailsResponse>()});
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
@@ -49,10 +50,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>());
+            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
 
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
@@ -66,10 +67,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>());
+            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
 
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
@@ -94,10 +95,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Build().ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery);
+            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
 
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
@@ -119,13 +120,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conferences = new List<ConferenceForHostVideoApi>();
             var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(bookingException);
 
-            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery);
+            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
 
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();

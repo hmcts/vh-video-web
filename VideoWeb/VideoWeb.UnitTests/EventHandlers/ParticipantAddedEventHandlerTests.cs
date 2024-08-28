@@ -1,16 +1,13 @@
 using Moq;
 using NUnit.Framework;
+using FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -47,6 +44,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             EventHubClientMock.Verify(
                 x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + 1));
+            TestConference.Participants.Should().HaveCount(participantCount);
         }
     }
 }

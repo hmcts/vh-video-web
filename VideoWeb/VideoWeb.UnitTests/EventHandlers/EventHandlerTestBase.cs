@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -37,7 +38,7 @@ public abstract class EventHandlerTestBase
         TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
         MemoryCache.Set(TestConference.Id, TestConference);
         
-        ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id)).ReturnsAsync(TestConference);
+        ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
         
         helper.RegisterUsersForHubContext(TestConference.Participants);
     }

@@ -15,10 +15,10 @@ namespace VideoWeb.UnitTests.EventHandlers
     {
         private TransferEventHandler _eventHandler;
 
-        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, ParticipantState.InHearing)]
-        [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, ParticipantState.Available)]
+        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, ParticipantState.InHearing, ParticipantStatus.InHearing)]
+        [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, ParticipantState.Available, ParticipantStatus.Available)]
         public async Task Should_send_participant__status_messages_to_clients_and_asb_when_transfer_occurs(
-            RoomType from, RoomType to, ParticipantState status)
+            RoomType from, RoomType to, ParticipantState status,  ParticipantStatus expectedStatus)
         {
             _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
@@ -42,6 +42,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     status), Times.Exactly(participantCount));
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(expectedStatus);
+            
         }
 
         [Test]
@@ -74,6 +76,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                     expectedStatus), Times.Exactly(participantCount));
 
             // Verify the conference cache has been updated
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
+                .Be(ParticipantStatus.InConsultation);
             conference.ConsultationRooms.Count.Should().Be(1);
             var consultationRoom = conference.ConsultationRooms[0];
             consultationRoom.Label.Should().Be(callbackEvent.TransferTo);
@@ -120,6 +124,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                     expectedStatus), Times.Exactly(participantCount));
 
             // Verify the conference cache has been updated
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
+                .Be(ParticipantStatus.InConsultation);
             conference.ConsultationRooms.Count.Should().Be(1);
             var consultationRoom = conference.ConsultationRooms[0];
             consultationRoom.Label.Should().Be(callbackEvent.TransferTo);
@@ -162,6 +168,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                     expectedStatus), Times.Exactly(participantCount));
             
             // Verify the conference cache has been updated
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
+                .Be(ParticipantStatus.Available);
             conference.ConsultationRooms.Count.Should().Be(1);
             participantForEvent.CurrentRoom.Should().BeNull();
         }
@@ -199,6 +207,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                     expectedStatus), Times.Exactly(participantCount));
             
             // Verify the conference cache has been updated
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
+                .Be(ParticipantStatus.Available);
             conference.ConsultationRooms.Count.Should().Be(0);
             participantForEvent.CurrentRoom.Should().BeNull();
         }
@@ -231,6 +241,10 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     expectedStatus), Times.Exactly(participantCount));
+            
+            // Verify the conference cache has been updated
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
+                .Be(ParticipantStatus.InConsultation);
         }
     }
 }

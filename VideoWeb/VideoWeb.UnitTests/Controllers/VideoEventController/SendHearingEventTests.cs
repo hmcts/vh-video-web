@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -7,11 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
@@ -187,7 +186,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             Mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.IsAny<Guid>()))
+                .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
             var request = CreateRequest();
 

@@ -7,15 +7,16 @@ using System.Linq;
 using System.Reflection;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace VideoWeb.Common
 {
     public interface IUserProfileService
     {
         string GetObfuscatedUsername(string participantUserName);
-        Task<UserProfile> GetUserAsync(string username);
-        Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user);
-        Task ClearUserCache(string username);
+        Task<UserProfile> GetUserAsync(string username, CancellationToken cancellationToken = default);
+        Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default);
+        Task ClearUserCache(string username, CancellationToken cancellationToken = default);
     }
 
     public class UserProfileService : IUserProfileService
@@ -33,15 +34,15 @@ namespace VideoWeb.Common
             return obfuscatedUsername;
         }
 
-        public async Task<UserProfile> GetUserAsync(string username)
+        public async Task<UserProfile> GetUserAsync(string username, CancellationToken cancellationToken = default)
         {
             var usernameClean = username.ToLower().Trim();
-            return await _userProfileCache.GetAsync(usernameClean);
+            return await _userProfileCache.GetAsync(usernameClean, cancellationToken);
         }
 
-        public async Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user)
+        public async Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
-            var usernameClean = user.Identity.Name.ToLower().Trim();
+            var usernameClean = user.Identity!.Name!.ToLower().Trim();
             var userProfile = await _userProfileCache.GetOrAddAsync(usernameClean, new UserProfile
             {
                 FirstName = user.FindFirst(ClaimTypes.GivenName)?.Value,
@@ -50,14 +51,14 @@ namespace VideoWeb.Common
                 UserName = usernameClean,
                 Roles = DetermineRolesFromClaims(user),
                 IsAdmin = IsAdmin(user)
-            });
+            }, cancellationToken);
 
             return userProfile;
         }
 
-        public async Task ClearUserCache(string username)
+        public async Task ClearUserCache(string username, CancellationToken cancellationToken = default)
         {
-            await _userProfileCache.ClearFromCache(username);
+            await _userProfileCache.ClearFromCache(username, cancellationToken);
         }
 
         private static bool IsAdmin(ClaimsPrincipal user)
@@ -68,8 +69,8 @@ namespace VideoWeb.Common
         private List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
-            var cliams = new List<Claim>();
-            var userRoles = Enum.GetValues(typeof(Role)).Cast<Role>().Select(x => x.ToString());
+            var claims = new List<Claim>();
+            var userRoles = Enum.GetValues(typeof(Role)).Cast<Role>().Select(x => x.ToString()).ToList();
 
             var fields = typeof(AppRoles).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach(var field in fields)
@@ -79,27 +80,27 @@ namespace VideoWeb.Common
                 if (user.IsInRole(appRole) && userRoles.Contains(appRole))
                 {
                     roles.Add(userRole);
-                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
+                    claims.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "Citizen")
                 {
                     roles.Add(Role.Individual);
-                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
+                    claims.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "VHO")
                 {
                     roles.Add(Role.VideoHearingsOfficer);
-                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
+                    claims.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "ProfessionalUser")
                 {
                     roles.Add(Role.Representative);
-                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
+                    claims.Add(new Claim(ClaimTypes.Role, appRole));
                 }
             }
-            if (!roles.Any())
+            if (roles.Count == 0)
             {
-                _userProfileCache.ClearFromCache(user.Identity.Name);
+                _userProfileCache.ClearFromCache(user.Identity!.Name);
                 throw new NotSupportedException($"No supported role for this application");
             }
 

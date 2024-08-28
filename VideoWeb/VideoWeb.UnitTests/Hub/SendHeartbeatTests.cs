@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Moq;
@@ -8,7 +9,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Hub
@@ -33,7 +33,7 @@ namespace VideoWeb.UnitTests.Hub
                 OperatingSystem = "Mac OS X",
                 OperatingSystemVersion = "10.15"
             };
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
             var mockJudgeClient = new Mock<IEventHubClient>();
@@ -102,7 +102,7 @@ namespace VideoWeb.UnitTests.Hub
                 OperatingSystem = "Mac OS X",
                 OperatingSystemVersion = "10.15"
             };
-            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id)).ReturnsAsync(conference);
+            ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using Microsoft.AspNetCore.Mvc;
@@ -34,14 +35,15 @@ public class EndOfDayController(
     [HttpGet("active-sessions")]
     [SwaggerOperation(OperationId = "GetActiveConferences")]
     [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences()
+    public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences(CancellationToken cancellationToken)
+
     {
         logger.LogDebug("Getting all active conferences");
         try
         {
-            var activeConferences = await videoApiClient.GetActiveConferencesAsync();
-            var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id));
-            var allocatedHearings = await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId));
+            var activeConferences = await videoApiClient.GetActiveConferencesAsync(cancellationToken);
+            var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
+            var allocatedHearings = await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId), cancellationToken);
             var conferences = await retrieveCachedConferencesTask;
             var response = conferences
                 .Select(c

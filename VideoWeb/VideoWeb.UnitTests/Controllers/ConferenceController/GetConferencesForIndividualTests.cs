@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
@@ -58,10 +59,10 @@ public class GetConferencesForIndividualTests
             .Build().ToList();
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
@@ -92,14 +93,14 @@ public class GetConferencesForIndividualTests
         }
         
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(bookings);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
@@ -115,13 +116,13 @@ public class GetConferencesForIndividualTests
         var conferences = new List<ConferenceVideoApi>();
         var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(bookingException);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
@@ -136,10 +137,10 @@ public class GetConferencesForIndividualTests
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
             "Please provide a valid email", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (ObjectResult)result.Result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -151,10 +152,10 @@ public class GetConferencesForIndividualTests
         var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token", (int)HttpStatusCode.Unauthorized,
             "Invalid Client ID", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (ObjectResult)result.Result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
@@ -166,10 +167,10 @@ public class GetConferencesForIndividualTests
         var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
             "Stacktrace goes here", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         var typedResult = result.Value;
         typedResult.Should().BeNull();
     }
@@ -182,10 +183,10 @@ public class GetConferencesForIndividualTests
             "Stacktrace goes here", null, default, null);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferencesForIndividual();
+        var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
         
         var typedResult = (ObjectResult)result.Result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

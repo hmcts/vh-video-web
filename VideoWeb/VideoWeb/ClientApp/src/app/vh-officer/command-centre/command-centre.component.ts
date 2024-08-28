@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { ClientSettingsResponse, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, ConferenceForVhOfficerResponse, Supplier } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -301,7 +301,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.logger.warn(`${this.loggerPrefix} (isJoinByPhone) config settings is falsey`);
         }
 
-        const datePhone = this.configSettings?.join_by_phone_from_date;
+        const supplierConfig = this.getSupplierConfiguration(hearing.supplier);
+        const datePhone = supplierConfig?.join_by_phone_from_date;
         this.logger.debug(`${this.loggerPrefix} Join by date from settings is: ${datePhone}`);
 
         if (!datePhone || datePhone.length === 0) {
@@ -383,5 +384,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         if (allocationHearingMessage.hearingDetails.length > 0) {
             this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
         }
+    }
+
+    private getSupplierConfiguration(supplier: Supplier) {
+        return this.configSettings?.supplier_configurations.find(x => x.supplier === supplier);
     }
 }

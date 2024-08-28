@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -44,13 +45,13 @@ public class GetConferenceByIdVhoTests
         var testParticipant = conference.Participants[0];
         testParticipant.UserRole = UserRole.Individual;
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(conference.Id))
+            .Setup(x => x.GetConferenceDetailsByIdAsync(conference.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
-        var result = await _sut.GetConferenceByIdVhoAsync(conference.Id);
+        var result = await _sut.GetConferenceByIdVhoAsync(conference.Id, It.IsAny<CancellationToken>());
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
-        _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
+        _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         var response = (ConferenceResponseVho)typedResult.Value;
         response.Participants.Find(e => e.Id == testParticipant.Id).Role.Should().Be((Role)UserRole.Individual);
     }
@@ -64,7 +65,7 @@ public class GetConferenceByIdVhoTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferenceByIdVhoAsync(Guid.Empty);
+        var result = await _sut.GetConferenceByIdVhoAsync(Guid.Empty, CancellationToken.None);
         
         var typedResult = (BadRequestObjectResult)result.Result;
         typedResult.Should().NotBeNull();
@@ -77,10 +78,10 @@ public class GetConferenceByIdVhoTests
             (int)HttpStatusCode.Unauthorized,
             "Invalid Client ID", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid());
+        var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid(), CancellationToken.None);
         
         var typedResult = (ObjectResult)result.Result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
@@ -96,7 +97,7 @@ public class GetConferenceByIdVhoTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(apiException);
         
-        var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid());
+        var result = await _sut.GetConferenceByIdVhoAsync(Guid.NewGuid(), CancellationToken.None);
         var typedResult = result.Value;
         typedResult.Should().BeNull();
     }
@@ -110,7 +111,7 @@ public class GetConferenceByIdVhoTests
             .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(() => default);
         
-        var response = (await _sut.GetConferenceByIdVhoAsync(conferenceId)).Result as NoContentResult;
+        var response = (await _sut.GetConferenceByIdVhoAsync(conferenceId, CancellationToken.None)).Result as NoContentResult;
         
         ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
     }

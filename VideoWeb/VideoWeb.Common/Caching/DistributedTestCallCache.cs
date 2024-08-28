@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITe
 {
     public DistributedTestCallCache(
         IDistributedCache distributedCache,
-        ILogger<RedisCacheBase<string, bool>> logger) : base(distributedCache, logger)
+        ILogger<DistributedTestCallCache> logger) : base(distributedCache, logger)
     {
         CacheEntryOptions = new DistributedCacheEntryOptions
         {
@@ -24,13 +25,13 @@ public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITe
         return $"{key}_SelfTestCompleted";
     }
 
-    public Task AddTestCompletedForTodayAsync(string username)
+    public Task AddTestCompletedForTodayAsync(string username, CancellationToken cancellationToken = default)
     {
-        return WriteToCache(username, true);
+        return WriteToCache(username, true, cancellationToken);
     }
 
-    public Task<bool> HasUserCompletedATestToday(string username)
+    public Task<bool> HasUserCompletedATestToday(string username, CancellationToken cancellationToken = default)
     {
-        return ReadFromCache(username);
+        return ReadFromCache(username, cancellationToken);
     }
 }

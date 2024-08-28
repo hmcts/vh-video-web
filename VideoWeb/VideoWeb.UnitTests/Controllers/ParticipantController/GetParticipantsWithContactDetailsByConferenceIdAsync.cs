@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
@@ -67,12 +68,12 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 new () { Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
             };
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conference.Id)).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetHostsInHearingsTodayAsync())
+                .Setup(x => x.GetHostsInHearingsTodayAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(judgesInHearings);
 
-            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id, CancellationToken.None);
             var typedResult = result as OkObjectResult;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().NotBeNull();
@@ -94,7 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_bad_request_when_conferenceId_empty()
         {
-            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.Empty);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.Empty, CancellationToken.None);
             
             var typedResult = (BadRequestObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -106,8 +107,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId)).ThrowsAsync(apiException);
-            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

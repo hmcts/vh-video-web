@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 
@@ -61,6 +62,7 @@ public static class ConferenceCacheMapper
         conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
         conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
         conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
+        conference.Supplier = hearingDetailsResponse.BookingSupplier
         return conference;
     }
     

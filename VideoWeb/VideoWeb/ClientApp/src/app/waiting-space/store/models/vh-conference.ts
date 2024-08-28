@@ -1,4 +1,12 @@
-import { ConferenceStatus, EndpointStatus, InterpreterType, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceStatus,
+    EndpointStatus,
+    InterpreterType,
+    LinkType,
+    ParticipantStatus,
+    Role,
+    Supplier
+} from 'src/app/services/clients/api-client';
 
 export interface VHConference {
     id: string;
@@ -11,6 +19,7 @@ export interface VHConference {
     isVenueScottish: boolean;
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
+    supplier: Supplier;
 }
 
 export interface VHParticipant {
@@ -28,6 +37,7 @@ export interface VHParticipant {
     pexipInfo?: VHPexipParticipant;
     room?: VHRoom;
     interpreterLanguage?: VHInterpreterLanguage;
+    currentAudioMix?: string;
     linkedParticipants: Array<VHLinkedParticipant>;
 }
 
@@ -50,6 +60,8 @@ export interface VHPexipParticipant {
     isAudioOnlyCall: boolean;
     isVideoCall: boolean;
     protocol: string;
+    receivingAudioMix: string;
+    sentAudioMixes: Array<PexipAudioMix>;
 }
 
 export interface VHRoom {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
@@ -43,16 +44,16 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetConferencesForHost")]
     [Authorize("Judicial")]
-    public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForHostAsync()
+    public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForHostAsync(CancellationToken cancellationToken)
     {
         logger.LogDebug("GetConferencesForHost");
         
         try
         {
             var username = User.Identity!.Name;
-            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
+            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
-            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request);
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
             
             if(conferences.Count != hearings.Count)
                 logger.LogError("Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}",
@@ -83,15 +84,15 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetConferencesForStaffMember")]
     [Authorize("Judicial")]
-    public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForStaffMemberAsync([FromQuery] IEnumerable<string> hearingVenueNames)
+    public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForStaffMemberAsync([FromQuery] IEnumerable<string> hearingVenueNames, CancellationToken cancellationToken)
     {
         logger.LogDebug("GetConferencesForStaffMember");
         
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
-            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request);
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
             var response = hearingsForToday
                 .Select(hearing => BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
                 .ToList();
@@ -116,7 +117,7 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
     [Authorize("Individual")]
-    public async Task<ActionResult<List<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
+    public async Task<ActionResult<List<ConferenceForIndividualResponse>>> GetConferencesForIndividual(CancellationToken cancellationToken)
     {
         logger.LogDebug("GetConferencesForIndividual");
         try
@@ -124,7 +125,7 @@ public class ConferencesController(
             var username = User.Identity!.Name;
             if (IsQuicklinkUser())
             {
-                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
                 var conferences = await conferenceService.GetConferences(conferencesForIndividual
                     .Where(x => x.IsWaitingRoomOpen)
                     .Select(x => x.Id));
@@ -132,8 +133,8 @@ public class ConferencesController(
             }
             else
             {
-                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
+                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
                 var response = hearings.Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
                 response = response.Where(c => c.IsWaitingRoomOpen);
                 return Ok(response.ToList());
@@ -158,15 +159,15 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
     [Authorize(AppRoles.VhOfficerRole)]
-    public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync([FromQuery] VhoConferenceFilterQuery query)
+    public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync([FromQuery] VhoConferenceFilterQuery query, CancellationToken cancellationToken)
     {
         logger.LogDebug("GetConferencesForVhOfficer");
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
-            var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request);
-            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingId));
+            var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request, cancellationToken);
+            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingId), cancellationToken);
             var responses = conferences
                 .Where(c => c.IsWaitingRoomOpen)
                 .Select(x => ConferenceForVhOfficerResponseMapper.Map(x, 
@@ -201,7 +202,7 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
     [Authorize(AppRoles.VhOfficerRole)]
-    public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId)
+    public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         if (conferenceId == Guid.Empty)
         {
@@ -214,7 +215,7 @@ public class ConferencesController(
         Conference conference;
         try
         {
-            conference = await conferenceService.GetConference(conferenceId);
+            conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             if (conference == null)
             {
                 logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
@@ -268,7 +269,7 @@ public class ConferencesController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [SwaggerOperation(OperationId = "GetConferenceById")]
-    public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId)
+    public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         logger.LogDebug("GetConferenceById");
         
@@ -285,7 +286,7 @@ public class ConferencesController(
         Conference conference;
         try
         {
-            conference = await conferenceService.ForceGetConference(conferenceId);
+            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
             if (conference == null)
             {
                 logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);

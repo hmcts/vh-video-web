@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -38,7 +39,7 @@ public class LockConsultationRoomRequestTests
             }
         };
         
-        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id))).ReturnsAsync(_testConference);
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == _testConference.Id), It.IsAny<CancellationToken>())).ReturnsAsync(_testConference);
         _sut = _mocker.Create<ConsultationsController>();
         _sut.ControllerContext = context;
     }
@@ -55,11 +56,11 @@ public class LockConsultationRoomRequestTests
         };
         
         // Act
-        var result = await _sut.LockConsultationRoomRequestAsync(request);
+        var result = await _sut.LockConsultationRoomRequestAsync(request, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();
-        _mocker.Mock<IVideoApiClient>().Verify(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>()), Times.Once);
+        _mocker.Mock<IVideoApiClient>().Verify(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Test]
@@ -75,16 +76,16 @@ public class LockConsultationRoomRequestTests
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
             "Please provide a valid conference Id", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>()))
+            .Setup(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
         // Act
-        var result = await _sut.LockConsultationRoomRequestAsync(request);
+        var result = await _sut.LockConsultationRoomRequestAsync(request, CancellationToken.None);
         
         // Assert
         result.Should().BeOfType<ObjectResult>();
         var typedResult = (ObjectResult)result;
         typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        _mocker.Mock<IVideoApiClient>().Verify(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>()), Times.Once);
+        _mocker.Mock<IVideoApiClient>().Verify(x => x.LockRoomAsync(It.IsAny<LockRoomRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
