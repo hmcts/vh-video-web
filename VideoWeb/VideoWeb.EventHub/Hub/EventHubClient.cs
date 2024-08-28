@@ -49,9 +49,6 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnConnectedAsync()
         {
-            if (Context.User.Identity is not { IsAuthenticated: true }) return;
-            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
             var isAdmin = IsSenderAdmin();
 
             await AddUserToUserGroup(isAdmin);
@@ -61,6 +58,8 @@ namespace VideoWeb.EventHub.Hub
 
             // Cache user profile in the redis cache
             await _userProfileService.CacheUserProfileAsync(Context.User);
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity!.Name);
+            _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
         }
 
         private async Task AddUserToConferenceGroups(bool isAdmin)

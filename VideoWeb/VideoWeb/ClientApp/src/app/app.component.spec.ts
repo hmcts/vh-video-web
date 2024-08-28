@@ -40,6 +40,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
+import { EventsHubService } from './services/events-hub.service';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -59,6 +60,7 @@ describe('AppComponent', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+    let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
 
     let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
@@ -115,6 +117,7 @@ describe('AppComponent', () => {
     });
 
     beforeEach(waitForAsync(() => {
+        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['configureConnection']);
         noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
@@ -146,6 +149,7 @@ describe('AppComponent', () => {
                 { provide: Logger, useValue: new MockLogger() },
                 { provide: TranslateService, useValue: translateServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: EventsHubService, useValue: eventsHubServiceSpy },
                 {
                     provide: ActivatedRoute,
                     useValue: activatedRouteMock
