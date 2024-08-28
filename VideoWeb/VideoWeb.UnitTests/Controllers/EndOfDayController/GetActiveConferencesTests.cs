@@ -63,28 +63,27 @@ public class GetActiveConferencesTests
             .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
             .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
         
-        var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
-            .With(x => x.Participants = participants)
+        var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
             .With((x, i) => x.CaseName = $"Test case name {i + 1}")
             .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
             .With(x => x.ScheduledDuration = 20)
-            .With(x => x.Status = ConferenceState.NotStarted)
+            .With(x => x.CurrentStatus = ConferenceState.NotStarted)
             .With(x => x.ClosedDateTime = null)
             .With(x => x.IsWaitingRoomOpen = true)
             .Random(2).With(x => x.CaseName = "Test case name same")
             .And(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-10))
-            .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.Status = ConferenceState.Closed)
+            .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.CurrentStatus = ConferenceState.Closed)
             .And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x =>
                 x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
-            .Random(1).With(x => x.Status = ConferenceState.Closed)
+            .Random(1).With(x => x.CurrentStatus = ConferenceState.Closed)
             .And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-25)).And(x =>
                 x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
-            .Random(1).With(x => x.Status = ConferenceState.InSession).And(x =>
+            .Random(1).With(x => x.CurrentStatus = ConferenceState.InSession).And(x =>
                 x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
             .Build().ToList();
         
         var allocatedCsoResponses =
-            conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+            conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingId}"}}).ToList();
         allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
         allocatedCsoResponses[0].Cso = null; //on unallocated hearing 
         

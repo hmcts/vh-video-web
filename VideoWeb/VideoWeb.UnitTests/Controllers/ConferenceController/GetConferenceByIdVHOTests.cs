@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using VideoApi.Contract.Enums;
-using VideoWeb.Common;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController;
@@ -52,7 +52,6 @@ public class GetConferenceByIdVhoTests
         typedResult.Should().NotBeNull();
         _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(It.IsAny<Guid>()), Times.Never);
         var response = (ConferenceResponseVho)typedResult.Value;
-        response.CaseNumber.Should().Be(conference.CaseNumber);
         response.Participants.Find(e => e.Id == testParticipant.Id).Role.Should().Be((Role)UserRole.Individual);
     }
     

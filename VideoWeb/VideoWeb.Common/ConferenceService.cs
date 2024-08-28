@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V2.Responses;
@@ -14,6 +16,7 @@ public interface IConferenceService
     public Task<Conference> GetConference(Guid conferenceId);
     public Task<Conference> ForceGetConference(Guid conferenceId);
     public Task UpdateConferenceAsync(Conference conference);
+    public Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds);
 }
 
 public class ConferenceService(
@@ -22,10 +25,15 @@ public class ConferenceService(
     IBookingsApiClient bookingApiClient)
     : IConferenceService
 {
+    
+    /// <summary>
+    /// Will return conference from cache if exists, otherwise will query database and update cache
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <returns></returns>
     public async Task<Conference> GetConference(Guid conferenceId)
     {
-        var conference = await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback);
-        return conference;
+        return await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback);
         
         async Task<(ConferenceDetailsResponse conferenceDetails, HearingDetailsResponseV2 hearingDetails)> ConferenceDetailsCallback()
         {
@@ -33,6 +41,12 @@ public class ConferenceService(
             var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId);
             return (conferenceDetails, hearingDetails);
         }
+    }
+    
+    public async Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds)
+    {
+        var ids = conferenceIds.ToArray();
+        return await Task.WhenAll(ids.Select(GetConference));
     }
     
     /// <summary>

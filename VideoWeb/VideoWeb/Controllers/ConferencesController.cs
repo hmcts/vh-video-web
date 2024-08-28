@@ -9,20 +9,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoApi.Client;
-using VideoApi.Contract.Enums;
-using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common;
 using VideoWeb.Extensions;
 using VideoWeb.Helpers.Sorting;
 using VideoWeb.Mappings;
+using VideoWeb.Middleware;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
-using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers;
 
@@ -53,19 +51,16 @@ public class ConferencesController(
         {
             var username = User.Identity!.Name;
             var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-            var conferencesForHost = await videoApiClient.GetConferencesForHostByHearingRefIdAsync(new GetConferencesByHearingIdsRequest
-            {
-                HearingRefIds = hearings.Select(x => x.Id).ToArray()
-            });
+            var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request);
             
-            if(conferencesForHost.Count != hearings.Count)
+            if(conferences.Count != hearings.Count)
                 logger.LogError("Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}",
-                    hearings.Count, conferencesForHost.Count, username);
+                    hearings.Count, conferences.Count, username);
             
             var response = hearings
-                .Where(h => conferencesForHost.Any(c => c.HearingId == h.Id))
-                .Select(h => BookingForHostResponseMapper.Map(h, conferencesForHost.ToList()))
-                .ToList();
+                .Where(h => conferences.Any(c => c.HearingId == h.Id))
+                .Select(h => BookingForHostResponseMapper.Map(h, conferences.First(c => c.HearingId == h.Id)));
             
             return Ok(response);
         }
@@ -94,11 +89,11 @@ public class ConferencesController(
         
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueAsync(hearingVenueNames);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
-            var conferencesForStaffMember = await videoApiClient.GetConferencesForHostByHearingRefIdAsync(request);
-            var response = conferencesForStaffMember
-                .Select(ConferenceForHostResponseMapper.Map)
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request);
+            var response = hearingsForToday
+                .Select(hearing => BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
                 .ToList();
             return Ok(response);
         }
@@ -130,18 +125,16 @@ public class ConferencesController(
             if (IsQuicklinkUser())
             {
                 var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                var response = conferencesForIndividual
-                    .Select(ConferenceForIndividualResponseMapper.Map)
-                    .ToList();
-                return Ok(response);
+                var conferences = await conferenceService.GetConferences(conferencesForIndividual
+                    .Where(x => x.IsWaitingRoomOpen)
+                    .Select(x => x.Id));
+                return Ok(conferences.Select(ConferenceForIndividualResponseMapper.Map));
             }
             else
             {
                 var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForIndividual =
-                    await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                var response = hearings
-                    .Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
+                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var response = hearings.Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
                 response = response.Where(c => c.IsWaitingRoomOpen);
                 return Ok(response.ToList());
             }
@@ -154,14 +147,6 @@ public class ConferencesController(
         {
             return HandleVideoApiExceptionForGetConferences(e);
         }
-    }
-    
-    private bool IsQuicklinkUser()
-    {
-        var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
-        var isQuicklinkUser = claims?.Find(x =>
-            x.Value == Role.QuickLinkObserver.ToString() || x.Value == Role.QuickLinkParticipant.ToString());
-        return isQuicklinkUser != null;
     }
     
     /// <summary>
@@ -178,13 +163,15 @@ public class ConferencesController(
         logger.LogDebug("GetConferencesForVhOfficer");
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
-            var conferences = await videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
-            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+            var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request);
+            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingId));
             var responses = conferences
-                .Where(c => c.IsWaitingRoomOpen && c.Participants.Exists(e => e.UserRole == UserRole.Judge))
-                .Select(x => ConferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                .Where(c => c.IsWaitingRoomOpen)
+                .Select(x => ConferenceForVhOfficerResponseMapper.Map(x, 
+                    allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingId), 
+                    hearingsForToday.First(h => h.Id == x.HearingId)))
                 .ApplyCsoFilter(query)
                 .ToList();
             
@@ -224,10 +211,10 @@ public class ConferencesController(
             return BadRequest(ModelState);
         }
         
-        ConferenceDetailsResponse conference;
+        Conference conference;
         try
         {
-            conference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            conference = await conferenceService.GetConference(conferenceId);
             if (conference == null)
             {
                 logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
@@ -265,7 +252,7 @@ public class ConferencesController(
         
         conference.Participants = conference
             .Participants
-            .Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
+            .Where(x => displayRoles.Contains(x.Role)).ToList();
 
         return Ok(ConferenceResponseVhoMapper.Map(conference));
     }
@@ -338,5 +325,13 @@ public class ConferencesController(
     {
         logger.LogError(e, "Unable to get conferences for user");
         return StatusCode(e.StatusCode, e.Response);
+    }
+    
+    private bool IsQuicklinkUser()
+    {
+        var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
+        var isQuicklinkUser = claims?.Find(x =>
+            x.Value == Role.QuickLinkObserver.ToString() || x.Value == Role.QuickLinkParticipant.ToString());
+        return isQuicklinkUser != null;
     }
 }

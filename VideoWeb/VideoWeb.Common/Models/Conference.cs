@@ -35,7 +35,10 @@ namespace VideoWeb.Common.Models
         public bool IsScottish { get; set; }
         public string IngestUrl { get; set; }
         public ConferenceMeetingRoom MeetingRoom { get; set; }
-
+        public DateTime CreatedDateTime { get; set; }
+        public string TelephoneConferenceId { get; set; }
+        public string TelephoneConferenceNumbers { get; set; }
+        
         public Participant GetJudge()
         {
             return Participants.SingleOrDefault(x => x.IsJudge());

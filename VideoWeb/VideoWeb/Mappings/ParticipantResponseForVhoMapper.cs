@@ -2,17 +2,16 @@ using System;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings;
 
 public static class ParticipantResponseForVhoMapper
 {
-    public static ParticipantResponseVho Map(ParticipantResponse participant)
+    public static ParticipantResponseVho Map(Participant participant)
     {
-        var status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString());
-        var role = Enum.Parse<Role>(participant.UserRole.ToString());
+        var status = Enum.Parse<ParticipantStatus>(participant.ParticipantStatus.ToString());
+        var role = Enum.Parse<Role>(participant.Role.ToString());
         
         var response = new ParticipantResponseVho
         {
@@ -21,11 +20,12 @@ public static class ParticipantResponseForVhoMapper
             Role = role,
             DisplayName = participant.DisplayName,
             CurrentRoom = RoomSummaryResponseMapper.Map(participant.CurrentRoom),
-            InterpreterRoom = RoomSummaryResponseMapper.Map(participant.CurrentInterpreterRoom),
+            InterpreterRoom = RoomSummaryResponseMapper.Map(participant.InterpreterRoom),
+            Name = participant.FullTitledName,
             LinkedParticipants = participant.LinkedParticipants.Select(lp => new LinkedParticipantResponse
             {
                 LinkedId = lp.LinkedId,
-                LinkType = (LinkType)lp.Type
+                LinkType = lp.LinkType
             }).ToList()
         };
         

@@ -1,19 +1,19 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
     ConferenceResponseVho,
-    ParticipantHeartbeatResponse,
-    TaskResponse,
     CourtRoomsAccountResponse,
-    Role
+    ParticipantHeartbeatResponse,
+    Role,
+    TaskResponse
 } from 'src/app/services/clients/api-client';
-import { Injectable } from '@angular/core';
-import { CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { map, switchMap } from 'rxjs/operators';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { CsoFilter } from './models/cso-filter';
-import { VhoStorageKeys } from './models/session-keys';
+import {Injectable} from '@angular/core';
+import {CourtRoomsAccounts} from './models/court-rooms-accounts';
+import {map, switchMap} from 'rxjs/operators';
+import {SessionStorage} from 'src/app/services/session-storage';
+import {CsoFilter} from './models/cso-filter';
+import {VhoStorageKeys} from './models/session-keys';
 
 @Injectable()
 export class VhoQueryService {
@@ -171,14 +171,6 @@ export class VhoQueryService {
 
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
-    }
-
-    getCourtRoomsAccounts(
-        venueAllocation: string[],
-        allocatedCsosIds: string[],
-        includeUnallocated: boolean = false
-    ): Promise<CourtRoomsAccountResponse[]> {
-        return this.apiClient.getCourtRoomAccounts(venueAllocation ?? [], allocatedCsosIds ?? [], includeUnallocated).toPromise();
     }
 
     getActiveConferences() {

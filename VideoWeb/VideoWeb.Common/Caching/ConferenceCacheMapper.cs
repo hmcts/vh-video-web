@@ -19,7 +19,7 @@ public static class ConferenceCacheMapper
 
         var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
-        var caseInformation = hearingDetailsResponse.Cases[0];
+        var caseInformation = hearingDetailsResponse.Cases.FirstOrDefault(c => c.IsLeadCase) ?? hearingDetailsResponse.Cases[0];
         
         var endpoints = conferenceResponse.Endpoints == null
             ? new List<Endpoint>()
@@ -27,8 +27,7 @@ public static class ConferenceCacheMapper
         
         var civilianRooms = conferenceResponse.CivilianRooms == null
             ? new List<CivilianRoom>()
-            : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
-                .ToList();
+            : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel).ToList();
         
         var meetingRoom = conferenceResponse.MeetingRoom == null
             ? null
@@ -37,29 +36,31 @@ public static class ConferenceCacheMapper
                 ParticipantUri = conferenceResponse.MeetingRoom.ParticipantUri,
                 PexipNode = conferenceResponse.MeetingRoom.PexipNode,
                 PexipSelfTest = conferenceResponse.MeetingRoom.PexipSelfTestNode,
+                AdminUri = conferenceResponse.MeetingRoom.AdminUri
             };
         
-        var conference = new Conference
-        {
-            Id = conferenceResponse.Id,
-            HearingId = conferenceResponse.HearingId,
-            Participants = participants,
-            HearingVenueName = hearingDetailsResponse.HearingVenueName,
-            Endpoints = endpoints,
-            CivilianRooms = civilianRooms,
-            CurrentStatus = conferenceResponse.CurrentStatus,
-            IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen,
-            CaseName = caseInformation.Name,
-            CaseNumber = caseInformation.Number,
-            CaseType = hearingDetailsResponse.ServiceName,
-            ScheduledDateTime = conferenceResponse.ScheduledDateTime,
-            ScheduledDuration = conferenceResponse.ScheduledDuration,
-            ClosedDateTime = conferenceResponse.ClosedDateTime,
-            AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
-            IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
-            IngestUrl = conferenceResponse.IngestUrl,
-            MeetingRoom = meetingRoom
-        };
+        var conference = new Conference();
+        conference.Id = conferenceResponse.Id;
+        conference.HearingId = conferenceResponse.HearingId;
+        conference.Participants = participants;
+        conference.HearingVenueName = hearingDetailsResponse.HearingVenueName;
+        conference.Endpoints = endpoints;
+        conference.CivilianRooms = civilianRooms;
+        conference.CurrentStatus = conferenceResponse.CurrentStatus;
+        conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
+        conference.CaseName = caseInformation.Name;
+        conference.CaseNumber = caseInformation.Number;
+        conference.CaseType = hearingDetailsResponse.ServiceName;
+        conference.ScheduledDateTime = conferenceResponse.ScheduledDateTime;
+        conference.ScheduledDuration = conferenceResponse.ScheduledDuration;
+        conference.ClosedDateTime = conferenceResponse.ClosedDateTime;
+        conference.AudioRecordingRequired = conferenceResponse.AudioRecordingRequired;
+        conference.IsScottish = hearingDetailsResponse.IsHearingVenueScottish;
+        conference.IngestUrl = conferenceResponse.IngestUrl;
+        conference.MeetingRoom = meetingRoom;
+        conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
+        conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
+        conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
         return conference;
     }
     

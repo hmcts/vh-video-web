@@ -1,25 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoApi.Contract.Responses;
-using VideoApi.Contract.Enums;
-using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.Mappings;
 
 public static class ConferenceResponseVhoMapper{
     
-    public static ConferenceResponseVho Map(ConferenceDetailsResponse conference)
+    public static ConferenceResponseVho Map(Conference conference)
     {
-        
-        conference.Participants ??= new List<ParticipantResponse>();
-        
-        var participants = conference.Participants
-            .OrderBy(x => x.UserRole)
-            .Select(ParticipantResponseForVhoMapper.Map)
-            .ToList();
-        
         var response = new ConferenceResponseVho
         {
             Id = conference.Id,
@@ -29,7 +18,7 @@ public static class ConferenceResponseVhoMapper{
             ScheduledDateTime = conference.ScheduledDateTime,
             ScheduledDuration = conference.ScheduledDuration,
             Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
-            Participants = participants,
+            Participants = conference.Participants.Select(ParticipantResponseForVhoMapper.Map).ToList(),
             ClosedDateTime = conference.ClosedDateTime,
             HearingVenueName = conference.HearingVenueName,
             HearingId = conference.HearingId
@@ -46,12 +35,12 @@ public static class ConferenceResponseVhoMapper{
         return response;
     }
     
-    private static void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
+    private static void AssignTilePositions(Conference conference, ConferenceResponseVho response)
     {
         var tiledParticipants = conference.Participants.Where(x =>
-            x.UserRole == UserRole.Individual || x.UserRole == UserRole.Representative).ToList();
+            x.Role == Role.Individual || x.Role == Role.Representative).ToList();
         
-        var partyGroups = tiledParticipants.GroupBy(x => x.UserRole).ToList();
+        var partyGroups = tiledParticipants.GroupBy(x => x.Role).ToList();
         foreach (var group in partyGroups)
         {
             var pats = @group.ToList();

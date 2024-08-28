@@ -1,21 +1,40 @@
-using System;
-using VideoWeb.Common.Models;
-using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
+using VideoApi.Contract.Responses;
 using ParticipantForHostResponse = VideoWeb.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.Mappings;
 
 public static class ParticipantForHostResponseMapper
 {
-    public static ParticipantForHostResponse Map(Participant participant)
+    public static ParticipantForHostResponse Map(ParticipantResponse participant)
     {
         return new ParticipantForHostResponse
         {
             Id = participant.Id,
-            Role = Enum.Parse<Role>(participant.Role.ToString()),
             DisplayName = participant.DisplayName,
-            Representee = participant.Representee,
-            HearingRole = participant.HearingRole,
+        };
+    }
+    
+    /// <summary>
+    /// TODO: Delete mapper once V1 apis are removed
+    /// </summary>
+    /// <param name="participant"></param>
+    /// <returns></returns>
+    public static ParticipantForHostResponse Map(BookingsApi.Contract.V1.Responses.ParticipantResponse participant)
+    {
+        return new ParticipantForHostResponse
+        {
+            Id = participant.Id,
+            DisplayName = participant.DisplayName,
+        };
+    }
+    
+    
+    public static ParticipantForHostResponse Map(BookingsApi.Contract.V2.Responses.ParticipantResponseV2 participant)
+    {
+        return new ParticipantForHostResponse
+        {
+            Id = participant.Id,
+            DisplayName = participant.DisplayName,
         };
     }
 }
