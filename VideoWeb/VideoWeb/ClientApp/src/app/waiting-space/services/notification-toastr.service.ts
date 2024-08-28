@@ -351,7 +351,13 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showParticipantLeftHearingRoom(participant: VHParticipant, inHearing: boolean = false): VhToastComponent {
+    /**
+     * Display a toast notification informing a participant has left the hearing room
+     * @param participant the leaving participant
+     * @param loggedInParticipantInVideo true if the logged in participant has a video stream on display (i.e. in consultation or in a hearing)
+     * @returns a toast notification informing a participant has left
+     */
+    showParticipantLeftHearingRoom(participant: VHParticipant, loggedInParticipantInVideo: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.participant-left-hearing.message', {
             name: participant.name ?? participant.displayName
         });
@@ -369,7 +375,7 @@ export class NotificationToastrService {
             toastComponent: VhToastComponent
         });
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: inHearing ? 'white' : 'black',
+            color: loggedInParticipantInVideo ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on participant left hearing alert`);

@@ -82,6 +82,7 @@ export const ConferenceActions = createActionGroup({
         'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>(),
 
         'Participant Leave HearingRoom': props<{ participantId: string; conferenceId: string }>(),
-        'Participant Leave HearingRoom Success': props<{ conference: VHConference; participant: VHParticipant }>()
+        'Participant Leave HearingRoom Success': props<{ participant: VHParticipant }>(),
+        'Participant Leave HearingRoom Failure': props<{ error: Error }>()
     }
 });

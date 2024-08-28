@@ -56,6 +56,7 @@ import { VideoCallEffects } from './store/effects/video-call.effects';
 import { AudioMixSelectionComponent } from './audio-mix-selection/audio-mix-selection.component';
 import { ReferenceDataEffects } from './store/effects/reference-data.effects';
 import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/reference-data.reducer';
+import { NotificationEffects } from './store/effects/notification.effects';
 
 @NgModule({
     imports: [
@@ -65,7 +66,7 @@ import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,

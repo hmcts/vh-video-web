@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
-import { ConferenceState } from '../reducers/conference.reducer';
-import { Store } from '@ngrx/store';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../reducers/conference.reducer';
+
+import * as ConferenceSelectors from '../selectors/conference.selectors';
+import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 
 @Injectable()
 export class NotificationEffects {
@@ -13,10 +16,16 @@ export class NotificationEffects {
         () =>
             this.actions$.pipe(
                 ofType(ConferenceActions.participantLeaveHearingRoomSuccess),
-                tap(action => {
+                concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+                tap(([action, loggedInParticipant]) => {
+                    const isHost = loggedInParticipant?.role === Role.Judge || loggedInParticipant?.role === Role.StaffMember;
+                    if (!isHost) {
+                        return;
+                    }
                     this.toastNotificationService.showParticipantLeftHearingRoom(
                         action.participant,
-                        action.conference.status === ConferenceStatus.InSession
+                        loggedInParticipant.status === ParticipantStatus.InConsultation ||
+                            loggedInParticipant.status === ParticipantStatus.InHearing
                     );
                 })
             ),

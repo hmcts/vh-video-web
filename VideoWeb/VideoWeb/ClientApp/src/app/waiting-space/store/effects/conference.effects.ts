@@ -79,9 +79,10 @@ export class ConferenceEffects {
                 this.store.select(ConferenceSelectors.getParticipantById(action.participantId))
             ]),
             switchMap(([action, conference, participant]) =>
-                this.apiClient
-                    .leaveHearing(action.conferenceId, action.participantId)
-                    .pipe(map(() => ConferenceActions.participantLeaveHearingRoomSuccess({ conference, participant })))
+                this.apiClient.leaveHearing(action.conferenceId, action.participantId).pipe(
+                    map(() => ConferenceActions.participantLeaveHearingRoomSuccess({ participant })),
+                    catchError(error => of(ConferenceActions.participantLeaveHearingRoomFailure({ error })))
+                )
             )
         )
     );

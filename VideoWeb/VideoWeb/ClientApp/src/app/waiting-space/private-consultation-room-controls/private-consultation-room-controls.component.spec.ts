@@ -92,6 +92,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
     });
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
@@ -757,28 +758,47 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('leave', () => {
-        it('should call super leave method with participants', () => {
-            const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
-            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Individual,
-                    HearingRole.LITIGANT_IN_PERSON,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
-            ]);
+        describe('host', () => {
+            beforeEach(() => {
+                component.participant.role = Role.Judge;
+            });
+            it('should call super leave method with participants', () => {
+                const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
+                getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
+                    new ParticipantModel(
+                        '7879c48a-f513-4d3b-bb1b-151831427507',
+                        'Participant Name',
+                        'DisplayName',
+                        'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
+                        Role.Judge,
+                        HearingRole.JUDGE,
+                        false,
+                        null,
+                        null,
+                        ParticipantStatus.Available,
+                        null
+                    )
+                ]);
 
-            component.leave(true);
+                component.leave(true);
 
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+            });
+        });
+
+        describe('non-host', () => {
+            beforeEach(() => {
+                component.participant.role = Role.Individual;
+            });
+            it('should call super leave method with participants', () => {
+                const spy = spyOn(HearingControlsBaseComponent.prototype, 'nonHostLeave');
+
+                component.leave(true);
+
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(true);
+            });
         });
     });
 

@@ -148,6 +148,7 @@ describe('HearingControlsBaseComponent', () => {
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
@@ -928,6 +929,7 @@ describe('HearingControlsBaseComponent', () => {
         beforeEach(() => {
             videoCallService.dismissParticipantFromHearing.calls.reset();
             videoCallService.suspendHearing.calls.reset();
+            component.participant.role = Role.Judge;
         });
 
         it('should not display the leave hearing popup', () => {
