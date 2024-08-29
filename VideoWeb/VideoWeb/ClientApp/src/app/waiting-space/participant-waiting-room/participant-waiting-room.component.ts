@@ -355,7 +355,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             return;
         }
         const feedbackUrl = 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/';
-        window.location.href = feedbackUrl;
+        window.location.assign(feedbackUrl);
     }
 
     private onShouldReload(): void {

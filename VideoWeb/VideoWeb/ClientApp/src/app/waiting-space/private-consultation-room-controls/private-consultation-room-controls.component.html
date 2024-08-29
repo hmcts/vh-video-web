@@ -757,7 +757,7 @@
 <ng-container *ngIf="isHost">
   <app-confirm-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)"> </app-confirm-leave-hearing-popup>
 </ng-container>
-<ng-container *ngIf="isHost">
+<ng-container *ngIf="!isHost">
   <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
   </app-confirm-non-host-leave-hearing-popup>
 </ng-container>
