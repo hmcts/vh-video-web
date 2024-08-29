@@ -73,9 +73,9 @@ namespace VideoWeb.UnitTests.Hub
             };
         }
 
-        protected List<ConferenceDetailsResponse> SetupConferences(int numOfConferences)
+        protected List<ConferenceCoreResponse> SetupConferences(int numOfConferences)
         {
-            var conferences = Builder<ConferenceDetailsResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .Build()
                 .ToList();
@@ -83,7 +83,9 @@ namespace VideoWeb.UnitTests.Hub
             Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
+            VideoApiClientMock
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -107,7 +109,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
-                .ReturnsAsync(conferences);
+                .ReturnsAsync(new List<ConferenceCoreResponse>(conferences));
 
             return conferences
                 .Where(x => x.Participants.Exists(p => p.Username == Claims.Identity?.Name))

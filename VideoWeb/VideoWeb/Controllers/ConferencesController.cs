@@ -124,7 +124,7 @@ public class ConferencesController(
         try
         {
             var username = User.Identity!.Name;
-            if (IsQuicklinkUser())
+            if (IsQuickLinkUser())
             {
                 var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
                 var conferences = await conferenceService.GetConferences(conferencesForIndividual
@@ -313,7 +313,7 @@ public class ConferencesController(
         return StatusCode(e.StatusCode, e.Response);
     }
     
-    private bool IsQuicklinkUser()
+    private bool IsQuickLinkUser()
     {
         var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
         var isQuicklinkUser = claims?.Find(x =>
