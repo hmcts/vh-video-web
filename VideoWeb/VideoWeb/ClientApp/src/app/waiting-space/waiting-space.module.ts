@@ -58,7 +58,6 @@ import { ReferenceDataEffects } from './store/effects/reference-data.effects';
 import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/reference-data.reducer';
 import { NotificationEffects } from './store/effects/notification.effects';
 import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm-non-host-leave-hearing-popup.component';
-import { ErrorEffects } from './store/effects/error.effects';
 
 @NgModule({
     imports: [
@@ -68,7 +67,7 @@ import { ErrorEffects } from './store/effects/error.effects';
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects, ErrorEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
