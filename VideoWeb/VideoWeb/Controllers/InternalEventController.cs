@@ -32,6 +32,7 @@ namespace VideoWeb.Controllers
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
         private readonly IHearingCancelledEventNotifier _hearingCancelledEventNotifier;
         private readonly IHearingDateTimeChangedEventNotifier _hearingDateTimeChangedEventNotifier;
+        private readonly IHearingDetailsUpdatedEventNotifier _hearingDetailsUpdatedEventNotifier;
 
         public InternalEventController(
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
@@ -41,7 +42,8 @@ namespace VideoWeb.Controllers
             IAllocationHearingsEventNotifier allocationHearingsEventNotifier,
             IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier,
             IHearingCancelledEventNotifier hearingCancelledEventNotifier,
-            IHearingDateTimeChangedEventNotifier hearingDateTimeChangedEventNotifier
+            IHearingDateTimeChangedEventNotifier hearingDateTimeChangedEventNotifier,
+            IHearingDetailsUpdatedEventNotifier hearingDetailsUpdatedEventNotifier
             )
         {
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -52,6 +54,7 @@ namespace VideoWeb.Controllers
             _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
             _hearingCancelledEventNotifier = hearingCancelledEventNotifier;
             _hearingDateTimeChangedEventNotifier = hearingDateTimeChangedEventNotifier;
+            _hearingDetailsUpdatedEventNotifier = hearingDetailsUpdatedEventNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -195,6 +198,16 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> HearingDateTimeChanged(Guid hearingId)
         {
             await _hearingDateTimeChangedEventNotifier.PushHearingDateTimeChangedEvent(hearingId);
+            return NoContent();
+        }
+
+        [HttpPost("HearingDetailsUpdated")]
+        [SwaggerOperation(OperationId = "HearingDetailsUpdated")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> HearingDetailsUpdated(Guid hearingId)
+        {
+            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(hearingId);
             return NoContent();
         }
     }
