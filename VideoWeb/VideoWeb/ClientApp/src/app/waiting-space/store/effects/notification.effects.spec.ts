@@ -74,7 +74,6 @@ describe('NotificationEffects', () => {
 
         it('should not show participant left hearing room notification for non-host participants', () => {
             // arrange
-            const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
             const vhParticipant = vhConference.participants.find(x => x.role === Role.Individual);
             const loggedInParticipant = vhConference.participants.find(x => x.role !== Role.Judge);
@@ -97,7 +96,6 @@ describe('NotificationEffects', () => {
 
         it('should not show participant left hearing room notification when active conference does not match conference id', () => {
             // arrange
-            const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
             const vhParticipant = vhConference.participants.find(x => x.role === Role.Individual);
             const loggedInParticipant = vhConference.participants.find(x => x.role !== Role.Judge);

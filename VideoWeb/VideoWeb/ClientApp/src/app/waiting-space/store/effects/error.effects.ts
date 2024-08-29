@@ -7,11 +7,6 @@ import { switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class ErrorEffects {
-    constructor(
-        private actions$: Actions,
-        private logger: Logger
-    ) {}
-
     logAllErrors$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -27,4 +22,9 @@ export class ErrorEffects {
             ),
         { dispatch: false }
     );
+
+    constructor(
+        private actions$: Actions,
+        private logger: Logger
+    ) {}
 }
