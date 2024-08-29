@@ -984,6 +984,14 @@ describe('HearingControlsBaseComponent', () => {
         });
     });
 
+    describe('displayLanguageChange', () => {
+        it('should emit the change language was selected', () => {
+            spyOn(component.changeLanguageSelected, 'emit');
+            component.displayLanguageChange();
+            expect(component.changeLanguageSelected.emit).toHaveBeenCalled();
+        });
+    });
+
     describe('nonHostLeave', () => {
         beforeEach(() => {
             component.participant.role = Role.Individual;
