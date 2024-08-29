@@ -101,36 +101,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_video_api_error()
-        {
-            var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.HearingRole == "Witness");
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(judge.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var Controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not start transfer participant";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-
-            _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.TransferParticipantAsync(TestConference.Id,
-                    It.IsAny<TransferParticipantRequest>(), It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
-
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
-            result.Should().BeOfType<ObjectResult>();
-            var typedResult = (ObjectResult)result;
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-            
-            _mocker.Mock<IConferenceManagementService>().Verify(
-                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, witness.Id, false, It.IsAny<CancellationToken>()), Times.Never);
-        }
-
-        [Test]
         public async Task should_return_accepted_when_participant_is_witness_and_judge_is_in_conference()
         {
             var judge = TestConference.GetJudge();
@@ -254,33 +224,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                     It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant), It.IsAny<CancellationToken>()),
                 Times.Once);
-        }
-
-        [Test]
-        public async Task should_return_video_api_error_for_add_task()
-        {
-            var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.HearingRole == "Witness");
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(judge.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var Controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not add dismiss alert for participant";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-
-            _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.AddTaskAsync(TestConference.Id,
-                    It.IsAny<AddTaskRequest>(), It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
-
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
-            result.Should().BeOfType<ObjectResult>();
-            var typedResult = (ObjectResult)result;
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         [Test]

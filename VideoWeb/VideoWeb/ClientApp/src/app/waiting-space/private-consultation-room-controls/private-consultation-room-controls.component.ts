@@ -38,6 +38,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public wowzaUUID: string;
     @Input() public conference: ConferenceResponse;
 
+    featureFlags = FEATURE_FLAGS;
+
     showContextMenu = false;
     enableDynamicEvidenceSharing = false;
     isWowzaKillButtonEnabled = false;
