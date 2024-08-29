@@ -16,12 +16,19 @@ export class NotificationEffects {
         () =>
             this.actions$.pipe(
                 ofType(ConferenceActions.participantLeaveHearingRoomSuccess),
-                concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
-                tap(([action, loggedInParticipant]) => {
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                tap(([action, activeConference, loggedInParticipant]) => {
                     const isHost = loggedInParticipant?.role === Role.Judge || loggedInParticipant?.role === Role.StaffMember;
+                    if (activeConference.id !== action.conferenceId) {
+                        return;
+                    }
                     if (!isHost) {
                         return;
                     }
+
                     this.toastNotificationService.showParticipantLeftHearingRoom(
                         action.participant,
                         loggedInParticipant.status === ParticipantStatus.InConsultation ||
