@@ -8,10 +8,10 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import {catchError as _observableCatch, mergeMap as _observableMergeMap} from 'rxjs/operators';
-import {from as _observableFrom, Observable, of as _observableOf, throwError as _observableThrow} from 'rxjs';
-import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpResponse, HttpResponseBase} from '@angular/common/http';
+import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
+import { from as _observableFrom, Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 

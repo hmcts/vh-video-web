@@ -1,13 +1,13 @@
-import {fakeAsync, tick} from '@angular/core/testing';
-import {Observable, of} from 'rxjs';
-import {ApiClient} from '../../services/clients/api-client';
-import {ConferenceTestData} from '../../testing/mocks/data/conference-test-data';
-import {VhoQueryService} from './vho-query-service.service';
-import {CourtRoomFilter, CourtRoomsAccounts} from './models/court-rooms-accounts';
-import {take, takeLast} from 'rxjs/operators';
-import {SessionStorage} from 'src/app/services/session-storage';
-import {CsoFilter} from './models/cso-filter';
-import {VhoStorageKeys} from './models/session-keys';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { Observable, of } from 'rxjs';
+import { ApiClient } from '../../services/clients/api-client';
+import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
+import { VhoQueryService } from './vho-query-service.service';
+import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
+import { take, takeLast } from 'rxjs/operators';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { CsoFilter } from './models/cso-filter';
+import { VhoStorageKeys } from './models/session-keys';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();

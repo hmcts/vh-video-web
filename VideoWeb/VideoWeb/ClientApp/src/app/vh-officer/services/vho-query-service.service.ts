@@ -1,4 +1,4 @@
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
@@ -7,12 +7,12 @@ import {
     Role,
     TaskResponse
 } from 'src/app/services/clients/api-client';
-import {Injectable} from '@angular/core';
-import {CourtRoomsAccounts} from './models/court-rooms-accounts';
-import {map, switchMap} from 'rxjs/operators';
-import {SessionStorage} from 'src/app/services/session-storage';
-import {CsoFilter} from './models/cso-filter';
-import {VhoStorageKeys} from './models/session-keys';
+import { Injectable } from '@angular/core';
+import { CourtRoomsAccounts } from './models/court-rooms-accounts';
+import { map, switchMap } from 'rxjs/operators';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { CsoFilter } from './models/cso-filter';
+import { VhoStorageKeys } from './models/session-keys';
 
 @Injectable()
 export class VhoQueryService {

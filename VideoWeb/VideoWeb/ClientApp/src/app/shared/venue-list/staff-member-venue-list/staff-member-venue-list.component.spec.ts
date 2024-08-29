@@ -1,20 +1,20 @@
-import {Router} from '@angular/router';
-import {of} from 'rxjs';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
-import {HearingVenueResponse} from 'src/app/services/clients/api-client';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {SessionStorage} from 'src/app/services/session-storage';
-import {MockLogger} from 'src/app/testing/mocks/mock-logger';
-import {VhoQueryService} from 'src/app/vh-officer/services/vho-query-service.service';
-import {CourtRoomsAccounts} from '../../../vh-officer/services/models/court-rooms-accounts';
-import {VhoStorageKeys} from '../../../vh-officer/services/models/session-keys';
-import {pageUrls} from '../../page-url.constants';
-import {StaffMemberVenueListComponent} from './staff-member-venue-list.component';
-import {TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {FEATURE_FLAGS, LaunchDarklyService} from '../../../services/launch-darkly.service';
-import {TranslatePipeMock} from '../../../testing/mocks/mock-translation-pipe';
-import {ProfileService} from 'src/app/services/api/profile.service';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-rooms-accounts';
+import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
+import { pageUrls } from '../../page-url.constants';
+import { StaffMemberVenueListComponent } from './staff-member-venue-list.component';
+import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 describe('StaffMemerVenueListComponent', () => {
     let component: StaffMemberVenueListComponent;

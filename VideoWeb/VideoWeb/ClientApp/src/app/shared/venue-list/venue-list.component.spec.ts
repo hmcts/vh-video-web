@@ -1,23 +1,18 @@
-import {Router} from '@angular/router';
-import {of} from 'rxjs';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
-import {
-    HearingVenueResponse,
-    JusticeUserResponse,
-    Role,
-    UserProfileResponse
-} from 'src/app/services/clients/api-client';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {SessionStorage} from 'src/app/services/session-storage';
-import {MockLogger} from 'src/app/testing/mocks/mock-logger';
-import {VhoQueryService} from 'src/app/vh-officer/services/vho-query-service.service';
-import {CourtRoomsAccounts} from '../../vh-officer/services/models/court-rooms-accounts';
-import {VhoStorageKeys} from '../../vh-officer/services/models/session-keys';
-import {VenueListComponentDirective} from './venue-list.component';
-import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
-import {ProfileService} from 'src/app/services/api/profile.service';
-import {CsoFilter} from 'src/app/vh-officer/services/models/cso-filter';
-import {fakeAsync, tick} from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { HearingVenueResponse, JusticeUserResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
+import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
+import { VenueListComponentDirective } from './venue-list.component';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     get showVhoSpecificContent() {
