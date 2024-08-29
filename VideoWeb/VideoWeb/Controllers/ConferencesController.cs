@@ -51,7 +51,7 @@ public class ConferencesController(
         try
         {
             var username = User.Identity!.Name;
-            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
+            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
             var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
             
@@ -61,7 +61,8 @@ public class ConferencesController(
             
             var response = hearings
                 .Where(h => conferences.Any(c => c.HearingId == h.Id))
-                .Select(h => BookingForHostResponseMapper.Map(h, conferences.First(c => c.HearingId == h.Id)));
+                .Select(h => BookingForHostResponseMapper.Map(h, conferences.First(c => c.HearingId == h.Id)))
+                .ToList();
             
             return Ok(response);
         }
@@ -127,13 +128,13 @@ public class ConferencesController(
             {
                 var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
                 var conferences = await conferenceService.GetConferences(conferencesForIndividual
-                    .Where(x => x.IsWaitingRoomOpen)
-                    .Select(x => x.Id));
-                return Ok(conferences.Select(ConferenceForIndividualResponseMapper.Map));
+                        .Where(x => x.IsWaitingRoomOpen)
+                        .Select(x => x.Id), cancellationToken);
+                return Ok(conferences.Select(ConferenceForIndividualResponseMapper.Map).ToList());
             }
             else
             {
-                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
+                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
                 var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
                 var response = hearings.Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
                 response = response.Where(c => c.IsWaitingRoomOpen);
@@ -199,7 +200,6 @@ public class ConferencesController(
     [HttpGet("{conferenceId}/vhofficer")]
     [ProducesResponseType(typeof(ConferenceResponseVho), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
     [Authorize(AppRoles.VhOfficerRole)]
     public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
@@ -212,22 +212,7 @@ public class ConferencesController(
             return BadRequest(ModelState);
         }
         
-        Conference conference;
-        try
-        {
-            conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-            if (conference == null)
-            {
-                logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
-                return NoContent();
-            }
-        }
-        catch (VideoApiException e)
-        {
-            logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
-            
-            return StatusCode(e.StatusCode, e.Response);
-        }
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         
         if (!conference.IsWaitingRoomOpen)
         {

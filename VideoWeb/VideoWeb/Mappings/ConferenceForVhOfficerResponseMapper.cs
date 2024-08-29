@@ -3,10 +3,9 @@ using System.Linq;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common.Enums;
 
 namespace VideoWeb.Mappings;
 
@@ -39,7 +38,7 @@ public static class ConferenceForVhOfficerResponseMapper
         response.HearingRefId = conference.HearingId;
         response.AllocatedCso = allocatedCso;
         response.AllocatedCsoId = allocatedCsoResponse?.Cso?.Id;
-        response.Supplier = (Supplier)conference.Supplier;
+        response.Supplier = conference.Supplier;
         return response;
     }
     

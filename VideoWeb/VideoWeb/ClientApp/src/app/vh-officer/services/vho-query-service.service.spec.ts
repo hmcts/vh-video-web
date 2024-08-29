@@ -1,13 +1,13 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
-import { ApiClient, CourtRoomsAccountResponse } from '../../services/clients/api-client';
-import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
-import { VhoQueryService } from './vho-query-service.service';
-import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { take, takeLast } from 'rxjs/operators';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { CsoFilter } from './models/cso-filter';
-import { VhoStorageKeys } from './models/session-keys';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {Observable, of} from 'rxjs';
+import {ApiClient} from '../../services/clients/api-client';
+import {ConferenceTestData} from '../../testing/mocks/data/conference-test-data';
+import {VhoQueryService} from './vho-query-service.service';
+import {CourtRoomFilter, CourtRoomsAccounts} from './models/court-rooms-accounts';
+import {take, takeLast} from 'rxjs/operators';
+import {SessionStorage} from 'src/app/services/session-storage';
+import {CsoFilter} from './models/cso-filter';
+import {VhoStorageKeys} from './models/session-keys';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
@@ -21,7 +21,6 @@ describe('VhoQueryService', () => {
             'getTasks',
             'completeTask',
             'getHeartbeatDataForParticipant',
-            'getCourtRoomAccounts',
             'getActiveConferences'
         ]);
     });
@@ -257,34 +256,6 @@ describe('VhoQueryService', () => {
 
         const result = await service.getParticipantHeartbeats(confId, participantId);
         expect(result).toBe(data);
-    });
-
-    it('should get court rooms filter', async () => {
-        const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
-        const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
-        const courtAccounts: CourtRoomsAccountResponse[] = [];
-        courtAccounts.push(courtRoomsAccounts1);
-        courtAccounts.push(courtRoomsAccounts2);
-
-        apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
-        const usernames = ['Birmingham', 'Manchester'];
-        const result = await service.getCourtRoomsAccounts(usernames, null, false);
-        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames, [], false);
-        expect(result).toBe(courtAccounts);
-    });
-
-    it('should get court rooms filter when querying by csos', async () => {
-        const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
-        const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
-        const courtAccounts: CourtRoomsAccountResponse[] = [];
-        courtAccounts.push(courtRoomsAccounts1);
-        courtAccounts.push(courtRoomsAccounts2);
-
-        apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
-        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
-        const result = await service.getCourtRoomsAccounts(null, allocatedCsoIds, true);
-        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith([], allocatedCsoIds, true);
-        expect(result).toBe(courtAccounts);
     });
 
     it('should get cso filters from storage', async () => {

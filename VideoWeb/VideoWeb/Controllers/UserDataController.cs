@@ -21,5 +21,6 @@ public class UserDataController(IBookingsApiClient bookingApiClient) : Controlle
     /// </summary>
     [HttpGet("csos", Name = "GetCSOs")]
     [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers(CancellationToken cancellationToken) =>Ok(await bookingApiClient.GetJusticeUserListAsync(string.Empty, null, cancellationToken));
+    public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers(CancellationToken cancellationToken) 
+        =>Ok(await bookingApiClient.GetJusticeUserListAsync(string.Empty, null, cancellationToken));
 }

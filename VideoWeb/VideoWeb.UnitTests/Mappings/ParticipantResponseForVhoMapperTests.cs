@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
@@ -15,8 +14,7 @@ public class ParticipantResponseForVhoMapperTests
     {
         const ParticipantStatus expectedStatus = ParticipantStatus.Available;
         const Role expectedRole = Role.Individual;
-        var participant = new ParticipantResponseBuilder(UserRole.Individual)
-            .WithStatus(ParticipantState.Available).Build();
+        var participant = new ParticipantBuilder(Role.Individual).WithStatus(ParticipantStatus.Available).Build();
         
         var response = ParticipantResponseForVhoMapper.Map(participant);
         response.Id.Should().Be(participant.Id);
@@ -27,6 +25,6 @@ public class ParticipantResponseForVhoMapperTests
         
         var actualLp = response.LinkedParticipants[0];
         actualLp.LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
-        actualLp.LinkType.Should().Be((LinkType)participant.LinkedParticipants[0].Type);
+        actualLp.LinkType.Should().Be(participant.LinkedParticipants[0].LinkType);
     }
 }

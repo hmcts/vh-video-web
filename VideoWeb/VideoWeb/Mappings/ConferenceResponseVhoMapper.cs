@@ -9,20 +9,23 @@ public static class ConferenceResponseVhoMapper{
     
     public static ConferenceResponseVho Map(Conference conference)
     {
-        var response = new ConferenceResponseVho
+        var response = new ConferenceResponseVho();
+        response.Id = conference.Id;
+        response.CaseName = conference.CaseName;
+        response.CaseNumber = conference.CaseNumber;
+        response.CaseType = conference.CaseType;
+        response.ScheduledDateTime = conference.ScheduledDateTime;
+        response.ScheduledDuration = conference.ScheduledDuration;
+        response.Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus);
+        response.ClosedDateTime = conference.ClosedDateTime;
+        response.HearingVenueName = conference.HearingVenueName;
+        response.HearingId = conference.HearingId;
+        
+        if (conference.Participants != null)
         {
-            Id = conference.Id,
-            CaseName = conference.CaseName,
-            CaseNumber = conference.CaseNumber,
-            CaseType = conference.CaseType,
-            ScheduledDateTime = conference.ScheduledDateTime,
-            ScheduledDuration = conference.ScheduledDuration,
-            Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
-            Participants = conference.Participants.Select(ParticipantResponseForVhoMapper.Map).ToList(),
-            ClosedDateTime = conference.ClosedDateTime,
-            HearingVenueName = conference.HearingVenueName,
-            HearingId = conference.HearingId
-        };
+            response.Participants = conference.Participants.Select(ParticipantResponseForVhoMapper.Map).ToList();
+            AssignTilePositions(conference, response);
+        }
         
         if (conference.MeetingRoom == null) return response;
         
@@ -30,7 +33,7 @@ public static class ConferenceResponseVhoMapper{
         response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
         response.PexipNodeUri = conference.MeetingRoom.PexipNode;
         
-        AssignTilePositions(conference, response);
+
         
         return response;
     }

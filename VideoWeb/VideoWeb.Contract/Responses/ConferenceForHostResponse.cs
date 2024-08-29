@@ -73,4 +73,9 @@ public class ParticipantForHostResponse
     /// The participant display name during a conference
     /// </summary>
     public string DisplayName { get; set; }
+    
+    /// <summary>
+    /// The participant's role
+    /// </summary>
+    public Role Role { get; set; }
 }

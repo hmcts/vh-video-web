@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V2.Responses;
@@ -30,6 +31,7 @@ public class ConferenceService(
     /// Will return conference from cache if exists, otherwise will query database and update cache
     /// </summary>
     /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<Conference> GetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
@@ -43,16 +45,11 @@ public class ConferenceService(
         }
     }
     
-    public async Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default)
-    {
-        var ids = conferenceIds.ToArray();
-        return await Task.WhenAll(ids.Select(id => GetConference(id, cancellationToken)));
-    }
-    
     /// <summary>
     /// Force query of database and update cache
     /// </summary>
     /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
@@ -65,5 +62,11 @@ public class ConferenceService(
     public async Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
     {
         await conferenceCache.UpdateConferenceAsync(conference, cancellationToken);
+    }
+    
+    public async Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default)
+    {
+        var ids = conferenceIds.ToArray();
+        return await Task.WhenAll(ids.Select(id => GetConference(id, cancellationToken)));
     }
 }

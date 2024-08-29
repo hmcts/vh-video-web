@@ -62,7 +62,7 @@ public static class ConferenceCacheMapper
         conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
         conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
         conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
-        conference.Supplier = hearingDetailsResponse.BookingSupplier
+        conference.Supplier = (Supplier)hearingDetailsResponse.BookingSupplier;
         return conference;
     }
     

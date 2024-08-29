@@ -1,18 +1,22 @@
-import { Directive, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { vhContactDetails } from 'src/app/shared/contact-information';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ScreenHelper } from 'src/app/shared/screen-helper';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import {Directive, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {UntypedFormGroup} from '@angular/forms';
+import {Router} from '@angular/router';
+import {Subscription} from 'rxjs';
+import {ProfileService} from 'src/app/services/api/profile.service';
+import {VideoWebService} from 'src/app/services/api/video-web.service';
+import {
+    ConferenceForHostResponse,
+    LoggedParticipantResponse,
+    Role,
+    UserProfileResponse
+} from 'src/app/services/clients/api-client';
+import {EventsService} from 'src/app/services/events.service';
+import {HearingVenueFlagsService} from 'src/app/services/hearing-venue-flags.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {ConferenceStatusMessage} from 'src/app/services/models/conference-status-message';
+import {vhContactDetails} from 'src/app/shared/contact-information';
+import {pageUrls} from 'src/app/shared/page-url.constants';
+import {ScreenHelper} from 'src/app/shared/screen-helper';
 
 @Directive()
 export abstract class HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
@@ -85,7 +89,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
 
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const useJudgeWaitingRoom = conference.participants.find(
-                p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
+                p => p.id === x.participant_id && p.role === Role.Judge
             );
             if (useJudgeWaitingRoom) {
                 this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
