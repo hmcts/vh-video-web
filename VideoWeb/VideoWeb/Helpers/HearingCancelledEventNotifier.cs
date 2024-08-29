@@ -9,11 +9,11 @@ namespace VideoWeb.Helpers
 {
     public class HearingCancelledEventNotifier(IEventHandlerFactory eventHandlerFactory) : IHearingCancelledEventNotifier
     {
-        public Task PushHearingCancelledEvent(Guid hearingId)
+        public Task PushHearingCancelledEvent(Guid conferenceId)
         {
             var callbackEvent = new CallbackEvent
             {
-                HearingId = hearingId,
+                ConferenceId = conferenceId,
                 EventType = EventType.HearingCancelled,
                 TimeStampUtc = DateTime.Now
             };

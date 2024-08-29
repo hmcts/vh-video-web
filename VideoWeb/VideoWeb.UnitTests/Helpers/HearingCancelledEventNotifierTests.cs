@@ -26,18 +26,18 @@ namespace VideoWeb.UnitTests.Helpers
         public async Task should_push_event()
         {
             // Arrange
-            var hearingId = Guid.NewGuid();
+            var conferenceId = Guid.NewGuid();
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.HearingCancelled)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
             // Act
-            await _notifier.PushHearingCancelledEvent(hearingId);
+            await _notifier.PushHearingCancelledEvent(conferenceId);
 
             // Assert
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => 
                 c.EventType == EventType.HearingCancelled && 
-                c.HearingId == hearingId)
+                c.ConferenceId == conferenceId)
             ), Times.Once);
         }
     }

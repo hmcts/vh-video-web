@@ -185,9 +185,9 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "HearingCancelled")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HearingCancelled(Guid hearingId)
+        public async Task<IActionResult> HearingCancelled(Guid conferenceId)
         {
-            await _hearingCancelledEventNotifier.PushHearingCancelledEvent(hearingId);
+            await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conferenceId);
             return NoContent();
         }
         
@@ -195,9 +195,9 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "HearingDateTimeChanged")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HearingDateTimeChanged(Guid hearingId)
+        public async Task<IActionResult> HearingDateTimeChanged(Guid conferenceId)
         {
-            await _hearingDateTimeChangedEventNotifier.PushHearingDateTimeChangedEvent(hearingId);
+            await _hearingDateTimeChangedEventNotifier.PushHearingDateTimeChangedEvent(conferenceId);
             return NoContent();
         }
 
@@ -205,9 +205,9 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "HearingDetailsUpdated")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HearingDetailsUpdated(Guid hearingId)
+        public async Task<IActionResult> HearingDetailsUpdated(Guid conferenceId)
         {
-            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(hearingId);
+            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(conferenceId);
             return NoContent();
         }
     }

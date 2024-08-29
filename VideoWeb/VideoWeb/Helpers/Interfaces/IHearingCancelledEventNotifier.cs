@@ -5,6 +5,6 @@ namespace VideoWeb.Helpers.Interfaces
 {
     public interface IHearingCancelledEventNotifier
     {
-        Task PushHearingCancelledEvent(Guid hearingId);
+        Task PushHearingCancelledEvent(Guid conferenceId);
     }
 }

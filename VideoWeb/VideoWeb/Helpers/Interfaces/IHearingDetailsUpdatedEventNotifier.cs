@@ -5,6 +5,6 @@ namespace VideoWeb.Helpers.Interfaces
 {
     public interface IHearingDetailsUpdatedEventNotifier
     {
-        public Task PushHearingDetailsUpdatedEvent(Guid hearingId);
+        public Task PushHearingDetailsUpdatedEvent(Guid conferenceId);
     }
 }

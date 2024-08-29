@@ -13,7 +13,6 @@ namespace VideoWeb.EventHub.Models
         public EventType EventType { get; set; }
         public DateTime TimeStampUtc { get; set; }
         public Guid ConferenceId { get; set; }
-        public Guid HearingId { get; set; }
         public Guid ParticipantId { get; set; }
         public string TransferFrom { get; set; }
         public string TransferTo { get; set; }

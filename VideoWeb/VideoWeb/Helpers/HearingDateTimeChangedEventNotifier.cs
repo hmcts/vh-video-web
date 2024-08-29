@@ -9,11 +9,11 @@ namespace VideoWeb.Helpers
 {
     public class HearingDateTimeChangedNotifier(IEventHandlerFactory eventHandlerFactory) : IHearingDateTimeChangedEventNotifier
     {
-        public Task PushHearingDateTimeChangedEvent(Guid hearingId)
+        public Task PushHearingDateTimeChangedEvent(Guid conferenceId)
         {
             var callbackEvent = new CallbackEvent
             {
-                HearingId = hearingId,
+                ConferenceId = conferenceId,
                 EventType = EventType.HearingDateTimeChanged,
                 TimeStampUtc = DateTime.Now
             };
