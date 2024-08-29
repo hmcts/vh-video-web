@@ -24,6 +24,8 @@ namespace VideoWeb.EventHub.Enums
         EndpointTransfer,
         ParticipantsUpdated,
         NewConferenceAdded,
-        AllocationHearings
+        AllocationHearings,
+        HearingCancelled,
+        HearingDateTimeChanged
     }
 }
