@@ -88,9 +88,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
 
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
-            const useJudgeWaitingRoom = conference.participants.find(
-                p => p.id === x.participant_id && p.role === Role.Judge
-            );
+            const useJudgeWaitingRoom = conference.participants.find(p => p.id === x.participant_id && p.role === Role.Judge);
             if (useJudgeWaitingRoom) {
                 this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);

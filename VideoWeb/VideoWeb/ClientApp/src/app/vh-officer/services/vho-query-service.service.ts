@@ -195,7 +195,11 @@ export class VhoQueryService {
         return Object.entries(venuesAndJudges)
             .map(
                 ([venue, judges]) =>
-                    new CourtRoomsAccounts(venue, judges.sort((a, b) => a.localeCompare(b)), true)
+                    new CourtRoomsAccounts(
+                        venue,
+                        judges.sort((a, b) => a.localeCompare(b)),
+                        true
+                    )
             )
             .sort((a, b) => a.venue.localeCompare(b.venue));
     }
