@@ -27,7 +27,23 @@ namespace VideoWeb.EventHub.Hub
             DateTime timestamp, Guid messageId);
         Task AdminAnsweredChat(Guid conferenceId, string username);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
+        /// <summary>
+        /// When a host transfers a participant in or out of a hearing
+        /// </summary>
+        /// <param name="conferenceId"></param>
+        /// <param name="participantId"></param>
+        /// <param name="transferDirection"></param>
+        /// <returns></returns>
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
+        
+        /// <summary>
+        /// When a non-host chooses to transfer in or out of a hearing
+        /// </summary>
+        /// <param name="conferenceId"></param>
+        /// <param name="participantId"></param>
+        /// <param name="transferDirection"></param>
+        /// <returns></returns>
+        Task NonHostTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
         Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
         Task NewConferenceAddedMessage(Guid conferenceId);

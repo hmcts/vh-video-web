@@ -98,6 +98,7 @@ import { AppInsightsLoggerService } from '../services/logging/loggers/app-insigh
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 import { CookiesComponent } from './cookies/cookies.component';
+import { FeatureFlagDirective } from './directives/feature-flag.directive';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -141,6 +142,7 @@ export function getSettings(configService: ConfigService) {
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
+        FeatureFlagDirective,
         ErrorCameraMicrophoneComponent,
         VhToastComponent,
         RoomClosingToastComponent,
@@ -196,6 +198,7 @@ export function getSettings(configService: ConfigService) {
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
+        FeatureFlagDirective,
         ErrorCameraMicrophoneComponent,
         TranslateModule,
         MultilinePipe,
