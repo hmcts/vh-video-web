@@ -1,53 +1,29 @@
 using System;
 using System.Threading.Tasks;
-using Autofac.Extras.Moq;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
-    public class HearingCancelledTests
+    public class HearingCancelledTests : InternalEventControllerTests
     {
-        private AutoMock _mocker;
-        private VideoWeb.Controllers.InternalEventController _controller;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = AutoMock.GetLoose();
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole("Judge").Build();
-            var context = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = claimsPrincipal
-                }
-            };
-
-            _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
-            _controller.ControllerContext = context;
-
-            _mocker.Mock<IHearingCancelledEventNotifier>();
-        }
-        
         [Test]
         public async Task should_push_event()
         {
             // Arrange
             var hearingId = Guid.NewGuid();
+            var notifierMock = Mocker.Mock<IHearingCancelledEventNotifier>();
 
             // Act
-            var result = await _controller.HearingCancelled(hearingId);
+            var result = await Controller.HearingCancelled(hearingId);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IHearingCancelledEventNotifier>().Verify(x => x.PushHearingCancelledEvent(hearingId), Times.Once);
+            notifierMock.Verify(x => x.PushHearingCancelledEvent(hearingId), Times.Once);
         }
     }
 }
