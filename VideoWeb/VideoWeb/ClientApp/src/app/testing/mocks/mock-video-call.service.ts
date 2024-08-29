@@ -61,7 +61,6 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'pauseHearing',
         'endHearing',
         'leaveHearing',
-        'nonHostleaveHearing',
         'suspendHearing',
         'lowerAllHands',
         'lowerHandById',

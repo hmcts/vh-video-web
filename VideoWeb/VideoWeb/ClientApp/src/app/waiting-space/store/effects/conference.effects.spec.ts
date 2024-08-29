@@ -20,13 +20,11 @@ describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
     let effects: ConferenceEffects;
     let apiClient: jasmine.SpyObj<ApiClient>;
-    let videoCallService: jasmine.SpyObj<VideoCallService>;
     let mockConferenceStore: MockStore<ConferenceState>;
     let supplierClientService: jasmine.SpyObj<SupplierClientService>;
 
     beforeEach(() => {
-        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById']);
-        videoCallService = jasmine.createSpyObj('VideoCallService', ['receiveAudioFromMix', 'sendParticipantAudioToMixes']);
+        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing']);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
@@ -117,6 +115,52 @@ describe('ConferenceEffects', () => {
                 // assert
                 expect(supplierClientService.loadSupplierScript).toHaveBeenCalledWith(conference.supplier);
             });
+        });
+    });
+
+    describe('participantLeaveHearingRoom$', () => {
+        afterEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should call the leave hearing', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+            apiClient.nonHostLeaveHearing.and.returnValue(of(void 0));
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            // act
+            const action = ConferenceActions.participantLeaveHearingRoom({ conferenceId: conference.id });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            const expected = cold('-b', {
+                b: ConferenceActions.participantLeaveHearingRoomSuccess({ conferenceId: conference.id, participant: vhParticipant })
+            });
+            expect(effects.participantLeaveHearingRoom$).toBeObservable(expected);
+            expect(apiClient.nonHostLeaveHearing).toHaveBeenCalled();
+        });
+
+        it('should  dispatch error action when leave hearing fails', () => {
+            // arrange
+            const participants = new ConferenceTestData().getListOfParticipants();
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+            const error = new Error('failed to leave hearing');
+            apiClient.nonHostLeaveHearing.and.returnValue(cold('#', {}, error));
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            // act
+            const action = ConferenceActions.participantLeaveHearingRoom({ conferenceId: '123' });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            const expected = cold('-b', { b: ConferenceActions.participantLeaveHearingRoomFailure({ error }) });
+            expect(effects.participantLeaveHearingRoom$).toBeObservable(expected);
+            expect(apiClient.nonHostLeaveHearing).toHaveBeenCalled();
         });
     });
 });

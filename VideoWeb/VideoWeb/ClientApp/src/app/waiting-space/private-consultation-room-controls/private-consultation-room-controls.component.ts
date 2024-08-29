@@ -16,6 +16,8 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -59,7 +61,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         configService: ConfigService,
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected conferenceStore: Store<ConferenceState>
     ) {
         super(
             videoCallService,
@@ -70,7 +73,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             translateService,
             videoControlService,
             userMediaService,
-            focusService
+            focusService,
+            conferenceStore
         );
         this.canToggleParticipantsPanel = true;
 

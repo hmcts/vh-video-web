@@ -52,6 +52,10 @@ import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/partici
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
+import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { ConferenceActions } from '../store/actions/conference.actions';
+import { take } from 'rxjs/operators';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -70,6 +74,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     let component: HearingControlsBaseComponent;
+    let mockStore: MockStore<ConferenceState>;
     const globalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
@@ -104,6 +109,9 @@ describe('HearingControlsBaseComponent', () => {
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeEach(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
+
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
         });
@@ -163,7 +171,8 @@ describe('HearingControlsBaseComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusService
+            focusService,
+            mockStore
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
@@ -977,7 +986,6 @@ describe('HearingControlsBaseComponent', () => {
 
     describe('nonHostLeave', () => {
         beforeEach(() => {
-            videoCallService.nonHostleaveHearing.calls.reset();
             component.participant.role = Role.Individual;
         });
 
@@ -988,13 +996,19 @@ describe('HearingControlsBaseComponent', () => {
             expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
         });
 
-        it('should dismiss participant if confirmed leaving', () => {
+        it('should dismiss participant if confirmed leaving', done => {
             component.displayLeaveHearingPopup = true;
-            videoCallServiceSpy.nonHostleaveHearing.and.returnValue(of());
 
             component.nonHostLeave(true);
 
-            expect(videoCallService.nonHostleaveHearing).toHaveBeenCalledOnceWith(component.conferenceId, component.participant.id);
+            mockStore.scannedActions$.pipe(take(1)).subscribe(action => {
+                expect(action).toEqual(
+                    ConferenceActions.participantLeaveHearingRoom({
+                        conferenceId: component.conferenceId
+                    })
+                );
+                done();
+            });
         });
     });
 

@@ -74,13 +74,10 @@ export class ConferenceEffects {
     participantLeaveHearingRoom$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ConferenceActions.participantLeaveHearingRoom),
-            concatLatestFrom(action => [
-                this.store.select(ConferenceSelectors.getActiveConference),
-                this.store.select(ConferenceSelectors.getParticipantById(action.participantId))
-            ]),
-            switchMap(([action, conference, participant]) =>
-                this.apiClient.leaveHearing(action.conferenceId, action.participantId).pipe(
-                    map(() => ConferenceActions.participantLeaveHearingRoomSuccess({ participant })),
+            concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+            switchMap(([action, participant]) =>
+                this.apiClient.nonHostLeaveHearing(action.conferenceId).pipe(
+                    map(() => ConferenceActions.participantLeaveHearingRoomSuccess({ conferenceId: action.conferenceId, participant })),
                     catchError(error => of(ConferenceActions.participantLeaveHearingRoomFailure({ error })))
                 )
             )

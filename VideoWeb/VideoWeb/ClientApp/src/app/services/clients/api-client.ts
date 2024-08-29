@@ -737,7 +737,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Call a witness into a video hearing
+     * Admit a participant into an active video hearing
      * @param conferenceId conference id
      * @param participantId witness id
      * @return Accepted
@@ -1103,15 +1103,12 @@ export class ApiClient extends ApiClientBase {
     /**
      * Leave host from hearing
      * @param conferenceId conference id
-     * @param participantId witness id
      * @return Accepted
      */
-    nonHostLeaveHearing(conferenceId: string, participantId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/participant/{participantId}/non-host-leave';
+    nonHostLeaveHearing(conferenceId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/non-host-leave';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {

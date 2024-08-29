@@ -754,7 +754,13 @@
   </video>
 </div>
 
-<app-confirm-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)"> </app-confirm-leave-hearing-popup>
+<ng-container *ngIf="isHost">
+  <app-confirm-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)"> </app-confirm-leave-hearing-popup>
+</ng-container>
+<ng-container *ngIf="isHost">
+  <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
+  </app-confirm-non-host-leave-hearing-popup>
+</ng-container>
 
 <app-confirm-close-hearing-popup *ngIf="canShowCloseHearingPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>
 

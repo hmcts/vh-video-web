@@ -44,6 +44,8 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -62,6 +64,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     let component: PrivateConsultationRoomControlsComponent;
+    let mockStore: MockStore<ConferenceState>;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
@@ -95,6 +98,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
     });
     beforeEach(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
+
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
         });
@@ -150,7 +156,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -250,7 +257,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -276,7 +284,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });

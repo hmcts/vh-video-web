@@ -518,6 +518,7 @@
     "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
+    "leave-hearing": "Leave Hearing",
     "to": "to",
     "date": "Date",
     "case-number": "case number",
@@ -1053,6 +1054,7 @@
   "confirm-leave-hearing-popup": {
     "title": "You are about to leave this hearing",
     "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "non-host-message": "Do you wish to leave this hearing?",
     "leave-hearing": "Leave hearing",
     "leave-hearing-label": "Confirm leaving the hearing",
     "cancel-leave": "Cancel",
