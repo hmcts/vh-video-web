@@ -377,9 +377,6 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: loggedInParticipantInVideo ? 'white' : 'black',
             htmlBody: message,
-            onNoAction: async () => {
-                this.logger.debug(`${this.loggerPrefix} No action called on participant left hearing alert`);
-            },
             buttons: [
                 {
                     id: 'notification-toastr-participant-left-hearing-dismiss',

@@ -837,4 +837,40 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(result).toBe('ac');
         });
     });
+
+    describe('canShowLeaveButton', () => {
+        describe('when vodafone is enabled', () => {
+            beforeEach(() => {
+                component.vodafoneEnabled = true;
+            });
+
+            it('should return true when the participant is not in private consultation', () => {
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeTrue();
+            });
+
+            it('should return false when the participant is in private consultation', () => {
+                component.isPrivateConsultation = true;
+                expect(component.canShowLeaveButton).toBeFalse();
+            });
+        });
+
+        describe('when vodafone is disabled', () => {
+            beforeEach(() => {
+                component.vodafoneEnabled = false;
+            });
+
+            it('should return true when the participant is a host and not in private consultation', () => {
+                component.participant.role = Role.Judge;
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeTrue();
+            });
+
+            it('should return false when the participant is not a host', () => {
+                component.participant.role = Role.Individual;
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeFalse();
+            });
+        });
+    });
 });

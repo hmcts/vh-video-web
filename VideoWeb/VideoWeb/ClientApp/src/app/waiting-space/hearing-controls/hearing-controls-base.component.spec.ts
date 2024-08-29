@@ -967,6 +967,37 @@ describe('HearingControlsBaseComponent', () => {
         });
     });
 
+    describe('displayLanguageChange', () => {
+        it('should emit the change language was selected', () => {
+            spyOn(component.changeLanguageSelected, 'emit');
+            component.displayLanguageChange();
+            expect(component.changeLanguageSelected.emit).toHaveBeenCalled();
+        });
+    });
+
+    describe('nonHostLeave', () => {
+        beforeEach(() => {
+            videoCallService.nonHostleaveHearing.calls.reset();
+            component.participant.role = Role.Individual;
+        });
+
+        it('should not display the leave hearing popup', () => {
+            component.displayLeaveHearingPopup = true;
+            component.nonHostLeave(false);
+            expect(component.displayLeaveHearingPopup).toBeFalsy();
+            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
+        });
+
+        it('should dismiss participant if confirmed leaving', () => {
+            component.displayLeaveHearingPopup = true;
+            videoCallServiceSpy.nonHostleaveHearing.and.returnValue(of());
+
+            component.nonHostLeave(true);
+
+            expect(videoCallService.nonHostleaveHearing).toHaveBeenCalledOnceWith(component.conferenceId, component.participant.id);
+        });
+    });
+
     describe('isAnotherHostInHearing', () => {
         beforeEach(() => {});
 
