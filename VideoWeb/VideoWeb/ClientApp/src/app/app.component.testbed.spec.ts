@@ -28,6 +28,7 @@ import { SecurityConfigSetupService } from './security/security-config-setup.ser
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
+import { EventsHubService } from './services/events-hub.service';
 
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -38,6 +39,7 @@ describe('AppComponent - Testbed', () => {
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
     let publicEventsServiceSpy: jasmine.SpyObj<PublicEventsService>;
     let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+    let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
 
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
@@ -56,6 +58,8 @@ describe('AppComponent - Testbed', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeEach(() => {
+        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['configureConnection']);
+
         noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
@@ -102,7 +106,8 @@ describe('AppComponent - Testbed', () => {
                 { provide: PublicEventsService, useValue: publicEventsServiceSpy },
                 { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
                 { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
-                { provide: NoSleepService, useValue: noSleepServiceSpy }
+                { provide: NoSleepService, useValue: noSleepServiceSpy },
+                { provide: EventsHubService, useValue: eventsHubServiceSpy }
             ]
         });
 

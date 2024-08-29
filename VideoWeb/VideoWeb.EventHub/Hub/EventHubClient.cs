@@ -30,9 +30,6 @@ public class EventHub(
     
     public override async Task OnConnectedAsync()
     {
-        if (Context.User.Identity is not { IsAuthenticated: true }) return;
-        var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-        logger.LogTrace("Connected to event hub server-side: {Username}", userName);
         var isAdmin = IsSenderAdmin();
         
         await AddUserToUserGroup(isAdmin);
@@ -42,6 +39,8 @@ public class EventHub(
         
         // Cache user profile in the redis cache
         await userProfileService.CacheUserProfileAsync(Context.User);
+        var userName = GetObfuscatedUsernameAsync(Context.User.Identity!.Name);
+        logger.LogTrace("Connected to event hub server-side: {Username}", userName);
     }
     
     private async Task AddUserToConferenceGroups(bool isAdmin)

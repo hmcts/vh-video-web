@@ -35,6 +35,7 @@ import { IndividualPanelModel } from '../models/individual-panel-model';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-participants-panel',
@@ -56,6 +57,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     eventhubSubscription$ = new Subscription();
     participantsSubscription$ = new Subscription();
 
+    vodafoneEnabled = false;
+
     transferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     readonly idPrefix = 'participants-panel';
@@ -73,7 +76,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         private store: Store<ConferenceState>,
-        private changeDetector: ChangeDetectorRef
+        private changeDetector: ChangeDetectorRef,
+        private ldService: LaunchDarklyService
     ) {}
 
     get participantsInHearing() {
@@ -101,6 +105,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.ldService
+            .getFlag<boolean>(FEATURE_FLAGS.vodafone)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(flag => {
+                this.vodafoneEnabled = flag;
+            });
+
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         const participants$ = this.store.select(ConferenceSelectors.getParticipants);
         const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
@@ -617,7 +628,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async callParticipantIntoHearing(participant: PanelModel) {
-        if (!participant.isCallableAndReadyToJoin) {
+        if (!this.vodafoneEnabled && !participant.isCallableAndReadyToJoin) {
             return;
         }
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
@@ -654,7 +665,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async dismissParticipantFromHearing(participant: PanelModel) {
-        if (!participant.isCallableAndReadyToBeDismissed) {
+        const canDismiss = this.vodafoneEnabled ? participant.isInHearing() : participant.isCallableAndReadyToBeDismissed;
+        if (!canDismiss) {
             return;
         }
 

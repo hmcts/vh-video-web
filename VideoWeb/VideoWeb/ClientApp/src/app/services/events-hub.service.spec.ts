@@ -95,7 +95,7 @@ describe('EventsHubService', () => {
     });
 
     describe('on getClientSettings', () => {
-        it('should call build connection and configure connection.', () => {
+        it('should call build connection.', () => {
             // Arrange
             const expectedEventHubPath = 'test-event-hub-path';
             const clientSettingsResponse = new ClientSettingsResponse();
@@ -104,14 +104,12 @@ describe('EventsHubService', () => {
             connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
             spyOn(serviceUnderTest, 'buildConnection');
-            spyOn(serviceUnderTest, 'configureConnection');
 
             // Act
             clientSettings$.next(clientSettingsResponse);
 
             // Assert
             expect(serviceUnderTest.buildConnection).toHaveBeenCalledOnceWith(expectedEventHubPath);
-            expect(serviceUnderTest.configureConnection).toHaveBeenCalledTimes(1);
             expect(connectionStatusServiceSpy.onConnectionStatusChange).toHaveBeenCalledTimes(1);
             expect(connectionStatusChanged$.subscribe).toHaveBeenCalledTimes(1);
         });

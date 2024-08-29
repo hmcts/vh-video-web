@@ -6,6 +6,7 @@ import { catchError, first, map, takeUntil } from 'rxjs/operators';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { EventsHubService } from 'src/app/services/events-hub.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -42,7 +43,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         private formBuilder: UntypedFormBuilder,
         private readonly quickLinksService: QuickLinksService,
         private route: ActivatedRoute,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        private eventhubService: EventsHubService
     ) {}
 
     ngOnInit(): void {
@@ -138,6 +140,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
                             role: this.quickLinkRoleFormControl.value
                         });
 
+                        this.eventhubService.configureConnection();
                         this.router.navigate([pageUrls.Navigator]);
                         this.pending$.next(false);
                     },

@@ -12,7 +12,8 @@ export const FEATURE_FLAGS = {
     wowzaKillButton: 'wowza-listener-kill-switch',
     hostMuteMicrophone: 'host-mute-microphone',
     vodafone: 'vodafone',
-    activeSessionFilter: 'active-sessions-filter'
+    activeSessionFilter: 'active-sessions-filter',
+    interpreterEnhancements: 'interpreter-enhancements'
 };
 
 @Injectable({
