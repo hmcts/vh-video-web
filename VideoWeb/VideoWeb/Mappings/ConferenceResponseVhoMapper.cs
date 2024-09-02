@@ -1,7 +1,6 @@
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
 
 namespace VideoWeb.Mappings;
 
@@ -16,7 +15,7 @@ public static class ConferenceResponseVhoMapper{
         response.CaseType = conference.CaseType;
         response.ScheduledDateTime = conference.ScheduledDateTime;
         response.ScheduledDuration = conference.ScheduledDuration;
-        response.Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus);
+        response.Status = conference.CurrentStatus;
         response.ClosedDateTime = conference.ClosedDateTime;
         response.HearingVenueName = conference.HearingVenueName;
         response.HearingId = conference.HearingId;

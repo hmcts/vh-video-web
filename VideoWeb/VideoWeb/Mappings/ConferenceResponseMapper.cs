@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.Mappings;
 
@@ -18,7 +18,7 @@ public static class ConferenceResponseMapper
             CaseType = conference.CaseType,
             ScheduledDateTime = conference.ScheduledDateTime,
             ScheduledDuration = conference.ScheduledDuration,
-            Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
+            Status = conference.CurrentStatus,
             Participants = MapParticipants(conference),
             ClosedDateTime = conference.ClosedDateTime,
             HearingVenueName = conference.HearingVenueName,

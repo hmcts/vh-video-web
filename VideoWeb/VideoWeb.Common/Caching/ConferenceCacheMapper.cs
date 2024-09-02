@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V2.Responses;
+using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.Common.Caching;
 
@@ -47,7 +48,7 @@ public static class ConferenceCacheMapper
         conference.HearingVenueName = hearingDetailsResponse.HearingVenueName;
         conference.Endpoints = endpoints;
         conference.CivilianRooms = civilianRooms;
-        conference.CurrentStatus = conferenceResponse.CurrentStatus;
+        conference.CurrentStatus = GetConferenceStatus(conferenceResponse.CurrentStatus);
         conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
         conference.CaseName = caseInformation.Name;
         conference.CaseNumber = caseInformation.Number;
@@ -89,5 +90,15 @@ public static class ConferenceCacheMapper
             LinkedId = linkedParticipant.LinkedId,
             LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
         };
+    }
+    
+    private static ConferenceStatus GetConferenceStatus(ConferenceState state)
+    {
+        if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
+        {
+            status = ConferenceStatus.NotStarted;
+        }
+        
+        return status;
     }
 }

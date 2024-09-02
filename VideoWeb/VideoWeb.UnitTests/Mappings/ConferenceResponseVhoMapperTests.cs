@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
@@ -29,7 +28,7 @@ public class ConferenceResponseVhoMapperTests
         var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -78,7 +77,7 @@ public class ConferenceResponseVhoMapperTests
         var expectedConferenceStatus = ConferenceStatus.Suspended;
         var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -116,7 +115,7 @@ public class ConferenceResponseVhoMapperTests
         var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = null)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -158,7 +157,7 @@ public class ConferenceResponseVhoMapperTests
         var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();

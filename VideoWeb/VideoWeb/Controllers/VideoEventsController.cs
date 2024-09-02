@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
-using VideoWeb.Extensions;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
+using VideoWeb.Extensions;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers;
@@ -104,7 +104,7 @@ public class VideoEventsController(
         return videoApiClient.RaiseVideoEventAsync(request);
     }
     
-    private CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
+    private static CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
     {
         var isPhoneEvent = string.IsNullOrEmpty(request.Phone);
         if (!isPhoneEvent)
