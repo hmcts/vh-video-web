@@ -13,18 +13,32 @@ env:
   ado_project: "Video Hearings"
   ado_pipeline: "hmcts.vh-video-web.sds.pr-close"
   pr_number: ${{github.event.pull_request.number}}
-  branch: ${{ github.ref_name }}
+  branch: ${{ github.head_ref}}
   AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
 jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Pipline
-        shell: pwsh
-        run: |
+     - name: Check if merge branch exists
+       shell: pwsh
+       run: |
+          $mergeBranch = "refs/heads/${{ env.branch }}/merge"
+          $headBranch = "refs/pull/${{ env.pr_number }}/head"
+          $branchExists = git ls-remote --heads origin $mergeBranch
+          if (-not $branchExists) {
+              Write-Host "Merge branch does not exist. Using head branch."
+              $branch = $headBranch
+          } else {
+              Write-Host "Using merge branch."
+              $branch = $mergeBranch
+          }
+          echo "::set-env name=TARGET_BRANCH::$branch"
+     - name: Trigger Pipline
+       shell: pwsh
+       run: |
           $gitPullRequestId = "${{ env.pr_number }}"
-          $branch="${{ env.branch }}"
+          $branch="${{ env:TARGET_BRANCH }}"
           $pipelineName = "${{ env.ado_pipeline }}"
           $organisation = "https://dev.azure.com/${{ env.ado_org }}/"
           $project = "${{ env.ado_project }}"
