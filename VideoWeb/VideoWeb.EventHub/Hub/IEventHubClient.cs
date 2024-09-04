@@ -50,7 +50,6 @@ namespace VideoWeb.EventHub.Hub
         Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
         Task EndpointsUpdated(Guid conferenceId, UpdateEndpointsDto endpoints);
         Task HearingCancelledMessage(Guid hearingId);
-        Task HearingDateTimeChangedMessage(Guid hearingId);
         Task HearingDetailsUpdatedMessage(Guid hearingId);
         
         /// <summary>
