@@ -31,7 +31,6 @@ namespace VideoWeb.Controllers
         private readonly ILogger<InternalEventController> _logger;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
         private readonly IHearingCancelledEventNotifier _hearingCancelledEventNotifier;
-        private readonly IHearingDateTimeChangedEventNotifier _hearingDateTimeChangedEventNotifier;
         private readonly IHearingDetailsUpdatedEventNotifier _hearingDetailsUpdatedEventNotifier;
 
         public InternalEventController(
@@ -42,7 +41,6 @@ namespace VideoWeb.Controllers
             IAllocationHearingsEventNotifier allocationHearingsEventNotifier,
             IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier,
             IHearingCancelledEventNotifier hearingCancelledEventNotifier,
-            IHearingDateTimeChangedEventNotifier hearingDateTimeChangedEventNotifier,
             IHearingDetailsUpdatedEventNotifier hearingDetailsUpdatedEventNotifier
             )
         {
@@ -53,7 +51,6 @@ namespace VideoWeb.Controllers
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
             _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
             _hearingCancelledEventNotifier = hearingCancelledEventNotifier;
-            _hearingDateTimeChangedEventNotifier = hearingDateTimeChangedEventNotifier;
             _hearingDetailsUpdatedEventNotifier = hearingDetailsUpdatedEventNotifier;
         }
 
@@ -188,16 +185,6 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> HearingCancelled(Guid conferenceId)
         {
             await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conferenceId);
-            return NoContent();
-        }
-        
-        [HttpPost("HearingDateTimeChanged")]
-        [SwaggerOperation(OperationId = "HearingDateTimeChanged")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HearingDateTimeChanged(Guid conferenceId)
-        {
-            await _hearingDateTimeChangedEventNotifier.PushHearingDateTimeChangedEvent(conferenceId);
             return NoContent();
         }
 
