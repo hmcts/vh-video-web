@@ -209,7 +209,7 @@
         </ng-container>
 
         <button
-          *ngIf="!isPrivateConsultation && isHost"
+          *ngIf="canShowLeaveButton"
           id="leave-hearing"
           class="hide-for-medium"
           data-module="govuk-button"
@@ -326,7 +326,7 @@
       <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
     </button>
     <div class="show-for-medium-only">
-      <ng-container *ngIf="isHost && !isPrivateConsultation">
+      <ng-container *ngIf="canShowLeaveButton">
         <div class="flexBar"></div>
 
         <button
@@ -643,7 +643,7 @@
         <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
       </button>
 
-      <ng-container *ngIf="canShowLeaveButton">
+      <ng-container *ngIf="isHost">
         <button
           id="change-hearing-layout"
           class="icon-button"
@@ -656,7 +656,9 @@
         >
           <fa-icon icon="th-large" flip="horizontal"></fa-icon>
         </button>
+      </ng-container>
 
+      <ng-container *ngIf="canShowLeaveButton">
         <button
           id="leave-hearing-desktop"
           class="icon-button"
