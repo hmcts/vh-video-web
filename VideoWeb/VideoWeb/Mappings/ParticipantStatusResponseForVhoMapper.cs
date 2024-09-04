@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
-using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Mappings;
 
@@ -15,14 +15,14 @@ public static class ParticipantStatusResponseForVhoMapper
     {
         var conferenceId = conference.Id;
         var hearingVenueName = conference.HearingVenueName;
-        
         var pats = conference.Participants
             .OrderBy(x => x.Role)
             .Select(x =>
             {
                 var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                var hostInHearing = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id &&
-                                                               (j.Status == ParticipantState.InHearing || j.Status == ParticipantState.InConsultation  || j.Status == ParticipantState.Available));
+                var hostInHearing
+                    = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id && 
+                                                 (j.Status == ParticipantState.InHearing || j.Status == ParticipantState.InConsultation  || j.Status == ParticipantState.Available));
                 var links = x.LinkedParticipants.Select(x =>
                     new Contract.Responses.LinkedParticipantResponse
                     {

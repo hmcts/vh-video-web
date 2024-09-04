@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = BookingsApi.Contract.V1.Responses.ParticipantResponse;
-using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings;
 
@@ -18,29 +14,21 @@ public class ConferenceResponseVhoMapperTests
     [Test]
     public void Should_map_all_properties()
     {
-        var participants = new List<ParticipantResponse>
+        var participants = new List<Participant>
         {
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Representative).Build(),
-            new ParticipantResponseBuilder(UserRole.Judge).Build(),
-            new ParticipantResponseBuilder(UserRole.CaseAdmin).Build()
+            new ParticipantBuilder(Role.Individual).Build(),
+            new ParticipantBuilder(Role.Individual).Build(),
+            new ParticipantBuilder(Role.Representative).Build(),
+            new ParticipantBuilder(Role.Judge).Build(),
+            new ParticipantBuilder(Role.CaseAdmin).Build()
         };
-        
-        var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
-            .Build().ToList();
-        participants[0].RefId = bookingParticipants[0].Id;
-        participants[1].RefId = bookingParticipants[1].Id;
-        participants[2].RefId = bookingParticipants[2].Id;
-        participants[3].RefId = bookingParticipants[3].Id;
-        participants[4].RefId = bookingParticipants[4].Id;
-        
+
         var expectedConferenceStatus = ConferenceStatus.Suspended;
         
-        var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
+        var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+        var conference = Builder<Conference>.CreateNew()
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -57,23 +45,23 @@ public class ConferenceResponseVhoMapperTests
         
         var participantsResponse = response.Participants;
         participantsResponse.Should().NotBeNullOrEmpty();
-        foreach (var participantResponse in participantsResponse)
+        foreach (var Participant in participantsResponse)
         {
-            if (participantResponse.Role == Role.Representative || participantResponse.Role == Role.Individual)
+            if (Participant.Role == Role.Representative || Participant.Role == Role.Individual)
             {
-                (participantResponse.TiledDisplayName.StartsWith("T1")
-                 || participantResponse.TiledDisplayName.StartsWith("T2")
-                 || participantResponse.TiledDisplayName.StartsWith("T3")
-                 || participantResponse.TiledDisplayName.StartsWith("T4"))
+                (Participant.TiledDisplayName.StartsWith("T1")
+                 || Participant.TiledDisplayName.StartsWith("T2")
+                 || Participant.TiledDisplayName.StartsWith("T3")
+                 || Participant.TiledDisplayName.StartsWith("T4"))
                     .Should().BeTrue();
             }
-            if (participantResponse.Role == Role.Judge)
+            if (Participant.Role == Role.Judge)
             {
-                participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
+                Participant.TiledDisplayName.StartsWith("T0").Should().BeTrue();
             }
-            if (participantResponse.Role == Role.CaseAdmin)
+            if (Participant.Role == Role.CaseAdmin)
             {
-                participantResponse.TiledDisplayName.Should().BeNull();
+                Participant.TiledDisplayName.Should().BeNull();
             }
         }
         
@@ -85,14 +73,11 @@ public class ConferenceResponseVhoMapperTests
     [Test]
     public void Should_map_all_properties_with_empty_participants_list()
     {
-        var participants = new List<ParticipantResponse>();
-        
+        var participants = new List<Participant>();
         var expectedConferenceStatus = ConferenceStatus.Suspended;
-        
-        var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
-        
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+        var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
+        var conference = Builder<Conference>.CreateNew()
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -115,7 +100,7 @@ public class ConferenceResponseVhoMapperTests
     [Test]
     public void Maps_Hearing_Id_From_Conference()
     {
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew().Build();
+        var conference = Builder<Conference>.CreateNew().Build();
         
         var response = ConferenceResponseVhoMapper.Map(conference);
         
@@ -127,10 +112,10 @@ public class ConferenceResponseVhoMapperTests
     {
         var expectedConferenceStatus = ConferenceStatus.Suspended;
         
-        var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
+        var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+        var conference = Builder<Conference>.CreateNew()
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = null)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();
@@ -153,13 +138,13 @@ public class ConferenceResponseVhoMapperTests
     [Test]
     public void Should_map_if_have_not_booking_participants_with_the_same_id()
     {
-        var participants = new List<ParticipantResponse>
+        var participants = new List<Participant>
         {
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Individual).Build(),
-            new ParticipantResponseBuilder(UserRole.Representative).Build(),
-            new ParticipantResponseBuilder(UserRole.Judge).Build(),
-            new ParticipantResponseBuilder(UserRole.CaseAdmin).Build()
+            new ParticipantBuilder(Role.Individual).Build(),
+            new ParticipantBuilder(Role.Individual).Build(),
+            new ParticipantBuilder(Role.Representative).Build(),
+            new ParticipantBuilder(Role.Judge).Build(),
+            new ParticipantBuilder(Role.CaseAdmin).Build()
         };
         
         participants[0].RefId = Guid.NewGuid();
@@ -169,10 +154,10 @@ public class ConferenceResponseVhoMapperTests
         participants[4].RefId = Guid.NewGuid();
         
         
-        var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
+        var meetingRoom = Builder<ConferenceMeetingRoom>.CreateNew().Build();
         
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+        var conference = Builder<Conference>.CreateNew()
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .Build();

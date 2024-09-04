@@ -10,20 +10,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoApi.Client;
-using VideoApi.Contract.Enums;
-using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common;
 using VideoWeb.Extensions;
 using VideoWeb.Helpers.Sorting;
 using VideoWeb.Mappings;
+using VideoWeb.Middleware;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
-using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers;
 
@@ -53,19 +51,17 @@ public class ConferencesController(
         try
         {
             var username = User.Identity!.Name;
-            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
-            var conferencesForHost = await videoApiClient.GetConferencesForHostByHearingRefIdAsync(new GetConferencesByHearingIdsRequest
-            {
-                HearingRefIds = hearings.Select(x => x.Id).ToArray()
-            }, cancellationToken);
+            var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
+            var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
             
-            if(conferencesForHost.Count != hearings.Count)
+            if(conferences.Count != hearings.Count)
                 logger.LogError("Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}",
-                    hearings.Count, conferencesForHost.Count, username);
+                    hearings.Count, conferences.Count, username);
             
             var response = hearings
-                .Where(h => conferencesForHost.Any(c => c.HearingId == h.Id))
-                .Select(h => BookingForHostResponseMapper.Map(h, conferencesForHost.ToList()))
+                .Where(h => conferences.Any(c => c.HearingId == h.Id))
+                .Select(h => BookingForHostResponseMapper.Map(h, conferences.First(c => c.HearingId == h.Id)))
                 .ToList();
             
             return Ok(response);
@@ -95,11 +91,11 @@ public class ConferencesController(
         
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueAsync(hearingVenueNames, cancellationToken);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
-            var conferencesForStaffMember = await videoApiClient.GetConferencesForHostByHearingRefIdAsync(request, cancellationToken);
-            var response = conferencesForStaffMember
-                .Select(ConferenceForHostResponseMapper.Map)
+            var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+            var response = hearingsForToday
+                .Select(hearing => BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
                 .ToList();
             return Ok(response);
         }
@@ -128,21 +124,19 @@ public class ConferencesController(
         try
         {
             var username = User.Identity!.Name;
-            if (IsQuicklinkUser())
+            if (IsQuickLinkUser())
             {
                 var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
-                var response = conferencesForIndividual
-                    .Select(ConferenceForIndividualResponseMapper.Map)
-                    .ToList();
-                return Ok(response);
+                var conferences = await conferenceService.GetConferences(conferencesForIndividual
+                        .Where(x => x.IsWaitingRoomOpen)
+                        .Select(x => x.Id), cancellationToken);
+                return Ok(conferences.Select(ConferenceForIndividualResponseMapper.Map).ToList());
             }
             else
             {
-                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username, cancellationToken);
-                var conferencesForIndividual =
-                    await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
-                var response = hearings
-                    .Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
+                var hearings = await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
+                var conferencesForIndividual = await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
+                var response = hearings.Select(hearing => BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
                 response = response.Where(c => c.IsWaitingRoomOpen);
                 return Ok(response.ToList());
             }
@@ -155,14 +149,6 @@ public class ConferencesController(
         {
             return HandleVideoApiExceptionForGetConferences(e);
         }
-    }
-    
-    private bool IsQuicklinkUser()
-    {
-        var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
-        var isQuicklinkUser = claims?.Find(x =>
-            x.Value == Role.QuickLinkObserver.ToString() || x.Value == Role.QuickLinkParticipant.ToString());
-        return isQuicklinkUser != null;
     }
     
     /// <summary>
@@ -179,13 +165,15 @@ public class ConferencesController(
         logger.LogDebug("GetConferencesForVhOfficer");
         try
         {
-            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames, cancellationToken);
+            var hearingsForToday = await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames, cancellationToken);
             var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray()};
-            var conferences = await videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request, cancellationToken);
-            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId), cancellationToken);
+            var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request, cancellationToken);
+            var allocatedHearings = await bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingId), cancellationToken);
             var responses = conferences
-                .Where(c => c.IsWaitingRoomOpen && c.Participants.Exists(e => e.UserRole == UserRole.Judge))
-                .Select(x => ConferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                .Where(c => c.IsWaitingRoomOpen)
+                .Select(x => ConferenceForVhOfficerResponseMapper.Map(x, 
+                    allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingId), 
+                    hearingsForToday.First(h => h.Id == x.HearingId)))
                 .ApplyCsoFilter(query)
                 .ToList();
             
@@ -212,7 +200,6 @@ public class ConferencesController(
     [HttpGet("{conferenceId}/vhofficer")]
     [ProducesResponseType(typeof(ConferenceResponseVho), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
     [Authorize(AppRoles.VhOfficerRole)]
     public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
@@ -225,22 +212,7 @@ public class ConferencesController(
             return BadRequest(ModelState);
         }
         
-        ConferenceDetailsResponse conference;
-        try
-        {
-            conference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
-            if (conference == null)
-            {
-                logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
-                return NoContent();
-            }
-        }
-        catch (VideoApiException e)
-        {
-            logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
-            
-            return StatusCode(e.StatusCode, e.Response);
-        }
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         
         if (!conference.IsWaitingRoomOpen)
         {
@@ -266,7 +238,7 @@ public class ConferencesController(
         
         conference.Participants = conference
             .Participants
-            .Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
+            .Where(x => displayRoles.Contains(x.Role)).ToList();
 
         return Ok(ConferenceResponseVhoMapper.Map(conference));
     }
@@ -339,5 +311,13 @@ public class ConferencesController(
     {
         logger.LogError(e, "Unable to get conferences for user");
         return StatusCode(e.StatusCode, e.Response);
+    }
+    
+    private bool IsQuickLinkUser()
+    {
+        var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
+        var isQuicklinkUser = claims?.Find(x =>
+            x.Value == Role.QuickLinkObserver.ToString() || x.Value == Role.QuickLinkParticipant.ToString());
+        return isQuicklinkUser != null;
     }
 }

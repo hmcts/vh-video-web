@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Extensions
                 {
                     new CivilianRoom {Id = _participantRoomId, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
                 },
-                CurrentStatus = ConferenceState.InSession,
+                CurrentStatus = ConferenceStatus.InSession,
             };
 
 

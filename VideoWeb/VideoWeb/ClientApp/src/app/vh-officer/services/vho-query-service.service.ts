@@ -4,9 +4,8 @@ import {
     ConferenceForVhOfficerResponse,
     ConferenceResponseVho,
     ParticipantHeartbeatResponse,
-    TaskResponse,
-    CourtRoomsAccountResponse,
-    Role
+    Role,
+    TaskResponse
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 import { CourtRoomsAccounts } from './models/court-rooms-accounts';
@@ -119,8 +118,7 @@ export class VhoQueryService {
     getAvailableCourtRoomFilters(): Observable<CourtRoomsAccounts[]> {
         return this.getQueryResults().pipe(
             switchMap(x => {
-                const response = this.mapConferencesToCourtRoomsAccountResponses(x);
-                const courtRooms = response.map(courtRoom => new CourtRoomsAccounts(courtRoom.venue, courtRoom.rooms, true));
+                const courtRooms = this.mapConferencesToCourtRoomsAccounts(x);
                 // update the court room to match existing filters
                 const previousFilter = this.courtRoomsAccountsFilters;
 
@@ -173,19 +171,11 @@ export class VhoQueryService {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
 
-    getCourtRoomsAccounts(
-        venueAllocation: string[],
-        allocatedCsosIds: string[],
-        includeUnallocated: boolean = false
-    ): Promise<CourtRoomsAccountResponse[]> {
-        return this.apiClient.getCourtRoomAccounts(venueAllocation ?? [], allocatedCsosIds ?? [], includeUnallocated).toPromise();
-    }
-
     getActiveConferences() {
         return this.apiClient.getActiveConferences().toPromise();
     }
 
-    private mapConferencesToCourtRoomsAccountResponses(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccountResponse[] {
+    private mapConferencesToCourtRoomsAccounts(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccounts[] {
         const venuesAndJudges = conferences
             .filter(e => e.participants.some(s => s.role === Role.Judge))
             .map(e => ({
@@ -205,10 +195,11 @@ export class VhoQueryService {
         return Object.entries(venuesAndJudges)
             .map(
                 ([venue, judges]) =>
-                    new CourtRoomsAccountResponse({
-                        rooms: judges.sort((a, b) => a.localeCompare(b)),
-                        venue: venue
-                    })
+                    new CourtRoomsAccounts(
+                        venue,
+                        judges.sort((a, b) => a.localeCompare(b)),
+                        true
+                    )
             )
             .sort((a, b) => a.venue.localeCompare(b.venue));
     }

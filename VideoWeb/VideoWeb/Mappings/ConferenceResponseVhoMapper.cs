@@ -1,39 +1,30 @@
-using System.Collections.Generic;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
-using VideoApi.Contract.Responses;
-using VideoApi.Contract.Enums;
-using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.Mappings;
 
 public static class ConferenceResponseVhoMapper{
     
-    public static ConferenceResponseVho Map(ConferenceDetailsResponse conference)
+    public static ConferenceResponseVho Map(Conference conference)
     {
+        var response = new ConferenceResponseVho();
+        response.Id = conference.Id;
+        response.CaseName = conference.CaseName;
+        response.CaseNumber = conference.CaseNumber;
+        response.CaseType = conference.CaseType;
+        response.ScheduledDateTime = conference.ScheduledDateTime;
+        response.ScheduledDuration = conference.ScheduledDuration;
+        response.Status = conference.CurrentStatus;
+        response.ClosedDateTime = conference.ClosedDateTime;
+        response.HearingVenueName = conference.HearingVenueName;
+        response.HearingId = conference.HearingId;
         
-        conference.Participants ??= new List<ParticipantResponse>();
-        
-        var participants = conference.Participants
-            .OrderBy(x => x.UserRole)
-            .Select(ParticipantResponseForVhoMapper.Map)
-            .ToList();
-        
-        var response = new ConferenceResponseVho
+        if (conference.Participants != null)
         {
-            Id = conference.Id,
-            CaseName = conference.CaseName,
-            CaseNumber = conference.CaseNumber,
-            CaseType = conference.CaseType,
-            ScheduledDateTime = conference.ScheduledDateTime,
-            ScheduledDuration = conference.ScheduledDuration,
-            Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
-            Participants = participants,
-            ClosedDateTime = conference.ClosedDateTime,
-            HearingVenueName = conference.HearingVenueName,
-            HearingId = conference.HearingId
-        };
+            response.Participants = conference.Participants.Select(ParticipantResponseForVhoMapper.Map).ToList();
+            AssignTilePositions(conference, response);
+        }
         
         if (conference.MeetingRoom == null) return response;
         
@@ -41,17 +32,17 @@ public static class ConferenceResponseVhoMapper{
         response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
         response.PexipNodeUri = conference.MeetingRoom.PexipNode;
         
-        AssignTilePositions(conference, response);
+
         
         return response;
     }
     
-    private static void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
+    private static void AssignTilePositions(Conference conference, ConferenceResponseVho response)
     {
         var tiledParticipants = conference.Participants.Where(x =>
-            x.UserRole == UserRole.Individual || x.UserRole == UserRole.Representative).ToList();
+            x.Role == Role.Individual || x.Role == Role.Representative).ToList();
         
-        var partyGroups = tiledParticipants.GroupBy(x => x.UserRole).ToList();
+        var partyGroups = tiledParticipants.GroupBy(x => x.Role).ToList();
         foreach (var group in partyGroups)
         {
             var pats = @group.ToList();

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookingsApi.Client;
@@ -15,6 +17,7 @@ public interface IConferenceService
     public Task<Conference> GetConference(Guid conferenceId, CancellationToken cancellationToken = default);
     public Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default);
     public Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
+    public Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default);
 }
 
 public class ConferenceService(
@@ -23,15 +26,21 @@ public class ConferenceService(
     IBookingsApiClient bookingApiClient)
     : IConferenceService
 {
+    
+    /// <summary>
+    /// Will return conference from cache if exists, otherwise will query database and update cache
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<Conference> GetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
-        var conference = await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback, cancellationToken);
-        return conference;
+        return await conferenceCache.GetOrAddConferenceAsync(conferenceId, ConferenceDetailsCallback, cancellationToken);
         
         async Task<(ConferenceDetailsResponse conferenceDetails, HearingDetailsResponseV2 hearingDetails)> ConferenceDetailsCallback()
         {
-            var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId);
+            var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
+            var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId, cancellationToken);
             return (conferenceDetails, hearingDetails);
         }
     }
@@ -40,6 +49,7 @@ public class ConferenceService(
     /// Force query of database and update cache
     /// </summary>
     /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
@@ -52,5 +62,11 @@ public class ConferenceService(
     public async Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
     {
         await conferenceCache.UpdateConferenceAsync(conference, cancellationToken);
+    }
+    
+    public async Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default)
+    {
+        var ids = conferenceIds.ToArray();
+        return await Task.WhenAll(ids.Select(id => GetConference(id, cancellationToken)));
     }
 }

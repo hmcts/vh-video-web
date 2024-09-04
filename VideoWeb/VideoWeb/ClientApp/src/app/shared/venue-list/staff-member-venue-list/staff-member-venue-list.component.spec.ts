@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -39,12 +39,6 @@ describe('StaffMemerVenueListComponent', () => {
     selectedJudgeNames.push(venueName1.name);
     selectedJudgeNames.push(venueName2.name);
     selectedJudgeNames.push(venueName3.name);
-
-    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
-    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
-    const courtAccounts: CourtRoomsAccountResponse[] = [];
-    courtAccounts.push(courtRoomsAccounts1);
-    courtAccounts.push(courtRoomsAccounts2);
 
     const venueAccounts1 = new CourtRoomsAccounts('Birmingham', ['Room 01', 'Room 02'], false);
     const venueAccounts2 = new CourtRoomsAccounts('Manchester', ['Room 01', 'Room 02'], false);

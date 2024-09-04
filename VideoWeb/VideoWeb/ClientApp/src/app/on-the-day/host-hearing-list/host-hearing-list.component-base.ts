@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, LoggedParticipantResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -12,7 +12,6 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Directive()
 export abstract class HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
@@ -84,9 +83,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
 
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
-            const useJudgeWaitingRoom = conference.participants.find(
-                p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
-            );
+            const useJudgeWaitingRoom = conference.participants.find(p => p.id === x.participant_id && p.role === Role.Judge);
             if (useJudgeWaitingRoom) {
                 this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);

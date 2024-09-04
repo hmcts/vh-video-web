@@ -1,27 +1,26 @@
-using Autofac.Extras.Moq;
-using FizzWare.NBuilder;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
+using FizzWare.NBuilder;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.UnitTests.Builders;
-using ConferenceForHostVideoApi = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
-using ParticipantForHostVideoApi = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -35,8 +34,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<HearingDetailsResponse>{Mock.Of<HearingDetailsResponse>()});
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<HearingDetailsResponseV2>{Mock.Of<HearingDetailsResponseV2>()});
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
@@ -50,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
@@ -67,7 +66,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
@@ -80,50 +79,61 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences()
         {
             var hearingVenueNamesQuery = new List<string>();
-            var participants = new List<ParticipantForHostVideoApi>
+            var participants = new List<ParticipantCoreResponse>
             {
-                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
-                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
-                Builder<ParticipantForHostVideoApi>.CreateNew().With(x => x.Role = UserRole.Judge).Build()
-
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Individual).Build(),
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Representative).Build(),
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Judge).Build()
             };
-            var conferences = Builder<ConferenceForHostVideoApi>.CreateListOfSize(10).All()
+            var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
-                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
                 .With(x => x.Participants = participants)
                 .Build().ToList();
-
+            
+            var hearings = Builder<HearingDetailsResponseV2>.CreateListOfSize(10)
+                .All()
+                .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+                .Build().ToList();
+            
+            for (var i = 0; i < hearings.Count; i++)
+            {
+                conferences[i].HearingId = hearings[i].Id;
+            }
+            
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(hearings);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
 
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
-            var conferencesForUser = (List<ConferenceForHostResponse>)typedResult.Value;
-            conferencesForUser.Should().NotBeNullOrEmpty();
-            conferencesForUser.Count.Should().Be(conferences.Count);
-            var i = 1;
-            foreach (var conference in conferencesForUser)
-            {
-                conference.CaseName.Should().Be($"CaseName{i++}");
-            }
+            var conferencesForHost = (List<ConferenceForHostResponse>)typedResult.Value;
+            conferencesForHost.Should().NotBeNullOrEmpty();
+            conferencesForHost!.Count.Should().Be(conferences.Count);
+            conferencesForHost[0].Participants.Should().NotBeNullOrEmpty();
+            conferencesForHost[0].Participants.Count.Should().Be(participants.Count);
         }
 
         [Test]
         public async Task Should_return_ok_with_no_conferences()
         {
             var hearingVenueNamesQuery = new List<string>();
-            var conferences = new List<ConferenceForHostVideoApi>();
+            var conferences = new List<ConferenceCoreResponse>();
             var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(bookingException);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
@@ -131,8 +141,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
-            var conferencesForUser = (List<ConferenceForHostResponse>)typedResult.Value;
-            conferencesForUser.Should().BeEmpty();
+            var conferencesForHost = (List<ConferenceForHostResponse>)typedResult.Value;
+            conferencesForHost.Should().BeEmpty();
         }
 
         private ConferencesController SetupControllerWithClaims(System.Security.Claims.ClaimsPrincipal claimsPrincipal)

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
+using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers.Sorting;
 using VideoWeb.Mappings;
@@ -21,6 +22,7 @@ namespace VideoWeb.Controllers;
 public class EndOfDayController(
     IVideoApiClient videoApiClient,
     IBookingsApiClient bookingsApiClient,
+    IConferenceService conferenceService,
     ILogger<EndOfDayController> logger)
     : ControllerBase
 {
@@ -40,14 +42,12 @@ public class EndOfDayController(
         try
         {
             var activeConferences = await videoApiClient.GetActiveConferencesAsync(cancellationToken);
-            var allocatedHearings =
-                await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingRefId), cancellationToken);
-
-            var response = activeConferences
+            var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
+            var allocatedHearings = await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId), cancellationToken);
+            var conferences = await retrieveCachedConferencesTask;
+            var response = conferences
                 .Select(c
-                    => ConferenceForVhOfficerResponseMapper.Map(c,
-                        allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingRefId)))
-                .ToList();
+                    => ConferenceForVhOfficerResponseMapper.Map(c, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingId))).ToList();
             response.Sort(new SortConferenceForVhoOfficerHelper());
             return Ok(response);
         }
