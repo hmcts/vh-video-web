@@ -313,7 +313,7 @@ describe('VideoCallService', () => {
         apiClient.nonHostLeaveHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
         await service.nonHostLeaveHearing(conferenceId);
-        expect(apiClient.nonHostLeaveHearing).toHaveBeenCalledWith(conferenceId, participant
+        expect(apiClient.nonHostLeaveHearing).toHaveBeenCalledWith(conferenceId);
     });
 
     it('should make api end call on end hearing', async () => {
