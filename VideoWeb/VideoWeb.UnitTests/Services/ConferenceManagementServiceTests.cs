@@ -140,6 +140,12 @@ public class ConferenceManagementServiceTests
         
         await _sut.ParticipantLeaveConferenceAsync(conferenceId, participant.Username);
         
+        foreach (var conferenceParticipant in _conference.Participants)
+        {
+            EventHubContextMock.Verify(
+                x => x.Clients.Group(conferenceParticipant.Username.ToLowerInvariant())
+                    .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out), Times.Once);
+        }
         
         EventHubContextMock.Verify(
             x => x.Clients.Group(conferenceId.ToString())
