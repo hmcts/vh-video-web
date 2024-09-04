@@ -65,7 +65,7 @@ export class ParticipantsPanelItemComponent {
             toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText();
         }
         if (this.participant.isAvailable()) {
-            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText();
+            toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText();
         }
         if (this.participant.isWitness && this.participant.isAvailable() && !this.participant.isInHearing()) {
             toolTipText = this.participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText();
