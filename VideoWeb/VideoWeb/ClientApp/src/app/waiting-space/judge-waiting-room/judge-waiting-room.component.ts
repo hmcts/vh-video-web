@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Subscription } from 'rxjs';
-import { take, takeUntil, tap } from 'rxjs/operators';
+import { combineLatest, interval, merge, Subscription } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -41,6 +41,8 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+import { VHPexipParticipant } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -398,6 +400,39 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioErrorRetryToast = null;
     }
 
+    verifyAudioRecordingStreamV2() {
+        const countdownComplete$ = this.store.select(ConferenceSelectors.getCountdownComplete);
+        const loggedInParticipant$ = this.store.select(ConferenceSelectors.getLoggedInParticipant);
+        const wowzaParticipant$ = this.store.select(ConferenceSelectors.getWowzaParticipant);
+
+        combineLatest([countdownComplete$, loggedInParticipant$, wowzaParticipant$])
+            .pipe(
+                filter(
+                    ([countdownComplete, loggedInParticipant, wowzaParticipant]) =>
+                        countdownComplete && loggedInParticipant.status === ParticipantStatus.InHearing
+                ),
+                switchMap(([_, loggedInParticipant, wowzaParticipant]) =>
+                    interval(this.audioStreamIntervalSeconds * 1000).pipe(
+                        takeWhile(() => loggedInParticipant.status === ParticipantStatus.InHearing),
+                        map(() => wowzaParticipant)
+                    )
+                )
+            )
+            .subscribe((wowzaParticipant: VHPexipParticipant) => {
+                this.logAndAlertIfAudioRecordingStreamError(wowzaParticipant);
+            });
+    }
+
+    private logAndAlertIfAudioRecordingStreamError(wowzaParticipant: VHPexipParticipant) {
+        const noWowzaParticipant = !wowzaParticipant || !wowzaParticipant.isAudioOnlyCall;
+        const notifyError = !this.continueWithNoRecording && this.showVideo;
+
+        if (noWowzaParticipant && notifyError) {
+            this.logWowzaAlert();
+            this.showAudioRecordingRestartAlert();
+        }
+    }
+
     async verifyAudioRecordingStream(): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
             this.logger.debug(`${this.loggerPrefixJudge} Recording Session Seconds: ${this.recordingSessionSeconds}`);
@@ -582,6 +617,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.connectToPexip();
                 if (this.conference.audio_recording_required) {
                     this.initAudioRecordingInterval();
+                    this.verifyAudioRecordingStreamV2();
                 }
             });
         } catch (error) {

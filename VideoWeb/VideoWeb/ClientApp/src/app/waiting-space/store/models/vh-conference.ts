@@ -20,6 +20,7 @@ export interface VHConference {
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
     supplier: Supplier;
+    countdownComplete?: boolean;
 }
 
 export interface VHParticipant {

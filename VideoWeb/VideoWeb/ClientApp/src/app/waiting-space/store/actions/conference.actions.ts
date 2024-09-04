@@ -18,6 +18,7 @@ export const ConferenceActions = createActionGroup({
         'Load Conference Success': props<{ conference: VHConference }>(),
         'Load Conference Failure': props<{ error: Error }>(),
 
+        'Countdown Complete': props<{ conferenceId: string }>(),
         'Update Active Conference Status': props<{ conferenceId: string; status: ConferenceStatus }>(),
         'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus }>(),
         'Update Endpoint Status': props<{ conferenceId: string; endpointId: string; status: EndpointStatus }>(),

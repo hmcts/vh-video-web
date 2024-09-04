@@ -1,19 +1,23 @@
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
-import { EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
     loggedInParticipant?: VHParticipant;
+    wowzaParticipant?: VHPexipParticipant;
+    countdownComplete?: boolean;
     availableRooms: VHRoom[];
 }
 
 export const initialState: ConferenceState = {
     currentConference: undefined,
     loggedInParticipant: undefined,
+    wowzaParticipant: undefined,
+    countdownComplete: undefined,
     availableRooms: []
 };
 
@@ -35,7 +39,8 @@ export const conferenceReducer = createReducer(
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
-        return { ...state, currentConference: updatedConference, availableRooms: availableRooms };
+        const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
+        return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete };
     }),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
@@ -43,7 +48,16 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedConference: VHConference = { ...conference, status: status };
+        const updatedConference: VHConference = { ...conference, status: status, countdownComplete: null };
+        return { ...state, currentConference: updatedConference };
+    }),
+    on(ConferenceActions.countdownComplete, (state, { conferenceId }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+
+        const updatedConference: VHConference = { ...conference, countdownComplete: true };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateParticipantStatus, (state, { conferenceId, participantId, status }) => {
@@ -170,14 +184,24 @@ export const conferenceReducer = createReducer(
             participant.pexipDisplayName?.includes(e.id) ? { ...e, pexipInfo: participant } : e
         );
 
-        return { ...state, currentConference: { ...conference, participants, endpoints } };
+        let wowzaParticipant = state.wowzaParticipant;
+        if (participant.pexipDisplayName?.toLowerCase().includes('wowza')) {
+            wowzaParticipant = participant;
+        }
+
+        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant };
     }),
     on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
         const conference = state.currentConference;
         const participants = conference.participants.map(p => (p.pexipInfo?.uuid === pexipUUID ? { ...p, pexipInfo: null } : p));
         const endpoints = conference.endpoints.map(e => (e.pexipInfo?.uuid === pexipUUID ? { ...e, pexipInfo: null } : e));
 
-        return { ...state, currentConference: { ...conference, participants, endpoints } };
+        let wowzaParticipant = state.wowzaParticipant;
+        if (wowzaParticipant?.uuid === pexipUUID) {
+            wowzaParticipant = null;
+        }
+
+        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
         let updatedRoomList = state.availableRooms;
