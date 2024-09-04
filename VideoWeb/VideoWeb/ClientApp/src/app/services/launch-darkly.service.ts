@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { LDFlagValue, LDClient, LDContext, initialize } from 'launchdarkly-js-client-sdk';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ConfigService } from './api/config.service';
 import { first, map } from 'rxjs/operators';
 
@@ -17,16 +17,17 @@ export const FEATURE_FLAGS = {
 })
 export class LaunchDarklyService implements OnDestroy {
     client: LDClient;
+    private flagSubjects: { [key: string]: BehaviorSubject<LDFlagValue> } = {};
 
     constructor(private configService: ConfigService) {
-        this.initialize();
+        this.vhInitialize();
     }
 
     async ngOnDestroy() {
         await this.client.close();
     }
 
-    initialize(): void {
+    vhInitialize(): void {
         this.configService
             .getClientSettings()
             .pipe(first())
@@ -41,17 +42,26 @@ export class LaunchDarklyService implements OnDestroy {
                 };
 
                 this.client = initialize(ldClientId, context);
+                this.client.waitUntilReady().then(() => {
+                    this.loadAllFlagsAndSetupSubscriptions();
+                });
             });
     }
 
+    loadAllFlagsAndSetupSubscriptions(): void {
+        const allFlags = this.client.allFlags();
+        Object.values(FEATURE_FLAGS).forEach(flagKey => {
+            this.flagSubjects[flagKey] = new BehaviorSubject<LDFlagValue>(allFlags[flagKey]);
+            this.client.on(`change:${flagKey}`, (newValue: LDFlagValue) => {
+                this.flagSubjects[flagKey].next(newValue);
+            });
+        });
+    }
+
     getFlag<T>(flagKey: string, defaultValue: LDFlagValue = false): Observable<T> {
-        const fetchFlag = new Subject<void>();
-        this.client.on(`change:${flagKey}`, () => {
-            fetchFlag.next();
-        });
-        this.client.waitUntilReady().then(() => {
-            fetchFlag.next();
-        });
-        return fetchFlag.pipe(map(() => this.client.variation(flagKey, defaultValue) as T));
+        if (!this.flagSubjects[flagKey]) {
+            this.flagSubjects[flagKey] = new BehaviorSubject<LDFlagValue>(defaultValue);
+        }
+        return this.flagSubjects[flagKey].asObservable().pipe(map(value => value as T));
     }
 }
