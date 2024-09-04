@@ -12,13 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using VideoApi.Client;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
-using VideoApi.Contract.Enums;
-using VideoWeb.Common;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController;
@@ -90,7 +89,7 @@ public class GetConferenceByIdTests
     public async Task Should_return_unauthorised_when_conference_exceededLimit()
     {
         var conference = CreateValidConferenceResponse(null);
-        conference.CurrentStatus = ConferenceState.Closed;
+        conference.CurrentStatus = ConferenceStatus.Closed;
         conference.IsWaitingRoomOpen = false;
         _mocker.Mock<IConferenceService>()
             .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))

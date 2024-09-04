@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
-using VideoWeb.UnitTests.Builders;
-using VideoApi.Contract.Enums;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Common;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -73,16 +73,19 @@ namespace VideoWeb.UnitTests.Hub
             };
         }
 
-        protected List<ConferenceForAdminResponse> SetupAdminConferences(int numOfConferences)
+        protected List<ConferenceCoreResponse> SetupConferences(int numOfConferences)
         {
-            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
-                .Build().ToList();
+                .Build()
+                .ToList();
 
             Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
+            VideoApiClientMock
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -96,7 +99,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
 
-            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceDetailsResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(numOfConferencesWithUser).With(x => x.Participants = participantsWithUser)
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
@@ -106,10 +109,10 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
-                .ReturnsAsync(conferences);
+                .ReturnsAsync(new List<ConferenceCoreResponse>(conferences));
 
             return conferences
-                .Where(x => x.Participants.Exists(p => p.Username == Claims.Identity.Name))
+                .Where(x => x.Participants.Exists(p => p.Username == Claims.Identity?.Name))
                 .Select(c => c.Id.ToString()).ToArray();
         }
         

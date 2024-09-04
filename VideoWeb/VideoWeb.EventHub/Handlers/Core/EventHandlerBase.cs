@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
@@ -79,7 +78,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
-            SourceConference.UpdateConferenceStatus((ConferenceState)hearingEventStatus);
+            SourceConference.UpdateConferenceStatus(hearingEventStatus);
             await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {

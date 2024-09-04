@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -16,16 +17,16 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
-using VideoApi.Contract.Enums;
-using VideoApi.Contract.Requests;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -40,8 +41,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<HearingDetailsResponse>{Mock.Of<HearingDetailsResponse>()});
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<HearingDetailsResponseV2>{Mock.Of<HearingDetailsResponseV2>()});
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
@@ -54,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferenceDetailsByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery(), CancellationToken.None);
@@ -71,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery(), CancellationToken.None);
@@ -90,35 +91,34 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
-
-
-            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
+            
+            var conferences = Builder<ConferenceDetailsResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
                 .With((x, i) => x.CaseName = $"Test case name {i+1}")
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
-                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
                 .With(x => x.IsWaitingRoomOpen = true)
                 .Random(2).With(x => x.CaseName = "Test case name same").And(x=> x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-10))
-                .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
-                .Random(1).With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-25)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
-                .Random(1).With(x=> x.Status = ConferenceState.InSession).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
+                .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.CurrentStatus = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
+                .Random(1).With(x => x.CurrentStatus = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-25)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
+                .Random(1).With(x=> x.CurrentStatus = ConferenceState.InSession).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
                 .Build().ToList();
 
             var allocatedCsoResponses = 
-                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingId}"}}).ToList();
             allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
             allocatedCsoResponses[0].Cso = null; //on unallocated hearing 
 
             var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
             var expectedConferenceIds = conferences.Where(x =>
-                    x.Status != ConferenceState.Closed ||
+                    x.CurrentStatus != ConferenceState.Closed ||
                     DateTime.Compare(x.ClosedDateTime.GetValueOrDefault(), closedConferenceTimeLimit) < 0)
                 .Select(x => x.Id).ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferenceDetailsByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -140,15 +140,26 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 new InstantMessageResponse
                     {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
             };
-
+            
+            var hearingsForToday = new List<HearingDetailsResponseV2>();
+            
             foreach (var conference in conferences)
             {
+                hearingsForToday.Add(Builder<HearingDetailsResponseV2>.CreateNew()
+                    .With(x => x.Id = conference.HearingId)
+                    .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+                    .Build());
+                
                 _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
                     .ReturnsAsync(new List<InstantMessageResponse>());
             }
 
             _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
                 .ReturnsAsync(messages);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(),It.IsAny<CancellationToken>()))
+                .ReturnsAsync(hearingsForToday);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery(), CancellationToken.None);
 
@@ -162,7 +173,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             
             // paused hearings in sessions cannot chat, no need to get history
-            foreach (var conference in conferences.Where(x=> x.Status == ConferenceState.InSession))
+            foreach (var conference in conferences.Where(x=> x.CurrentStatus == ConferenceState.InSession))
             {
                 _mocker.Mock<IVideoApiClient>().Verify(x => x.GetInstantMessageHistoryAsync(conference.Id), Times.Never);
             }
@@ -182,19 +193,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
-
-
-            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
+            
+            var conferences = Builder<ConferenceDetailsResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
-                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
                 .With(x=> x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
+            var hearingsForToday = new List<HearingDetailsResponseV2>();
+            
             var allocatedCsoResponses = 
-                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId}).ToList();
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingId}).ToList();
             var allocatedCsoIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
             // Allocate to a cso that is not in our list
             allocatedCsoResponses[0].Cso = new JusticeUserResponse { FullName = $"TestUserFor{allocatedCsoResponses[0].HearingId}", Id = Guid.NewGuid() }; 
@@ -206,17 +218,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 j++;
             }
 
-            conferences[^1].Status = ConferenceState.InSession;
+            conferences[^1].CurrentStatus = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
             {
+                hearingsForToday.Add(Builder<HearingDetailsResponseV2>.CreateNew()
+                    .With(x => x.Id = conference.HearingId)
+                    .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+                    .Build());
                 conference.ClosedDateTime = DateTime.UtcNow.AddMinutes(minutes);
                 minutes += 30;
             }
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(),It.IsAny<CancellationToken>()))
+                .ReturnsAsync(hearingsForToday);
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferenceDetailsByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -295,22 +314,22 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
 
 
-            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
+            var conferences = Builder<ConferenceDetailsResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
-                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
                 .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
-                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingId}"}}).ToList();
             allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
             var unallocatedHearing = allocatedCsoResponses[0];
             unallocatedHearing.Cso = null;
 
-            conferences[^1].Status = ConferenceState.InSession;
+            conferences[^1].CurrentStatus = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
@@ -320,7 +339,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferenceDetailsByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -343,14 +362,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                     {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
+            var hearingsForToday = new List<HearingDetailsResponseV2>();
             foreach (var conference in conferences)
             {
                 _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new List<InstantMessageResponse>());
+                
+                hearingsForToday.Add(Builder<HearingDetailsResponseV2>.CreateNew()
+                    .With(x => x.Id = conference.HearingId)
+                    .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+                    .Build());
             }
 
             _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(messages);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(),It.IsAny<CancellationToken>()))
+                .ReturnsAsync(hearingsForToday);
             
             // Act
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery
@@ -373,13 +402,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_no_conferences()
         {
-            var conferences = new List<ConferenceForAdminResponse>();
+            var conferences = new List<ConferenceDetailsResponse>();
             var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetConferenceDetailsByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conferences);
             _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(bookingException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery(), CancellationToken.None);

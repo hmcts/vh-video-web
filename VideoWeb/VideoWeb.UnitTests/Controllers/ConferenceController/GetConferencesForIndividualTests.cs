@@ -4,24 +4,22 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
+using BookingsApi.Client;
+using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Controllers;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using VideoWeb.UnitTests.Builders;
-using ConferenceVideoApi = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
-using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
-using Autofac.Extras.Moq;
-using BookingsApi.Client;
-using BookingsApi.Contract.V1.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
-using VideoWeb.Mappings;
-using VideoWeb.Contract.Responses;
+using VideoWeb.Controllers;
+using VideoWeb.UnitTests.Builders;
+using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController;
 
@@ -57,13 +55,23 @@ public class GetConferencesForIndividualTests
         _sut = _mocker.Create<ConferencesController>();
         _sut.ControllerContext = context;
         
-        var conferences = Builder<ConferenceVideoApi>.CreateListOfSize(10).All()
+        var conferencesResponses = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
             .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
             .With(x => x.IsWaitingRoomOpen = true)
             .Build().ToList();
         
+        var conferences = Builder<Conference>.CreateListOfSize(10).All()
+            .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+            .With(x => x.IsWaitingRoomOpen = true)
+            .Build();
+        
         _mocker.Mock<IVideoApiClient>()
             .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conferencesResponses);
+        
+        
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConferences(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         
         var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
@@ -71,7 +79,7 @@ public class GetConferencesForIndividualTests
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
         
-        var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult.Value;
+        var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult?.Value;
         conferencesForUser.Should().NotBeNullOrEmpty();
         conferencesForUser.Count.Should().Be(conferences.Count);
     }
@@ -79,14 +87,14 @@ public class GetConferencesForIndividualTests
     [Test]
     public async Task Should_return_ok_with_list_of_conferences()
     {
-        var bookings = Builder<ConfirmedHearingsTodayResponse>.CreateListOfSize(10).All()
+        var bookings = Builder<ConfirmedHearingsTodayResponseV2>.CreateListOfSize(10).All()
             .With(x => x.Id = Guid.NewGuid())
             .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
             .With(x => x.ScheduledDuration = 20)
-            .With(x => x.Endpoints = Builder<BookingsApi.Contract.V1.Responses.EndpointResponse>.CreateListOfSize(1).Build().ToList())
+            .With(x => x.Endpoints = Builder<EndpointResponseV2>.CreateListOfSize(1).Build().ToList())
             .Build().ToList();
         
-        var conferences = Builder<ConferenceVideoApi>.CreateListOfSize(10).All()
+        var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
             .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
             .With(x => x.IsWaitingRoomOpen = true)
             .Build().ToList();
@@ -101,7 +109,7 @@ public class GetConferencesForIndividualTests
             .ReturnsAsync(conferences);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayV2Async(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(bookings);
         
         var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
@@ -117,13 +125,13 @@ public class GetConferencesForIndividualTests
     [Test]
     public async Task Should_return_ok_with_no_conferences()
     {
-        var conferences = new List<ConferenceVideoApi>();
+        var conferences = new List<ConferenceCoreResponse>();
         var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
         _mocker.Mock<IVideoApiClient>()
             .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayV2Async(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(bookingException);
         
         var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
@@ -187,7 +195,7 @@ public class GetConferencesForIndividualTests
             "Stacktrace goes here", null, default, null);
         
         _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConfirmedHearingsByUsernameForTodayV2Async(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
         var result = await _sut.GetConferencesForIndividual(CancellationToken.None);
