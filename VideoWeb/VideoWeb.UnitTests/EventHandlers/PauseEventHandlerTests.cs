@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -35,7 +34,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Paused),
                 Times.Exactly(participantCount));
-            TestConference.CurrentStatus.Should().Be(ConferenceState.Paused);
+            TestConference.CurrentStatus.Should().Be(ConferenceStatus.Paused);
         }
     }
 }

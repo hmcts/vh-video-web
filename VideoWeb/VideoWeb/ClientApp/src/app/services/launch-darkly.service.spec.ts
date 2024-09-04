@@ -2,7 +2,7 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from './api/config.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { FEATURE_FLAGS, LaunchDarklyService } from './launch-darkly.service';
-import { LDClient } from 'launchdarkly-js-client-sdk';
+import { LDClient, LDFlagSet } from 'launchdarkly-js-client-sdk';
 import { of } from 'rxjs';
 
 describe('LaunchDarklyService', () => {
@@ -14,6 +14,8 @@ describe('LaunchDarklyService', () => {
     const ldClientSpy = jasmine.createSpyObj<LDClient>('LDClient', ['waitUntilReady', 'allFlags', 'on', 'variation', 'close']);
 
     beforeEach(() => {
+        // default to no flags
+        ldClientSpy.on.and.returnValue();
         TestBed.configureTestingModule({
             providers: [{ provide: ConfigService, useValue: configServiceSpy }, Logger]
         });
@@ -21,7 +23,7 @@ describe('LaunchDarklyService', () => {
     });
 
     it('LD client should be intialised', () => {
-        service.initialize();
+        service.vhInitialize();
         expect(service.client).toBeDefined();
     });
 
@@ -38,9 +40,14 @@ describe('LaunchDarklyService', () => {
         service.client = ldClientSpy;
         const flagKey = FEATURE_FLAGS.ejudiciarySignIn;
         const keyParam = `change:${flagKey}`;
+        const allFlags: LDFlagSet = { [flagKey]: true };
+        ldClientSpy.allFlags.and.returnValue(allFlags);
+
         ldClientSpy.on.withArgs(keyParam, jasmine.anything()).and.returnValue();
         ldClientSpy.waitUntilReady.and.returnValue(Promise.resolve());
         ldClientSpy.variation.withArgs(flagKey, jasmine.any(Boolean)).and.returnValue(true);
+
+        service.loadAllFlagsAndSetupSubscriptions();
 
         let result: boolean;
         service.getFlag<boolean>(flagKey).subscribe(val => (result = val));

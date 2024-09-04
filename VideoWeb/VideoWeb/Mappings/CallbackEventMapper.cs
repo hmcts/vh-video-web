@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using VideoApi.Contract.Requests;
 using VideoWeb.Extensions;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
@@ -15,10 +16,12 @@ public static class CallbackEventMapper
     {
         request.EventType = request.EventType switch
         {
-            VideoApi.Contract.Enums.EventType.RoomParticipantJoined => VideoApi.Contract.Enums.EventType.Joined,
-            VideoApi.Contract.Enums.EventType.RoomParticipantDisconnected => VideoApi.Contract.Enums.EventType
-                .Disconnected,
-            VideoApi.Contract.Enums.EventType.RoomParticipantTransfer => VideoApi.Contract.Enums.EventType.Transfer,
+            VideoApi.Contract.Enums.EventType.RoomParticipantJoined 
+                => VideoApi.Contract.Enums.EventType.Joined,
+            VideoApi.Contract.Enums.EventType.RoomParticipantDisconnected 
+                => VideoApi.Contract.Enums.EventType.Disconnected,
+            VideoApi.Contract.Enums.EventType.RoomParticipantTransfer 
+                => VideoApi.Contract.Enums.EventType.Transfer,
             _ => request.EventType
         };
         var eventType = Enum.Parse<EventType>(request.EventType.ToString());
@@ -38,7 +41,7 @@ public static class CallbackEventMapper
             TimeStampUtc = request.TimeStampUtc,
             ParticipantId = participantId,
             IsParticipantInVmr = request.IsParticipantInVmr(conference),
-            ConferenceStatus = conference.CurrentStatus,
+            ConferenceStatus = Enum.Parse<ConferenceState>(conference.CurrentStatus.ToString())
         };
         
         if (IsEndpointJoined(callbackEvent, conference))

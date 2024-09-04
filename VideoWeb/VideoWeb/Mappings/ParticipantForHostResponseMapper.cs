@@ -1,21 +1,19 @@
 using System;
-using VideoWeb.Common.Models;
-using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
+using VideoApi.Contract.Responses;
 using ParticipantForHostResponse = VideoWeb.Contract.Responses.ParticipantForHostResponse;
+using Role = VideoWeb.Common.Models.Role;
 
 namespace VideoWeb.Mappings;
 
 public static class ParticipantForHostResponseMapper
 {
-    public static ParticipantForHostResponse Map(Participant participant)
+    public static ParticipantForHostResponse Map(ParticipantCoreResponse participant)
     {
         return new ParticipantForHostResponse
         {
             Id = participant.Id,
-            Role = Enum.Parse<Role>(participant.Role.ToString()),
             DisplayName = participant.DisplayName,
-            Representee = participant.Representee,
-            HearingRole = participant.HearingRole,
+            Role = Enum.Parse<Role>(participant.UserRole.ToString())
         };
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { VideoCallService } from '../../services/video-call.service';
 import { HearingRole } from '../../models/hearing-role-model';
 import { InterpreterType } from 'src/app/services/clients/api-client';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Injectable()
 export class VideoCallEffects {
@@ -17,10 +18,12 @@ export class VideoCallEffects {
             this.actions$.pipe(
                 ofType(ConferenceActions.createPexipParticipant),
                 concatLatestFrom(action => [
+                    this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.interpreterEnhancements),
                     this.store.select(ConferenceSelectors.getParticipantByPexipId(action.participant.uuid)),
                     this.store.select(ConferenceSelectors.getEndpointByPexipId(action.participant.uuid))
                 ]),
-                tap(([action, participant, endpoint]) => {
+                filter(([_action, interpreterEnhancementsEnabled, _participant, _endpoint]) => interpreterEnhancementsEnabled),
+                tap(([action, _flagEnabled, participant, endpoint]) => {
                     // filter non vh participant (i.e. countdown or wowza)
                     if (!participant && !endpoint) {
                         return;
@@ -78,9 +81,11 @@ export class VideoCallEffects {
             this.actions$.pipe(
                 ofType(ConferenceActions.updateAudioMix),
                 concatLatestFrom(action => [
+                    this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.interpreterEnhancements),
                     this.store.select(ConferenceSelectors.getParticipantByPexipId(action.participant.pexipInfo.uuid))
                 ]),
-                tap(([action, participant]) => {
+                filter(([_action, interpreterEnhancementsEnabled, _participant]) => interpreterEnhancementsEnabled),
+                tap(([action, _flagEnabled, participant]) => {
                     // filter non vh participant (i.e. countdown or wowza)
                     if (!participant) {
                         return;
@@ -131,6 +136,7 @@ export class VideoCallEffects {
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
-        private videoCallService: VideoCallService
+        private videoCallService: VideoCallService,
+        private launchDarklyService: LaunchDarklyService
     ) {}
 }

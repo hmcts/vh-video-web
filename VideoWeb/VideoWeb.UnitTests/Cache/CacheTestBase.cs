@@ -48,6 +48,7 @@ public abstract class CacheTestBase
             .With(x => x.Id == conference.HearingId)
             .With(x => x.Participants = hearingParticipants)
             .With(x => x.Endpoints = endpoints)
+            .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
             .Build();
         return hearing;
     }
