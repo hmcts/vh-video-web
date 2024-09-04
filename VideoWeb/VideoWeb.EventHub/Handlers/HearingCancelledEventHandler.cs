@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
         : EventHandlerBase(hubContext, conferenceService, logger)
     {
 
-        public override EventType EventType => EventType.NewConferenceAdded;
+        public override EventType EventType => EventType.HearingCancelled;
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
