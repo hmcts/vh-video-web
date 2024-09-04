@@ -8,6 +8,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
+import { EventsService } from 'src/app/services/events.service';
 
 @Component({
     selector: 'app-participant-hearings',
@@ -17,9 +18,9 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     conferences: ConferenceForIndividualResponse[];
     conferencesSubscription: Subscription;
     loadingData: boolean;
-    interval: any;
     errorCount: number;
     loggedInParticipant: LoggedParticipantResponse;
+    eventHubSubscriptions: Subscription = new Subscription();
 
     constructor(
         private videoWebService: VideoWebService,
@@ -27,16 +28,17 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         private router: Router,
         private logger: Logger,
         private translate: TranslateService,
-        private hearingVenueFlagsService: HearingVenueFlagsService
+        private hearingVenueFlagsService: HearingVenueFlagsService,
+        private eventsService: EventsService
     ) {
         this.loadingData = true;
     }
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('[ParticipantHearings] - Clearing intervals and subscriptions for individual');
-        clearInterval(this.interval);
+        this.logger.debug('[ParticipantHearings] - Clearing subscriptions for individual');
         this.conferencesSubscription.unsubscribe();
+        this.eventHubSubscriptions.unsubscribe();
     }
 
     getTranslation(key: string) {
@@ -46,9 +48,14 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.errorCount = 0;
         this.retrieveHearingsForUser();
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForUser();
-        }, 30000);
+        this.setUpEventHubSubscribers();
+    }
+
+    setUpEventHubSubscribers() {
+        this.eventHubSubscriptions.add(this.eventsService.getNewConferenceAdded().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getHearingCancelled().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getHearingDetailsUpdated().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getParticipantsUpdated().subscribe(() => this.retrieveHearingsForUser()));
     }
 
     retrieveHearingsForUser() {

@@ -40,6 +40,9 @@ import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
 import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { NewConferenceAddedMessage } from './models/new-conference-added-message';
+import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
+import { HearingCancelledMessage } from './models/hearing-cancelled-message';
 
 @Injectable({
     providedIn: 'root'
@@ -73,6 +76,9 @@ export class EventsService {
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
     private messageAllocationSubject = new Subject<NewAllocationMessage>();
+    private newConferenceAddedSubject = new Subject<NewConferenceAddedMessage>();
+    private hearingDetailsUpdatedSubject = new Subject<HearingDetailsUpdatedMessage>();
+    private hearingCancelledSubject = new Subject<HearingCancelledMessage>();
 
     private _handlersRegistered = false;
 
@@ -86,6 +92,21 @@ export class EventsService {
 
         NewConferenceAddedMessage: (conferenceId: string) => {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
+            const message = new NewConferenceAddedMessage(conferenceId);
+            this.logger.debug('[EventsService] - NewConferenceAddedMessage received', message);
+            this.newConferenceAddedSubject.next(message);
+        },
+
+        HearingDetailsUpdatedMessage: (conferenceId: string) => {
+            const message = new HearingDetailsUpdatedMessage(conferenceId);
+            this.logger.debug('[EventsService] - HearingDetailsUpdatedMessage received', message);
+            this.hearingDetailsUpdatedSubject.next(message);
+        },
+
+        HearingCancelledMessage: (conferenceId: string) => {
+            const message = new HearingCancelledMessage(conferenceId);
+            this.logger.debug('[EventsService] - HearingCancelled received', message);
+            this.hearingCancelledSubject.next(message);
         },
 
         AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
@@ -521,6 +542,18 @@ export class EventsService {
 
     getAudioRestartActioned(): Observable<string> {
         return this.audioRestartActionedSubject.asObservable();
+    }
+
+    getNewConferenceAdded(): Observable<NewConferenceAddedMessage> {
+        return this.newConferenceAddedSubject.asObservable();
+    }
+
+    getHearingCancelled(): Observable<HearingCancelledMessage> {
+        return this.hearingCancelledSubject.asObservable();
+    }
+
+    getHearingDetailsUpdated(): Observable<HearingDetailsUpdatedMessage> {
+        return this.hearingDetailsUpdatedSubject.asObservable();
     }
 
     async sendMessage(instantMessage: InstantMessage) {
