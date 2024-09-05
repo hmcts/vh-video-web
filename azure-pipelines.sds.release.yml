@@ -18,7 +18,7 @@ pool:
 
 stages:
 
-#####################################################
+######################################################
 # Build Docker Image & Push. ########################
 - stage: Docker_Build_Push
   displayName: Docker Build & Push Image
