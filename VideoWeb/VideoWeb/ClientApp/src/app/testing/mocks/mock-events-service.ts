@@ -20,6 +20,9 @@ import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { EndpointRepMessage } from '../../shared/models/endpoint-rep-message';
+import { NewConferenceAddedMessage } from 'src/app/services/models/new-conference-added-message';
+import { HearingCancelledMessage } from 'src/app/services/models/hearing-cancelled-message';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
@@ -49,6 +52,9 @@ export const getEndpointUnlinkedUpdatedMock = new Subject<EndpointRepMessage>();
 export const getEndpointLinkedUpdatedMock = new Subject<EndpointRepMessage>();
 export const getEndpointDisconnectUpdatedMock = new Subject<EndpointRepMessage>();
 export const getAudioRestartActionedMock = new Subject<string>();
+export const getNewConferenceAddedMock = new Subject<NewConferenceAddedMessage>();
+export const getHearingCancelledMock = new Subject<HearingCancelledMessage>();
+export const getHearingDetailsUpdatedMock = new Subject<HearingDetailsUpdatedMessage>();
 
 export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -90,7 +96,10 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getEndpointLinkedUpdated',
         'getEndpointDisconnectUpdated',
         'getAudioRestartActioned',
-        'sendAudioRestartActioned'
+        'sendAudioRestartActioned',
+        'getNewConferenceAdded',
+        'getHearingCancelled',
+        'getHearingDetailsUpdated'
     ],
     ['eventHubIsConnected']
 );
@@ -122,3 +131,6 @@ eventsServiceSpy.getEndpointUnlinkedUpdated.and.returnValue(getEndpointUnlinkedU
 eventsServiceSpy.getEndpointLinkedUpdated.and.returnValue(getEndpointLinkedUpdatedMock.asObservable());
 eventsServiceSpy.getEndpointDisconnectUpdated.and.returnValue(getEndpointDisconnectUpdatedMock.asObservable());
 eventsServiceSpy.getAudioRestartActioned.and.returnValue(getAudioRestartActionedMock.asObservable());
+eventsServiceSpy.getNewConferenceAdded.and.returnValue(getNewConferenceAddedMock.asObservable());
+eventsServiceSpy.getHearingCancelled.and.returnValue(getHearingCancelledMock.asObservable());
+eventsServiceSpy.getHearingDetailsUpdated.and.returnValue(getHearingDetailsUpdatedMock.asObservable());

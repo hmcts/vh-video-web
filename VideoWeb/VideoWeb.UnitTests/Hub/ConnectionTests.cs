@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -33,6 +34,34 @@ namespace VideoWeb.UnitTests.Hub
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,
                     EventHub.Hub.EventHub.VhOfficersGroupName, CancellationToken.None),
+                Times.Once);
+        }
+        
+        [Test]
+        public async Task Should_subscribe_staff_member_to_all_conferences()
+        {
+            var numOfConferences = 10;
+            var conferences = SetupConferences(numOfConferences, userRole: AppRoles.StaffMember);
+            var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
+
+            await Hub.OnConnectedAsync();
+            
+            GroupManagerMock.Verify(
+                x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
+                    CancellationToken.None), Times.Exactly(numOfConferences));
+        }
+
+        [Test]
+        public async Task Should_subscribe_staff_member_to_staff_member_group()
+        {
+            var numOfConferences = 10;
+            SetupConferences(numOfConferences, userRole: AppRoles.StaffMember);
+
+            await Hub.OnConnectedAsync();
+
+            GroupManagerMock.Verify(
+                x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,
+                    EventHub.Hub.EventHub.StaffMembersGroupName, CancellationToken.None),
                 Times.Once);
         }
         

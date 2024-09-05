@@ -29,7 +29,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
             
             const int vhoCount = 1;
-            EventHubClientMock.Verify(x => x.HearingCancelledMessage(callbackEvent.ConferenceId), Times.Exactly(TestConference.Participants.Count + vhoCount));
+            const int staffMemberCount = 1;
+            EventHubClientMock.Verify(x => x.HearingCancelledMessage(callbackEvent.ConferenceId), Times.Exactly(TestConference.Participants.Count + vhoCount + staffMemberCount));
         } 
     }
 }

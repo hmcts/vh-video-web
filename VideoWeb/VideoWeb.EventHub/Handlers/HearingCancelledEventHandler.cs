@@ -30,7 +30,7 @@ namespace VideoWeb.EventHub.Handlers
                 .HearingCancelledMessage(conferenceId);
             
             await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
-                .NewConferenceAddedMessage(conferenceId);
+                .HearingCancelledMessage(conferenceId);
         }
     }
 }
