@@ -14,6 +14,7 @@ public static class ConferenceForVhOfficerResponseMapper
     public const string NotRequired = "Not Required";
     public const string NotAllocated = "Not Allocated";
     
+    [Obsolete("Use the overload that takes a HearingDetailsResponseV2")]
     public static ConferenceForVhOfficerResponse Map(Conference conference, AllocatedCsoResponse allocatedCsoResponse)
     {
         var allocatedCso = !allocatedCsoResponse?.SupportsWorkAllocation ?? false
@@ -42,13 +43,13 @@ public static class ConferenceForVhOfficerResponseMapper
         return response;
     }
     
-    public static ConferenceForVhOfficerResponse Map(ConferenceDetailsResponse conference, AllocatedCsoResponse allocatedCsoResponse, HearingDetailsResponseV2 hearingDetails)
+    public static ConferenceForVhOfficerResponse Map(ConferenceDetailsResponse conference, HearingDetailsResponseV2 hearingDetails)
     {
-        var allocatedCso = !allocatedCsoResponse?.SupportsWorkAllocation ?? false
+        var allocatedCso = hearingDetails?.SupportsWorkAllocation ?? false
             ? NotRequired
-            : allocatedCsoResponse?.Cso?.FullName ?? NotAllocated;
+            : hearingDetails?.AllocatedToName ?? NotAllocated;
         
-        var caseInfo = hearingDetails.Cases.FirstOrDefault(c => c.IsLeadCase) ?? hearingDetails.Cases[0];
+        var caseInfo = hearingDetails?.Cases.Find(c => c.IsLeadCase) ?? hearingDetails?.Cases[0];
         
         var response = new ConferenceForVhOfficerResponse();
         response.Id = conference.Id;
@@ -67,7 +68,7 @@ public static class ConferenceForVhOfficerResponseMapper
         response.CreatedDateTime = hearingDetails.CreatedDate;
         response.HearingRefId = conference.HearingId;
         response.AllocatedCso = allocatedCso;
-        response.AllocatedCsoId = allocatedCsoResponse?.Cso?.Id;
+        response.AllocatedCsoId = hearingDetails?.AllocatedToId;
         response.Supplier = (Supplier)conference.Supplier;
         return response;
     }
