@@ -84,6 +84,9 @@ public class EventComponentHelper
         
         EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
             .Returns(EventHubClientMock.Object);
+        
+        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.StaffMembersGroupName))
+            .Returns(EventHubClientMock.Object);
     }
     
     public Conference BuildConferenceForTest()

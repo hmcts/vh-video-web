@@ -42,8 +42,10 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             await _eventHandler.HandleAsync(callbackEvent);
 
+            const int vhoCount = 1;
+            const int staffMemberCount = 1;
             EventHubClientMock.Verify(
-                x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + 1));
+                x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + vhoCount + staffMemberCount));
             TestConference.Participants.Should().HaveCount(participantCount);
         }
     }

@@ -33,5 +33,8 @@ public class ParticipantsUpdatedEventHandler(
         
         await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
             .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
+        
+        await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+            .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
     }
 }

@@ -28,6 +28,9 @@ namespace VideoWeb.EventHub.Handlers
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .HearingCancelledMessage(conferenceId);
+            
+            await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+                .NewConferenceAddedMessage(conferenceId);
         }
     }
 }
