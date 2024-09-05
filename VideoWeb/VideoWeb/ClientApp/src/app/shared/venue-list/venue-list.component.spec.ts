@@ -19,7 +19,7 @@ class MockedVenueListComponent extends VenueListComponentDirective {
         return true;
     }
 
-    goToHearingList() { }
+    goToHearingList() {}
 }
 
 describe('VenueListComponent', () => {
