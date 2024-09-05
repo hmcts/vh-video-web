@@ -33,6 +33,9 @@ public class ConferenceCacheMapperTests
         response.HearingId.Should().Be(conference.HearingId);
         response.Supplier.Should().Be((Supplier)hearingResponse.BookingSupplier);
         
+        response.HearingVenueName.Should().Be(hearingResponse.HearingVenueName);
+        response.CaseName.Should().Be(hearingResponse.Cases[0].Name);
+        response.CaseNumber.Should().Be(hearingResponse.Cases[0].Number);
         response.Participants.Count.Should().Be(conference.Participants.Count);
         
         foreach (var resultParticipant in response.Participants)
@@ -143,7 +146,7 @@ public class ConferenceCacheMapperTests
         resultEndpoint.InterpreterLanguage.Should().BeNull();
     }
     
-    private static HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
+    private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
     {
         var participants = new List<ParticipantResponseV2>();
         var joh = new List<JudiciaryParticipantResponse>();
@@ -194,6 +197,8 @@ public class ConferenceCacheMapperTests
             .With(x => x.Participants = participants)
             .With(x => x.JudiciaryParticipants = joh)
             .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
+            .With(x => x.HearingVenueName = "Venue")
+            .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
             .Build();
     }
     

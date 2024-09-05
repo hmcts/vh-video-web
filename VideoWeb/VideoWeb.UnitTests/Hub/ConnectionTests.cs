@@ -12,7 +12,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_subscribe_admin_to_all_conferences()
         {
             var numOfConferences = 10;
-            var conferences = SetupAdminConferences(numOfConferences);
+            var conferences = SetupConferences(numOfConferences);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
             await Hub.OnConnectedAsync();
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_subscribe_admin_to_vho_group()
         {
             var numOfConferences = 10;
-            SetupAdminConferences(numOfConferences);
+            SetupConferences(numOfConferences);
 
             await Hub.OnConnectedAsync();
 

@@ -1,13 +1,12 @@
-using FizzWare.NBuilder;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using FizzWare.NBuilder;
 using FluentAssertions;
+using NUnit.Framework;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings;
 
@@ -49,7 +48,7 @@ public class ConferenceResponseMapperTests
         
         
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceState.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .With(x => x.IsScottish = true)

@@ -2,13 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    CourtRoomsAccountResponse,
-    HearingVenueResponse,
-    JusticeUserResponse,
-    Role,
-    UserProfileResponse
-} from 'src/app/services/clients/api-client';
+import { HearingVenueResponse, JusticeUserResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -50,12 +44,6 @@ describe('VHOfficerVenueListComponent', () => {
     selectedJudgeNames.push(venueName2.name);
     selectedJudgeNames.push(venueName3.name);
 
-    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', rooms: ['Room 01', 'Room 02'] });
-    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', rooms: ['Room 01', 'Room 02'] });
-    const courtAccounts: CourtRoomsAccountResponse[] = [];
-    courtAccounts.push(courtRoomsAccounts1);
-    courtAccounts.push(courtRoomsAccounts2);
-
     const venueAccounts1 = new CourtRoomsAccounts('Birmingham', ['Room 01', 'Room 02'], false);
     const venueAccounts2 = new CourtRoomsAccounts('Manchester', ['Room 01', 'Room 02'], false);
     const venueAccounts: CourtRoomsAccounts[] = [];
@@ -84,7 +72,7 @@ describe('VHOfficerVenueListComponent', () => {
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts', 'getActiveConferences']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getActiveConferences']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
@@ -104,7 +92,6 @@ describe('VHOfficerVenueListComponent', () => {
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
-        vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));

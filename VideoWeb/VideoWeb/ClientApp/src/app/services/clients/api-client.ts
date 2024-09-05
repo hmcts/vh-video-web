@@ -8,9 +8,9 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
-import { Observable, from as _observableFrom, throwError as _observableThrow, of as _observableOf } from 'rxjs';
-import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
+import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
+import { from as _observableFrom, Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
@@ -6606,131 +6606,6 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Get Court rooms accounts (judges)
-     * @param hearingVenueNames (optional)
-     * @param allocatedCsoIds (optional)
-     * @param includeUnallocated (optional)
-     * @return OK
-     */
-    getCourtRoomAccounts(
-        hearingVenueNames: string[] | undefined,
-        allocatedCsoIds: string[] | undefined,
-        includeUnallocated: boolean | undefined
-    ): Observable<CourtRoomsAccountResponse[]> {
-        let url_ = this.baseUrl + '/api/accounts/courtrooms?';
-        if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
-        else if (hearingVenueNames !== undefined)
-            hearingVenueNames &&
-                hearingVenueNames.forEach(item => {
-                    url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
-                });
-        if (allocatedCsoIds === null) throw new Error("The parameter 'allocatedCsoIds' cannot be null.");
-        else if (allocatedCsoIds !== undefined)
-            allocatedCsoIds &&
-                allocatedCsoIds.forEach(item => {
-                    url_ += 'AllocatedCsoIds=' + encodeURIComponent('' + item) + '&';
-                });
-        if (includeUnallocated === null) throw new Error("The parameter 'includeUnallocated' cannot be null.");
-        else if (includeUnallocated !== undefined) url_ += 'IncludeUnallocated=' + encodeURIComponent('' + includeUnallocated) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetCourtRoomAccounts(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetCourtRoomAccounts(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<CourtRoomsAccountResponse[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<CourtRoomsAccountResponse[]>;
-                })
-            );
-    }
-
-    protected processGetCourtRoomAccounts(response: HttpResponseBase): Observable<CourtRoomsAccountResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(CourtRoomsAccountResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<CourtRoomsAccountResponse[]>(null as any);
-    }
-
-    /**
      * Get CSOS
      * @return OK
      */
@@ -9886,55 +9761,6 @@ export interface IConferenceResponseVho {
     hearing_id?: string;
 }
 
-export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
-    /** The venue name (judge first name) */
-    venue?: string | undefined;
-    /** The list of court rooms (judge last name) */
-    rooms?: string[] | undefined;
-
-    constructor(data?: ICourtRoomsAccountResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.venue = _data['venue'];
-            if (Array.isArray(_data['rooms'])) {
-                this.rooms = [] as any;
-                for (let item of _data['rooms']) this.rooms!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): CourtRoomsAccountResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new CourtRoomsAccountResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['venue'] = this.venue;
-        if (Array.isArray(this.rooms)) {
-            data['rooms'] = [];
-            for (let item of this.rooms) data['rooms'].push(item);
-        }
-        return data;
-    }
-}
-
-export interface ICourtRoomsAccountResponse {
-    /** The venue name (judge first name) */
-    venue?: string | undefined;
-    /** The list of court rooms (judge last name) */
-    rooms?: string[] | undefined;
-}
-
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
     heartbeat_url_base?: string | undefined;
     heartbeat_jwt?: string | undefined;
@@ -10318,10 +10144,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
     /** The participant display name during a conference */
     display_name?: string | undefined;
     role?: Role;
-    /** The representee (if participant is a representative) */
-    representee?: string | undefined;
-    /** The participant hearing role in conference */
-    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantForHostResponse) {
         if (data) {
@@ -10336,8 +10158,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
             this.id = _data['id'];
             this.display_name = _data['display_name'];
             this.role = _data['role'];
-            this.representee = _data['representee'];
-            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -10353,8 +10173,6 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
         data['id'] = this.id;
         data['display_name'] = this.display_name;
         data['role'] = this.role;
-        data['representee'] = this.representee;
-        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -10365,10 +10183,6 @@ export interface IParticipantForHostResponse {
     /** The participant display name during a conference */
     display_name?: string | undefined;
     role?: Role;
-    /** The representee (if participant is a representative) */
-    representee?: string | undefined;
-    /** The participant hearing role in conference */
-    hearing_role?: string | undefined;
 }
 
 export class ParticipantForUserResponse implements IParticipantForUserResponse {

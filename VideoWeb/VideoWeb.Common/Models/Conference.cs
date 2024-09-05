@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using Supplier = VideoWeb.Common.Enums.Supplier;
 
@@ -24,7 +23,7 @@ namespace VideoWeb.Common.Models
         public List<CivilianRoom> CivilianRooms { get; set; }
         public List<ConsultationRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
-        public ConferenceState CurrentStatus { get; set; }
+        public ConferenceStatus CurrentStatus { get; set; }
         public string CaseName { get; set; }
         public string CaseNumber { get; set; }
         public string CaseType { get; set; }
@@ -36,6 +35,9 @@ namespace VideoWeb.Common.Models
         public bool IsScottish { get; set; }
         public string IngestUrl { get; set; }
         public ConferenceMeetingRoom MeetingRoom { get; set; }
+        public DateTime CreatedDateTime { get; set; }
+        public string TelephoneConferenceId { get; set; }
+        public string TelephoneConferenceNumbers { get; set; }
         public Supplier Supplier { get; set; }
 
         public Participant GetJudge()
@@ -147,8 +149,7 @@ namespace VideoWeb.Common.Models
             if (endpointToUpdate == null) return;
             endpointToUpdate.EndpointStatus = status;
         }
-        
-        
+
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
         {
             var room = CivilianRooms.Find(x => x.Id == roomId);
@@ -188,7 +189,7 @@ namespace VideoWeb.Common.Models
             return consultationRoom;
         }
 
-        public void UpdateConferenceStatus(ConferenceState newState)
+        public void UpdateConferenceStatus(ConferenceStatus newState)
         {
             CurrentStatus = newState;
         }

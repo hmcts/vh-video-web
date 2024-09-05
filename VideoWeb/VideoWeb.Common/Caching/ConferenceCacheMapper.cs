@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.V2.Responses;
+using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using VideoWeb.Common.Enums;
 using VideoWeb.Common.Models;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using Supplier = VideoWeb.Common.Enums.Supplier;
 
 namespace VideoWeb.Common.Caching;
 
@@ -20,14 +21,15 @@ public static class ConferenceCacheMapper
 
         var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
+        var caseInformation = hearingDetailsResponse.Cases.FirstOrDefault(c => c.IsLeadCase) ?? hearingDetailsResponse.Cases[0];
+        
         var endpoints = conferenceResponse.Endpoints == null
             ? new List<Endpoint>()
             : conferenceResponse.Endpoints.Select(e => EndpointCacheMapper.MapEndpointToCacheModel(e, endpointsForHearing.Find(x => x.DisplayName == e.DisplayName))).ToList();
         
         var civilianRooms = conferenceResponse.CivilianRooms == null
             ? new List<CivilianRoom>()
-            : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
-                .ToList();
+            : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel).ToList();
         
         var meetingRoom = conferenceResponse.MeetingRoom == null
             ? null
@@ -36,30 +38,32 @@ public static class ConferenceCacheMapper
                 ParticipantUri = conferenceResponse.MeetingRoom.ParticipantUri,
                 PexipNode = conferenceResponse.MeetingRoom.PexipNode,
                 PexipSelfTest = conferenceResponse.MeetingRoom.PexipSelfTestNode,
+                AdminUri = conferenceResponse.MeetingRoom.AdminUri
             };
         
-        var conference = new Conference
-        {
-            Id = conferenceResponse.Id,
-            HearingId = conferenceResponse.HearingId,
-            Participants = participants,
-            HearingVenueName = conferenceResponse.HearingVenueName,
-            Endpoints = endpoints,
-            CivilianRooms = civilianRooms,
-            CurrentStatus = conferenceResponse.CurrentStatus,
-            IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen,
-            CaseName = conferenceResponse.CaseName,
-            CaseNumber = conferenceResponse.CaseNumber,
-            CaseType = conferenceResponse.CaseType,
-            ScheduledDateTime = conferenceResponse.ScheduledDateTime,
-            ScheduledDuration = conferenceResponse.ScheduledDuration,
-            ClosedDateTime = conferenceResponse.ClosedDateTime,
-            AudioRecordingRequired = conferenceResponse.AudioRecordingRequired,
-            IsScottish = hearingDetailsResponse.IsHearingVenueScottish,
-            IngestUrl = conferenceResponse.IngestUrl,
-            MeetingRoom = meetingRoom,
-            Supplier = (Supplier)hearingDetailsResponse.BookingSupplier
-        };
+        var conference = new Conference();
+        conference.Id = conferenceResponse.Id;
+        conference.HearingId = conferenceResponse.HearingId;
+        conference.Participants = participants;
+        conference.HearingVenueName = hearingDetailsResponse.HearingVenueName;
+        conference.Endpoints = endpoints;
+        conference.CivilianRooms = civilianRooms;
+        conference.CurrentStatus = GetConferenceStatus(conferenceResponse.CurrentStatus);
+        conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
+        conference.CaseName = caseInformation.Name;
+        conference.CaseNumber = caseInformation.Number;
+        conference.CaseType = hearingDetailsResponse.ServiceName;
+        conference.ScheduledDateTime = conferenceResponse.ScheduledDateTime;
+        conference.ScheduledDuration = conferenceResponse.ScheduledDuration;
+        conference.ClosedDateTime = conferenceResponse.ClosedDateTime;
+        conference.AudioRecordingRequired = conferenceResponse.AudioRecordingRequired;
+        conference.IsScottish = hearingDetailsResponse.IsHearingVenueScottish;
+        conference.IngestUrl = conferenceResponse.IngestUrl;
+        conference.MeetingRoom = meetingRoom;
+        conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
+        conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
+        conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
+        conference.Supplier = (Supplier)hearingDetailsResponse.BookingSupplier;
         return conference;
     }
     
@@ -86,5 +90,15 @@ public static class ConferenceCacheMapper
             LinkedId = linkedParticipant.LinkedId,
             LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
         };
+    }
+    
+    private static ConferenceStatus GetConferenceStatus(ConferenceState state)
+    {
+        if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
+        {
+            status = ConferenceStatus.NotStarted;
+        }
+        
+        return status;
     }
 }

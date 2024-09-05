@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Helpers
             // Arrange
             Guid conferenceId = Guid.NewGuid();
             
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>())).ReturnsAsync((ConferenceVideoControlStatuses?)null);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Setup(x => x.ReadFromCache(conferenceId, It.IsAny<CancellationToken>())).ReturnsAsync((ConferenceVideoControlStatuses)null);
 
             
             // Act

@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
-using VideoApi.Contract.Requests;
-using VideoWeb.Common;
 using VideoWeb.Mappings;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
@@ -165,7 +165,6 @@ namespace VideoWeb.Controllers
             {
                 logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
-
                 return BadRequest(ModelState);
             }
             try
