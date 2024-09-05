@@ -310,7 +310,7 @@
         </button>
       </div>
     </button>
-    <div *ngIf="!isObserver" class="flexBar"></div>
+    <div *ngIf="!isObserver" id="flexbar1" class="flexBar hide-for-medium"></div>
     <button
       class="icon-button"
       id="toggle-participants-panel"
@@ -327,7 +327,7 @@
     </button>
     <div class="show-for-medium-only">
       <ng-container *ngIf="canShowLeaveButton">
-        <div class="flexBar"></div>
+        <div id="flexbar2" class="flexBar"></div>
 
         <button
           class="icon-button"
@@ -343,7 +343,7 @@
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </button>
 
-        <div class="flexBar"></div>
+        <div id="flexbar3" class="flexBar"></div>
       </ng-container>
 
       <button
@@ -493,7 +493,7 @@
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </button>
 
-      <div *ngIf="hasAMicrophone || hasACamera" class="flexBar"></div>
+      <div *ngIf="hasAMicrophone || hasACamera" id="flexbar4" class="flexBar"></div>
 
       <button
         *ngIf="hasAMicrophone || hasACamera"
@@ -673,7 +673,7 @@
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </button>
 
-        <div class="flexBar"></div>
+        <div id="flexbar5" class="flexBar"></div>
       </ng-container>
 
       <button
@@ -700,7 +700,7 @@
         {{ 'private-consultation-room-controls.close' | translate }}
       </button>
 
-      <div class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
+      <div id="flexbar6" class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
 
       <button
         *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom"
