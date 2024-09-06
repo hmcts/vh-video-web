@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Handlers
@@ -22,8 +23,10 @@ namespace VideoWeb.EventHub.Handlers
         {
             foreach (var participant in SourceConference.Participants)
             {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .HearingCancelledMessage(SourceConference.Id);
+                // Staff members already receive a message via the staff members group below, so don't message them here as well
+                if (participant.Role != Role.StaffMember)
+                    await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                        .HearingCancelledMessage(SourceConference.Id);
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
