@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
@@ -25,6 +25,8 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+import { VHParticipant } from '../store/models/vh-conference';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -54,7 +56,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
     displayLeaveHearingPopup: boolean;
-    participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
     displayChangeLayoutPopup = false;
@@ -171,24 +172,20 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
 
-        this.participantService.loggedInParticipant$
+        this.conferenceStore
+            .select(ConferenceSelectors.getLoggedInParticipant)
             .pipe(
                 takeUntil(this.destroyedSubject),
-                filter(participant => participant && participant.role === Role.Judge)
+                filter(participant => !!participant)
             )
-            .subscribe(participant => this.onLoggedInParticipantChanged(participant));
-
+            .subscribe(participant => {
+                this.onLoggedInParticipantChanged(participant);
+            });
         this.initialiseMuteStatus();
     }
 
-    onLoggedInParticipantChanged(participant: ParticipantModel): void {
-        this.isSpotlighted = participant.isSpotlighted;
-        this.participantSpotlightUpdateSubscription?.unsubscribe();
-        this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
-            .pipe(filter(updatedParticipant => updatedParticipant.id === participant.id))
-            .subscribe(updatedParticipant => {
-                this.isSpotlighted = updatedParticipant.isSpotlighted;
-            });
+    onLoggedInParticipantChanged(participant: VHParticipant): void {
+        this.isSpotlighted = participant.pexipInfo?.isSpotlighted;
     }
 
     initialiseMuteStatus() {
@@ -242,9 +239,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     ngOnDestroy(): void {
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-
-        this.participantSpotlightUpdateSubscription?.unsubscribe();
-        this.participantSpotlightUpdateSubscription = null;
 
         if (this.sharingDynamicEvidence) {
             this.videoCallService.stopScreenWithMicrophone();
