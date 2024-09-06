@@ -56,6 +56,8 @@ import { take } from 'rxjs/operators';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VHConference } from '../store/models/vh-conference';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 
 describe('HearingControlsBaseComponent', () => {
     let component: HearingControlsBaseComponent;
@@ -94,9 +96,10 @@ describe('HearingControlsBaseComponent', () => {
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     const testData = new ConferenceTestData();
+    let vhConference: VHConference;
 
     beforeEach(() => {
-        const vhConference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+        vhConference = mapConferenceToVHConference(testData.getConferenceDetailNow());
         const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Individual);
         mockStore = createMockStore({
             initialState: {
@@ -1139,5 +1142,53 @@ describe('HearingControlsBaseComponent', () => {
             component.participant = undefined;
             expect(component.isObserver).toBeFalse();
         });
+    });
+
+    describe('onLoggedInParticipantChanged', () => {
+        it('should set the spotlight to true when vh participant spotlight is true', fakeAsync(() => {
+            // arrange
+            component.isSpotlighted = false;
+
+            let participant = vhConference.participants[0];
+            let pexipInfo = participant.pexipInfo;
+            pexipInfo = { ...pexipInfo, isSpotlighted: true };
+            participant = { ...participant, pexipInfo: pexipInfo };
+
+            // act
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+            component.ngOnInit();
+            tick();
+
+            expect(component.isSpotlighted).toBeTrue();
+        }));
+
+        it('should set the spotlight to false when vh participant spotlight is false', fakeAsync(() => {
+            // arrange
+            component.isSpotlighted = true;
+
+            let participant = vhConference.participants[0];
+            let pexipInfo = participant.pexipInfo;
+            pexipInfo = { ...pexipInfo, isSpotlighted: false };
+            participant = { ...participant, pexipInfo: pexipInfo };
+
+            // act
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+            component.ngOnInit();
+            tick();
+
+            expect(component.isSpotlighted).toBeFalse();
+        }));
+
+        it('should not change the spotlight when vh participant is undefined', fakeAsync(() => {
+            // arrange
+            component.isSpotlighted = true;
+
+            // act
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, undefined);
+            component.ngOnInit();
+            tick();
+
+            expect(component.isSpotlighted).toBeTrue();
+        }));
     });
 });

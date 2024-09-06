@@ -165,7 +165,6 @@ export const conferenceReducer = createReducer(
         let existingLoggedInParticipant = state.loggedInParticipant;
         const participants = conference.participants.map(p => {
             const updateParticipant = participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p;
-
             if (existingLoggedInParticipant && updateParticipant.id === existingLoggedInParticipant.id) {
                 existingLoggedInParticipant = updateParticipant;
             }
@@ -189,7 +188,7 @@ export const conferenceReducer = createReducer(
 
         let updatedLoggedInParticipant = state.loggedInParticipant;
         if (state.loggedInParticipant?.pexipInfo?.uuid === pexipUUID) {
-            updatedLoggedInParticipant = null;
+            updatedLoggedInParticipant = { ...state.loggedInParticipant, pexipInfo: null };
         }
         return { ...state, currentConference: { ...conference, participants, endpoints }, loggedInParticipant: updatedLoggedInParticipant };
     }),
