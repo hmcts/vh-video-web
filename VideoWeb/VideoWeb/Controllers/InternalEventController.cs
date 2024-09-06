@@ -194,6 +194,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HearingDetailsUpdated(Guid conferenceId)
         {
+            await _conferenceService.ForceGetConference(conferenceId);
             await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(conferenceId);
             return NoContent();
         }
