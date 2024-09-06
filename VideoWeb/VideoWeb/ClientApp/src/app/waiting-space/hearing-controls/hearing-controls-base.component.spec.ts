@@ -1,10 +1,9 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import {
     ClientSettingsResponse,
     ConferenceResponse,
-    ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role
@@ -59,21 +58,6 @@ import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('HearingControlsBaseComponent', () => {
-    const participantOneId = Guid.create().toString();
-    const participantOne = new ParticipantForUserResponse({
-        id: participantOneId,
-        status: ParticipantStatus.NotSignedIn,
-        display_name: 'Interpreter',
-        role: Role.Individual,
-        representee: null,
-        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
-        hearing_role: HearingRole.INTERPRETER,
-        first_name: 'Interpreter',
-        last_name: 'Doe',
-        interpreter_room: null,
-        linked_participants: []
-    });
-
     let component: HearingControlsBaseComponent;
     let mockStore: MockStore<ConferenceState>;
     const globalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
