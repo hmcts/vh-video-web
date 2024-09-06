@@ -52,6 +52,10 @@ export class ParticipantService {
         return [...this.nonEndpointParticipants, ...this.endpointParticipants];
     }
 
+    /**
+     * @deprecated This method is deprecated and will be removed in future versions.
+     * Use `getLoggedInParticipant` selector from the ConferenceStore instead.
+     */
     get loggedInParticipant$(): Observable<ParticipantModel> {
         return this._loggedInParticipant.asObservable();
     }

@@ -162,22 +162,36 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.createPexipParticipant, ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
         const conference = state.currentConference;
-        const participants = conference.participants.map(p =>
-            participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p
-        );
+        let existingLoggedInParticipant = state.loggedInParticipant;
+        const participants = conference.participants.map(p => {
+            const updateParticipant = participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p;
+
+            if (existingLoggedInParticipant && updateParticipant.id === existingLoggedInParticipant.id) {
+                existingLoggedInParticipant = updateParticipant;
+            }
+            return updateParticipant;
+        });
 
         const endpoints = conference.endpoints.map(e =>
             participant.pexipDisplayName?.includes(e.id) ? { ...e, pexipInfo: participant } : e
         );
 
-        return { ...state, currentConference: { ...conference, participants, endpoints } };
+        return {
+            ...state,
+            currentConference: { ...conference, participants, endpoints },
+            loggedInParticipant: existingLoggedInParticipant
+        };
     }),
     on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
         const conference = state.currentConference;
         const participants = conference.participants.map(p => (p.pexipInfo?.uuid === pexipUUID ? { ...p, pexipInfo: null } : p));
         const endpoints = conference.endpoints.map(e => (e.pexipInfo?.uuid === pexipUUID ? { ...e, pexipInfo: null } : e));
 
-        return { ...state, currentConference: { ...conference, participants, endpoints } };
+        let updatedLoggedInParticipant = state.loggedInParticipant;
+        if (state.loggedInParticipant?.pexipInfo?.uuid === pexipUUID) {
+            updatedLoggedInParticipant = null;
+        }
+        return { ...state, currentConference: { ...conference, participants, endpoints }, loggedInParticipant: updatedLoggedInParticipant };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
         let updatedRoomList = state.availableRooms;

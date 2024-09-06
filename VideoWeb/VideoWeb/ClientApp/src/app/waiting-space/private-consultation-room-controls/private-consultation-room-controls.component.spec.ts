@@ -44,7 +44,7 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
+import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
@@ -170,6 +170,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     afterEach(() => {
+        mockStore.resetSelectors();
         component.ngOnDestroy();
     });
 

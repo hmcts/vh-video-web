@@ -52,10 +52,11 @@ import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/partici
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
-import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
-import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { take } from 'rxjs/operators';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -108,10 +109,18 @@ describe('HearingControlsBaseComponent', () => {
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
-    beforeEach(() => {
-        const initialState = initialConferenceState;
-        mockStore = createMockStore({ initialState });
+    const testData = new ConferenceTestData();
 
+    beforeEach(() => {
+        const vhConference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+        const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Individual);
+        mockStore = createMockStore({
+            initialState: {
+                currentConference: mapConferenceToVHConference(testData.getConferenceDetailNow()),
+                availableRooms: [],
+                loggedInParticipant
+            }
+        });
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
         });
@@ -121,7 +130,7 @@ describe('HearingControlsBaseComponent', () => {
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
             [],
-            ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
+            ['onParticipantSpotlightStatusChanged$']
         );
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
@@ -132,11 +141,6 @@ describe('HearingControlsBaseComponent', () => {
         ]);
 
         videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
-
-        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
-            ParticipantModel.fromParticipantForUserResponse(participantOne)
-        );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
@@ -185,6 +189,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     afterEach(() => {
+        mockStore.resetSelectors();
         component.ngOnDestroy();
     });
     it('should return true for staff member', () => {
@@ -247,73 +252,6 @@ describe('HearingControlsBaseComponent', () => {
                 expect(component.videoMuted).toBeFalse();
             }));
         });
-    });
-
-    describe('onLoggedInParticipantChanged', () => {
-        it('should unsubscribe from the existing subscription and resubscribe', fakeAsync(() => {
-            // Arrange
-            const firstSubscription = new Subscription();
-            spyOn(firstSubscription, 'unsubscribe');
-            const secondSubscription = new Subscription();
-            spyOn(secondSubscription, 'unsubscribe');
-            const observable = new Observable<ParticipantModel>();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(observable);
-            spyOn(observable, 'pipe').and.returnValue(observable);
-            spyOn(observable, 'subscribe').and.returnValues(firstSubscription, secondSubscription);
-
-            // Act
-            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
-            flush();
-            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
-            flush();
-
-            // Assert
-            expect(firstSubscription.unsubscribe).toHaveBeenCalledTimes(1);
-            expect(secondSubscription.unsubscribe).not.toHaveBeenCalledTimes(1);
-            expect(component['participantSpotlightUpdateSubscription']).toBe(secondSubscription);
-        }));
-
-        it('should update isSpotlighted when spotlight changed event is emitted', fakeAsync(() => {
-            // Arrange
-            const spotlightChangedSubject = new Subject<ParticipantModel>();
-            const spotlightChanged$ = spotlightChangedSubject.asObservable();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
-            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
-
-            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
-            participant.isSpotlighted = false;
-
-            // Act
-            component.onLoggedInParticipantChanged(participant);
-            flush();
-
-            participant.isSpotlighted = true;
-            spotlightChangedSubject.next(participant);
-
-            // Assert
-            expect(component.isSpotlighted).toBeTrue();
-        }));
-
-        it('should NOT update isSpotlighted when spotlight changed event is emitted if the participant IDs dont match', fakeAsync(() => {
-            // Arrange
-            const spotlightChangedSubject = new Subject<ParticipantModel>();
-            const spotlightChanged$ = spotlightChangedSubject.asObservable();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
-            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
-
-            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
-            participant.isSpotlighted = false;
-
-            // Act
-            component.onLoggedInParticipantChanged(participant);
-            flush();
-
-            participant.id = Guid.create().toString();
-            spotlightChangedSubject.next(participant);
-
-            // Assert
-            expect(component.isSpotlighted).toBeFalse();
-        }));
     });
 
     describe('onVideoEvidenceSharing', () => {
