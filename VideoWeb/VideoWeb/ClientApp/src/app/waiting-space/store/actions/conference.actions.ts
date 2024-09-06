@@ -79,6 +79,10 @@ export const ConferenceActions = createActionGroup({
         'Update StaffMember Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
         'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),
 
-        'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>()
+        'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>(),
+
+        'Participant Leave HearingRoom': props<{ conferenceId: string }>(),
+        'Participant Leave HearingRoom Success': props<{ conferenceId: string; participant: VHParticipant }>(),
+        'Participant Leave HearingRoom Failure': props<{ error: Error }>()
     }
 });

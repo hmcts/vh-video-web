@@ -26,6 +26,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
@@ -887,6 +889,104 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+        });
+    });
+
+    describe('showParticipantLeftHearingRoom', () => {
+        let mockToast: ActiveToast<VhToastComponent>;
+        const testData = new ConferenceTestData();
+
+        const translatedTitle = 'Participant left';
+        const translatedMessageSuffix = ' left the hearing room';
+
+        beforeEach(() => {
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            mockToast = {
+                toastId: 999,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-left-hearing.title', jasmine.any(Object))
+                .and.returnValue(translatedTitle);
+
+            toastrService.show.and.returnValue(mockToast);
+        });
+
+        it('should display the correct message with white background when video is on', () => {
+            // Arrange
+            const participant = testData.getListOfParticipantDetails()[0];
+            const vhParticipant = mapParticipantToVHParticipant(participant);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-left-hearing.message', jasmine.any(Object))
+                .and.returnValue(`${vhParticipant.name}${translatedMessageSuffix}`);
+
+            // Act
+            const toast = service.showParticipantLeftHearingRoom(vhParticipant, true);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+            expect(toast.vhToastOptions.color).toBe('white');
+            expect(toast.vhToastOptions.htmlBody).toContain(`${vhParticipant.name}${translatedMessageSuffix}`);
+
+            toast.vhToastOptions.buttons[0].action();
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(mockToast.toastId);
+        });
+
+        it('should display the correct message with black background when video is off', () => {
+            // Arrange
+            const participant = testData.getListOfParticipantDetails()[0];
+            const vhParticipant = mapParticipantToVHParticipant(participant);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-left-hearing.message', jasmine.any(Object))
+                .and.returnValue(`${vhParticipant.name}${translatedMessageSuffix}`);
+
+            // Act
+            const toast = service.showParticipantLeftHearingRoom(vhParticipant, false);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+            expect(toast.vhToastOptions.color).toBe('black');
+            expect(toast.vhToastOptions.htmlBody).toContain(`${vhParticipant.name}${translatedMessageSuffix}`);
+        });
+
+        it('should use the display name when participant name is not set (QL only)', () => {
+            // Arrange
+            const participant = testData.getListOfParticipantDetails()[0];
+            participant.name = undefined;
+            const vhParticipant = mapParticipantToVHParticipant(participant);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-left-hearing.message', jasmine.any(Object))
+                .and.returnValue(`${vhParticipant.displayName}${translatedMessageSuffix}`);
+
+            // Act
+            const toast = service.showParticipantLeftHearingRoom(vhParticipant, true);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+            expect(toast.vhToastOptions.color).toBe('white');
+            expect(toast.vhToastOptions.htmlBody).toContain(`${vhParticipant.displayName}${translatedMessageSuffix}`);
         });
     });
 

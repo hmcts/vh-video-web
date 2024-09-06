@@ -38,8 +38,9 @@ import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
+import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, take } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -254,6 +255,17 @@ export class EventsService {
                 })
             );
             this.hearingTransferSubject.next(payload);
+        },
+
+        NonHostTransfer: (conferenceId: string, participantId: string, transferDirection: TransferDirection) => {
+            if (transferDirection === TransferDirection.Out) {
+                this.store
+                    .select(ConferenceSelectors.getParticipantById(participantId))
+                    .pipe(take(1))
+                    .subscribe(participant => {
+                        this.store.dispatch(ConferenceActions.participantLeaveHearingRoomSuccess({ conferenceId, participant }));
+                    });
+            }
         },
 
         ParticipantMediaStatusMessage: (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {

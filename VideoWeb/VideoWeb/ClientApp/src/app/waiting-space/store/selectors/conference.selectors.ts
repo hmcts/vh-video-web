@@ -5,6 +5,7 @@ export const getActiveConference = createSelector(activeConferenceFeature, state
 export const getParticipants = createSelector(activeConferenceFeature, state => state?.currentConference?.participants);
 export const getEndpoints = createSelector(activeConferenceFeature, state => state?.currentConference?.endpoints);
 export const getLoggedInParticipant = createSelector(activeConferenceFeature, state => state?.loggedInParticipant);
+export const getParticipantById = (id: string) => createSelector(getParticipants, participants => participants?.find(p => p?.id === id));
 export const getParticipantByPexipId = (pexipId: string) =>
     createSelector(getParticipants, participants => participants?.find(p => p?.pexipInfo?.uuid === pexipId));
 export const getEndpointByPexipId = (pexipId: string) =>
