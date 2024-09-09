@@ -18,6 +18,7 @@ public interface IConferenceService
     public Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default);
     public Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
     public Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default);
+    public Task RemoveConference(Conference conference, CancellationToken cancellationToken = default);
 }
 
 public class ConferenceService(
@@ -68,5 +69,10 @@ public class ConferenceService(
     {
         var ids = conferenceIds.ToArray();
         return await Task.WhenAll(ids.Select(id => GetConference(id, cancellationToken)));
+    }
+    
+    public async Task RemoveConference(Conference conference, CancellationToken cancellationToken = default)
+    {
+        await conferenceCache.RemoveConferenceAsync(conference, cancellationToken);
     }
 }

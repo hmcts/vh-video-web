@@ -15,13 +15,15 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
     public class HearingCancelledTests : InternalEventControllerTests
     {
         private Conference _conference;
+        private Mock<IConferenceService> _conferenceServiceMock;
         private Mock<IHearingCancelledEventNotifier> _notifierMock;
         
         [SetUp]
         public void Setup()
         {
             _conference = new ConferenceCacheModelBuilder().Build();
-            Mocker.Mock<IConferenceService>()
+            _conferenceServiceMock = Mocker.Mock<IConferenceService>();
+            _conferenceServiceMock
                 .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_conference);
             _notifierMock = Mocker.Mock<IHearingCancelledEventNotifier>();
@@ -35,7 +37,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-
+            
+            _conferenceServiceMock.Verify(x => x.RemoveConference(_conference, default), Times.Once);
             _notifierMock.Verify(x => x.PushHearingCancelledEvent(_conference), Times.Once);
         }
     }

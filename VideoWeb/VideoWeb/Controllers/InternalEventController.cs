@@ -185,6 +185,7 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> HearingCancelled(Guid conferenceId)
         {
             var conference = await _conferenceService.GetConference(conferenceId);
+            await _conferenceService.RemoveConference(conference);
             await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conference);
             return NoContent();
         }

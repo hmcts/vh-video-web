@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Cache
 {
@@ -72,6 +73,21 @@ namespace VideoWeb.UnitTests.Cache
 
             result.Should().NotBeNull();
             result.Id.Should().Be(conferenceDetails.Id);
+        }
+
+        [Test]
+        public async Task RemoveConferenceAsync_should_remove_conference_from_cache()
+        {
+            // Arrange
+            var conference = new ConferenceCacheModelBuilder().Build();
+            _memoryCache.Set(conference.Id, conference);
+
+            // Act
+            await _conferenceCache.RemoveConferenceAsync(conference);
+
+            // Assert
+            var conferenceInCache = _memoryCache.Get(conference.Id);
+            conferenceInCache.Should().BeNull();
         }
     }
 }
