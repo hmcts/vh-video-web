@@ -652,7 +652,7 @@
           [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
           [attr.aria-label]="'private-consultation-room-controls.change-hearing-layout' | translate"
           tabindex="0"
-          (click)="displayChangeLayoutPopup = !displayChangeLayoutPopup"
+          (click)="$event.preventDefault(); displayChangeLayoutDialog()"
         >
           <fa-icon icon="th-large" flip="horizontal"></fa-icon>
         </button>
@@ -770,4 +770,5 @@
   *ngIf="canDisplayChangeLayoutPopup"
   [conference]="conference"
   [onLayoutUpdate]="onLayoutUpdate"
+  (popupAnswered)="closeChangeLayoutDialog()"
 ></app-change-hearing-layout-popup>

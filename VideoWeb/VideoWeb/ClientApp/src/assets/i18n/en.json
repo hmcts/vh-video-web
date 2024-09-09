@@ -686,7 +686,9 @@
   "select-hearing-layout": {
     "choose-hearing-layout": "Choose hearing layout",
     "open-all": "Open all",
-    "close-all": "Close all"
+    "close-all": "Close all",
+    "close-button-text": "Close",
+    "close-button-label": "Close hearing layout menu"
   },
   "hearing-layout": {
     "layout-image-alt": "Layout image for {{layout}}",
