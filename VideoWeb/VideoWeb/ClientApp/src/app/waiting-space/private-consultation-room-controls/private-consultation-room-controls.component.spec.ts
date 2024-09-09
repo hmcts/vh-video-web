@@ -44,6 +44,8 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -62,6 +64,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     let component: PrivateConsultationRoomControlsComponent;
+    let mockStore: MockStore<ConferenceState>;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
@@ -92,8 +95,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
     });
     beforeEach(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
+
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
         });
@@ -149,7 +156,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -249,7 +257,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -275,7 +284,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
-            focusServiceSpy
+            focusServiceSpy,
+            mockStore
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
@@ -757,28 +767,47 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('leave', () => {
-        it('should call super leave method with participants', () => {
-            const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
-            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Individual,
-                    HearingRole.LITIGANT_IN_PERSON,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
-            ]);
+        describe('host', () => {
+            beforeEach(() => {
+                component.participant.role = Role.Judge;
+            });
+            it('should call super leave method with participants', () => {
+                const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
+                getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
+                    new ParticipantModel(
+                        '7879c48a-f513-4d3b-bb1b-151831427507',
+                        'Participant Name',
+                        'DisplayName',
+                        'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
+                        Role.Judge,
+                        HearingRole.JUDGE,
+                        false,
+                        null,
+                        null,
+                        ParticipantStatus.Available,
+                        null
+                    )
+                ]);
 
-            component.leave(true);
+                component.leave(true);
 
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+            });
+        });
+
+        describe('non-host', () => {
+            beforeEach(() => {
+                component.participant.role = Role.Individual;
+            });
+            it('should call super leave method with participants', () => {
+                const spy = spyOn(HearingControlsBaseComponent.prototype, 'nonHostLeave');
+
+                component.leave(true);
+
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(true);
+            });
         });
     });
 
@@ -815,6 +844,42 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             const layout = HearingLayout.Dynamic;
             const result = component.mapLayout(layout);
             expect(result).toBe('ac');
+        });
+    });
+
+    describe('canShowLeaveButton', () => {
+        describe('when vodafone is enabled', () => {
+            beforeEach(() => {
+                component.vodafoneEnabled = true;
+            });
+
+            it('should return true when the participant is not in private consultation', () => {
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeTrue();
+            });
+
+            it('should return false when the participant is in private consultation', () => {
+                component.isPrivateConsultation = true;
+                expect(component.canShowLeaveButton).toBeFalse();
+            });
+        });
+
+        describe('when vodafone is disabled', () => {
+            beforeEach(() => {
+                component.vodafoneEnabled = false;
+            });
+
+            it('should return true when the participant is a host and not in private consultation', () => {
+                component.participant.role = Role.Judge;
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeTrue();
+            });
+
+            it('should return false when the participant is not a host', () => {
+                component.participant.role = Role.Individual;
+                component.isPrivateConsultation = false;
+                expect(component.canShowLeaveButton).toBeFalse();
+            });
         });
     });
 });

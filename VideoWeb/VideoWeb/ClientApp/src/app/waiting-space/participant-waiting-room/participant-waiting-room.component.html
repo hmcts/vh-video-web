@@ -131,10 +131,21 @@
     <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
-      <div class="govuk-grid-column-one-third">
-        <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
-          {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
-        </button>
+      <div class="govuk-grid-column-full">
+        <div class="govuk-button-group">
+          <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
+            {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
+          </button>
+          <button
+            id="leaveHearingButton"
+            class="govuk-button govuk-button--warning"
+            data-module="govuk-button"
+            type="button"
+            (click)="onLeaveHearingButtonClicked()"
+          >
+            {{ 'participant-waiting-room.leave-hearing' | translate }}
+          </button>
+        </div>
       </div>
       <div class="govuk-grid-column-two-thirds" style="float: right">
         <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
@@ -343,6 +354,9 @@
 <app-modal id="pc-leave-modal" class="modal clear consultation">
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
 </app-modal>
+
+<app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
+</app-confirm-non-host-leave-hearing-popup>
 
 <app-audio-mix-selection
   *ngIf="displayLanguageModal"

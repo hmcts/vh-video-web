@@ -720,4 +720,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             expect(component.canStartJoinConsultation).toBeFalse();
         });
     });
+
+    describe('onLeaveHearingButtonClicked', () => {
+        it('should display leave hearing popup', () => {
+            component.displayLeaveHearingPopup = false;
+            component.onLeaveHearingButtonClicked();
+            expect(component.displayLeaveHearingPopup).toBeTrue();
+        });
+    });
 });

@@ -1209,7 +1209,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
+        return this.vodafoneEnabled
+            ? this.participant.status === ParticipantStatus.InHearing
+            : !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
     }
 
     isHost(): boolean {

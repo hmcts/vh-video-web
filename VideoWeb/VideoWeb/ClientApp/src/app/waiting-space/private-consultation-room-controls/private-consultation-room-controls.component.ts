@@ -16,6 +16,8 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -43,6 +45,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     showContextMenu = false;
     enableDynamicEvidenceSharing = false;
     isWowzaKillButtonEnabled = false;
+    vodafoneEnabled = false;
     private conferenceStatus: ConferenceStatusChanged;
 
     constructor(
@@ -58,7 +61,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         configService: ConfigService,
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected conferenceStore: Store<ConferenceState>
     ) {
         super(
             videoCallService,
@@ -69,7 +73,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             translateService,
             videoControlService,
             userMediaService,
-            focusService
+            focusService,
+            conferenceStore
         );
         this.canToggleParticipantsPanel = true;
 
@@ -81,7 +86,16 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getClientSettings()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
-        ldService.getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false).subscribe(value => (this.isWowzaKillButtonEnabled = value));
+        ldService
+            .getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(value => (this.isWowzaKillButtonEnabled = value));
+        ldService
+            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(value => {
+                this.vodafoneEnabled = value;
+            });
 
         // Needed to prevent 'this' being undefined in the callback
         this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
@@ -92,7 +106,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     get canShowLeaveButton(): boolean {
-        return this.isHost && !this.isPrivateConsultation;
+        return this.vodafoneEnabled ? !this.isPrivateConsultation : this.isHost && !this.isPrivateConsultation;
     }
 
     get canDisplayChangeLayoutPopup(): boolean {
@@ -120,7 +134,11 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     leave(confirmation: boolean) {
-        super.leave(confirmation, this.participantService.participants);
+        if (this.isHost) {
+            super.leave(confirmation, this.participantService.participants);
+        } else {
+            super.nonHostLeave(confirmation);
+        }
     }
 
     killWowza() {
