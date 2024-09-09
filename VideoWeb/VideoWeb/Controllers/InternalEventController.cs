@@ -184,7 +184,8 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HearingCancelled(Guid conferenceId)
         {
-            await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
+            await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conference);
             return NoContent();
         }
 
@@ -194,8 +195,8 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HearingDetailsUpdated(Guid conferenceId)
         {
-            await _conferenceService.ForceGetConference(conferenceId);
-            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(conferenceId);
+            var conference = await _conferenceService.ForceGetConference(conferenceId);
+            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(conference);
             return NoContent();
         }
     }

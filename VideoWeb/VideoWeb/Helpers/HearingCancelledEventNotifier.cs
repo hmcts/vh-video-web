@@ -1,25 +1,29 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
+using Microsoft.AspNetCore.SignalR;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
+using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers
 {
-    public class HearingCancelledEventNotifier(IEventHandlerFactory eventHandlerFactory) : IHearingCancelledEventNotifier
+    public class HearingCancelledEventNotifier(IHubContext<Hub.EventHub, IEventHubClient> hubContext) 
+        : IHearingCancelledEventNotifier
     {
-        public Task PushHearingCancelledEvent(Guid conferenceId)
+        public async Task PushHearingCancelledEvent(Conference conference)
         {
-            var callbackEvent = new CallbackEvent
+            foreach (var participant in conference.Participants.Where(participant => participant.Role != Role.StaffMember))
             {
-                ConferenceId = conferenceId,
-                EventType = EventType.HearingCancelled,
-                TimeStampUtc = DateTime.Now
-            };
-
-            var handler = eventHandlerFactory.Get(callbackEvent.EventType);
-            return handler.HandleAsync(callbackEvent);
+                await hubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .HearingCancelledMessage(conference.Id);
+            }
+                
+            await hubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .HearingCancelledMessage(conference.Id);
+                
+            await hubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+                .HearingCancelledMessage(conference.Id);
         }
     }
 }
