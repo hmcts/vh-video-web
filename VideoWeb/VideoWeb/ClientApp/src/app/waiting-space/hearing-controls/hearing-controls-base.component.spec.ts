@@ -1218,4 +1218,20 @@ describe('HearingControlsBaseComponent', () => {
             expect(component.isObserver).toBeFalse();
         });
     });
+
+    describe('changeLayoutDialog', () => {
+        it('should store the focus and set the display layout dialog to true', () => {
+            component.displayChangeLayoutPopup = false;
+            component.displayChangeLayoutDialog();
+            expect(focusService.storeFocus).toHaveBeenCalled();
+            expect(component.displayChangeLayoutPopup).toBeTrue();
+        });
+
+        it('should close the layout dialog and restore the focus', () => {
+            component.displayChangeLayoutPopup = true;
+            component.closeChangeLayoutDialog();
+            expect(focusService.restoreFocus).toHaveBeenCalled();
+            expect(component.displayChangeLayoutPopup).toBeFalse();
+        });
+    });
 });
