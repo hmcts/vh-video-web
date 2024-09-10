@@ -24,13 +24,24 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [Route("conferences")]
 [ApiController]
-public class InstantMessagesController(
-    IVideoApiClient videoApiClient,
-    ILogger<InstantMessagesController> logger,
-    IMessageDecoder messageDecoder,
-    IConferenceService conferenceService)
-    : ControllerBase
+public class InstantMessagesController : ControllerBase
 {
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly ILogger<InstantMessagesController> _logger;
+    private readonly IMessageDecoder _messageDecoder;
+    private readonly IConferenceService _conferenceService;
+    
+    public InstantMessagesController(IVideoApiClient videoApiClient,
+        ILogger<InstantMessagesController> logger,
+        IMessageDecoder messageDecoder,
+        IConferenceService conferenceService)
+    {
+        _videoApiClient = videoApiClient;
+        _logger = logger;
+        _messageDecoder = messageDecoder;
+        _conferenceService = conferenceService;
+    }
+    
     /// <summary>
     /// Get all the instant messages for a conference for a participant
     /// </summary>
@@ -45,12 +56,12 @@ public class InstantMessagesController(
     public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId,
         Guid participantId, CancellationToken cancellationToken)
     {
-        logger.LogDebug($"GetMessages for {conferenceId}");
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        _logger.LogDebug($"GetMessages for {conferenceId}");
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Single(x => x.Id == participantId);
 
         var messages =
-            await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username,
+            await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username,
                 cancellationToken);
         if (messages == null || !messages.Any())
         {
@@ -76,14 +87,14 @@ public class InstantMessagesController(
     public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId,
         CancellationToken cancellationToken)
     {
-        logger.LogDebug($"GetMessages for {conferenceId}");
-        var messages = await videoApiClient.GetInstantMessageHistoryAsync(conferenceId, cancellationToken);
+        _logger.LogDebug($"GetMessages for {conferenceId}");
+        var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conferenceId, cancellationToken);
         if (messages.IsNullOrEmpty())
         {
             return Ok(new UnreadInstantMessageConferenceCountResponse());
         }
 
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
 
         var response = UnreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
 
@@ -103,12 +114,12 @@ public class InstantMessagesController(
     public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, Guid participantId,
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetMessages for {Conference}", conferenceId);
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        _logger.LogDebug("GetMessages for {Conference}", conferenceId);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Single(x => x.Id == participantId);
 
         var messages =
-            await videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username,
+            await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username,
                 cancellationToken);
         if (messages.IsNullOrEmpty())
         {
@@ -129,13 +140,13 @@ public class InstantMessagesController(
             return response;
         }
         
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         
         var username = User.Identity?.Name;
         
         foreach (var message in messages)
         {
-            var isUser = messageDecoder.IsMessageFromUser(message, username);
+            var isUser = _messageDecoder.IsMessageFromUser(message, username);
             string fromDisplayName;
             if (isUser)
             {
@@ -143,7 +154,7 @@ public class InstantMessagesController(
             }
             else
             {
-                fromDisplayName = await messageDecoder.GetMessageOriginatorAsync(conference, message);
+                fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
             }
             
             var mapped = ChatResponseMapper.Map(message, fromDisplayName, isUser, conference);

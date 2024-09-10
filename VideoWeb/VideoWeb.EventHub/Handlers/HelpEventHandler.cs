@@ -10,7 +10,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public HelpEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<HelpEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

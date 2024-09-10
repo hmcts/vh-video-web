@@ -19,12 +19,20 @@ public interface IReferenceDataService
     
 }
 
-public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryCache memoryCache)
-    : IReferenceDataService
+public class ReferenceDataService : IReferenceDataService
 {
+    private readonly IBookingsApiClient _bookingsApiClient;
+    private readonly IMemoryCache _memoryCache;
     private const string InterpreterLanguagesKey = "RefData_InterpreterLanguages";
     private const string HearingVenuesKey = "RefData_HearingVenues";
 
+    public ReferenceDataService(IBookingsApiClient bookingsApiClient, 
+        IMemoryCache memoryCache)
+    {
+        _bookingsApiClient = bookingsApiClient;
+        _memoryCache = memoryCache;
+    }
+    
     public async Task InitialiseCache()
     {
         await GetInterpreterLanguagesAsync();
@@ -35,7 +43,7 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
     {
         return await GetOrCreateCacheAsync(InterpreterLanguagesKey, async token =>
         {
-            var interpreterLanguages = await bookingsApiClient.GetAvailableInterpreterLanguagesAsync(token);
+            var interpreterLanguages = await _bookingsApiClient.GetAvailableInterpreterLanguagesAsync(token);
             return interpreterLanguages.Select(x => x.Map()).ToList();
         }, cancellationToken);
     }
@@ -45,7 +53,7 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
     {
         return await GetOrCreateCacheAsync(HearingVenuesKey, async token =>
         {
-            var hearingVenues = await bookingsApiClient.GetHearingVenuesForHearingsTodayAsync(token);
+            var hearingVenues = await _bookingsApiClient.GetHearingVenuesForHearingsTodayAsync(token);
             return hearingVenues.ToList();
         }, cancellationToken);
     }
@@ -53,7 +61,7 @@ public class ReferenceDataService(IBookingsApiClient bookingsApiClient, IMemoryC
     private async Task<List<T>> GetOrCreateCacheAsync<T>(string cacheKey,
         Func<CancellationToken, Task<List<T>>> fetchFunction, CancellationToken cancellationToken)
     {
-        return await memoryCache.GetOrCreateAsync(cacheKey, async entry =>
+        return await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(3);
             return await fetchFunction(cancellationToken);

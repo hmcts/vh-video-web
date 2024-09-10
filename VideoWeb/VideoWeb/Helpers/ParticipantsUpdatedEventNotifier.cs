@@ -13,11 +13,18 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Helpers
 {
-    public class ParticipantsUpdatedEventNotifier(
-        IEventHandlerFactory eventHandlerFactory,
-        ILogger<ParticipantsUpdatedEventNotifier> logger)
-        : IParticipantsUpdatedEventNotifier
+    public class ParticipantsUpdatedEventNotifier : IParticipantsUpdatedEventNotifier
     {
+        private readonly IEventHandlerFactory _eventHandlerFactory;
+        private readonly ILogger<ParticipantsUpdatedEventNotifier> _logger;
+        
+        public ParticipantsUpdatedEventNotifier(IEventHandlerFactory eventHandlerFactory,
+            ILogger<ParticipantsUpdatedEventNotifier> logger)
+        {
+            _eventHandlerFactory = eventHandlerFactory;
+            _logger = logger;
+        }
+        
         public Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
         {
             CallbackEvent callbackEvent = new CallbackEvent
@@ -29,7 +36,7 @@ namespace VideoWeb.Helpers
                 ParticipantsToNotify = participantsToNotify.Select(ParticipantDtoForResponseMapper.Map).ToList()
             };
 
-            logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
+            _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
             return PublishEventToUi(callbackEvent);
         }
 
@@ -40,7 +47,7 @@ namespace VideoWeb.Helpers
                 return Task.CompletedTask;
             }
 
-            var handler = eventHandlerFactory.Get(callbackEvent.EventType);
+            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             return handler.HandleAsync(callbackEvent);
         }
     }

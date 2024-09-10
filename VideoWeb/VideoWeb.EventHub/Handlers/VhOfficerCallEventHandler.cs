@@ -16,7 +16,7 @@ namespace VideoWeb.EventHub.Handlers
         private readonly IConsultationNotifier _consultationNotifier;
         
         public VhOfficerCallEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            ILogger<VhOfficerCallEventHandler> logger,
+            ILogger<EventHandlerBase> logger,
             IVideoApiClient videoApiClient,
             IConsultationNotifier consultationNotifier,
             IConferenceService conferenceService)

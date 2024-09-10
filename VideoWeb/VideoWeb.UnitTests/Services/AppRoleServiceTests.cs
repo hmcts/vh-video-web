@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             const JusticeUserRole justiceUserRole = JusticeUserRole.VhTeamLead;
-            string[] expectedAppRoles = [AppRoles.VhOfficerRole, AppRoles.Administrator];
+            string[] expectedAppRoles = { AppRoles.VhOfficerRole, AppRoles.Administrator };
             
             var username = "random@claims.com";
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>(){justiceUserRole}, username);

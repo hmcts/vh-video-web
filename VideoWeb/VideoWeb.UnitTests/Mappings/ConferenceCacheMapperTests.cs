@@ -231,7 +231,7 @@ public class ConferenceCacheMapperTests
             .With(x => x.CurrentStatus = ConferenceState.Suspended)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
-            .With(x => x.CivilianRooms = [new() { Id = 1, Label = "Room 1" }])
+            .With(x => x.CivilianRooms = new List<CivilianRoomResponse>{ new() { Id = 1, Label = "Room 1" }})
             .With(x => x.Endpoints = endpoints)
             .Build();
         return conference;

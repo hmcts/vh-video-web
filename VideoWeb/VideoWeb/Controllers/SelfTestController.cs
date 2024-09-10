@@ -16,12 +16,21 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("selftest")]
-    public class SelfTestController(
-        IVideoApiClient videoApiClient,
-        ILogger<SelfTestController> logger,
-        ITestCallCache testCallCache)
-        : ControllerBase
+    public class SelfTestController : ControllerBase
     {
+        private IVideoApiClient _videoApiClient;
+        private ILogger<SelfTestController> _logger;
+        private ITestCallCache _testCallCache;
+        
+        public SelfTestController(IVideoApiClient videoApiClient,
+            ILogger<SelfTestController> logger,
+            ITestCallCache testCallCache)
+        {
+            _videoApiClient = videoApiClient;
+            _logger = logger;
+            _testCallCache = testCallCache;
+        }
+        
         /// <summary>
         /// Get the Pexip self test node.
         /// </summary>
@@ -34,14 +43,14 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var config = await videoApiClient.GetPexipServicesConfigurationAsync();
+                var config = await _videoApiClient.GetPexipServicesConfigurationAsync();
                 var response = PexipServiceConfigurationResponseMapper.Map(config);
                 
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
-                logger.LogError(e, "Unable to get Pexip configuration");
+                _logger.LogError(e, "Unable to get Pexip configuration");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -56,7 +65,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> CheckUserCompletedATestTodayAsync()
         {
-            var hasUserCompletedATestToday = await testCallCache.HasUserCompletedATestToday(User.Identity.Name);
+            var hasUserCompletedATestToday = await _testCallCache.HasUserCompletedATestToday(User.Identity.Name);
             return hasUserCompletedATestToday ? Ok() : NotFound();
         }
         
@@ -70,13 +79,13 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var score = await videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
+                var score = await _videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
+                await _testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
                 return Ok(score);
             }
             catch (VideoApiException e)
             {
-                logger.LogError(e,
+                _logger.LogError(e,
                     "Unable to get test call result for participant: {ParticipantId} in conference: {ConferenceId}",
                     participantId, conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
@@ -91,13 +100,13 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var score = await videoApiClient.GetIndependentTestCallResultAsync(participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
+                var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
+                await _testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
                 return Ok(score);
             }
             catch (VideoApiException e)
             {
-                logger.LogError(e, "Unable to get independent test call result for participant: {ParticipantId}", participantId);
+                _logger.LogError(e, "Unable to get independent test call result for participant: {ParticipantId}", participantId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

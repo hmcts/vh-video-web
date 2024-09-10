@@ -42,10 +42,10 @@ public class ParticipantsUpdatedTests
         _controller.ControllerContext = context;
         _testConferenceId = Guid.NewGuid();
         _mockConference = _mocker.Mock<Conference>();
-        _mockConference.Object.Participants =
-        [
+        _mockConference.Object.Participants = new List<Participant>
+        {
             new() { Id = Guid.NewGuid(), Role = Role.Judge }, new() { Id = _removedId, Role = Role.Individual }
-        ];
+        };
         _mockConference.Object.Id = _testConferenceId;
         
         _mocker.Mock<IConferenceService>()

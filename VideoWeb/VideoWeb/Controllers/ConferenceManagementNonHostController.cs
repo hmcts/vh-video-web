@@ -11,8 +11,15 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class ConferenceManagementNonHostController(IConferenceManagementService conferenceManagementService) : ControllerBase
+    public class ConferenceManagementNonHostController : ControllerBase
     {
+        private readonly IConferenceManagementService _conferenceManagementService;
+        
+        public ConferenceManagementNonHostController(IConferenceManagementService conferenceManagementService)
+        {
+            _conferenceManagementService = conferenceManagementService;
+        }
+        
         /// <summary>
         /// Leave host from hearing
         /// </summary>
@@ -26,7 +33,7 @@ namespace VideoWeb.Controllers
             CancellationToken cancellationToken)
         {
             var username = User.Identity!.Name;
-            await conferenceManagementService.ParticipantLeaveConferenceAsync(conferenceId, username,
+            await _conferenceManagementService.ParticipantLeaveConferenceAsync(conferenceId, username,
                 cancellationToken);
             return Accepted();
         }

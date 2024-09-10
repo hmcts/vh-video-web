@@ -11,9 +11,15 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.Helpers;
 
-public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
-    : IEndpointsUpdatedEventNotifier
+public class EndpointsUpdatedEventNotifier : IEndpointsUpdatedEventNotifier
 {
+    private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
+    
+    public EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+    {
+        _hubContext = hubContext;
+    }
+    
     public async Task PushEndpointsUpdatedEvent(Conference conference, UpdateConferenceEndpointsRequest endpointsToNotify)
     {
         var existingEndpoints = conference.Endpoints
@@ -32,17 +38,17 @@ public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IE
         };
         
         foreach (var participant in conference.Participants)
-            await hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
+            await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
         
     }
     
     public async Task PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string jvsEndpointName) =>
-        await hubContext.Clients.Group(participant.ToLowerInvariant()).UnlinkedParticipantFromEndpoint(conferenceId, jvsEndpointName);
+        await _hubContext.Clients.Group(participant.ToLowerInvariant()).UnlinkedParticipantFromEndpoint(conferenceId, jvsEndpointName);
     
     public async Task PushLinkedNewParticipantToEndpoint(Guid conferenceId, string participant, string jvsEndpointName) =>
-        await hubContext.Clients.Group(participant.ToLowerInvariant()).LinkedNewParticipantToEndpoint(conferenceId, jvsEndpointName);
+        await _hubContext.Clients.Group(participant.ToLowerInvariant()).LinkedNewParticipantToEndpoint(conferenceId, jvsEndpointName);
     
     public async Task PushCloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string participant, string jvsEndpointName) =>
-        await hubContext.Clients.Group(participant.ToLowerInvariant()).CloseConsultationBetweenEndpointAndParticipant(conferenceId, jvsEndpointName);
+        await _hubContext.Clients.Group(participant.ToLowerInvariant()).CloseConsultationBetweenEndpointAndParticipant(conferenceId, jvsEndpointName);
     
 }

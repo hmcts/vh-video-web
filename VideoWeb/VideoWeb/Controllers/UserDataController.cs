@@ -14,13 +14,20 @@ namespace VideoWeb.Controllers;
 [Route("api/accounts")]
 [ApiController]
 [Authorize(AppRoles.VhOfficerRole)]
-public class UserDataController(IBookingsApiClient bookingApiClient) : ControllerBase
+public class UserDataController : ControllerBase
 {
+    private readonly IBookingsApiClient _bookingApiClient;
+    
+    public UserDataController(IBookingsApiClient bookingApiClient)
+    {
+        _bookingApiClient = bookingApiClient;
+    }
+    
     /// <summary>
     ///Get CSOS
     /// </summary>
     [HttpGet("csos", Name = "GetCSOs")]
     [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers(CancellationToken cancellationToken) 
-        =>Ok(await bookingApiClient.GetJusticeUserListAsync(string.Empty, null, cancellationToken));
+        =>Ok(await _bookingApiClient.GetJusticeUserListAsync(string.Empty, null, cancellationToken));
 }

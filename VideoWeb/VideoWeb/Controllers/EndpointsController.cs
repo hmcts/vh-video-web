@@ -17,11 +17,18 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [ApiController]
 [Route("video-endpoints")]
-public class EndpointsController(
-    ILogger<EndpointsController> logger,
-    IConferenceService conferenceService)
-    : ControllerBase
+public class EndpointsController : ControllerBase
 {
+    private readonly ILogger<EndpointsController> _logger;
+    private readonly IConferenceService _conferenceService;
+    
+    public EndpointsController(ILogger<EndpointsController> logger,
+        IConferenceService conferenceService)
+    {
+        _logger = logger;
+        _conferenceService = conferenceService;
+    }
+    
     [HttpGet("{conferenceId}/participants")]
     [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
     [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
@@ -29,12 +36,12 @@ public class EndpointsController(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+            var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
             return Ok(conference.Endpoints.Select(VideoEndpointsResponseMapper.Map).ToList());
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "Endpoints could not be fetched for ConferenceId: {ConferenceId}", conferenceId);
+            _logger.LogError(e, "Endpoints could not be fetched for ConferenceId: {ConferenceId}", conferenceId);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
@@ -47,7 +54,7 @@ public class EndpointsController(
     {
         var username = User.Identity?.Name?.Trim() ??
                            throw new UnauthorizedAccessException("No username found in claims");
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         var isHostOrJoh = conference.Participants.Exists(x =>
             (x.IsHost() || x.IsJudicialOfficeHolder()) && x.Username.Equals(User.Identity.Name?.Trim(),
                 StringComparison.InvariantCultureIgnoreCase));

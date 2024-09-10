@@ -11,7 +11,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public PauseEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<PauseEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

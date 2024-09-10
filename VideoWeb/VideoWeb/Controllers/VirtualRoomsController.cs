@@ -16,12 +16,21 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [Route("conferences")]
 [ApiController]
-public class VirtualRoomsController(
-    IVideoApiClient videoApiClient,
-    IConferenceService conferenceService,
-    ILogger<VirtualRoomsController> logger)
-    : ControllerBase
+public class VirtualRoomsController : ControllerBase
 {
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly IConferenceService _conferenceService;
+    private readonly ILogger<VirtualRoomsController> _logger;
+    
+    public VirtualRoomsController(IVideoApiClient videoApiClient,
+        IConferenceService conferenceService,
+        ILogger<VirtualRoomsController> logger)
+    {
+        _videoApiClient = videoApiClient;
+        _conferenceService = conferenceService;
+        _logger = logger;
+    }
+    
     [HttpGet("{conferenceId}/rooms/shared/{participantId}")]
     [SwaggerOperation(OperationId = "GetParticipantRoomForParticipant")]
     [ProducesResponseType(typeof(SharedParticipantRoom), (int) HttpStatusCode.OK)]
@@ -33,20 +42,20 @@ public class VirtualRoomsController(
         {
             var room = participantType switch
             {
-                "Witness" => await videoApiClient.GetWitnessRoomForParticipantAsync(conferenceId,
+                "Witness" => await _videoApiClient.GetWitnessRoomForParticipantAsync(conferenceId,
                     participantId),
-                "Judicial" => await videoApiClient.GetJudicialRoomForParticipantAsync(conferenceId,
+                "Judicial" => await _videoApiClient.GetJudicialRoomForParticipantAsync(conferenceId,
                     participantId),
-                _ => await videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
+                _ => await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
             };
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participant = conference.Participants.First(x => x.Id == participantId);
             var response = SharedParticipantRoomMapper.Map(room, participant, participantType == "Witness");
             return Ok(response);
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e,
+            _logger.LogError(e,
                 "Unable to retrieve interpreter room for participant {ParticipantId} for conference: {ConferenceId}",
                 participantId, conferenceId);
             return StatusCode(e.StatusCode, e.Response);

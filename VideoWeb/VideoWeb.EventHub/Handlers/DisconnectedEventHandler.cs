@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<DisconnectedEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

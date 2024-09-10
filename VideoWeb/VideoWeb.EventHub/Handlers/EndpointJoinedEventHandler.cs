@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public EndpointJoinedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<EndpointJoinedEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }
