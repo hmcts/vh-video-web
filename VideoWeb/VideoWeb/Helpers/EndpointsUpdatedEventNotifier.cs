@@ -8,6 +8,7 @@ using System.Linq;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
+using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers;
 
@@ -31,9 +32,11 @@ public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IE
             RemovedEndpoints = endpointsToNotify.RemovedEndpoints
         };
         
-        foreach (var participant in conference.Participants)
+        foreach (var participant in conference.Participants.Where(participant => participant.Role != Role.StaffMember))
             await hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
         
+        await hubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+            .EndpointsUpdated(conference.Id, endpoints);
     }
     
     public async Task PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string jvsEndpointName) =>

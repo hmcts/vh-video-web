@@ -17,6 +17,7 @@ import { NewConferenceAddedMessage } from 'src/app/services/models/new-conferenc
 import { HearingCancelledMessage } from 'src/app/services/models/hearing-cancelled-message';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 
 describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
@@ -57,6 +58,7 @@ describe('ParticipantHearingList', () => {
     let hearingCancelledSpy: jasmine.Spy;
     let hearingDetailsUpdatedSpy: jasmine.Spy;
     let participantsUpdatedSpy: jasmine.Spy;
+    let endpointsUpdatedSpy: jasmine.Spy;
     let addSubscriptionSpy: jasmine.Spy;
 
     beforeAll(() => {
@@ -79,13 +81,15 @@ describe('ParticipantHearingList', () => {
             getNewConferenceAdded: jasmine.createSpy().and.returnValue(of({} as NewConferenceAddedMessage)),
             getHearingCancelled: jasmine.createSpy().and.returnValue(of({} as HearingCancelledMessage)),
             getHearingDetailsUpdated: jasmine.createSpy().and.returnValue(of({} as HearingDetailsUpdatedMessage)),
-            getParticipantsUpdated: jasmine.createSpy().and.returnValue(of({} as ParticipantsUpdatedMessage))
+            getParticipantsUpdated: jasmine.createSpy().and.returnValue(of({} as ParticipantsUpdatedMessage)),
+            getEndpointsUpdated: jasmine.createSpy().and.returnValue(of({} as EndpointsUpdatedMessage))
         });
 
         newConferenceAddedSpy = eventsService.getNewConferenceAdded;
         hearingCancelledSpy = eventsService.getHearingCancelled;
         hearingDetailsUpdatedSpy = eventsService.getHearingDetailsUpdated;
         participantsUpdatedSpy = eventsService.getParticipantsUpdated;
+        endpointsUpdatedSpy = eventsService.getEndpointsUpdated;
     });
 
     beforeEach(() => {
@@ -175,7 +179,8 @@ describe('ParticipantHearingList', () => {
         expect(hearingCancelledSpy).toHaveBeenCalled();
         expect(hearingDetailsUpdatedSpy).toHaveBeenCalled();
         expect(participantsUpdatedSpy).toHaveBeenCalled();
-        expect(addSubscriptionSpy).toHaveBeenCalledTimes(4);
+        expect(endpointsUpdatedSpy).toHaveBeenCalled();
+        expect(addSubscriptionSpy).toHaveBeenCalledTimes(5);
     }));
 
     it('should retrieve conferences when hearing events are emitted', () => {
@@ -183,14 +188,16 @@ describe('ParticipantHearingList', () => {
         const hearingCancelledSubject = new Subject<HearingCancelledMessage>();
         const hearingDetailsUpdatedSubject = new Subject<HearingDetailsUpdatedMessage>();
         const participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+        const endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
         component.setUpEventHubSubscribers();
 
         newConferenceAddedSubject.next({} as NewConferenceAddedMessage);
         hearingCancelledSubject.next({} as HearingCancelledMessage);
         hearingDetailsUpdatedSubject.next({} as HearingDetailsUpdatedMessage);
         participantsUpdatedSubject.next({} as ParticipantsUpdatedMessage);
+        endpointsUpdatedSubject.next({} as EndpointsUpdatedMessage);
 
-        expect(videoWebService.getConferencesForIndividual).toHaveBeenCalledTimes(4);
+        expect(videoWebService.getConferencesForIndividual).toHaveBeenCalledTimes(5);
     });
 
     it('should show hearings when judge has conferences', () => {

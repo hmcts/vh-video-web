@@ -56,6 +56,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.eventHubSubscriptions.add(this.eventsService.getHearingCancelled().subscribe(() => this.retrieveHearingsForUser()));
         this.eventHubSubscriptions.add(this.eventsService.getHearingDetailsUpdated().subscribe(() => this.retrieveHearingsForUser()));
         this.eventHubSubscriptions.add(this.eventsService.getParticipantsUpdated().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getEndpointsUpdated().subscribe(() => this.retrieveHearingsForUser()));
     }
 
     retrieveHearingsForUser() {

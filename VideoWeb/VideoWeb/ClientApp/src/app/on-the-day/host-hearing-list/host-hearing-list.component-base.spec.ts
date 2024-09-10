@@ -13,6 +13,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
     eventsServiceSpy,
+    getEndpointsUpdatedMessageSubjectMock,
     getHearingCancelledMock,
     getHearingDetailsUpdatedMock,
     getNewConferenceAddedMock,
@@ -98,6 +99,7 @@ describe('JudgeHearingListComponent', () => {
         expect(eventsServiceSpy.getHearingCancelled).toHaveBeenCalled();
         expect(eventsServiceSpy.getHearingDetailsUpdated).toHaveBeenCalled();
         expect(eventsServiceSpy.getParticipantsUpdated).toHaveBeenCalled();
+        expect(eventsServiceSpy.getEndpointsUpdated).toHaveBeenCalled();
     });
 
     it('should retrieve conferences when hearing events are emitted', () => {
@@ -107,8 +109,9 @@ describe('JudgeHearingListComponent', () => {
         getNewConferenceAddedMock.next();
         getHearingCancelledMock.next();
         getHearingDetailsUpdatedMock.next();
+        getEndpointsUpdatedMessageSubjectMock.next();
 
-        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(3);
+        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(4);
     });
 
     it('should show hearings when judge has conferences', () => {
