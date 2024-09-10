@@ -8,9 +8,9 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
-import { from as _observableFrom, Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
+import { Observable, from as _observableFrom, throwError as _observableThrow, of as _observableOf } from 'rxjs';
+import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
@@ -1710,12 +1710,6 @@ export class ApiClient extends ApiClientBase {
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('No Content', status, _responseText, _headers);
                 })
             );
         } else if (status === 401) {

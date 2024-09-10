@@ -7,6 +7,6 @@ namespace VideoWeb.Contract.Request
     {
         public List<string> HearingVenueNames { get; set; } = new();
         public List<Guid> AllocatedCsoIds { get; set; } = new();
-        public bool IncludeUnallocated { get; set; }
+        public bool? IncludeUnallocated { get; set; }
     }
 }

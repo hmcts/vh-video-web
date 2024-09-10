@@ -159,7 +159,7 @@ public class ConferencesController(
             hearingsForToday =
                 await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames, cancellationToken);
         }
-        else if (query.AllocatedCsoIds.Count > 0 || query.IncludeUnallocated)
+        else if (query.AllocatedCsoIds.Count > 0 || query.IncludeUnallocated.HasValue)
         {
             hearingsForToday = await bookingApiClient.GetHearingsForTodayByCsosV2Async(
                 new HearingsForTodayByAllocationRequestV2()
@@ -172,6 +172,11 @@ public class ConferencesController(
         {
             ModelState.AddModelError(nameof(query), filterMissingMessage);
             return ValidationProblem(ModelState);
+        }
+        
+        if(hearingsForToday.Count == 0)
+        {
+            return Ok(new List<ConferenceForVhOfficerResponse>());
         }
 
         var request = new GetConferencesByHearingIdsRequest
