@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public LeaveEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<LeaveEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

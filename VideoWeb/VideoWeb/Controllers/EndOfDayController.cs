@@ -19,13 +19,24 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [Route("end-of-day")]
 [ApiController]
-public class EndOfDayController(
-    IVideoApiClient videoApiClient,
-    IBookingsApiClient bookingsApiClient,
-    IConferenceService conferenceService,
-    ILogger<EndOfDayController> logger)
-    : ControllerBase
+public class EndOfDayController : ControllerBase
 {
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly IBookingsApiClient _bookingsApiClient;
+    private readonly IConferenceService _conferenceService;
+    private readonly ILogger<EndOfDayController> _logger;
+    
+    public EndOfDayController(IVideoApiClient videoApiClient,
+        IBookingsApiClient bookingsApiClient,
+        IConferenceService conferenceService,
+        ILogger<EndOfDayController> logger)
+    {
+        _videoApiClient = videoApiClient;
+        _bookingsApiClient = bookingsApiClient;
+        _conferenceService = conferenceService;
+        _logger = logger;
+    }
+    
     /// <summary>
     /// Get all active conferences.
     /// This includes conferences that are in progress or paused.
@@ -38,12 +49,12 @@ public class EndOfDayController(
     public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences(CancellationToken cancellationToken)
 
     {
-        logger.LogDebug("Getting all active conferences");
+        _logger.LogDebug("Getting all active conferences");
         try
         {
-            var activeConferences = await videoApiClient.GetActiveConferencesAsync(cancellationToken);
-            var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
-            var allocatedHearings = await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId), cancellationToken);
+            var activeConferences = await _videoApiClient.GetActiveConferencesAsync(cancellationToken);
+            var retrieveCachedConferencesTask = _conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
+            var allocatedHearings = await _bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId), cancellationToken);
             var conferences = await retrieveCachedConferencesTask;
             var response = conferences
                 .Select(c
@@ -58,7 +69,7 @@ public class EndOfDayController(
                 return Ok(new List<ConferenceForVhOfficerResponse>());
             }
 
-            logger.LogError(e, "Unable to get active conferences");
+            _logger.LogError(e, "Unable to get active conferences");
             return StatusCode(e.StatusCode, e.Response);
         }
     }

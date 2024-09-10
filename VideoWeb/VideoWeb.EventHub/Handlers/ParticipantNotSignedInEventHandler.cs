@@ -13,7 +13,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public ParticipantNotSignedInEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<ParticipantNotSignedInEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

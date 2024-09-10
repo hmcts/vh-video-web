@@ -14,8 +14,15 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [ApiController]
 [Route("api/reference-data")]
-public class ReferenceDataController(IReferenceDataService referenceDataService) : ControllerBase
+public class ReferenceDataController : ControllerBase
 {
+    private readonly IReferenceDataService _referenceDataService;
+    
+    public ReferenceDataController(IReferenceDataService referenceDataService)
+    {
+        _referenceDataService = referenceDataService;
+    }
+    
     /// <summary>
     ///     Get available interpreter languages
     /// </summary>
@@ -25,7 +32,7 @@ public class ReferenceDataController(IReferenceDataService referenceDataService)
     [SwaggerOperation(OperationId = "GetAvailableInterpreterLanguages")]
     public async Task<ActionResult<List<InterpreterLanguageResponse>>> GetAvailableInterpreterLanguages(CancellationToken cancellationToken)
     {
-        var languages = await referenceDataService.GetInterpreterLanguagesAsync(cancellationToken);
+        var languages = await _referenceDataService.GetInterpreterLanguagesAsync(cancellationToken);
         languages = languages.OrderBy(x => x.Description).ToList();
         return Ok(languages.Select(x => x.Map()).ToList());
     }

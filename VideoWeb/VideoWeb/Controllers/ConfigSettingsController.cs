@@ -20,20 +20,32 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [ApiController]
 [Route("config")]
-public class ConfigSettingsController(
-    IOptions<AzureAdConfiguration> azureAdConfiguration,
-    IOptions<EJudAdConfiguration> ejudAdConfiguration,
-    IOptions<HearingServicesConfiguration> servicesConfiguration,
-    IOptions<Dom1AdConfiguration> dom1AdConfiguration,
-    ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
-    ILogger<ConfigSettingsController> logger,
-    IFeatureToggles featureToggles)
-    : BaseNoCacheController
+public class ConfigSettingsController : BaseNoCacheController
 {
-    private readonly AzureAdConfiguration _azureAdConfiguration = azureAdConfiguration.Value;
-    private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
-    private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
-    private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
+    private readonly AzureAdConfiguration _azureAdConfiguration;
+    private readonly EJudAdConfiguration _ejudAdConfiguration;
+    private readonly Dom1AdConfiguration _dom1AdConfiguration;
+    private readonly HearingServicesConfiguration _servicesConfiguration;
+    private readonly ISupplierPlatformServiceFactory _supplierPlatformServiceFactory;
+    private readonly ILogger<ConfigSettingsController> _logger;
+    private readonly IFeatureToggles _featureToggles;
+
+    public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
+        IOptions<EJudAdConfiguration> ejudAdConfiguration,
+        IOptions<HearingServicesConfiguration> servicesConfiguration,
+        IOptions<Dom1AdConfiguration> dom1AdConfiguration,
+        ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
+        ILogger<ConfigSettingsController> logger,
+        IFeatureToggles featureToggles)
+    {
+        _azureAdConfiguration = azureAdConfiguration.Value;
+        _ejudAdConfiguration = ejudAdConfiguration.Value;
+        _servicesConfiguration = servicesConfiguration.Value;
+        _dom1AdConfiguration = dom1AdConfiguration.Value;
+        _supplierPlatformServiceFactory = supplierPlatformServiceFactory;
+        _logger = logger;
+        _featureToggles = featureToggles;
+    }
     
     /// <summary>
     /// GetClientConfigurationSettings the configuration settings for client
@@ -52,10 +64,10 @@ public class ConfigSettingsController(
             {
                 Supplier.Kinly
             };
-            if (featureToggles.Vodafone())
+            if (_featureToggles.Vodafone())
                 suppliers.Add(Supplier.Vodafone);
             var supplierConfigurations = suppliers
-                .Select(supplierPlatformServiceFactory.Create)
+                .Select(_supplierPlatformServiceFactory.Create)
                 .Select(platformService => platformService.GetSupplierConfiguration())
                 .ToList();
             var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, supplierConfigurations);
@@ -63,7 +75,7 @@ public class ConfigSettingsController(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Unable to retrieve client configuration settings");
+            _logger.LogError(e, "Unable to retrieve client configuration settings");
             return BadRequest(e.Message);
         }
     }

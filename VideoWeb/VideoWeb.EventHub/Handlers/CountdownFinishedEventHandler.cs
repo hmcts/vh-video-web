@@ -10,7 +10,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public CountdownFinishedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<CountdownFinishedEventHandler> logger)
+            ILogger<EventHandlerBase> logger)
             : base(hubContext, conferenceService, logger)
         {
         }

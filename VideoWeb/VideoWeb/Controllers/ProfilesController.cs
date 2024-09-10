@@ -16,8 +16,18 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("profile")]
-    public class ProfilesController(ILogger<ProfilesController> logger, IUserProfileService userProfileService) : ControllerBase
+    public class ProfilesController : ControllerBase
     {
+        private readonly ILogger<ProfilesController> _logger;
+        private readonly IUserProfileService _userProfileService;
+        
+        public ProfilesController(ILogger<ProfilesController> logger,
+            IUserProfileService userProfileService)
+        {
+            _logger = logger;
+            _userProfileService = userProfileService;
+        }
+        
         /// <summary>
         /// Get profile for logged in user
         /// </summary>
@@ -34,7 +44,7 @@ namespace VideoWeb.Controllers
             catch (Exception e)
             {
                 const string message = "User does not have permission";
-                logger.LogError(e, message);
+                _logger.LogError(e, message);
                 return Unauthorized(message);
             }
         }
@@ -52,7 +62,7 @@ namespace VideoWeb.Controllers
         {
             var usernameClean = username.ToLower().Trim();
 
-            var userProfile = await userProfileService.GetUserAsync(usernameClean, cancellationToken);
+            var userProfile = await _userProfileService.GetUserAsync(usernameClean, cancellationToken);
             if (userProfile == null) return NotFound();
 
             var response = UserProfileToUserProfileResponseMapper.Map(userProfile);

@@ -26,14 +26,27 @@ namespace VideoWeb.Controllers;
 [Route("callback")]
 [Authorize(AuthenticationSchemes = "Callback")]
 [AllowAnonymous]
-public class VideoEventsController(
-    IConferenceService conferenceService,
-    IVideoApiClient videoApiClient,
-    IEventHandlerFactory eventHandlerFactory,
-    ILogger<VideoEventsController> logger,
-    TelemetryClient telemetryClient)
-    : ControllerBase
+public class VideoEventsController : ControllerBase
 {
+    private readonly IConferenceService _conferenceService;
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly IEventHandlerFactory _eventHandlerFactory;
+    private readonly ILogger<VideoEventsController> _logger;
+    private readonly TelemetryClient _telemetryClient;
+    
+    public VideoEventsController(IConferenceService conferenceService,
+        IVideoApiClient videoApiClient,
+        IEventHandlerFactory eventHandlerFactory,
+        ILogger<VideoEventsController> logger,
+        TelemetryClient telemetryClient)
+    {
+        _conferenceService = conferenceService;
+        _videoApiClient = videoApiClient;
+        _eventHandlerFactory = eventHandlerFactory;
+        _logger = logger;
+        _telemetryClient = telemetryClient;
+    }
+    
     [HttpPost]
     [SwaggerOperation(OperationId = "SendEvent")]
     [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -42,10 +55,10 @@ public class VideoEventsController(
     {
         try
         {
-            telemetryClient.TrackCustomEvent("KinlyCallback", request);
+            _telemetryClient.TrackCustomEvent("KinlyCallback", request);
             
             var conferenceId = Guid.Parse(request.ConferenceId);
-            var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
+            var conference = await _conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);
             
             var events = new List<ConferenceEventRequest>() {request};
@@ -61,14 +74,14 @@ public class VideoEventsController(
             // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
             foreach (var e in events)
             {
-                telemetryClient.TrackCustomEvent("SentGeneratedEventToVideoApi", e);
+                _telemetryClient.TrackCustomEvent("SentGeneratedEventToVideoApi", e);
                 await SendEventToVideoApi(e);
             }
             
             callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
             foreach (var cb in callbackEvents)
             {
-                telemetryClient.TrackCustomEvent("SentGeneratedEventToUI", cb);
+                _telemetryClient.TrackCustomEvent("SentGeneratedEventToUI", cb);
                 await PublishEventToUi(cb);
             }
             
@@ -79,12 +92,12 @@ public class VideoEventsController(
             eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
             eventProperties.Add("conferenceId", request.ConferenceId);
             
-            telemetryClient.TrackEvent("KinlyCallbackHandled", eventProperties);
+            _telemetryClient.TrackEvent("KinlyCallbackHandled", eventProperties);
             return NoContent();
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
+            _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
                 e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
@@ -99,10 +112,10 @@ public class VideoEventsController(
         
         request = request.UpdateEventTypeForVideoApi();
         
-        logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
+        _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
             request.ConferenceId, request.EventType);
         
-        return videoApiClient.RaiseVideoEventAsync(request);
+        return _videoApiClient.RaiseVideoEventAsync(request);
     }
     
     private static CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
@@ -126,7 +139,7 @@ public class VideoEventsController(
             return Task.CompletedTask;
         }
         
-        var handler = eventHandlerFactory.Get(callbackEvent.EventType);
+        var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
         return handler.HandleAsync(callbackEvent);
     }
     
@@ -158,7 +171,7 @@ public class VideoEventsController(
             default: return;
         }
         
-        await conferenceService.UpdateConferenceAsync(conference);
+        await _conferenceService.UpdateConferenceAsync(conference);
     }
     
     private async Task GenerateTransferEventOnVmrParticipantJoining(Conference conference, ConferenceEventRequest request)
@@ -179,7 +192,7 @@ public class VideoEventsController(
                 .FirstOrDefault(participant => participant?.ParticipantStatus == ParticipantStatus.InConsultation);
             if (linkedParticipantInConsultation != null)
             {
-                var room = (await videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
+                var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
                 if (room != null)
                 {
                     await SendHearingEventAsync(new ConferenceEventRequest

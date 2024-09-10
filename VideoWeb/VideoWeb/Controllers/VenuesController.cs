@@ -17,9 +17,18 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("hearing-venues")]
     [Authorize(AppRoles.VenueManagementRole)]
-    public class VenuesController(ILogger<VenuesController> logger, IReferenceDataService referenceDataService)
-        : ControllerBase
+    public class VenuesController : ControllerBase
     {
+        private readonly ILogger<VenuesController> _logger;
+        private readonly IReferenceDataService _referenceDataService;
+        
+        public VenuesController(ILogger<VenuesController> logger,
+            IReferenceDataService referenceDataService)
+        {
+            _logger = logger;
+            _referenceDataService = referenceDataService;
+        }
+        
         /// <summary>
         ///     Get available courts
         /// </summary>
@@ -30,9 +39,9 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetVenues")]
         public async Task<ActionResult<IList<HearingVenueResponse>>> GetVenues(CancellationToken cancellationToken)
         {
-            logger.LogDebug("GetVenues");
+            _logger.LogDebug("GetVenues");
 
-            var response = await referenceDataService.GetHearingVenuesForTodayAsync(cancellationToken);
+            var response = await _referenceDataService.GetHearingVenuesForTodayAsync(cancellationToken);
             return Ok(response);
         }
     }

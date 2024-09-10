@@ -28,7 +28,7 @@ public class ParticipantStatusResponseForVhoMapperTests
         var judge2DifferentHearing = CreateParticipant("judge2");
         var judge3DifferentHearing = CreateParticipant("judge3");
         var judge4DifferentHearing = CreateParticipant("judge4");
-        conference.Participants = [judge1, judge2, judge3, judge4];
+        conference.Participants = new List<Participant> {judge1, judge2, judge3, judge4};
         
         var judgesInHearings = new List<ParticipantInHearingResponse>
         {

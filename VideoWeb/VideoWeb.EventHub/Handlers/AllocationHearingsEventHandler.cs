@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 
         public AllocationHearingsEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
-            ILogger<AllocationHearingsEventHandler> logger) 
+            ILogger<EventHandlerBase> logger) 
             : base(hubContext, conferenceService, logger)
         {
         }

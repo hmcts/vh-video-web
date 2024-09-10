@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,8 +66,8 @@ public class UpdateJudgeDisplayNameTests
             .ReturnsAsync(new Conference()
             {
                 Id = conferenceId,
-                Participants =
-                [
+                Participants = new List<Participant>
+                {
                     new()
                     {
                         Id = participantId,
@@ -81,7 +82,7 @@ public class UpdateJudgeDisplayNameTests
                         Representee = "Representee",
                         HearingRole = "HearingRole"
                     }
-                ]
+                }
             });
 
         var result =

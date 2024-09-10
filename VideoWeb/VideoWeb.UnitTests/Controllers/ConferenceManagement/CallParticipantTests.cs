@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -182,7 +183,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             {
                 Id = TestConference.Id,
                 Participants = TestConference.Participants,
-                CivilianRooms = [new CivilianRoom { Participants = TestConference.CivilianRooms[0].Participants.Select(p => p).ToList() }]
+                CivilianRooms = new List<CivilianRoom> {new()
+                    { Participants = TestConference.CivilianRooms[0].Participants.Select(p => p).ToList() }}
             };
             
             // Remove witness from the cache

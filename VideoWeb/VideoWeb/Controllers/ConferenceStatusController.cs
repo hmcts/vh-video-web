@@ -16,11 +16,18 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [ApiController]
 [Route("conferences")]
-public class ConferenceStatusController(
-    ILogger<ConferenceManagementController> logger,
-    IConferenceVideoControlStatusService conferenceVideoControlStatusService)
-    : ControllerBase
+public class ConferenceStatusController : ControllerBase
 {
+    private readonly ILogger<ConferenceStatusController> _logger;
+    private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
+    
+    public ConferenceStatusController(ILogger<ConferenceStatusController> logger,
+        IConferenceVideoControlStatusService conferenceVideoControlStatusService)
+    {
+        _logger = logger;
+        _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
+    }
+    
     /// <summary>
     /// Updates the video control statuses for the conference
     /// </summary>
@@ -39,17 +46,17 @@ public class ConferenceStatusController(
         {
             var videoControlStatuses = SetConferenceVideoControlStatusesRequestMapper.Map(setVideoControlStatusesRequest);
             
-            logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
-            logger.LogTrace($"Updating conference videoControlStatuses in cache: {JsonSerializer.Serialize(videoControlStatuses)}");
+            _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+            _logger.LogTrace($"Updating conference videoControlStatuses in cache: {JsonSerializer.Serialize(videoControlStatuses)}");
             
-            await conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses, cancellationToken);
+            await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses, cancellationToken);
             
-            logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+            _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
             return Accepted();
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+            _logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
             throw;
         }
     }
@@ -69,22 +76,22 @@ public class ConferenceStatusController(
     {
         try
         {
-            logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
-            var videoControlStatuses = await conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
+            _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
+            var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
             
             if (videoControlStatuses == null)
             {
-                logger.LogWarning("video control statuses with id: {conferenceId} not found", conferenceId);
+                _logger.LogWarning("video control statuses with id: {conferenceId} not found", conferenceId);
                 
                 return NoContent();
             }
             
-            logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+            _logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
             return Ok(videoControlStatuses);
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+            _logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
             throw;
         }
     }

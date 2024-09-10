@@ -12,7 +12,7 @@ public class ParticipantsUpdatedEventHandler : EventHandlerBase
 
     public ParticipantsUpdatedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
         IConferenceService conferenceService,
-        ILogger<ParticipantsUpdatedEventHandler> logger)
+        ILogger<EventHandlerBase> logger)
         : base(hubContext, conferenceService, logger)
     {
     }
