@@ -14,8 +14,15 @@ namespace VideoWeb.Common
         ISupplierPlatformService Create(Supplier supplier);
     }
     
-    public class SupplierPlatformServiceFactory(IServiceProvider serviceProvider) : ISupplierPlatformServiceFactory
+    public class SupplierPlatformServiceFactory : ISupplierPlatformServiceFactory
     {
+        private readonly IServiceProvider _serviceProvider;
+        
+        public SupplierPlatformServiceFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+        
         public ISupplierPlatformService Create(Supplier supplier)
         {
             var jwtTokenProvider = GetJwtTokenProvider(supplier);
@@ -27,16 +34,16 @@ namespace VideoWeb.Common
         private IJwtTokenProvider GetJwtTokenProvider(Supplier supplier) =>
             supplier switch
             {
-                Supplier.Kinly => serviceProvider.GetService<IKinlyJwtTokenProvider>(),
-                Supplier.Vodafone => serviceProvider.GetService<IVodafoneJwtTokenProvider>(),
+                Supplier.Kinly => _serviceProvider.GetService<IKinlyJwtTokenProvider>(),
+                Supplier.Vodafone => _serviceProvider.GetService<IVodafoneJwtTokenProvider>(),
                 _ => throw new InvalidOperationException($"Unsupported supplier {supplier}")
             };
 
         private SupplierConfiguration GetSupplierConfiguration(Supplier supplier) =>
             supplier switch
             {
-                Supplier.Kinly => serviceProvider.GetRequiredService<IOptions<KinlyConfiguration>>().Value,
-                Supplier.Vodafone => serviceProvider.GetRequiredService<IOptions<VodafoneConfiguration>>().Value,
+                Supplier.Kinly => _serviceProvider.GetRequiredService<IOptions<KinlyConfiguration>>().Value,
+                Supplier.Vodafone => _serviceProvider.GetRequiredService<IOptions<VodafoneConfiguration>>().Value,
                 _ => throw new InvalidOperationException($"Unsupported supplier {supplier}")
             };
     }

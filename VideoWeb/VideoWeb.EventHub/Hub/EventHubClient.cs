@@ -14,19 +14,38 @@ using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.EventHub.Hub;
 
-public class EventHub(
-    IUserProfileService userProfileService,
-    IAppRoleService appRoleService,
-    IVideoApiClient videoApiClient,
-    ILogger<EventHub> logger,
-    IHeartbeatRequestMapper heartbeatRequestMapper,
-    IConferenceVideoControlStatusService conferenceVideoControlStatusService,
-    IConferenceManagementService conferenceManagementService,
-    IConferenceService conferenceService)
-    : Hub<IEventHubClient>
+public class EventHub : Hub<IEventHubClient>
 {
     public static string VhOfficersGroupName => "VhOfficers";
     public static string DefaultAdminName => "Admin";
+
+    private readonly IUserProfileService _userProfileService;
+    private readonly IAppRoleService _appRoleService;
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly ILogger<EventHub> _logger;
+    private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
+    private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
+    private readonly IConferenceManagementService _conferenceManagementService;
+    private readonly IConferenceService _conferenceService;
+    
+    public EventHub(IUserProfileService userProfileService,
+        IAppRoleService appRoleService,
+        IVideoApiClient videoApiClient,
+        ILogger<EventHub> logger,
+        IHeartbeatRequestMapper heartbeatRequestMapper,
+        IConferenceVideoControlStatusService conferenceVideoControlStatusService,
+        IConferenceManagementService conferenceManagementService,
+        IConferenceService conferenceService)
+    {
+        _userProfileService = userProfileService;
+        _appRoleService = appRoleService;
+        _videoApiClient = videoApiClient;
+        _logger = logger;
+        _heartbeatRequestMapper = heartbeatRequestMapper;
+        _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
+        _conferenceManagementService = conferenceManagementService;
+        _conferenceService = conferenceService;
+    }
     
     public override async Task OnConnectedAsync()
     {
@@ -38,9 +57,9 @@ public class EventHub(
         await base.OnConnectedAsync();
         
         // Cache user profile in the redis cache
-        await userProfileService.CacheUserProfileAsync(Context.User);
+        await _userProfileService.CacheUserProfileAsync(Context.User);
         var userName = GetObfuscatedUsernameAsync(Context.User.Identity!.Name);
-        logger.LogTrace("Connected to event hub server-side: {Username}", userName);
+        _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
     }
     
     private async Task AddUserToConferenceGroups(bool isAdmin)
@@ -77,19 +96,19 @@ public class EventHub(
         
         if (exception == null)
         {
-            logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
+            _logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
         }
         else
         {
-            logger.LogError(exception,
+            _logger.LogError(exception,
                 "There was an error when disconnecting from chat hub server-side: {Username}", obfuscatedUsername);
         }
         
         var isAdmin = IsSenderAdmin();
         await RemoveUserFromUserGroup(isAdmin);
         await RemoveUserFromConferenceGroups(isAdmin);
-        await userProfileService.ClearUserCache(username);
-        await appRoleService.ClearUserCache(username);
+        await _userProfileService.ClearUserCache(username);
+        await _appRoleService.ClearUserCache(username);
         
         await base.OnDisconnectedAsync(exception);
     }
@@ -118,7 +137,7 @@ public class EventHub(
         if (isAdmin)
         {
             //TODO: CREATE new endpoint for this
-            var conferences = await videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null);
+            var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null);
             return conferences.Select(x => x.Id);
         }
         
@@ -132,7 +151,7 @@ public class EventHub(
     
     private string GetObfuscatedUsernameAsync(string username)
     {
-        return userProfileService.GetObfuscatedUsername(username);
+        return _userProfileService.GetObfuscatedUsername(username);
     }
     
     /// <summary>
@@ -147,9 +166,9 @@ public class EventHub(
     {
         try
         {
-            logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
-            var conference = await conferenceService.GetConference(conferenceId);
-            var imRules = new InstantMessageRules(userProfileService);
+            _logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
+            var imRules = new InstantMessageRules(_userProfileService);
             var from = Context.User.Identity!.Name!.ToLower();
             var isTargetAdmin = to.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase);
             var canExchangeMessage = await imRules.CanExchangeMessage(conference, to, from);
@@ -171,12 +190,12 @@ public class EventHub(
             await SendToParticipant(sendMessageDto);
             if (!isTargetAdmin)
             {
-                logger.LogDebug("Admin has responded, notifying admin channel");
+                _logger.LogDebug("Admin has responded, notifying admin channel");
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to);
             }
             
-            logger.LogDebug("Pushing message to Video API history {MessageUuid}", sendMessageDto.MessageUuid);
-            await videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
+            _logger.LogDebug("Pushing message to Video API history {MessageUuid}", sendMessageDto.MessageUuid);
+            await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
                 To = isTargetAdmin ? DefaultAdminName : sendMessageDto.ParticipantUsername,
@@ -185,7 +204,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when sending message to {To}, in conference {ConferenceId}", to, conferenceId);
+            _logger.LogError(ex, "Error occured when sending message to {To}, in conference {ConferenceId}", to, conferenceId);
         }
     }
     
@@ -194,8 +213,8 @@ public class EventHub(
         var participant = dto.Conference.Participants.Single(x =>
             x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
         
-        var username = userProfileService.GetObfuscatedUsername(participant.Username);
-        logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
+        var username = _userProfileService.GetObfuscatedUsername(participant.Username);
+        _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
         
         var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
         
@@ -207,7 +226,7 @@ public class EventHub(
     private async Task SendToAdmin(SendMessageDto dto, string fromId)
     {
         var groupName = dto.Conference.Id.ToString();
-        logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
+        _logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
         var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
         await Clients.Group(groupName)
             .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
@@ -218,13 +237,13 @@ public class EventHub(
     {
         try
         {
-            var dto = heartbeatRequestMapper.MapToHealth(heartbeat);
+            var dto = _heartbeatRequestMapper.MapToHealth(heartbeat);
             await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
             (
                 conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion,
                 heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
             );
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participant = conference.Participants.Single(x => x.Id == participantId);
             await Clients.Group(participant.Username.ToLowerInvariant()).ReceiveHeartbeat
             (
@@ -242,13 +261,13 @@ public class EventHub(
                 );
             }
             
-            var addHeartbeatRequest = heartbeatRequestMapper.MapToRequest(heartbeat);
-            await videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId,
+            var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
+            await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId,
                 addHeartbeatRequest);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when sending heartbeat");
+            _logger.LogError(ex, "Error occured when sending heartbeat");
         }
     }
     
@@ -256,19 +275,19 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             
             var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
             if (transferringParticipant == null)
             {
-                logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
+                _logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
                     conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
             }
             
             await Clients.Group(VhOfficersGroupName)
                 .HearingTransfer(conferenceId, participantId, transferDirection);
-            logger.LogTrace(
+            _logger.LogTrace(
                 "Participant Transfer: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} | Direction: {Direction}",
                 participantId, conferenceId, transferDirection);
             
@@ -280,7 +299,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when transferring participant");
+            _logger.LogError(ex, "Error occured when transferring participant");
         }
     }
     
@@ -288,17 +307,17 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
-                logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
+                _logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
                     conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
             }
             
-            await conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId,
+            await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId,
                 participant.Id.ToString(), mediaStatus);
             
             var groupNames = new List<string> { VhOfficersGroupName };
@@ -310,14 +329,14 @@ public class EventHub(
                     .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
             }
             
-            logger.LogTrace(
+            _logger.LogTrace(
                 "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
                 participantId, conferenceId);
             
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating participant device status");
+            _logger.LogError(ex, "Error occured when updating participant device status");
         }
     }
     
@@ -329,13 +348,13 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participant = conference.Participants.Single(x => x.Id == participantId);
             var linkedParticipants = GetLinkedParticipants(conference, participant);
             
             await Clients.Group(participant.Username.ToLowerInvariant())
                 .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted);
-            logger.LogTrace(
+            _logger.LogTrace(
                 "Participant remote mute status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsRemoteMuted}",
                 participantId, conferenceId, isRemoteMuted);
             Task.WaitAll(
@@ -346,7 +365,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            _logger.LogError(ex,
                 "Error occured when updating participant {ParticipantId} in conference {ConferenceId} remote mute status to {IsRemoteMuted}",
                 participantId, conferenceId, isRemoteMuted);
         }
@@ -360,12 +379,12 @@ public class EventHub(
     {
         try
         {
-            await conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+            await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
                 isRaised);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            _logger.LogError(ex,
                 "Error occured when updating participant {ParticipantId} in conference {ConferenceId} hand status to {IsHandRaised}",
                 participantId, conferenceId, isRaised);
         }
@@ -383,12 +402,12 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
                 
-                logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}",
+                _logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}",
                     participantId, conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, participantId);
             }
@@ -399,7 +418,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            _logger.LogError(ex,
                 "Error occured when updating participant {ParticipantId} in conference {ConferenceId} local mute status to {Muted}",
                 participantId, conferenceId, muted);
         }
@@ -416,7 +435,7 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var participants = conference.Participants.Where(x => !x.IsHost());
             
             foreach (var participant in participants)
@@ -427,7 +446,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            _logger.LogError(ex,
                 "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
                 conferenceId, muted);
         }
@@ -443,7 +462,7 @@ public class EventHub(
     {
         try
         {
-            var conference = await conferenceService.GetConference(conferenceId);
+            var conference = await _conferenceService.GetConference(conferenceId);
             var otherHosts = conference.Participants
                 .Where(x => x.IsHost() && x.Id != participantId)
                 .ToArray();
@@ -454,12 +473,12 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}",
+            _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}",
                 conferenceId);
         }
     }
     
-    private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
+    private static List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
     {
         if (participant.IsJudicialOfficeHolder())
         {

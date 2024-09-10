@@ -5,15 +5,17 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class PauseEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class PauseEventHandler : EventHandlerBase
     {
-
         public override EventType EventType => EventType.Pause;
 
+        public PauseEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<PauseEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishConferenceStatusMessage(ConferenceStatus.Paused);

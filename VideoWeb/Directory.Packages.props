@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <Authors>HMCTS VH</Authors>
         <Company>HMCTS</Company>
         <RepositoryUrl>https://github.com/hmcts/vh-video-web</RepositoryUrl>

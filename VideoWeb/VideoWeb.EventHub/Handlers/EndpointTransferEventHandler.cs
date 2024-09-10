@@ -9,15 +9,17 @@ using VHRoom = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class EndpointTransferEventHandler (
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class EndpointTransferEventHandler : EventHandlerBase
     {
-
         public override EventType EventType => EventType.EndpointTransfer;
 
+        public EndpointTransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<EndpointTransferEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var endpointStatus = DeriveEndpointStatusForTransferEvent(callbackEvent);

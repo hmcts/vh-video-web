@@ -6,14 +6,16 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers;
 
-public class ParticipantsUpdatedEventHandler(
-    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-    IConferenceService conferenceService,
-    ILogger<EventHandlerBase> logger)
-    : EventHandlerBase(hubContext, conferenceService, logger)
+public class ParticipantsUpdatedEventHandler : EventHandlerBase
 {
-    
     public override EventType EventType => EventType.ParticipantsUpdated;
+
+    public ParticipantsUpdatedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IConferenceService conferenceService,
+        ILogger<ParticipantsUpdatedEventHandler> logger)
+        : base(hubContext, conferenceService, logger)
+    {
+    }
     
     protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
     {

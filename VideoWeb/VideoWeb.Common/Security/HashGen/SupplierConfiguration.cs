@@ -2,9 +2,9 @@ using VideoWeb.Common.Enums;
 
 namespace VideoWeb.Common.Security.HashGen
 {
-    public abstract class SupplierConfiguration(Supplier supplier)
+    public abstract class SupplierConfiguration
     {
-        public Supplier Supplier { get; private set; } = supplier;
+        public Supplier Supplier { get; private set; }
         public string CallbackSecret { get; set; }
         public string Audience { get; set; }
         public string Issuer { get; set; }
@@ -17,5 +17,10 @@ namespace VideoWeb.Common.Security.HashGen
         public string TurnServerUser { get; set; }
         public string TurnServerCredential { get; set; }
         public string HeartbeatUrlBase { get; set; }
+        
+        protected SupplierConfiguration(Supplier supplier)
+        {
+            Supplier = supplier;
+        }
     }
 }

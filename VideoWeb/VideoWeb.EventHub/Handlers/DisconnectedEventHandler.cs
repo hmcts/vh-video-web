@@ -6,15 +6,17 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class DisconnectedEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class DisconnectedEventHandler : EventHandlerBase
     {
-
         public override EventType EventType => EventType.Disconnected;
 
+        public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<DisconnectedEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected);

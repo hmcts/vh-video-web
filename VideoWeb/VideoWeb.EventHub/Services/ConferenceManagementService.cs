@@ -33,16 +33,27 @@ public interface IConferenceManagementService
     Task ParticipantLeaveConferenceAsync(Guid conferenceId, string username, CancellationToken cancellationToken = default);
 }
 
-public class ConferenceManagementService(
-    IConferenceService conferenceService,
-    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-    IVideoApiClient videoApiClient,
-    ILogger<ConferenceManagementService> logger)
-    : IConferenceManagementService
+public class ConferenceManagementService : IConferenceManagementService
 {
+    private readonly IConferenceService _conferenceService;
+    private readonly IHubContext<Hub.EventHub, IEventHubClient> _hubContext;
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly ILogger<ConferenceManagementService> _logger;
+    
+    public ConferenceManagementService(IConferenceService conferenceService,
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IVideoApiClient videoApiClient,
+        ILogger<ConferenceManagementService> logger)
+    {
+        _conferenceService = conferenceService;
+        _hubContext = hubContext;
+        _videoApiClient = videoApiClient;
+        _logger = logger;
+    }
+    
     public async Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised, CancellationToken cancellationToken = default)
     {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Find(x => x.Id == participantId);
         if (participant == null) throw new ParticipantNotFoundException(conferenceId, participantId);
         var linkedParticipants = GetLinkedParticipants(conference, participant);
@@ -52,19 +63,19 @@ public class ConferenceManagementService(
 
         foreach (var groupName in groupNames)
         {
-            await hubContext.Clients.Group(groupName)
+            await _hubContext.Clients.Group(groupName)
                 .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
         }
                
-        logger.LogTrace(
+        _logger.LogTrace(
             "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
             participantId, conferenceId, isRaised);
         foreach (var linkedParticipant in linkedParticipants)
         {
-            await hubContext.Clients
+            await _hubContext.Clients
                 .Group(linkedParticipant.Username.ToLowerInvariant())
                 .ParticipantHandRaiseMessage(linkedParticipant.Id, conferenceId, isRaised);
-            logger.LogTrace(
+            _logger.LogTrace(
                 "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
                 linkedParticipant.Id, conferenceId, isRaised);
         }
@@ -72,28 +83,28 @@ public class ConferenceManagementService(
 
     public async Task ParticipantLeaveConferenceAsync(Guid conferenceId, string username, CancellationToken cancellationToken = default)
     {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Find(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
         if (participant == null) throw new ParticipantNotFoundException(conferenceId, username);
         
-        await videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
+        await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
         {
             ParticipantId = participant.Id,
             TransferType = TransferType.Dismiss
         }, cancellationToken);
 
-        logger.LogTrace("Participant left conference: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}", participant.Id, conferenceId);
+        _logger.LogTrace("Participant left conference: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}", participant.Id, conferenceId);
         foreach (var conferenceParticipant in conference.Participants.Where(x=> !x.IsStaffMember()))
         {
-            await hubContext.Clients.Group(conferenceParticipant.Username.ToLowerInvariant())
+            await _hubContext.Clients.Group(conferenceParticipant.Username.ToLowerInvariant())
                 .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out);
         }
-        await hubContext.Clients.Group(conferenceId.ToString())
+        await _hubContext.Clients.Group(conferenceId.ToString())
             .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out);
     }
 
 
-    private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
+    private static List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
     {
         if (participant.IsJudicialOfficeHolder())
         {
