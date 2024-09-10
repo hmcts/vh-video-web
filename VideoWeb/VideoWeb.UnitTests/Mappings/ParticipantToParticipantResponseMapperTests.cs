@@ -133,7 +133,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var testConference = new Conference
             {
-                CivilianRooms = [civilianRoom]
+                CivilianRooms = new List<CivilianRoom> { civilianRoom }
             };
             
             var mapped = _sut.Map(testParticipant, testConference);

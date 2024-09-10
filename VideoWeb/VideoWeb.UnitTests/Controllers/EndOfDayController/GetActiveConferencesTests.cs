@@ -28,7 +28,7 @@ public class GetActiveConferencesTests
 {
     private AutoMock _mocker;
     private VideoWeb.Controllers.EndOfDayController _sut;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -36,7 +36,7 @@ public class GetActiveConferencesTests
         var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
         _sut = SetupControllerWithClaims(claimsPrincipal);
     }
-    
+
     private VideoWeb.Controllers.EndOfDayController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var context = new ControllerContext

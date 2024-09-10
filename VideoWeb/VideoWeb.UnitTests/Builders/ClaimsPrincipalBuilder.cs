@@ -7,17 +7,18 @@ namespace VideoWeb.UnitTests.Builders
     {
         public const string Username = "john@hmcts.net";
         
-        private readonly List<Claim> _claims = [];
+        private readonly List<Claim> _claims = new() { };
         public ClaimsPrincipalBuilder(bool includeGivenName = true, bool includeSurname = true, bool includeDefaultClaims = true)
         {
             if (includeDefaultClaims)
             {
                 _claims =
-                [
-                    new Claim("preferred_username", Username),
-                    new Claim(ClaimTypes.NameIdentifier, "userId"),
-                    new Claim(ClaimTypes.Name, "John Doe")
-                ];
+                    new List<Claim>
+                    {
+                        new Claim("preferred_username", Username),
+                        new Claim(ClaimTypes.NameIdentifier, "userId"),
+                        new Claim(ClaimTypes.Name, "John Doe")
+                    };
             }
 
             if (includeGivenName)
