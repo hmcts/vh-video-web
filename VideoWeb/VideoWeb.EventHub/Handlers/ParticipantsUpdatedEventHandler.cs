@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
@@ -24,16 +25,12 @@ public class ParticipantsUpdatedEventHandler(
     private async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants,
         List<ParticipantResponse> participantsToNotify)
     {
-        foreach (var participant in participantsToNotify)
+        foreach (var participant in participantsToNotify.Where(p => p.Role != Role.StaffMember))
         {
-            // Staff members already receive a message via the staff members group below, so don't message them here as well
-            if (participant.Role != Role.StaffMember)
-            {
-                await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
-                    .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
-                Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
-                    participant.Role);
-            }
+            await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
+                .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
+            Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
+                participant.Role);
         }
         
         await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
