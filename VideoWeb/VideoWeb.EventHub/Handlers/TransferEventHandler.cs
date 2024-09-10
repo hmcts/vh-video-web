@@ -9,14 +9,17 @@ using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class TransferEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class TransferEventHandler : EventHandlerBase
     {
         public override EventType EventType => EventType.Transfer;
 
+        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<TransferEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var participantStatusTuple = DeriveParticipantStatusForTransferEvent(callbackEvent);

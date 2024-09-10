@@ -9,10 +9,19 @@ namespace VideoWeb.Common
         SupplierConfiguration GetSupplierConfiguration();
     }
 
-    public class SupplierPlatformService(IJwtTokenProvider jwtTokenProvider, SupplierConfiguration supplierConfiguration) : ISupplierPlatformService
+    public class SupplierPlatformService : ISupplierPlatformService
     {
-        public IJwtTokenProvider GetTokenProvider() => jwtTokenProvider;
+        private readonly IJwtTokenProvider _jwtTokenProvider;
+        private readonly SupplierConfiguration _supplierConfiguration;
         
-        public SupplierConfiguration GetSupplierConfiguration() => supplierConfiguration;
+        public SupplierPlatformService(IJwtTokenProvider jwtTokenProvider, SupplierConfiguration supplierConfiguration)
+        {
+            _jwtTokenProvider = jwtTokenProvider;
+            _supplierConfiguration = supplierConfiguration;
+        }
+        
+        public IJwtTokenProvider GetTokenProvider() => _jwtTokenProvider;
+        
+        public SupplierConfiguration GetSupplierConfiguration() => _supplierConfiguration;
     }
 }

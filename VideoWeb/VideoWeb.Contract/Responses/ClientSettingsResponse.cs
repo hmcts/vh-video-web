@@ -69,6 +69,6 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// Configurations for the suppliers
         /// </summary>
-        public List<SupplierConfigurationResponse> SupplierConfigurations { get; set; } = [];
+        public List<SupplierConfigurationResponse> SupplierConfigurations { get; set; } = new();
     }
 }

@@ -7,16 +7,17 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class ParticipantNotSignedInEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class ParticipantNotSignedInEventHandler : EventHandlerBase
     {
-        
-
         public override EventType EventType => EventType.ParticipantNotSignedIn;
 
+        public ParticipantNotSignedInEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<ParticipantNotSignedInEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishParticipantStatusMessage(ParticipantState.NotSignedIn, ParticipantStatus.NotSignedIn);

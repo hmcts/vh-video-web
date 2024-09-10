@@ -6,14 +6,17 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class ParticipantJoiningEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class ParticipantJoiningEventHandler : EventHandlerBase
     {
         public override EventType EventType => EventType.ParticipantJoining;
 
+        public ParticipantJoiningEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<ParticipantJoiningEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
+        
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishParticipantStatusMessage(ParticipantState.Joining, ParticipantStatus.Joining);

@@ -8,22 +8,30 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class VhOfficerCallEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        ILogger<EventHandlerBase> logger,
-        IVideoApiClient videoApiClient,
-        IConsultationNotifier consultationNotifier,
-        IConferenceService conferenceService)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class VhOfficerCallEventHandler : EventHandlerBase
     {
         public override EventType EventType => EventType.VhoCall;
 
+        private readonly IVideoApiClient _videoApiClient;
+        private readonly IConsultationNotifier _consultationNotifier;
+        
+        public VhOfficerCallEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            ILogger<VhOfficerCallEventHandler> logger,
+            IVideoApiClient videoApiClient,
+            IConsultationNotifier consultationNotifier,
+            IConferenceService conferenceService)
+            : base(hubContext, conferenceService, logger)
+        {
+            _videoApiClient = videoApiClient;
+            _consultationNotifier = consultationNotifier;
+        }
+        
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
             if (SourceEndpoint != null)
             {
-                return videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = SourceConference.Id,
                     EndpointId = SourceEndpoint.Id,
@@ -31,10 +39,10 @@ namespace VideoWeb.EventHub.Handlers
                 });
             }
 
-            return consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty, SourceParticipant.Id);
+            return _consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty, SourceParticipant.Id);
         }
 
-        private string ValidationConsultationRoom(CallbackEvent callbackEvent)
+        private static string ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
             if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {

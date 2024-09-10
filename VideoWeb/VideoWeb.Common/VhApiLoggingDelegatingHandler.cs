@@ -7,11 +7,18 @@ using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common;
 
-public class VhApiLoggingDelegatingHandler(
-    ILogger<VhApiLoggingDelegatingHandler> logger,
-    TelemetryClient telemetryClient)
-    : DelegatingHandler
+public class VhApiLoggingDelegatingHandler : DelegatingHandler
 {
+    private readonly ILogger<VhApiLoggingDelegatingHandler> _logger;
+    private readonly TelemetryClient _telemetryClient;
+    
+    public VhApiLoggingDelegatingHandler(ILogger<VhApiLoggingDelegatingHandler> logger,
+        TelemetryClient telemetryClient)
+    {
+        _logger = logger;
+        _telemetryClient = telemetryClient;
+    }
+    
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var requestTelemetry = new Microsoft.ApplicationInsights.DataContracts.RequestTelemetry
@@ -26,7 +33,7 @@ public class VhApiLoggingDelegatingHandler(
         {
             var requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
             requestTelemetry.Properties.Add("VHApiRequestBody", requestBody);
-            logger.LogInformation("Request to {RequestUri}: {RequestBody}", request.RequestUri, requestBody);
+            _logger.LogInformation("Request to {RequestUri}: {RequestBody}", request.RequestUri, requestBody);
         }
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         // Proceed with the request
@@ -39,7 +46,7 @@ public class VhApiLoggingDelegatingHandler(
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         requestTelemetry.Properties.Add("VHApiResponseBody", responseBody);
 
-        telemetryClient.TrackRequest(requestTelemetry);
+        _telemetryClient.TrackRequest(requestTelemetry);
 
         return response;
     }

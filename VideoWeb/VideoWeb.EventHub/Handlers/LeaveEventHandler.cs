@@ -6,14 +6,16 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class LeaveEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-        IConferenceService conferenceService,
-        ILogger<EventHandlerBase> logger)
-        : EventHandlerBase(hubContext, conferenceService, logger)
+    public class LeaveEventHandler : EventHandlerBase
     {
-
         public override EventType EventType => EventType.Leave;
+
+        public LeaveEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceService conferenceService,
+            ILogger<LeaveEventHandler> logger)
+            : base(hubContext, conferenceService, logger)
+        {
+        }
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
