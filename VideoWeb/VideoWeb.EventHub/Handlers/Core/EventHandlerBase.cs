@@ -22,9 +22,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public abstract EventType EventType { get; }
 
-        // Constructor for .NET 6
-        protected EventHandlerBase(
-            IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceService conferenceService,
             ILogger<EventHandlerBase> logger)
         {
@@ -50,6 +48,12 @@ namespace VideoWeb.EventHub.Handlers.Core
             await PublishStatusAsync(callbackEvent);
         }
 
+        /// <summary>
+        ///     Publish a participant event to all participants in conference to those connected to the HubContext
+        /// </summary>
+        /// <param name="participantState">Participant status event to publish</param>
+        /// <param name="newStatus"></param>
+        /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState, ParticipantStatus newStatus)
         {
             SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus);
@@ -74,6 +78,11 @@ namespace VideoWeb.EventHub.Handlers.Core
                 SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role, participantState);
         }
 
+        /// <summary>
+        ///     Publish a hearing event to all participants in conference to those connected to the HubContext
+        /// </summary>
+        /// <param name="hearingEventStatus">Hearing status event to publish</param>
+        /// <returns></returns>
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
             SourceConference.UpdateConferenceStatus(hearingEventStatus);
