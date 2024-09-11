@@ -63,6 +63,28 @@ namespace VideoWeb.UnitTests.Cache
             result.Should().BeEquivalentTo(conference);
         }
         
+        [Test]
+        public async Task RemoveConferenceAsync_should_remove_conference_from_cache()
+        {
+            // Arrange
+            var conferenceResponse = CreateConferenceResponse();
+            var hearingDetails = CreateHearingResponse(conferenceResponse);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetails);
+            var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
+            var rawData = Encoding.UTF8.GetBytes(serialisedConference);
+            _distributedCacheMock
+                .Setup(x => x.GetAsync(conference.Id.ToString(), CancellationToken.None))
+                .ReturnsAsync(rawData);
+            
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
+
+            // Act
+            await cache.RemoveConferenceAsync(conference);
+
+            // Assert
+            _distributedCacheMock.Verify(x => x.RemoveAsync(conference.Id.ToString(), default), Times.Once);
+        }
+        
         private static JsonSerializerSettings SerializerSettings => new () { TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None };
     }
 }

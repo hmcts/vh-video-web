@@ -30,6 +30,8 @@ namespace VideoWeb.Controllers
         private readonly IAllocationHearingsEventNotifier _allocationHearingsEventNotifier;
         private readonly ILogger<InternalEventController> _logger;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
+        private readonly IHearingCancelledEventNotifier _hearingCancelledEventNotifier;
+        private readonly IHearingDetailsUpdatedEventNotifier _hearingDetailsUpdatedEventNotifier;
 
         public InternalEventController(
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
@@ -37,7 +39,9 @@ namespace VideoWeb.Controllers
             ILogger<InternalEventController> logger,
             INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
             IAllocationHearingsEventNotifier allocationHearingsEventNotifier,
-            IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier
+            IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier,
+            IHearingCancelledEventNotifier hearingCancelledEventNotifier,
+            IHearingDetailsUpdatedEventNotifier hearingDetailsUpdatedEventNotifier
             )
         {
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -46,6 +50,8 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
             _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
+            _hearingCancelledEventNotifier = hearingCancelledEventNotifier;
+            _hearingDetailsUpdatedEventNotifier = hearingDetailsUpdatedEventNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -170,6 +176,29 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, $"HearingIds: {JsonSerializer.Serialize(request)}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+        
+        [HttpPost("HearingCancelled")]
+        [SwaggerOperation(OperationId = "HearingCancelled")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> HearingCancelled(Guid conferenceId)
+        {
+            var conference = await _conferenceService.GetConference(conferenceId);
+            await _conferenceService.RemoveConference(conference);
+            await _hearingCancelledEventNotifier.PushHearingCancelledEvent(conference);
+            return NoContent();
+        }
+
+        [HttpPost("HearingDetailsUpdated")]
+        [SwaggerOperation(OperationId = "HearingDetailsUpdated")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> HearingDetailsUpdated(Guid conferenceId)
+        {
+            var conference = await _conferenceService.ForceGetConference(conferenceId);
+            await _hearingDetailsUpdatedEventNotifier.PushHearingDetailsUpdatedEvent(conference);
+            return NoContent();
         }
     }
 }

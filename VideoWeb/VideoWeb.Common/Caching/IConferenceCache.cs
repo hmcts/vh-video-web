@@ -12,5 +12,6 @@ namespace VideoWeb.Common.Caching
         Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse, CancellationToken cancellationToken = default);
         Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
         Task <Conference> GetOrAddConferenceAsync(Guid id, Func<Task<(ConferenceDetailsResponse, HearingDetailsResponseV2)>> addConferenceDetailsFactory, CancellationToken cancellationToken = default);
+        Task RemoveConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
     }
 }

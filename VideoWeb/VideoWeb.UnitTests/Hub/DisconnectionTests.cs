@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -15,6 +16,20 @@ namespace VideoWeb.UnitTests.Hub
         {
             var numOfConferences = 10;
             var conferences = SetupConferences(numOfConferences);
+            var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
+
+            await Hub.OnDisconnectedAsync(null);
+
+            GroupManagerMock.Verify(
+                x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
+                    CancellationToken.None), Times.Exactly(numOfConferences));
+        }
+        
+        [Test]
+        public async Task Should_unsubscribe_staff_member_from_all_conferences()
+        {
+            var numOfConferences = 10;
+            var conferences = SetupConferences(numOfConferences, userRole: AppRoles.StaffMember);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
             await Hub.OnDisconnectedAsync(null);
