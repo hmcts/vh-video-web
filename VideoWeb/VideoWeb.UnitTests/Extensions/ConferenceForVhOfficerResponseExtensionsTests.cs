@@ -71,7 +71,7 @@ public class ConferenceForVhOfficerResponseExtensionsTests
         unallocatedConferences.Add(
             new ConferenceForVhOfficerResponse { AllocatedCsoId = allocatedCsoId,  HearingVenueName = "Birmingham Magistrates Court" });
         var filteredConferences = unallocatedConferences
-            .ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true, AllocatedCsoIds = new[] {allocatedCsoId}})
+            .ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true, AllocatedCsoIds = [allocatedCsoId] })
             .ToList();
         filteredConferences.Should().HaveCount(2);
     }    
@@ -82,7 +82,7 @@ public class ConferenceForVhOfficerResponseExtensionsTests
         var allocatedCsoId = Guid.NewGuid();
         unallocatedConferences.Add(
             new ConferenceForVhOfficerResponse { AllocatedCsoId = allocatedCsoId,  HearingVenueName = "Birmingham Magistrates Court" });
-        var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = false, AllocatedCsoIds = new[] {allocatedCsoId}});
+        var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = false, AllocatedCsoIds = [allocatedCsoId]});
         filteredConferences.Should().HaveCount(1);
     }
     

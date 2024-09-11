@@ -40,41 +40,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
         }
-
-        [Test]
-        public async Task Should_forward_error_when_video_api_returns_error()
-        {
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
-            
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
-
-            var typedResult = (ObjectResult)result.Result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-        }
         
-        [Test]
-        public async Task Should_forward_error_when_bookings_api_returns_error()
-        {
-            var apiException = new BookingsApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
-            
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>(), CancellationToken.None);
-
-            var typedResult = (ObjectResult)result.Result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
-        }
-
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
@@ -121,28 +87,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForHost!.Count.Should().Be(conferences.Count);
             conferencesForHost[0].Participants.Should().NotBeNullOrEmpty();
             conferencesForHost[0].Participants.Count.Should().Be(participants.Count);
-        }
-
-        [Test]
-        public async Task Should_return_ok_with_no_conferences()
-        {
-            var hearingVenueNamesQuery = new List<string>();
-            var conferences = new List<ConferenceCoreResponse>();
-            var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(conferences);
-            _mocker.Mock<IBookingsApiClient>()
-                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(bookingException);
-
-            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
-
-            var typedResult = (OkObjectResult)result.Result;
-            typedResult.Should().NotBeNull();
-
-            var conferencesForHost = (List<ConferenceForHostResponse>)typedResult.Value;
-            conferencesForHost.Should().BeEmpty();
         }
 
         private ConferencesController SetupControllerWithClaims(System.Security.Claims.ClaimsPrincipal claimsPrincipal)

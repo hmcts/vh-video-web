@@ -5,8 +5,8 @@ namespace VideoWeb.Contract.Request
 {
     public class VhoConferenceFilterQuery
     {
-        public IEnumerable<string> HearingVenueNames { get; set; } = new List<string>();
-        public IEnumerable<Guid> AllocatedCsoIds { get; set; } = new List<Guid>();
-        public bool IncludeUnallocated { get; set; }
+        public List<string> HearingVenueNames { get; set; } = new();
+        public List<Guid> AllocatedCsoIds { get; set; } = new();
+        public bool? IncludeUnallocated { get; set; }
     }
 }

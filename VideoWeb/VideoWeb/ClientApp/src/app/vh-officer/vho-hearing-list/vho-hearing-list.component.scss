@@ -1,5 +1,13 @@
 @import 'govuk-frontend/dist/govuk/base';
 
+.no-conferences-message {
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center; /* Vertically center */
+  height: 100%; /* Ensure it takes the full height of the parent */
+  text-align: center; /* Center text inside the element */
+}
+
 .vh-width-main {
   width: 85% !important;
   padding-left: 0px !important;

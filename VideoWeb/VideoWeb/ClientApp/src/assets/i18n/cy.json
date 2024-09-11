@@ -832,7 +832,9 @@
   "select-hearing-layout": {
     "choose-hearing-layout": "Dewiswch gynllun ar gyfer y gwrandawiad",
     "open-all": "Agor y cyfan",
-    "close-all": "Cau'r cyfan"
+    "close-all": "Cau'r cyfan",
+    "close-button-text": "Cau",
+    "close-button-label": "Caewch y cynllun ar gyfer y ddewislen gwrandawiad"
   },
   "hearing-layout": {
     "title-1-plus-7": "1 prif siaradwr",
