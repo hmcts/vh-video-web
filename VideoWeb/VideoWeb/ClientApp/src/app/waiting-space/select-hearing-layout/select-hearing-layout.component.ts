@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
@@ -13,6 +13,9 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() conference: ConferenceResponse;
     @Input() callback: Function;
     @Input() onHostToolBar = false;
+    @Input() showActionButtons = false;
+
+    @Output() closeButtonPressed = new EventEmitter();
 
     availableLayouts: HearingLayout[];
 
@@ -101,5 +104,9 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         if (callback) {
             callback(layout);
         }
+    }
+
+    onClose() {
+        this.closeButtonPressed.emit();
     }
 }

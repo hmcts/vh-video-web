@@ -51,11 +51,13 @@ import { ConferenceEffects } from './store/effects/conference.effects';
 import { environment } from 'src/environments/environment';
 import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
-import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup/change-hearing-layout.component';
+import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup/change-hearing-layout-popup.component';
 import { VideoCallEffects } from './store/effects/video-call.effects';
 import { AudioMixSelectionComponent } from './audio-mix-selection/audio-mix-selection.component';
 import { ReferenceDataEffects } from './store/effects/reference-data.effects';
 import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/reference-data.reducer';
+import { NotificationEffects } from './store/effects/notification.effects';
+import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm-non-host-leave-hearing-popup.component';
 
 @NgModule({
     imports: [
@@ -65,7 +67,7 @@ import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
@@ -84,6 +86,7 @@ import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/
         ParticipantAlertComponent,
         SelectHearingLayoutComponent,
         ConfirmLeaveHearingPopupComponent,
+        ConfirmNonHostLeaveHearingPopupComponent,
         ConfirmCloseHearingPopupComponent,
         ConfirmStartHearingPopupComponent,
         AudioMixSelectionComponent,

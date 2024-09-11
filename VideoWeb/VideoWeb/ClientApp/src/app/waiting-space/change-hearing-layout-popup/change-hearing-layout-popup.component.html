@@ -1,0 +1,11 @@
+<div id="change-hearing-layout-modal" class="modal modal-open">
+  <div class="modal-content">
+    <app-select-hearing-layout
+      [conference]="conference"
+      [callback]="onLayoutUpdate"
+      [onHostToolBar]="true"
+      [showActionButtons]="true"
+      (closeButtonPressed)="closePopup()"
+    ></app-select-hearing-layout>
+  </div>
+</div>

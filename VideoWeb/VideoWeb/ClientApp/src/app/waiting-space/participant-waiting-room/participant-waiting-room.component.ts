@@ -50,6 +50,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
     showWarning = false;
     displayLanguageModal: boolean;
+    displayLeaveHearingPopup = false;
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
@@ -342,6 +343,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     dismissWarning() {
         this.showWarning = false;
         this.setUpSubscribers();
+    }
+
+    onLeaveHearingButtonClicked() {
+        this.displayLeaveHearingPopup = true;
+    }
+
+    leave(confirmation: boolean) {
+        this.displayLeaveHearingPopup = false;
+        if (!confirmation) {
+            return;
+        }
+        const feedbackUrl = 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/';
+        window.location.assign(feedbackUrl);
     }
 
     private onShouldReload(): void {

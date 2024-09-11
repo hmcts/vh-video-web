@@ -511,6 +511,7 @@
     "case-number": "rhif yr achos ",
     "date": "Dyddiad",
     "to": "tan",
+    "leave-hearing": "Gadael y gwrandawiad",
     "please-wait": "Arhoswch os gwelwch yn dda",
     "hearing-starting-at": "Mae eich gwrandawiad fideo wedi'i restru i ddechrau am ",
     "hearing-status-messages": {
@@ -831,7 +832,9 @@
   "select-hearing-layout": {
     "choose-hearing-layout": "Dewiswch gynllun ar gyfer y gwrandawiad",
     "open-all": "Agor y cyfan",
-    "close-all": "Cau'r cyfan"
+    "close-all": "Cau'r cyfan",
+    "close-button-text": "Cau",
+    "close-button-label": "Caewch y cynllun ar gyfer y ddewislen gwrandawiad"
   },
   "hearing-layout": {
     "title-1-plus-7": "1 prif siaradwr",
@@ -971,6 +974,7 @@
   "confirm-leave-hearing-popup": {
     "title": "Rydych chi ar fin gadael y gwrandawiad hwn",
     "message": "Sicrhewch fod y barnwr neu swyddog cyfrifol arall o staff yn parhau'n bresennol cyn gadael y gwrandawiad.",
+    "non-host-leave-hearing": "A ydych yn dymuno gadael y gwrandawiad hwn",
     "leave-hearing": "Gadael y gwrandawiad",
     "leave-hearing-label": "Cadarnhau gadael y gwrandawiad",
     "cancel-leave": "Canslo",

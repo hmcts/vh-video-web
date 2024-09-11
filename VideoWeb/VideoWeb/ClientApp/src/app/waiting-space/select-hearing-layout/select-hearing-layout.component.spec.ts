@@ -151,4 +151,12 @@ describe('SelectHearingLayoutComponent', () => {
             expect(component.subscriptions.unsubscribe).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe('onClose', () => {
+        it('should emit close button pressed event', () => {
+            spyOn(component.closeButtonPressed, 'emit');
+            component.onClose();
+            expect(component.closeButtonPressed.emit).toHaveBeenCalledTimes(1);
+        });
+    });
 });

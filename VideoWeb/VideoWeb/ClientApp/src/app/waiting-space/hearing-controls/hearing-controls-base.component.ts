@@ -22,6 +22,9 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { FocusService } from 'src/app/services/focus.service';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { ConferenceActions } from '../store/actions/conference.actions';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -74,7 +77,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected conferenceStore: Store<ConferenceState>
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -476,6 +480,15 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
+    nonHostLeave(confirmation: boolean) {
+        this.displayLeaveHearingPopup = false;
+        if (confirmation) {
+            this.conferenceStore.dispatch(ConferenceActions.participantLeaveHearingRoom({ conferenceId: this.conferenceId }));
+        } else {
+            this.focusService.restoreFocus();
+        }
+    }
+
     displayConfirmationDialog() {
         this.focusService.storeFocus();
         this.displayConfirmPopup = true;
@@ -484,6 +497,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     displayConfirmationLeaveHearingDialog() {
         this.focusService.storeFocus();
         this.displayLeaveHearingPopup = true;
+    }
+
+    displayChangeLayoutDialog() {
+        this.focusService.storeFocus();
+        this.displayChangeLayoutPopup = true;
+    }
+
+    closeChangeLayoutDialog() {
+        this.displayChangeLayoutPopup = false;
+        this.focusService.restoreFocus();
     }
 
     leavePrivateConsultation() {

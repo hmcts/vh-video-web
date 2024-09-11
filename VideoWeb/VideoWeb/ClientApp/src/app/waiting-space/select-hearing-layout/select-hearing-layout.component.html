@@ -1,26 +1,50 @@
-<div class="govuk-accordion" data-module="govuk-accordion" id="select-hearing-container">
-  <div class="govuk-accordion__section" id="accordian-container">
-    <div class="govuk-accordion__section-header">
-      <div class="govuk-accordion__section-heading">
-          <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"></span>
-      </div>
-    </div>
-    <div *ngIf="!isAccordianOpen">
-      <app-hearing-layout [layout]="currentLayout$ | async" [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)" [showInput]="false"></app-hearing-layout>
-    </div>
+<div class="govuk-width-container">
+  <div class="govuk-grid-row govuk-!-margin-0">
+    <div class="govuk-accordion" data-module="govuk-accordion" id="select-hearing-container">
+      <div class="govuk-accordion__section" id="accordian-container">
+        <div class="govuk-accordion__section-header">
+          <div class="govuk-accordion__section-heading">
+            <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"></span>
+          </div>
+        </div>
+        <div *ngIf="!isAccordianOpen">
+          <app-hearing-layout
+            [layout]="currentLayout$ | async"
+            [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)"
+            [showInput]="false"
+          ></app-hearing-layout>
+        </div>
 
-    <div id="select-hearing-container-content-1" class="govuk-accordion__section-content">
-      <div class="govuk-radios govuk-radios--small layoutsgrid">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-visually-hidden">{{'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
-          <ng-container *ngFor="let layout of availableLayouts">
-              <app-hearing-layout
+        <div id="select-hearing-container-content-1" class="govuk-accordion__section-content">
+          <div class="govuk-radios govuk-radios--small layoutsgrid">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-visually-hidden">{{ 'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
+              <ng-container *ngFor="let layout of availableLayouts">
+                <app-hearing-layout
                   [layout]="layout"
                   [recommended]="(recommendedLayout$ | async) === layout"
                   [isSelected]="(currentLayout$ | async) === layout"
-                  (selectedEvent)="updateSelectedLayout(layout, callback)"></app-hearing-layout>
-          </ng-container>
-        </fieldset>
+                  (selectedEvent)="updateSelectedLayout(layout, callback)"
+                ></app-hearing-layout>
+              </ng-container>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div *ngIf="showActionButtons" class="govuk-grid-column-full govuk-!-margin-top-3">
+      <div class="govuk-button-group">
+        <button
+          id="btnContinueLanguageChange"
+          class="govuk-button"
+          data-module="govuk-button"
+          [attr.aria-label]="'select-hearing-layout.close-button-label' | translate"
+          (click)="onClose()"
+        >
+          {{ 'select-hearing-layout.close-button-text' | translate }}
+        </button>
       </div>
     </div>
   </div>

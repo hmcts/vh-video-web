@@ -11,6 +11,7 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { VideoCallService } from './video-call.service';
+import { VHParticipant } from '../store/models/vh-conference';
 
 @Injectable()
 export class NotificationToastrService {
@@ -339,6 +340,47 @@ export class NotificationToastrService {
                 {
                     id: 'notification-toastr-participant-added-dismiss',
                     label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    /**
+     * Display a toast notification informing a participant has left the hearing room
+     * @param participant the leaving participant
+     * @param loggedInParticipantInVideo true if the logged in participant has a video stream on display (i.e. in consultation or in a hearing)
+     * @returns a toast notification informing a participant has left
+     */
+    showParticipantLeftHearingRoom(participant: VHParticipant, loggedInParticipantInVideo: boolean = false): VhToastComponent {
+        const messageBody = this.translateService.instant('notification-toastr.participant-left-hearing.message', {
+            name: participant.name ?? participant.displayName
+        });
+
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+            'notification-toastr.participant-left-hearing.title'
+        )}</span>`;
+
+        message += `<span class="toast-content toast-body">${messageBody}</span>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: loggedInParticipantInVideo ? 'white' : 'black',
+            htmlBody: message,
+            buttons: [
+                {
+                    id: 'notification-toastr-participant-left-hearing-dismiss',
+                    label: this.translateService.instant('notification-toastr.participant-left-hearing.dismiss'),
                     cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);

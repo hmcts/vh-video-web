@@ -518,6 +518,7 @@
     "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
+    "leave-hearing": "Leave Hearing",
     "to": "to",
     "date": "Date",
     "case-number": "case number",
@@ -685,7 +686,9 @@
   "select-hearing-layout": {
     "choose-hearing-layout": "Choose hearing layout",
     "open-all": "Open all",
-    "close-all": "Close all"
+    "close-all": "Close all",
+    "close-button-text": "Close",
+    "close-button-label": "Close hearing layout menu"
   },
   "hearing-layout": {
     "layout-image-alt": "Layout image for {{layout}}",
@@ -1053,6 +1056,7 @@
   "confirm-leave-hearing-popup": {
     "title": "You are about to leave this hearing",
     "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "non-host-message": "Do you wish to leave this hearing?",
     "leave-hearing": "Leave hearing",
     "leave-hearing-label": "Confirm leaving the hearing",
     "cancel-leave": "Cancel",
@@ -1321,6 +1325,11 @@
     "participant-added": {
       "title": "{{name}}",
       "message": "{{role}} has been added to the hearing.",
+      "dismiss": "OK"
+    },
+    "participant-left-hearing": {
+      "title": "Left hearing",
+      "message": "{{name}} has left the hearing.",
       "dismiss": "OK"
     },
     "endpoint-added": {
