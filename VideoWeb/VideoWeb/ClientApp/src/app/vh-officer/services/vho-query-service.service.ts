@@ -53,6 +53,8 @@ export class VhoQueryService {
 
     stopQuery() {
         clearInterval(this.interval);
+        this.vhoConferences = [];
+        this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
     async runQuery() {
