@@ -23,7 +23,6 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
     conferencesSubscription = new Subscription();
     hearingListForm: UntypedFormGroup;
     loadingData: boolean;
-    interval: any;
     today = new Date();
     profile: UserProfileResponse;
     loggedUser: LoggedParticipantResponse;
@@ -55,8 +54,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('[JudgeHearingList] - Clearing intervals and subscriptions for Judge/Clerk');
-        clearInterval(this.interval);
+        this.logger.debug('[JudgeHearingList] - Clearing subscriptions for Judge/Clerk');
         this.conferencesSubscription.unsubscribe();
         this.screenHelper.enableFullScreen(false);
         this.eventHubSubscriptions.unsubscribe();
@@ -69,9 +67,6 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.retrieveHearingsForUser();
         this.setupSubscribers();
         this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForUser();
-        }, 30000);
     }
 
     hasHearings() {
@@ -107,6 +102,11 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
                 }
             })
         );
+        this.eventHubSubscriptions.add(this.eventsService.getNewConferenceAdded().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getHearingCancelled().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getHearingDetailsUpdated().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getParticipantsUpdated().subscribe(() => this.retrieveHearingsForUser()));
+        this.eventHubSubscriptions.add(this.eventsService.getEndpointsUpdated().subscribe(() => this.retrieveHearingsForUser()));
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {

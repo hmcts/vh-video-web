@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
@@ -23,7 +25,7 @@ public class ParticipantsUpdatedEventHandler(
     private async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants,
         List<ParticipantResponse> participantsToNotify)
     {
-        foreach (var participant in participantsToNotify)
+        foreach (var participant in participantsToNotify.Where(p => p.Role != Role.StaffMember))
         {
             await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
                 .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
@@ -32,6 +34,9 @@ public class ParticipantsUpdatedEventHandler(
         }
         
         await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
+        
+        await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
             .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
     }
 }

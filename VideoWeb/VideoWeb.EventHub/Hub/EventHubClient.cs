@@ -27,13 +27,15 @@ public class EventHub(
 {
     public static string VhOfficersGroupName => "VhOfficers";
     public static string DefaultAdminName => "Admin";
+    public static string StaffMembersGroupName => "StaffMembers";
     
     public override async Task OnConnectedAsync()
     {
         var isAdmin = IsSenderAdmin();
+        var isStaffMember = IsSenderStaffMember();
         
-        await AddUserToUserGroup(isAdmin);
-        await AddUserToConferenceGroups(isAdmin);
+        await AddUserToUserGroup(isAdmin, isStaffMember);
+        await AddUserToConferenceGroups(isAdmin || isStaffMember);
         
         await base.OnConnectedAsync();
         
@@ -59,11 +61,16 @@ public class EventHub(
         }
     }
     
-    private async Task AddUserToUserGroup(bool isAdmin)
+    private async Task AddUserToUserGroup(bool isAdmin, bool isStaffMember)
     {
         if (isAdmin)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, VhOfficersGroupName);
+        }
+
+        if (isStaffMember)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, StaffMembersGroupName);
         }
         
         await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity!.Name!.ToLowerInvariant());
@@ -86,19 +93,25 @@ public class EventHub(
         }
         
         var isAdmin = IsSenderAdmin();
-        await RemoveUserFromUserGroup(isAdmin);
-        await RemoveUserFromConferenceGroups(isAdmin);
+        var isStaffMember = IsSenderStaffMember();
+        await RemoveUserFromUserGroup(isAdmin, isStaffMember);
+        await RemoveUserFromConferenceGroups(isAdmin || isStaffMember);
         await userProfileService.ClearUserCache(username);
         await appRoleService.ClearUserCache(username);
         
         await base.OnDisconnectedAsync(exception);
     }
     
-    private async Task RemoveUserFromUserGroup(bool isAdmin)
+    private async Task RemoveUserFromUserGroup(bool isAdmin, bool isStaffMember)
     {
         if (isAdmin)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, VhOfficersGroupName);
+        }
+
+        if (isStaffMember)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, StaffMembersGroupName);
         }
         
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
@@ -128,6 +141,11 @@ public class EventHub(
     private bool IsSenderAdmin()
     {
         return Context.User.IsInRole(AppRoles.VhOfficerRole);
+    }
+
+    private bool IsSenderStaffMember()
+    {
+        return Context.User.IsInRole(AppRoles.StaffMember);
     }
     
     private string GetObfuscatedUsernameAsync(string username)

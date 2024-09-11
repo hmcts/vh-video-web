@@ -46,6 +46,11 @@ namespace VideoWeb.Common.Caching
 
             return conference;
         }
+        
+        public async Task RemoveConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
+        {
+            await RemoveFromCache(conference.Id, cancellationToken);
+        }
 
         protected override string GetKey(Guid key)
         {
