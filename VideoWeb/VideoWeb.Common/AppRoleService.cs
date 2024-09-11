@@ -18,7 +18,7 @@ namespace VideoWeb.Common
         Task<List<Claim>> GetClaimsForUserAsync(string username);
         Task ClearUserCache(string username);
     }
-    
+
     public class AppRoleService : IAppRoleService
     {
         private readonly IUserClaimsCache _userClaimscache;
@@ -26,7 +26,7 @@ namespace VideoWeb.Common
         private readonly ILogger<AppRoleService> _logger;
 
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> Semaphores = new();
-        
+
         public AppRoleService(IUserClaimsCache cache, IBookingsApiClient bookingsApiClient, ILogger<AppRoleService> logger)
         {
             _userClaimscache = cache;
@@ -43,7 +43,8 @@ namespace VideoWeb.Common
             }
             var semaphore = Semaphores.GetOrAdd(username, _ => new SemaphoreSlim(3, 3));
             await semaphore.WaitAsync();
-            try{
+            try
+            {
                 claims = await _userClaimscache.GetAsync(username);
                 if (claims != null)
                 {
@@ -64,7 +65,6 @@ namespace VideoWeb.Common
             JusticeUserResponse user = null;
             try
             {
-                Console.WriteLine(username);
                 user = await _bookingsApiClient!.GetJusticeUserByUsernameAsync(username);
             }
             catch (BookingsApiException ex)
@@ -102,7 +102,7 @@ namespace VideoWeb.Common
         private static List<Claim> MapUserRoleToAppRole(List<JusticeUserRole> userRoles)
         {
             var claims = new List<Claim>();
-            
+
             foreach (JusticeUserRole role in userRoles)
             {
                 var appRole = role switch
@@ -119,7 +119,7 @@ namespace VideoWeb.Common
                     claims.Add(new Claim(ClaimTypes.Role, appRole));
                 }
             }
-            
+
             if (userRoles.Exists(x => x == JusticeUserRole.VhTeamLead))
             {
                 // Team leaders (Admins) are also VHOs so add the VHO role to get the same journey

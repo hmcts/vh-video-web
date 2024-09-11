@@ -11,7 +11,14 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    eventsServiceSpy,
+    getEndpointsUpdatedMessageSubjectMock,
+    getHearingCancelledMock,
+    getHearingDetailsUpdatedMock,
+    getNewConferenceAddedMock,
+    hearingStatusSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { HostHearingListBaseComponentDirective } from './host-hearing-list.component-base';
 
@@ -83,17 +90,28 @@ describe('JudgeHearingListComponent', () => {
         expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
-    it('calls the retrieveHearingsForUser twice', () => {
-        jasmine.clock().install();
+    it('calls the retrieveHearingsForUser and sets up subscriptions on init', () => {
         spyOn(component, 'retrieveHearingsForUser');
         component.ngOnInit();
 
         expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(1);
+        expect(eventsServiceSpy.getNewConferenceAdded).toHaveBeenCalled();
+        expect(eventsServiceSpy.getHearingCancelled).toHaveBeenCalled();
+        expect(eventsServiceSpy.getHearingDetailsUpdated).toHaveBeenCalled();
+        expect(eventsServiceSpy.getParticipantsUpdated).toHaveBeenCalled();
+        expect(eventsServiceSpy.getEndpointsUpdated).toHaveBeenCalled();
+    });
 
-        jasmine.clock().tick(30001);
+    it('should retrieve conferences when hearing events are emitted', () => {
+        spyOn(component, 'retrieveHearingsForUser');
+        component.setupSubscribers();
 
-        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(2);
-        jasmine.clock().uninstall();
+        getNewConferenceAddedMock.next();
+        getHearingCancelledMock.next();
+        getHearingDetailsUpdatedMock.next();
+        getEndpointsUpdatedMessageSubjectMock.next();
+
+        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(4);
     });
 
     it('should show hearings when judge has conferences', () => {
@@ -186,15 +204,11 @@ describe('JudgeHearingListComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck]);
     });
 
-    it('should remove fullscreen, clear subscriptions and intervals on destroy', () => {
-        spyOn(window, 'clearInterval');
-        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component.interval = interval;
+    it('should remove fullscreen and clear subscriptions on destroy', () => {
         component.conferencesSubscription = new Subscription();
         component.eventHubSubscriptions = new Subscription();
         component.ngOnDestroy();
 
         expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(false);
-        expect(clearInterval).toHaveBeenCalledWith(interval);
     });
 });

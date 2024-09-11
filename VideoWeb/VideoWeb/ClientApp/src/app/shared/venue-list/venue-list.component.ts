@@ -104,7 +104,7 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
     }
 
     async getCsoFilter(): Promise<CsoFilter> {
-        let includeUnallocated = false;
+        let includeUnallocated: boolean;
         const allocatedCsoIds = [...this.selectedCsos];
 
         if (allocatedCsoIds.find(c => c === VenueListComponentDirective.ALLOCATED_TO_ME)) {

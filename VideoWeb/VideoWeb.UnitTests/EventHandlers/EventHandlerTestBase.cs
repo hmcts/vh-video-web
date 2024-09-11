@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
+using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -23,23 +25,36 @@ public abstract class EventHandlerTestBase
     protected Mock<IConferenceService> ConferenceServiceMock { get; private set; }
     protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
     protected Conference TestConference { get; set; }
+
+    private EventComponentHelper _eventComponentHelper;
     
     [SetUp]
     public void Setup()
     {
-        var helper = new EventComponentHelper();
-        EventHandlersList = helper.GetHandlers();
-        EventHubContextMock = helper.EventHubContextMock;
-        EventHubClientMock = helper.EventHubClientMock;
-        MemoryCache = helper.Cache;
-        ConferenceServiceMock = helper.ConferenceServiceMock;
-        LoggerMock = helper.EventHandlerBaseMock;
+        _eventComponentHelper = new EventComponentHelper();
+        EventHandlersList = _eventComponentHelper.GetHandlers();
+        EventHubContextMock = _eventComponentHelper.EventHubContextMock;
+        EventHubClientMock = _eventComponentHelper.EventHubClientMock;
+        MemoryCache = _eventComponentHelper.Cache;
+        ConferenceServiceMock = _eventComponentHelper.ConferenceServiceMock;
+        LoggerMock = _eventComponentHelper.EventHandlerBaseMock;
         
         TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
         MemoryCache.Set(TestConference.Id, TestConference);
         
         ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
         
-        helper.RegisterUsersForHubContext(TestConference.Participants);
+        _eventComponentHelper.RegisterUsersForHubContext(TestConference.Participants);
+    }
+
+    protected void AddParticipantToConference(Role role)
+    {
+        var staffMemberParticipant = Builder<Participant>.CreateNew()
+            .With(x => x.Role = role).With(x => x.Id = Guid.NewGuid())
+            .With(x => x.Username = Faker.Internet.Email())
+            .Build();
+        
+        TestConference.Participants.Add(staffMemberParticipant);
+        _eventComponentHelper.RegisterParticipantForHubContext(staffMemberParticipant);
     }
 }

@@ -73,6 +73,9 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
         subscription$.add(serviceUnderTest.getEndpointsUpdated().subscribe());
         subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
+        subscription$.add(serviceUnderTest.getNewConferenceAdded().subscribe());
+        subscription$.add(serviceUnderTest.getHearingCancelled().subscribe());
+        subscription$.add(serviceUnderTest.getHearingDetailsUpdated().subscribe());
 
         // Assert
         expect(subscription$).toBeTruthy();
@@ -145,7 +148,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegistrations = 27;
+        const expectedNumberOfRegistrations = 29;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {
@@ -210,21 +213,10 @@ describe('EventsService', () => {
         });
 
         describe('ParticipantAdded', () => {
-            const eventString = 'ParticipantsUpdatedMessage';
+            const eventName = 'ParticipantsUpdatedMessage';
 
             it('should be registered', () => {
-                // Arrange
-
-                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-                // Act
-                serviceUnderTest.registerHandlers();
-
-                // Assert
-
-                expect(serviceUnderTest.handlersRegistered).toBeTrue();
-                expect(hubConnectionSpy.on).toHaveBeenCalledWith(eventString, jasmine.any(Function));
+                verifyEventHandlerRegistered(eventName);
             });
 
             it('should set the correct next value of participantAddedSubject when function is called', doneCallback => {
@@ -236,7 +228,7 @@ describe('EventsService', () => {
                 const testParticipantArr = [testParticipant];
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
-                    if (eventType === eventString) {
+                    if (eventType === eventName) {
                         func(testConferenceId, testParticipantArr);
                     }
                 });
@@ -253,21 +245,10 @@ describe('EventsService', () => {
         });
 
         describe('EndpointAdded', () => {
-            const eventString = 'EndpointsUpdated';
+            const eventName = 'EndpointsUpdated';
 
             it('should be registered', () => {
-                // Arrange
-
-                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-                // Act
-                serviceUnderTest.registerHandlers();
-
-                // Assert
-
-                expect(serviceUnderTest.handlersRegistered).toBeTrue();
-                expect(hubConnectionSpy.on).toHaveBeenCalledWith(eventString, jasmine.any(Function));
+                verifyEventHandlerRegistered(eventName);
             });
 
             it('should set the correct next value of endpointAddedSubject when function is called', doneCallback => {
@@ -285,7 +266,7 @@ describe('EventsService', () => {
 
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
-                    if (eventType === eventString) {
+                    if (eventType === eventName) {
                         func(testConferenceId, testUpdateEndpointsDto);
                     }
                 });
@@ -300,6 +281,71 @@ describe('EventsService', () => {
                 serviceUnderTest.registerHandlers();
             });
         });
+
+        describe('HearingDetailsUpdatedMessage', () => {
+            const eventName = 'HearingDetailsUpdatedMessage';
+
+            it('should be registered', () => {
+                verifyEventHandlerRegistered(eventName);
+            });
+
+            it('should handle event', () => {
+                const conferenceId = 'TestConferenceId';
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
+                    if (eventType === eventName) {
+                        func(conferenceId);
+                    }
+                });
+
+                serviceUnderTest.getHearingDetailsUpdated().subscribe(message => {
+                    expect(message.conferenceId).toBe(conferenceId);
+                });
+
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+                serviceUnderTest.registerHandlers();
+            });
+        });
+
+        describe('HearingCancelledMessage', () => {
+            const eventName = 'HearingCancelledMessage';
+
+            it('should be registered', () => {
+                verifyEventHandlerRegistered(eventName);
+            });
+
+            it('should handle event', () => {
+                const conferenceId = 'TestConferenceId';
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
+                    if (eventType === eventName) {
+                        func(conferenceId);
+                    }
+                });
+
+                serviceUnderTest.getHearingCancelled().subscribe(message => {
+                    expect(message.conferenceId).toBe(conferenceId);
+                });
+
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+                serviceUnderTest.registerHandlers();
+            });
+        });
+
+        function verifyEventHandlerRegistered(eventName: string) {
+            // Arrange
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+            // Act
+            serviceUnderTest.registerHandlers();
+
+            // Assert
+            expect(serviceUnderTest.handlersRegistered).toBeTrue();
+            expect(hubConnectionSpy.on).toHaveBeenCalledWith(eventName, jasmine.any(Function));
+        }
     });
 
     describe('send message functions', () => {

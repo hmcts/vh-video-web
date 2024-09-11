@@ -143,6 +143,8 @@ namespace VideoWeb.Extensions
             services.AddScoped<IEndpointsUpdatedEventNotifier, EndpointsUpdatedEventNotifier>();
             services.AddScoped<INewConferenceAddedEventNotifier, NewConferenceAddedEventNotifier>();
             services.AddScoped<IAllocationHearingsEventNotifier, AllocationHearingsEventNotifier>();
+            services.AddScoped<IHearingCancelledEventNotifier, HearingCancelledEventNotifier>();
+            services.AddScoped<IHearingDetailsUpdatedEventNotifier, HearingDetailsUpdatedEventNotifier>();
             RegisterEventHandlers(services);
 
             var contractResolver = new DefaultContractResolver

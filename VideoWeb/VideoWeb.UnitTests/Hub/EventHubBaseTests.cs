@@ -73,14 +73,14 @@ namespace VideoWeb.UnitTests.Hub
             };
         }
 
-        protected List<ConferenceCoreResponse> SetupConferences(int numOfConferences)
+        protected List<ConferenceCoreResponse> SetupConferences(int numOfConferences, string userRole = AppRoles.VhOfficerRole)
         {
             var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .Build()
                 .ToList();
 
-            Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
+            Claims = new ClaimsPrincipalBuilder().WithRole(userRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             VideoApiClientMock
