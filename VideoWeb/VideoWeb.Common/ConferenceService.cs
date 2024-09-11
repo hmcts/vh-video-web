@@ -81,6 +81,6 @@ public class ConferenceService : IConferenceService
     
     public async Task RemoveConference(Conference conference, CancellationToken cancellationToken = default)
     {
-        await conferenceCache.RemoveConferenceAsync(conference, cancellationToken);
+        await _conferenceCache.RemoveConferenceAsync(conference, cancellationToken);
     }
 }

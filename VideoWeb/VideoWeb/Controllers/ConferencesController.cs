@@ -29,13 +29,24 @@ namespace VideoWeb.Controllers;
 [Produces("application/json")]
 [ApiController]
 [Route("conferences")]
-public class ConferencesController(
-    IVideoApiClient videoApiClient,
-    ILogger<ConferencesController> logger,
-    IBookingsApiClient bookingApiClient,
-    IConferenceService conferenceService)
-    : ControllerBase
+public class ConferencesController : ControllerBase
 {
+    private readonly IVideoApiClient _videoApiClient;
+    private readonly ILogger<ConferencesController> _logger;
+    private readonly IBookingsApiClient _bookingApiClient;
+    private readonly IConferenceService _conferenceService;
+    
+    public ConferencesController(IVideoApiClient videoApiClient,
+        ILogger<ConferencesController> logger,
+        IBookingsApiClient bookingApiClient,
+        IConferenceService conferenceService)
+    {
+        _videoApiClient = videoApiClient;
+        _logger = logger;
+        _bookingApiClient = bookingApiClient;
+        _conferenceService = conferenceService;
+    }
+    
     /// <summary>
     /// Get conferences today for a host
     /// </summary>
@@ -48,16 +59,16 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForHostAsync(
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForHost");
+        _logger.LogDebug("GetConferencesForHost");
 
         var username = User.Identity!.Name;
         var hearings =
-            await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
+            await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
         var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
-        var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        var conferences = await _videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
 
         if (conferences.Count != hearings.Count)
-            logger.LogError(
+            _logger.LogError(
                 "Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}",
                 hearings.Count, conferences.Count, username);
 
@@ -82,13 +93,13 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForStaffMemberAsync(
         [FromQuery] IEnumerable<string> hearingVenueNames, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForStaffMember");
+        _logger.LogDebug("GetConferencesForStaffMember");
 
         var hearingsForToday =
-            await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
+            await _bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
         var request = new GetConferencesByHearingIdsRequest
             { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
-        var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        var conferences = await _videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
         var response = hearingsForToday
             .Select(hearing =>
                 BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
@@ -108,14 +119,14 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForIndividualResponse>>> GetConferencesForIndividual(
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForIndividual");
+        _logger.LogDebug("GetConferencesForIndividual");
 
         var username = User.Identity!.Name;
         if (IsQuickLinkUser())
         {
             var conferencesForIndividual =
-                await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
-            var conferences = await conferenceService.GetConferences(conferencesForIndividual
+                await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
+            var conferences = await _conferenceService.GetConferences(conferencesForIndividual
                 .Where(x => x.IsWaitingRoomOpen)
                 .Select(x => x.Id), cancellationToken);
             return Ok(conferences.Select(ConferenceForIndividualResponseMapper.Map).ToList());
@@ -123,9 +134,9 @@ public class ConferencesController(
         else
         {
             var hearings =
-                await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
+                await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
             var conferencesForIndividual =
-                await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
+                await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
             var response = hearings.Select(hearing =>
                 BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
             response = response.Where(c => c.IsWaitingRoomOpen);
@@ -145,7 +156,7 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync(
         [FromQuery] VhoConferenceFilterQuery query, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForVhOfficer");
+        _logger.LogDebug("GetConferencesForVhOfficer");
         const string filterMissingMessage = "Please provide a filter for hearing venue names or allocated CSOs";
         if (query == null)
         {
@@ -157,11 +168,11 @@ public class ConferencesController(
         if (query.HearingVenueNames.Count > 0)
         {
             hearingsForToday =
-                await bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames, cancellationToken);
+                await _bookingApiClient.GetHearingsForTodayByVenueV2Async(query.HearingVenueNames, cancellationToken);
         }
         else if (query.AllocatedCsoIds.Count > 0 || query.IncludeUnallocated.HasValue)
         {
-            hearingsForToday = await bookingApiClient.GetHearingsForTodayByCsosV2Async(
+            hearingsForToday = await _bookingApiClient.GetHearingsForTodayByCsosV2Async(
                 new HearingsForTodayByAllocationRequestV2()
                 {
                     Unallocated = query.IncludeUnallocated,
@@ -181,7 +192,7 @@ public class ConferencesController(
 
         var request = new GetConferencesByHearingIdsRequest
             { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray() };
-        var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request, cancellationToken);
+        var conferences = await _videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request, cancellationToken);
         var openConferences = conferences.Where(x => x.IsWaitingRoomOpen).ToList();
         var responses = openConferences.Select(x =>
             ConferenceForVhOfficerResponseMapper.Map(x, hearingsForToday.First(h => h.Id == x.HearingId))).ToList();
@@ -206,17 +217,17 @@ public class ConferencesController(
     {
         if (conferenceId == Guid.Empty)
         {
-            logger.LogWarning("Unable to get conference when id is not provided");
+            _logger.LogWarning("Unable to get conference when id is not provided");
             ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
             
             return BadRequest(ModelState);
         }
         
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
         
         if (!conference.IsWaitingRoomOpen)
         {
-            logger.LogInformation(
+            _logger.LogInformation(
                 "Unauthorised to view conference details {ConferenceId} because user is not Officer " +
                 "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
             
@@ -257,13 +268,13 @@ public class ConferencesController(
     [SwaggerOperation(OperationId = "GetConferenceById")]
     public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferenceById");
+        _logger.LogDebug("GetConferenceById");
         
         var userProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
         
         if (conferenceId == Guid.Empty)
         {
-            logger.LogWarning("Unable to get conference when id is not provided");
+            _logger.LogWarning("Unable to get conference when id is not provided");
             ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
             return BadRequest(ModelState);
         }
@@ -272,23 +283,23 @@ public class ConferencesController(
         Conference conference;
         try
         {
-            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+            conference = await _conferenceService.ForceGetConference(conferenceId, cancellationToken);
             if (conference == null)
             {
-                logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
+                _logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
                 return NoContent();
             }
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
+            _logger.LogError(e, "Unable to retrieve conference: {ConferenceId}", conferenceId);
             return StatusCode(e.StatusCode, e.Response);
         }
         
         if (!userProfile.Roles.Contains(Role.StaffMember) &&
             (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
         {
-            logger.LogInformation(
+            _logger.LogInformation(
                 "Unauthorised to view conference details {ConferenceId} because user is neither a VH Officer " +
                 "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
             return Unauthorized();

@@ -44,7 +44,7 @@ namespace VideoWeb.Common.Caching
         
         public Task RemoveConferenceAsync(Conference conference, CancellationToken cancellationToken = default)
         {
-            memoryCache.Remove(conference.Id);
+            _memoryCache.Remove(conference.Id);
             return Task.CompletedTask;
         }
     }
