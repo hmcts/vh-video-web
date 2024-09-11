@@ -9,7 +9,6 @@ namespace VideoWeb.Common;
 public interface IFeatureToggles
 {
     public bool Vodafone();
-    bool AppInsightsProfilingEnabled();
 }
 
 public class FeatureToggles : IFeatureToggles
@@ -18,7 +17,6 @@ public class FeatureToggles : IFeatureToggles
     private readonly Context _context;
     private const string LdUser = "vh-video-web";
     private const string VodafoneToggleKey = "vodafone";
-    private const string ProfilingKey = "enable-profiling";
 
     public FeatureToggles(string sdkKey, string environmentName)
     {
@@ -32,12 +30,7 @@ public class FeatureToggles : IFeatureToggles
     {
         return GetBoolValueWithKey(VodafoneToggleKey);
     }
-    
-    public bool AppInsightsProfilingEnabled()
-    {
-        return GetBoolValueWithKey(ProfilingKey);
-    }
-    
+
     private bool GetBoolValueWithKey(string key)
     {
         if (!_ldClient.Initialized)
