@@ -1,3 +1,8 @@
+<div *ngIf="noConferences" id="no-conferences-message" class="govuk-grid-column-full govuk-!-margin-3" style="align-content: center">
+  <div class="no-conferences-message">
+    <h3 class="govuk-heading-m">{{ 'judge-hearing-list.you-have-no-video-hearings' | translate }}</h3>
+  </div>
+</div>
 <div id="conference-list" class="govuk-!-padding-3">
   <div
     class="vhList govuk-!-padding-top-2"
@@ -22,16 +27,16 @@
         </span>
       </span>
     </div>
-    <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date : 'HH:mm' }}</div>
+    <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
     <ng-container *ngIf="conference.startedDateTime">
       <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
       <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">
-        {{ conference.startedDateTime | date : 'HH:mm' }}
+        {{ conference.startedDateTime | date: 'HH:mm' }}
       </div>
     </ng-container>
     <ng-container *ngIf="conference.endedDateTime">
       <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
-      <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date : 'HH:mm' }}</div>
+      <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
     </ng-container>
     <div class="title listItemBig" id="{{ conference.id }}-case-name">
       <app-truncatable-text [text]="conference.caseName"></app-truncatable-text>

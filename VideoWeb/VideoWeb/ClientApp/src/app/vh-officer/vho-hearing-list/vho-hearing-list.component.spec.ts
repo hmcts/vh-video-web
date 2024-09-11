@@ -78,4 +78,16 @@ describe('VhoHearingListComponent', () => {
 
         expect(id).toEqual(conference.id);
     });
+
+    describe('noConferences', () => {
+        it('should return true if there are no conferences', () => {
+            component.conferences = [];
+            expect(component.noConferences).toBeTruthy();
+        });
+
+        it('should return false if there are conferences', () => {
+            component.conferences = new ConferenceTestData().getTestData().map(c => new HearingSummary(c));
+            expect(component.noConferences).toBeFalsy();
+        });
+    });
 });
