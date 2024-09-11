@@ -15,6 +15,10 @@ export class VhoHearingListComponent {
 
     currentConference: HearingSummary;
 
+    get noConferences(): boolean {
+        return this.conferences == null || this.conferences.length === 0;
+    }
+
     isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
