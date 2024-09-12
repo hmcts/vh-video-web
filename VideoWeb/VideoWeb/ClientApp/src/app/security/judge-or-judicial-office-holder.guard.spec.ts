@@ -7,21 +7,18 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { JudgeOrJudicialOfficeHolderGuard } from './judge-or-judicial-office-holder.guard';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../services/launch-darkly.service';
 
 describe('JudgeOrJudicialOfficeHolderGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: JudgeOrJudicialOfficeHolderGuard;
     let router: jasmine.SpyObj<Router>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
-    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -33,14 +30,7 @@ describe('JudgeOrJudicialOfficeHolderGuard', () => {
     });
 
     beforeEach(() => {
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
-        guard = new JudgeOrJudicialOfficeHolderGuard(
-            securityServiceProviderServiceSpy,
-            profileServiceSpy,
-            router,
-            new MockLogger(),
-            launchDarklyServiceSpy
-        );
+        guard = new JudgeOrJudicialOfficeHolderGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger());
     });
 
     const unauthorisedRoles = Object.values(Role).filter(role => role !== Role.Judge && role !== Role.JudicialOfficeHolder);

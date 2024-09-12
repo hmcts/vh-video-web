@@ -5,8 +5,8 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { pageUrls } from '../../page-url.constants';
 import { VenueListComponentDirective } from '../venue-list.component';
-import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 @Component({
     selector: 'app-staff-member-venue-list',

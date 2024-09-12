@@ -1,13 +1,11 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-logout',
@@ -23,8 +21,7 @@ export class LogoutComponent implements OnInit {
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
-        private profileService: ProfileService,
-        private ldService: LaunchDarklyService
+        private profileService: ProfileService
     ) {
         combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
             ([service, idp]) => {
@@ -33,11 +30,7 @@ export class LogoutComponent implements OnInit {
             }
         );
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
-
-        this.ldService
-            .getFlag<boolean>(FEATURE_FLAGS.multiIdpSelection)
-            .pipe(first())
-            .subscribe(flag => (this.loginPath = flag ? '../' + pageUrls.IdpSelection : '../' + pageUrls.Login));
+        this.loginPath = '../' + pageUrls.IdpSelection;
     }
 
     get loggedIn(): Observable<boolean> {

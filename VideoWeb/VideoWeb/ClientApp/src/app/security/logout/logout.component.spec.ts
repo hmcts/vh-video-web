@@ -21,8 +21,6 @@ describe('LogoutComponent', () => {
 
     beforeAll(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
     });
 
     beforeEach(() => {
@@ -32,7 +30,6 @@ describe('LogoutComponent', () => {
             ['currentSecurityService$', 'currentIdp$']
         );
 
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens', 'isAuthenticated']);
         isAuthenticatedSubject = new Subject<boolean>();
         securityServiceSpy.logoffAndRevokeTokens.and.returnValue(of(null));
@@ -41,7 +38,7 @@ describe('LogoutComponent', () => {
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
-        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, launchDarklyServiceSpy);
+        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy);
     });
 
     it('should call logout if authenticated', fakeAsync(() => {
@@ -77,7 +74,6 @@ describe('LogoutComponent', () => {
     it('should return false for "loggedIn" when not authenticated', fakeAsync(() => {
         let loggedIn = true;
         component.loggedIn.subscribe(isLoggedIn => (loggedIn = isLoggedIn));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
         isAuthenticatedSubject.next(false);
         tick();
 

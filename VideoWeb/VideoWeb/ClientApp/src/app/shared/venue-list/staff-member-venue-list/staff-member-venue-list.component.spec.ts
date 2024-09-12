@@ -67,7 +67,6 @@ describe('StaffMemerVenueListComponent', () => {
             profileServiceSpy
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         venueSessionStorage.clear();
     });
