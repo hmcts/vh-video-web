@@ -132,13 +132,6 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
 
     private setupSubscribers() {
         this.ldService
-            .getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(value => {
-                this.vhoWorkAllocationFeatureFlag = value;
-            });
-
-        this.ldService
             .getFlag<boolean>(FEATURE_FLAGS.activeSessionFilter, false)
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(value => {

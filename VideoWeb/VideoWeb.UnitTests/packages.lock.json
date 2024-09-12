@@ -108,9 +108,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[2.2.10, )",
-        "resolved": "2.2.10",
-        "contentHash": "2F6+S8N4aCbuts3fS2lmzon+9S5Pqgt0GW2mo4obbP6u/YdS7mSqJ0uU9z1PsRpdGnRmrfrQ67O/N7/N3AIlPg==",
+        "requested": "[2.2.11, )",
+        "resolved": "2.2.11",
+        "contentHash": "ciMnAm7RGQ+yFX+/YUHlzwcPwIVKfyv3kGmNlvBS9ewItIqOEhVXMXjmDVwMPixYFx+Yept0gmdivo8woo044w==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "13.0.3"
@@ -173,8 +173,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "2.2.16",
-        "contentHash": "DxPU7ApSxMr6LsqeoMmE/gc2tmEdym+H5lMlEQwsG8GKDIGfW+PYBlGbV1K5f+MDp3KLFZ/dqidDPw4RS8CWcA==",
+        "resolved": "2.3.1",
+        "contentHash": "fELMrU9fK/QaLJo9rw1BKPKDWiNIypCXicOC61lkXkdAraQfeEIOuyQtVsopIl+PpUkHmkdbeXBITP+zS55y5w==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2363,7 +2363,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
-          "BookingsApi.Client": "[2.2.16, )",
+          "BookingsApi.Client": "[2.3.1, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
@@ -2383,7 +2383,7 @@
           "Swashbuckle.AspNetCore.Annotations": "[6.6.1, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.6.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "VideoApi.Client": "[2.2.10, )",
+          "VideoApi.Client": "[2.2.11, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"
@@ -2402,7 +2402,7 @@
           "Microsoft.Identity.Client": "[4.61.0, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[2.2.10, )"
+          "VideoApi.Client": "[2.2.11, )"
         }
       },
       "videoweb.contract": {

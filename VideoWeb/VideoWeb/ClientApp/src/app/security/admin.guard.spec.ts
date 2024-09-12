@@ -1,4 +1,3 @@
-import { async, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';

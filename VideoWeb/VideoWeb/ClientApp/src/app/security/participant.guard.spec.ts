@@ -7,21 +7,18 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { ParticipantGuard } from './participant.guard';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../services/launch-darkly.service';
 
 describe('ParticipantGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: ParticipantGuard;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
-    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -33,14 +30,7 @@ describe('ParticipantGuard', () => {
     });
 
     beforeEach(() => {
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
-        guard = new ParticipantGuard(
-            securityServiceProviderServiceSpy,
-            profileServiceSpy,
-            router,
-            new MockLogger(),
-            launchDarklyServiceSpy
-        );
+        guard = new ParticipantGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger());
     });
 
     it('should not be able to activate component if role is VHOfficer', async () => {
@@ -106,7 +96,7 @@ describe('ParticipantGuard', () => {
         expect(router.navigate).toHaveBeenCalledWith(['/logout']);
     });
 
-    it('should back to login when user profile is not authoried', async () => {
+    it('should back to login when user profile is not authorised', async () => {
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
 
         const result = await guard.canActivate(null, null);
