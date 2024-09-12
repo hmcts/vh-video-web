@@ -38,7 +38,7 @@ describe('LaunchDarklyService', () => {
 
     it('should return a given flag', fakeAsync(() => {
         service.client = ldClientSpy;
-        const flagKey = FEATURE_FLAGS.ejudiciarySignIn;
+        const flagKey = FEATURE_FLAGS.vodafone;
         const keyParam = `change:${flagKey}`;
         const allFlags: LDFlagSet = { [flagKey]: true };
         ldClientSpy.allFlags.and.returnValue(allFlags);

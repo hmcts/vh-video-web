@@ -26,16 +26,8 @@ export class IdpSelectionComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.ldService.getFlag(FEATURE_FLAGS.ejudiciarySignIn).subscribe(featureEnabled => {
-            if (featureEnabled) {
-                this.idpSelectorModel.addIdp(IdpProviders.ejud, '/' + pageUrls.Login);
-            } else {
-                this.idpSelectorModel.removeIdp(IdpProviders.ejud);
-            }
-
-            this.updateProviderNames();
-        });
-
+        this.idpSelectorModel.addIdp(IdpProviders.ejud, '/' + pageUrls.Login);
+        this.updateProviderNames();
         this.ldService.getFlag(FEATURE_FLAGS.dom1SignIn).subscribe(featureEnabled => {
             if (featureEnabled) {
                 this.idpSelectorModel.addIdp(IdpProviders.dom1, '/' + pageUrls.Login);

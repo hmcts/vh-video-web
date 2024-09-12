@@ -51,7 +51,6 @@ describe('CommandCentreComponent - Events', () => {
     const eventsService = eventsServiceSpy;
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
-    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     const logger: Logger = new MockLogger();
@@ -86,7 +85,6 @@ describe('CommandCentreComponent - Events', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
         const config = new ClientSettingsResponse({
@@ -106,7 +104,6 @@ describe('CommandCentreComponent - Events', () => {
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -117,7 +114,6 @@ describe('CommandCentreComponent - Events', () => {
             screenHelper,
             eventBusServiceSpy,
             configService,
-            launchDarklyServiceSpy,
             notificationToastrServiceSpy
         );
         component.hearings = hearings;

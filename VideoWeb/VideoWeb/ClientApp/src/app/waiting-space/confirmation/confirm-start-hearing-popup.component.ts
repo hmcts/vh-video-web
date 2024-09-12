@@ -2,7 +2,6 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { YesNoPopupBaseDirective } from '../../shared/confirmation/yes-no-popup-base.component';
 import { FocusService } from 'src/app/services/focus.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.component';
 
 @Component({
@@ -16,19 +15,12 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @Input() hearingId: string;
     @Input() hasAMicrophone = true;
 
-    isMuteMicrophoneEnabled = false;
-
     constructor(
         protected translateService: TranslateService,
-        protected focusService: FocusService,
-        launchDarklyService: LaunchDarklyService
+        protected focusService: FocusService
     ) {
         super(focusService);
         this.modalDivId = 'confirmationDialog';
-
-        launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
-            this.isMuteMicrophoneEnabled = value;
-        });
     }
 
     get action(): string {
@@ -38,9 +30,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     respondWithYes() {
-        if (this.isMuteMicrophoneEnabled && this.hasAMicrophone) {
-            this.muteMicrophoneForm.save();
-        }
+        this.muteMicrophoneForm.save();
         super.respondWithYes();
     }
 }

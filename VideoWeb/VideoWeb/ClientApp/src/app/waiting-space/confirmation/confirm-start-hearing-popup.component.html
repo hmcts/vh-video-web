@@ -6,7 +6,7 @@
         <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-        <app-mute-microphone *ngIf="isMuteMicrophoneEnabled && hasAMicrophone" [hearingId]="hearingId"></app-mute-microphone>
+        <app-mute-microphone *ngIf="hasAMicrophone" [hearingId]="hearingId"></app-mute-microphone>
         <div class="govuk-!-margin-bottom-9"></div>
         <button
             id="btnConfirmStart"

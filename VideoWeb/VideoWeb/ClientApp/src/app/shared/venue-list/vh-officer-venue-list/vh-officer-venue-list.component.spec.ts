@@ -92,7 +92,6 @@ describe('VHOfficerVenueListComponent', () => {
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
         venueSessionStorage.clear();
@@ -258,12 +257,5 @@ describe('VHOfficerVenueListComponent', () => {
             fixture.detectChanges();
             expect(fixture.debugElement.query(By.css('#cso-list'))).toBeTruthy();
         });
-
-        it('Should not show cso list, when implemented by vh-officer-venue-list and feature flag off', fakeAsync(() => {
-            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(false));
-            fixture.detectChanges();
-            tick();
-            expect(fixture.debugElement.query(By.css('#cso-list'))).toBeFalsy();
-        }));
     });
 });
