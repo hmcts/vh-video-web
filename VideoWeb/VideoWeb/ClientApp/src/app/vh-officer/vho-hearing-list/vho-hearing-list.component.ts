@@ -11,7 +11,6 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 })
 export class VhoHearingListComponent {
     @Input() conferences: HearingSummary[];
-    @Input() workAllocationFeatureFlag: boolean;
     @Output() selectedConference = new EventEmitter<HearingSummary>();
 
     currentConference: HearingSummary;
