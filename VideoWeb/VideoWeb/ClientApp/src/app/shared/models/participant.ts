@@ -1,15 +1,15 @@
 import {
+    LinkedParticipantResponse,
+    ParticipantForUserResponse,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
-    ParticipantResponseVho,
-    ParticipantForUserResponse,
-    LinkedParticipantResponse,
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
-import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
-import { HearingRole } from '../../waiting-space/models/hearing-role-model';
+import {PexipDisplayNameModel} from 'src/app/services/conference/models/pexip-display-name.model';
+import {HearingRole} from '../../waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
     id: string;
@@ -99,11 +99,11 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
-            null, // participant.name,
+            participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
             participant.role,
-            null, // participant.hearing_role,
+            participant.hearing_role,
             false,
             participant.interpreter_room,
             participant.linked_participants,

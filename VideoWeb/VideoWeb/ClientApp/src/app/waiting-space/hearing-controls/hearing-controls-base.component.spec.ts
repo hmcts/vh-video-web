@@ -1,6 +1,6 @@
-import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import {fakeAsync, flush, tick} from '@angular/core/testing';
+import {Guid} from 'guid-typescript';
+import {BehaviorSubject, Observable, of, Subject, Subscription} from 'rxjs';
 import {
     ClientSettingsResponse,
     ConferenceResponse,
@@ -9,18 +9,18 @@ import {
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { browsers } from 'src/app/shared/browser.constants';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ParticipantModel } from 'src/app/shared/models/participant';
-import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
-import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
+import {ParticipantService} from 'src/app/services/conference/participant.service';
+import {DeviceTypeService} from 'src/app/services/device-type.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
+import {UserMediaService} from 'src/app/services/user-media.service';
+import {browsers} from 'src/app/shared/browser.constants';
+import {getSpiedPropertyGetter} from 'src/app/shared/jasmine-helpers/property-helpers';
+import {ParticipantModel} from 'src/app/shared/models/participant';
+import {ParticipantHandRaisedMessage} from 'src/app/shared/models/participant-hand-raised-message';
+import {ParticipantRemoteMuteMessage} from 'src/app/shared/models/participant-remote-mute-message';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {VideoCallTestData} from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     eventsServiceSpy,
     hearingCountdownCompleteSubjectMock,
@@ -29,33 +29,35 @@ import {
     participantStatusSubjectMock,
     participantToggleLocalMuteSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import {MockLogger} from 'src/app/testing/mocks/mock-logger';
+import {translateServiceSpy} from 'src/app/testing/mocks/mock-translation.service';
 import {
     onParticipantUpdatedMock,
     onVideoEvidenceSharedMock,
     onVideoEvidenceStoppedMock,
     videoCallServiceSpy
 } from 'src/app/testing/mocks/mock-video-call.service';
-import { HearingRole } from '../models/hearing-role-model';
-import { ParticipantUpdated } from '../models/video-call-models';
-import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
-import { HearingControlsBaseComponent } from './hearing-controls-base.component';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
-import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
-import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
-import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
-import { createMockStore, MockStore } from '@ngrx/store/testing';
-import { ConferenceActions } from '../store/actions/conference.actions';
-import { take } from 'rxjs/operators';
+import {HearingRole} from '../models/hearing-role-model';
+import {ParticipantUpdated} from '../models/video-call-models';
+import {
+    PrivateConsultationRoomControlsComponent
+} from '../private-consultation-room-controls/private-consultation-room-controls.component';
+import {HearingControlsBaseComponent} from './hearing-controls-base.component';
+import {ConferenceService} from 'src/app/services/conference/conference.service';
+import {ConferenceStatusChanged} from 'src/app/services/conference/models/conference-status-changed.model';
+import {ConfigService} from 'src/app/services/api/config.service';
+import {VideoControlService} from '../../services/conference/video-control.service';
+import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import {SessionStorage} from 'src/app/services/session-storage';
+import {VhoStorageKeys} from 'src/app/vh-officer/services/models/session-keys';
+import {ParticipantToggleLocalMuteMessage} from 'src/app/shared/models/participant-toggle-local-mute-message';
+import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
+import {FocusService} from 'src/app/services/focus.service';
+import {ConferenceSetting} from 'src/app/shared/models/conference-setting';
+import {ConferenceState, initialState as initialConferenceState} from '../store/reducers/conference.reducer';
+import {createMockStore, MockStore} from '@ngrx/store/testing';
+import {ConferenceActions} from '../store/actions/conference.actions';
+import {take} from 'rxjs/operators';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -1035,7 +1037,7 @@ describe('HearingControlsBaseComponent', () => {
                     false,
                     null,
                     null,
-                    ParticipantStatus.Available,
+                    ParticipantStatus.InHearing,
                     null
                 )
             ];
@@ -1045,7 +1047,7 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
 
-        it('returns false if there is no other host', () => {
+        it('returns false if there is no other host, judge status not in hearing', () => {
             const participants = [
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -1067,7 +1069,7 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
 
-        it('returns false if another host is not in hearing', () => {
+        it('returns true if another host is in hearing, staff', () => {
             const participants = [
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -1075,7 +1077,7 @@ describe('HearingControlsBaseComponent', () => {
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     Role.Judge,
-                    HearingRole.JUDGE,
+                    null,
                     false,
                     null,
                     null,
@@ -1088,7 +1090,42 @@ describe('HearingControlsBaseComponent', () => {
                     'DisplayName',
                     'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
                     Role.StaffMember,
-                    HearingRole.STAFF_MEMBER,
+                    null,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.InHearing,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeTrue();
+        });
+
+        it('returns true if another host is in hearing, judge', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
+                    null,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.InHearing,
+                    null
+                ),
+                new ParticipantModel(
+                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    'Participant Name',
+                    'DisplayName',
+                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    Role.StaffMember,
+                    null,
                     false,
                     null,
                     null,
@@ -1099,8 +1136,9 @@ describe('HearingControlsBaseComponent', () => {
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
 
-            expect(isAnotherHostInHearing).toBeFalse();
+            expect(isAnotherHostInHearing).toBeTrue();
         });
+
     });
 
     it('should send handshake update, when new participant joins', fakeAsync(() => {
