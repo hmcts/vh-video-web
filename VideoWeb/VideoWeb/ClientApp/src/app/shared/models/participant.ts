@@ -8,8 +8,8 @@ import {
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
-import {PexipDisplayNameModel} from 'src/app/services/conference/models/pexip-display-name.model';
-import {HearingRole} from '../../waiting-space/models/hearing-role-model';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
+import { HearingRole } from '../../waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
     id: string;
