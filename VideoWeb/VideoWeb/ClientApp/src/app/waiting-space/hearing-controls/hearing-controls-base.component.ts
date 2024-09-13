@@ -549,9 +549,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     isAnotherHostInHearing(participants: ParticipantModel[]): boolean {
         const hosts = participants.filter(
-            x => x.id !== this.participant.id &&
-                ((x.hearingRole === HearingRole.JUDGE || x.hearingRole === HearingRole.STAFF_MEMBER) ||
-                (x.role === Role.Judge || x.role === Role.StaffMember))
+            x =>
+                x.id !== this.participant.id &&
+                (x.hearingRole === HearingRole.JUDGE ||
+                    x.hearingRole === HearingRole.STAFF_MEMBER ||
+                    x.role === Role.Judge ||
+                    x.role === Role.StaffMember)
         );
 
         if (hosts.length === 0) {

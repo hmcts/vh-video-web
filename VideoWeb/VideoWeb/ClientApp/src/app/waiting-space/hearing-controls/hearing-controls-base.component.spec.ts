@@ -1138,7 +1138,6 @@ describe('HearingControlsBaseComponent', () => {
 
             expect(isAnotherHostInHearing).toBeTrue();
         });
-
     });
 
     it('should send handshake update, when new participant joins', fakeAsync(() => {
