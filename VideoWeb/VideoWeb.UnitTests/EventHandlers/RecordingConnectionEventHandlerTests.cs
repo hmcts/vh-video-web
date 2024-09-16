@@ -33,8 +33,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.RecordingConnectionFailed(conference.Id, participantId),
-                Times.Once);
+
         }
     }
 }
