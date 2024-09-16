@@ -1908,7 +1908,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[2.2.16, )",
+          "BookingsApi.Client": "[2.3.1, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.ApplicationInsights": "[2.22.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
