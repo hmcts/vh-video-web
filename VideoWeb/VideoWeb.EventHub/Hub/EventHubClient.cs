@@ -45,6 +45,32 @@ public class EventHub(
         logger.LogTrace("Connected to event hub server-side: {Username}", userName);
     }
     
+        public override async Task OnDisconnectedAsync(Exception exception)
+    {
+        var username = Context.User.Identity?.Name?.ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(username)) return;
+        var obfuscatedUsername = GetObfuscatedUsernameAsync(username);
+        
+        if (exception == null)
+        {
+            logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
+        }
+        else
+        {
+            logger.LogError(exception,
+                "There was an error when disconnecting from chat hub server-side: {Username}", obfuscatedUsername);
+        }
+        
+        var isAdmin = IsSenderAdmin();
+        var isStaffMember = IsSenderStaffMember();
+        await RemoveUserFromUserGroup(isAdmin, isStaffMember);
+        await RemoveUserFromConferenceGroups(isAdmin || isStaffMember);
+        await userProfileService.ClearUserCache(username);
+        await appRoleService.ClearUserCache(username);
+        
+        await base.OnDisconnectedAsync(exception);
+    }
+    
     private async Task AddUserToConferenceGroups(bool isAdmin)
     {
         var conferenceIds = await GetConferenceIds(isAdmin);
@@ -74,32 +100,6 @@ public class EventHub(
         }
         
         await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity!.Name!.ToLowerInvariant());
-    }
-    
-    public override async Task OnDisconnectedAsync(Exception exception)
-    {
-        var username = Context.User.Identity?.Name?.ToLowerInvariant();
-        if (string.IsNullOrWhiteSpace(username)) return;
-        var obfuscatedUsername = GetObfuscatedUsernameAsync(username);
-        
-        if (exception == null)
-        {
-            logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
-        }
-        else
-        {
-            logger.LogError(exception,
-                "There was an error when disconnecting from chat hub server-side: {Username}", obfuscatedUsername);
-        }
-        
-        var isAdmin = IsSenderAdmin();
-        var isStaffMember = IsSenderStaffMember();
-        await RemoveUserFromUserGroup(isAdmin, isStaffMember);
-        await RemoveUserFromConferenceGroups(isAdmin || isStaffMember);
-        await userProfileService.ClearUserCache(username);
-        await appRoleService.ClearUserCache(username);
-        
-        await base.OnDisconnectedAsync(exception);
     }
     
     private async Task RemoveUserFromUserGroup(bool isAdmin, bool isStaffMember)
