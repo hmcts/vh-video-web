@@ -1,10 +1,10 @@
 import {
+    LinkedParticipantResponse,
+    ParticipantForUserResponse,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
-    ParticipantResponseVho,
-    ParticipantForUserResponse,
-    LinkedParticipantResponse,
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
@@ -99,11 +99,11 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
-            null, // participant.name,
+            participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
             participant.role,
-            null, // participant.hearing_role,
+            participant.hearing_role,
             false,
             participant.interpreter_room,
             participant.linked_participants,

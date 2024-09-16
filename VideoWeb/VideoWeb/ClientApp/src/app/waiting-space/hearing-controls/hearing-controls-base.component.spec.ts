@@ -1035,7 +1035,7 @@ describe('HearingControlsBaseComponent', () => {
                     false,
                     null,
                     null,
-                    ParticipantStatus.Available,
+                    ParticipantStatus.InHearing,
                     null
                 )
             ];
@@ -1045,7 +1045,7 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
 
-        it('returns false if there is no other host', () => {
+        it('returns false if there is no other host, judge status not in hearing', () => {
             const participants = [
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -1067,7 +1067,7 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
 
-        it('returns false if another host is not in hearing', () => {
+        it('returns true if another host is in hearing, staff', () => {
             const participants = [
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -1075,7 +1075,7 @@ describe('HearingControlsBaseComponent', () => {
                     'DisplayName',
                     'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     Role.Judge,
-                    HearingRole.JUDGE,
+                    null,
                     false,
                     null,
                     null,
@@ -1088,7 +1088,42 @@ describe('HearingControlsBaseComponent', () => {
                     'DisplayName',
                     'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
                     Role.StaffMember,
-                    HearingRole.STAFF_MEMBER,
+                    null,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.InHearing,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeTrue();
+        });
+
+        it('returns true if another host is in hearing, judge', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
+                    Role.Judge,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.InHearing,
+                    null
+                ),
+                new ParticipantModel(
+                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    'Participant Name',
+                    'DisplayName',
+                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    Role.StaffMember,
+                    null,
                     false,
                     null,
                     null,
@@ -1099,7 +1134,7 @@ describe('HearingControlsBaseComponent', () => {
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
 
-            expect(isAnotherHostInHearing).toBeFalse();
+            expect(isAnotherHostInHearing).toBeTrue();
         });
     });
 
