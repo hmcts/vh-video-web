@@ -16,18 +16,13 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participant = SourceConference.Participants.Find(p => p.Id == callbackEvent.ParticipantId);
             var conferenceId = SourceConference.Id;
 
-            if (participant != null)
-            {
-                var participantId = participant.Id;
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .RecordingConnectionFailed(conferenceId, participantId);
-                Logger.LogTrace(
-                    $"Recording Connection Failed: Conference Id: {SourceConference.Id} - Participant id: {participant.Id}");
+            var participantId = callbackEvent.ParticipantId;
 
-            }
+            Logger.LogTrace(
+                $"Recording Connection Failed: Conference Id: {conferenceId} - Participant id: {participantId}");
+
         }
     }
 }
