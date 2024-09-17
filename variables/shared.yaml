@@ -71,4 +71,4 @@ variables:
     value: "/,/logout,/home"
 
   - name: dotnetVersion
-    value: '8.x'
+    value: '8.0.8'
