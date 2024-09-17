@@ -20,7 +20,6 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(EventType.VhoCall, typeof(VhOfficerCallEventHandler))]
         [TestCase(EventType.Start, typeof(StartEventHandler))]
         [TestCase(EventType.CountdownFinished, typeof(CountdownFinishedEventHandler))]
-        [TestCase(EventType.RecordingConnectionFailed, typeof(RecordingConnectionEventHandler))]
         [TestCase(EventType.EndpointJoined, typeof(EndpointJoinedEventHandler))]
         [TestCase(EventType.EndpointDisconnected, typeof(EndpointDisconnectedEventHandler))]
         [TestCase(EventType.EndpointTransfer, typeof(EndpointTransferEventHandler))]
