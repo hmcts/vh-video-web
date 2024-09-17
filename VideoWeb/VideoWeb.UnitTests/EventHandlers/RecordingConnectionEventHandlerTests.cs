@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
@@ -33,6 +35,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(x => x.RecordingConnectionFailed(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
 
         }
     }
