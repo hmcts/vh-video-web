@@ -20,8 +20,9 @@ namespace VideoWeb.EventHub.Handlers
 
             var participantId = callbackEvent.ParticipantId;
 
+            var message = $"Recording Connection Failed: Conference Id: {conferenceId} - Participant id: {participantId}";
             Logger.LogTrace(
-                $"Recording Connection Failed: Conference Id: {conferenceId} - Participant id: {participantId}");
+                message: message);
 
         }
     }

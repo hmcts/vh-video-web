@@ -367,7 +367,7 @@ public class EventHub(
                 .Where(x => x.IsHost() && x.Id != participantId)
                 .ToArray();
 
-            if (otherHosts.Any())
+            if (otherHosts.Length != 0)
                 foreach (var host in otherHosts)
                     await Clients.Group(host.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId);
         }
@@ -478,7 +478,7 @@ public class EventHub(
                 dto.MessageUuid);
     }
 
-    private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
+    private static List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
     {
         if (participant.IsJudicialOfficeHolder())
         {
