@@ -70,7 +70,8 @@ public class EventComponentHelper
             new EndpointJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
-            new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
+            new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new RecordingConnectionEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
         };
     }
 
