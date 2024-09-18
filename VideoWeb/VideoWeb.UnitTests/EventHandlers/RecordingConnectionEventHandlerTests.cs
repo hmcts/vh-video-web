@@ -21,21 +21,21 @@ namespace VideoWeb.UnitTests.EventHandlers
             _eventHandler = new RecordingConnectionEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
-            var participantCount = conference.Participants.Count + 1; // plus one for admin
             var participantId = conference.Participants.Find(x => x.Role == VideoWeb.Common.Models.Role.Individual).Id;
+            var conferenceId = conference.Id;
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.RecordingConnectionFailed,
                 EventId = Guid.NewGuid().ToString(),
                 ParticipantId = participantId,
-                ConferenceId = conference.Id,
+                ConferenceId = conferenceId,
                 TimeStampUtc = DateTime.UtcNow
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.RecordingConnectionFailed(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+            EventHubClientMock.Verify(x => x.RecordingConnectionFailed(conferenceId, participantId), Times.Once);
 
         }
     }

@@ -24,6 +24,9 @@ namespace VideoWeb.EventHub.Handlers
             Logger.LogTrace(
                 message: message);
 
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .RecordingConnectionFailed(conferenceId, participantId);
+
         }
     }
 }
