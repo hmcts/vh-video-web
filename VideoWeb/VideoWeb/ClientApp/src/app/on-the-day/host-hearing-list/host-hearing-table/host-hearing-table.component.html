@@ -7,7 +7,8 @@
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.judge' | translate }}</th>
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.hearing' | translate }}</th>
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.attendees' | translate }}</th>
-                    <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.conference-status-heading' | translate }}</th>
+                    <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.conference-status-heading' |
+                        translate }}</th>
                 </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -30,17 +31,18 @@
                     <td class="govuk-table__cell">
                         <p id="case-name-{{ hearing.id }}"
                             class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-                            <app-truncatable-text [text]="hearing.caseName" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text>
+                            <app-truncatable-text [text]="hearing.caseName" [maxLimit]="15"
+                                [hideShowMore]="true"></app-truncatable-text>
                         </p>
                         <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
                             {{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }}
                         </p>
                         <p class="govuk-!-margin-0 govuk-!-padding-0">
                             {{ 'judge-hearing-table.case-number' | translate }}<span id="case-number-{{ hearing.id }}"
-                                class="govuk-!-font-weight-bold"><app-truncatable-text [text]="hearing.caseNumber" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text></span>
+                                class="govuk-!-font-weight-bold"><app-truncatable-text [text]="hearing.caseNumber"
+                                    [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text></span>
                         </p>
                     </td>
-
                     <!-- Participant -->
                     <td class="govuk-table__cell">
                         <div *ngIf="!hearing.isClosed()">
@@ -49,7 +51,8 @@
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="panel-member-count-{{ hearing.id }}">
                                         {{ hearing.panelMembers.length }} {{( hearing.panelMembers.length > 1 ?
-                                        'judge-hearing-table.panel-members' : 'judge-hearing-table.panel-member') | translate }}
+                                        'judge-hearing-table.panel-members' : 'judge-hearing-table.panel-member') |
+                                        translate }}
                                     </span>
                                 </p>
                             </span>
@@ -64,8 +67,9 @@
                             <span *ngIf="hearing.staffMembers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="staff-member-count-{{ hearing.id }}">
-                                        {{ hearing.staffMembers.length }} {{( hearing.staffMembers.length > 1 ? 
-                                        'judge-hearing-table.staff-members' : 'judge-hearing-table.staff-member') | translate }}
+                                        {{ hearing.staffMembers.length }} {{( hearing.staffMembers.length > 1 ?
+                                        'judge-hearing-table.staff-members' : 'judge-hearing-table.staff-member') |
+                                        translate }}
                                     </span>
                                 </p>
                             </span>
@@ -74,14 +78,16 @@
                                     <span id="participant-count-{{ hearing.id }}">
                                         {{ hearing.nonJudicialParticipantsExcludingObservers.length }} {{(
                                         hearing.nonJudicialParticipantsExcludingObservers.length > 1 ?
-                                        'judge-hearing-table.participants' : 'judge-hearing-table.participant') | translate }}
+                                        'judge-hearing-table.participants' : 'judge-hearing-table.participant') |
+                                        translate }}
                                     </span>
                                 </p>
                             </span>
                             <div *ngIf="hearing.numberOfEndpoints > 0">
                                 <span id="endpoints-count-{{ hearing.id }}">
                                     {{ hearing.numberOfEndpoints }} {{( hearing.numberOfEndpoints > 1 ?
-                                    'judge-hearing-table.video-access-points' : 'judge-hearing-table.video-access-point') | translate }}
+                                    'judge-hearing-table.video-access-points' :
+                                    'judge-hearing-table.video-access-point') | translate }}
                                 </span>
                             </div>
                             <span *ngIf="hearing.observers.length > 0">
