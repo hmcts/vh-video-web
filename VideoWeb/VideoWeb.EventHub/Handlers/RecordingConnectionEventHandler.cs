@@ -20,9 +20,7 @@ namespace VideoWeb.EventHub.Handlers
 
             var participantId = callbackEvent.ParticipantId;
 
-            var message = $"Recording Connection Failed: Conference Id: {conferenceId} - Participant id: {participantId}";
-            Logger.LogTrace(
-                message: message);
+            Logger.LogTrace("Recording Connection Failed: Conference Id: {ConferenceId} - Participant id: {ParticipantId}", conferenceId, participantId);
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RecordingConnectionFailed(conferenceId, participantId);
