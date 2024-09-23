@@ -13,68 +13,106 @@ resources:
       ref: master
       endpoint: hmcts
 
-pool:
+parameters:
+- name: stages
+  type: object
+  default:
+  - env: 'dev'
+    buildPushImage: true
+    pushHelmChart: true
+  - env: 'demo'
+    requireApproval: true
+    buildPushImage: false
+    pushHelmChart: false
+  - env: 'test'
+    requireApproval: true
+    buildPushImage: true
+    pushHelmChart: false
+
+pool: 
   vmImage: ubuntu-22.04
 
 stages:
-  #####################################################
-  # Build Docker Image & Push. ########################
-  - stage: Docker_Build_Push
-    displayName: Docker Build & Push Image
-    variables:
-      - template: variables/dev.yaml
-      - template: variables/shared.yaml
+#####################################################
+# Manual Approval ###################################
+- ${{ each stage in parameters.stages }}:
+  - stage: Manual_Approval_${{ stage.env }}
+    displayName: Approval ${{ stage.env }}
+    condition: eq('${{ stage.requireApproval }}', true)
     jobs:
-      - job: Docker_Build
-        displayName: "Docker Build and Push"
+      - job: Approve
+        displayName: 'Approve to ${{ stage.env }}'
+        pool: server
+        timeoutInMinutes: 10080 # 7 Days
         steps:
-          - checkout: self
+          - task: ManualValidation@0
+            timeoutInMinutes: 10080 # 7 Days
+            inputs:
+              instructions: 'Please Approve run to ${{ stage.env }}'
+              onTimeout: 'reject'
 
-          - bash: |
-              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
-            displayName: Add NuGet Feed Authentication
-            workingDirectory: $(app_path)
+#####################################################
+# Build Docker Image & Push. ########################
+  - ${{ if eq(stage.buildPushImage, true)  }}:
+    - stage: Docker_Build_Push_${{ stage.env }}
+      displayName: Build & Push ${{ stage.env }}
+      dependsOn:
+        - Manual_Approval_${{ stage.env }}
+      variables:
+        - template: variables/${{ stage.env }}.yaml
+        - template: variables/shared.yaml
+      jobs:
+      - job: Docker_Build_${{ stage.env }}
+        displayName: Docker Build and Push ${{ stage.env }}
+        steps:
+        - checkout: self
 
-          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
-            parameters:
-              azureSubscription: ${{ variables.acrSubscription }}
-              acrName: ${{ variables.acrName }}
-              repositoryName: ${{ variables.repositoryName }}
-
-          - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
-            parameters:
-              azureSubscription: ${{ variables.acrSubscription }}
-              acrName: ${{ variables.acrName }}
-              repositoryName: ${{ variables.repositoryName }}
-              imageName: "${{ variables.imageName }}"
-              imageTags:
-                - "${{ variables.devTagName }}"
+        - bash: |
+            sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
+          displayName: Add NuGet Feed Authentication
+          workingDirectory: $(app_path)
+      
+        - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+          
+        - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+            imageName: "${{ variables.imageName }}"
+            imageTags:
+              - '${{ variables.imageTagName }}'
 
   #########################################
   # Push Helm Charts to Repo. #############
-  - stage: Helm
-    displayName: Push Helm Charts
-    dependsOn: Docker_Build_Push
-    variables:
+  - ${{ if eq(stage.pushHelmChart, true) }}:
+    - stage: Helm_${{ stage.env }}
+      displayName: Push Helm Charts ${{ stage.env }}
+      dependsOn: Docker_Build_Push_${{ stage.env }}
+      variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
       - group: vh-github-app-credentials
-    jobs:
-      - job: Helm
-        displayName: "Helm Push"
+      jobs:
+      - job: Helm_${{ stage.env }}
+        displayName: Helm Push ${{ stage.env }}
         steps:
-          - checkout: self
+        - checkout: self
 
-          - template: templates\Github\get-app-token.yaml@azTemplates
-            parameters:
-              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-              appId: $(gh_app_app_id)
+        - template: templates\Github\get-app-token.yaml@azTemplates
+          parameters:
+            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+            appId: $(gh_app_app_id)
 
-          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
-            parameters:
-              chartName: ${{ variables.chartName }}
-              chartPath: ${{ variables.chartPath }}
-              githubToken: $(githubappinstall.token)
-              githubUsername: $(gh_app_name)
-              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
-              subDirectory: ${{ variables.subDirectory }}
+        - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+          parameters:
+            chartName: ${{ variables.chartName }}
+            chartPath: ${{ variables.chartPath }}
+            githubToken: $(githubappinstall.token)
+            githubUsername: $(gh_app_name)
+            githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+            subDirectory: ${{ variables.subDirectory }}
