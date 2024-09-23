@@ -40,6 +40,7 @@ public static class CallbackEventMapper
             TransferFrom = request.TransferFrom,
             TimeStampUtc = request.TimeStampUtc,
             ParticipantId = participantId,
+            PhoneNumber = request.Phone,
             IsParticipantInVmr = request.IsParticipantInVmr(conference),
             ConferenceStatus = Enum.Parse<ConferenceState>(conference.CurrentStatus.ToString())
         };

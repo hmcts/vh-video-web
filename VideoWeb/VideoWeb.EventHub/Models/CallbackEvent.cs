@@ -26,5 +26,6 @@ namespace VideoWeb.EventHub.Models
         public List<HearingDetailRequest> AllocatedHearingsDetails { get; set; }
         
         public string CsoAllocatedUserName { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }

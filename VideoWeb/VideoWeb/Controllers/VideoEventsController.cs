@@ -25,7 +25,6 @@ namespace VideoWeb.Controllers;
 [ApiController]
 [Route("callback")]
 [Authorize(AuthenticationSchemes = "Callback")]
-[AllowAnonymous]
 public class VideoEventsController(
     IConferenceService conferenceService,
     IVideoApiClient videoApiClient,
@@ -107,12 +106,6 @@ public class VideoEventsController(
     
     private static CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
     {
-        var isPhoneEvent = string.IsNullOrEmpty(request.Phone);
-        if (!isPhoneEvent)
-        {
-            return null;
-        }
-        
         var callbackEvent = CallbackEventMapper.Map(request, conference);
         request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
         
