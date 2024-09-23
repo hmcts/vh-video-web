@@ -42,7 +42,7 @@ public class ConferenceCacheMapperTests
         {
             var participant = conference.Participants.Single(x => x.Id == resultParticipant.Id);
             var participantDetails = hearingResponse.Participants.SingleOrDefault(x => x.Id == resultParticipant.RefId);
-            var johDetails = hearingResponse.JudiciaryParticipants.SingleOrDefault(x => x.Email == resultParticipant.Username);
+            var johDetails = hearingResponse.JudicialOfficeHolders.SingleOrDefault(x => x.Email == resultParticipant.Username);
             if (participantDetails != null)
             {
                 resultParticipant.Id.Should().Be(participant.Id);
@@ -131,7 +131,7 @@ public class ConferenceCacheMapperTests
         var hearing = BuildHearingDetailsResponse(conference);
         var participant = hearing.Participants[0];
         participant.InterpreterLanguage = null;
-        var judiciaryParticipant = hearing.JudiciaryParticipants[0];
+        var judiciaryParticipant = hearing.JudicialOfficeHolders[0];
         judiciaryParticipant.InterpreterLanguage = null;
         var endpoint = hearing.Endpoints[0];
         endpoint.InterpreterLanguage = null;
@@ -195,7 +195,7 @@ public class ConferenceCacheMapperTests
             .With(x => x.Id = conference.HearingId)
             .With(x => x.Endpoints = endpoints)
             .With(x => x.Participants = participants)
-            .With(x => x.JudiciaryParticipants = joh)
+            .With(x => x.JudicialOfficeHolders = joh)
             .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
             .With(x => x.HearingVenueName = "Venue")
             .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())

@@ -4,7 +4,7 @@
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="2.3.2-pr-0894-0002" />
+    <PackageReference Include="BookingsApi.Client" Version="2.3.2-pr-0893-0018" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.5.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />

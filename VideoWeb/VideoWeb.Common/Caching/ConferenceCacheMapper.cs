@@ -70,7 +70,7 @@ public static class ConferenceCacheMapper
     private static Participant MapParticipantToCacheModel(ParticipantResponse participant, HearingDetailsResponseV2 hearingDetails)
     {
         var participantDetails = hearingDetails.Participants?.SingleOrDefault(x => x.Id == participant.RefId);
-        var judiciaryDetails = hearingDetails.JudiciaryParticipants?.SingleOrDefault(x
+        var judiciaryDetails = hearingDetails.JudicialOfficeHolders?.SingleOrDefault(x
             => String.Equals(x.Email, participant.Username, StringComparison.OrdinalIgnoreCase));
         
         var model =
