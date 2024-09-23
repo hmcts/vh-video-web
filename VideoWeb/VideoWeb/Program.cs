@@ -32,7 +32,10 @@ namespace VideoWeb
                     foreach (var keyVault in keyVaults)
                     {
                         var filePath = $"/mnt/secrets/{keyVault}";
-                        configBuilder.Add(GetKeyPerFileSource(filePath));
+                        if (Directory.Exists(filePath))
+                        {
+                            configBuilder.Add(GetKeyPerFileSource(filePath));    
+                        }
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -53,7 +56,10 @@ namespace VideoWeb
                         foreach (var keyVault in keyVaults)
                         {
                             var filePath = $"/mnt/secrets/{keyVault}";
-                            configBuilder.Add(GetKeyPerFileSource(filePath));
+                            if (Directory.Exists(filePath))
+                            {
+                                configBuilder.Add(GetKeyPerFileSource(filePath));    
+                            }
                         }
                     });
                 });
