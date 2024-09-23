@@ -57,6 +57,7 @@ stages:
     - stage: Docker_Build_Push_${{ stage.env }}
       displayName: Build & Push ${{ stage.env }}
       dependsOn:
+      - ${{ if stage.requireApproval }}:
         - Manual_Approval_${{ stage.env }}
       variables:
         - template: variables/${{ stage.env }}.yaml
