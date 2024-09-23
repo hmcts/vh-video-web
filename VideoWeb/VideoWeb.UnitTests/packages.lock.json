@@ -108,9 +108,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[2.2.15-pr-0679-0002, )",
-        "resolved": "2.2.15-pr-0679-0002",
-        "contentHash": "1ofx+22oE0puqyZrjzl2BCLo4u2arrLH5PAcU/fCB0K1yhuHUQyZ55NL82Cm1RKBeuPkrwA+6sOixUTYpoOXcg==",
+        "requested": "[2.2.16-pr-0679-0003, )",
+        "resolved": "2.2.16-pr-0679-0003",
+        "contentHash": "zp56yUM8bvat3+OvKXV/KQB7s5gvZHRFhWfGVJUwXnqKtE2Yl2eMAuupISHvAPcsfDmnDmOkxnBme3qN5yjd6w==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "13.0.3"
@@ -2383,7 +2383,7 @@
           "Swashbuckle.AspNetCore.Annotations": "[6.6.1, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.6.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "VideoApi.Client": "[2.2.15-pr-0679-0002, )",
+          "VideoApi.Client": "[2.2.16-pr-0679-0003, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"
@@ -2402,7 +2402,7 @@
           "Microsoft.Identity.Client": "[4.61.0, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[2.2.15-pr-0679-0002, )"
+          "VideoApi.Client": "[2.2.16-pr-0679-0003, )"
         }
       },
       "videoweb.contract": {
