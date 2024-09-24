@@ -12,6 +12,7 @@ namespace VideoWeb.Common.Models
         {
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
+            TelephoneParticipants = new List<TelephoneParticipant>();
             CivilianRooms = new List<CivilianRoom>();
             ConsultationRooms = new List<ConsultationRoom>();
         }
@@ -20,6 +21,7 @@ namespace VideoWeb.Common.Models
         public Guid HearingId { get; set; }
         public List<Participant> Participants { get; set; }
         public List<Endpoint> Endpoints { get; set; }
+        public List<TelephoneParticipant> TelephoneParticipants { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
         public List<ConsultationRoom> ConsultationRooms { get; set; }
         public string HearingVenueName { get; set; }
@@ -192,6 +194,18 @@ namespace VideoWeb.Common.Models
         public void UpdateConferenceStatus(ConferenceStatus newState)
         {
             CurrentStatus = newState;
+        }
+
+        public void AddTelephoneParticipant(Guid id, string phoneNumber)
+        {
+            if (TelephoneParticipants.Exists(x => x.Id == id)) return;
+            TelephoneParticipants.Add(new TelephoneParticipant
+                { Id = id, PhoneNumber = phoneNumber, Connected = true, Room = RoomType.WaitingRoom });
+        }
+        
+        public void RemoveTelephoneParticipant(Guid id)
+        {
+            TelephoneParticipants.RemoveAll(x => x.Id == id);
         }
     }
 }

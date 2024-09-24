@@ -19,6 +19,11 @@ public static class ConferenceCacheMapper
             .Select(p => MapParticipantToCacheModel(p, hearingDetailsResponse))
             .ToList();
 
+        var telephoneParticipants = conferenceResponse
+            .TelephoneParticipants
+            .Select(TelephoneParticipantCacheMapper.MapTelephoneToCacheModel)
+            .ToList();
+
         var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
         var caseInformation = hearingDetailsResponse.Cases.FirstOrDefault(c => c.IsLeadCase) ?? hearingDetailsResponse.Cases[0];
@@ -47,6 +52,7 @@ public static class ConferenceCacheMapper
         conference.Participants = participants;
         conference.HearingVenueName = hearingDetailsResponse.HearingVenueName;
         conference.Endpoints = endpoints;
+        conference.TelephoneParticipants = telephoneParticipants;
         conference.CivilianRooms = civilianRooms;
         conference.CurrentStatus = GetConferenceStatus(conferenceResponse.CurrentStatus);
         conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
