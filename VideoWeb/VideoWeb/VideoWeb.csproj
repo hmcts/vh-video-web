@@ -49,7 +49,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.1" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="VideoApi.Client" Version="2.2.11" />
+    <PackageReference Include="VideoApi.Client" Version="2.2.17-pr-0673-0006" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="8.0.7" />
