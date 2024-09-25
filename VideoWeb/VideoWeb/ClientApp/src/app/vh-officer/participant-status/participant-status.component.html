@@ -11,8 +11,7 @@
         </span>
       </div>
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
-          <ng-container
-              *ngIf="participant.isJudge || participant.isQuickLinkUser || participant.isStaffMember; else individualName">
+        <ng-container *ngIf="participant.isJudge || participant.isQuickLinkUser || participant.isStaffMember; else individualName">
           {{ participant.displayName }}
         </ng-container>
         <ng-template #individualName>
@@ -75,6 +74,9 @@
         [ngClass]="getParticipantStatusClass(participant.status)"
       >
         {{ participant.statusText }}
+        <ng-container *ngIf="!participant.isConnected">
+          <app-dial-out-number-icon></app-dial-out-number-icon>
+        </ng-container>
       </p>
     </div>
   </div>

@@ -66,6 +66,7 @@ import {
     faPenToSquare,
     faPhone,
     faPhoneAlt,
+    faPhoneVolume,
     faQuestionCircle,
     faShareSquare,
     faSignInAlt,
@@ -100,6 +101,8 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 import { CookiesComponent } from './cookies/cookies.component';
 import { FeatureFlagDirective } from './directives/feature-flag.directive';
+import { DialOutNumberComponent } from './dial-out-number/dial-out-number.component';
+import { DialOutNumberIconComponent } from './dial-out-number-icon/dial-out-number-icon.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -161,7 +164,9 @@ export function getSettings(configService: ConfigService) {
         HookElementDirective,
         RandomPipe,
         TruncatableTextComponent,
-        CookiesComponent
+        DialOutNumberComponent,
+        CookiesComponent,
+        DialOutNumberIconComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -206,6 +211,8 @@ export function getSettings(configService: ConfigService) {
         NgxDatePipe,
         HyphenatePipe,
         LoadingComponent,
+        DialOutNumberComponent,
+        DialOutNumberIconComponent,
         VideoFilterComponent,
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
@@ -256,7 +263,8 @@ export class SharedModule {
             faVideo,
             faVideoSlash,
             faThLarge,
-            faPenToSquare
+            faPenToSquare,
+            faPhoneVolume
         );
     }
 }

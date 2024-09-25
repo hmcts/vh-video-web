@@ -91,6 +91,16 @@ export class ParticipantContactDetails {
         this.participant.status = value;
     }
 
+    get isConnected(): boolean {
+        const connectedStatuses = [
+            ParticipantStatus.Available,
+            ParticipantStatus.InHearing,
+            ParticipantStatus.InConsultation,
+            ParticipantStatus.Joining
+        ];
+        return connectedStatuses.includes(this.participant.status);
+    }
+
     set statusText(value: string) {
         this.participantStatusText = value;
     }

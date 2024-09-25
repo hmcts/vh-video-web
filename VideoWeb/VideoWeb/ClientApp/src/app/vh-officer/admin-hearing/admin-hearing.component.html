@@ -17,6 +17,11 @@
         title="Admin overview of the hearings"
       ></iframe>
     </div>
+    <ng-container *ngIf="vhoVodafoneFeatureFlag">
+      <div id="participant-dial-out" class="govuk-grid-column-one-half govuk-!-padding-0">
+        <app-dial-out-number></app-dial-out-number>
+      </div>
+    </ng-container>
   </div>
   <div class="govuk-grid-row">
     <app-tasks-table [hearing]="hearing"></app-tasks-table>
