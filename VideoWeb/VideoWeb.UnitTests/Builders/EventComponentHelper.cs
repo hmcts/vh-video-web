@@ -73,7 +73,7 @@ public class EventComponentHelper
             new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
-            new TelephoneTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
+            new TelephoneTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new RecordingConnectionEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
         };
     }
