@@ -108,9 +108,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[2.2.11, )",
-        "resolved": "2.2.11",
-        "contentHash": "ciMnAm7RGQ+yFX+/YUHlzwcPwIVKfyv3kGmNlvBS9ewItIqOEhVXMXjmDVwMPixYFx+Yept0gmdivo8woo044w==",
+        "requested": "[2.2.16, )",
+        "resolved": "2.2.16",
+        "contentHash": "1s1BAk3VJeFBLCpOuyIzRMELIZMCHqI0Qfp4PwXfzxOthT25gibMdbZJr47Nimrne/4dP2NgrqKdvgXtyHbo/A==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "13.0.3"
@@ -173,8 +173,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "2.3.1",
-        "contentHash": "fELMrU9fK/QaLJo9rw1BKPKDWiNIypCXicOC61lkXkdAraQfeEIOuyQtVsopIl+PpUkHmkdbeXBITP+zS55y5w==",
+        "resolved": "2.3.2",
+        "contentHash": "xAm1KJP2PpIvyJl3xE0ifO1DN2MH6l7v4JKQNDvS7uYo99jRhw9RHfsLzCq/AO5LXcZSuOTR7pXdhcdT6cYqGQ==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2363,7 +2363,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
-          "BookingsApi.Client": "[2.3.1, )",
+          "BookingsApi.Client": "[2.3.2, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
@@ -2392,7 +2392,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[2.3.1, )",
+          "BookingsApi.Client": "[2.3.2, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.ApplicationInsights": "[2.22.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",

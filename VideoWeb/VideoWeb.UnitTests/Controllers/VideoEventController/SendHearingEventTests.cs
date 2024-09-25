@@ -14,6 +14,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common;
+using VideoWeb.EventHub.Handlers;
 using RoomType = VideoApi.Contract.Enums.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
@@ -81,16 +82,17 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
-        public async Task Should_return_no_content_phone_shouldnt_call_handler()
+        public async Task Should_handle_telephone_event()
         {
             // Arrange
             var request = CreateRequest("0123456789");
+            request.EventType = EventType.TelephoneJoined;
 
             // Act
             var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
-            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Never);
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();

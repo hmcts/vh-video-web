@@ -31,5 +31,4 @@ namespace VideoWeb.Common.Caching
             };
         }
     }
-    
 }

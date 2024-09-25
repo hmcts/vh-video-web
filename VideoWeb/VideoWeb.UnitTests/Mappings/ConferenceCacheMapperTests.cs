@@ -16,7 +16,9 @@ using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
 using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
+using RoomType = VideoApi.Contract.Enums.RoomType;
 using Supplier = VideoWeb.Common.Enums.Supplier;
+using TelephoneParticipantResponse = VideoApi.Contract.Responses.TelephoneParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings;
 
@@ -107,6 +109,13 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
             var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
             endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
+        }
+        
+        foreach (var telephoneParticipant in response.TelephoneParticipants)
+        {
+            telephoneParticipant.Id.Should().NotBeEmpty();
+            telephoneParticipant.Room.Should().Be(VideoWeb.Common.Models.RoomType.WaitingRoom);
+            telephoneParticipant.PhoneNumber.Should().NotBeNullOrEmpty();
         }
     }
     
@@ -234,6 +243,23 @@ public class ConferenceCacheMapperTests
             .With(x => x.CivilianRooms = [new() { Id = 1, Label = "Room 1" }])
             .With(x => x.Endpoints = endpoints)
             .Build();
+        
+        var telephoneParticipants = new List<TelephoneParticipantResponse>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Room = RoomType.WaitingRoom,
+                PhoneNumber = "01234567890"
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Room = RoomType.WaitingRoom,
+                PhoneNumber = "Anonymous"
+            }
+        };
+        conference.TelephoneParticipants = telephoneParticipants;
         return conference;
     }
 }

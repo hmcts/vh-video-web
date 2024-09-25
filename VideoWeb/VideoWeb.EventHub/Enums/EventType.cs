@@ -25,6 +25,9 @@ namespace VideoWeb.EventHub.Enums
         ParticipantsUpdated,
         NewConferenceAdded,
         AllocationHearings,
-        RecordingConnectionFailed
+        RecordingConnectionFailed,
+        TelephoneJoined,
+        TelephoneDisconnected,
+        TelephoneTransfer
     }
 }
