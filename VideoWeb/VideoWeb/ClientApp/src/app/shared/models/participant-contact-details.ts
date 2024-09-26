@@ -87,16 +87,6 @@ export class ParticipantContactDetails {
         return this.participant.hearing_role === HearingRole.INTERPRETER || this.participant.linked_participants.length > 0;
     }
 
-    get isConnected(): boolean {
-        const connectedStatuses = [
-            ParticipantStatus.Available,
-            ParticipantStatus.InHearing,
-            ParticipantStatus.InConsultation,
-            ParticipantStatus.Joining
-        ];
-        return connectedStatuses.includes(this.participant.status);
-    }
-
     set status(value: ParticipantStatus) {
         this.participant.status = value;
     }
