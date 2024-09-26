@@ -102,7 +102,6 @@ import { TruncatableTextComponent } from './truncatable-text/truncatable-text.co
 import { CookiesComponent } from './cookies/cookies.component';
 import { FeatureFlagDirective } from './directives/feature-flag.directive';
 import { DialOutNumberComponent } from './dial-out-number/dial-out-number.component';
-import { DialOutNumberIconComponent } from './dial-out-number-icon/dial-out-number-icon.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -165,8 +164,7 @@ export function getSettings(configService: ConfigService) {
         RandomPipe,
         TruncatableTextComponent,
         DialOutNumberComponent,
-        CookiesComponent,
-        DialOutNumberIconComponent
+        CookiesComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -212,7 +210,6 @@ export function getSettings(configService: ConfigService) {
         HyphenatePipe,
         LoadingComponent,
         DialOutNumberComponent,
-        DialOutNumberIconComponent,
         VideoFilterComponent,
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,

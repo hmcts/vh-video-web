@@ -10,6 +10,8 @@ import { VideoCallService } from 'src/app/waiting-space/services/video-call.serv
 })
 export class DialOutNumberComponent implements OnInit {
     form: FormGroup<DialOutForm>;
+    message: string;
+    isError: boolean;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -29,13 +31,25 @@ export class DialOutNumberComponent implements OnInit {
 
         console.log('Dialling out to ' + this.form.value.telephone);
         const telephone = parsePhoneNumberFromString(this.form.value.telephone, 'GB');
-        const displayName = telephone.formatNational().slice(-4);
-        this.videocallService.callParticipantByTelephone(telephone.number, displayName, dialoutResponse => {
-            console.log('Dial out response', dialoutResponse);
+        this.videocallService.callParticipantByTelephone(telephone.number, (dialoutResponse: PexipDialOutResponse) => {
+            if (dialoutResponse.status === 'success') {
+                this.form.reset();
+                this.displayMessage('Dial out successful', false);
+            } else {
+                this.displayMessage('Dial out failed', true);
+            }
         });
     }
 
+    private displayMessage(message: string, isError: boolean) {
+        this.message = message;
+        this.isError = isError;
+    }
+
     phoneNumberValidator(control: FormControl) {
+        if (!control.value) {
+            return;
+        }
         const phoneNumber = parsePhoneNumberFromString(control.value, 'GB'); // Specify the default country code
         if (phoneNumber && phoneNumber.isValid()) {
             return null;

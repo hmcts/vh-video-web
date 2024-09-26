@@ -549,7 +549,8 @@ export class VideoCallService {
         this.pexipAPI.dialOut(ingestUrl, 'auto', 'GUEST', callbackFn, params);
     }
 
-    callParticipantByTelephone(telephone: string, name: string = undefined, callbackFn: Function) {
+    callParticipantByTelephone(telephone: string, callbackFn: Function) {
+        const name = telephone.slice(-4);
         const params: PexipDialOutParams = {
             call_type: 'audio',
             remote_display_name: name,

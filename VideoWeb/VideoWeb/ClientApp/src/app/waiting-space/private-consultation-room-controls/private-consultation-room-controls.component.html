@@ -311,6 +311,13 @@
       </div>
     </button>
     <div *ngIf="!isObserver" id="flexbar1" class="flexBar hide-for-medium"></div>
+    <ng-container *appFeatureFlag="featureFlags.dialOutParticipant">
+      <app-hearing-control-icon
+        [iconName]="'phone-volume'"
+        [iconText]="'Dial-out'"
+        (iconClicked)="onDialOutClicked()"
+      ></app-hearing-control-icon>
+    </ng-container>
     <button
       class="icon-button"
       id="toggle-participants-panel"
@@ -772,3 +779,5 @@
   [onLayoutUpdate]="onLayoutUpdate"
   (popupAnswered)="closeChangeLayoutDialog()"
 ></app-change-hearing-layout-popup>
+
+<app-dial-out-participant-popup *ngIf="displayDialOutPopup" (popupAnswered)="closeDialOutPopup()"></app-dial-out-participant-popup>

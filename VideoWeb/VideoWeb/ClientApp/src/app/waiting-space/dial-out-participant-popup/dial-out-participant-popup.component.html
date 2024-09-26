@@ -1,0 +1,20 @@
+<div id="dial-participant-modal" class="modal modal-open">
+  <div class="modal-content">
+    <h1 class="govuk-heading-m">Enter a number of a person you wish to dial in</h1>
+    <app-dial-out-number></app-dial-out-number>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-margin-top-3">
+        <div class="govuk-button-group">
+          <button
+            class="govuk-button"
+            data-module="govuk-button"
+            [attr.aria-label]="'Close Dial Out Participant Popup'"
+            (click)="closePopup()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

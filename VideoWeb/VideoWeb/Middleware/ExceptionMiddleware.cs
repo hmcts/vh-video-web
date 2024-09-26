@@ -61,7 +61,12 @@ namespace VideoWeb.Middleware
 
         private Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
         {
-            context.Response.StatusCode = (int) statusCode;
+            if (context.Response.HasStarted)
+            {
+                Console.WriteLine("The response has already started, the error handling middleware will not be executed.");
+                return Task.CompletedTask;
+            }
+            context.Response.StatusCode = (int)statusCode;
             var sb = new StringBuilder(exception.Message);
             var innerException = exception.InnerException;
             while (innerException != null)

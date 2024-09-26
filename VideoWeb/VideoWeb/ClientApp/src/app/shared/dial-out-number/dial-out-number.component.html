@@ -1,16 +1,10 @@
-<div class="dial-out-header">
-  <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Dial out</span>
-</div>
-
 <form id="dial-out-form" [formGroup]="form" (ngSubmit)="dialOutNumber()">
-  <div
-    class="govuk-form-group"
-    [ngClass]="{ 'govuk-form-group--error': form.controls.telephone.touched && form.controls.telephone.invalid }"
-  >
+  <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.controls.telephone.dirty && form.controls.telephone.invalid }">
     <label class="govuk-label" for="phone-number"> UK phone number </label>
-    <p *ngIf="form.controls.telephone.touched && form.controls.telephone.invalid" id="phone-number-error" class="govuk-error-message">
+    <p *ngIf="form.controls.telephone.dirty && form.controls.telephone.invalid" id="phone-number-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> Enter a valid phone number
     </p>
+
     <input
       class="govuk-input govuk-input--width-20"
       id="phone-number"
@@ -19,6 +13,10 @@
       autocomplete="tel"
       aria-describedby="phone-number-error"
     />
+
+    <h1 id="dial-response-message" [ngClass]="{ 'govuk-error-message': isError }" class="govuk-heading-s govuk-!-margin-top-3">
+      {{ message }}
+    </h1>
   </div>
 
   <div class="govuk-button-group">

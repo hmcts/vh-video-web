@@ -49,6 +49,17 @@ declare type PexipProtocol = 'sip' | 'h323' | 'rtmp' | 'mssip' | 'auto';
 
 declare type PexipRole = 'GUEST' | 'HOST';
 
+declare interface PexipDialOutResponse {
+    /**
+     * "success" or "error"
+     */
+    status: string;
+    /**
+     * List of added participant ids
+     */
+    result: string[];
+}
+
 declare interface PexipDialOutParams {
     /**
      * This additional parameter can be specified for RTMP calls to send the presentation stream to a separate RTMP destination.

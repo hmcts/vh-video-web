@@ -74,9 +74,6 @@
         [ngClass]="getParticipantStatusClass(participant.status)"
       >
         {{ participant.statusText }}
-        <ng-container *ngIf="!participant.isConnected">
-          <app-dial-out-number-icon></app-dial-out-number-icon>
-        </ng-container>
       </p>
     </div>
   </div>
