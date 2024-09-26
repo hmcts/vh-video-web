@@ -46,7 +46,7 @@ export class DialOutNumberComponent implements OnInit {
         this.isError = isError;
     }
 
-    phoneNumberValidator(control: FormControl) {
+    private phoneNumberValidator(control: FormControl) {
         if (!control.value) {
             return;
         }
