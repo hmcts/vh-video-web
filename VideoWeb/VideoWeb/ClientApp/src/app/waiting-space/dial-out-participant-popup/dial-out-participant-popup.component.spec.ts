@@ -1,22 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DialOutParticipantPopupComponent } from './dial-out-participant-popup.component';
 
 describe('DialOutParticipantPopupComponent', () => {
     let component: DialOutParticipantPopupComponent;
-    let fixture: ComponentFixture<DialOutParticipantPopupComponent>;
+    const focusServiceSpy = jasmine.createSpyObj('FocusService', ['focus']);
 
     beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [DialOutParticipantPopupComponent]
-        }).compileComponents();
-
-        fixture = TestBed.createComponent(DialOutParticipantPopupComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        component = new DialOutParticipantPopupComponent(focusServiceSpy);
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should set modalDivId to dial-out-participant-modal', () => {
+        expect(component.modalDivId).toEqual('dial-out-participant-modal');
+    });
+
+    it('should emit closeButtonPressed event when closePopup is called', () => {
+        spyOn(component.popupAnswered, 'emit');
+        component.closePopup();
+
+        expect(component.popupAnswered.emit).toHaveBeenCalled();
     });
 });

@@ -10,7 +10,7 @@ import { YesNoPopupBaseDirective } from 'src/app/shared/confirmation/yes-no-popu
 export class DialOutParticipantPopupComponent extends YesNoPopupBaseDirective implements AfterViewInit {
     constructor(protected focusService: FocusService) {
         super(focusService);
-        this.modalDivId = 'dial-participant-modal';
+        this.modalDivId = 'dial-out-participant-modal';
     }
 
     closePopup() {
