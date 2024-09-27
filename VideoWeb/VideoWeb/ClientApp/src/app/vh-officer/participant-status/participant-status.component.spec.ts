@@ -1,19 +1,14 @@
-import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
-import {
-    LinkedParticipantResponse,
-    LinkType,
-    ParticipantContactDetailsResponseVho,
-    Role
-} from 'src/app/services/clients/api-client';
-import {ParticipantContactDetails} from 'src/app/shared/models/participant-contact-details';
-import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
-import {eventsServiceSpy} from 'src/app/testing/mocks/mock-events-service';
-import {HearingRole} from 'src/app/waiting-space/models/hearing-role-model';
-import {VideoWebService} from '../../services/api/video-web.service';
-import {ErrorService} from '../../services/error.service';
-import {ParticipantStatusReader} from '../../shared/models/participant-status-reader';
-import {MockLogger} from '../../testing/mocks/mock-logger';
-import {ParticipantStatusComponent} from './participant-status.component';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
+import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { VideoWebService } from '../../services/api/video-web.service';
+import { ErrorService } from '../../services/error.service';
+import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
+import { MockLogger } from '../../testing/mocks/mock-logger';
+import { ParticipantStatusComponent } from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
     const eventsService = eventsServiceSpy;

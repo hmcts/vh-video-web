@@ -1,8 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ParticipantStatusDirective} from '../vho-shared/participant-status-base/participant-status-base.component';
-import {UpdateParticipantDisplayNameRequest} from '../../services/clients/api-client';
-import {faPenToSquare} from '@fortawesome/free-solid-svg-icons';
-import {ParticipantContactDetails} from '../../shared/models/participant-contact-details';
+import { Component, Input, OnInit } from '@angular/core';
+import { ParticipantStatusDirective } from '../vho-shared/participant-status-base/participant-status-base.component';
+import { UpdateParticipantDisplayNameRequest } from '../../services/clients/api-client';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 
 @Component({
     selector: 'app-participant-status',
