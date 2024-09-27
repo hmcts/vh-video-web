@@ -30,22 +30,26 @@
 
     <div class="govuk-grid-column-one-third">
         <span *ngIf="isEditingParticipant(participant.id)">
-            <div class="govuk-form-group vh-mt10">
+            <div [ngClass]="showError ? 'govuk-form-group--error' : 'govuk-form-group'">
                 <input
                     type="text"
                     id="participant-{{ participant.id }}-name"
                     #participantInputName
-                    (blur)="onParticipantDisplayName(participantInputName.value)"
-                    value="{{ newParticipantDisplayName }}"
+                    (blur)="onParticipantNameChange(participantInputName.value)"
+                    value="{{ newParticipantName }}"
                     class="govuk-input govuk-input--width-20"
                 />
+            </div>
+            <div *ngIf="showError" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error</span>
+                Update display name error
             </div>
             <div class="vh-mt10">
                 <span>
                   <input
                       type="button"
                       id="editDisplayName"
-                      (click)="renameParticipant(participant.id)"
+                      (click)="saveNameUpdate(participant.id)"
                       value="{{ 'participant-status.save' | translate }}"
                       class="govuk-button"
                   />
@@ -54,7 +58,7 @@
                   <input
                       type="button"
                       id="cancelDisplayName"
-                      (click)="cancelDisplayName()"
+                      (click)="cancelNameUpdate()"
                       value="{{ 'participant-status.cancel' | translate }}"
                       class="govuk-button vh-ml10 govuk-button--secondary"
                   />

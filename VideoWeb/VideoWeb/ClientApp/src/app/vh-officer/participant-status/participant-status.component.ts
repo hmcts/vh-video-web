@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ParticipantStatusDirective } from '../vho-shared/participant-status-base/participant-status-base.component';
-import { UpdateParticipantDisplayNameRequest } from '../../services/clients/api-client';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
+import {Component, Input, OnInit} from '@angular/core';
+import {ParticipantStatusDirective} from '../vho-shared/participant-status-base/participant-status-base.component';
+import {UpdateParticipantDisplayNameRequest} from '../../services/clients/api-client';
+import {faPenToSquare} from '@fortawesome/free-solid-svg-icons';
+import {ParticipantContactDetails} from '../../shared/models/participant-contact-details';
 
 @Component({
     selector: 'app-participant-status',
@@ -12,12 +12,13 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
 export class ParticipantStatusComponent extends ParticipantStatusDirective implements OnInit {
     @Input() conferenceId: string;
     participantBeingEdited: ParticipantContactDetails;
-    newParticipantDisplayName: string;
+    newParticipantName: string;
     editIcon = faPenToSquare;
+    showError = false;
 
     ngOnInit() {
         this.participantBeingEdited = null;
-        this.newParticipantDisplayName = null;
+        this.newParticipantName = null;
         this.setupEventHubSubscribers();
         this.loadData();
     }
@@ -28,21 +29,30 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
 
     setParticipantEdit(participant: ParticipantContactDetails) {
         this.participantBeingEdited = participant;
-        this.newParticipantDisplayName = participant.displayName;
+        this.newParticipantName = participant.displayName;
     }
 
-    onParticipantDisplayName(value: string) {
-        this.newParticipantDisplayName = value;
+    onParticipantNameChange(value: string) {
+        this.newParticipantName = value;
     }
 
-    cancelDisplayName() {
+    cancelNameUpdate() {
         this.participantBeingEdited = null;
-        this.newParticipantDisplayName = null;
+        this.newParticipantName = null;
+        this.showError = false;
     }
 
-    async renameParticipant(participantId: string) {
-        const updatedParticipant = new UpdateParticipantDisplayNameRequest({ display_name: this.newParticipantDisplayName });
-        await this.videoWebService.updateParticipantDisplayName(this.conferenceId, participantId, updatedParticipant);
-        this.cancelDisplayName();
+    saveNameUpdate(participantId: string) {
+        const updatedParticipant = new UpdateParticipantDisplayNameRequest({ display_name: this.newParticipantName });
+        this.videoWebService
+            .updateParticipantDisplayName(this.conferenceId, participantId, updatedParticipant)
+            .then(() => {
+                this.showError = false;
+                this.cancelNameUpdate();
+            })
+            .catch(error => {
+                this.showError = true;
+                this.logger.error('Failed to update display-name', error);
+            });
     }
 }
