@@ -55,7 +55,7 @@ export class DialOutNumberComponent implements OnInit {
             return;
         }
         const phoneNumber = parsePhoneNumberFromString(control.value, 'GB'); // Specify the default country code
-        if (phoneNumber && phoneNumber.isValid()) {
+        if (phoneNumber?.isValid()) {
             return null;
         }
         return { invalidPhoneNumber: true };
