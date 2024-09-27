@@ -4,7 +4,7 @@
 
 <div id="participant-status-list">
   <div *ngFor="let participant of participants" class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half status-box-display">
+    <div class="govuk-grid-column-one-third status-box-display">
       <div class="participant-icon">
         <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon">
           <fa-icon icon="language"></fa-icon>
@@ -22,9 +22,49 @@
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
       </div>
+        &nbsp;
+        <a id="edit-link" href="javascript:void(0);" (click)="setParticipantEdit(participant)" class="govuk-body vh-ml10">
+            <fa-icon [icon]="editIcon" *ngIf="!isEditingParticipant(participant.id)"></fa-icon>
+        </a>
     </div>
 
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-third">
+        <span *ngIf="isEditingParticipant(participant.id)">
+            <div class="govuk-form-group vh-mt10">
+                <input
+                    type="text"
+                    id="participant-{{ participant.id }}-name"
+                    #participantInputName
+                    (blur)="onParticipantDisplayName(participantInputName.value)"
+                    value="{{ newParticipantDisplayName }}"
+                    class="govuk-input govuk-input--width-20"
+                />
+            </div>
+            <div class="vh-mt10">
+                <span>
+                  <input
+                      type="button"
+                      id="editDisplayName"
+                      (click)="renameParticipant(participant.id)"
+                      value="{{ 'participant-status.save' | translate }}"
+                      class="govuk-button"
+                  />
+                </span>&nbsp;
+                <span>
+                  <input
+                      type="button"
+                      id="cancelDisplayName"
+                      (click)="cancelDisplayName()"
+                      value="{{ 'participant-status.cancel' | translate }}"
+                      class="govuk-button vh-ml10 govuk-button--secondary"
+                  />
+                </span>
+            </div>
+        </span>
+    </div>
+
+
+    <div class="govuk-grid-column-one-third">
       <p
         id="participant-status-{{ participant.id }}"
         class="govuk-body-s govuk-!-font-weight-bold"

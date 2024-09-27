@@ -1,20 +1,26 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
-import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { VideoWebService } from '../../services/api/video-web.service';
-import { ErrorService } from '../../services/error.service';
-import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
-import { MockLogger } from '../../testing/mocks/mock-logger';
-import { ParticipantStatusComponent } from './participant-status.component';
+import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {
+    LinkedParticipantResponse,
+    LinkType,
+    ParticipantContactDetailsResponseVho,
+    Role
+} from 'src/app/services/clients/api-client';
+import {ParticipantContactDetails} from 'src/app/shared/models/participant-contact-details';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {eventsServiceSpy} from 'src/app/testing/mocks/mock-events-service';
+import {HearingRole} from 'src/app/waiting-space/models/hearing-role-model';
+import {VideoWebService} from '../../services/api/video-web.service';
+import {ErrorService} from '../../services/error.service';
+import {ParticipantStatusReader} from '../../shared/models/participant-status-reader';
+import {MockLogger} from '../../testing/mocks/mock-logger';
+import {ParticipantStatusComponent} from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
     const eventsService = eventsServiceSpy;
     const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getParticipantsWithContactDetailsByConferenceId',
-        'raiseSelfTestFailureEvent'
+        'raiseSelfTestFailureEvent',
+        'updateParticipantDisplayName'
     ]);
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
         'goToServiceError',
@@ -36,7 +42,7 @@ describe('ParticipantStatusComponent', () => {
             'MyVenue'
         );
         videoWebServiceSpy.getParticipantsWithContactDetailsByConferenceId.and.returnValue(Promise.resolve(participants));
-
+        videoWebServiceSpy.updateParticipantDisplayName.and.returnValue(Promise.resolve());
         component = new ParticipantStatusComponent(
             videoWebServiceSpy,
             errorServiceSpy,
@@ -210,6 +216,38 @@ describe('ParticipantStatusComponent', () => {
             const observer1Index = participantList.findIndex(x => x.displayName === 'M Observer 03');
             expect(observer1Index).toEqual(8);
             // Observer 03
+        });
+    });
+    describe('Updating Participant Name Controls', () => {
+        it('should set participant being edited, when edit button clicked', () => {
+            const participant = new ParticipantContactDetails(participants[0]);
+            component.setParticipantEdit(participant);
+            expect(component.participantBeingEdited).toEqual(participant);
+            expect(component.newParticipantDisplayName).toEqual(participant.displayName);
+        });
+
+        it('should set new participant display name, when text box filled in', () => {
+            const newName = 'New Name';
+            component.onParticipantDisplayName(newName);
+            expect(component.newParticipantDisplayName).toEqual(newName);
+        });
+
+        it('should cancel editing participant, when cancel button clicked', () => {
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            component.newParticipantDisplayName = 'New Name';
+            component.cancelDisplayName();
+            expect(component.participantBeingEdited).toBeNull();
+            expect(component.newParticipantDisplayName).toBeNull();
+        });
+
+        it('should update participant name, when save button clicked', async () => {
+            component.conferenceId = '123';
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            component.newParticipantDisplayName = 'New Name';
+            await component.renameParticipant(component.participantBeingEdited.id);
+            expect(videoWebServiceSpy.updateParticipantDisplayName).toHaveBeenCalled();
+            expect(component.participantBeingEdited).toBeNull();
+            expect(component.newParticipantDisplayName).toBeNull();
         });
     });
 });
