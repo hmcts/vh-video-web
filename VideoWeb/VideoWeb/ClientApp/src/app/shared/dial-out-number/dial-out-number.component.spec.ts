@@ -27,7 +27,7 @@ describe('DialOutNumberComponent', () => {
             component.dialOutNumber();
 
             expect(component.form.valid).toBeTrue();
-            expect(videoCallServiceSpy.callParticipantByTelephone).toHaveBeenCalled;
+            expect(videoCallServiceSpy.callParticipantByTelephone).toHaveBeenCalled();
         });
 
         it('should not call videoCallService if form is invalid', () => {
