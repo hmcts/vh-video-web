@@ -7,7 +7,7 @@ if ! command -v yq &>/dev/null; then
 fi
 
 # Ensure the /mnt/secrets directory exists
-base_dir="$HOME"
+base_dir="$HOME/mnt/secrets"
 
 # Ensure the base directory exists
 mkdir -p "$base_dir"
