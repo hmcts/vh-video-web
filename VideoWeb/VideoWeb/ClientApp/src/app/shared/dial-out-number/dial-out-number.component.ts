@@ -32,13 +32,17 @@ export class DialOutNumberComponent implements OnInit {
         console.log('Dialling out to ' + this.form.value.telephone);
         const telephone = parsePhoneNumberFromString(this.form.value.telephone, 'GB');
         this.videocallService.callParticipantByTelephone(telephone.number, (dialoutResponse: PexipDialOutResponse) => {
-            if (dialoutResponse.status === 'success') {
-                this.form.reset();
-                this.displayMessage('Dial out successful', false);
-            } else {
-                this.displayMessage('Dial out failed', true);
-            }
+            this.processDialOutResponse(dialoutResponse);
         });
+    }
+
+    processDialOutResponse(dialoutResponse: PexipDialOutResponse) {
+        if (dialoutResponse.status === 'success') {
+            this.form.reset();
+            this.displayMessage('Dial out successful', false);
+        } else {
+            this.displayMessage('Dial out failed', true);
+        }
     }
 
     private displayMessage(message: string, isError: boolean) {

@@ -871,4 +871,22 @@ describe('VideoCallService', () => {
             expect(pexipSpy.setReceiveFromAudioMix).toHaveBeenCalledWith(mixName, uuid);
         });
     });
+
+    describe('callParticipantByTelephone', () => {
+        it('should call pexip dialOut', () => {
+            service.pexipAPI = pexipSpy;
+            const phoneNumber = '0123456789';
+            const callbackFn = () => {};
+
+            const expectedParams: PexipDialOutParams = {
+                call_type: 'audio',
+                remote_display_name: '6789',
+                overlay_text: '6789'
+            };
+
+            service.callParticipantByTelephone(phoneNumber, callbackFn);
+
+            expect(pexipSpy.dialOut).toHaveBeenCalledWith(phoneNumber, 'auto', 'GUEST', callbackFn, expectedParams);
+        });
+    });
 });

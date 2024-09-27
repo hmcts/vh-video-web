@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialOutNumberComponent } from './dial-out-number.component';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('DialOutNumberComponent', () => {
     let component: DialOutNumberComponent;
@@ -13,7 +14,8 @@ describe('DialOutNumberComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [DialOutNumberComponent],
-            providers: [{ provide: VideoCallService, useValue: videoCallServiceSpy }]
+            providers: [{ provide: VideoCallService, useValue: videoCallServiceSpy }],
+            imports: [ReactiveFormsModule]
         }).compileComponents();
 
         fixture = TestBed.createComponent(DialOutNumberComponent);
@@ -37,6 +39,23 @@ describe('DialOutNumberComponent', () => {
             expect(component.form.valid).toBeFalse();
             expect(component.form.controls.telephone.errors).toEqual({ invalidPhoneNumber: true });
             expect(videoCallServiceSpy.callParticipantByTelephone).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('processDialOutResponse', () => {
+        it('should reset form and display success message if dial out is successful', () => {
+            component.processDialOutResponse({ status: 'success', result: [] });
+
+            expect(component.form.value.telephone).toBeNull();
+            expect(component.message).toBe('Dial out successful');
+            expect(component.isError).toBeFalse();
+        });
+
+        it('should display error message if dial out is unsuccessful', () => {
+            component.processDialOutResponse({ status: 'failed', result: [] });
+
+            expect(component.message).toBe('Dial out failed');
+            expect(component.isError).toBeTrue();
         });
     });
 });
