@@ -29,3 +29,8 @@ nvm use
 ```
 
 > You will need Node Version Manager installed  to run the above command 
+
+## Running the app as a container
+
+Visit the VH-Setup repository for
+[Instructions to run as a container locally.](https://github.com/hmcts/vh-setup/tree/main/docs/local-container-setup).

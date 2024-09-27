@@ -1,0 +1,24 @@
+services:
+  videoweb:
+    image: ${DOCKER_REGISTRY-}videoweb
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp-vh.pfx
+      - VHSERVICES__BOOKINGSAPIURL=https://vh-bookings-api.dev.platform.hmcts.net/
+      - VHSERVICES__VIDEOAPIURL=https://vh-video-api.dev.platform.hmcts.net/
+    ports:
+      - 5801:80
+      - 5800:443
+    build:
+      context: .
+      dockerfile: ./VideoWeb/VideoWeb/Dockerfile
+      args:
+        - skip_client_build=false
+    volumes:
+      - ~/.aspnet/DataProtection-Keys:/root/.aspnet/DataProtection-Keys
+      - ~/.aspnet/https:/https:ro
+      - ~/.microsoft/usersecrets/:/root/.microsoft/usersecrets:ro # Comment this line if you you want to use Key Per File (secrets as mounted volume)
+      - ~/mnt/secrets:/mnt/secrets:ro # Comment this line if you you want to .net secrets
