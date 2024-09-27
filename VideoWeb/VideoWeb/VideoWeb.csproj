@@ -49,7 +49,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.1" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="VideoApi.Client" Version="2.2.18-pr-0681-0003" />
+    <PackageReference Include="VideoApi.Client" Version="2.2.18" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="8.0.7" />
@@ -73,19 +73,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Remove="ClientApp\.angular\**" />
-    <None Remove="ClientApp\.angular\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
     <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="ClientApp\.angular\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="ClientApp\.angular\**" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
