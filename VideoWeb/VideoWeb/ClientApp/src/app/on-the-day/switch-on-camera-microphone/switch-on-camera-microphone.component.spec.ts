@@ -4,7 +4,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -15,6 +14,7 @@ import { Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
@@ -26,7 +26,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let errorService: jasmine.SpyObj<ErrorService>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     const logger: Logger = new MockLogger();
@@ -35,7 +35,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     beforeEach(async () => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         activatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [], ['currentStream$']);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(
+            'UserMediaStreamServiceV2',
+            ['createAndPublishStream', 'closeCurrentStream'],
+            ['currentStream$']
+        );
         currentStreamSubject = new Subject<MediaStream>();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -163,7 +167,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     });
 
     it('should update mediaAccepted and userPrompted to true when request media', fakeAsync(() => {
-        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject);
 
         component.requestMedia();
         currentStreamSubject.next(mockCamStream);
