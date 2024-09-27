@@ -9,10 +9,9 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { first } from 'rxjs/operators';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -43,7 +42,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService
+        private userMediaStreamService: UserMediaStreamServiceV2
     ) {
         super(participantStatusUpdateService, logger);
         this.userPrompted = false;
@@ -81,10 +80,14 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
 
     async requestMedia() {
         this.userMediaService.initialise();
-        this.userMediaStreamService.currentStream$.pipe(first()).subscribe({
+        this.userMediaStreamService.currentStream$.pipe().subscribe({
             next: stream => {
+                if (!stream || !stream.active) {
+                    return;
+                }
                 this.mediaAccepted = true;
                 this.userPrompted = true;
+                this.userMediaStreamService.closeCurrentStream();
             },
             error: error => {
                 this.mediaAccepted = false;
@@ -102,6 +105,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
                 );
             }
         });
+        this.userMediaStreamService.createAndPublishStream();
     }
 
     goVideoTest() {

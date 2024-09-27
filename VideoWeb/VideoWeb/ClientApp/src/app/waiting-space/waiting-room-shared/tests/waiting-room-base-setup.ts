@@ -67,8 +67,13 @@ export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
 export let roomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
-export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
-export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['active'], ['getVideoTracks']);
+export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['active'], ['getAudioTracks']);
+export const mockCamAndMicStream = jasmine.createSpyObj<MediaStream>(
+    'MediaStream',
+    ['getAudioTracks', 'getVideoTracks', 'active'],
+    ['active']
+);
 export let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 export const testDataDevice = new MediaDeviceTestData();
 export const jwToken = new TokenResponse({
