@@ -225,19 +225,6 @@
           "Swashbuckle.AspNetCore.SwaggerGen": "6.6.1"
         }
       },
-      "VH.Core.Configuration": {
-        "type": "Direct",
-        "requested": "[0.1.13, )",
-        "resolved": "0.1.13",
-        "contentHash": "fEtq8dy7GbJ8eUDc5kmwg3Ze+6C7JEPSHlmvz22W8UPX/x7ujBTr5MqUdpKNQganaHalt/6DHfHi+gxlPSUjiw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections.Common": "3.1.10",
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Microsoft.Extensions.Configuration.KeyPerFile": "3.1.11",
-          "Microsoft.Extensions.DependencyModel": "3.1.6",
-          "SonarAnalyzer.CSharp": "8.2.0.14119"
-        }
-      },
       "VideoApi.Client": {
         "type": "Direct",
         "requested": "[2.2.17-pr-0673-0006, )",
@@ -850,15 +837,6 @@
         "dependencies": {
           "Microsoft.Extensions.Configuration": "3.1.22",
           "Microsoft.Extensions.Configuration.FileExtensions": "3.1.22"
-        }
-      },
-      "Microsoft.Extensions.Configuration.KeyPerFile": {
-        "type": "Transitive",
-        "resolved": "3.1.11",
-        "contentHash": "u3Y7Hs22o7vtN3hVtiS9/FwhG1BI5Vc24wucLU1wUvWS4jY1Ddx9h6H1srVtdtXA04tZbGrYBUoCbZDHEyddzQ==",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "3.1.11",
-          "Microsoft.Extensions.FileProviders.Physical": "3.1.11"
         }
       },
       "Microsoft.Extensions.DependencyInjection": {
