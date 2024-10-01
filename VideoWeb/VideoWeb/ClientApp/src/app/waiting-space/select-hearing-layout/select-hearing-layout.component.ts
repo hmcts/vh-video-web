@@ -7,7 +7,8 @@ import { Accordion, createAll } from 'govuk-frontend';
 
 @Component({
     selector: 'app-select-hearing-layout',
-    templateUrl: './select-hearing-layout.component.html'
+    templateUrl: './select-hearing-layout.component.html',
+    styleUrls: ['./select-hearing-layout.component.scss']
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     @Input() conference: ConferenceResponse;
