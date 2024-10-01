@@ -35,6 +35,12 @@ export class HearingLayoutComponent {
                 return this.translateService.instant('hearing-layout.title-1-plus-7');
             case HearingLayout.TwoPlus21:
                 return this.translateService.instant('hearing-layout.title-2-plus-21');
+            case HearingLayout.NineEqual:
+                return this.translateService.instant('hearing-layout.title-nine-equal');
+            case HearingLayout.SixteenEqual:
+                return this.translateService.instant('hearing-layout.title-sixteen-equal');
+            case HearingLayout.TwentyFiveEqual:
+                return this.translateService.instant('hearing-layout.title-twenty-five-equal');
             default:
                 return this.translateService.instant('hearing-layout.title-dynamic');
         }
@@ -46,6 +52,12 @@ export class HearingLayoutComponent {
                 return this.translateService.instant('hearing-layout.description-1-plus-7');
             case HearingLayout.TwoPlus21:
                 return this.translateService.instant('hearing-layout.description-2-plus-21');
+            case HearingLayout.NineEqual:
+                return this.translateService.instant('hearing-layout.description-nine-equal');
+            case HearingLayout.SixteenEqual:
+                return this.translateService.instant('hearing-layout.description-sixteen-equal');
+            case HearingLayout.TwentyFiveEqual:
+                return this.translateService.instant('hearing-layout.description-twenty-five-equal');
             default:
                 return this.translateService.instant('hearing-layout.description-dynamic');
         }

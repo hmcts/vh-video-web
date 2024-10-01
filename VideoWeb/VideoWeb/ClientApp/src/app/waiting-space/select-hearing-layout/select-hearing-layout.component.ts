@@ -24,7 +24,14 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
 
-    private availableLayoutsWR = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
+    private availableLayoutsWR = [
+        HearingLayout.OnePlus7,
+        HearingLayout.TwoPlus21,
+        HearingLayout.Dynamic,
+        HearingLayout.NineEqual,
+        HearingLayout.SixteenEqual,
+        HearingLayout.TwentyFiveEqual
+    ];
     private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
 
     constructor(

@@ -844,6 +844,12 @@
     "description-2-plus-21": "Hyd at 21 o gyfranogwyr ar y sgrin. Bydd llun y sawl sy'n siarad yn ymddangos ar y 2 brif sgrin.",
     "title-dynamic": "Dynamig",
     "description-dynamic": "Bydd y cynllun yn addasu'n awtomatig yn dibynnu ar y nifer o gyfranogwyr.",
+    "title-nine-equal": "3x3",
+    "title-sixteen-equal": "4x4",
+    "title-twenty-five-equal": "5x5",
+    "description-nine-equal": "Hyd at 9 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 3x3.",
+    "description-sixteen-equal": "Hyd at 16 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 4x4.",
+    "description-twenty-five-equal": "Hyd at 25 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 5x5.",
     "layout-image-alt": "Llun o gynllun: {{layout}}"
   },
   "judge-participant-status-list": {

@@ -13,7 +13,10 @@ describe('HearingLayoutComponent', () => {
     const getLayoutImagePathTestCases = [
         { layout: HearingLayout.Dynamic, expected: '/assets/images/layout_dynamic.png' },
         { layout: HearingLayout.OnePlus7, expected: '/assets/images/layout_1_7.png' },
-        { layout: HearingLayout.TwoPlus21, expected: '/assets/images/layout_2_21.png' }
+        { layout: HearingLayout.TwoPlus21, expected: '/assets/images/layout_2_21.png' },
+        { layout: HearingLayout.NineEqual, expected: '/assets/images/layout_dynamic.png' },
+        { layout: HearingLayout.SixteenEqual, expected: '/assets/images/layout_dynamic.png' },
+        { layout: HearingLayout.TwentyFiveEqual, expected: '/assets/images/layout_dynamic.png' }
     ];
 
     getLayoutImagePathTestCases.forEach(test => {
@@ -26,7 +29,10 @@ describe('HearingLayoutComponent', () => {
     const getLayoutTitleTestCases = [
         { layout: HearingLayout.Dynamic, expected: 'hearing-layout.title-dynamic' },
         { layout: HearingLayout.OnePlus7, expected: 'hearing-layout.title-1-plus-7' },
-        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.title-2-plus-21' }
+        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.title-2-plus-21' },
+        { layout: HearingLayout.NineEqual, expected: 'hearing-layout.title-nine-equal' },
+        { layout: HearingLayout.SixteenEqual, expected: 'hearing-layout.title-sixteen-equal' },
+        { layout: HearingLayout.TwentyFiveEqual, expected: 'hearing-layout.title-twenty-five-equal' }
     ];
 
     getLayoutTitleTestCases.forEach(test => {
@@ -39,7 +45,10 @@ describe('HearingLayoutComponent', () => {
     const getLayoutDescriptionTestCases = [
         { layout: HearingLayout.Dynamic, expected: 'hearing-layout.description-dynamic' },
         { layout: HearingLayout.OnePlus7, expected: 'hearing-layout.description-1-plus-7' },
-        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.description-2-plus-21' }
+        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.description-2-plus-21' },
+        { layout: HearingLayout.NineEqual, expected: 'hearing-layout.description-nine-equal' },
+        { layout: HearingLayout.SixteenEqual, expected: 'hearing-layout.description-sixteen-equal' },
+        { layout: HearingLayout.TwentyFiveEqual, expected: 'hearing-layout.description-twenty-five-equal' }
     ];
 
     getLayoutDescriptionTestCases.forEach(test => {
