@@ -136,10 +136,6 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy, AfterVie
             const selectedLayoutElement = document.getElementById(`${this.LAYOUT_RADIO_BUTTON_ID_PREFIX}${selectedLayout}`);
             const container = document.getElementById(this.SELECT_HEARING_CONTAINER_ID);
 
-            if (!container || !selectedLayoutElement) {
-                return;
-            }
-
             const elementRect = selectedLayoutElement.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
 
