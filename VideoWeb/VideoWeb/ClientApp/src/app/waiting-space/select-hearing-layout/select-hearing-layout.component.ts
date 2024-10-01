@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
@@ -10,7 +10,7 @@ import { Accordion, createAll } from 'govuk-frontend';
     templateUrl: './select-hearing-layout.component.html',
     styleUrls: ['./select-hearing-layout.component.scss']
 })
-export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
+export class SelectHearingLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     @Input() conference: ConferenceResponse;
     @Input() callback: Function;
     @Input() onHostToolBar = false;
@@ -40,6 +40,8 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         HearingLayout.SixteenEqual,
         HearingLayout.TwentyFiveEqual
     ];
+    private readonly SELECT_HEARING_CONTAINER_ID = 'select-hearing-container-content-1';
+    private readonly LAYOUT_RADIO_BUTTON_ID_PREFIX = 'layout-radio-button-';
 
     constructor(
         private readonly hearingLayoutService: HearingLayoutService,
@@ -89,6 +91,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         );
     }
 
+    ngAfterViewInit() {
+        this.scrollSelectedLayoutIntoView();
+    }
+
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
     }
@@ -122,5 +128,27 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
 
     onClose() {
         this.closeButtonPressed.emit();
+    }
+
+    scrollSelectedLayoutIntoView() {
+        this.currentLayout$.subscribe(currentLayout => {
+            const selectedLayout = this.availableLayouts.find(l => l === currentLayout);
+            const selectedLayoutElement = document.getElementById(`${this.LAYOUT_RADIO_BUTTON_ID_PREFIX}${selectedLayout}`);
+            const container = document.getElementById(this.SELECT_HEARING_CONTAINER_ID);
+
+            if (!container || !selectedLayoutElement) {
+                return;
+            }
+
+            const elementRect = selectedLayoutElement.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const offsetTop = elementRect.top - containerRect.top;
+
+            container.scrollBy({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        });
     }
 }
