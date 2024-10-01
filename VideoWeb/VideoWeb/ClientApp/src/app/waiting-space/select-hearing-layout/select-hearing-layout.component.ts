@@ -33,7 +33,13 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         HearingLayout.SixteenEqual,
         HearingLayout.TwentyFiveEqual
     ];
-    private readonly availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
+    private readonly availableLayoutHostToolBar = [
+        HearingLayout.OnePlus7,
+        HearingLayout.TwoPlus21,
+        HearingLayout.NineEqual,
+        HearingLayout.SixteenEqual,
+        HearingLayout.TwentyFiveEqual
+    ];
 
     constructor(
         private readonly hearingLayoutService: HearingLayoutService,
