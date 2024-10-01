@@ -25,7 +25,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
 
-    private availableLayoutsWR = [
+    private readonly availableLayoutsWR = [
         HearingLayout.OnePlus7,
         HearingLayout.TwoPlus21,
         HearingLayout.Dynamic,
@@ -33,11 +33,11 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         HearingLayout.SixteenEqual,
         HearingLayout.TwentyFiveEqual
     ];
-    private availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
+    private readonly availableLayoutHostToolBar = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21];
 
     constructor(
-        private hearingLayoutService: HearingLayoutService,
-        protected translateService: TranslateService
+        private readonly hearingLayoutService: HearingLayoutService,
+        protected readonly translateService: TranslateService
     ) {}
 
     get currentLayout$(): Observable<HearingLayout> {

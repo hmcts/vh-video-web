@@ -16,7 +16,7 @@ export class HearingLayoutComponent {
     headerLayoutTitlePrefix = 'hearing-layout-title-';
     headerLayoutDescriptionPrefix = 'hearing-layout-description-';
 
-    constructor(private translateService: TranslateService) {}
+    constructor(private readonly translateService: TranslateService) {}
 
     getLayoutImagePath() {
         switch (this.layout) {
