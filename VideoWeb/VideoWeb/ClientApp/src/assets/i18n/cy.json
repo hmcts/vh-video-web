@@ -847,9 +847,9 @@
     "title-nine-equal": "3x3",
     "title-sixteen-equal": "4x4",
     "title-twenty-five-equal": "5x5",
-    "description-nine-equal": "Hyd at 9 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 3x3.",
-    "description-sixteen-equal": "Hyd at 16 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 4x4.",
-    "description-twenty-five-equal": "Hyd at 25 o gyfranogwyr ar y sgrin, wedi'u harddangos mewn grid 5x5.",
+    "description-nine-equal": "Hyd at 9 o gyfranogwyr ar y sgrin, wedi'i arddangos mewn grid 3x3.",
+    "description-sixteen-equal": "Hyd at 16 o gyfranogwyr ar y sgrin, wedi'i arddangos mewn grid 4x4.",
+    "description-twenty-five-equal": "Hyd at 25 o gyfranogwyr ar y sgrin, wedi'i arddangos mewn grid 5x5.",
     "layout-image-alt": "Llun o gynllun: {{layout}}"
   },
   "judge-participant-status-list": {
