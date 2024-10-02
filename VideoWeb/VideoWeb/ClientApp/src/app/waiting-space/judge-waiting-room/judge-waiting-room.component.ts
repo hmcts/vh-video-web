@@ -1,46 +1,47 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { merge, Subscription } from 'rxjs';
-import { take, takeUntil, tap } from 'rxjs/operators';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { ClockService } from 'src/app/services/clock.service';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
-import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
-import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
-import { ParticipantModel } from 'src/app/shared/models/participant';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { CallError, ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
-import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import { RoomClosingToastrService } from '../services/room-closing-toast.service';
-import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { Title } from '@angular/platform-browser';
-import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
-import { HideComponentsService } from '../services/hide-components.service';
-import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
-import { Store } from '@ngrx/store';
-import { ConferenceState } from '../store/reducers/conference.reducer';
-import { LaunchDarklyService } from '../../services/launch-darkly.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {merge, Subscription} from 'rxjs';
+import {take, takeUntil, tap} from 'rxjs/operators';
+import {ConsultationService} from 'src/app/services/api/consultation.service';
+import {VideoWebService} from 'src/app/services/api/video-web.service';
+import {ConferenceStatus, ParticipantStatus, Role} from 'src/app/services/clients/api-client';
+import {ClockService} from 'src/app/services/clock.service';
+import {ConferenceService} from 'src/app/services/conference/conference.service';
+import {ConferenceStatusChanged} from 'src/app/services/conference/models/conference-status-changed.model';
+import {PexipDisplayNameModel} from 'src/app/services/conference/models/pexip-display-name.model';
+import {VirtualMeetingRoomModel} from 'src/app/services/conference/models/virtual-meeting-room.model';
+import {ParticipantService} from 'src/app/services/conference/participant.service';
+import {VideoControlCacheService} from 'src/app/services/conference/video-control-cache.service';
+import {VideoControlService} from 'src/app/services/conference/video-control.service';
+import {DeviceTypeService} from 'src/app/services/device-type.service';
+import {ErrorService} from 'src/app/services/error.service';
+import {EventsService} from 'src/app/services/events.service';
+import {HearingLayoutService} from 'src/app/services/hearing-layout.service';
+import {HearingVenueFlagsService} from 'src/app/services/hearing-venue-flags.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {UnloadDetectorService} from 'src/app/services/unload-detector.service';
+import {HeartbeatModelMapper} from 'src/app/shared/mappers/heartbeat-model-mapper';
+import {ParticipantModel} from 'src/app/shared/models/participant';
+import {pageUrls} from 'src/app/shared/page-url.constants';
+import {VhToastComponent} from 'src/app/shared/toast/vh-toast.component';
+import {CallError, ParticipantDeleted, ParticipantUpdated} from '../models/video-call-models';
+import {ConsultationInvitationService} from '../services/consultation-invitation.service';
+import {NotificationSoundsService} from '../services/notification-sounds.service';
+import {NotificationToastrService} from '../services/notification-toastr.service';
+import {ParticipantRemoteMuteStoreService} from '../services/participant-remote-mute-store.service';
+import {RoomClosingToastrService} from '../services/room-closing-toast.service';
+import {VideoCallService} from '../services/video-call.service';
+import {WaitingRoomBaseDirective} from '../waiting-room-shared/waiting-room-base.component';
+import {Title} from '@angular/platform-browser';
+import {ModalTrapFocus} from '../../shared/modal/modal-trap-focus';
+import {HideComponentsService} from '../services/hide-components.service';
+import {FocusService} from 'src/app/services/focus.service';
+import {ConferenceStatusMessage} from '../../services/models/conference-status-message';
+import {Store} from '@ngrx/store';
+import {ConferenceState} from '../store/reducers/conference.reducer';
+import {LaunchDarklyService} from '../../services/launch-darkly.service';
+import {AudioRecordingService} from "../../services/audio-recording.service";
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -49,7 +50,6 @@ import { LaunchDarklyService } from '../../services/launch-darkly.service';
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     audioRecordingInterval: NodeJS.Timer;
-    isRecording: boolean;
     continueWithNoRecording = false;
     audioStreamIntervalSeconds = 10;
     recordingSessionSeconds = 0;
@@ -65,12 +65,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
-    wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
-    restartActioned: boolean;
-    dialOutUUID = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
+    private recordingPaused: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -101,7 +99,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        private audioRecordingService: AudioRecordingService
     ) {
         super(
             route,
@@ -129,6 +128,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
+        this.audioRecordingService.getAudioRecordingState().subscribe((recordingPaused: boolean) => {
+            this.recordingPaused = recordingPaused;
+            if(!this.recordingPaused) {
+                this.initAudioRecordingInterval();
+            }
+        });
     }
 
     get isChatVisible() {
@@ -319,7 +324,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     async startHearing() {
         const action = this.isNotStarted() ? 'start' : 'resume';
-        this.restartActioned = false;
+        this.audioRecordingService.restartActioned = false;
         this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
             conference: this.conferenceId,
             status: this.conference.status
@@ -409,7 +414,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
-            (!this.wowzaAgent || !this.wowzaAgent.isAudioOnlyCall)
+            (!this.audioRecordingService.wowzaAgent || !this.audioRecordingService.wowzaAgent.isAudioOnlyCall)
         ) {
             this.logWowzaAlert();
             this.showAudioRecordingRestartAlert();
@@ -453,37 +458,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ModalTrapFocus.trap('video-container');
     }
 
-    reconnectToWowza() {
-        this.restartActioned = true;
-        this.cleanupDialOutConnections();
-        this.videoCallService.connectWowzaAgent(this.conference.ingest_url, async dialOutToWowzaResponse => {
-            if (dialOutToWowzaResponse.status === 'success') {
-                this.dialOutUUID.push(dialOutToWowzaResponse.result[0]);
-                await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
-                this.initAudioRecordingInterval();
-            } else {
-                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-            }
-        });
-    }
-
-    updateWowzaParticipant(updatedParticipant: ParticipantUpdated) {
-        if (updatedParticipant.uuid === this.wowzaAgent?.uuid) {
-            this.wowzaAgent = updatedParticipant;
-            this.logger.debug(`${this.loggerPrefixJudge} WowzaListener updated`, {
-                pexipId: updatedParticipant.uuid,
-                displayName: updatedParticipant.pexipDisplayName
-            });
-        }
-    }
-
     handleHearingStatusMessage(message: ConferenceStatusMessage) {
         if (message.conferenceId === this.conference.id) {
             this.logger.debug(`${this.loggerPrefixJudge} Hearing status message received`, {
                 message: message
             });
             if (message.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended) {
-                this.cleanupDialOutConnections();
+                this.audioRecordingService.cleanupDialOutConnections();
             }
         }
     }
@@ -539,7 +520,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(updatedParticipant => {
                 this.assignPexipIdToRemoteStore(updatedParticipant);
-                this.updateWowzaParticipant(updatedParticipant);
+                this.audioRecordingService.updateWowzaParticipant(updatedParticipant);
                 this.syncDisplayName(updatedParticipant);
             });
 
@@ -550,7 +531,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.videoCallService
             .onConferenceAdjourned()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe(() => this.cleanupDialOutConnections());
+            .subscribe(() => this.audioRecordingService.cleanupDialOutConnections());
 
         this.eventService
             .getParticipantMediaStatusMessage()
@@ -595,6 +576,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.eventService.getHearingStatusMessage().subscribe(message => {
             this.handleHearingStatusMessage(message);
         });
+
+        this.audioRecordingService.init(this.conference, this.participant.id);
     }
 
     private onShouldReload(): void {
@@ -662,32 +645,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.executeWaitingRoomCleanup();
     }
 
-    private cleanupDialOutConnections() {
-        this.logger.debug(`${this.loggerPrefixJudge} Cleaning up dial out connections, if any {dialOutUUID: ${this.dialOutUUID}}`);
-        this.dialOutUUID?.forEach(uuid => {
-            this.videoCallService.disconnectWowzaAgent(uuid);
-        });
-        this.dialOutUUID = [];
-    }
-
-    private showAudioRecordingRestartAlert() {
-        if (this.audioErrorRetryToast) {
-            return;
-        }
-        this.recordingSessionSeconds = 0;
-        clearInterval(this.audioRecordingInterval);
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza.bind(this));
-    }
-
     private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
         if (
             this.conference.audio_recording_required &&
-            this.wowzaAgent &&
+            this.audioRecordingService.wowzaAgent &&
             this.conference.status === ConferenceStatus.InSession &&
-            deletedParticipant.uuid === this.wowzaAgent.uuid
+            deletedParticipant.uuid === this.audioRecordingService.wowzaAgent.uuid &&
+            !this.recordingPaused
         ) {
             this.logWowzaAlert();
-            this.wowzaAgent = null;
+            this.audioRecordingService.wowzaAgent = null;
             this.showAudioRecordingRestartAlert();
         }
     }
@@ -696,7 +663,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.warn(
             `${this.loggerPrefixJudge} not recording when expected, streaming agent could not establish connection: show alert`,
             {
-                agent: this.wowzaAgent,
+                agent: this.audioRecordingService.wowzaAgent,
                 showVideo: this.showVideo,
                 continueWithNoRecording: this.continueWithNoRecording,
                 audioErrorRetryToast: this.audioErrorRetryToast
@@ -706,17 +673,29 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     private assignWowzaAgent(createdParticipant: ParticipantUpdated) {
         if (createdParticipant.isAudioOnlyCall) {
-            if (this.restartActioned) {
+            if (this.audioRecordingService.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
             }
             this.continueWithNoRecording = false;
-            this.wowzaAgent = createdParticipant;
+            this.audioRecordingService.wowzaAgent = createdParticipant;
             this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
                 pexipId: createdParticipant.uuid,
                 displayName: createdParticipant.pexipDisplayName
             });
-        } else if (this.restartActioned) {
+        } else if (this.audioRecordingService.restartActioned) {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         }
+    }
+
+    private showAudioRecordingRestartAlert() {
+        if (this.audioErrorRetryToast) {
+            return;
+        }
+        this.recordingSessionSeconds = 0;
+        clearInterval(this.audioRecordingInterval);
+        const failedToReconnectCallback = () => {
+            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+        }
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.audioRecordingService.reconnectToWowza.bind(this, failedToReconnectCallback));
     }
 }

@@ -1,23 +1,32 @@
-import { Component, Input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { takeUntil } from 'rxjs/operators';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { EventsService } from 'src/app/services/events.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
-import { VideoCallService } from '../services/video-call.service';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
-import { FocusService } from 'src/app/services/focus.service';
-import { Store } from '@ngrx/store';
-import { ConferenceState } from '../store/reducers/conference.reducer';
+import {Component, Input} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {takeUntil} from 'rxjs/operators';
+import {ConfigService} from 'src/app/services/api/config.service';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    HearingLayout,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
+import {ConferenceService} from 'src/app/services/conference/conference.service';
+import {ConferenceStatusChanged} from 'src/app/services/conference/models/conference-status-changed.model';
+import {ParticipantService} from 'src/app/services/conference/participant.service';
+import {DeviceTypeService} from 'src/app/services/device-type.service';
+import {EventsService} from 'src/app/services/events.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {UserMediaService} from 'src/app/services/user-media.service';
+import {HearingControlsBaseComponent} from '../hearing-controls/hearing-controls-base.component';
+import {VideoCallService} from '../services/video-call.service';
+import {VideoControlService} from '../../services/conference/video-control.service';
+import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
+import {FocusService} from 'src/app/services/focus.service';
+import {Store} from '@ngrx/store';
+import {ConferenceState} from '../store/reducers/conference.reducer';
+import {faCirclePause, faPlayCircle} from '@fortawesome/free-regular-svg-icons';
+import {AudioRecordingService} from "../../services/audio-recording.service";
+import {NotificationToastrService} from "../services/notification-toastr.service";
+
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -37,7 +46,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
-    @Input() public wowzaUUID: string;
     @Input() public conference: ConferenceResponse;
 
     featureFlags = FEATURE_FLAGS;
@@ -46,7 +54,14 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     enableDynamicEvidenceSharing = false;
     isWowzaKillButtonEnabled = false;
     vodafoneEnabled = false;
+    pauseIcon = faCirclePause;
+    playIcon = faPlayCircle;
+    recordingPaused: boolean;
+    pauseButtonActioned = false;
+    resumeButtonActioned = false;
+
     private conferenceStatus: ConferenceStatusChanged;
+
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -62,7 +77,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
-        protected conferenceStore: Store<ConferenceState>
+        protected conferenceStore: Store<ConferenceState>,
+        protected audioRecordingService: AudioRecordingService,
+        protected notificationToastrService: NotificationToastrService,
     ) {
         super(
             videoCallService,
@@ -99,6 +116,12 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
         // Needed to prevent 'this' being undefined in the callback
         this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
+
+        this.audioRecordingService.init(this.conference, this.participant?.id);
+
+        this.audioRecordingService.getAudioRecordingState().subscribe(async (audioStopped: boolean) => {
+            this.recordingPaused = audioStopped;
+        });
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -141,10 +164,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         }
     }
 
-    killWowza() {
-        this.videoCallService.disconnectWowzaAgent(this.wowzaUUID);
-    }
-
     onLayoutUpdate(layout: HearingLayout) {
         const mappedLayout = this.mapLayout(layout);
         this.videoCallService.transformLayout(mappedLayout);
@@ -166,4 +185,21 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         }
         return mappedLayout;
     }
+
+    async pauseRecording() {
+        this.pauseButtonActioned = true;
+        await this.audioRecordingService.stopRecording();
+        this.pauseButtonActioned = false;
+
+    }
+
+    async resumeRecording() {
+        this.pauseButtonActioned = true;
+        const failedToReconnectCallback = () => {
+            this.notificationToastrService.showAudioRecordingRestartFailure(() => {});
+        }
+        await this.audioRecordingService.reconnectToWowza(failedToReconnectCallback);
+        this.pauseButtonActioned = false;
+    }
+
 }

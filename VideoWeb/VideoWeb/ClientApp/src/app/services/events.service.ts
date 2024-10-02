@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
-import { Heartbeat } from '../shared/models/heartbeat';
-import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
-import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
-import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
-import { EndpointsUpdatedMessage } from '../shared/models/endpoints-updated-message';
-import { Room } from '../shared/models/room';
-import { RoomTransfer } from '../shared/models/room-transfer';
+import {Injectable} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
+import {HearingLayoutChanged} from 'src/app/services/models/hearing-layout-changed';
+import {Heartbeat} from '../shared/models/heartbeat';
+import {ParticipantHandRaisedMessage} from '../shared/models/participant-hand-raised-message';
+import {ParticipantMediaStatus} from '../shared/models/participant-media-status';
+import {ParticipantMediaStatusMessage} from '../shared/models/participant-media-status-message';
+import {ParticipantRemoteMuteMessage} from '../shared/models/participant-remote-mute-message';
+import {ParticipantsUpdatedMessage} from '../shared/models/participants-updated-message';
+import {EndpointsUpdatedMessage} from '../shared/models/endpoints-updated-message';
+import {Room} from '../shared/models/room';
+import {RoomTransfer} from '../shared/models/room-transfer';
 import {
     ConferenceStatus,
     ConsultationAnswer,
@@ -19,31 +19,34 @@ import {
     ParticipantResponse,
     ParticipantStatus
 } from './clients/api-client';
-import { EventsHubService } from './events-hub.service';
-import { Logger } from './logging/logger-base';
-import { ConferenceMessageAnswered } from './models/conference-message-answered';
-import { ConferenceStatusMessage } from './models/conference-status-message';
-import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
-import { EndpointStatusMessage } from './models/EndpointStatusMessage';
-import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
-import { HelpMessage } from './models/help-message';
-import { InstantMessage } from './models/instant-message';
-import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
-import { ParticipantStatusMessage } from './models/participant-status-message';
-import { RequestedConsultationMessage } from './models/requested-consultation-message';
-import { NewAllocationMessage } from './models/new-allocation-message';
-import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
-import { ParticipantToggleLocalMuteMessage } from '../shared/models/participant-toggle-local-mute-message';
-import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
-import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
-import { Store } from '@ngrx/store';
-import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
+import {EventsHubService} from './events-hub.service';
+import {Logger} from './logging/logger-base';
+import {ConferenceMessageAnswered} from './models/conference-message-answered';
+import {ConferenceStatusMessage} from './models/conference-status-message';
+import {ConsultationRequestResponseMessage} from './models/consultation-request-response-message';
+import {EndpointStatusMessage} from './models/EndpointStatusMessage';
+import {HearingTransfer, TransferDirection} from './models/hearing-transfer';
+import {HelpMessage} from './models/help-message';
+import {InstantMessage} from './models/instant-message';
+import {HeartbeatHealth, ParticipantHeartbeat} from './models/participant-heartbeat';
+import {ParticipantStatusMessage} from './models/participant-status-message';
+import {RequestedConsultationMessage} from './models/requested-consultation-message';
+import {NewAllocationMessage} from './models/new-allocation-message';
+import {UpdateEndpointsDto} from '../shared/models/update-endpoints-dto';
+import {ParticipantToggleLocalMuteMessage} from '../shared/models/participant-toggle-local-mute-message';
+import {EndpointRepMessage} from '../shared/models/endpoint-rep-message';
+import {ConferenceState} from '../waiting-space/store/reducers/conference.reducer';
+import {Store} from '@ngrx/store';
+import {ConferenceActions} from '../waiting-space/store/actions/conference.actions';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
-import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
-import { distinctUntilChanged, take } from 'rxjs/operators';
-import { NewConferenceAddedMessage } from './models/new-conference-added-message';
-import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
-import { HearingCancelledMessage } from './models/hearing-cancelled-message';
+import {
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../waiting-space/store/models/api-contract-to-state-model-mappers';
+import {distinctUntilChanged, take} from 'rxjs/operators';
+import {NewConferenceAddedMessage} from './models/new-conference-added-message';
+import {HearingDetailsUpdatedMessage} from './models/hearing-details-updated-message';
+import {HearingCancelledMessage} from './models/hearing-cancelled-message';
 
 @Injectable({
     providedIn: 'root'
@@ -73,6 +76,7 @@ export class EventsService {
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
     private audioRestartActionedSubject = new Subject<string>();
+    private audioPausedActionSubject = new Subject<string>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
@@ -323,6 +327,11 @@ export class EventsService {
             this.audioRestartActionedSubject.next(conferenceId);
         },
 
+        AudioPauseResumeActioned: (conferenceId: string) => {
+            this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
+            this.audioPausedActionSubject.next(conferenceId);
+        },
+
         updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
             this.logger.debug('[EventsService] - Participant Local mute status change received: ', {
                 participantId,
@@ -556,6 +565,10 @@ export class EventsService {
         return this.audioRestartActionedSubject.asObservable();
     }
 
+    getAudioPausedActioned(): Observable<string> {
+        return this.audioRestartActionedSubject.asObservable();
+    }
+
     getNewConferenceAdded(): Observable<NewConferenceAddedMessage> {
         return this.newConferenceAddedSubject.asObservable();
     }
@@ -641,6 +654,14 @@ export class EventsService {
     async sendAudioRestartActioned(conferenceId: string, participantId: string) {
         await this.eventsHubConnection.send('PushAudioRestartAction', conferenceId, participantId);
         this.logger.debug('[EventsService] - Sent device Audio Restart action to EventHub', {
+            conference: conferenceId,
+            participant: participantId
+        });
+    }
+
+    async sendAudioRecordingPause(conferenceId: string, participantId: string, isPaused: boolean) {
+        await this.eventsHubConnection.send('AudioRecordingPaused', conferenceId, participantId, isPaused);
+        this.logger.debug('[EventsService] - Sent audio recording paused action to EventHub', {
             conference: conferenceId,
             participant: participantId
         });

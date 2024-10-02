@@ -677,7 +677,9 @@
     "unsupported-dynamic-evidence": "Video sharing is not supported on this browser",
     "change-hearing-layout": "Change Layout",
     "change-interpreting-language": "Change Interpreting Language",
-    "interpreting-for": "Interpreting for"
+    "interpreting-for": "Interpreting for",
+    "pause-recording": "Pause recording placeholder text",
+    "resume-recording": "Resume recording placeholder text"
   },
   "chat-panel": {
     "heading": "VH Officer messages",

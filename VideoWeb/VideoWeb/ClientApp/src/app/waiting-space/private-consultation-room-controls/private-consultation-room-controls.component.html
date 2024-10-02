@@ -1,6 +1,5 @@
 <div class="controls-container" id="div-controls-container">
   <div class="icons-container">
-    <button *ngIf="isWowzaKillButtonEnabled" (click)="killWowza()">Kill Wowza</button>&nbsp;
     <button
       class="icon-button dropdown"
       id="toggle-context-menu"
@@ -643,20 +642,43 @@
         <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
       </button>
 
-      <ng-container *ngIf="isHost">
+      <ng-container *ngIf="isHost && recordingPaused">
         <button
+          [disabled]='resumeButtonActioned'
           id="change-hearing-layout"
           class="icon-button"
           appTooltip
-          colour="grey"
-          [text]="'private-consultation-room-controls.change-hearing-layout' | translate"
-          [attr.aria-label]="'private-consultation-room-controls.change-hearing-layout' | translate"
+          colour="green"
+          [text]="'private-consultation-room-controls.resume-recording' | translate"
+          [attr.aria-label]="'private-consultation-room-controls.resume-recording' | translate"
           tabindex="0"
-          (click)="$event.preventDefault(); displayChangeLayoutDialog()"
+
+          (click)="resumeRecording()"
+          (keydown.enter)="$event.preventDefault(); resumeRecording()"
+          (keydown.space)="$event.preventDefault(); resumeRecording()"
         >
-          <fa-icon icon="th-large" flip="horizontal"></fa-icon>
+          <fa-icon [icon]='playIcon'></fa-icon>
         </button>
       </ng-container>
+
+    <ng-container *ngIf="isHost && !recordingPaused">
+        <button
+            [disabled]='pauseButtonActioned'
+            id="mute-recording"
+            class="icon-button"
+            appTooltip
+            colour="red"
+            [text]="'private-consultation-room-controls.pause-recording' | translate"
+            [attr.aria-label]="'private-consultation-room-controls.pause-recording' | translate"
+            tabindex="0"
+
+            (click)="pauseRecording()"
+            (keydown.enter)="$event.preventDefault(); pauseRecording()"
+            (keydown.space)="$event.preventDefault(); pauseRecording()"
+        >
+            <fa-icon [icon]="pauseIcon"></fa-icon>
+        </button>
+    </ng-container>
 
       <ng-container *ngIf="canShowLeaveButton">
         <button

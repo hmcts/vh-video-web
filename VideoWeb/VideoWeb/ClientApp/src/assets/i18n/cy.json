@@ -731,7 +731,9 @@
     "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn",
     "change-hearing-layout": "Newid cynllun",
     "change-interpreting-language": "Newid iaith dehongli",
-    "interpreting-for": "Dehongli ar gyfer"
+    "interpreting-for": "Dehongli ar gyfer",
+    "pause-recording": "Pause recording placeholder text",
+    "resume-recording": "Resume recording placeholder text"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
