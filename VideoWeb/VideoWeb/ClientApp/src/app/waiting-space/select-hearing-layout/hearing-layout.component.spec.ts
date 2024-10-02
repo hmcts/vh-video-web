@@ -14,9 +14,9 @@ describe('HearingLayoutComponent', () => {
         { layout: HearingLayout.Dynamic, expected: '/assets/images/layout_dynamic.png' },
         { layout: HearingLayout.OnePlus7, expected: '/assets/images/layout_1_7.png' },
         { layout: HearingLayout.TwoPlus21, expected: '/assets/images/layout_2_21.png' },
-        { layout: HearingLayout.NineEqual, expected: '/assets/images/layout_dynamic.png' },
-        { layout: HearingLayout.SixteenEqual, expected: '/assets/images/layout_dynamic.png' },
-        { layout: HearingLayout.TwentyFiveEqual, expected: '/assets/images/layout_dynamic.png' }
+        { layout: HearingLayout.NineEqual, expected: '/assets/images/layout_3x3.png' },
+        { layout: HearingLayout.SixteenEqual, expected: '/assets/images/layout_4x4.png' },
+        { layout: HearingLayout.TwentyFiveEqual, expected: '/assets/images/layout_5x5.png' }
     ];
 
     getLayoutImagePathTestCases.forEach(test => {

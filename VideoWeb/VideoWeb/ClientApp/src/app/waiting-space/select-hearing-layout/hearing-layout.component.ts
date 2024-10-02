@@ -24,6 +24,12 @@ export class HearingLayoutComponent {
                 return '/assets/images/layout_1_7.png';
             case HearingLayout.TwoPlus21:
                 return '/assets/images/layout_2_21.png';
+            case HearingLayout.NineEqual:
+                return '/assets/images/layout_3x3.png';
+            case HearingLayout.SixteenEqual:
+                return '/assets/images/layout_4x4.png';
+            case HearingLayout.TwentyFiveEqual:
+                return '/assets/images/layout_5x5.png';
             default:
                 return '/assets/images/layout_dynamic.png';
         }
