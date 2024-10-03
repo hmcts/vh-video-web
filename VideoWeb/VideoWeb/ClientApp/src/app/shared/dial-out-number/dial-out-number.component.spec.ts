@@ -3,6 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DialOutNumberComponent } from './dial-out-number.component';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 describe('DialOutNumberComponent', () => {
     let component: DialOutNumberComponent;
@@ -10,11 +13,16 @@ describe('DialOutNumberComponent', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
 
     beforeEach(async () => {
+        translateServiceSpy.instant.withArgs('dial-out-number.dial-out-success-message').and.returnValue('Dial out successful');
+        translateServiceSpy.instant.withArgs('dial-out-number.dial-out-failed-message').and.returnValue('Dial out failed');
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['callParticipantByTelephone']);
 
         await TestBed.configureTestingModule({
-            declarations: [DialOutNumberComponent],
-            providers: [{ provide: VideoCallService, useValue: videoCallServiceSpy }],
+            declarations: [DialOutNumberComponent, TranslatePipeMock],
+            providers: [
+                { provide: VideoCallService, useValue: videoCallServiceSpy },
+                { provide: TranslateService, useValue: translateServiceSpy }
+            ],
             imports: [ReactiveFormsModule]
         }).compileComponents();
 

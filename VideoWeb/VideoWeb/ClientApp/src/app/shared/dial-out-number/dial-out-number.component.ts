@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
@@ -15,7 +16,8 @@ export class DialOutNumberComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private videocallService: VideoCallService
+        private videocallService: VideoCallService,
+        private translateService: TranslateService
     ) {}
 
     ngOnInit(): void {
@@ -30,8 +32,7 @@ export class DialOutNumberComponent implements OnInit {
         }
 
         console.log('Dialling out to ' + this.form.value.telephone);
-        const telephone = parsePhoneNumberFromString(this.form.value.telephone, 'GB');
-        this.videocallService.callParticipantByTelephone(telephone.number, (dialoutResponse: PexipDialOutResponse) => {
+        this.videocallService.callParticipantByTelephone(this.form.value.telephone, (dialoutResponse: PexipDialOutResponse) => {
             this.processDialOutResponse(dialoutResponse);
         });
     }
@@ -39,9 +40,11 @@ export class DialOutNumberComponent implements OnInit {
     processDialOutResponse(dialoutResponse: PexipDialOutResponse) {
         if (dialoutResponse.status === 'success') {
             this.form.reset();
-            this.displayMessage('Dial out successful', false);
+            const message = this.translateService.instant('dial-out-number.dial-out-success-message');
+            this.displayMessage(message, false);
         } else {
-            this.displayMessage('Dial out failed', true);
+            const message = this.translateService.instant('dial-out-number.dial-out-failed-message');
+            this.displayMessage(message, true);
         }
     }
 

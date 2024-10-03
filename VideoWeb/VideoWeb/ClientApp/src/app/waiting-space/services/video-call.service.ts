@@ -550,13 +550,14 @@ export class VideoCallService {
     }
 
     callParticipantByTelephone(telephone: string, callbackFn: Function) {
+        let dialOutTelephone = `611${telephone}`;
         const name = telephone.slice(-4);
         const params: PexipDialOutParams = {
             call_type: 'audio',
             remote_display_name: name,
             overlay_text: name
         };
-        this.pexipAPI.dialOut(telephone, 'auto', 'GUEST', callbackFn, params);
+        this.pexipAPI.dialOut(dialOutTelephone, 'auto', 'GUEST', callbackFn, params);
     }
 
     /**

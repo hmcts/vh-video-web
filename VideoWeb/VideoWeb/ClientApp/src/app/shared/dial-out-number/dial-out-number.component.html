@@ -1,8 +1,9 @@
 <form id="dial-out-form" [formGroup]="form" (ngSubmit)="dialOutNumber()">
   <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.controls.telephone.dirty && form.controls.telephone.invalid }">
-    <label class="govuk-label" for="phone-number"> UK phone number </label>
+    <label class="govuk-label" for="phone-number"> {{ 'dial-out-number.form-label' | translate }} </label>
     <p *ngIf="form.controls.telephone.dirty && form.controls.telephone.invalid" id="phone-number-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> Enter a valid phone number
+      <span class="govuk-visually-hidden">{{ 'dial-out-number.form-error-message-hidden' | translate }}</span>
+      {{ 'dial-out-number.form-error-invalid-number' | translate }}
     </p>
 
     <input
@@ -33,7 +34,7 @@
       type="submit"
       [disabled]="!form.valid"
     >
-      Call phone number
+      {{ 'dial-out-number.form-button-submit' | translate }}
     </button>
   </div>
 </form>

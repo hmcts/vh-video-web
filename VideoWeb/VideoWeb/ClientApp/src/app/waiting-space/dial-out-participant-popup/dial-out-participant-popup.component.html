@@ -1,6 +1,6 @@
 <div id="dial-out-participant-modal" class="modal modal-open">
   <div class="modal-content">
-    <h1 class="govuk-heading-m">Enter a number of a person you wish to dial in</h1>
+    <h1 class="govuk-heading-m">{{ 'dial-out-popup.header' | translate }}</h1>
     <app-dial-out-number></app-dial-out-number>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full govuk-!-margin-top-3">
@@ -8,10 +8,10 @@
           <button
             class="govuk-button"
             data-module="govuk-button"
-            [attr.aria-label]="'Close Dial Out Participant Popup'"
+            [attr.aria-label]="'dial-out-popup.close-button-aria-label' | translate"
             (click)="closePopup()"
           >
-            Close
+            {{ 'dial-out-popup.close-button' | translate }}
           </button>
         </div>
       </div>

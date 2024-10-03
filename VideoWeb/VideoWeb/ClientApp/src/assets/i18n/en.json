@@ -679,7 +679,8 @@
     "unsupported-dynamic-evidence": "Video sharing is not supported on this browser",
     "change-hearing-layout": "Change Layout",
     "change-interpreting-language": "Change Interpreting Language",
-    "interpreting-for": "Interpreting for"
+    "interpreting-for": "Interpreting for",
+    "dial-out": "Dial out"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -1524,6 +1525,19 @@
     "change-audio-hint": "Interpret for",
     "button-cancel": "Cancel",
     "button-continue": " Continue"
+  },
+  "dial-out-number": {
+    "form-label": "UK phone number",
+    "form-error-message-hidden": "Error:",
+    "form-error-invalid-number": "Enter a valid phone number",
+    "form-button-submit": "Call phone number",
+    "dial-out-success-message": "Dial out successful",
+    "dial-out-failure": "Dial out failed"
+  },
+  "dial-out-popup": {
+    "header": "Enter the number of a person you wish to dial in",
+    "close-button-aria-label": "Close Dial Out Participant Popup",
+    "close-button": "Close"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",

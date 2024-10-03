@@ -886,7 +886,7 @@ describe('VideoCallService', () => {
 
             service.callParticipantByTelephone(phoneNumber, callbackFn);
 
-            expect(pexipSpy.dialOut).toHaveBeenCalledWith(phoneNumber, 'auto', 'GUEST', callbackFn, expectedParams);
+            expect(pexipSpy.dialOut).toHaveBeenCalledWith(`611${phoneNumber}`, 'auto', 'GUEST', callbackFn, expectedParams);
         });
     });
 });

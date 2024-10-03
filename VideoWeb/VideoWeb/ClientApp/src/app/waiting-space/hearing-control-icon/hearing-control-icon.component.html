@@ -5,11 +5,11 @@
       class="icon-button"
       appTooltip
       colour="grey"
+      [text]="iconText"
       [attr.aria-label]="iconText"
       tabindex="0"
       (click)="$event.preventDefault(); onIconClicked()"
     >
-      {{ iconText }}
       <fa-icon [icon]="['fas', iconName]"></fa-icon>
     </button>
   </div>
