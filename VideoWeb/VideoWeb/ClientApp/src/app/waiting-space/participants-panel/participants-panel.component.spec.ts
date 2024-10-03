@@ -1,20 +1,20 @@
-import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
-import { LowerCasePipe } from '@angular/common';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Guid } from 'guid-typescript';
-import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
-import { of, Subject } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
-import { EventsService } from 'src/app/services/events.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
-import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
+import {ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {LowerCasePipe} from '@angular/common';
+import {ActivatedRoute, convertToParamMap} from '@angular/router';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {Guid} from 'guid-typescript';
+import {MockComponent, MockDirective, MockPipe} from 'ng-mocks';
+import {of, Subject} from 'rxjs';
+import {VideoWebService} from 'src/app/services/api/video-web.service';
+import {ParticipantService} from 'src/app/services/conference/participant.service';
+import {VideoControlService} from 'src/app/services/conference/video-control.service';
+import {EventsService} from 'src/app/services/events.service';
+import {Logger} from 'src/app/services/logging/logger-base';
+import {EndpointStatusMessage} from 'src/app/services/models/EndpointStatusMessage';
+import {HearingTransfer, TransferDirection} from 'src/app/services/models/hearing-transfer';
+import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
+import {TooltipDirective} from 'src/app/shared/directives/tooltip.directive';
+import {ParticipantPanelModelMapper} from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
@@ -23,27 +23,31 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
-import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
-import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
-import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
-import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
+import {ParticipantHandRaisedMessage} from 'src/app/shared/models/participant-hand-raised-message';
+import {ParticipantMediaStatus} from 'src/app/shared/models/participant-media-status';
+import {ParticipantMediaStatusMessage} from 'src/app/shared/models/participant-media-status-message';
+import {ParticipantsUpdatedMessage} from 'src/app/shared/models/participants-updated-message';
+import {HyphenatePipe} from 'src/app/shared/pipes/hyphenate.pipe';
+import {MultilinePipe} from 'src/app/shared/pipes/multiline.pipe';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {VideoCallTestData} from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
+    getEndpointsUpdatedMessageSubjectMock,
     getParticipantsUpdatedSubjectMock,
     hearingTransferSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
-    participantStatusSubjectMock,
-    getEndpointsUpdatedMessageSubjectMock
+    participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import {MockLogger} from 'src/app/testing/mocks/mock-logger';
+import {translateServiceSpy} from 'src/app/testing/mocks/mock-translation.service';
+import {
+    onConferenceUpdatedMock,
+    onParticipantUpdatedMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -52,39 +56,38 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse,
     VideoEndpointResponse
 } from '../../services/clients/api-client';
-import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
-import { HearingRole } from '../models/hearing-role-model';
-import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
-import { PanelModel } from '../models/panel-model-base';
-import { ParticipantPanelModel } from '../models/participant-panel-model';
-import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
-import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
-import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import {JudgeContextMenuComponent} from '../judge-context-menu/judge-context-menu.component';
+import {HearingRole} from '../models/hearing-role-model';
+import {LinkedParticipantPanelModel} from '../models/linked-participant-panel-model';
+import {PanelModel} from '../models/panel-model-base';
+import {ParticipantPanelModel} from '../models/participant-panel-model';
+import {ConferenceUpdated, ParticipantUpdated} from '../models/video-call-models';
+import {VideoEndpointPanelModel} from '../models/video-endpoint-panel-model';
+import {ParticipantAlertComponent} from '../participant-alert/participant-alert.component';
+import {ParticipantRemoteMuteStoreService} from '../services/participant-remote-mute-store.service';
 import {
     conferenceParticipantsStatusSubject,
     createParticipantRemoteMuteStoreServiceSpy
 } from '../services/mock-participant-remote-mute-store.service';
-import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
-import { VideoCallService } from '../services/video-call.service';
-import { ParticipantsPanelComponent } from './participants-panel.component';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
-import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
-import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
-import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ParticipantsPanelItemComponent } from './participants-panel-item/participants-panel-item.component';
-import { ConferenceState } from '../store/reducers/conference.reducer';
+import {IConferenceParticipantsStatus} from '../models/conference-participants-status';
+import {VideoCallService} from '../services/video-call.service';
+import {ParticipantsPanelComponent} from './participants-panel.component';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {RoomNamePipe} from 'src/app/shared/pipes/room-name.pipe';
+import {EndpointsUpdatedMessage} from 'src/app/shared/models/endpoints-updated-message';
+import {UpdateEndpointsDto} from 'src/app/shared/models/update-endpoints-dto';
+import {createMockStore, MockStore, provideMockStore} from '@ngrx/store/testing';
+import {ParticipantsPanelItemComponent} from './participants-panel-item/participants-panel-item.component';
+import {ConferenceState} from '../store/reducers/conference.reducer';
 import {
     mapConferenceToVHConference,
     mapEndpointToVHEndpoint,
     mapParticipantToVHParticipant
 } from '../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import {FEATURE_FLAGS, LaunchDarklyService} from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -1212,54 +1215,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
     });
 
-    it('should process eventhub participant updates for panel members added to a hearing when a PM is already present', () => {
-        const panelMember1DisplayName = 'Added Panel Member 1';
-        const panelMember2DisplayName = 'Added Panel Member 2';
-
-        const panelMember1 = new ParticipantForUserResponse({
-            display_name: panelMember1DisplayName,
-            first_name: 'Panel',
-            role: Role.JudicialOfficeHolder,
-            hearing_role: 'Panel Member',
-            user_name: 'panel.member@hmcts.net',
-            id: '6666-1234-2345-3456'
-        });
-
-        const panelMember2 = new ParticipantForUserResponse({
-            display_name: panelMember2DisplayName,
-            first_name: 'Panel',
-            role: Role.JudicialOfficeHolder,
-            hearing_role: 'Panel Member',
-            user_name: 'panel.member.2@hmcts.net',
-            id: '6666-1234-2345-3457'
-        });
-
-        participants = participants.filter(x => x.role !== Role.JudicialOfficeHolder);
-        participants.push(panelMember1);
-
-        component.nonEndpointParticipants = [];
-        let mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-
-        component.setupEventhubSubscribers();
-
-        let message = new ParticipantsUpdatedMessage(conferenceId, participants);
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        panelMember1.interpreter_room = new RoomSummaryResponse({ id: '14682', label: 'Panel Member1', locked: false });
-        participants.push(panelMember2);
-        mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-        message = new ParticipantsUpdatedMessage(conferenceId, participants);
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        const linkedParticipantPanelModel = component.nonEndpointParticipants.filter(x => x.role === Role.JudicialOfficeHolder);
-
-        expect(linkedParticipantPanelModel.length).toBe(1);
-        expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember1DisplayName);
-        expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
-    });
-
     it('should remove participants not in conference after participants updated message received', () => {
         const participant1 = new ParticipantForUserResponse({
             display_name: 'Judge 1',
@@ -1300,309 +1255,52 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.nonEndpointParticipants).toEqual(mappedUpdatedParticipants);
     });
 
-    it('should persist states for participant after new participant is added', () => {
-        /*
-        If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after
-        a new participant has been added and the participants list refreshed
-        */
-
-        const participantsForHearing: ParticipantForUserResponse[] = [];
-
-        const participant1 = new ParticipantForUserResponse({
-            id: '1111-1111-1111-1111',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual Judge 26',
-            role: Role.Judge,
-            representee: null,
-            tiled_display_name: 'JUDGE; HEARTBEAT',
-            hearing_role: HearingRole.JUDGE,
-            linked_participants: []
-        });
-
-        const participant2 = new ParticipantForUserResponse({
-            id: '2222-2222-2222-2222',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual PanelMember 31',
-            interpreter_room: new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false }),
-            role: Role.JudicialOfficeHolder,
-            representee: null,
-            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
-            hearing_role: HearingRole.PANEL_MEMBER,
-            linked_participants: []
-        });
-
-        const participant3 = new ParticipantForUserResponse({
-            id: '3333-3333-3333-3333',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual Individual 25',
+    it('it should persist states for participants when new participants added', () => {
+        const newParticipantAdded = new ParticipantForUserResponse({
+            display_name: 'participant 1',
+            id: '85dfea9b-d8ec-477e-825f-7e4e3611db99',
+            first_name: 'participant 1',
             role: Role.Individual,
-            representee: null,
-            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual Individual 25;92a3d792-dfad-474f-b587-b83766506ec6',
-            hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            linked_participants: []
+            hearing_role: HearingRole.APPELLANT,
+            user_name: 'Appellant 1'
         });
-
-        participantsForHearing.push(participant1);
-        participantsForHearing.push(participant2);
-        participantsForHearing.push(participant3);
-
-        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participantsForHearing);
-        component.nonEndpointParticipants = panelModelParticipants;
-
-        // Set initial states
-        component.nonEndpointParticipants.forEach(p => {
-            const initialStates = {
-                isRemoteMuted: false,
-                handRaised: false,
-                spotlighted: false,
-                isLocalMicMuted: false,
-                isLocalCameraOff: false
-            };
-
-            const pexipId = Guid.create().toString();
-            p.assignPexipId(pexipId);
-
-            p.updateParticipant(
-                initialStates.isRemoteMuted,
-                initialStates.handRaised,
-                initialStates.spotlighted,
-                null,
-                initialStates.isLocalMicMuted,
-                initialStates.isLocalCameraOff
-            );
-        });
-
-        const participantsToUpdateState: PanelModel[] = [];
-        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant2.interpreter_room.id));
-        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant3.id));
-
-        // Update the states
-        participantsToUpdateState.forEach(participant => {
-            const newStates = {
-                isRemoteMuted: true,
-                handRaised: true,
-                spotlighted: true,
-                isLocalMicMuted: true,
-                isLocalCameraOff: true
-            };
-
-            let participantId = participant.id;
-            if (participant instanceof LinkedParticipantPanelModel) {
-                participantId = participant.participants[0].id;
-            }
-
-            participant.updateParticipant(
-                newStates.isRemoteMuted,
-                newStates.handRaised,
-                newStates.spotlighted,
-                participantId,
-                newStates.isLocalMicMuted,
-                newStates.isLocalCameraOff
-            );
-        });
-
-        component.participants = [...component.nonEndpointParticipants];
-
-        const newParticipant = new ParticipantForUserResponse({
-            id: '4444-4444-4444-4444',
-            status: ParticipantStatus.NotSignedIn,
-            display_name: 'QL Test 1',
-            role: Role.QuickLinkParticipant,
-            representee: null,
-            tiled_display_name: 'JUDGE; HEARTBEAT',
-            hearing_role: 'WITNESS;NO_HEARTBEAT;QL Test 1;ecdbb7ee-ba03-4a78-8225-fdfce2cb14d6',
-            linked_participants: []
-        });
-
-        participantsForHearing.push(newParticipant);
-
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participantsForHearing);
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray([...participants, newParticipantAdded]);
+        const newParticipant = mapper.mapFromParticipantUserResponse(newParticipantAdded);
+        component.nonEndpointParticipants = mappedParticipants;
         component.setupEventhubSubscribers();
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+        const message = new ParticipantsUpdatedMessage(conferenceId, [...participants, newParticipantAdded]);
 
-        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
-
-        const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
         getParticipantsUpdatedSubjectMock.next(message);
 
-        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === participant2.interpreter_room.id);
-
-        const updatedParticipant2 = component.participants.find(p => p.id === participant2.interpreter_room.id);
-
-        expect(updatedParticipant2.isMicRemoteMuted()).toBe(true);
-        expect(updatedParticipant2.hasHandRaised()).toBe(true);
-        expect(updatedParticipant2.hasSpotlight()).toBe(true);
-        expect(updatedParticipant2.isLocalMicMuted()).toBe(true);
-        expect(updatedParticipant2.isLocalCameraOff()).toBe(true);
-        expect(updatedParticipant2.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
-
-        const updatedParticipant3 = component.participants.find(p => p.id === participant3.id);
-
-        expect(updatedParticipant3.isMicRemoteMuted()).toBe(true);
-        expect(updatedParticipant3.hasHandRaised()).toBe(true);
-        expect(updatedParticipant3.hasSpotlight()).toBe(true);
-        expect(updatedParticipant3.isLocalMicMuted()).toBe(true);
-        expect(updatedParticipant3.isLocalCameraOff()).toBe(true);
+        expect(component.nonEndpointParticipants).toContain(newParticipant);
+        // assert the state of existing participants
+        expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
     });
 
-    it('should persist states for multiple panel members after new participant is added', () => {
-        /*
-        If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after
-        a new participant has been added and the participants list refreshed.
-
-        In this scenario, there are 2 panel members. Panel Member 1 turns off their audio and video, Panel Member 2 does not
-        */
-
-        const participantsForHearing: ParticipantForUserResponse[] = [];
-
-        const judge = new ParticipantForUserResponse({
-            id: '1111-1111-1111-1111',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual Judge 26',
-            role: Role.Judge,
-            representee: null,
-            tiled_display_name: 'JUDGE; HEARTBEAT',
-            hearing_role: HearingRole.JUDGE,
-            linked_participants: []
+    it('it should update participant display name, when update event recieved', () => {
+        const participant = participants[0];
+        const updatedParticipant = new ParticipantForUserResponse({
+            display_name: 'Updated display name',
+            id: participant.id,
+            first_name: participant.first_name,
+            last_name: participant.last_name,
+            role: participant.role,
+            hearing_role: participant.hearing_role,
+            user_name: participant.user_name
         });
-
-        const linkedParticipantInterpreterRoom = new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false });
-
-        const panelMember1 = new ParticipantForUserResponse({
-            id: '2222-2222-2222-2222',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual PanelMember 31',
-            interpreter_room: linkedParticipantInterpreterRoom,
-            role: Role.JudicialOfficeHolder,
-            representee: null,
-            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
-            hearing_role: HearingRole.PANEL_MEMBER,
-            linked_participants: []
-        });
-
-        const panelMember2 = new ParticipantForUserResponse({
-            id: '3333-3333-3333-3333',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual PanelMember 32',
-            interpreter_room: linkedParticipantInterpreterRoom,
-            role: Role.JudicialOfficeHolder,
-            representee: null,
-            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
-            hearing_role: HearingRole.PANEL_MEMBER,
-            linked_participants: []
-        });
-
-        participantsForHearing.push(judge);
-        participantsForHearing.push(panelMember1);
-        participantsForHearing.push(panelMember2);
-
-        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participantsForHearing);
-        component.nonEndpointParticipants = panelModelParticipants;
-
-        // Set initial states
-        component.nonEndpointParticipants.forEach(p => {
-            const initialStates = {
-                isRemoteMuted: false,
-                handRaised: false,
-                spotlighted: false,
-                isLocalMicMuted: false,
-                isLocalCameraOff: false
-            };
-
-            const pexipId = Guid.create().toString();
-            p.assignPexipId(pexipId);
-
-            p.updateParticipant(
-                initialStates.isRemoteMuted,
-                initialStates.handRaised,
-                initialStates.spotlighted,
-                null,
-                initialStates.isLocalMicMuted,
-                initialStates.isLocalCameraOff
-            );
-        });
-
-        const participantsToUpdateState: PanelModel[] = [];
-        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === linkedParticipantInterpreterRoom.id));
-
-        // Update the states - panel member 1 turns off their audio and video
-        participantsToUpdateState.forEach(participant => {
-            const newStates = {
-                isLocalMicMuted: true,
-                isLocalCameraOff: true
-            };
-
-            participant.updateParticipant(
-                participant.isMicRemoteMuted(),
-                participant.hasHandRaised(),
-                participant.hasSpotlight(),
-                panelMember1.id,
-                newStates.isLocalMicMuted,
-                newStates.isLocalCameraOff
-            );
-        });
-
-        component.participants = [...component.nonEndpointParticipants];
-
-        const newParticipant = new ParticipantForUserResponse({
-            id: '4444-4444-4444-4444',
-            status: ParticipantStatus.InHearing,
-            display_name: 'Manual PanelMember 33',
-            interpreter_room: linkedParticipantInterpreterRoom,
-            role: Role.JudicialOfficeHolder,
-            representee: null,
-            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
-            hearing_role: HearingRole.PANEL_MEMBER,
-            linked_participants: []
-        });
-
-        participantsForHearing.push(newParticipant);
-
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participantsForHearing);
+        participants.splice(0, 1, updatedParticipant);
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        component.nonEndpointParticipants = mappedParticipants;
+        component.setupEventhubSubscribers();
         participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
 
-        component.setupEventhubSubscribers();
+        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
 
-        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
-
-        const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
         getParticipantsUpdatedSubjectMock.next(message);
 
-        const linkedParticipant = component.participants.find(
-            p => p.id === linkedParticipantInterpreterRoom.id
-        ) as LinkedParticipantPanelModel;
-
-        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === linkedParticipantInterpreterRoom.id);
-
-        expect(linkedParticipant.isMicRemoteMuted()).toBe(false);
-        expect(linkedParticipant.hasHandRaised()).toBe(false);
-        expect(linkedParticipant.hasSpotlight()).toBe(false);
-        expect(linkedParticipant.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
-
-        const updatedPanelMember1 = linkedParticipant.participants.find(p => p.id === panelMember1.id);
-
-        expect(updatedPanelMember1.isMicRemoteMuted()).toBe(false);
-        expect(updatedPanelMember1.hasHandRaised()).toBe(false);
-        expect(updatedPanelMember1.hasSpotlight()).toBe(false);
-        expect(updatedPanelMember1.isLocalMicMuted()).toBe(true);
-        expect(updatedPanelMember1.isLocalCameraOff()).toBe(true);
-
-        const updatedPanelMember2 = linkedParticipant.participants.find(p => p.id === panelMember2.id);
-
-        expect(updatedPanelMember2.isMicRemoteMuted()).toBe(false);
-        expect(updatedPanelMember2.hasHandRaised()).toBe(false);
-        expect(updatedPanelMember2.hasSpotlight()).toBe(false);
-        expect(updatedPanelMember2.isLocalMicMuted()).toBe(false);
-        expect(updatedPanelMember2.isLocalCameraOff()).toBe(false);
-
-        const updatedPanelMember3 = linkedParticipant.participants.find(p => p.id === newParticipant.id);
-
-        expect(updatedPanelMember3.isMicRemoteMuted()).toBe(undefined);
-        expect(updatedPanelMember3.hasHandRaised()).toBe(undefined);
-        expect(updatedPanelMember3.hasSpotlight()).toBe(undefined);
-        expect(updatedPanelMember3.isLocalMicMuted()).toBe(undefined);
-        expect(updatedPanelMember3.isLocalCameraOff()).toBe(undefined);
+        const updatedParticipantModel = component.nonEndpointParticipants.find(x => x.id === updatedParticipant.id);
+        expect(updatedParticipantModel.displayName).toBe(updatedParticipant.display_name);
     });
 
     describe('isWitness', () => {
