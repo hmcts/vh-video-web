@@ -31,7 +31,6 @@ export class DialOutNumberComponent implements OnInit {
             return;
         }
 
-        console.log('Dialling out to ' + this.form.value.telephone);
         this.videocallService.callParticipantByTelephone(this.form.value.telephone, (dialoutResponse: PexipDialOutResponse) => {
             this.processDialOutResponse(dialoutResponse);
         });
