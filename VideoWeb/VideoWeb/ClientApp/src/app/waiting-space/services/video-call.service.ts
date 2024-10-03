@@ -550,7 +550,7 @@ export class VideoCallService {
     }
 
     callParticipantByTelephone(telephone: string, callbackFn: Function) {
-        let dialOutTelephone = `611${telephone}`;
+        const dialOutTelephone = `611${telephone}`;
         const name = telephone.slice(-4);
         const params: PexipDialOutParams = {
             call_type: 'audio',
