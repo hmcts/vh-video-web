@@ -394,7 +394,7 @@ public class EventHub(
                 .Where(x => x.IsHost() && x.Id != participantId)
                 .ToArray();
             
-            if (otherHosts.Any())
+            if (otherHosts.Length != 0)
                 foreach (var host in otherHosts)
                     await Clients.Group(host.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId);
         }
@@ -455,7 +455,6 @@ public class EventHub(
     {
         if (isAdmin)
         {
-            //TODO: CREATE new endpoint for this
             var conferences = await videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null);
             return conferences.Select(x => x.Id);
         }
