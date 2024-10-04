@@ -1,19 +1,22 @@
 import * as signalR from '@microsoft/signalr';
-import { Guid } from 'guid-typescript';
-import { Observable, Subscription } from 'rxjs';
-import { MockLogger } from '../testing/mocks/mock-logger';
-import { EventsService } from './events.service';
-import { Logger } from './logging/logger-base';
-import { InstantMessage } from './models/instant-message';
-import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { EventsHubService } from './events-hub.service';
-import { Heartbeat } from '../shared/models/heartbeat';
-import { TransferDirection } from './models/hearing-transfer';
-import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
-import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
-import { MockStore, createMockStore } from '@ngrx/store/testing';
-import { initialState as initialConferenceState, ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
+import {Guid} from 'guid-typescript';
+import {Observable, Subscription} from 'rxjs';
+import {MockLogger} from '../testing/mocks/mock-logger';
+import {EventsService} from './events.service';
+import {Logger} from './logging/logger-base';
+import {InstantMessage} from './models/instant-message';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {EventsHubService} from './events-hub.service';
+import {Heartbeat} from '../shared/models/heartbeat';
+import {TransferDirection} from './models/hearing-transfer';
+import {ParticipantMediaStatus} from '../shared/models/participant-media-status';
+import {ParticipantResponse, VideoEndpointResponse} from './clients/api-client';
+import {UpdateEndpointsDto} from '../shared/models/update-endpoints-dto';
+import {createMockStore, MockStore} from '@ngrx/store/testing';
+import {
+    ConferenceState,
+    initialState as initialConferenceState
+} from '../waiting-space/store/reducers/conference.reducer';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -148,7 +151,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegistrations = 29;
+        const expectedNumberOfRegistrations = 30;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {
