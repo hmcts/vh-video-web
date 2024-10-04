@@ -872,7 +872,9 @@
     "joining": "Yn ymuno",
     "inhearing": "Mewn gwrandawiad",
     "available": "Ar gael",
-    "hmcts-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM"
+    "hmcts-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
+    "save": "Cadw",
+    "cancel": "Canslo"
   },
   "endpoint-status": {
     "inconsultation": "Mewn ymgynghoriad",
