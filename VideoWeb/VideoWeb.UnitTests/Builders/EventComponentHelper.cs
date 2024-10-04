@@ -25,8 +25,8 @@ public class EventComponentHelper
     public Mock<IEventHubClient> EventHubClientMock { get; set; }
     public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
     public Mock<IVideoApiClient> VideoApiClientMock { get; set; }
-    
-    
+
+
     public List<IEventHandler> GetHandlers()
     {
         var cache = new MemoryCache(new MemoryCacheOptions());
@@ -35,10 +35,10 @@ public class EventComponentHelper
         var videoApiClient = new Mock<IVideoApiClient>();
         var consultationNotifier = new Mock<IConsultationNotifier>();
         var conferenceService = new Mock<IConferenceService>();
-        
+
         return GetHandlers(eventHubContextMock, cache, logger, videoApiClient, consultationNotifier, conferenceService);
     }
-    
+
     private List<IEventHandler> GetHandlers(
         Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
         IMemoryCache memoryCache,
@@ -73,10 +73,11 @@ public class EventComponentHelper
             new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
-            new TelephoneTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
+            new TelephoneTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
+            new RecordingConnectionEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object)
         };
     }
-    
+
     public void RegisterUsersForHubContext(IEnumerable<Participant> participants)
     {
         foreach (var participant in participants)
@@ -84,10 +85,10 @@ public class EventComponentHelper
             EventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
                 .Returns(EventHubClientMock.Object);
         }
-        
+
         EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
             .Returns(EventHubClientMock.Object);
-        
+
         EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.StaffMembersGroupName))
             .Returns(EventHubClientMock.Object);
     }
@@ -97,7 +98,7 @@ public class EventComponentHelper
         EventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
             .Returns(EventHubClientMock.Object);
     }
-    
+
     public Conference BuildConferenceForTest()
     {
         return new Conference
