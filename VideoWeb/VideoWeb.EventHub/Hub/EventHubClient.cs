@@ -377,7 +377,32 @@ public class EventHub(
                 conferenceId);
         }
     }
-
+    
+    
+    /// <summary>
+    /// Send a message to all other hosts in the conference, that the audio recording has been manually paused.
+    /// </summary>
+    /// <param name="conferenceId">The UUID for a conference</param>
+    /// <param name="participantId">The Participant ID for the host that actioned the audio recording pause</param>
+    [Authorize("Host")]
+    public async Task AudioRecordingPaused(Guid conferenceId, Guid participantId)
+    {
+        try
+        {
+            var conference = await conferenceService.GetConference(conferenceId);
+            var otherHosts = conference.Participants
+                .Where(x => x.IsHost() && x.Id != participantId)
+                .ToArray();
+            
+            if (otherHosts.Any())
+                foreach (var host in otherHosts)
+                    await Clients.Group(host.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+        }
+    }
 
     private async Task AddUserToConferenceGroups(bool isAdmin)
     {
@@ -476,32 +501,6 @@ public class EventHub(
         await Clients.Group(groupName)
             .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                 dto.MessageUuid);
-    }
-    
-    
-    /// <summary>
-    /// Send a message to all other hosts in the conference, that the audio recording has been manually paused or resumed.
-    /// </summary>
-    /// <param name="conferenceId">The UUID for a conference</param>
-    /// <param name="participantId">The Participant ID for the host that actioned the audio recording pause/resume</param>
-    [Authorize("Host")]
-    public async Task AudioRecordingPaused(Guid conferenceId, Guid participantId)
-    {
-        try
-        {
-            var conference = await conferenceService.GetConference(conferenceId);
-            var otherHosts = conference.Participants
-                .Where(x => x.IsHost() && x.Id != participantId)
-                .ToArray();
-            
-            if (otherHosts.Any())
-                foreach (var host in otherHosts)
-                    await Clients.Group(host.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
-        }
     }
 
     private static List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
