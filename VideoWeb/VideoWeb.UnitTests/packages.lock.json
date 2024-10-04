@@ -173,8 +173,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "2.3.2",
-        "contentHash": "xAm1KJP2PpIvyJl3xE0ifO1DN2MH6l7v4JKQNDvS7uYo99jRhw9RHfsLzCq/AO5LXcZSuOTR7pXdhcdT6cYqGQ==",
+        "resolved": "2.3.7-pr-0899-0002",
+        "contentHash": "LtpzDL93mZ7xzRwai99dkeJKPdESrY4kHAbqAEBq7S1R64UfrH9w45AMdgv47914I/TE0pZgX7+vrQlbkCj3Yw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2342,7 +2342,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
-          "BookingsApi.Client": "[2.3.2, )",
+          "BookingsApi.Client": "[2.3.7-pr-0899-0002, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
