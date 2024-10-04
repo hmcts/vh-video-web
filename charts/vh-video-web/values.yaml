@@ -51,8 +51,8 @@ java:
         #vodafone configuration
         - vodafoneconfiguration--apisecret
         - vodafoneconfiguration--callbacksecret
-        - name: kinlyconfiguration--conferencephonenumber
-          alias: vodafoneconfiguration--conferencephonenumber
+        - vodafoneconfiguration--conferencephonenumber
+        - vodafoneconfiguration--conferencephonenumberWelsh
         - vodafoneconfiguration--heartbeaturlbase
         - name: kinlyconfiguration--joinbyphonefromdate
           alias: vodafoneconfiguration--joinbyphonefromdate
@@ -63,7 +63,7 @@ java:
           alias: vodafoneconfiguration--turnservercredential
         - name: kinlyconfiguration--turnserveruser
           alias: vodafoneconfiguration--turnserveruser
-        
+
         - quicklinks--issuer
         - quicklinks--rsapublickey
         - quicklinks--validaudience
