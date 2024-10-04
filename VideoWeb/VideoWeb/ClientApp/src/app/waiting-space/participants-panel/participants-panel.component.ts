@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription, combineLatest } from 'rxjs';
+import { combineLatest, Subject, Subscription } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -285,17 +285,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.eventService.getParticipantsUpdated().subscribe(async message => {
                 if (message.conferenceId === this.conferenceId) {
                     const mappedList = this.mapper.mapFromParticipantUserResponseArray(message.participants);
-                    const newlyAddedParticipants = mappedList.filter(
-                        ({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId)
-                    );
-                    newlyAddedParticipants.forEach(np => {
-                        if (
-                            np.role === Role.JudicialOfficeHolder &&
-                            this.nonEndpointParticipants.some(x => x.role === Role.JudicialOfficeHolder)
-                        ) {
-                            return;
+                    mappedList.forEach(pm => {
+                        const index = this.nonEndpointParticipants.findIndex(x => x.id === pm.id);
+                        if (index > -1) {
+                            this.nonEndpointParticipants.splice(index, 1, pm);
+                        } else {
+                            this.nonEndpointParticipants.push(pm);
                         }
-                        this.nonEndpointParticipants.push(np);
                     });
 
                     const nonEndpointParticipantsLinkedParticipantPanelIndex = this.nonEndpointParticipants.findIndex(

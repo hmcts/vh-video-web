@@ -36,7 +36,7 @@ import { NgxDatePipe } from './pipes/ngx-date.pipe';
 import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-mapper';
 import { LoadingComponent } from './loading/loading.component';
 import { ConfigService } from '../services/api/config.service';
-import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
+import { LOG_ADAPTER, LoggerService } from '../services/logging/logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
 import { HeaderLogoSvgComponent } from './header/header-logo-svg/header-logo-svg.component';
@@ -63,6 +63,7 @@ import {
     faLock,
     faMicrophone,
     faMicrophoneSlash,
+    faPenToSquare,
     faPhone,
     faPhoneAlt,
     faQuestionCircle,
@@ -254,7 +255,8 @@ export class SharedModule {
             faUserSolid,
             faVideo,
             faVideoSlash,
-            faThLarge
+            faThLarge,
+            faPenToSquare
         );
     }
 }
