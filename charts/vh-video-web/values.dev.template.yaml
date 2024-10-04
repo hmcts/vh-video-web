@@ -1,13 +1,13 @@
 ---
 java:
-  image: "${IMAGE_NAME}"
-  ingressHost: ${SERVICE_FQDN}
-  releaseNameOverride: ${RELEASE_NAME}
-  disableTraefikTls: false
-  environment:
-    AZUREAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
-    AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
-    EJUDAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
-    EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
-    DOM1__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
-    DOM1__REDIRECTURI: https://${SERVICE_FQDN}/home
+   image: '${IMAGE_NAME}'
+    ingressHost: ${SERVICE_FQDN}
+    releaseNameOverride: ${RELEASE_NAME}
+    disableTraefikTls: false
+    environment:
+        AZUREAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
+        AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
+        EJUDAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
+        EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
+        DOM1__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
+        DOM1__REDIRECTURI: https://${SERVICE_FQDN}/home
