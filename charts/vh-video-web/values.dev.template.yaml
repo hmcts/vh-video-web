@@ -1,6 +1,6 @@
 ---
 java:
-   image: '${IMAGE_NAME}'
+    image: '${IMAGE_NAME}'
     ingressHost: ${SERVICE_FQDN}
     releaseNameOverride: ${RELEASE_NAME}
     disableTraefikTls: false
