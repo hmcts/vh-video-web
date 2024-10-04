@@ -1,20 +1,20 @@
-import {ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
-import {LowerCasePipe} from '@angular/common';
-import {ActivatedRoute, convertToParamMap} from '@angular/router';
-import {TranslatePipe, TranslateService} from '@ngx-translate/core';
-import {Guid} from 'guid-typescript';
-import {MockComponent, MockDirective, MockPipe} from 'ng-mocks';
-import {of, Subject} from 'rxjs';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
-import {ParticipantService} from 'src/app/services/conference/participant.service';
-import {VideoControlService} from 'src/app/services/conference/video-control.service';
-import {EventsService} from 'src/app/services/events.service';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {EndpointStatusMessage} from 'src/app/services/models/EndpointStatusMessage';
-import {HearingTransfer, TransferDirection} from 'src/app/services/models/hearing-transfer';
-import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
-import {TooltipDirective} from 'src/app/shared/directives/tooltip.directive';
-import {ParticipantPanelModelMapper} from 'src/app/shared/mappers/participant-panel-model-mapper';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { LowerCasePipe } from '@angular/common';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Guid } from 'guid-typescript';
+import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
+import { of, Subject } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
@@ -23,14 +23,14 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
-import {ParticipantHandRaisedMessage} from 'src/app/shared/models/participant-hand-raised-message';
-import {ParticipantMediaStatus} from 'src/app/shared/models/participant-media-status';
-import {ParticipantMediaStatusMessage} from 'src/app/shared/models/participant-media-status-message';
-import {ParticipantsUpdatedMessage} from 'src/app/shared/models/participants-updated-message';
-import {HyphenatePipe} from 'src/app/shared/pipes/hyphenate.pipe';
-import {MultilinePipe} from 'src/app/shared/pipes/multiline.pipe';
-import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
-import {VideoCallTestData} from 'src/app/testing/mocks/data/video-call-test-data';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
+import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
@@ -41,13 +41,9 @@ import {
     participantMediaStatusSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import {MockLogger} from 'src/app/testing/mocks/mock-logger';
-import {translateServiceSpy} from 'src/app/testing/mocks/mock-translation.service';
-import {
-    onConferenceUpdatedMock,
-    onParticipantUpdatedMock,
-    videoCallServiceSpy
-} from 'src/app/testing/mocks/mock-video-call.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -58,36 +54,36 @@ import {
     Role,
     VideoEndpointResponse
 } from '../../services/clients/api-client';
-import {JudgeContextMenuComponent} from '../judge-context-menu/judge-context-menu.component';
-import {HearingRole} from '../models/hearing-role-model';
-import {LinkedParticipantPanelModel} from '../models/linked-participant-panel-model';
-import {PanelModel} from '../models/panel-model-base';
-import {ParticipantPanelModel} from '../models/participant-panel-model';
-import {ConferenceUpdated, ParticipantUpdated} from '../models/video-call-models';
-import {VideoEndpointPanelModel} from '../models/video-endpoint-panel-model';
-import {ParticipantAlertComponent} from '../participant-alert/participant-alert.component';
-import {ParticipantRemoteMuteStoreService} from '../services/participant-remote-mute-store.service';
+import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
+import { HearingRole } from '../models/hearing-role-model';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
+import { ParticipantPanelModel } from '../models/participant-panel-model';
+import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
+import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import {
     conferenceParticipantsStatusSubject,
     createParticipantRemoteMuteStoreServiceSpy
 } from '../services/mock-participant-remote-mute-store.service';
-import {IConferenceParticipantsStatus} from '../models/conference-participants-status';
-import {VideoCallService} from '../services/video-call.service';
-import {ParticipantsPanelComponent} from './participants-panel.component';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {RoomNamePipe} from 'src/app/shared/pipes/room-name.pipe';
-import {EndpointsUpdatedMessage} from 'src/app/shared/models/endpoints-updated-message';
-import {UpdateEndpointsDto} from 'src/app/shared/models/update-endpoints-dto';
-import {createMockStore, MockStore, provideMockStore} from '@ngrx/store/testing';
-import {ParticipantsPanelItemComponent} from './participants-panel-item/participants-panel-item.component';
-import {ConferenceState} from '../store/reducers/conference.reducer';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
+import { VideoCallService } from '../services/video-call.service';
+import { ParticipantsPanelComponent } from './participants-panel.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
+import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
+import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
+import { ParticipantsPanelItemComponent } from './participants-panel-item/participants-panel-item.component';
+import { ConferenceState } from '../store/reducers/conference.reducer';
 import {
     mapConferenceToVHConference,
     mapEndpointToVHEndpoint,
     mapParticipantToVHParticipant
 } from '../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import {FEATURE_FLAGS, LaunchDarklyService} from 'src/app/services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();

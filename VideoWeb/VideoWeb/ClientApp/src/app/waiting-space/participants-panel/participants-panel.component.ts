@@ -1,17 +1,17 @@
-import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {combineLatest, Subject, Subscription} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
-import {EndpointStatus, ParticipantResponse, ParticipantStatus, Role} from 'src/app/services/clients/api-client';
-import {VideoControlService} from 'src/app/services/conference/video-control.service';
-import {EventsService} from 'src/app/services/events.service';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {EndpointStatusMessage} from 'src/app/services/models/EndpointStatusMessage';
-import {HearingTransfer, TransferDirection} from 'src/app/services/models/hearing-transfer';
-import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
-import {ParticipantPanelModelMapper} from 'src/app/shared/mappers/participant-panel-model-mapper';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { combineLatest, Subject, Subscription } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
@@ -20,22 +20,22 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
-import {ParticipantHandRaisedMessage} from 'src/app/shared/models/participant-hand-raised-message';
-import {ParticipantMediaStatusMessage} from 'src/app/shared/models/participant-media-status-message';
-import {HearingRole} from '../models/hearing-role-model';
-import {LinkedParticipantPanelModel} from '../models/linked-participant-panel-model';
-import {PanelModel} from '../models/panel-model-base';
-import {ParticipantPanelModel} from '../models/participant-panel-model';
-import {ConferenceUpdated, ParticipantUpdated} from '../models/video-call-models';
-import {VideoEndpointPanelModel} from '../models/video-endpoint-panel-model';
-import {ParticipantRemoteMuteStoreService} from '../services/participant-remote-mute-store.service';
-import {VideoCallService} from '../services/video-call.service';
-import {IndividualPanelModel} from '../models/individual-panel-model';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
+import { HearingRole } from '../models/hearing-role-model';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
+import { ParticipantPanelModel } from '../models/participant-panel-model';
+import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import { VideoCallService } from '../services/video-call.service';
+import { IndividualPanelModel } from '../models/individual-panel-model';
 
-import {ConferenceState} from '../store/reducers/conference.reducer';
-import {Store} from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import {FEATURE_FLAGS, LaunchDarklyService} from 'src/app/services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-participants-panel',
