@@ -2386,6 +2386,8 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Client": "[2.3.6, )",
+          "VideoApi.Client": "[2.2.19, )",
           "VideoWeb.Common": "[1.0.0, )"
         }
       },
