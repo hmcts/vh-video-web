@@ -49,37 +49,38 @@ import { HearingCancelledMessage } from './models/hearing-cancelled-message';
     providedIn: 'root'
 })
 export class EventsService {
-    private participantStatusSubject = new Subject<ParticipantStatusMessage>();
-    private endpointStatusSubject = new Subject<EndpointStatusMessage>();
-    private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
-    private participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
-    private endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
-    private endpointUnlinkedSubject = new Subject<EndpointRepMessage>();
-    private endpointLinkedSubject = new Subject<EndpointRepMessage>();
-    private endpointDisconnectSubject = new Subject<EndpointRepMessage>();
+    private readonly participantStatusSubject = new Subject<ParticipantStatusMessage>();
+    private readonly endpointStatusSubject = new Subject<EndpointStatusMessage>();
+    private readonly hearingStatusSubject = new Subject<ConferenceStatusMessage>();
+    private readonly participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+    private readonly endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
+    private readonly endpointUnlinkedSubject = new Subject<EndpointRepMessage>();
+    private readonly endpointLinkedSubject = new Subject<EndpointRepMessage>();
+    private readonly endpointDisconnectSubject = new Subject<EndpointRepMessage>();
 
-    private hearingCountdownCompleteSubject = new Subject<string>();
-    private helpMessageSubject = new Subject<HelpMessage>();
+    private readonly hearingCountdownCompleteSubject = new Subject<string>();
+    private readonly helpMessageSubject = new Subject<HelpMessage>();
 
-    private requestedConsultationMessageSubject = new Subject<RequestedConsultationMessage>();
-    private consultationRequestResponseMessageSubject = new Subject<ConsultationRequestResponseMessage>();
+    private readonly requestedConsultationMessageSubject = new Subject<RequestedConsultationMessage>();
+    private readonly consultationRequestResponseMessageSubject = new Subject<ConsultationRequestResponseMessage>();
 
-    private messageSubject = new Subject<InstantMessage>();
-    private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
-    private participantHeartbeat = new Subject<ParticipantHeartbeat>();
-    private hearingTransferSubject = new Subject<HearingTransfer>();
-    private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
-    private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
-    private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
-    private participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
-    private audioRestartActionedSubject = new Subject<string>();
-    private roomUpdateSubject = new Subject<Room>();
-    private roomTransferSubject = new Subject<RoomTransfer>();
-    private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
-    private messageAllocationSubject = new Subject<NewAllocationMessage>();
-    private newConferenceAddedSubject = new Subject<NewConferenceAddedMessage>();
-    private hearingDetailsUpdatedSubject = new Subject<HearingDetailsUpdatedMessage>();
-    private hearingCancelledSubject = new Subject<HearingCancelledMessage>();
+    private readonly messageSubject = new Subject<InstantMessage>();
+    private readonly adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
+    private readonly participantHeartbeat = new Subject<ParticipantHeartbeat>();
+    private readonly hearingTransferSubject = new Subject<HearingTransfer>();
+    private readonly participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
+    private readonly participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
+    private readonly participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
+    private readonly participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
+    private readonly audioRestartActionedSubject = new Subject<string>();
+    private readonly audioPausedActionSubject = new Subject<string>();
+    private readonly roomUpdateSubject = new Subject<Room>();
+    private readonly roomTransferSubject = new Subject<RoomTransfer>();
+    private readonly hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
+    private readonly messageAllocationSubject = new Subject<NewAllocationMessage>();
+    private readonly newConferenceAddedSubject = new Subject<NewConferenceAddedMessage>();
+    private readonly hearingDetailsUpdatedSubject = new Subject<HearingDetailsUpdatedMessage>();
+    private readonly hearingCancelledSubject = new Subject<HearingCancelledMessage>();
 
     private _handlersRegistered = false;
 
@@ -323,6 +324,11 @@ export class EventsService {
             this.audioRestartActionedSubject.next(conferenceId);
         },
 
+        AudioPauseResumeActioned: (conferenceId: string) => {
+            this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
+            this.audioPausedActionSubject.next(conferenceId);
+        },
+
         updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
             this.logger.debug('[EventsService] - Participant Local mute status change received: ', {
                 participantId,
@@ -556,6 +562,10 @@ export class EventsService {
         return this.audioRestartActionedSubject.asObservable();
     }
 
+    getAudioPausedActioned(): Observable<string> {
+        return this.audioRestartActionedSubject.asObservable();
+    }
+
     getNewConferenceAdded(): Observable<NewConferenceAddedMessage> {
         return this.newConferenceAddedSubject.asObservable();
     }
@@ -641,6 +651,14 @@ export class EventsService {
     async sendAudioRestartActioned(conferenceId: string, participantId: string) {
         await this.eventsHubConnection.send('PushAudioRestartAction', conferenceId, participantId);
         this.logger.debug('[EventsService] - Sent device Audio Restart action to EventHub', {
+            conference: conferenceId,
+            participant: participantId
+        });
+    }
+
+    async sendAudioRecordingPause(conferenceId: string, participantId: string, isPaused: boolean) {
+        await this.eventsHubConnection.send('AudioRecordingPaused', conferenceId, participantId, isPaused);
+        this.logger.debug('[EventsService] - Sent audio recording paused action to EventHub', {
             conference: conferenceId,
             participant: participantId
         });
