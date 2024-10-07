@@ -715,7 +715,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 pexipId: createdParticipant.uuid,
                 displayName: createdParticipant.pexipDisplayName
             });
-        } else if (this.restartActioned) {
+        } else if (this.restartActioned && !this.continueWithNoRecording) {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         }
     }
