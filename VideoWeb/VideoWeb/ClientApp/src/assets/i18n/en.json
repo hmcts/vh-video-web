@@ -948,7 +948,9 @@
     "inhearing": "In hearing",
     "inconsultation": "In consultation",
     "disconnected": "Disconnected",
-    "hmcts-crest": "HM Courts & Tribunals Service crest"
+    "hmcts-crest": "HM Courts & Tribunals Service crest",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "endpoint-status": {
     "notyetjoined": "Not yet joined",

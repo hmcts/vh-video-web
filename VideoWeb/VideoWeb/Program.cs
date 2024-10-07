@@ -2,8 +2,10 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using VH.Core.Configuration;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.KeyPerFile;
+using Microsoft.Extensions.FileProviders;
 
 namespace VideoWeb
 {
@@ -19,8 +21,6 @@ namespace VideoWeb
             var keyVaults=new List<string> (){
                 "vh-bookings-api",
                 "vh-infra-core",
-                "vh-notification-api",
-                "vh-user-api",
                 "vh-video-api",
                 "vh-video-web"
             };
@@ -31,7 +31,11 @@ namespace VideoWeb
                 {
                     foreach (var keyVault in keyVaults)
                     {
-                        configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
+                        var filePath = $"/mnt/secrets/{keyVault}";
+                        if (Directory.Exists(filePath))
+                        {
+                            configBuilder.Add(GetKeyPerFileSource(filePath));    
+                        }
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -51,10 +55,25 @@ namespace VideoWeb
                     {
                         foreach (var keyVault in keyVaults)
                         {
-                            configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
+                            var filePath = $"/mnt/secrets/{keyVault}";
+                            if (Directory.Exists(filePath))
+                            {
+                                configBuilder.Add(GetKeyPerFileSource(filePath));    
+                            }
                         }
                     });
                 });
+        }
+        
+        private static KeyPerFileConfigurationSource GetKeyPerFileSource(string filePath)
+        {
+            return new KeyPerFileConfigurationSource
+            {
+                FileProvider = new PhysicalFileProvider(filePath),
+                Optional = true,
+                ReloadOnChange = true,
+                SectionDelimiter = "--" // Set your custom delimiter here
+            };
         }
     }
 }
