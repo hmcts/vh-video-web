@@ -14,7 +14,8 @@ describe('ParticipantStatusComponent', () => {
     const eventsService = eventsServiceSpy;
     const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getParticipantsWithContactDetailsByConferenceId',
-        'raiseSelfTestFailureEvent'
+        'raiseSelfTestFailureEvent',
+        'updateParticipantDisplayName'
     ]);
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
         'goToServiceError',
@@ -210,6 +211,57 @@ describe('ParticipantStatusComponent', () => {
             const observer1Index = participantList.findIndex(x => x.displayName === 'M Observer 03');
             expect(observer1Index).toEqual(8);
             // Observer 03
+        });
+    });
+
+    describe('Updating Participant Name Controls', () => {
+        it('should set participant being edited, when edit button clicked', () => {
+            const participant = new ParticipantContactDetails(participants[0]);
+            component.setParticipantEdit(participant);
+            expect(component.participantBeingEdited).toEqual(participant);
+            expect(component.newParticipantName).toEqual(participant.displayName);
+        });
+
+        it('should set new participant display name, when text box filled in', () => {
+            const newName = 'New Name';
+            component.onParticipantNameChange(newName);
+            expect(component.newParticipantName).toEqual(newName);
+        });
+
+        it('should cancel editing participant, when cancel button clicked', () => {
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            component.newParticipantName = 'New Name';
+            component.cancelNameUpdate();
+            expect(component.participantBeingEdited).toBeNull();
+            expect(component.newParticipantName).toBeNull();
+        });
+
+        it('should return true when participant id matches one being edited', () => {
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            expect(component.isEditingParticipant(component.participantBeingEdited.id)).toBeTrue();
+        });
+
+        it('should update participant name, when save button clicked', () => {
+            videoWebServiceSpy.updateParticipantDisplayName.and.returnValue(Promise.resolve());
+            component.conferenceId = '123';
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            component.newParticipantName = 'New Name';
+            component.saveNameUpdate(component.participantBeingEdited.id);
+            expect(videoWebServiceSpy.updateParticipantDisplayName).toHaveBeenCalledWith(
+                '123',
+                component.participantBeingEdited.id,
+                jasmine.any(Object)
+            );
+        });
+
+        it('should log error when update participant name fails', () => {
+            const error = new Error('Failed to update display-name');
+            videoWebServiceSpy.updateParticipantDisplayName.and.returnValue(Promise.reject(error));
+            component.conferenceId = '123';
+            component.participantBeingEdited = new ParticipantContactDetails(participants[0]);
+            component.newParticipantName = 'New Name';
+            component.saveNameUpdate(component.participantBeingEdited.id);
+            expect(videoWebServiceSpy.updateParticipantDisplayName).toHaveBeenCalled();
         });
     });
 });

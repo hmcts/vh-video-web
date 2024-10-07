@@ -4,7 +4,7 @@
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="2.3.2" />
+    <PackageReference Include="BookingsApi.Client" Version="2.3.6" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.5.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
@@ -16,7 +16,7 @@
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />
-    <PackageReference Include="VideoApi.Client" Version="2.2.20" />
+    <PackageReference Include="VideoApi.Client" Version="2.2.23" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
   </ItemGroup>
