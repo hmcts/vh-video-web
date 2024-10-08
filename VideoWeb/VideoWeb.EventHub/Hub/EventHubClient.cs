@@ -383,24 +383,23 @@ public class EventHub(
     /// Send a message to all other hosts in the conference, that the audio recording has been manually paused.
     /// </summary>
     /// <param name="conferenceId">The UUID for a conference</param>
-    /// <param name="participantId">The Participant ID for the host that actioned the audio recording pause</param>
     [Authorize("Host")]
-    public async Task AudioRecordingPaused(Guid conferenceId, Guid participantId)
+    public async Task PushAudioRecordingPaused(Guid conferenceId)
     {
         try
         {
             var conference = await conferenceService.GetConference(conferenceId);
-            var otherHosts = conference.Participants
-                .Where(x => x.IsHost() && x.Id != participantId)
+            var hosts = conference.Participants
+                .Where(x => x.IsHost())
                 .ToArray();
             
-            if (otherHosts.Length != 0)
-                foreach (var host in otherHosts)
+            if (hosts.Length != 0)
+                foreach (var host in hosts)
                     await Clients.Group(host.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+            logger.LogError(ex, "Error occured when updating hosts in conference {ConferenceId}", conferenceId);
         }
     }
 
