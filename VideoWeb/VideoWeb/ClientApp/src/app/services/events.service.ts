@@ -324,7 +324,7 @@ export class EventsService {
             this.audioRestartActionedSubject.next(conferenceId);
         },
 
-        AudioPauseResumeActioned: (conferenceId: string) => {
+        AudioRecordingPaused: (conferenceId: string) => {
             this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
             this.audioPausedActionSubject.next(conferenceId);
         },
@@ -656,11 +656,10 @@ export class EventsService {
         });
     }
 
-    async sendAudioRecordingPause(conferenceId: string, participantId: string, isPaused: boolean) {
-        await this.eventsHubConnection.send('AudioRecordingPaused', conferenceId, participantId, isPaused);
+    async sendAudioRecordingPaused(conferenceId: string) {
+        await this.eventsHubConnection.send('PushAudioRecordingPaused', conferenceId);
         this.logger.debug('[EventsService] - Sent audio recording paused action to EventHub', {
-            conference: conferenceId,
-            participant: participantId
+            conference: conferenceId
         });
     }
 }
