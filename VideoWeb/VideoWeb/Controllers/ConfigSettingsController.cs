@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,8 +10,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Enums;
-using VideoWeb.Common.Security;
-using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
@@ -67,19 +64,5 @@ public class ConfigSettingsController(
             logger.LogError(e, "Unable to retrieve client configuration settings");
             return BadRequest(e.Message);
         }
-    }
-
-    [HttpGet("version")]
-    [AllowAnonymous]
-    public string GetVersion()
-    {
-        string version = string.Empty;
-
-        Assembly assembly = Assembly.LoadFrom("bin/Debug/net8.0/VideoWeb.dll");
-        Version ver = assembly.GetName().Version;
-
-        version = ver.Major + "." + ver.Minor + "." + ver.Revision;
-
-        return version;
     }
 }
