@@ -358,7 +358,7 @@ public class EventHub(
     /// <param name="conferenceId">The UUID for a conference</param>
     /// <param name="participantId">The Participant ID for the host that actioned the audio restart</param>
     [Authorize("Host")]
-    public async Task PushAudioRestartAction(Guid conferenceId, Guid participantId)
+    public async Task SendAudioRestartAction(Guid conferenceId, Guid participantId)
     {
         try
         {
@@ -385,7 +385,7 @@ public class EventHub(
     /// <param name="conferenceId">The UUID for a conference</param>
     /// <param name="participantId">The Participant ID for the host that actioned the audio recording pause</param>
     [Authorize("Host")]
-    public async Task AudioRecordingPaused(Guid conferenceId, Guid participantId)
+    public async Task SendAudioRecordingPaused(Guid conferenceId, Guid participantId)
     {
         try
         {
@@ -400,7 +400,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+            logger.LogError(ex, "Error occured when updating hosts in conference {ConferenceId}", conferenceId);
         }
     }
 
