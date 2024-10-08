@@ -20,7 +20,7 @@ public class AudioRecordingPausedTests: EventHubBaseTests
 
         ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
-        await Hub.SendAudioRecordingPaused(conferenceId);
+        await Hub.SendAudioRecordingPaused(conferenceId, hostThatActionedEvent.Id);
 
         foreach (var participant in hosts)
             EventHubClientMock.Verify(x => x.Group(participant.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId), Times.Once);

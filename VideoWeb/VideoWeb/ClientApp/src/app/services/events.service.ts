@@ -657,7 +657,7 @@ export class EventsService {
     }
 
     async sendAudioRecordingPaused(conferenceId: string, participantId: string) {
-        await this.eventsHubConnection.send('SendAudioRecordingPaused', conferenceId);
+        await this.eventsHubConnection.send('SendAudioRecordingPaused', conferenceId, participantId);
         this.logger.debug('[EventsService] - Sent audio recording paused action to EventHub', {
             conference: conferenceId
         });
