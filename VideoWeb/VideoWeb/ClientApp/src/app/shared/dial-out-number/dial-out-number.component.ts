@@ -22,7 +22,7 @@ export class DialOutNumberComponent implements OnInit {
 
     ngOnInit(): void {
         this.form = this.formBuilder.group<DialOutForm>({
-            telephone: new FormControl('', [Validators.required, this.phoneNumberValidator])
+            telephone: new FormControl('', [Validators.required, this.phoneNumberValidator, Validators.pattern('[0-9]*')])
         });
     }
 

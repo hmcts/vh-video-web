@@ -40,12 +40,17 @@ describe('DialOutNumberComponent', () => {
             expect(videoCallServiceSpy.callParticipantByTelephone).toHaveBeenCalled();
         });
 
-        it('should not call videoCallService if form is invalid', () => {
-            component.form.controls.telephone.setValue('hello');
+        it('should not call videoCallService if form has non-numeric values', () => {
+            component.form.controls.telephone.setValue('01234567890$');
             component.dialOutNumber();
 
             expect(component.form.valid).toBeFalse();
-            expect(component.form.controls.telephone.errors).toEqual({ invalidPhoneNumber: true });
+            expect(component.form.controls.telephone.errors).toEqual({
+                pattern: {
+                    requiredPattern: '^[0-9]*$',
+                    actualValue: '01234567890$'
+                }
+            });
             expect(videoCallServiceSpy.callParticipantByTelephone).not.toHaveBeenCalled();
         });
     });
