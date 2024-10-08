@@ -133,7 +133,8 @@
     "tribunals-service": "Tribunals Service",
     "sign-out": "Sign out",
     "crest-img-alt": "HMCTS logo crest image",
-    "account-navigation-label": "Account navigation"
+    "account-navigation-label": "Account navigation",
+    "account-details": "Account details"
   },
   "not-found": {
     "page-not-found": "Page not found",
@@ -951,7 +952,9 @@
     "inhearing": "In hearing",
     "inconsultation": "In consultation",
     "disconnected": "Disconnected",
-    "hmcts-crest": "HM Courts & Tribunals Service crest"
+    "hmcts-crest": "HM Courts & Tribunals Service crest",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "endpoint-status": {
     "notyetjoined": "Not yet joined",

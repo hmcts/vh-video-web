@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="8.0.1" />
-    <PackageReference Include="BookingsApi.Client" Version="2.3.2" />
+    <PackageReference Include="BookingsApi.Client" Version="2.3.6" />
     <PackageReference Include="Castle.Core" Version="5.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="6.0.0" />
@@ -48,7 +48,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.1" />
-    <PackageReference Include="VideoApi.Client" Version="2.2.19-pr-0683-0003" />
+    <PackageReference Include="VideoApi.Client" Version="2.2.23" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="8.0.7" />

@@ -3,8 +3,9 @@
     <app-hearing-header [hearing]="hearing"></app-hearing-header>
   </div>
   <div class="govuk-grid-row">
-    <div id="participant-status-table" class="govuk-grid-column-one-quarter govuk-!-padding-0">
-      <app-participant-status [conferenceId]="hearing.id"></app-participant-status>
+    <div id="participant-status-table"
+         [ngClass]="vhoVodafoneFeatureFlag ? ' govuk-!-padding-0' : 'govuk-grid-column-one-quarter govuk-!-padding-0'">
+        <app-participant-status [conferenceId]="hearing.id"></app-participant-status>
     </div>
     <div *ngIf="!vhoVodafoneFeatureFlag" id="vho-admin-view" class="govuk-grid-column-three-quarters govuk-!-padding-0">
       <iframe
