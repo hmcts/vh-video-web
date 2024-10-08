@@ -1902,7 +1902,7 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[2.3.6, )",
+          "BookingsApi.Client": "[2.3.7-pr-0899-0002, )",
           "VideoApi.Client": "[2.2.23, )",
           "VideoWeb.Common": "[1.0.0, )"
         }

@@ -8,7 +8,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="2.3.6" />
+    <PackageReference Include="BookingsApi.Client" Version="2.3.7-pr-0899-0002" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

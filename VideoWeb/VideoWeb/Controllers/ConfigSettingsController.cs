@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -34,15 +35,15 @@ public class ConfigSettingsController(
     private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
     private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
     private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
-    
+
     /// <summary>
     /// GetClientConfigurationSettings the configuration settings for client
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ClientSettingsResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
     public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
     {
@@ -66,5 +67,19 @@ public class ConfigSettingsController(
             logger.LogError(e, "Unable to retrieve client configuration settings");
             return BadRequest(e.Message);
         }
+    }
+
+    [HttpGet("version")]
+    [AllowAnonymous]
+    public string GetVersion()
+    {
+        string version = string.Empty;
+
+        Assembly assembly = Assembly.LoadFrom("bin/Debug/net8.0/VideoWeb.dll");
+        Version ver = assembly.GetName().Version;
+
+        version = ver.Major + "." + ver.Minor + "." + ver.Revision;
+
+        return version;
     }
 }
