@@ -358,7 +358,7 @@ public class EventHub(
     /// <param name="conferenceId">The UUID for a conference</param>
     /// <param name="participantId">The Participant ID for the host that actioned the audio restart</param>
     [Authorize("Host")]
-    public async Task PushAudioRestartAction(Guid conferenceId, Guid participantId)
+    public async Task SendAudioRestartAction(Guid conferenceId, Guid participantId)
     {
         try
         {
@@ -383,18 +383,19 @@ public class EventHub(
     /// Send a message to all other hosts in the conference, that the audio recording has been manually paused.
     /// </summary>
     /// <param name="conferenceId">The UUID for a conference</param>
+    /// <param name="participantId">The Participant ID for the host that actioned the audio recording pause</param>
     [Authorize("Host")]
-    public async Task PushAudioRecordingPaused(Guid conferenceId)
+    public async Task SendAudioRecordingPaused(Guid conferenceId, Guid participantId)
     {
         try
         {
             var conference = await conferenceService.GetConference(conferenceId);
-            var hosts = conference.Participants
-                .Where(x => x.IsHost())
+            var otherHosts = conference.Participants
+                .Where(x => x.IsHost() && x.Id != participantId)
                 .ToArray();
             
-            if (hosts.Length != 0)
-                foreach (var host in hosts)
+            if (otherHosts.Length != 0)
+                foreach (var host in otherHosts)
                     await Clients.Group(host.Username.ToLowerInvariant()).AudioRecordingPaused(conferenceId);
         }
         catch (Exception ex)

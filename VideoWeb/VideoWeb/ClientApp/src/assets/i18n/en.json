@@ -133,7 +133,8 @@
     "tribunals-service": "Tribunals Service",
     "sign-out": "Sign out",
     "crest-img-alt": "HMCTS logo crest image",
-    "account-navigation-label": "Account navigation"
+    "account-navigation-label": "Account navigation",
+    "account-details": "Account details"
   },
   "not-found": {
     "page-not-found": "Page not found",
