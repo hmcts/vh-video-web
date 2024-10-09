@@ -23,9 +23,7 @@ namespace VideoWeb.EventHub.Hub
         Task RoomUpdate(Room room);
         Task RoomTransfer(RoomTransfer roomTransfer);
         Task HelpMessage(Guid conferenceId, string participantName);
-
-        Task ReceiveMessage(Guid conferenceId, string from, string fromDisplayName, string to, string message,
-            DateTime timestamp, Guid messageId);
+        Task ReceiveMessage(Guid conferenceId, string from, string fromDisplayName, string to, string message, DateTime timestamp, Guid messageId);
         Task AdminAnsweredChat(Guid conferenceId, string username);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         /// <summary>
@@ -36,7 +34,6 @@ namespace VideoWeb.EventHub.Hub
         /// <param name="transferDirection"></param>
         /// <returns></returns>
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
-
         /// <summary>
         /// When a non-host chooses to transfer in or out of a hearing
         /// </summary>
@@ -52,7 +49,6 @@ namespace VideoWeb.EventHub.Hub
         Task EndpointsUpdated(Guid conferenceId, UpdateEndpointsDto endpoints);
         Task HearingCancelledMessage(Guid conferenceId);
         Task HearingDetailsUpdatedMessage(Guid conferenceId);
-
         /// <summary>
         /// Request a participant's local mute be update. Not to be confused with remote mute (and lock).
         /// </summary>
