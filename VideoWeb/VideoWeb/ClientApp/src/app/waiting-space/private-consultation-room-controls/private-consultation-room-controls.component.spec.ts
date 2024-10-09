@@ -845,6 +845,24 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             const result = component.mapLayout(layout);
             expect(result).toBe('ac');
         });
+
+        it('should return 3x3 when layout is NineEqual', () => {
+            const layout = HearingLayout.NineEqual;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('3x3');
+        });
+
+        it('should return 4x4 when layout is SixteenEqual', () => {
+            const layout = HearingLayout.SixteenEqual;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('4x4');
+        });
+
+        it('should return 5x5 when layout is TwentyFiveEqual', () => {
+            const layout = HearingLayout.TwentyFiveEqual;
+            const result = component.mapLayout(layout);
+            expect(result).toBe('5x5');
+        });
     });
 
     describe('canShowLeaveButton', () => {

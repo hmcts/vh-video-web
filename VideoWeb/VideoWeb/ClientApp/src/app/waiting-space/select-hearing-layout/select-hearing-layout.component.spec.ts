@@ -159,4 +159,28 @@ describe('SelectHearingLayoutComponent', () => {
             expect(component.closeButtonPressed.emit).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe('ngAfterUpdate', () => {
+        it('should scroll the selected layout into view', () => {
+            // Arrange
+            const selectedLayout = HearingLayout.NineEqual;
+            spyOnProperty(component, 'currentLayout$', 'get').and.returnValue(of(selectedLayout));
+            const container = document.getElementById('select-hearing-container-content-1');
+            spyOn(container, 'scrollBy');
+
+            // Act
+            component.ngOnInit();
+            component.ngAfterViewInit();
+
+            // Assert
+            const selectedLayoutElement = document.getElementById(`layout-radio-button-${selectedLayout}`);
+            const expectedOffset = selectedLayoutElement.getBoundingClientRect().top - container.getBoundingClientRect().top;
+
+            // @ts-ignore
+            expect(container.scrollBy).toHaveBeenCalledWith({
+                top: expectedOffset,
+                behavior: 'smooth'
+            });
+        });
+    });
 });

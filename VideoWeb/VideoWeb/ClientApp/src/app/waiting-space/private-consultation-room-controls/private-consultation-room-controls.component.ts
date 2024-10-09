@@ -163,6 +163,15 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             case HearingLayout.Dynamic:
                 mappedLayout = 'ac';
                 break;
+            case HearingLayout.NineEqual:
+                mappedLayout = '3x3';
+                break;
+            case HearingLayout.SixteenEqual:
+                mappedLayout = '4x4';
+                break;
+            case HearingLayout.TwentyFiveEqual:
+                mappedLayout = '5x5';
+                break;
         }
         return mappedLayout;
     }
