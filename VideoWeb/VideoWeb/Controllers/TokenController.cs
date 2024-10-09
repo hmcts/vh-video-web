@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Security.HashGen;
@@ -15,7 +16,7 @@ namespace VideoWeb.Controllers
         private readonly IHashGenerator _hashGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public TokenController(IHashGenerator hashGenerator, 
+        public TokenController(IHashGenerator hashGenerator,
             KinlyConfiguration kinlyConfiguration)
         {
             _hashGenerator = hashGenerator;
@@ -36,7 +37,7 @@ namespace VideoWeb.Controllers
 
             var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
             var token = _hashGenerator.GenerateSelfTestTokenHash(expiresOn, participantId.ToString());
-            var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
+            var tokenResponse = new TokenResponse { ExpiresOn = expiresOn, Token = token };
             return Ok(tokenResponse);
         }
     }

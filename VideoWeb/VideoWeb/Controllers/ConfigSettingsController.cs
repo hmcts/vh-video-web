@@ -10,8 +10,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Enums;
-using VideoWeb.Common.Security;
-using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
@@ -34,15 +32,15 @@ public class ConfigSettingsController(
     private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
     private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
     private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
-    
+
     /// <summary>
     /// GetClientConfigurationSettings the configuration settings for client
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ClientSettingsResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
     public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
     {
