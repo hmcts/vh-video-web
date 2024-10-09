@@ -218,6 +218,7 @@
     "are-not-allowed-to-smoke-including-e-cigarettes": "are not allowed to smoke (including e-cigarettes)",
     "must-be-alone-unless-you-have-the-judges-permission": "must be alone unless you have the judge’s permission to have someone with you",
     "must-ask-the-judges-permission-to-move-away-from-screen": "must ask the judge's permission if you need to move away from your screen",
+    "abuse-warning": "abuse will NOT be tolerated, anyone using threatening or aggressive behaviour against our staff or judges will be removed from the hearing. You may also be reported to and arrested by the police; you may be sent to prison; your case may continue and be decided in your absence.",
     "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
     "scottish-crest": "SCTS Crest",
     "continue": "Continue"
@@ -578,7 +579,6 @@
     "unavailable": "Unavailable",
     "in": "In"
   },
-
   "terms-of-service-consultation": {
     "header": "Please acknowledge the Terms of Service below:",
     "para1": "The Legal Representative must make sure that the private consultation with their client remains secure and private, and act in their client’s best interests.",
@@ -699,9 +699,15 @@
     "title-1-plus-7": "1 main speaker",
     "title-2-plus-21": "2 main speakers",
     "title-dynamic": "Dynamic",
+    "title-nine-equal": "3x3",
+    "title-sixteen-equal": "4x4",
+    "title-twenty-five-equal": "5x5",
     "description-1-plus-7": "Up to 7 participants on screen. The current speaker appears in the main window.",
     "description-2-plus-21": "Up to 21 participants on screen. The current speakers appear in 2 main windows.",
-    "description-dynamic": "Layout automatically adapts to the number of participants."
+    "description-dynamic": "Layout automatically adapts to the number of participants.",
+    "description-nine-equal": "Up to 9 participants on screen, displayed in a 3x3 grid.",
+    "description-sixteen-equal": "Up to 16 participants on screen, displayed in a 4x4 grid.",
+    "description-twenty-five-equal": "Up to 25 participants on screen, displayed in a 5x5 grid."
   },
   "hearing-role": {
     "app": "App",

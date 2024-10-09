@@ -16,7 +16,7 @@ export class HearingLayoutComponent {
     headerLayoutTitlePrefix = 'hearing-layout-title-';
     headerLayoutDescriptionPrefix = 'hearing-layout-description-';
 
-    constructor(private translateService: TranslateService) {}
+    constructor(private readonly translateService: TranslateService) {}
 
     getLayoutImagePath() {
         switch (this.layout) {
@@ -24,6 +24,12 @@ export class HearingLayoutComponent {
                 return '/assets/images/layout_1_7.png';
             case HearingLayout.TwoPlus21:
                 return '/assets/images/layout_2_21.png';
+            case HearingLayout.NineEqual:
+                return '/assets/images/layout_3x3.png';
+            case HearingLayout.SixteenEqual:
+                return '/assets/images/layout_4x4.png';
+            case HearingLayout.TwentyFiveEqual:
+                return '/assets/images/layout_5x5.png';
             default:
                 return '/assets/images/layout_dynamic.png';
         }
@@ -35,6 +41,12 @@ export class HearingLayoutComponent {
                 return this.translateService.instant('hearing-layout.title-1-plus-7');
             case HearingLayout.TwoPlus21:
                 return this.translateService.instant('hearing-layout.title-2-plus-21');
+            case HearingLayout.NineEqual:
+                return this.translateService.instant('hearing-layout.title-nine-equal');
+            case HearingLayout.SixteenEqual:
+                return this.translateService.instant('hearing-layout.title-sixteen-equal');
+            case HearingLayout.TwentyFiveEqual:
+                return this.translateService.instant('hearing-layout.title-twenty-five-equal');
             default:
                 return this.translateService.instant('hearing-layout.title-dynamic');
         }
@@ -46,6 +58,12 @@ export class HearingLayoutComponent {
                 return this.translateService.instant('hearing-layout.description-1-plus-7');
             case HearingLayout.TwoPlus21:
                 return this.translateService.instant('hearing-layout.description-2-plus-21');
+            case HearingLayout.NineEqual:
+                return this.translateService.instant('hearing-layout.description-nine-equal');
+            case HearingLayout.SixteenEqual:
+                return this.translateService.instant('hearing-layout.description-sixteen-equal');
+            case HearingLayout.TwentyFiveEqual:
+                return this.translateService.instant('hearing-layout.description-twenty-five-equal');
             default:
                 return this.translateService.instant('hearing-layout.description-dynamic');
         }

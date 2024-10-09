@@ -44,6 +44,7 @@ import { distinctUntilChanged, take } from 'rxjs/operators';
 import { NewConferenceAddedMessage } from './models/new-conference-added-message';
 import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
 import { HearingCancelledMessage } from './models/hearing-cancelled-message';
+import {AudioRecordingPauseStateMessage} from "../shared/models/audio-recording-pause-state-message";
 
 @Injectable({
     providedIn: 'root'
@@ -73,7 +74,7 @@ export class EventsService {
     private readonly participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private readonly participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
     private readonly audioRestartActionedSubject = new Subject<string>();
-    private readonly audioPausedActionSubject = new Subject<string>();
+    private readonly audioPausedActionSubject = new Subject<AudioRecordingPauseStateMessage>();
     private readonly roomUpdateSubject = new Subject<Room>();
     private readonly roomTransferSubject = new Subject<RoomTransfer>();
     private readonly hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
@@ -325,9 +326,9 @@ export class EventsService {
             this.audioRestartActionedSubject.next(conferenceId);
         },
 
-        AudioRecordingPaused: (conferenceId: string) => {
+        AudioRecordingPaused: (conferenceId: string, state: boolean) => {
             this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
-            this.audioPausedActionSubject.next(conferenceId);
+            this.audioPausedActionSubject.next(new AudioRecordingPauseStateMessage(conferenceId, state));
         },
 
         updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
@@ -563,8 +564,8 @@ export class EventsService {
         return this.audioRestartActionedSubject.asObservable();
     }
 
-    getAudioPaused(): Observable<string> {
-        return this.audioRestartActionedSubject.asObservable();
+    getAudioPaused(): Observable<AudioRecordingPauseStateMessage> {
+        return this.audioPausedActionSubject.asObservable();
     }
 
     getNewConferenceAdded(): Observable<NewConferenceAddedMessage> {
@@ -657,8 +658,8 @@ export class EventsService {
         });
     }
 
-    async sendAudioRecordingPaused(conferenceId: string, participantId: string) {
-        await this.eventsHubConnection.send('SendAudioRecordingPaused', conferenceId, participantId);
+    async sendAudioRecordingPaused(conferenceId: string, state: boolean) {
+        await this.eventsHubConnection.send('SendAudioRecordingPaused', conferenceId, state);
         this.logger.debug('[EventsService] - Sent audio recording paused action to EventHub', {
             conference: conferenceId
         });
