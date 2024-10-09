@@ -44,7 +44,7 @@ import { distinctUntilChanged, take } from 'rxjs/operators';
 import { NewConferenceAddedMessage } from './models/new-conference-added-message';
 import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
 import { HearingCancelledMessage } from './models/hearing-cancelled-message';
-import {AudioRecordingPauseStateMessage} from "../shared/models/audio-recording-pause-state-message";
+import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
 
 @Injectable({
     providedIn: 'root'
