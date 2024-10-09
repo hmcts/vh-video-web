@@ -588,8 +588,18 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             it('Should set wowza listener property onParticipantCreated callback and display failure message if restart was actioned, and stream fails', () => {
                 videoCallService.onParticipantCreated.and.returnValue(of(ParticipantUpdated.fromPexipParticipant(wowzaParticipantFailed)));
                 component.restartActioned = true;
+                component.continueWithNoRecording = false;
                 component.ngOnInit();
                 expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
+            });
+
+            // This scenario is to prevent the supplier spamming us with connect failed messages when they create a new streaming agent over and over but it fails to connect
+            it('Should set wowza listener property onParticipantCreated callback and not display failure message if restart was actioned, and stream fails, but continueWithNoRecording was not set to false', () => {
+                videoCallService.onParticipantCreated.and.returnValue(of(ParticipantUpdated.fromPexipParticipant(wowzaParticipantFailed)));
+                component.restartActioned = true;
+                component.continueWithNoRecording = true;
+                component.ngOnInit();
+                expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
             });
         });
 

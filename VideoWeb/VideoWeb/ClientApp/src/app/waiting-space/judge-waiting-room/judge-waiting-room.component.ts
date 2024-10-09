@@ -93,8 +93,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
-        private unloadDetectorService: UnloadDetectorService,
-        private hearingLayoutService: HearingLayoutService,
+        protected unloadDetectorService: UnloadDetectorService,
+        protected hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
@@ -409,7 +409,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
-            (!this.wowzaAgent || !this.wowzaAgent.isAudioOnlyCall)
+            !this.wowzaAgent?.isAudioOnlyCall
         ) {
             this.logWowzaAlert();
             this.showAudioRecordingRestartAlert();
@@ -715,7 +715,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 pexipId: createdParticipant.uuid,
                 displayName: createdParticipant.pexipDisplayName
             });
-        } else if (this.restartActioned) {
+        } else if (this.restartActioned && !this.continueWithNoRecording) {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         }
     }
