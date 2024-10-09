@@ -48,7 +48,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <param name="newStatus"></param>
         /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState,
-            ParticipantStatus newStatus)
+            ParticipantStatus newStatus, string reason)
         {
             SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus);
             await conferenceService.UpdateConferenceAsync(SourceConference);
@@ -56,7 +56,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
-                        participantState);
+                        participantState, reason);
                 Logger.LogTrace(
                     "Informing {Username} in conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
                     participant.Username.ToLowerInvariant(), SourceConference.Id, SourceParticipant.Id,
@@ -65,7 +65,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
-                    participantState);
+                    participantState, reason);
             Logger.LogTrace(
                 "Informing Admin for conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
                 SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role, participantState);

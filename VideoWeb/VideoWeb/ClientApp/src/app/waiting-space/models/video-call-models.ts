@@ -24,6 +24,7 @@ export class ParticipantUpdated {
     public handRaised: boolean;
     public pexipDisplayName: string;
     public uuid: string;
+    public callTag: string;
     public isAudioOnlyCall: boolean;
     public isVideoCall: boolean;
     public protocol: string;
@@ -35,6 +36,7 @@ export class ParticipantUpdated {
         buzzTime: number,
         pexipName: string,
         uuid: string,
+        callTag: string,
         spotlightTime: number,
         isAudioOnlyCall: string,
         isVideoCall: string,
@@ -47,6 +49,7 @@ export class ParticipantUpdated {
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;
         this.uuid = uuid;
+        this.callTag = callTag;
         this.isAudioOnlyCall = isAudioOnlyCall?.toUpperCase() === 'YES';
         this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
         this.protocol = protocol;
@@ -60,6 +63,7 @@ export class ParticipantUpdated {
             pexipParticipant.buzz_time,
             pexipParticipant.display_name,
             pexipParticipant.uuid,
+            pexipParticipant.call_tag,
             pexipParticipant.spotlight,
             pexipParticipant.is_audio_only_call,
             pexipParticipant.is_video_call,

@@ -1234,6 +1234,7 @@ describe('ParticipantService', () => {
             const participantUpdated: ParticipantUpdated = {
                 pexipDisplayName: undefined,
                 uuid: undefined,
+                callTag: undefined,
                 isRemoteMuted: false,
                 isSpotlighted: false,
                 handRaised: false,

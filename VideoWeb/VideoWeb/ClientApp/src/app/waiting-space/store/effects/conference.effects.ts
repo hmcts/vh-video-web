@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { of } from 'rxjs';
-import { catchError, switchMap, map, tap } from 'rxjs/operators';
-import { ApiClient, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
+import { catchError, switchMap, map, tap, filter } from 'rxjs/operators';
+import { ApiClient, ParticipantStatus, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
+import { Router } from '@angular/router';
+import { pageUrls } from 'src/app/shared/page-url.constants';
+import { VideoCallService } from '../../services/video-call.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -84,10 +87,32 @@ export class ConferenceEffects {
         )
     );
 
+    participantDisconnect$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateParticipantStatus),
+                filter(action => action.status === ParticipantStatus.Disconnected),
+                concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+                switchMap(([action, participant]) => {
+                    if (participant.id !== action.participantId) {
+                        return of();
+                    }
+                    const callTag = participant?.pexipInfo?.callTag ?? this.videoCallService.pexipAPI.call_tag;
+                    if (action.reason.includes(`connected on another device ${callTag}`)) {
+                        this.router.navigate([pageUrls.Logout]);
+                    }
+                    return of();
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
         private apiClient: ApiClient,
-        private supplierClientService: SupplierClientService
+        private supplierClientService: SupplierClientService,
+        private videoCallService: VideoCallService,
+        private router: Router
     ) {}
 }

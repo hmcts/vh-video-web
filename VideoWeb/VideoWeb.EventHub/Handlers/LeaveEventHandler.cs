@@ -18,7 +18,7 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             if (SourceParticipant.ParticipantStatus == ParticipantStatus.InHearing || SourceParticipant.ParticipantStatus == ParticipantStatus.InConsultation)
-                return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected);
+                return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected, callbackEvent.Reason);
 
             return Task.CompletedTask;
         }

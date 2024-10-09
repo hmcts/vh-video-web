@@ -31,7 +31,7 @@ namespace VideoWeb.EventHub.Handlers
                 state = ParticipantState.InConsultation;
             }
 
-            await PublishParticipantStatusMessage(state, newStatus);
+            await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason);
         }
     }
 }
