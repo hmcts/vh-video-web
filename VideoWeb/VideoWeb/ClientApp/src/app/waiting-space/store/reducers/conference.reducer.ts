@@ -196,7 +196,12 @@ export const conferenceReducer = createReducer(
         const participants = conference.participants.map(p => (p.pexipInfo?.uuid === pexipUUID ? { ...p, pexipInfo: null } : p));
         const endpoints = conference.endpoints.map(e => (e.pexipInfo?.uuid === pexipUUID ? { ...e, pexipInfo: null } : e));
 
-        return { ...state, currentConference: { ...conference, participants, endpoints } };
+        let wowzaParticipant = state.wowzaParticipant;
+        if (wowzaParticipant?.uuid === pexipUUID) {
+            wowzaParticipant = null;
+        }
+
+        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
         let updatedRoomList = state.availableRooms;
