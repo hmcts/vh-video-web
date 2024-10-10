@@ -207,5 +207,27 @@ namespace VideoWeb.Common.Models
         {
             TelephoneParticipants.RemoveAll(x => x.Id == id);
         }
+
+        public List<Participant> GetNonScreenedParticipants()
+        {
+            var participants = Participants
+                .Where(x => x.ProtectFrom.Count == 0)
+                .Where(x => !Participants.Exists(p => p.ProtectFrom.Contains(x.ExternalReferenceId)))
+                .Where(x => !Endpoints.Exists(e => e.ProtectFrom.Contains(x.ExternalReferenceId)))
+                .ToList();
+            
+            return participants;
+        }
+        
+        public List<Endpoint> GetNonScreenedEndpoints()
+        {
+            var endpoints = Endpoints
+                .Where(x => x.ProtectFrom.Count == 0)
+                .Where(x => !Participants.Exists(p => p.ProtectFrom.Contains(x.ExternalReferenceId)))
+                .Where(x => !Endpoints.Exists(e => e.ProtectFrom.Contains(x.ExternalReferenceId)))
+                .ToList();
+            
+            return endpoints;
+        }
     }
 }

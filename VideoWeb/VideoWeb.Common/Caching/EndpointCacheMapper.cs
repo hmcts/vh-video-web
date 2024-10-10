@@ -16,7 +16,9 @@ namespace VideoWeb.Common.Caching
                 EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
                 DefenceAdvocateUsername = endpointResponse.DefenceAdvocate,
                 CurrentRoom = MapRoom(endpointResponse.CurrentRoom),
-                InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map()
+                InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map(),
+                ExternalReferenceId = endpointForHearingResponse.ExternalReferenceId,
+                ProtectFrom = endpointForHearingResponse.Screening?.ProtectedFrom ?? []
             };
         }
         private static ConsultationRoom MapRoom(RoomResponse room)

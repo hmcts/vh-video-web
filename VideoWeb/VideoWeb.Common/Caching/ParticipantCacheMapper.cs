@@ -38,6 +38,8 @@ public static class ParticipantCacheMapper
         model.CurrentRoom = MapRoomToCacheModel(participant.CurrentRoom);
         model.InterpreterRoom = MapRoomToCacheModel(participant.CurrentInterpreterRoom);
         model.InterpreterLanguage = hearingDetails.InterpreterLanguage?.Map();
+        model.ExternalReferenceId = hearingDetails.ExternalReferenceId;
+        model.ProtectFrom = hearingDetails.Screening?.ProtectedFrom ?? [];
         return model;
     }
     
