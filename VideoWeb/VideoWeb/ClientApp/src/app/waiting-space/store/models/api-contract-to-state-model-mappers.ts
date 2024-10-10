@@ -20,7 +20,8 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         isVenueScottish: conference.hearing_venue_is_scottish,
         participants: conference.participants.map(p => mapParticipantToVHParticipant(p)),
         endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e)),
-        supplier: conference.supplier
+        supplier: conference.supplier,
+        audioRecordingIngestUrl: conference.ingest_url
     };
 }
 

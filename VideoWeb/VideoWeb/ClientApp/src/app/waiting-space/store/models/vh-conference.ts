@@ -20,6 +20,8 @@ export interface VHConference {
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
     supplier: Supplier;
+    countdownComplete?: boolean;
+    audioRecordingIngestUrl: string;
 }
 
 export interface VHParticipant {

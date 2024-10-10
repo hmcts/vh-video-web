@@ -25,7 +25,7 @@ import {HeartbeatModelMapper} from 'src/app/shared/mappers/heartbeat-model-mappe
 import {ParticipantModel} from 'src/app/shared/models/participant';
 import {pageUrls} from 'src/app/shared/page-url.constants';
 import {VhToastComponent} from 'src/app/shared/toast/vh-toast.component';
-import {CallError, ParticipantDeleted, ParticipantUpdated} from '../models/video-call-models';
+import {CallError, ParticipantUpdated} from '../models/video-call-models';
 import {ConsultationInvitationService} from '../services/consultation-invitation.service';
 import {NotificationSoundsService} from '../services/notification-sounds.service';
 import {NotificationToastrService} from '../services/notification-toastr.service';
@@ -128,12 +128,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-        this.audioRecordingService.getAudioRecordingState().subscribe((recordingPaused: boolean) => {
-            this.recordingPaused = recordingPaused;
-            if(!this.recordingPaused) {
-                this.initAudioRecordingInterval();
-            }
-        });
     }
 
     get isChatVisible() {
@@ -194,7 +188,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
-    onConferenceInSessionCheckForDisconnectedParticipants(update: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {
+    onConferenceInSessionCheckForDisconnectedParticipants(update: {
+        oldStatus: ConferenceStatus;
+        newStatus: ConferenceStatus
+    }): void {
         if (update.newStatus === ConferenceStatus.InSession) {
             this.participantService.participants
                 .filter(x => !x.virtualMeetingRoomSummary)
@@ -408,12 +405,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         // has not been set to continue without recording,
         // conference is in-session,
         // the alert isn't open already,
+        // Recording is not paused
         // and the audio streaming agent cannot be validated, then show the alert
         if (
             this.recordingSessionSeconds > 20 &&
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
+            !this.recordingPaused &&
             (!this.audioRecordingService.wowzaAgent || !this.audioRecordingService.wowzaAgent.isAudioOnlyCall)
         ) {
             this.logWowzaAlert();
@@ -502,9 +501,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName?.includes(this.videoCallService.wowzaAgentName)) {
-                    this.assignWowzaAgent(createdParticipant);
-                }
             });
 
         this.videoCallService
@@ -520,13 +516,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(updatedParticipant => {
                 this.assignPexipIdToRemoteStore(updatedParticipant);
-                this.audioRecordingService.updateWowzaParticipant(updatedParticipant);
                 this.syncDisplayName(updatedParticipant);
             });
-
-        this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
-            this.handleWowzaAgentDisconnect(deletedParticipant);
-        });
 
         this.videoCallService
             .onConferenceAdjourned()
@@ -577,7 +568,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.handleHearingStatusMessage(message);
         });
 
-        this.audioRecordingService.init(this.conference, this.participant.id);
+        this.audioRecordingService.getAudioRecordingPauseState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((recordingPaused: boolean) => {
+                this.recordingPaused = recordingPaused;
+                if (!this.recordingPaused) {
+                    this.initAudioRecordingInterval();
+                }
+            });
+
+        this.audioRecordingService.getWowzaAgentConnectionState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(state => {
+                this.handleWowzaConnectionState(state);
+            });
     }
 
     private onShouldReload(): void {
@@ -643,18 +647,31 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
+        this.audioRecordingService.cleanupSubscriptions();
     }
 
-    private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
+
+    private handleWowzaConnectionState(isConnected: boolean) {
+        if (isConnected) {
+            if (this.audioRecordingService.restartActioned) {
+                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
+            }
+            this.continueWithNoRecording = false;
+        } else if (this.audioRecordingService.restartActioned) {
+            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+        }
+        else {
+            this.handleWowzaAgentDisconnect();
+        }
+    }
+
+    private handleWowzaAgentDisconnect() {
         if (
             this.conference.audio_recording_required &&
-            this.audioRecordingService.wowzaAgent &&
             this.conference.status === ConferenceStatus.InSession &&
-            deletedParticipant.uuid === this.audioRecordingService.wowzaAgent.uuid &&
             !this.recordingPaused
         ) {
             this.logWowzaAlert();
-            this.audioRecordingService.wowzaAgent = null;
             this.showAudioRecordingRestartAlert();
         }
     }
@@ -669,22 +686,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 audioErrorRetryToast: this.audioErrorRetryToast
             }
         );
-    }
-
-    private assignWowzaAgent(createdParticipant: ParticipantUpdated) {
-        if (createdParticipant.isAudioOnlyCall) {
-            if (this.audioRecordingService.restartActioned) {
-                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
-            }
-            this.continueWithNoRecording = false;
-            this.audioRecordingService.wowzaAgent = createdParticipant;
-            this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
-                pexipId: createdParticipant.uuid,
-                displayName: createdParticipant.pexipDisplayName
-            });
-        } else if (this.audioRecordingService.restartActioned) {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        }
     }
 
     private showAudioRecordingRestartAlert() {

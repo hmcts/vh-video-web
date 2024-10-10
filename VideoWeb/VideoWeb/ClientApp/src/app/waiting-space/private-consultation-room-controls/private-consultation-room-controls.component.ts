@@ -62,7 +62,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     private conferenceStatus: ConferenceStatusChanged;
 
-
     constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
@@ -117,9 +116,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         // Needed to prevent 'this' being undefined in the callback
         this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
 
-        this.audioRecordingService.init(this.conference, this.participant?.id);
-
-        this.audioRecordingService.getAudioRecordingState().subscribe(async (audioStopped: boolean) => {
+        this.audioRecordingService.getAudioRecordingPauseState().subscribe(async (audioStopped: boolean) => {
             this.recordingPaused = audioStopped;
         });
     }
@@ -210,5 +207,4 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         await this.audioRecordingService.reconnectToWowza(failedToReconnectCallback);
         this.pauseButtonActioned = false;
     }
-
 }
