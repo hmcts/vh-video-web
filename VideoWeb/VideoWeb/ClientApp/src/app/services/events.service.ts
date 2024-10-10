@@ -86,10 +86,16 @@ export class EventsService {
     private _handlersRegistered = false;
 
     private eventHandlers = {
-        ParticipantStatusMessage: (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
+        ParticipantStatusMessage: (
+            participantId: string,
+            username: string,
+            conferenceId: string,
+            status: ParticipantStatus,
+            reason: string
+        ) => {
             const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
             this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
-            this.store.dispatch(ConferenceActions.updateParticipantStatus({ conferenceId, participantId, status }));
+            this.store.dispatch(ConferenceActions.updateParticipantStatus({ conferenceId, participantId, status, reason }));
             this.participantStatusSubject.next(message);
         },
 

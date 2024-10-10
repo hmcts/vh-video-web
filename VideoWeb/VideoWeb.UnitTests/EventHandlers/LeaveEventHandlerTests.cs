@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.Disconnected), Times.Exactly(participantCount));
+                    ParticipantState.Disconnected, callbackEvent.Reason), Times.Exactly(participantCount));
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Disconnected);
         }
 
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.Disconnected), Times.Never);
+                    ParticipantState.Disconnected, callbackEvent.Reason), Times.Never);
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(expectedStatus);
         }
     }

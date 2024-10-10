@@ -10,7 +10,7 @@ namespace VideoWeb.EventHub.Hub
 {
     public interface IEventHubClient
     {
-        Task ParticipantStatusMessage(Guid participantId, string username, Guid conferenceId, ParticipantState participantState);
+        Task ParticipantStatusMessage(Guid participantId, string username, Guid conferenceId, ParticipantState participantState, string reason);
         Task ParticipantMediaStatusMessage(Guid participantId, Guid conferenceId, ParticipantMediaStatus mediaStatus);
         Task ParticipantRemoteMuteMessage(Guid participantId, Guid conferenceId, bool isRemoteMuted);
         Task ParticipantHandRaiseMessage(Guid participantId, Guid conferenceId, bool hasHandRaised);

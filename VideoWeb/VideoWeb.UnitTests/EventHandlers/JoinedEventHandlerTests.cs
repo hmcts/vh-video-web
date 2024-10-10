@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.Available), Times.Exactly(participantCount));
+                    ParticipantState.Available, callbackEvent.Reason), Times.Exactly(participantCount));
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.InHearing), Times.Exactly(participantCount));
+                    ParticipantState.InHearing, callbackEvent.Reason), Times.Exactly(participantCount));
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -116,7 +116,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.InConsultation), Times.Exactly(participantCount));
+                    ParticipantState.InConsultation, callbackEvent.Reason), Times.Exactly(participantCount));
 
             ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
                 Times.Once);

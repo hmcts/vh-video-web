@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.NotSignedIn), Times.Exactly(participantCount));
+                    ParticipantState.NotSignedIn, callbackEvent.Reason), Times.Exactly(participantCount));
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.NotSignedIn);
         }
     }
