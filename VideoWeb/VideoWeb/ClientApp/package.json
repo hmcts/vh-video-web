@@ -113,7 +113,7 @@
     "ng-mocks": "^14.12.2",
     "nswag": "^14.1.0",
     "prettier": "^3.3.3",
-    "puppeteer": "^23.2.0",
+    "puppeteer": "^23.5.1",
     "run-script-os": "^1.1.6",
     "sass": "^1.77.8",
     "typescript": ">=5.2.0 <5.4.0"

@@ -619,6 +619,7 @@ describe('HearingControlsBaseComponent', () => {
             isSpotlighted: true,
             handRaised: false,
             uuid: undefined,
+            callTag: undefined,
             isAudioOnlyCall: false,
             isVideoCall: false,
             protocol: '',

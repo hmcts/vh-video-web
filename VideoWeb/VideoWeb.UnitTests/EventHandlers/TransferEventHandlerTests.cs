@@ -41,7 +41,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    status), Times.Exactly(participantCount));
+                    status, callbackEvent.Reason), Times.Exactly(participantCount));
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(expectedStatus);
             
         }
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    expectedStatus), Times.Exactly(participantCount));
+                    expectedStatus, callbackEvent.Reason), Times.Exactly(participantCount));
 
             // Verify the conference cache has been updated
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
@@ -121,7 +121,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    expectedStatus), Times.Exactly(participantCount));
+                    expectedStatus, callbackEvent.Reason), Times.Exactly(participantCount));
 
             // Verify the conference cache has been updated
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
@@ -165,7 +165,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    expectedStatus), Times.Exactly(participantCount));
+                    expectedStatus, callbackEvent.Reason), Times.Exactly(participantCount));
             
             // Verify the conference cache has been updated
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
@@ -204,7 +204,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    expectedStatus), Times.Exactly(participantCount));
+                    expectedStatus, callbackEvent.Reason), Times.Exactly(participantCount));
             
             // Verify the conference cache has been updated
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()
@@ -240,7 +240,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    expectedStatus), Times.Exactly(participantCount));
+                    expectedStatus, callbackEvent.Reason), Times.Exactly(participantCount));
             
             // Verify the conference cache has been updated
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should()

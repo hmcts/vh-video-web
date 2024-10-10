@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing'; // import this
 
 import { ConferenceEffects } from './conference.effects';
-import { ApiClient } from 'src/app/services/clients/api-client';
+import { ApiClient, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../models/api-contract-to-state-model-mappers';
@@ -15,17 +15,27 @@ import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { VHParticipant } from '../models/vh-conference';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
     let effects: ConferenceEffects;
     let apiClient: jasmine.SpyObj<ApiClient>;
     let mockConferenceStore: MockStore<ConferenceState>;
+
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let supplierClientService: jasmine.SpyObj<SupplierClientService>;
+    let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+    let pexipClientSpy: jasmine.SpyObj<PexipClient>;
 
     beforeEach(() => {
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing']);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
+        pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [], {
+            pexipAPI: pexipClientSpy
+        });
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
@@ -33,7 +43,9 @@ describe('ConferenceEffects', () => {
                 provideMockStore(),
                 provideMockActions(() => actions$),
                 { provide: ApiClient, useValue: apiClient },
-                { provide: SupplierClientService, useValue: supplierClientService }
+                { provide: SupplierClientService, useValue: supplierClientService },
+                { provide: VideoCallService, useValue: videoCallServiceSpy },
+                { provide: ErrorService, useValue: errorServiceSpy }
             ]
         });
 
@@ -161,6 +173,108 @@ describe('ConferenceEffects', () => {
             const expected = cold('-b', { b: ConferenceActions.participantLeaveHearingRoomFailure({ error }) });
             expect(effects.participantLeaveHearingRoom$).toBeObservable(expected);
             expect(apiClient.nonHostLeaveHearing).toHaveBeenCalled();
+        });
+    });
+
+    describe('participantDisconnect$', () => {
+        afterEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should navigate to logout page if participant is disconnected because they connected on another device', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.updateParticipantStatus({
+                participantId: vhParticipant.id,
+                conferenceId: conference.id,
+                status: ParticipantStatus.Disconnected,
+                reason: 'connected on another device test-call-tag'
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.participantDisconnect$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.goToServiceError).toHaveBeenCalled();
+        });
+
+        it('should ignore if the status is not disconnected', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.updateParticipantStatus({
+                participantId: vhParticipant.id,
+                conferenceId: conference.id,
+                status: ParticipantStatus.Available,
+                reason: 'connected'
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.participantDisconnect$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
+        });
+
+        it('should not navigate to logout page if participant is disconnected and reason does not include connected on another device', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.updateParticipantStatus({
+                participantId: vhParticipant.id,
+                conferenceId: conference.id,
+                status: ParticipantStatus.Disconnected,
+                reason: 'some other reason'
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.participantDisconnect$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
+        });
+
+        it('should not navigate to logout page if participant is not the logged in participant', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.updateParticipantStatus({
+                participantId: '123',
+                conferenceId: conference.id,
+                status: ParticipantStatus.Disconnected,
+                reason: 'connected on another device test-call-tag'
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.participantDisconnect$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         });
     });
 });
