@@ -1,0 +1,41 @@
+@import 'govuk-frontend/dist/govuk/base';
+
+.grid-container {
+  display: grid;
+  grid-template-rows: auto auto; /* 2 rows */
+  grid-template-columns: 1fr; /* 1 column */
+  justify-items: center;
+  align-items: center;
+}
+
+.grid-container-no-text {
+  max-height: 25px;
+}
+
+.grid-item {
+  text-align: center;
+}
+
+.icon-button {
+  cursor: pointer;
+  opacity: 0.5;
+  margin-right: 20px;
+  // max-height: 25px;
+  font-size: 1.5em;
+  color: govuk-colour('white');
+  background: transparent;
+  border: none;
+}
+
+.icon-button:hover {
+  opacity: 1;
+}
+
+.icon-text {
+  opacity: 0.5;
+  color: govuk-colour('white');
+}
+
+.icon-text:hover {
+  opacity: 1;
+}

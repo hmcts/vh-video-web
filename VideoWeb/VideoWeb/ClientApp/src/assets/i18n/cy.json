@@ -734,7 +734,8 @@
     "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn",
     "change-hearing-layout": "Newid cynllun",
     "change-interpreting-language": "Newid iaith dehongli",
-    "interpreting-for": "Dehongli ar gyfer"
+    "interpreting-for": "Dehongli ar gyfer",
+    "dial-out": "Deialu allan"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -1519,6 +1520,19 @@
     "change-audio-hint": "Dehongli ar gyfer",
     "button-cancel": "Canslo",
     "button-continue": " Parhau"
+  },
+  "dial-out-number": {
+    "form-label": "Rhif ffôn y DU",
+    "form-error-message-hidden": "Gwall:",
+    "form-error-invalid-number": "Rhowch rif ffôn dilys",
+    "form-button-submit": "Ffoniwch y rhif ffôn",
+    "dial-out-success-message": "Deialu allan llwyddiannus",
+    "dial-out-failure": "Deialu allan yn aflwyddiannus"
+  },
+  "dial-out-popup": {
+    "header": "Rhowch rif y person yr hoffech ddeialu i mewn",
+    "close-button-aria-label": "Cau Naidlen Cyfranogwr Deialu Allan",
+    "close-button": "Cau"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",

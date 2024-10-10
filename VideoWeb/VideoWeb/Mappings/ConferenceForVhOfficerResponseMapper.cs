@@ -14,13 +14,8 @@ public static class ConferenceForVhOfficerResponseMapper
     public const string NotRequired = "Not Required";
     public const string NotAllocated = "Not Allocated";
     
-    [Obsolete("Use the overload that takes a HearingDetailsResponseV2")]
-    public static ConferenceForVhOfficerResponse Map(Conference conference, AllocatedCsoResponse allocatedCsoResponse)
+    public static ConferenceForVhOfficerResponse Map(Conference conference)
     {
-        var allocatedCso = !allocatedCsoResponse?.SupportsWorkAllocation ?? false
-            ? NotRequired
-            : allocatedCsoResponse?.Cso?.FullName ?? NotAllocated;
-        
         var response = new ConferenceForVhOfficerResponse();
         response.Id = conference.Id;
         response.CaseName = conference.CaseName;
@@ -37,8 +32,8 @@ public static class ConferenceForVhOfficerResponseMapper
         response.TelephoneConferenceNumbers = conference.TelephoneConferenceNumbers;
         response.CreatedDateTime = conference.CreatedDateTime;
         response.HearingRefId = conference.HearingId;
-        response.AllocatedCso = allocatedCso;
-        response.AllocatedCsoId = allocatedCsoResponse?.Cso?.Id;
+        response.AllocatedCso = conference.AllocatedCso;
+        response.AllocatedCsoId = conference.AllocatedCsoId;
         response.Supplier = conference.Supplier;
         return response;
     }

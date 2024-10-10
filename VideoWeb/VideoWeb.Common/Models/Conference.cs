@@ -41,6 +41,8 @@ namespace VideoWeb.Common.Models
         public string TelephoneConferenceId { get; set; }
         public string TelephoneConferenceNumbers { get; set; }
         public Supplier Supplier { get; set; }
+        public string AllocatedCso { get; set; }
+        public Guid? AllocatedCsoId { get; set; }
 
         public Participant GetJudge()
         {

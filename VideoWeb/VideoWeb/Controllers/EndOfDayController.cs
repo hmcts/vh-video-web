@@ -43,11 +43,9 @@ public class EndOfDayController(
         {
             var activeConferences = await videoApiClient.GetActiveConferencesAsync(cancellationToken);
             var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
-            var allocatedHearings = await bookingsApiClient.GetAllocationsForHearingsAsync(activeConferences.Select(e => e.HearingId), cancellationToken);
             var conferences = await retrieveCachedConferencesTask;
             var response = conferences
-                .Select(c
-                    => ConferenceForVhOfficerResponseMapper.Map(c, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == c.HearingId))).ToList();
+                .Select(c => ConferenceForVhOfficerResponseMapper.Map(c)).ToList();
             response.Sort(new SortConferenceForVhoOfficerHelper());
             return Ok(response);
         }

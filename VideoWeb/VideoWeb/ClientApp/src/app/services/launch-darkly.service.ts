@@ -9,7 +9,8 @@ export const FEATURE_FLAGS = {
     wowzaKillButton: 'wowza-listener-kill-switch',
     vodafone: 'vodafone',
     activeSessionFilter: 'active-sessions-filter',
-    interpreterEnhancements: 'interpreter-enhancements'
+    interpreterEnhancements: 'interpreter-enhancements',
+    dialOutParticipant: 'dial-out-participant'
 };
 
 @Injectable({

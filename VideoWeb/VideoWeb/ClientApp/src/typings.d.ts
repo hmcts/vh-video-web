@@ -43,6 +43,62 @@ declare interface PexRTC {
 
 declare type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none';
 
+declare type PexipDialOutCallType = 'video' | 'video-only ' | 'audio';
+
+declare type PexipProtocol = 'sip' | 'h323' | 'rtmp' | 'mssip' | 'auto';
+
+declare type PexipRole = 'GUEST' | 'HOST';
+
+declare interface PexipDialOutResponse {
+    /**
+     * "success" or "error"
+     */
+    status: string;
+    /**
+     * List of added participant ids
+     */
+    result: string[];
+}
+
+declare interface PexipDialOutParams {
+    /**
+     * This additional parameter can be specified for RTMP calls to send the presentation stream to a separate RTMP destination.
+     */
+    presentation_uri?: string;
+
+    /**
+     * Identifies the dialed participant as a streaming or recording device:
+     * true: streaming/recording participant
+     * false: not a streaming/recording participant
+     * Default: false
+     */
+    streaming?: boolean;
+
+    /**
+     * An optional DTMF sequence to transmit after the call to the dialed participant starts.
+     */
+    dtmf_sequence?: string;
+
+    /**
+     * Limits the media content of the call:<br>
+     * "video": main video plus presentation<br>
+     * "video-only": main video only<br>
+     * "audio": audio-only<br>
+     * Default: "video"
+     */
+    call_type?: PexipDialOutCallType;
+
+    /**
+     * An optional friendly name for this participant. This may be used instead of the participant's alias in participant lists and as a text overlay in some layout configurations.
+     */
+    remote_display_name?: string;
+
+    /**
+     * Optional text to use instead of remote_display_name as the participant name overlay text.
+     */
+    overlay_text?: string;
+}
+
 declare interface PexipClient {
     video_source: string | boolean;
     audio_source: string | boolean;
@@ -148,10 +204,10 @@ declare interface PexipClient {
     getPresentation();
 
     // Disconnect a given participant. Only available to users with "chair" (Host) rights.
-    disconnectParticipant(uuid);
+    disconnectParticipant(uuid: string);
 
     // Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
-    dialOut(destination, protocol, role, cb, user_params);
+    dialOut(destination: string, protocol: PexipProtocol, role: PexipRole, cb: Function, user_params: PexipDialOutParams);
 
     transformLayout(transforms: any);
 }

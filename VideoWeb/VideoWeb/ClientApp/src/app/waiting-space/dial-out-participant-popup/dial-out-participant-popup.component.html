@@ -1,0 +1,20 @@
+<div id="dial-out-participant-modal" class="modal modal-open">
+  <div class="modal-content">
+    <h1 class="govuk-heading-m">{{ 'dial-out-popup.header' | translate }}</h1>
+    <app-dial-out-number></app-dial-out-number>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-margin-top-3">
+        <div class="govuk-button-group">
+          <button
+            class="govuk-button"
+            data-module="govuk-button"
+            [attr.aria-label]="'dial-out-popup.close-button-aria-label' | translate"
+            (click)="closePopup()"
+          >
+            {{ 'dial-out-popup.close-button' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

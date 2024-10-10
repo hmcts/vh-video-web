@@ -58,6 +58,8 @@ import { ReferenceDataEffects } from './store/effects/reference-data.effects';
 import { referenceDataFeatureKey, referenceDataReducer } from './store/reducers/reference-data.reducer';
 import { NotificationEffects } from './store/effects/notification.effects';
 import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm-non-host-leave-hearing-popup.component';
+import { HearingControlIconComponent } from './hearing-control-icon/hearing-control-icon.component';
+import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/dial-out-participant-popup.component';
 
 @NgModule({
     imports: [
@@ -109,7 +111,9 @@ import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm
         PrivateConsultationLegalRepTermsOfServiceComponent,
         ParticipantsPanelItemComponent,
         WarnJoinHearingPopupComponent,
-        ChangeHearingLayoutPopupComponent
+        ChangeHearingLayoutPopupComponent,
+        HearingControlIconComponent,
+        DialOutParticipantPopupComponent
     ],
     providers: [
         VideoCallService,

@@ -1270,4 +1270,24 @@ describe('HearingControlsBaseComponent', () => {
             expect(component.displayChangeLayoutPopup).toBeFalse();
         });
     });
+
+    describe('dialout', () => {
+        it('should display popup when onDialOutClicked', () => {
+            component.displayDialOutPopup = false;
+
+            component.onDialOutClicked();
+
+            expect(focusService.storeFocus).toHaveBeenCalled();
+            expect(component.displayDialOutPopup).toBeTrue();
+        });
+
+        it('should hide popup when closeDialOutPopup', () => {
+            component.displayDialOutPopup = true;
+
+            component.closeDialOutPopup();
+
+            expect(focusService.restoreFocus).toHaveBeenCalled();
+            expect(component.displayDialOutPopup).toBeFalse();
+        });
+    });
 });

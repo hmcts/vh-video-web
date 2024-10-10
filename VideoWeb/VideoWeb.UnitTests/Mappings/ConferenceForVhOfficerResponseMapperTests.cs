@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using NUnit.Framework;
@@ -12,8 +13,9 @@ namespace VideoWeb.UnitTests.Mappings
         public void Should_map_all_properties()
         {
             var conference = new ConferenceCacheModelBuilder().Build();
+            conference.AllocatedCso = ConferenceForVhOfficerResponseMapper.NotAllocated;
 
-            var response = ConferenceForVhOfficerResponseMapper.Map(conference, null);
+            var response = ConferenceForVhOfficerResponseMapper.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.CaseName);
@@ -30,57 +32,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.TelephoneConferenceNumbers.Should().Be(conference.TelephoneConferenceNumbers);
             response.CreatedDateTime.Should().Be(conference.CreatedDateTime);
             response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
+            response.AllocatedCsoId.Should().Be(conference.AllocatedCsoId);
             response.Supplier.Should().Be(conference.Supplier);
-        }
-
-        [Test]
-        public void should_map_unallocated_when_venue_supports_work_allocation_and_cso_is_not_set()
-        {
-            var conference = new ConferenceCacheModelBuilder().Build();
-
-            var allocatedCsoResponse = new AllocatedCsoResponse
-            {
-                SupportsWorkAllocation = true
-            };
-            
-            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
-            
-            response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
-        }
-        
-        [Test]
-        public void should_map_cso_fullname_when_venue_supports_work_allocation_and_cso_is_set()
-        {
-            var fullName = "Foo Bar";
-            var conference = new ConferenceCacheModelBuilder().Build();
-
-            var allocatedCsoResponse = new AllocatedCsoResponse
-            {
-                SupportsWorkAllocation = true,
-                Cso = new JusticeUserResponse()
-                {
-                    FullName = fullName,
-                }
-            };
-            
-            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
-            
-            response.AllocatedCso.Should().Be(fullName);
-        }
-        
-        [Test]
-        public void should_map_required_when_venue_does_not_support_work_allocation()
-        {
-            var conference = new ConferenceCacheModelBuilder().Build();
-
-            var allocatedCsoResponse = new AllocatedCsoResponse
-            {
-                SupportsWorkAllocation = false
-            };
-            
-            var response = ConferenceForVhOfficerResponseMapper.Map(conference, allocatedCsoResponse);
-            
-            response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotRequired);
         }
     }
 }

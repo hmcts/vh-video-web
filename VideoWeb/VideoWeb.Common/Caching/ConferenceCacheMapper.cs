@@ -12,6 +12,9 @@ namespace VideoWeb.Common.Caching;
 
 public static class ConferenceCacheMapper
 {
+    public const string NotRequired = "Not Required";
+    public const string NotAllocated = "Not Allocated";
+    
     public static Conference MapConferenceToCacheModel(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse)
     {
         var participants = conferenceResponse
@@ -69,6 +72,12 @@ public static class ConferenceCacheMapper
         conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
         conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
         conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
+        
+        var allocatedCso = !hearingDetailsResponse?.SupportsWorkAllocation ?? false
+            ? NotRequired
+            : hearingDetailsResponse.AllocatedToName ?? NotAllocated;
+        conference.AllocatedCso = allocatedCso;
+        conference.AllocatedCsoId = hearingDetailsResponse.AllocatedToId;
         conference.Supplier = (Supplier)hearingDetailsResponse.BookingSupplier;
         return conference;
     }
