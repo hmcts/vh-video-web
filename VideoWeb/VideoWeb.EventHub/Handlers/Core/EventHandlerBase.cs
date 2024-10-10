@@ -45,7 +45,8 @@ namespace VideoWeb.EventHub.Handlers.Core
         ///     Publish a participant event to all participants in conference to those connected to the HubContext
         /// </summary>
         /// <param name="participantState">Participant status event to publish</param>
-        /// <param name="newStatus"></param>
+        /// <param name="newStatus">the new status to publish</param>
+        /// <param name="reason">reason for the disconnect</param>
         /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState,
             ParticipantStatus newStatus, string reason)
