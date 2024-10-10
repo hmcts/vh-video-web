@@ -37,8 +37,11 @@ namespace VideoWeb.Common
 
         private bool IsReadableBadRequest(Microsoft.ApplicationInsights.DataContracts.RequestTelemetry telemetry)
         {
-            return _httpContextAccessor.HttpContext.Request.Body.CanRead
-                   && telemetry.ResponseCode == "400";
+            if (_httpContextAccessor?.HttpContext == null)
+            {
+                return false;
+            }
+            return _httpContextAccessor.HttpContext.Request.Body.CanRead && telemetry.ResponseCode == "400";
         }
     }
 }

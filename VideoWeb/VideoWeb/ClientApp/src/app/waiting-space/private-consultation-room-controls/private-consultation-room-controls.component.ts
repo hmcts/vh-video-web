@@ -1,31 +1,26 @@
-import {Component, Input} from '@angular/core';
-import {TranslateService} from '@ngx-translate/core';
-import {takeUntil} from 'rxjs/operators';
-import {ConfigService} from 'src/app/services/api/config.service';
-import {
-    ConferenceResponse,
-    ConferenceStatus,
-    HearingLayout,
-    ParticipantStatus
-} from 'src/app/services/clients/api-client';
-import {ConferenceService} from 'src/app/services/conference/conference.service';
-import {ConferenceStatusChanged} from 'src/app/services/conference/models/conference-status-changed.model';
-import {ParticipantService} from 'src/app/services/conference/participant.service';
-import {DeviceTypeService} from 'src/app/services/device-type.service';
-import {EventsService} from 'src/app/services/events.service';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {UserMediaService} from 'src/app/services/user-media.service';
-import {HearingControlsBaseComponent} from '../hearing-controls/hearing-controls-base.component';
-import {VideoCallService} from '../services/video-call.service';
-import {VideoControlService} from '../../services/conference/video-control.service';
-import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
-import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
-import {FocusService} from 'src/app/services/focus.service';
-import {Store} from '@ngrx/store';
-import {ConferenceState} from '../store/reducers/conference.reducer';
-import {faCirclePause, faPlayCircle} from '@fortawesome/free-regular-svg-icons';
-import {AudioRecordingService} from "../../services/audio-recording.service";
-import {NotificationToastrService} from "../services/notification-toastr.service";
+import { Component, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { takeUntil } from 'rxjs/operators';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
+import { VideoCallService } from '../services/video-call.service';
+import { VideoControlService } from '../../services/conference/video-control.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FocusService } from 'src/app/services/focus.service';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { faCirclePause, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
+import { AudioRecordingService } from '../../services/audio-recording.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 
 @Component({
     selector: 'app-private-consultation-room-controls',
@@ -59,6 +54,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     recordingPaused: boolean;
     pauseButtonActioned = false;
     resumeButtonActioned = false;
+    wowzaConnected = false;
 
     private conferenceStatus: ConferenceStatusChanged;
 
@@ -78,7 +74,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected focusService: FocusService,
         protected conferenceStore: Store<ConferenceState>,
         protected audioRecordingService: AudioRecordingService,
-        protected notificationToastrService: NotificationToastrService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         super(
             videoCallService,
@@ -111,6 +107,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(value => {
                 this.vodafoneEnabled = value;
+            });
+
+        this.audioRecordingService
+            .getWowzaAgentConnectionState()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(connected => {
+                this.wowzaConnected = connected;
             });
 
         // Needed to prevent 'this' being undefined in the callback
@@ -196,14 +199,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         this.pauseButtonActioned = true;
         await this.audioRecordingService.stopRecording();
         this.pauseButtonActioned = false;
-
     }
 
     async resumeRecording() {
         this.pauseButtonActioned = true;
         const failedToReconnectCallback = () => {
             this.notificationToastrService.showAudioRecordingRestartFailure(() => {});
-        }
+        };
         await this.audioRecordingService.reconnectToWowza(failedToReconnectCallback);
         this.pauseButtonActioned = false;
     }
