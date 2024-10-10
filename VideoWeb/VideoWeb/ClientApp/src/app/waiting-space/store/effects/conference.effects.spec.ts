@@ -15,7 +15,7 @@ import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { VHParticipant } from '../models/vh-conference';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
-import { Router } from '@angular/router';
+import { ErrorService } from 'src/app/services/error.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -23,13 +23,13 @@ describe('ConferenceEffects', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     let mockConferenceStore: MockStore<ConferenceState>;
 
-    let routerSpy: jasmine.SpyObj<Router>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let supplierClientService: jasmine.SpyObj<SupplierClientService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let pexipClientSpy: jasmine.SpyObj<PexipClient>;
 
     beforeEach(() => {
-        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing']);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
@@ -45,7 +45,7 @@ describe('ConferenceEffects', () => {
                 { provide: ApiClient, useValue: apiClient },
                 { provide: SupplierClientService, useValue: supplierClientService },
                 { provide: VideoCallService, useValue: videoCallServiceSpy },
-                { provide: Router, useValue: routerSpy }
+                { provide: ErrorService, useValue: errorServiceSpy }
             ]
         });
 
@@ -202,7 +202,7 @@ describe('ConferenceEffects', () => {
             effects.participantDisconnect$.subscribe();
 
             // assert
-            expect(routerSpy.navigate).toHaveBeenCalledWith(['logout']);
+            expect(errorServiceSpy.goToServiceError).toHaveBeenCalled();
         });
 
         it('should ignore if the status is not disconnected', () => {
@@ -226,7 +226,7 @@ describe('ConferenceEffects', () => {
             effects.participantDisconnect$.subscribe();
 
             // assert
-            expect(routerSpy.navigate).not.toHaveBeenCalled();
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         });
 
         it('should not navigate to logout page if participant is disconnected and reason does not include connected on another device', () => {
@@ -250,7 +250,7 @@ describe('ConferenceEffects', () => {
             effects.participantDisconnect$.subscribe();
 
             // assert
-            expect(routerSpy.navigate).not.toHaveBeenCalled();
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         });
 
         it('should not navigate to logout page if participant is not the logged in participant', () => {
@@ -274,7 +274,7 @@ describe('ConferenceEffects', () => {
             effects.participantDisconnect$.subscribe();
 
             // assert
-            expect(routerSpy.navigate).not.toHaveBeenCalled();
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         });
     });
 });

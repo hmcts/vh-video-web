@@ -10,9 +10,8 @@ import { ConferenceState } from '../reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
-import { Router } from '@angular/router';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../../services/video-call.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -99,7 +98,11 @@ export class ConferenceEffects {
                     }
                     const callTag = participant?.pexipInfo?.callTag ?? this.videoCallService.pexipAPI.call_tag;
                     if (action.reason.includes(`connected on another device ${callTag}`)) {
-                        this.router.navigate([pageUrls.Logout]);
+                        this.errorService.goToServiceError(
+                            'error-service.unexpected-error',
+                            'error-service.connected-another-device',
+                            false
+                        );
                     }
                     return of();
                 })
@@ -113,6 +116,6 @@ export class ConferenceEffects {
         private apiClient: ApiClient,
         private supplierClientService: SupplierClientService,
         private videoCallService: VideoCallService,
-        private router: Router
+        private errorService: ErrorService
     ) {}
 }

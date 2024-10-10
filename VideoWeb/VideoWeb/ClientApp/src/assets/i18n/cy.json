@@ -378,7 +378,8 @@
     "please-unblock": "Ceisiwch ddadflocio'r camera a'r microffon neu ffoniwch ni os oes problem.",
     "problem-with-connection": "Mae problem gyda'ch cysylltiad",
     "unexpected-error": "Fe ddigwyddodd nam annisgwyl",
-    "click-reconnect": "Cliciwch ar Ailgysylltu i ddychwelyd i'r dudalen flaenorol. Ffoniwch ni os ydych dal i weld y neges hon."
+    "click-reconnect": "Cliciwch ar Ailgysylltu i ddychwelyd i'r dudalen flaenorol. Ffoniwch ni os ydych dal i weld y neges hon.",
+    "connected-another-device": "Rydych chi wedi cael eich canfod ar ddyfais arall. Gwiriwch nad oes gennych chi dabiau neu borwyr lluosog ar agor ac nad ydych wedi mewngofnodi ar ddyfais eilaidd."
   },
   "error": {
     "contact-for-help": "Cysylltu â ni i gael cymorth",
@@ -1604,7 +1605,7 @@
     "hindi": "Hindi",
     "hindko": "Hindko",
     "northern-hindko": "Hindko Gogleddol",
-    "hungarian": "Hwngareg",    
+    "hungarian": "Hwngareg",
     "armenian": "Armeneg",
     "ibibio": "Ibibio",
     "igbo-(also-known-as-ibo)": "Igbo (a elwir hefyd yn Ibo)",
