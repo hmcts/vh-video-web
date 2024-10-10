@@ -61,6 +61,6 @@ namespace VideoWeb.EventHub.Hub
         Task LinkedNewParticipantToEndpoint(Guid conferenceId, string endpoint);
         Task CloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string endpoint);
         Task AudioRestartActioned(Guid conferenceId);
-        Task AudioRecordingPaused(Guid conferenceId);
+        Task AudioRecordingPaused(Guid conferenceId, bool state);
     }
 }
