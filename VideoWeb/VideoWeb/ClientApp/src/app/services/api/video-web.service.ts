@@ -195,4 +195,8 @@ export class VideoWebService implements IVideoWebApiService {
     getCurrentParticipant(conferenceId: string): Promise<LoggedParticipantResponse> {
         return this.apiClient.getCurrentParticipant(conferenceId).toPromise();
     }
+
+    deleteParticipant(conferenceId: string, participantId: string): Promise<void> {
+        return this.apiClient.deleteParticipantFromConference(conferenceId, participantId).toPromise();
+    }
 }

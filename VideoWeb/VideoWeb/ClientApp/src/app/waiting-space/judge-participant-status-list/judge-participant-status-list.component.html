@@ -343,6 +343,7 @@
               {{ getParticipantStatus(participant) }}
             </span>
           </dd>
+          <button (click)="deleteParticipant(participant)">Delete</button>
 
           <div class="vh-line" *ngIf="!lastItem"></div>
         </dl>
