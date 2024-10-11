@@ -208,7 +208,18 @@ namespace VideoWeb.Common.Models
             TelephoneParticipants.RemoveAll(x => x.Id == id);
         }
 
-        public List<Participant> GetNonScreenedParticipants()
+        public List<Guid> GetHosts()
+        {
+            var participants = GetNonScreenedParticipants();
+            var endpoints = GetNonScreenedEndpoints();
+            var hosts = participants
+                .Select(p => p.Id)
+                .Union(endpoints.Select(e => e.Id))
+                .ToList();
+            return hosts;
+        }
+        
+        private List<Participant> GetNonScreenedParticipants()
         {
             var participants = Participants
                 .Where(x => x.ProtectFrom.Count == 0)
@@ -219,7 +230,7 @@ namespace VideoWeb.Common.Models
             return participants;
         }
         
-        public List<Endpoint> GetNonScreenedEndpoints()
+        private List<Endpoint> GetNonScreenedEndpoints()
         {
             var endpoints = Endpoints
                 .Where(x => x.ProtectFrom.Count == 0)

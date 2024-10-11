@@ -22,7 +22,7 @@
     <PackageReference Include="NUnit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="NBuilder" Version="6.1.0" />
-    <PackageReference Include="VideoApi.Client" Version="2.2.26" />
+    <PackageReference Include="VideoApi.Client" Version="2.2.27-pr-0688-0005" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />

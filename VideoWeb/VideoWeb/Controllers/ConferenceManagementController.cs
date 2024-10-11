@@ -65,11 +65,13 @@ namespace VideoWeb.Controllers
             {
                 var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
                 var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
+                var hosts = conference.GetHosts();
                 var apiRequest = new StartHearingRequest
                 {
                     Layout = request.Layout,
                     MuteGuests = false,
-                    TriggeredByHostId = triggeredById ?? Guid.Empty
+                    TriggeredByHostId = triggeredById ?? Guid.Empty,
+                    Hosts = hosts
                 };
 
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
