@@ -7,10 +7,10 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Models.Conference;
 
-public class GetHostsTests
+public class GetNonScreenedParticipantsAndEndpointsTests
 {
     [Test]
-    public void should_return_hosts()
+    public void should_return_non_screened_participants_and_endpoints()
     {
         // Arrange
         var conference = new ConferenceCacheModelBuilder()
@@ -115,7 +115,7 @@ public class GetHostsTests
             endpointToScreen2]);
         
         // Act
-        var hosts = conference.GetHosts();
+        var hosts = conference.GetNonScreenedParticipantsAndEndpoints();
 
         // Assert
         hosts.Should().BeEquivalentTo([judge.Id, individual.Id, endpoint.Id]);

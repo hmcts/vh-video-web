@@ -65,7 +65,7 @@ namespace VideoWeb.Controllers
             {
                 var conference = await _conferenceService.GetConference(conferenceId, cancellationToken);
                 var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
-                var hosts = conference.GetHosts();
+                var hosts = conference.GetNonScreenedParticipantsAndEndpoints();
                 var apiRequest = new StartHearingRequest
                 {
                     Layout = request.Layout,

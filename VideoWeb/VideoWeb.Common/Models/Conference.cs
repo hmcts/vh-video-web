@@ -210,15 +210,15 @@ namespace VideoWeb.Common.Models
             TelephoneParticipants.RemoveAll(x => x.Id == id);
         }
 
-        public List<Guid> GetHosts()
+        public List<Guid> GetNonScreenedParticipantsAndEndpoints()
         {
             var participants = GetNonScreenedParticipants();
             var endpoints = GetNonScreenedEndpoints();
-            var hosts = participants
+            
+            return participants
                 .Select(p => p.Id)
                 .Union(endpoints.Select(e => e.Id))
                 .ToList();
-            return hosts;
         }
         
         private List<Participant> GetNonScreenedParticipants()

@@ -99,7 +99,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(role).Build();
-            var hosts = TestConference.GetHosts();
+            var hosts = TestConference.GetNonScreenedParticipantsAndEndpoints();
 
             var controller = SetupControllerWithClaims(user);
 
