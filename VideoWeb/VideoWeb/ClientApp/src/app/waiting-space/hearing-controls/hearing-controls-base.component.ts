@@ -58,6 +58,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
     displayChangeLayoutPopup = false;
+    displayDialOutPopup = false;
 
     hasACamera = true;
     hasAMicrophone = true;
@@ -506,6 +507,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     closeChangeLayoutDialog() {
         this.displayChangeLayoutPopup = false;
+        this.focusService.restoreFocus();
+    }
+
+    onDialOutClicked() {
+        this.focusService.storeFocus();
+        this.displayDialOutPopup = true;
+    }
+
+    closeDialOutPopup() {
+        this.displayDialOutPopup = false;
         this.focusService.restoreFocus();
     }
 

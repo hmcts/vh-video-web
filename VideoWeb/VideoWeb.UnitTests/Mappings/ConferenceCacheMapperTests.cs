@@ -40,6 +40,9 @@ public class ConferenceCacheMapperTests
         response.CaseNumber.Should().Be(hearingResponse.Cases[0].Number);
         response.Participants.Count.Should().Be(conference.Participants.Count);
         
+        response.AllocatedCso.Should().Be(hearingResponse.AllocatedToName);
+        response.AllocatedCsoId.Should().Be(hearingResponse.AllocatedToId);
+        
         foreach (var resultParticipant in response.Participants)
         {
             var participant = conference.Participants.Single(x => x.Id == resultParticipant.Id);
@@ -123,7 +126,6 @@ public class ConferenceCacheMapperTests
         }
     }
     
-    
     [Test]
     public void Should_map_without_current_room()
     {
@@ -135,6 +137,36 @@ public class ConferenceCacheMapperTests
         var resultParticipant  = response.Participants[0];
         
         resultParticipant.CurrentRoom.Should().BeNull();
+    }
+
+    [Test]
+    public void should_map_venue_without_work_allocation()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        hearing.SupportsWorkAllocation = false;
+        hearing.AllocatedToId = null;
+        hearing.AllocatedToName = null;
+        hearing.AllocatedToUsername = null;
+        
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+        
+        response.AllocatedCso.Should().Be(ConferenceCacheMapper.NotRequired);
+    }
+    
+    [Test]
+    public void should_map_non_allocated_hearing()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        hearing.SupportsWorkAllocation = true;
+        hearing.AllocatedToId = null;
+        hearing.AllocatedToName = null;
+        hearing.AllocatedToUsername = null;
+        
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+        
+        response.AllocatedCso.Should().Be(ConferenceCacheMapper.NotAllocated);
     }
 
     [Test]
@@ -243,6 +275,9 @@ public class ConferenceCacheMapperTests
             .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
             .With(x => x.HearingVenueName = "Venue")
             .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+            .With(x=> x.SupportsWorkAllocation = true)
+            .With(x => x.AllocatedToId = Guid.NewGuid())
+            .With(x => x.AllocatedToName = "CSO Admin")
             .Build();
     }
     
