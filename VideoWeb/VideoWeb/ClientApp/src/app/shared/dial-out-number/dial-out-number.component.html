@@ -1,0 +1,40 @@
+<form id="dial-out-form" [formGroup]="form" (ngSubmit)="dialOutNumber()">
+  <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.controls.telephone.dirty && form.controls.telephone.invalid }">
+    <label class="govuk-label" for="phone-number"> {{ 'dial-out-number.form-label' | translate }} </label>
+    <p *ngIf="form.controls.telephone.dirty && form.controls.telephone.invalid" id="phone-number-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">{{ 'dial-out-number.form-error-message-hidden' | translate }}</span>
+      {{ 'dial-out-number.form-error-invalid-number' | translate }}
+    </p>
+
+    <input
+      class="govuk-input govuk-input--width-20"
+      id="phone-number"
+      formControlName="telephone"
+      type="tel"
+      autocomplete="tel"
+      aria-describedby="phone-number-error"
+    />
+
+    <h3
+      *ngIf="message"
+      id="dial-response-message"
+      [ngClass]="{ 'govuk-error-message': isError }"
+      class="govuk-heading-s govuk-!-margin-top-3"
+    >
+      {{ message }}
+    </h3>
+  </div>
+
+  <div class="govuk-button-group">
+    <button
+      id="dial-out-btn"
+      class="govuk-button"
+      data-prevent-double-click="true"
+      data-module="govuk-button"
+      type="submit"
+      [disabled]="!form.valid"
+    >
+      {{ 'dial-out-number.form-button-submit' | translate }}
+    </button>
+  </div>
+</form>
