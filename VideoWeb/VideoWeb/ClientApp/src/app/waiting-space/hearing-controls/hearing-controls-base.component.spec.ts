@@ -56,6 +56,8 @@ import { ConferenceState, initialState as initialConferenceState } from '../stor
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { take } from 'rxjs/operators';
+import { NotificationToastrService } from '../services/notification-toastr.service';
+import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -107,6 +109,7 @@ describe('HearingControlsBaseComponent', () => {
     let clientSettingsResponse: ClientSettingsResponse;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
+    let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     beforeEach(() => {
         const initialState = initialConferenceState;
@@ -157,6 +160,7 @@ describe('HearingControlsBaseComponent', () => {
 
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['showError']);
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
@@ -172,7 +176,9 @@ describe('HearingControlsBaseComponent', () => {
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusService,
-            mockStore
+            mockStore,
+            audioRecordingServiceSpy,
+            notificationToastrServiceSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;

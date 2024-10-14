@@ -8,5 +8,7 @@ export const getLoggedInParticipant = createSelector(activeConferenceFeature, st
 export const getParticipantById = (id: string) => createSelector(getParticipants, participants => participants?.find(p => p?.id === id));
 export const getCountdownComplete = createSelector(activeConferenceFeature, state => state?.currentConference?.countdownComplete);
 export const getWowzaParticipant = createSelector(activeConferenceFeature, state => state?.wowzaParticipant);
-export const getParticipantByPexipId = (pexipId: string) => createSelector(getParticipants, participants => participants?.find(p => p?.pexipInfo?.uuid === pexipId));
-export const getEndpointByPexipId = (pexipId: string) => createSelector(getEndpoints, endpoints => endpoints?.find(e => e?.pexipInfo?.uuid === pexipId));
+export const getParticipantByPexipId = (pexipId: string) =>
+    createSelector(getParticipants, participants => participants?.find(p => p?.pexipInfo?.uuid === pexipId));
+export const getEndpointByPexipId = (pexipId: string) =>
+    createSelector(getEndpoints, endpoints => endpoints?.find(e => e?.pexipInfo?.uuid === pexipId));

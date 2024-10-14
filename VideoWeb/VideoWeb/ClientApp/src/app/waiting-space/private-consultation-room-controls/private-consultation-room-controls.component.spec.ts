@@ -46,6 +46,8 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { NotificationToastrService } from '../services/notification-toastr.service';
+import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -70,7 +72,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     const eventsService = eventsServiceSpy;
     const participantStatusSubject = participantStatusSubjectMock;
-
+    let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
     const videoCallService = videoCallServiceSpy;
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
     const onScreenshareConnectedSubject = onScreenshareConnectedMock;
@@ -157,7 +159,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
-            mockStore
+            mockStore,
+            audioRecordingServiceSpy,
+            notificationToastrServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -258,7 +262,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
-            mockStore
+            mockStore,
+            audioRecordingServiceSpy,
+            notificationToastrServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -285,7 +291,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
-            mockStore
+            mockStore,
+            audioRecordingServiceSpy,
+            notificationToastrServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
@@ -808,14 +816,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
                 expect(spy).toHaveBeenCalledTimes(1);
                 expect(spy).toHaveBeenCalledWith(true);
             });
-        });
-    });
-
-    describe('killWowza', () => {
-        it('should call video-call service disconnect wowza participant', function () {
-            component.wowzaUUID = '1234';
-            component.killWowza();
-            expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('1234');
         });
     });
 

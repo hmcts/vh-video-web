@@ -1,41 +1,41 @@
-import {Injectable} from '@angular/core';
-import {Observable,Subject} from "rxjs";
-import {VideoCallService} from "../waiting-space/services/video-call.service";
-import {EventsService} from "./events.service";
-import {Logger} from "./logging/logger-base";
-import {AudioRecordingPauseStateMessage} from "../shared/models/audio-recording-pause-state-message";
-import {Store} from "@ngrx/store";
-import {ConferenceState} from "../waiting-space/store/reducers/conference.reducer";
+import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { VideoCallService } from '../waiting-space/services/video-call.service';
+import { EventsService } from './events.service';
+import { Logger } from './logging/logger-base';
+import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
-import {VHConference, VHPexipParticipant} from "../waiting-space/store/models/vh-conference";
-import {takeUntil} from "rxjs/operators";
+import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class AudioRecordingService {
-
     loggerPrefix = '[AudioRecordingService]';
     dialOutUUID = [];
     restartActioned: boolean;
     conference: VHConference;
-    wowzaAgent: VHPexipParticipant
-    getWowzaAgentConnectionState() : Observable<boolean> {
-        return this.wowzaAgentConnection$.asObservable();
-    }
-    getAudioRecordingPauseState() : Observable<boolean> {
-        return this.audioStopped$.asObservable();
-    }
+    wowzaAgent: VHPexipParticipant;
 
     private audioStopped$: Subject<boolean> = new Subject<boolean>();
     private wowzaAgentConnection$ = new Subject<boolean>();
     private onDestroy$ = new Subject<void>();
 
-    constructor(private logger: Logger, private videoCallService: VideoCallService, private eventService: EventsService, conferenceStore: Store<ConferenceState>) {
+    constructor(
+        private logger: Logger,
+        private videoCallService: VideoCallService,
+        private eventService: EventsService,
+        conferenceStore: Store<ConferenceState>
+    ) {
         conferenceStore
             .select(ConferenceSelectors.getActiveConference)
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe(conference => {this.conference = conference;});
+            .subscribe(conference => {
+                this.conference = conference;
+            });
 
         conferenceStore
             .select(ConferenceSelectors.getWowzaParticipant)
@@ -43,10 +43,9 @@ export class AudioRecordingService {
             .subscribe(participant => {
                 this.dialOutUUID.push(participant?.uuid);
                 this.wowzaAgent = participant;
-                if(participant?.isAudioOnlyCall) {
+                if (participant?.isAudioOnlyCall) {
                     this.wowzaAgentConnection$.next(true);
-                }
-                else {
+                } else {
                     this.wowzaAgentConnection$.next(false);
                 }
             });
@@ -58,9 +57,16 @@ export class AudioRecordingService {
         });
     }
 
+    getWowzaAgentConnectionState(): Observable<boolean> {
+        return this.wowzaAgentConnection$.asObservable();
+    }
+
+    getAudioRecordingPauseState(): Observable<boolean> {
+        return this.audioStopped$.asObservable();
+    }
     async stopRecording() {
-      await this.eventService.sendAudioRecordingPaused(this.conference.id, true);
-      this.videoCallService.disconnectWowzaAgent(this.wowzaAgent.uuid);
+        await this.eventService.sendAudioRecordingPaused(this.conference.id, true);
+        this.videoCallService.disconnectWowzaAgent(this.wowzaAgent.uuid);
     }
 
     async reconnectToWowza(failedToConnectCallback: Function) {

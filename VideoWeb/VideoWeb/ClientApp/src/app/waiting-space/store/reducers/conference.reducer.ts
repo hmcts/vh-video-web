@@ -1,7 +1,7 @@
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import {VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom} from '../models/vh-conference';
-import {ConferenceStatus, EndpointStatus, ParticipantStatus} from 'src/app/services/clients/api-client';
+import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -18,8 +18,8 @@ export const initialState: ConferenceState = {
     loggedInParticipant: undefined,
     availableRooms: [],
     wowzaParticipant: undefined,
-    countdownComplete: undefined,
-}
+    countdownComplete: undefined
+};
 
 function getCurrentConference(state: ConferenceState, conferenceId: string): VHConference {
     const conference = state.currentConference;
