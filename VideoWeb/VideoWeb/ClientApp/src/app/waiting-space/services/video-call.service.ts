@@ -541,12 +541,23 @@ export class VideoCallService {
     }
 
     connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
-        const params = {
+        const params: PexipDialOutParams = {
             streaming: true,
             call_type: 'audio',
             remote_display_name: this.wowzaAgentName
         };
         this.pexipAPI.dialOut(ingestUrl, 'auto', 'GUEST', callbackFn, params);
+    }
+
+    callParticipantByTelephone(telephone: string, callbackFn: Function) {
+        const dialOutTelephone = `611${telephone}`;
+        const name = telephone.slice(-4);
+        const params: PexipDialOutParams = {
+            call_type: 'audio',
+            remote_display_name: name,
+            overlay_text: name
+        };
+        this.pexipAPI.dialOut(dialOutTelephone, 'auto', 'GUEST', callbackFn, params);
     }
 
     /**
