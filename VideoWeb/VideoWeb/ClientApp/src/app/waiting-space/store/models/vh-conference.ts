@@ -59,6 +59,7 @@ export interface VHPexipParticipant {
     handRaised: boolean;
     pexipDisplayName: string;
     uuid: string;
+    callTag: string;
     isAudioOnlyCall: boolean;
     isVideoCall: boolean;
     protocol: string;

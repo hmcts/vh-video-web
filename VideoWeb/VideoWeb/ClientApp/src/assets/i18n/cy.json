@@ -378,7 +378,8 @@
     "please-unblock": "Ceisiwch ddadflocio'r camera a'r microffon neu ffoniwch ni os oes problem.",
     "problem-with-connection": "Mae problem gyda'ch cysylltiad",
     "unexpected-error": "Fe ddigwyddodd nam annisgwyl",
-    "click-reconnect": "Cliciwch ar Ailgysylltu i ddychwelyd i'r dudalen flaenorol. Ffoniwch ni os ydych dal i weld y neges hon."
+    "click-reconnect": "Cliciwch ar Ailgysylltu i ddychwelyd i'r dudalen flaenorol. Ffoniwch ni os ydych dal i weld y neges hon.",
+    "connected-another-device": "Rydych chi wedi cael eich canfod ar ddyfais arall. Gwiriwch nad oes gennych chi dabiau neu borwyr lluosog ar agor ac nad ydych wedi mewngofnodi ar ddyfais eilaidd."
   },
   "error": {
     "contact-for-help": "Cysylltu â ni i gael cymorth",
@@ -734,6 +735,7 @@
     "change-hearing-layout": "Newid cynllun",
     "change-interpreting-language": "Newid iaith dehongli",
     "interpreting-for": "Dehongli ar gyfer",
+    "dial-out": "Deialu allan",
     "pause-recording": "Pause recording placeholder text",
     "resume-recording": "Resume recording placeholder text"
   },
@@ -1521,6 +1523,19 @@
     "button-cancel": "Canslo",
     "button-continue": " Parhau"
   },
+  "dial-out-number": {
+    "form-label": "Rhif ffôn y DU",
+    "form-error-message-hidden": "Gwall:",
+    "form-error-invalid-number": "Rhowch rif ffôn dilys",
+    "form-button-submit": "Ffoniwch y rhif ffôn",
+    "dial-out-success-message": "Deialu allan llwyddiannus",
+    "dial-out-failure": "Deialu allan yn aflwyddiannus"
+  },
+  "dial-out-popup": {
+    "header": "Rhowch rif y person yr hoffech ddeialu i mewn",
+    "close-button-aria-label": "Cau Naidlen Cyfranogwr Deialu Allan",
+    "close-button": "Cau"
+  },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",
     "british-sign-language-(bsl)": "Iaith Arwyddion Prydain (BSL)",
@@ -1606,7 +1621,7 @@
     "hindi": "Hindi",
     "hindko": "Hindko",
     "northern-hindko": "Hindko Gogleddol",
-    "hungarian": "Hwngareg",    
+    "hungarian": "Hwngareg",
     "armenian": "Armeneg",
     "ibibio": "Ibibio",
     "igbo-(also-known-as-ibo)": "Igbo (a elwir hefyd yn Ibo)",

@@ -40,11 +40,14 @@ public class ConferenceCacheMapperTests
         response.CaseNumber.Should().Be(hearingResponse.Cases[0].Number);
         response.Participants.Count.Should().Be(conference.Participants.Count);
         
+        response.AllocatedCso.Should().Be(hearingResponse.AllocatedToName);
+        response.AllocatedCsoId.Should().Be(hearingResponse.AllocatedToId);
+        
         foreach (var resultParticipant in response.Participants)
         {
             var participant = conference.Participants.Single(x => x.Id == resultParticipant.Id);
             var participantDetails = hearingResponse.Participants.SingleOrDefault(x => x.Id == resultParticipant.RefId);
-            var johDetails = hearingResponse.JudiciaryParticipants.SingleOrDefault(x => x.Email == resultParticipant.Username);
+            var johDetails = hearingResponse.JudicialOfficeHolders.SingleOrDefault(x => x.Email == resultParticipant.Username);
             if (participantDetails != null)
             {
                 resultParticipant.Id.Should().Be(participant.Id);
@@ -66,6 +69,8 @@ public class ConferenceCacheMapperTests
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
+                resultParticipant.ExternalReferenceId.Should().Be(participantDetails.ExternalReferenceId);
+                resultParticipant.ProtectFrom.Should().BeEmpty();
             }
             else if (johDetails != null)
             {
@@ -109,6 +114,8 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
             var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
             endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
+            endpoint.ExternalReferenceId.Should().Be(hearingEndpoint.ExternalReferenceId);
+            endpoint.ProtectFrom.Should().BeEmpty();
         }
         
         foreach (var telephoneParticipant in response.TelephoneParticipants)
@@ -118,7 +125,6 @@ public class ConferenceCacheMapperTests
             telephoneParticipant.PhoneNumber.Should().NotBeNullOrEmpty();
         }
     }
-    
     
     [Test]
     public void Should_map_without_current_room()
@@ -134,13 +140,43 @@ public class ConferenceCacheMapperTests
     }
 
     [Test]
+    public void should_map_venue_without_work_allocation()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        hearing.SupportsWorkAllocation = false;
+        hearing.AllocatedToId = null;
+        hearing.AllocatedToName = null;
+        hearing.AllocatedToUsername = null;
+        
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+        
+        response.AllocatedCso.Should().Be(ConferenceCacheMapper.NotRequired);
+    }
+    
+    [Test]
+    public void should_map_non_allocated_hearing()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        hearing.SupportsWorkAllocation = true;
+        hearing.AllocatedToId = null;
+        hearing.AllocatedToName = null;
+        hearing.AllocatedToUsername = null;
+        
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+        
+        response.AllocatedCso.Should().Be(ConferenceCacheMapper.NotAllocated);
+    }
+
+    [Test]
     public void Should_map_without_interpreter_language()
     {
         var conference = BuildConferenceDetailsResponse();
         var hearing = BuildHearingDetailsResponse(conference);
         var participant = hearing.Participants[0];
         participant.InterpreterLanguage = null;
-        var judiciaryParticipant = hearing.JudiciaryParticipants[0];
+        var judiciaryParticipant = hearing.JudicialOfficeHolders[0];
         judiciaryParticipant.InterpreterLanguage = null;
         var endpoint = hearing.Endpoints[0];
         endpoint.InterpreterLanguage = null;
@@ -153,6 +189,36 @@ public class ConferenceCacheMapperTests
         resultJudiciaryParticipant.InterpreterLanguage.Should().BeNull();
         var resultEndpoint = response.Endpoints.Find(e => e.Id == endpoint.Id);
         resultEndpoint.InterpreterLanguage.Should().BeNull();
+    }
+
+    [Test]
+    public void Should_map_with_screening()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        var individuals = hearing.Participants
+            .Where(p => p.UserRoleName == UserRole.Individual.ToString())
+            .ToList();
+        var participantToScreenFrom = individuals[0];
+        var participantToScreen = individuals[1];
+        participantToScreen.Screening = new ScreeningResponseV2
+        {
+            Type = ScreeningType.Specific,
+            ProtectedFrom = [participantToScreenFrom.ExternalReferenceId]
+        };
+        var endpointToScreen = hearing.Endpoints[0];
+        endpointToScreen.Screening = new ScreeningResponseV2
+        {
+            Type = ScreeningType.Specific,
+            ProtectedFrom = [participantToScreenFrom.ExternalReferenceId]
+        };
+
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+
+        var resultParticipant = response.Participants.Find(p => p.Username == participantToScreen.Username);
+        resultParticipant.ProtectFrom.Should().BeEquivalentTo(participantToScreen.Screening.ProtectedFrom);
+        var resultEndpoint = response.Endpoints.Find(e => e.Id == endpointToScreen.Id);
+        resultEndpoint.ProtectFrom.Should().BeEquivalentTo(endpointToScreen.Screening.ProtectedFrom);
     }
     
     private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
@@ -197,17 +263,21 @@ public class ConferenceCacheMapperTests
             Sip = x.SipAddress,
             Pin = x.Pin,
             DefenceAdvocateId = conference.Participants.First(p => p.Username == x.DefenceAdvocate).RefId,
-            InterpreterLanguage = interpreterLanguage
+            InterpreterLanguage = interpreterLanguage,
+            ExternalReferenceId = Guid.NewGuid().ToString()
         }).ToList();
         
         return Builder<HearingDetailsResponseV2>.CreateNew()
             .With(x => x.Id = conference.HearingId)
             .With(x => x.Endpoints = endpoints)
             .With(x => x.Participants = participants)
-            .With(x => x.JudiciaryParticipants = joh)
+            .With(x => x.JudicialOfficeHolders = joh)
             .With(x => x.BookingSupplier = BookingSupplier.Vodafone)
             .With(x => x.HearingVenueName = "Venue")
             .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+            .With(x=> x.SupportsWorkAllocation = true)
+            .With(x => x.AllocatedToId = Guid.NewGuid())
+            .With(x => x.AllocatedToName = "CSO Admin")
             .Build();
     }
     

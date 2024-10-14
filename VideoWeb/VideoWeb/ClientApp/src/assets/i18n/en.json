@@ -119,7 +119,8 @@
     "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
     "problem-with-connection": "There's a problem with your connection",
     "camera-mic-blocked": "Your camera and microphone are blocked",
-    "please-unblock": "Please unblock the camera and microphone or call us if there is a problem."
+    "please-unblock": "Please unblock the camera and microphone or call us if there is a problem.",
+    "connected-another-device": "You have been detected on another device. Please check you do not have multiple tabs or browsers open and are not logged on a secondary device."
   },
   "error-camera-microphone": {
     "problem-with-camera-mic": "There is a problem with your camera and microphone",
@@ -679,6 +680,7 @@
     "change-hearing-layout": "Change Layout",
     "change-interpreting-language": "Change Interpreting Language",
     "interpreting-for": "Interpreting for",
+    "dial-out": "Dial out",
     "pause-recording": "Pause recording placeholder text",
     "resume-recording": "Resume recording placeholder text"
   },
@@ -1525,6 +1527,19 @@
     "change-audio-hint": "Interpret for",
     "button-cancel": "Cancel",
     "button-continue": " Continue"
+  },
+  "dial-out-number": {
+    "form-label": "UK phone number",
+    "form-error-message-hidden": "Error:",
+    "form-error-invalid-number": "Enter a valid phone number",
+    "form-button-submit": "Call phone number",
+    "dial-out-success-message": "Dial out successful",
+    "dial-out-failure": "Dial out failed"
+  },
+  "dial-out-popup": {
+    "header": "Enter the number of a person you wish to dial in",
+    "close-button-aria-label": "Close Dial Out Participant Popup",
+    "close-button": "Close"
   },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",

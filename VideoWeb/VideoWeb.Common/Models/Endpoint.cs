@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace VideoWeb.Common.Models
 {
@@ -10,5 +11,7 @@ namespace VideoWeb.Common.Models
         public string DefenceAdvocateUsername { get; set; }
         public ConsultationRoom CurrentRoom { get; set; }
         public InterpreterLanguage InterpreterLanguage { get; set; }
+        public string ExternalReferenceId { get; set; }
+        public List<string> ProtectFrom { get; set; } = [];
     }
 }

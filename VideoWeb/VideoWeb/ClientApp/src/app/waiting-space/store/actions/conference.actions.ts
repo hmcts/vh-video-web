@@ -21,7 +21,7 @@ export const ConferenceActions = createActionGroup({
         'Countdown Complete': props<{ conferenceId: string }>(),
 
         'Update Active Conference Status': props<{ conferenceId: string; status: ConferenceStatus }>(),
-        'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus }>(),
+        'Update Participant Status': props<{ conferenceId: string; participantId: string; status: ParticipantStatus; reason: string }>(),
         'Update Endpoint Status': props<{ conferenceId: string; endpointId: string; status: EndpointStatus }>(),
 
         'Load Logged In Participant': props<{ participantId: string }>(),

@@ -143,6 +143,7 @@ describe('Conference Reducer', () => {
                             handRaised: false,
                             pexipDisplayName: '1922_John Doe',
                             uuid: '1922_John Doe',
+                            callTag: 'john-cal-tag',
                             isAudioOnlyCall: false,
                             isVideoCall: true,
                             protocol: 'sip',
@@ -207,7 +208,8 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: conferenceTestData.id,
                     participantId: conferenceTestData.participants[0].id,
-                    status: updatedStatus
+                    status: updatedStatus,
+                    reason: undefined
                 })
             );
 
@@ -221,7 +223,8 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: 'unknown',
                     participantId: conferenceTestData.participants[0].id,
-                    status: updatedStatus
+                    status: updatedStatus,
+                    reason: undefined
                 })
             );
 
@@ -235,7 +238,8 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: conferenceTestData.id,
                     participantId: 'unknown',
-                    status: updatedStatus
+                    status: updatedStatus,
+                    reason: undefined
                 })
             );
 
@@ -249,7 +253,8 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: conferenceTestData.id,
                     participantId: conferenceTestData.participants[0].id,
-                    status: updatedStatus
+                    status: updatedStatus,
+                    reason: undefined
                 })
             );
 
@@ -263,7 +268,8 @@ describe('Conference Reducer', () => {
                 ConferenceActions.updateParticipantStatus({
                     conferenceId: conferenceTestData.id,
                     participantId: conferenceTestData.participants[0].id,
-                    status: updatedStatus
+                    status: updatedStatus,
+                    reason: undefined
                 })
             );
 
@@ -615,6 +621,7 @@ describe('Conference Reducer', () => {
                 handRaised: false,
                 pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
                 uuid: '1922_John Doe',
+                callTag: 'john-call-tag',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
                 protocol: 'sip',
@@ -636,6 +643,7 @@ describe('Conference Reducer', () => {
                 handRaised: false,
                 pexipDisplayName: `PTSN;${conferenceTestData.endpoints[0].displayName};${conferenceTestData.endpoints[0].id}`,
                 uuid: '1922_John Doe',
+                callTag: 'john-call-tag',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
                 protocol: 'sip',
@@ -657,6 +665,7 @@ describe('Conference Reducer', () => {
                 handRaised: false,
                 pexipDisplayName: '1922_John Doe_unknown',
                 uuid: '1922_John Doe',
+                callTag: 'john-call-tag',
                 isAudioOnlyCall: false,
                 isVideoCall: true,
                 protocol: 'sip',
@@ -687,6 +696,7 @@ describe('Conference Reducer', () => {
                                 handRaised: false,
                                 pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
                                 uuid: '1922_John Doe',
+                                callTag: 'john-call-tag',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
                                 protocol: 'sip',
@@ -719,6 +729,7 @@ describe('Conference Reducer', () => {
                                 handRaised: false,
                                 pexipDisplayName: `1922_John Doe${conferenceTestData.endpoints[0].id}`,
                                 uuid: '1922_John Doe',
+                                callTag: 'john-call-tag',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
                                 protocol: 'sip',
@@ -751,6 +762,7 @@ describe('Conference Reducer', () => {
                                 handRaised: false,
                                 pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
                                 uuid: '1922_John Doe',
+                                callTag: 'john-call-tag',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
                                 protocol: 'sip',

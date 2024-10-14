@@ -21,7 +21,7 @@ namespace VideoWeb.EventHub.Handlers
         {
             var participantStatusTuple = DeriveParticipantStatusForTransferEvent(callbackEvent);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
-            await PublishParticipantStatusMessage(participantStatusTuple.state, participantStatusTuple.status);
+            await PublishParticipantStatusMessage(participantStatusTuple.state, participantStatusTuple.status, callbackEvent.Reason);
         }
 
         private static (ParticipantState state, ParticipantStatus status) DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
