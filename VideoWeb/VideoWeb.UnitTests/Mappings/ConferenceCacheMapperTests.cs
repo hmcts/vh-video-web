@@ -69,6 +69,8 @@ public class ConferenceCacheMapperTests
                 resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
                 resultParticipant.LinkedParticipants[0].LinkType.ToString().Should().Be(participant.LinkedParticipants[0].Type.ToString());
                 resultParticipant.LinkedParticipants[0].LinkedId.Should().Be(participant.LinkedParticipants[0].LinkedId);
+                resultParticipant.ExternalReferenceId.Should().Be(participantDetails.ExternalReferenceId);
+                resultParticipant.ProtectFrom.Should().BeEmpty();
             }
             else if (johDetails != null)
             {
@@ -112,6 +114,8 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
             var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
             endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
+            endpoint.ExternalReferenceId.Should().Be(hearingEndpoint.ExternalReferenceId);
+            endpoint.ProtectFrom.Should().BeEmpty();
         }
         
         foreach (var telephoneParticipant in response.TelephoneParticipants)
@@ -186,6 +190,36 @@ public class ConferenceCacheMapperTests
         var resultEndpoint = response.Endpoints.Find(e => e.Id == endpoint.Id);
         resultEndpoint.InterpreterLanguage.Should().BeNull();
     }
+
+    [Test]
+    public void Should_map_with_screening()
+    {
+        var conference = BuildConferenceDetailsResponse();
+        var hearing = BuildHearingDetailsResponse(conference);
+        var individuals = hearing.Participants
+            .Where(p => p.UserRoleName == UserRole.Individual.ToString())
+            .ToList();
+        var participantToScreenFrom = individuals[0];
+        var participantToScreen = individuals[1];
+        participantToScreen.Screening = new ScreeningResponseV2
+        {
+            Type = ScreeningType.Specific,
+            ProtectedFrom = [participantToScreenFrom.ExternalReferenceId]
+        };
+        var endpointToScreen = hearing.Endpoints[0];
+        endpointToScreen.Screening = new ScreeningResponseV2
+        {
+            Type = ScreeningType.Specific,
+            ProtectedFrom = [participantToScreenFrom.ExternalReferenceId]
+        };
+
+        var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference, hearing);
+
+        var resultParticipant = response.Participants.Find(p => p.Username == participantToScreen.Username);
+        resultParticipant.ProtectFrom.Should().BeEquivalentTo(participantToScreen.Screening.ProtectedFrom);
+        var resultEndpoint = response.Endpoints.Find(e => e.Id == endpointToScreen.Id);
+        resultEndpoint.ProtectFrom.Should().BeEquivalentTo(endpointToScreen.Screening.ProtectedFrom);
+    }
     
     private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
     {
@@ -229,7 +263,8 @@ public class ConferenceCacheMapperTests
             Sip = x.SipAddress,
             Pin = x.Pin,
             DefenceAdvocateId = conference.Participants.First(p => p.Username == x.DefenceAdvocate).RefId,
-            InterpreterLanguage = interpreterLanguage
+            InterpreterLanguage = interpreterLanguage,
+            ExternalReferenceId = Guid.NewGuid().ToString()
         }).ToList();
         
         return Builder<HearingDetailsResponseV2>.CreateNew()
