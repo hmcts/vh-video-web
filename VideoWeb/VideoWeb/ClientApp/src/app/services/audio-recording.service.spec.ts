@@ -43,37 +43,39 @@ describe('AudioRecordingService', () => {
             expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('wowzaUUID');
         });
 
-        it('should reconnect to Wowza', async () => {
-            const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
-            service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
-            videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
-                callback({ status: 'success', result: ['newUUID'] });
+        describe('reconnectToWowza', () => {
+            it('should reconnect to Wowza', async () => {
+                const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
+                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
+                videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
+                    callback({ status: 'success', result: ['newUUID'] });
+                });
+
+                await service.reconnectToWowza(failedToConnectCallback);
+                expect(service.restartActioned).toBeTrue();
+                expect(videoCallServiceSpy.connectWowzaAgent).toHaveBeenCalledWith('ingestUrl', jasmine.any(Function));
+                expect(eventServiceSpy.sendAudioRecordingPaused).toHaveBeenCalledWith('conferenceId', false);
+                expect(failedToConnectCallback).not.toHaveBeenCalled();
             });
 
-            await service.reconnectToWowza(failedToConnectCallback);
-            expect(service.restartActioned).toBeTrue();
-            expect(videoCallServiceSpy.connectWowzaAgent).toHaveBeenCalledWith('ingestUrl', jasmine.any(Function));
-            expect(eventServiceSpy.sendAudioRecordingPaused).toHaveBeenCalledWith('conferenceId', false);
-            expect(failedToConnectCallback).not.toHaveBeenCalled();
-        });
+            it('should call failedToConnectCallback if reconnect to Wowza fails', async () => {
+                const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
+                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
+                videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
+                    callback({ status: 'failure' });
+                });
 
-        it('should call failedToConnectCallback if reconnect to Wowza fails', async () => {
-            const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
-            service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
-            videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
-                callback({ status: 'failure' });
+                await service.reconnectToWowza(failedToConnectCallback);
+                expect(failedToConnectCallback).toHaveBeenCalled();
             });
 
-            await service.reconnectToWowza(failedToConnectCallback);
-            expect(failedToConnectCallback).toHaveBeenCalled();
-        });
-
-        it('should clean up dial out connections', () => {
-            service.dialOutUUID = ['uuid1', 'uuid2'];
-            service.cleanupDialOutConnections();
-            expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid1');
-            expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid2');
-            expect(service.dialOutUUID.length).toBe(0);
+            it('should clean up dial out connections', () => {
+                service.dialOutUUID = ['uuid1', 'uuid2'];
+                service.cleanupDialOutConnections();
+                expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid1');
+                expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid2');
+                expect(service.dialOutUUID.length).toBe(0);
+            });
         });
 
         it('should clean up subscriptions on destroy', () => {

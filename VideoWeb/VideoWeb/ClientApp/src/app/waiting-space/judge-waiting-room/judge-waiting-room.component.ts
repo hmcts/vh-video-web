@@ -139,111 +139,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     ngOnInit() {
-        this.errorCount = 0;
-        this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
-        this.loggedInUser = this.route.snapshot.data['loggedUser'];
-
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
-        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
-
-        this.initConferenceStatusLogic();
-
-        this.videoCallService
-            .onParticipantCreated()
-            .pipe(
-                takeUntil(this.onDestroy$),
-                tap(createdParticipant => {
-                    this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
-                        pexipId: createdParticipant.uuid,
-                        displayName: createdParticipant.pexipDisplayName
-                    });
-                })
-            )
-            .subscribe(createdParticipant => {
-                this.assignPexipIdToRemoteStore(createdParticipant);
-            });
-
-        this.videoCallService
-            .onParticipantUpdated()
-            .pipe(
-                takeUntil(this.onDestroy$),
-                tap(updatedParticipant => {
-                    this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: updatedParticipant.uuid,
-                        dispayName: updatedParticipant.pexipDisplayName
-                    });
-                })
-            )
-            .subscribe(updatedParticipant => {
-                this.assignPexipIdToRemoteStore(updatedParticipant);
-                this.syncDisplayName(updatedParticipant);
-            });
-
-        this.videoCallService
-            .onConferenceAdjourned()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(() => this.audioRecordingService.cleanupDialOutConnections());
-
-        this.eventService
-            .getParticipantMediaStatusMessage()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(participantStatusMessage => {
-                if (participantStatusMessage.conferenceId === this.conference.id) {
-                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(
-                        participantStatusMessage.participantId,
-                        participantStatusMessage.mediaStatus.is_local_audio_muted,
-                        participantStatusMessage.mediaStatus.is_local_video_muted
-                    );
-                }
-            });
-
-        try {
-            this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
-            this.connected = false;
-            this.getConference().then(() => {
-                this.subscribeToClock();
-                this.startEventHubSubscribers();
-                this.connectToPexip();
-                if (this.conference.audio_recording_required) {
-                    this.initAudioRecordingInterval();
-                }
-            });
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
-            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
-        }
-
-        this.eventService
-            .getAudioRestartActioned()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((conferenceId: string) => {
-                if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
-                    this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
-                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
-                }
-            });
-
-        this.eventService.getHearingStatusMessage().subscribe(message => {
-            this.handleHearingStatusMessage(message);
-        });
-
-        this.audioRecordingService
-            .getAudioRecordingPauseState()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((recordingPaused: boolean) => {
-                this.recordingPaused = recordingPaused;
-                if (!this.recordingPaused) {
-                    this.initAudioRecordingInterval();
-                }
-            });
-
-        this.audioRecordingService
-            .getWowzaAgentConnectionState()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(state => {
-                this.handleWowzaConnectionState(state);
-            });
+        this.init();
         this.divTrapId = 'video-container';
     }
 
@@ -577,6 +473,114 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ) {
             this.videoCallService.setParticipantOverlayText(pexipParticipant.uuid, this.participant.display_name);
         }
+    }
+
+    init() {
+        this.errorCount = 0;
+        this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
+
+        this.initConferenceStatusLogic();
+
+        this.videoCallService
+            .onParticipantCreated()
+            .pipe(
+                takeUntil(this.onDestroy$),
+                tap(createdParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
+                        pexipId: createdParticipant.uuid,
+                        displayName: createdParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(createdParticipant => {
+                this.assignPexipIdToRemoteStore(createdParticipant);
+            });
+
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                takeUntil(this.onDestroy$),
+                tap(updatedParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
+                        pexipId: updatedParticipant.uuid,
+                        dispayName: updatedParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(updatedParticipant => {
+                this.assignPexipIdToRemoteStore(updatedParticipant);
+                this.syncDisplayName(updatedParticipant);
+            });
+
+        this.videoCallService
+            .onConferenceAdjourned()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(() => this.audioRecordingService.cleanupDialOutConnections());
+
+        this.eventService
+            .getParticipantMediaStatusMessage()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(participantStatusMessage => {
+                if (participantStatusMessage.conferenceId === this.conference.id) {
+                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_audio_muted,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
+                    );
+                }
+            });
+
+        try {
+            this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
+            this.connected = false;
+            this.getConference().then(() => {
+                this.subscribeToClock();
+                this.startEventHubSubscribers();
+                this.connectToPexip();
+                if (this.conference.audio_recording_required) {
+                    this.initAudioRecordingInterval();
+                }
+            });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
+            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        }
+
+        this.eventService
+            .getAudioRestartActioned()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((conferenceId: string) => {
+                if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
+                    this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
+                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
+                }
+            });
+
+        this.eventService.getHearingStatusMessage().subscribe(message => {
+            this.handleHearingStatusMessage(message);
+        });
+
+        this.audioRecordingService
+            .getAudioRecordingPauseState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((recordingPaused: boolean) => {
+                this.recordingPaused = recordingPaused;
+                if (!this.recordingPaused) {
+                    this.initAudioRecordingInterval();
+                }
+            });
+
+        this.audioRecordingService
+            .getWowzaAgentConnectionState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(state => {
+                this.handleWowzaConnectionState(state);
+            });
     }
 
     private onShouldReload(): void {

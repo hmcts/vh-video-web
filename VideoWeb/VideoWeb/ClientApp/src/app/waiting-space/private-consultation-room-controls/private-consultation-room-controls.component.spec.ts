@@ -900,4 +900,16 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             });
         });
     });
+
+    describe('Pause Resume Audio Recording', () => {
+        it('should call audioRecordingService.pauseRecording', () => {
+            component.pauseRecording();
+            expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalled();
+        });
+
+        it('should call audioRecordingService.resumeRecording', () => {
+            component.resumeRecording();
+            expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalled();
+        });
+    });
 });

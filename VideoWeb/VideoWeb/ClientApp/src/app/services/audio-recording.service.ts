@@ -64,6 +64,7 @@ export class AudioRecordingService {
     getAudioRecordingPauseState(): Observable<boolean> {
         return this.audioStopped$.asObservable();
     }
+
     async stopRecording() {
         await this.eventService.sendAudioRecordingPaused(this.conference.id, true);
         this.videoCallService.disconnectWowzaAgent(this.wowzaAgent.uuid);
