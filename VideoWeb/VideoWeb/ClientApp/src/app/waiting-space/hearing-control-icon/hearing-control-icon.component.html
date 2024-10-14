@@ -11,6 +11,7 @@
       (click)="$event.preventDefault(); onIconClicked()"
     >
       <fa-icon [icon]="['fas', iconName]"></fa-icon>
+      <ng-content></ng-content>
     </button>
   </div>
   <div *ngIf="showText" class="grid-item">
