@@ -26,7 +26,8 @@ const mockWowzaAgent: VHPexipParticipant = {
     protocol: '',
     receivingAudioMix: '',
     sentAudioMixes: undefined,
-    uuid: 'wowzaUUID'
+    uuid: 'wowzaUUID',
+    callTag: 'callTag'
 };
 
 const getWowzaAgentConnectionState$ = new Subject<boolean>();
