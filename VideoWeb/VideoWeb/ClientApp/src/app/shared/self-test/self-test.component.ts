@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Subject, Subscription } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AddSelfTestFailureEventRequest,
@@ -16,7 +16,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
@@ -67,7 +67,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
+        private userMediaStreamService: UserMediaStreamServiceV2,
         private videoFilterService: VideoFilterService,
         private videoCallService: VideoCallService
     ) {}
@@ -92,6 +92,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+        this.userMediaStreamService.closeCurrentStream();
         if (this.conference) {
             let reason: SelfTestFailureReason;
             if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
@@ -175,14 +176,21 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.userMediaStreamService.activeMicrophoneStream$
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
+        this.userMediaStreamService.currentStream$
+            .pipe(
+                filter(stream => !!stream),
+                takeUntil(this.destroyedSubject)
+            )
+            .subscribe(stream => {
+                // Extract audio tracks and create a new MediaStream for the microphone
+                const audioTracks = stream.getAudioTracks();
+                this.preferredMicrophoneStream = new MediaStream(audioTracks);
 
-        this.userMediaStreamService.activeCameraStream$
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(cameraStream => (this.outgoingStream = cameraStream));
-
+                // Extract video tracks and create a new MediaStream for the video
+                const videoTracks = stream.getVideoTracks();
+                this.outgoingStream = new MediaStream(videoTracks);
+            });
+        this.userMediaStreamService.createAndPublishStream();
         this.userMediaService
             .hasMultipleDevices()
             .pipe(takeUntil(this.destroyedSubject))
@@ -206,7 +214,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
 
-        await this.videoCallService.setupClient(this.conference.supplier);
+        // conference will be null if running from the hearing list page
+        await this.videoCallService.setupClient(this.conference?.supplier);
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -278,11 +287,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
-
-        this.userMediaStreamService.activeMicrophoneStream$
-            .pipe(take(1))
-            .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
-
+        this.userMediaStreamService.createAndPublishStream();
         this.call();
     }
 
