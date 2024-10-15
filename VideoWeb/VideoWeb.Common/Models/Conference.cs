@@ -119,11 +119,6 @@ namespace VideoWeb.Common.Models
                 Participants.Add(participant);
             }
         }
-
-        public void RemoveParticipant(Guid referenceId)
-        {
-            Participants.RemoveAll(x => x.RefId == referenceId);
-        }
         
         public bool IsParticipantInConference(string username)
         {
@@ -164,10 +159,78 @@ namespace VideoWeb.Common.Models
             return room;
         }
 
-        public CivilianRoom GetRoom(Guid participantId)
+        /// <summary>
+        /// Check if any of the participants or endpoints from the given list are screened from each other.
+        /// If any of the externalReferenceIds for an entity exist in the protectFrom list of another entity, they
+        /// cannot be in a consultation together.
+        /// </summary>
+        /// <param name="participantIds">List of participants to be in a consultation</param>
+        /// <param name="endpointIds">List of endpoints to be in a consultation</param>
+        public bool AreEntitiesScreenedFromEachOther(List<Guid> participantIds, List<Guid> endpointIds)
         {
-            return CivilianRooms.Find(room => room.Participants.Contains(participantId));
+            var allExternalReferenceIds = Participants.Select(x => x.ExternalReferenceId)
+                .Union(Endpoints.Select(x => x.ExternalReferenceId)).ToList();
+
+            foreach (var participantId in participantIds)
+            {
+                var participant = Participants.Find(x => x.Id == participantId);
+                if (participant == null) continue;
+                if (participant.ProtectFrom.Exists(allExternalReferenceIds.Contains)) return true;
+            }
+            
+            foreach (var endpointId in endpointIds)
+            {
+                var endpoint = Endpoints.Find(x => x.Id == endpointId);
+                if (endpoint == null) continue;
+                if (endpoint.ProtectFrom.Exists(allExternalReferenceIds.Contains)) return true;
+            }
+
+            return false;
         }
+
+        /// <summary>
+        /// Check if the participant is screened from any of the entities in a existing consultation room
+        /// </summary>
+        /// <param name="roomLabel">The label of the consultation room</param>
+        /// <param name="participantId">The id of the participant attempting to join a consultation room</param>
+        /// <returns>true if the participant is not screened from any of the entities in the room</returns>
+        public bool CanParticipantJoinConsultationRoom(string roomLabel, Guid participantId)
+        {
+            var participant = Participants.Find(x => x.Id == participantId);
+            if (participant == null)
+                throw new ArgumentException($"The participant {participantId} does not exist", nameof(participantId));
+
+            var ids = GetParticipantsAndEndpointsInRoom(roomLabel);
+            ids.participantIds.Add(participantId);
+
+            return !AreEntitiesScreenedFromEachOther(ids.participantIds, ids.endpointIds);
+        }
+
+        /// <summary>
+        /// Check if the endpoint is screened from any of the entities in a existing consultation room
+        /// </summary>
+        /// <param name="roomLabel">The label of the consultation room</param>
+        /// <param name="endpointId">The id of the endpoint attempting to join a consultation room</param>
+        /// <returns>true if the endpoint is not screened from any of the entities in the room</returns>
+        public bool CanEndpointJoinConsultationRoom(string roomLabel, Guid endpointId)
+        {
+            var endpoint = Endpoints.Find(x => x.Id == endpointId);
+            if (endpoint == null)
+                throw new ArgumentException($"The endpoint {endpointId} does not exist", nameof(endpointId));
+
+            var ids = GetParticipantsAndEndpointsInRoom(roomLabel);
+            ids.endpointIds.Add(endpointId);
+
+            return !AreEntitiesScreenedFromEachOther(ids.participantIds, ids.endpointIds);
+        }
+
+        private (List<Guid> participantIds, List<Guid> endpointIds) GetParticipantsAndEndpointsInRoom(string roomLabel)
+        {
+            var participants = Participants.Where(x => x.CurrentRoom?.Label == roomLabel).Select(x => x.Id).ToList();
+            var endpoints = Endpoints.Where(x => x.CurrentRoom?.Label == roomLabel).Select(x => x.Id).ToList();
+            return (participants, endpoints);
+        }
+
 
         public HearingLayout GetRecommendedLayout()
         {
@@ -242,5 +305,7 @@ namespace VideoWeb.Common.Models
             
             return endpoints;
         }
+
+        
     }
 }

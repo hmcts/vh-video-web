@@ -25,6 +25,8 @@ public static class ParticipantDtoForResponseMapper
         response.CurrentRoom = RoomSummaryResponseMapper.Map(participant.CurrentRoom);
         response.InterpreterRoom  = RoomSummaryResponseMapper.Map(participant.InterpreterRoom);
         response.InterpreterLanguage = participant.InterpreterLanguage?.Map();
+        response.ExternalReferenceId = participant.ExternalReferenceId;
+        response.ProtectFrom = participant.ProtectFrom;
         return response;
     }
 }

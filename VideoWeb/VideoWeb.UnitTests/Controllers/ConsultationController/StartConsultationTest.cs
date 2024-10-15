@@ -21,6 +21,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
+using VideoWeb.Contract.Enums;
 using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
 
@@ -226,6 +227,34 @@ public class StartConsultationTest
         
         var typedResult = (StatusCodeResult) result;
         typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+    }
+
+    [Test]
+    public async Task Should_return_forbidden_when_participants_are_screened()
+    {
+        // arrange
+        var individual = _testConference.Participants.Find(x => x.Role == Role.Individual);
+        var endpoint = _testConference.Endpoints[0];
+        individual.ProtectFrom.Add(endpoint.ExternalReferenceId);
+        var rep = _testConference.Participants.Find(x => x.Role == Role.Representative);
+        
+        var request = new StartPrivateConsultationRequest()
+        {
+            ConferenceId = _testConference.Id,
+            RequestedBy = rep.Id,
+            RoomType = VirtualCourtRoomType.Participant,
+            InviteEndpoints = [endpoint.Id],
+            InviteParticipants = [individual.Id, rep.Id]
+        };
+        
+        // act
+        var result = await _controller.StartConsultationAsync(request, CancellationToken.None);
+        
+        // assert
+        result.Should().BeOfType<ForbidResult>();
+        
+        _mocker.Mock<IVideoApiClient>()
+            .Verify(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Test]
