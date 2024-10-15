@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -54,7 +55,9 @@ public class ConferencesController(
         var hearings =
             await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
         var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
-        var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
+        if (hearings.Count > 0)
+            conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
 
         if (conferences.Count != hearings.Count)
             logger.LogError(
@@ -88,7 +91,9 @@ public class ConferencesController(
             await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
         var request = new GetConferencesByHearingIdsRequest
             { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
-        var conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
+        if (hearingsForToday.Count > 0)
+            conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
         var response = hearingsForToday
             .Select(hearing =>
                 BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
