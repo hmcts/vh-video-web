@@ -44,6 +44,34 @@ namespace VideoWeb.UnitTests.EventHandlers
             TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Disconnected);
         }
 
+        [Test]
+        public async Task should_send_message_if_the_reason_is_due_to_another_device_detected()
+        {
+            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            participantForEvent.ParticipantStatus = ParticipantStatus.Available;
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Leave,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TimeStampUtc = DateTime.UtcNow,
+                Reason = "has connected on another device 5333788d-ba93-e527-71b4-4edfab5cb80a"
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    ParticipantState.Disconnected, callbackEvent.Reason), Times.Exactly(participantCount));
+            TestConference.Participants.Find(x => x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Disconnected);
+        }
+
         [TestCase(ParticipantStatus.Available, ParticipantStatus.Available)]
         [TestCase(ParticipantStatus.Disconnected, ParticipantStatus.Disconnected)]
         [TestCase(ParticipantStatus.Joining, ParticipantStatus.Joining)]
