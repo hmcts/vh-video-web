@@ -89,6 +89,30 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForHost[0].Participants.Count.Should().Be(participants.Count);
         }
 
+        [Test]
+        public async Task Should_return_empty_list_when_no_hearings_found()
+        {
+            // Arrange
+            var venueNames = new List<string>{ "Venue1"};
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<List<string>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<HearingDetailsResponseV2>());
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<ConferenceCoreResponse>());
+            
+            // Act
+            var result = await _controller.GetConferencesForStaffMemberAsync(venueNames, CancellationToken.None);
+            
+            // Assert
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            var conferencesForUser = (List<ConferenceForHostResponse>) typedResult.Value;
+            conferencesForUser.Should().BeEmpty();
+        }
+
         private ConferencesController SetupControllerWithClaims(System.Security.Claims.ClaimsPrincipal claimsPrincipal)
         {
             var context = new ControllerContext
