@@ -71,6 +71,7 @@ export class AudioRecordingService {
     }
 
     async reconnectToWowza(failedToConnectCallback: Function) {
+        this.restartActioned = true;
         this.cleanupDialOutConnections();
         this.videoCallService.connectWowzaAgent(this.conference.audioRecordingIngestUrl, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
