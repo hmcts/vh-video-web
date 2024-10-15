@@ -958,8 +958,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
             });
 
-            it('should display audio recording alert when wowza agent not set to isAudioOnlyCall', async () => {
-                audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
+            it('should display audio recording alert when wowza agent not assigned', async () => {
+                audioRecordingServiceSpy.wowzaAgent = null;
                 component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
                 await component.verifyAudioRecordingStream();

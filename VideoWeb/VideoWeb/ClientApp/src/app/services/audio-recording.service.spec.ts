@@ -3,22 +3,42 @@ import { VideoCallService } from '../waiting-space/services/video-call.service';
 import { EventsService } from './events.service';
 import { Subject } from 'rxjs';
 import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
-import { initAllWRDependencies, mockConferenceStore } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
-import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
+import { VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
+import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
+import {
+    globalConference,
+    initAllWRDependencies,
+    mockConferenceStore
+} from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('AudioRecordingService', () => {
     let service: AudioRecordingService;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let eventServiceSpy: jasmine.SpyObj<EventsService>;
+    const audioStoppedMock$ = new Subject<AudioRecordingPauseStateMessage>();
+    const pexipParticipant: VHPexipParticipant = {
+        isRemoteMuted: false,
+        isSpotlighted: false,
+        handRaised: false,
+        pexipDisplayName: 'vh-wowza',
+        uuid: 'unique-identifier',
+        callTag: 'call-tag',
+        isAudioOnlyCall: true,
+        isVideoCall: false,
+        protocol: 'protocol-type',
+        receivingAudioMix: 'audio-mix',
+        sentAudioMixes: []
+    };
 
     beforeEach(() => {
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getWowzaParticipant, pexipParticipant);
         videoCallServiceSpy = jasmine.createSpyObj('VideoCallService', [
             'disconnectWowzaAgent',
             'connectWowzaAgent',
             'getWowzaAgentConnectionState'
         ]);
         eventServiceSpy = jasmine.createSpyObj('EventsService', ['sendAudioRecordingPaused', 'getAudioPaused']);
-        eventServiceSpy.getAudioPaused.and.returnValue(new Subject<AudioRecordingPauseStateMessage>());
+        eventServiceSpy.getAudioPaused.and.returnValue(audioStoppedMock$);
 
         const loggerMock = jasmine.createSpyObj('Logger', ['debug']);
 
@@ -29,12 +49,27 @@ describe('AudioRecordingService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('functions', () => {
-        beforeEach(() => {
-            service.wowzaAgent = { uuid: 'wowzaUUID' } as VHPexipParticipant;
-            service.conference = { id: 'conferenceId' } as VHConference;
+    it('should get audio pause state', done => {
+        service.getAudioRecordingPauseState().subscribe(isPaused => {
+            expect(isPaused).toBeTrue();
+            done();
+        });
+        audioStoppedMock$.next({ conferenceId: globalConference.id, pauseState: true });
+    });
+
+    it('should get Wowza agent connection state', done => {
+        const participant: VHPexipParticipant = { uuid: 'wowzaUUID', isAudioOnlyCall: false } as VHPexipParticipant;
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getWowzaParticipant, participant);
+
+        service.getWowzaAgentConnectionState().subscribe(isConnected => {
+            expect(isConnected).toBeFalse();
+            done();
         });
 
+        mockConferenceStore.refreshState();
+    });
+
+    describe('functions', () => {
         it('should stop recording', async () => {
             service.conference = { id: 'conferenceId' } as any;
             service.wowzaAgent = { uuid: 'wowzaUUID' } as any;

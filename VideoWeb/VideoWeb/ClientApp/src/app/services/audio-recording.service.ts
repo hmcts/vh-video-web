@@ -20,14 +20,14 @@ export class AudioRecordingService {
     conference: VHConference;
     wowzaAgent: VHPexipParticipant;
 
-    private audioStopped$: Subject<boolean> = new Subject<boolean>();
-    private wowzaAgentConnection$ = new Subject<boolean>();
-    private onDestroy$ = new Subject<void>();
+    private readonly audioStopped$: Subject<boolean> = new Subject<boolean>();
+    private readonly wowzaAgentConnection$ = new Subject<boolean>();
+    private readonly onDestroy$ = new Subject<void>();
 
     constructor(
-        private logger: Logger,
-        private videoCallService: VideoCallService,
-        private eventService: EventsService,
+        private readonly logger: Logger,
+        private readonly videoCallService: VideoCallService,
+        private readonly eventService: EventsService,
         conferenceStore: Store<ConferenceState>
     ) {
         conferenceStore

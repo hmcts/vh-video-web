@@ -91,8 +91,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
-        private unloadDetectorService: UnloadDetectorService,
-        private hearingLayoutService: HearingLayoutService,
+        private readonly unloadDetectorService: UnloadDetectorService,
+        private readonly hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
@@ -100,7 +100,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>,
-        private audioRecordingService: AudioRecordingService
+        private readonly audioRecordingService: AudioRecordingService
     ) {
         super(
             route,

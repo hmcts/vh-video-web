@@ -947,4 +947,15 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.participants[0].currentAudioMix).toEqual('en');
         });
     });
+    describe('countdownComplete action', () => {
+        it('should update the count down complete conference state', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.countdownComplete({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+            expect(result.currentConference.countdownComplete).toEqual(true);
+        });
+    });
 });
