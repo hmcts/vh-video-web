@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,11 +97,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("rep1@hmcts.net").Build();
             _sut = SetupControllerWithClaims(cp);
+            var participant = _testConference.Participants.First(x => x.Role == Role.Individual);
 
             var request = new InviteToConsultationRequest
             {
                 ConferenceId = _testConference.Id,
-                ParticipantId = _testConference.Participants[0].Id,
+                ParticipantId = participant.Id,
                 RoomLabel = "Room1"
             };
 
@@ -112,7 +114,42 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
                     x => x.NotifyConsultationRequestAsync(_testConference, "Room1", _testConference.Participants[2].Id,
-                        _testConference.Participants[0].Id), Times.Once);
+                        participant.Id), Times.Once);
+        }
+
+        [Test]
+        public async Task should_return_forbidden_if_invitee_is_screened_from_existing_participant_in_room()
+        {
+            // arrange
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
+                .WithUsername("rep1@hmcts.net").Build();
+            _sut = SetupControllerWithClaims(cp);
+            
+            var roomLabel = "RoomLabel1";
+            var individual = _testConference.Participants.Find(x => x.Role == Role.Individual);
+            var endpoint = _testConference.Endpoints[0];
+            individual.ProtectFrom.Add(endpoint.ExternalReferenceId);
+            var rep = _testConference.Participants.Find(x => x.Role == Role.Representative);
+            
+            rep.CurrentRoom = new ConsultationRoom {Label = roomLabel};
+            rep.Username = "rep1@hmcts.net";
+            endpoint.CurrentRoom = new ConsultationRoom {Label = roomLabel};
+
+            var request = new InviteToConsultationRequest
+            {
+                ConferenceId = _testConference.Id,
+                RoomLabel = roomLabel,
+                ParticipantId = individual.Id
+            };
+            
+            // act
+            var result = await _sut.InviteToConsultationAsync(request, CancellationToken.None);
+            
+            // assert
+            result.Should().BeOfType<ForbidResult>();
+            
+            _mocker.Mock<IConsultationNotifier>().Verify(
+                x => x.NotifyConsultationRequestAsync(_testConference, roomLabel, Guid.Empty, individual.Id), Times.Never);
         }
 
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)

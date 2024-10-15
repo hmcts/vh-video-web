@@ -42,7 +42,9 @@ public static class VideoEndpointsResponseMapper
             PexipDisplayName = pexipDisplayName,
             CurrentRoom = RoomSummaryResponseMapper.Map(endpoint.CurrentRoom),
             DefenceAdvocateUsername = endpoint.DefenceAdvocateUsername,
-            InterpreterLanguage = endpoint.InterpreterLanguage?.Map()
+            InterpreterLanguage = endpoint.InterpreterLanguage?.Map(),
+            ExternalReferenceId = endpoint.ExternalReferenceId,
+            ProtectFrom = endpoint.ProtectFrom
         };
     }
 }
