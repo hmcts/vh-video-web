@@ -417,73 +417,67 @@
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
       </button>
 
-      <button
-        class="icon-button dropdown always-on"
-        id="start-screenshare-img-desktop"
-        *ngIf="!screenShareStream && canShowScreenShareButton"
-        appTooltip
-        [text]="'private-consultation-room-controls.share-my-screen' | translate"
-        colour="grey"
-        [attr.aria-label]="'private-consultation-room-controls.share-my-screen' | translate"
-        (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
-        (keydown.enter)="$event.preventDefault(); showEvidenceContextMenu = !showEvidenceContextMenu"
-        (keydown.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
-        tabindex="0"
-      >
-        <fa-icon icon="share-square"></fa-icon>
-        <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
-          <button
-            id="shareDropdown-startEvidenceSharing"
-            *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
-            (click)="startScreenShareWithMicrophone()"
-            disableChildTooltip
-            appTooltip
-            [colour]="'grey'"
-            [text]="'private-consultation-room-controls.share-video-evidence' | translate"
-            [attr.aria-label]="'private-consultation-room-controls.share-video-evidence' | translate"
-            (keydown.enter)="startScreenShareWithMicrophone()"
-            tabindex="0"
-          >
-            <span class="action"
-              ><fa-icon
-                [icon]="['far', 'play-circle']"
-                aria-hidden="true"
-                tabindex="0"
-                (keyup.enter)="startScreenShareWithMicrophone()"
-                (keyup.space)="startScreenShareWithMicrophone()"
-              ></fa-icon>
-              <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
-            </span>
-          </button>
-          <div
-            id="shareDropdown-unsupportedEvidenceSharing"
-            appTooltip
-            colour="red"
-            [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
-            [attr.aria-label]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
-          >
-            <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0">
-              <fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
-              <span style="margin-left: 4px">{{ 'private-consultation-room-controls.unsupported-dynamic-evidence' | translate }}</span>
-            </p>
-          </div>
-          <button
-            id="shareDropdown-startDocumentSharing"
-            (click)="startScreenShare()"
-            (keydown.enter)="startScreenShare()"
-            appTooltip
-            [colour]="'grey'"
-            [text]="'private-consultation-room-controls.share-document-evidence' | translate"
-            [attr.aria-label]="'private-consultation-room-controls.share-document-evidence' | translate"
-            tabindex="0"
-          >
-            <span class="action"
-              ><fa-icon icon="file-alt" tabindex="0" (keydown.enter)="startScreenShare()" (keydown.space)="startScreenShare()"></fa-icon>
-              <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
-            </span>
-          </button>
-        </div>
-      </button>
+      <ng-container *appDesktopOnly>
+        <app-hearing-control-icon
+          *ngIf="!screenShareStream && canShowScreenShareButton"
+          [iconName]="'share-square'"
+          [iconText]="'private-consultation-room-controls.share-my-screen' | translate"
+          (iconClicked)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        >
+          <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
+            <button
+              id="shareDropdown-startEvidenceSharing"
+              *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
+              (click)="startScreenShareWithMicrophone()"
+              disableChildTooltip
+              appTooltip
+              [colour]="'grey'"
+              [text]="'private-consultation-room-controls.share-video-evidence' | translate"
+              [attr.aria-label]="'private-consultation-room-controls.share-video-evidence' | translate"
+              (keydown.enter)="startScreenShareWithMicrophone()"
+              tabindex="0"
+            >
+              <span class="action"
+                ><fa-icon
+                  [icon]="['far', 'play-circle']"
+                  aria-hidden="true"
+                  tabindex="0"
+                  (keyup.enter)="startScreenShareWithMicrophone()"
+                  (keyup.space)="startScreenShareWithMicrophone()"
+                ></fa-icon>
+                <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
+              </span>
+            </button>
+            <div
+              id="shareDropdown-unsupportedEvidenceSharing"
+              appTooltip
+              colour="red"
+              [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
+              [attr.aria-label]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"
+            >
+              <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0">
+                <fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
+                <span style="margin-left: 4px">{{ 'private-consultation-room-controls.unsupported-dynamic-evidence' | translate }}</span>
+              </p>
+            </div>
+            <button
+              id="shareDropdown-startDocumentSharing"
+              (click)="startScreenShare()"
+              (keydown.enter)="startScreenShare()"
+              appTooltip
+              [colour]="'grey'"
+              [text]="'private-consultation-room-controls.share-document-evidence' | translate"
+              [attr.aria-label]="'private-consultation-room-controls.share-document-evidence' | translate"
+              tabindex="0"
+            >
+              <span class="action"
+                ><fa-icon icon="file-alt" tabindex="0" (keydown.enter)="startScreenShare()" (keydown.space)="startScreenShare()"></fa-icon>
+                <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
+              </span>
+            </button>
+          </div></app-hearing-control-icon
+        >
+      </ng-container>
 
       <button
         *ngIf="screenShareStream || sharingDynamicEvidence"

@@ -93,7 +93,7 @@ export class ConferenceEffects {
                 filter(action => action.status === ParticipantStatus.Disconnected),
                 concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
                 switchMap(([action, participant]) => {
-                    if (participant.id !== action.participantId) {
+                    if (participant?.id !== action.participantId) {
                         return of();
                     }
                     // the pexip info is not set when in the waiting room so we have to default to the video call service
