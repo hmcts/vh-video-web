@@ -35,7 +35,7 @@ export class DynatraceService {
      */
     addUserIdentifyScript(userIdendify) {
         const script = this.renderer.createElement('script');
-        script.text = "dtrum.identifyUser('" + userIdendify + "')";
+        script.text = 'dtrum.identifyUser(\'' + userIdendify + '\')';
         this.document.head.appendChild(script);
     }
 }

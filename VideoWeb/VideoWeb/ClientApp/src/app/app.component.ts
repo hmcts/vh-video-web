@@ -110,8 +110,8 @@ export class AppComponent implements OnInit, OnDestroy {
                             is calling a method `addUserIdentifyScript` from the `dynatraceService`
                             service. This method is used to identify the user in Dynatrace
                             monitoring by passing the user's preferred username in lowercase as a
-                            parameter. 
-                            TODO: uncomment the below line to add this identification*/
+                            parameter.*/
+                            // TODO: uncomment the below line to add this identification
                             // this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
                         }
 
