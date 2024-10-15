@@ -104,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
                         if (isAuthenticated) {
                             this.eventhubService.configureConnection();
-                            
+
                             /* The line
                             `this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());`
                             is calling a method `addUserIdentifyScript` from the `dynatraceService`
