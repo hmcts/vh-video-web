@@ -720,7 +720,7 @@ describe('Conference Reducer', () => {
     });
 
     describe('deletePexipParticipant action', () => {
-        it('should remove pexip info from the participant', () => {
+        it('should remove wowza participant', () => {
             const initialStateWithPexipInfo = {
                 ...existingInitialState,
                 currentConference: {
