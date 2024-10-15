@@ -87,6 +87,22 @@ describe('Conference Reducer', () => {
                     pexipInfo: undefined,
                     role: Role.Representative,
                     linkedParticipants: []
+                },
+                {
+                    id: 'Xf497ffa-802c-4dfb-a3f2-208de0c12345',
+                    name: 'wowza',
+                    username: 'vh-wowza',
+                    status: ParticipantStatus.InConsultation,
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Mr John Doe;0f497ffa-802c-4dfb-a3f2-208de0c10df7',
+                    room: originalRoom,
+                    representee: '',
+                    displayName: 'vh-wowza',
+                    firstName: undefined,
+                    lastName: undefined,
+                    hearingRole: undefined,
+                    pexipInfo: undefined,
+                    role: undefined,
+                    linkedParticipants: []
                 }
             ],
             endpoints: [
@@ -636,6 +652,28 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
         });
 
+        it('should update-wowza participant', () => {
+            const pexipParticipant = {
+                isRemoteMuted: false,
+                isSpotlighted: false,
+                handRaised: false,
+                pexipDisplayName: 'vh-wowza',
+                uuid: 'wowza12345',
+                callTag: 'wowza',
+                isAudioOnlyCall: true,
+                isVideoCall: false,
+                protocol: 'sip',
+                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                receivingAudioMix: 'main'
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.upsertPexipParticipant({ participant: pexipParticipant })
+            );
+
+            expect(result.wowzaParticipant?.uuid).toEqual(pexipParticipant.uuid);
+        });
+
         it('should add pexip info to the endpoint', () => {
             const pexipParticipant = {
                 isRemoteMuted: false,
@@ -694,11 +732,11 @@ describe('Conference Reducer', () => {
                                 isRemoteMuted: false,
                                 isSpotlighted: false,
                                 handRaised: false,
-                                pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
-                                uuid: '1922_John Doe',
-                                callTag: 'john-call-tag',
-                                isAudioOnlyCall: false,
-                                isVideoCall: true,
+                                pexipDisplayName: 'vh-wowza',
+                                uuid: 'wowza',
+                                callTag: 'wowza',
+                                isAudioOnlyCall: true,
+                                isVideoCall: false,
                                 protocol: 'sip',
                                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                                 receivingAudioMix: 'main'
@@ -709,10 +747,10 @@ describe('Conference Reducer', () => {
             };
             const result = conferenceReducer(
                 initialStateWithPexipInfo,
-                ConferenceActions.deletePexipParticipant({ pexipUUID: '1922_John Doe' })
+                ConferenceActions.deletePexipParticipant({ pexipUUID: 'vh-wowza' })
             );
 
-            expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
+            expect(result.wowzaParticipant).toBeFalsy();
         });
 
         it('should remove pexip info from the endpoint', () => {
@@ -776,6 +814,39 @@ describe('Conference Reducer', () => {
             const result = conferenceReducer(initialStateWithPexipInfo, ConferenceActions.deletePexipParticipant({ pexipUUID: 'unknown' }));
 
             expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
+        });
+
+        it('should update wowza participant if pexip dispaly name contains wowza keyword', () => {
+            const initialStateWithPexipInfo = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    participants: [
+                        {
+                            ...existingInitialState.currentConference.participants[0],
+                            pexipInfo: {
+                                isRemoteMuted: false,
+                                isSpotlighted: false,
+                                handRaised: false,
+                                pexipDisplayName: `vh-wowza-${conferenceTestData.participants[0].id}`,
+                                uuid: '1922_John Doe',
+                                callTag: 'john-call-tag',
+                                isAudioOnlyCall: false,
+                                isVideoCall: true,
+                                protocol: 'sip',
+                                sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                                receivingAudioMix: 'main'
+                            }
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(
+                initialStateWithPexipInfo,
+                ConferenceActions.deletePexipParticipant({ pexipUUID: '1922_John Doe' })
+            );
+
+            expect(result.currentConference.participants[0].pexipInfo).toBeFalsy();
         });
     });
 
@@ -956,6 +1027,16 @@ describe('Conference Reducer', () => {
                 })
             );
             expect(result.currentConference.countdownComplete).toEqual(true);
+        });
+
+        it('should return current state if conference id does not match', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.countdownComplete({
+                    conferenceId: 'unknown'
+                })
+            );
+            expect(result).toEqual(existingInitialState);
         });
     });
 });
