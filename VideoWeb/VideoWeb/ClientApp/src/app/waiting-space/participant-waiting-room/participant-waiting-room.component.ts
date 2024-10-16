@@ -282,7 +282,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.role !== Role.Judge &&
                 p.role !== Role.StaffMember &&
                 p.hearing_role !== HearingRole.OBSERVER &&
-                p.hearing_role !== HearingRole.WITNESS
+                p.hearing_role !== HearingRole.WITNESS &&
+                !p.protect_from?.includes(this.participant.external_reference_id) &&
+                !this.participant.protect_from?.includes(p.external_reference_id)
         );
     }
 

@@ -12,6 +12,10 @@ public static class BookingForIndividualResponseMapper
     public static ConferenceForIndividualResponse Map(ConfirmedHearingsTodayResponseV2 booking, List<ConferenceCoreResponse> conferences)
     {
         var conference = conferences.Find(x => x.HearingId == booking.Id);
+        if (conference == null)
+        {
+            return null;
+        }
         return new ConferenceForIndividualResponse
         {
             Id = conference.Id,
