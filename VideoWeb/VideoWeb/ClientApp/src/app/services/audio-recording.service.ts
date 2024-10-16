@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
-import { takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -39,12 +39,18 @@ export class AudioRecordingService {
 
         conferenceStore
             .select(ConferenceSelectors.getWowzaParticipant)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                distinctUntilChanged((prev, curr) => prev?.uuid === curr?.uuid)
+            )
             .subscribe(participant => {
-                this.dialOutUUID.push(participant?.uuid);
+                if (participant) {
+                    this.dialOutUUID = [...new Set([...this.dialOutUUID, participant?.uuid])];
+                }
                 this.wowzaAgent = participant;
                 if (participant?.isAudioOnlyCall) {
                     this.wowzaAgentConnection$.next(true);
+                    this.restartActioned = false;
                 } else {
                     this.wowzaAgentConnection$.next(false);
                 }
@@ -68,6 +74,7 @@ export class AudioRecordingService {
     async stopRecording() {
         await this.eventService.sendAudioRecordingPaused(this.conference.id, true);
         this.videoCallService.disconnectWowzaAgent(this.wowzaAgent.uuid);
+        this.dialOutUUID = this.dialOutUUID.filter(uuid => uuid !== this.wowzaAgent.uuid);
     }
 
     async reconnectToWowza(failedToConnectCallback: Function) {
@@ -75,7 +82,6 @@ export class AudioRecordingService {
         this.cleanupDialOutConnections();
         this.videoCallService.connectWowzaAgent(this.conference.audioRecordingIngestUrl, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
-                this.dialOutUUID.push(dialOutToWowzaResponse.result[0]);
                 await this.eventService.sendAudioRecordingPaused(this.conference.id, false);
             } else {
                 failedToConnectCallback();
