@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_forbidden_when_endpoint_is_screened()
+        public async Task should_return_badrequest_when_endpoint_is_screened()
         {
             // arrange
             var roomLabel = "RoomLabel1";
@@ -105,7 +105,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
             
             // assert
-            result.Should().BeOfType<ForbidResult>();
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+                .Be(ConsultationsController.ConsultationHasScreenedEndpointErrorMessage);
             
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.JoinEndpointToConsultationAsync(It.IsAny<EndpointConsultationRequest>(), It.IsAny<CancellationToken>()), Times.Never);

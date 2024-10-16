@@ -251,7 +251,8 @@ public class StartConsultationTest
         var result = await _controller.StartConsultationAsync(request, CancellationToken.None);
         
         // assert
-        result.Should().BeOfType<ForbidResult>();
+        result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+            .Be(ConsultationsController.ConsultationHasScreenedParticipantAndEndpointErrorMessage);
         
         _mocker.Mock<IVideoApiClient>()
             .Verify(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>(), It.IsAny<CancellationToken>()), Times.Never);

@@ -118,7 +118,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_forbidden_if_invitee_is_screened_from_existing_participant_in_room()
+        public async Task should_return_badrequest_if_invitee_is_screened_from_existing_participant_in_room()
         {
             // arrange
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
@@ -146,7 +146,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _sut.InviteToConsultationAsync(request, CancellationToken.None);
             
             // assert
-            result.Should().BeOfType<ForbidResult>();
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+                .Be(ConsultationsController.ConsultationHasScreenedParticipantErrorMessage);
             
             _mocker.Mock<IConsultationNotifier>().Verify(
                 x => x.NotifyConsultationRequestAsync(_testConference, roomLabel, Guid.Empty, individual.Id), Times.Never);

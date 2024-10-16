@@ -33,6 +33,16 @@ namespace VideoWeb.Controllers
         IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
         : ControllerBase
     {
+        public const string ConsultationHasScreenedParticipantErrorMessage =
+            "Participant is not allowed to join the consultation room with a participant they are screened from";
+
+        public const string ConsultationHasScreenedEndpointErrorMessage =
+            "Endpoint is not allowed to join the consultation room with a participant they are screened from";
+
+        public const string ConsultationHasScreenedParticipantAndEndpointErrorMessage =
+            "Cannot start consultation with participants or endpoints that are screened from each other";
+        
+        
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeaveConsultation")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -134,7 +144,7 @@ namespace VideoWeb.Controllers
 
                 if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
                 {
-                    return BadRequest("Participant is not allowed to join the consultation room with a participant they are screened from");
+                    return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
                 }
                 
                 var mappedRequest = JoinPrivateConsultationRequestMapper.Map(request);
@@ -166,7 +176,7 @@ namespace VideoWeb.Controllers
                 if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(),
                         request.InviteEndpoints.ToList()))
                 {
-                    return BadRequest("Cannot start consultation with participants or endpoints that are screened from each other");
+                    return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
                 }
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
@@ -302,7 +312,7 @@ namespace VideoWeb.Controllers
             
             if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
             {
-                return BadRequest("Participant is not allowed to join the consultation room with a participant they are screened from");
+                return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
             }
 
             await consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
@@ -328,7 +338,7 @@ namespace VideoWeb.Controllers
             
             if (!conference.CanEndpointJoinConsultationRoom(request.RoomLabel, request.EndpointId))
             {
-                return Forbid("Endpoint is not allowed to join the consultation room with a participant they are screened from");
+                return BadRequest(ConsultationHasScreenedEndpointErrorMessage);
             }
 
             try
