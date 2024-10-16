@@ -136,7 +136,7 @@ public class JoinPrivateConsultationTests
     }
 
     [Test]
-    public async Task JoinPrivateConsultation_ParticipantScreened_ReturnForbidden()
+    public async Task JoinPrivateConsultation_ParticipantScreened_ReturnBadRequest()
     {
         // Arrange
         var expectedRoomLabel = "ExpectedRoomLabel";
@@ -173,7 +173,8 @@ public class JoinPrivateConsultationTests
         var result = await _consultationsController.JoinPrivateConsultation(request, CancellationToken.None);
         
         // Assert
-        result.Should().BeAssignableTo<ForbidResult>();
+        result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+            .Be(ConsultationsController.ConsultationHasScreenedParticipantErrorMessage);
         
         _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
             It.Is<Conference>(c => c == conference),
