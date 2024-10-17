@@ -95,6 +95,11 @@ namespace VideoWeb
                 Configuration.Bind("RedisConfiguration", options);
             });
 
+            services.Configure<DynatraceConfiguration>(options =>
+            {
+                Configuration.Bind("DynatraceConfiguration", options);
+            });
+
             var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(kinlyTokenSettings);
@@ -105,6 +110,9 @@ namespace VideoWeb
 
             var redis = Configuration.GetSection("RedisConfiguration").Get<RedisConfiguration>();
             services.AddSingleton(redis);
+
+            var dynatrace = Configuration.GetSection("DynatraceConfiguration").Get<DynatraceConfiguration>();
+            services.AddSingleton(dynatrace);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
