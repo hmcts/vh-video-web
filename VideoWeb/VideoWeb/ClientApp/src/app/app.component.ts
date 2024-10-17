@@ -112,7 +112,8 @@ export class AppComponent implements OnInit, OnDestroy {
                             monitoring by passing the user's preferred username in lowercase as a
                             parameter.*/
                             // TODO: uncomment the below line to add this identification
-                            // this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
+                            // To be implemented behind the cookie banner VIH-5622
+                            this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
                         }
 
                         if (this.currentIdp !== 'quickLink') {
