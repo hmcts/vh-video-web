@@ -190,6 +190,7 @@ export class EventsService {
 
         CountdownFinished: (conferenceId: string) => {
             this.logger.debug('[EventsService] - CountdownFinished received', conferenceId);
+            this.store.dispatch(ConferenceActions.countdownComplete({ conferenceId }));
             this.hearingCountdownCompleteSubject.next(conferenceId);
         },
 
