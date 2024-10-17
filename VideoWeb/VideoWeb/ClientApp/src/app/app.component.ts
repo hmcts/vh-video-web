@@ -22,6 +22,7 @@ import { HideComponentsService } from './waiting-space/services/hide-components.
 import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
 import { EventsHubService } from './services/events-hub.service';
+import { DynatraceService } from './services/api/dynatrace.service';
 
 @Component({
     selector: 'app-root',
@@ -68,7 +69,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private noSleepService: NoSleepService,
         private logger: Logger,
         private hideBackgroundService: HideComponentsService,
-        private eventhubService: EventsHubService
+        private eventhubService: EventsHubService,
+        private dynatraceService: DynatraceService
     ) {
         this.isRepresentativeOrIndividual = false;
 
@@ -94,13 +96,24 @@ export class AppComponent implements OnInit, OnDestroy {
             .getClientSettings()
             .pipe(first())
             .subscribe({
-                next: () => {
+                next: clientSettings => {
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
+                    this.dynatraceService.addDynatraceScript(clientSettings.dynatrace_rum_link);
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
 
                         if (isAuthenticated) {
                             this.eventhubService.configureConnection();
+
+                            /* The line
+                            `this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());`
+                            is calling a method `addUserIdentifyScript` from the `dynatraceService`
+                            service. This method is used to identify the user in Dynatrace
+                            monitoring by passing the user's preferred username in lowercase as a
+                            parameter.*/
+                            // TODO: uncomment the below line to add this identification
+                            // To be implemented behind the cookie banner VIH-5622
+                            this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
                         }
 
                         if (this.currentIdp !== 'quickLink') {
