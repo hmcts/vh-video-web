@@ -102,6 +102,7 @@ import { TruncatableTextComponent } from './truncatable-text/truncatable-text.co
 import { CookiesComponent } from './cookies/cookies.component';
 import { FeatureFlagDirective } from './directives/feature-flag.directive';
 import { DialOutNumberComponent } from './dial-out-number/dial-out-number.component';
+import { DesktopOnlyDirective } from './directives/desktop-only.directive';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -146,6 +147,7 @@ export function getSettings(configService: ConfigService) {
         ChatBodyWindowComponent,
         TooltipDirective,
         FeatureFlagDirective,
+        DesktopOnlyDirective,
         ErrorCameraMicrophoneComponent,
         VhToastComponent,
         RoomClosingToastComponent,
@@ -203,6 +205,7 @@ export function getSettings(configService: ConfigService) {
         ChatBodyWindowComponent,
         TooltipDirective,
         FeatureFlagDirective,
+        DesktopOnlyDirective,
         ErrorCameraMicrophoneComponent,
         TranslateModule,
         MultilinePipe,

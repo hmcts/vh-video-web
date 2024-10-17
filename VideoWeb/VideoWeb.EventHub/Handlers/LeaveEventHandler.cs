@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
@@ -17,8 +18,12 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            if (SourceParticipant.ParticipantStatus == ParticipantStatus.InHearing || SourceParticipant.ParticipantStatus == ParticipantStatus.InConsultation)
-                return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected, callbackEvent.Reason);
+            var anotherDeviceDetected = callbackEvent.Reason.Contains("has connected on another device",
+                StringComparison.InvariantCultureIgnoreCase);
+            if (SourceParticipant.ParticipantStatus == ParticipantStatus.InHearing ||
+                SourceParticipant.ParticipantStatus == ParticipantStatus.InConsultation || anotherDeviceDetected)
+                return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected,
+                    callbackEvent.Reason);
 
             return Task.CompletedTask;
         }
