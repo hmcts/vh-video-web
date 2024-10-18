@@ -5,12 +5,12 @@ import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { Logger } from './logging/logger-base';
 import { NoSleepService } from './no-sleep.service';
-import { UserMediaStreamService } from './user-media-stream.service';
+import { UserMediaStreamServiceV2 } from './user-media-stream-v2.service';
 
 describe('NoSleepService', () => {
     let service: NoSleepService;
 
-    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
+    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let renderer2FactorySpy: jasmine.SpyObj<RendererFactory2>;
     let renderer2Spy: jasmine.SpyObj<Renderer2>;
     let deviceServiceSpy: jasmine.SpyObj<DeviceDetectorService>;
@@ -24,7 +24,7 @@ describe('NoSleepService', () => {
 
     beforeEach(() => {
         currentStreamSubject = new Subject<MediaStream>();
-        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$']);
+        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamServiceV2>([], ['currentStream$']);
         getSpiedPropertyGetter(userMediaStreamServiceSpy, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
         videoElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'setAttribute'], ['style', 'parentElement']);

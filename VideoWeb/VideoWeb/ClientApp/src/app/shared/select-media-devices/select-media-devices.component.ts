@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { takeUntil } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -11,6 +10,7 @@ import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { ModalTrapFocus } from '../modal/modal-trap-focus';
 import { FocusService } from 'src/app/services/focus.service';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -40,7 +40,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
 
     constructor(
         private userMediaService: UserMediaService,
-        private userMediaStreamSerivce: UserMediaStreamService,
+        private userMediaStreamService: UserMediaStreamServiceV2,
         private logger: Logger,
         private translateService: TranslateService,
         private profileService: ProfileService,
@@ -81,12 +81,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
             );
         });
 
-        this.userMediaStreamSerivce.activeCameraStream$.subscribe(activateCameraStream => {
-            this.selectedCameraStream = activateCameraStream;
-        });
+        this.userMediaStreamService.currentStream$.pipe(takeUntil(this.destroyedSubject)).subscribe(stream => {
+            // Extract audio tracks and create a new MediaStream for the microphone
+            const audioTracks = stream.getAudioTracks();
+            this.selectedMicrophoneStream = new MediaStream(audioTracks);
 
-        this.userMediaStreamSerivce.activeMicrophoneStream$.subscribe(activateMicrophoneStream => {
-            this.selectedMicrophoneStream = activateMicrophoneStream;
+            // Extract video tracks and create a new MediaStream for the video
+            const videoTracks = stream.getVideoTracks();
+            this.selectedCameraStream = new MediaStream(videoTracks);
         });
 
         this.profileService.getUserProfile().then(profile => {
