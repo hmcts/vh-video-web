@@ -69,8 +69,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private noSleepService: NoSleepService,
         private logger: Logger,
         private hideBackgroundService: HideComponentsService,
-        private eventhubService: EventsHubService,
-        private dynatraceService: DynatraceService
+        private readonly eventhubService: EventsHubService,
+        private readonly dynatraceService: DynatraceService
     ) {
         this.isRepresentativeOrIndividual = false;
 
