@@ -39,7 +39,8 @@ import {
     hearingLayoutChangedSubjectMock,
     getEndpointLinkedUpdatedMock,
     getEndpointUnlinkedUpdatedMock,
-    getEndpointDisconnectUpdatedMock
+    getEndpointDisconnectUpdatedMock,
+    getHearingDetailsUpdatedMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -94,6 +95,8 @@ import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message'
 import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { videoWebServiceSpy } from 'src/app/vh-officer/vho-shared/tests/participant-status-base-setup';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1997,6 +2000,21 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     expect(value).toEqual(vhContactDetails.englandAndWales.phoneNumber);
                 });
             });
+        });
+    });
+
+    describe('getHearingDetailsUpdated', () => {
+        it('should fetch and update the conference', () => {
+            // Arrange
+            const conferenceId = globalConference.id;
+            const hearingDetailsUpdatedMessage = new HearingDetailsUpdatedMessage(conferenceId);
+
+            // Act
+            getHearingDetailsUpdatedMock.next(hearingDetailsUpdatedMessage);
+
+            // Assert
+            expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conferenceId);
+            expect(component.conferenceId).toBe(conferenceId);
         });
     });
 });

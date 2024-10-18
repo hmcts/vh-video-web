@@ -616,6 +616,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
+
+        this.logger.debug('[WR] - Subscribing to hearing details updated message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingDetailsUpdated().subscribe(async () => {
+                await this.getConference();
+            })
+        );
     }
 
     resolveParticipant(participantId: any): Participant {
