@@ -24,6 +24,8 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
 
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
+
+            var dynatraceConfiguration = Builder<DynatraceConfiguration>.CreateNew().Build();
             
             var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
             var vodafoneConfiguration = Builder<VodafoneConfiguration>.CreateNew().Build();
@@ -33,7 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
                 vodafoneConfiguration
             };
 
-            var response = ClientSettingsResponseMapper.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfigs);
+            var response = ClientSettingsResponseMapper.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, supplierConfigs, dynatraceConfiguration);
 
             response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);

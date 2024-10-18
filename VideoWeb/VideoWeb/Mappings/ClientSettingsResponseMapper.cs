@@ -13,7 +13,8 @@ public static class ClientSettingsResponseMapper{
         EJudAdConfiguration eJudAdConfiguration, 
         Dom1AdConfiguration dom1AdConfiguration,
         HearingServicesConfiguration servicesConfiguration, 
-        List<SupplierConfiguration> supplierConfigurations)
+        List<SupplierConfiguration> supplierConfigurations,
+        DynatraceConfiguration dynatraceConfiguration)
     {
         var ejudSettings = IdpSettingsResponseMapper.Map(eJudAdConfiguration);
         var vhAdSettings = IdpSettingsResponseMapper.Map(azureAdConfiguration);
@@ -34,7 +35,8 @@ public static class ClientSettingsResponseMapper{
             EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
             EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
             BlurRadius = servicesConfiguration.BlurRadius,
-            LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId
+            LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId,
+            DynatraceRumLink = dynatraceConfiguration.DynatraceRumLink
         };
     }
     

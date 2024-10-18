@@ -27,6 +27,7 @@ java:
           alias: DOM1--TenantId
         - name: dom1--videoweb--clientid
           alias: DOM1--ClientId
+        - dynatraceconfiguration--dynatracerumlink
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}

@@ -41,6 +41,7 @@ import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
+import { DynatraceService } from './services/api/dynatrace.service';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -61,6 +62,7 @@ describe('AppComponent', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
     let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
+    let dynatraceServiceSpy: jasmine.SpyObj<DynatraceService>;
 
     let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
@@ -110,6 +112,7 @@ describe('AppComponent', () => {
             'logoffAndRevokeTokens',
             'isAuthenticated'
         ]);
+        dynatraceServiceSpy = jasmine.createSpyObj<DynatraceService>('DynatraceService', ['addDynatraceScript', 'addUserIdentifyScript']);
     });
 
     afterAll(() => {
@@ -150,6 +153,7 @@ describe('AppComponent', () => {
                 { provide: TranslateService, useValue: translateServiceSpy },
                 { provide: Router, useValue: routerSpy },
                 { provide: EventsHubService, useValue: eventsHubServiceSpy },
+                { provide: DynatraceService, useValue: dynatraceServiceSpy },
                 {
                     provide: ActivatedRoute,
                     useValue: activatedRouteMock

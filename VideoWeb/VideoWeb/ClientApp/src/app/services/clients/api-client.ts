@@ -7488,6 +7488,11 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
+export enum ConferenceRole {
+    Host = 'Host',
+    Guest = 'Guest'
+}
+
 export enum EndpointState {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
@@ -7524,7 +7529,8 @@ export enum EventType {
     RoomParticipantTransfer = 'RoomParticipantTransfer',
     TelephoneJoined = 'TelephoneJoined',
     TelephoneDisconnected = 'TelephoneDisconnected',
-    TelephoneTransfer = 'TelephoneTransfer'
+    TelephoneTransfer = 'TelephoneTransfer',
+    RecordingConnectionFailed = 'RecordingConnectionFailed'
 }
 
 export enum LinkedParticipantType {
@@ -8034,6 +8040,7 @@ export class EndpointResponse implements IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
+    conference_role?: ConferenceRole;
 
     constructor(data?: IEndpointResponse) {
         if (data) {
@@ -8052,6 +8059,7 @@ export class EndpointResponse implements IEndpointResponse {
             this.status = _data['status'];
             this.defence_advocate = _data['defence_advocate'];
             this.current_room = _data['current_room'] ? RoomResponse.fromJS(_data['current_room']) : <any>undefined;
+            this.conference_role = _data['conference_role'];
         }
     }
 
@@ -8071,6 +8079,7 @@ export class EndpointResponse implements IEndpointResponse {
         data['status'] = this.status;
         data['defence_advocate'] = this.defence_advocate;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
+        data['conference_role'] = this.conference_role;
         return data;
     }
 }
@@ -8083,6 +8092,7 @@ export interface IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
+    conference_role?: ConferenceRole;
 }
 
 export class ParticipantHeartbeatResponse implements IParticipantHeartbeatResponse {
@@ -9359,6 +9369,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     launch_darkly_client_id?: string | undefined;
     /** Configurations for the suppliers */
     supplier_configurations?: SupplierConfigurationResponse[] | undefined;
+    /** The url to the Dynatrace Real User Monitoring javascript script. */
+    dynatrace_rum_link?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -9389,6 +9401,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
                 for (let item of _data['supplier_configurations'])
                     this.supplier_configurations!.push(SupplierConfigurationResponse.fromJS(item));
             }
+            this.dynatrace_rum_link = _data['dynatrace_rum_link'];
         }
     }
 
@@ -9417,6 +9430,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             data['supplier_configurations'] = [];
             for (let item of this.supplier_configurations) data['supplier_configurations'].push(item.toJSON());
         }
+        data['dynatrace_rum_link'] = this.dynatrace_rum_link;
         return data;
     }
 }
@@ -9446,6 +9460,8 @@ export interface IClientSettingsResponse {
     launch_darkly_client_id?: string | undefined;
     /** Configurations for the suppliers */
     supplier_configurations?: SupplierConfigurationResponse[] | undefined;
+    /** The url to the Dynatrace Real User Monitoring javascript script. */
+    dynatrace_rum_link?: string | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {

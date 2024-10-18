@@ -166,15 +166,22 @@ public class GetClientConfigurationSettingsTests
             BlurRadius = 20
         };
 
+        var dynatraceConfiguration = new DynatraceConfiguration
+        {
+            DynatraceRumLink = "dynatraceRumLink.js"
+        };
+
         foreach (var supplierConfiguration in supplierConfigurations)
         {
             SetUpPlatformService(supplierConfiguration);
         }
 
-        var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
+        var parameters = new ParameterBuilder(_mocker)
+            .AddObject(Options.Create(securitySettings))
             .AddObject(Options.Create(servicesConfiguration))
             .AddObject(Options.Create(eJudAdConfiguration))
             .AddObject(Options.Create(dom1AdConfiguration))
+            .AddObject(Options.Create(dynatraceConfiguration))
             .Build();
         
         var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);

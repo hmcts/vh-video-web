@@ -23,6 +23,7 @@ public class ConfigSettingsController(
     IOptions<EJudAdConfiguration> ejudAdConfiguration,
     IOptions<HearingServicesConfiguration> servicesConfiguration,
     IOptions<Dom1AdConfiguration> dom1AdConfiguration,
+    IOptions<DynatraceConfiguration> dynatraceConfiguration,
     ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
     ILogger<ConfigSettingsController> logger,
     IFeatureToggles featureToggles)
@@ -32,6 +33,7 @@ public class ConfigSettingsController(
     private readonly EJudAdConfiguration _ejudAdConfiguration = ejudAdConfiguration.Value;
     private readonly Dom1AdConfiguration _dom1AdConfiguration = dom1AdConfiguration.Value;
     private readonly HearingServicesConfiguration _servicesConfiguration = servicesConfiguration.Value;
+    private readonly DynatraceConfiguration _dynatraceConfiguration = dynatraceConfiguration.Value;
 
     /// <summary>
     /// GetClientConfigurationSettings the configuration settings for client
@@ -56,7 +58,7 @@ public class ConfigSettingsController(
                 .Select(supplierPlatformServiceFactory.Create)
                 .Select(platformService => platformService.GetSupplierConfiguration())
                 .ToList();
-            var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, supplierConfigurations);
+            var clientSettings = ClientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _dom1AdConfiguration, _servicesConfiguration, supplierConfigurations, _dynatraceConfiguration);
             return Ok(clientSettings);
         }
         catch (Exception e)

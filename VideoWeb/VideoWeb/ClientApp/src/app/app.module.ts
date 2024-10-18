@@ -26,6 +26,7 @@ import { NavigatorComponent } from './home/navigator/navigator.component';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
+import { DynatraceService } from './services/api/dynatrace.service';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -70,6 +71,7 @@ export function getLocale() {
         { provide: Navigator, useValue: window.navigator },
         { provide: Document, useValue: window.document },
         ConfigService,
+        DynatraceService,
         Title,
         PageTrackerService,
         ParticipantStatusUpdateService
