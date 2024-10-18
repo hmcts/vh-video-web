@@ -113,7 +113,7 @@ export class AppComponent implements OnInit, OnDestroy {
                             parameter.*/
                             // TODO: uncomment the below line to add this identification
                             // To be implemented behind the cookie banner VIH-5622
-                            
+
                             // this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
                         }
 
