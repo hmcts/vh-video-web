@@ -133,7 +133,7 @@ public class ConferencesController(
                 await videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username, cancellationToken);
             var response = hearings.Select(hearing =>
                 BookingForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
-            response = response.Where(c => c.IsWaitingRoomOpen);
+            response = response.Where(c => c is { IsWaitingRoomOpen: true });
             return Ok(response.ToList());
         }
     }

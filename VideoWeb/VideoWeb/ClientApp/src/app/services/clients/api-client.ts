@@ -2232,7 +2232,8 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2340,7 +2341,8 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2448,7 +2450,8 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2556,17 +2559,9 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result403: any = null;
-                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result403 = ProblemDetails.fromJS(resultData403);
-                    return throwException('Forbidden', status, _responseText, _headers, result403);
                 })
             );
         } else if (status === 401) {
@@ -2781,7 +2776,8 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2889,7 +2885,8 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -7488,6 +7485,11 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
+export enum ConferenceRole {
+    Host = 'Host',
+    Guest = 'Guest'
+}
+
 export enum EndpointState {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
@@ -7524,7 +7526,8 @@ export enum EventType {
     RoomParticipantTransfer = 'RoomParticipantTransfer',
     TelephoneJoined = 'TelephoneJoined',
     TelephoneDisconnected = 'TelephoneDisconnected',
-    TelephoneTransfer = 'TelephoneTransfer'
+    TelephoneTransfer = 'TelephoneTransfer',
+    RecordingConnectionFailed = 'RecordingConnectionFailed'
 }
 
 export enum LinkedParticipantType {
@@ -8034,6 +8037,7 @@ export class EndpointResponse implements IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
+    conference_role?: ConferenceRole;
 
     constructor(data?: IEndpointResponse) {
         if (data) {
@@ -8052,6 +8056,7 @@ export class EndpointResponse implements IEndpointResponse {
             this.status = _data['status'];
             this.defence_advocate = _data['defence_advocate'];
             this.current_room = _data['current_room'] ? RoomResponse.fromJS(_data['current_room']) : <any>undefined;
+            this.conference_role = _data['conference_role'];
         }
     }
 
@@ -8071,6 +8076,7 @@ export class EndpointResponse implements IEndpointResponse {
         data['status'] = this.status;
         data['defence_advocate'] = this.defence_advocate;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
+        data['conference_role'] = this.conference_role;
         return data;
     }
 }
@@ -8083,6 +8089,7 @@ export interface IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
+    conference_role?: ConferenceRole;
 }
 
 export class ParticipantHeartbeatResponse implements IParticipantHeartbeatResponse {
@@ -10493,6 +10500,10 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -10524,6 +10535,11 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
             }
+            this.external_reference_id = _data['external_reference_id'];
+            if (Array.isArray(_data['protect_from'])) {
+                this.protect_from = [] as any;
+                for (let item of _data['protect_from']) this.protect_from!.push(item);
+            }
         }
     }
 
@@ -10553,6 +10569,11 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
+        data['external_reference_id'] = this.external_reference_id;
+        if (Array.isArray(this.protect_from)) {
+            data['protect_from'] = [];
+            for (let item of this.protect_from) data['protect_from'].push(item);
         }
         return data;
     }
@@ -10584,6 +10605,10 @@ export interface IParticipantForUserResponse {
     interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -10613,6 +10638,10 @@ export class ParticipantResponse implements IParticipantResponse {
     interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -10644,6 +10673,11 @@ export class ParticipantResponse implements IParticipantResponse {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
             }
+            this.external_reference_id = _data['external_reference_id'];
+            if (Array.isArray(_data['protect_from'])) {
+                this.protect_from = [] as any;
+                for (let item of _data['protect_from']) this.protect_from!.push(item);
+            }
         }
     }
 
@@ -10673,6 +10707,11 @@ export class ParticipantResponse implements IParticipantResponse {
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
+        data['external_reference_id'] = this.external_reference_id;
+        if (Array.isArray(this.protect_from)) {
+            data['protect_from'] = [];
+            for (let item of this.protect_from) data['protect_from'].push(item);
         }
         return data;
     }
@@ -10705,6 +10744,10 @@ export interface IParticipantResponse {
     interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -11227,6 +11270,10 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
     interpreter_language?: InterpreterLanguageResponse;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -11248,6 +11295,11 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.interpreter_language = _data['interpreter_language']
                 ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
                 : <any>undefined;
+            this.external_reference_id = _data['external_reference_id'];
+            if (Array.isArray(_data['protect_from'])) {
+                this.protect_from = [] as any;
+                for (let item of _data['protect_from']) this.protect_from!.push(item);
+            }
         }
     }
 
@@ -11268,6 +11320,11 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['is_current_user'] = this.is_current_user;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
+        data['external_reference_id'] = this.external_reference_id;
+        if (Array.isArray(this.protect_from)) {
+            data['protect_from'] = [];
+            for (let item of this.protect_from) data['protect_from'].push(item);
+        }
         return data;
     }
 }
@@ -11285,6 +11342,10 @@ export interface IVideoEndpointResponse {
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
     interpreter_language?: InterpreterLanguageResponse;
+    /** A unique identifier for the participant (used by special measures) */
+    external_reference_id?: string | undefined;
+    /** List of external references to protect this participant from */
+    protect_from?: string[] | undefined;
 }
 
 export class ApiException extends Error {

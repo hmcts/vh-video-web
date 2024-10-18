@@ -23,14 +23,18 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                         .With(x => x.Username = "judge@hmcts.net")
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "john@hmcts.net").Build(),
+                        .With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "john@hmcts.net")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x=> x.Username = "rep1@hmcts.net")
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                        .With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                        .With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                        .With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.StaffMember).With(x => x.Id = Guid.NewGuid())
                         .With(x => x.Username = "staffMember@hmcts.net")
@@ -39,11 +43,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Endpoints = new List<Endpoint>
                 {
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
-                        .With(x=> x.DefenceAdvocateUsername =  "rep1@hmcts.net").Build(),
+                        .With(x=> x.DefenceAdvocateUsername =  "rep1@hmcts.net")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
-                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net").Build(),
+                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP3")
-                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net").Build(),
+                        .With(x=> x.DefenceAdvocateUsername =  "john@hmcts.net")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                 }
             };
         }
