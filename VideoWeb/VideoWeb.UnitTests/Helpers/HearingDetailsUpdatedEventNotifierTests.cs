@@ -8,7 +8,6 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
@@ -76,8 +75,8 @@ namespace VideoWeb.UnitTests.Helpers
 
         private void VerifyHearingDetailsUpdatedMessagePublished(int times)
         {
-            _eventHelper.EventHubClientMock.Verify(x => x.HearingDetailsUpdatedMessage(It.Is<ConferenceDto>(r => 
-                r.Conference.Id == _conference.Id)), 
+            _eventHelper.EventHubClientMock.Verify(x => x.HearingDetailsUpdatedMessage(It.Is<ConferenceResponse>(r => 
+                r.Id == _conference.Id)), 
                 Times.Exactly(times));
         }
     }
