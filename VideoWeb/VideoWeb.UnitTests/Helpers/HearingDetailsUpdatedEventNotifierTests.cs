@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
@@ -40,7 +41,8 @@ namespace VideoWeb.UnitTests.Helpers
             // Assert
             const int vhoCount = 1;
             const int staffMemberCount = 1;
-            _eventHelper.EventHubClientMock.Verify(x => x.HearingDetailsUpdatedMessage(_conference.Id), Times.Exactly(_conference.Participants.Count + vhoCount + staffMemberCount));
+            var expectedMessageCount = _conference.Participants.Count + vhoCount + staffMemberCount;
+            VerifyHearingDetailsUpdatedMessagePublished(expectedMessageCount);
         }
 
         [Test]
@@ -57,7 +59,7 @@ namespace VideoWeb.UnitTests.Helpers
             const int nonParticipantStaffMemberCount = 1; // Non-participant staff member = a staff member who is not a participant on the conference
             var nonStaffMemberParticipantCount = _conference.Participants.Count(p => p.Role != Role.StaffMember); // Non-staff member participants = participants minus staff members
             var expectedMessageCount = nonParticipantStaffMemberCount + vhoCount + nonStaffMemberParticipantCount;
-            _eventHelper.EventHubClientMock.Verify(x => x.HearingDetailsUpdatedMessage(_conference.Id), Times.Exactly(expectedMessageCount));
+            VerifyHearingDetailsUpdatedMessagePublished(expectedMessageCount);
         }
         
         private void AddParticipantToConference(Role role)
@@ -69,6 +71,13 @@ namespace VideoWeb.UnitTests.Helpers
         
             _conference.Participants.Add(staffMemberParticipant);
             _eventHelper.RegisterParticipantForHubContext(staffMemberParticipant);
+        }
+
+        private void VerifyHearingDetailsUpdatedMessagePublished(int times)
+        {
+            _eventHelper.EventHubClientMock.Verify(x => x.HearingDetailsUpdatedMessage(It.Is<ConferenceResponse>(r => 
+                r.Id == _conference.Id)), 
+                Times.Exactly(times));
         }
     }
 }
