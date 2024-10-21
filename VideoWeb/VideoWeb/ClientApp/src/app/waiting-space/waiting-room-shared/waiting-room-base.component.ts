@@ -277,12 +277,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
-            this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);
-            this.errorCount = 0;
-            this.loadingData = false;
-            this.countdownComplete = data.status === ConferenceStatus.InSession;
-            this.hearing = new Hearing(data);
-            this.conference = this.hearing.getConference();
+            this.setConference(data);
             this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
                 this.participantEndpoints = endpoints;
             });
@@ -614,6 +609,16 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.eventHubSubscription$.add(
             this.eventService.getHearingLayoutChanged().subscribe(hearingLayout => {
                 this.handleHearingLayoutUpdatedMessage(hearingLayout);
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to hearing details updated message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingDetailsUpdated().subscribe(hearingDetailsUpdatedMessage => {
+                hearingDetailsUpdatedMessage.conference.scheduled_date_time = new Date(
+                    hearingDetailsUpdatedMessage.conference.scheduled_date_time
+                );
+                this.setConference(hearingDetailsUpdatedMessage.conference);
             })
         );
     }
@@ -1474,5 +1479,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.logger.debug('[WR] - Hearing Layout Changed showing notification', participant);
         this.notificationToastrService.showHearingLayoutchanged(participant, this.isParticipantInConference);
+    }
+
+    private setConference(conferenceResponse: ConferenceResponse) {
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(conferenceResponse.hearing_venue_is_scottish);
+        this.errorCount = 0;
+        this.loadingData = false;
+        this.countdownComplete = conferenceResponse.status === ConferenceStatus.InSession;
+        this.hearing = new Hearing(conferenceResponse);
+        this.conference = this.hearing.getConference();
     }
 }

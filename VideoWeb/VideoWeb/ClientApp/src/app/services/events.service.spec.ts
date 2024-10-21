@@ -10,7 +10,7 @@ import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
+import { ConferenceResponse, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { ConferenceState, initialState as initialConferenceState } from '../waiting-space/store/reducers/conference.reducer';
@@ -290,17 +290,19 @@ describe('EventsService', () => {
             });
 
             it('should handle event', () => {
-                const conferenceId = 'TestConferenceId';
+                const conference = new ConferenceResponse({
+                    id: 'TestConferenceId'
+                });
 
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
                     if (eventType === eventName) {
-                        func(conferenceId);
+                        func(conference);
                     }
                 });
 
                 serviceUnderTest.getHearingDetailsUpdated().subscribe(message => {
-                    expect(message.conferenceId).toBe(conferenceId);
+                    expect(message.conference.id).toBe(conference.id);
                 });
 
                 spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
