@@ -16,10 +16,7 @@ namespace VideoWeb.Helpers
         public async Task PushHearingDetailsUpdatedEvent(Conference conference)
         {
             var conferenceResponse = ConferenceResponseMapper.Map(conference);
-            var dto = new ConferenceDto
-            {
-                Conference = conferenceResponse
-            };
+            var dto = new ConferenceDto { Conference = conferenceResponse };
             
             foreach (var participant in conference.Participants.Where(participant => participant.Role != Role.StaffMember))
             {
