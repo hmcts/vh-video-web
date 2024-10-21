@@ -21,15 +21,15 @@ namespace VideoWeb.Extensions
 {
     public static class ConfigureAuthSchemeExtensions
     {
-        public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration)
+        public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration,
+            bool vodafoneEnabled)
         {
-            var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var dom1AdConfiguration = configuration.GetSection(Dom1AdConfiguration.ConfigSectionKey).Get<Dom1AdConfiguration>();
-            var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-
+            
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
@@ -79,15 +79,6 @@ namespace VideoWeb.Extensions
                         return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
                 })
-                .AddJwtBearer(callback, options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
-                    };
-                })
                 .AddJwtBearer(internalEvent, options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -97,6 +88,28 @@ namespace VideoWeb.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(internalEventSecret)
                     };
                 });
+
+            byte[] callbackSecret;
+            if (vodafoneEnabled)
+            {
+                var vodaConfiguration = configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
+                callbackSecret = Convert.FromBase64String(vodaConfiguration.CallbackSecret);
+            }
+            else
+            {
+                var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+                callbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+            }
+
+            authenticationBuilder.AddJwtBearer(callback, options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(callbackSecret)
+                };
+            });
 
             foreach (var scheme in providerSchemes)
             {
