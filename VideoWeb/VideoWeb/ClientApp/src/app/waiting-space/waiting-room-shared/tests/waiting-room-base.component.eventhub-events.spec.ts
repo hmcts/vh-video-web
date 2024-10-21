@@ -2004,17 +2004,26 @@ describe('WaitingRoomComponent EventHub Call', () => {
     });
 
     describe('getHearingDetailsUpdated', () => {
-        it('should fetch and update the conference', () => {
+        it('should update the conference', () => {
             // Arrange
-            const conferenceId = globalConference.id;
-            const hearingDetailsUpdatedMessage = new HearingDetailsUpdatedMessage(conferenceId);
+            const newScheduledDateTime = new Date(globalConference.scheduled_date_time);
+            newScheduledDateTime.setHours(newScheduledDateTime.getHours() + 2);
+            const updatedConference = new ConferenceResponse({
+                id: globalConference.id,
+                scheduled_date_time: newScheduledDateTime,
+                audio_recording_required: !globalConference.audio_recording_required
+            });
+            updatedConference.audio_recording_required = !updatedConference.audio_recording_required;
+
+            const hearingDetailsUpdatedMessage = new HearingDetailsUpdatedMessage(updatedConference);
 
             // Act
             getHearingDetailsUpdatedMock.next(hearingDetailsUpdatedMessage);
 
             // Assert
-            expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conferenceId);
-            expect(component.conferenceId).toBe(conferenceId);
+            expect(component.conference.id).toBe(updatedConference.id);
+            expect(component.conference.scheduled_date_time).toBe(updatedConference.scheduled_date_time);
+            expect(component.conference.audio_recording_required).toBe(updatedConference.audio_recording_required);
         });
     });
 });
