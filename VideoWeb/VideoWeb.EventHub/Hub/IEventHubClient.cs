@@ -48,7 +48,7 @@ namespace VideoWeb.EventHub.Hub
         Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
         Task EndpointsUpdated(Guid conferenceId, UpdateEndpointsDto endpoints);
         Task HearingCancelledMessage(Guid conferenceId);
-        Task HearingDetailsUpdatedMessage(Guid conferenceId);
+        Task HearingDetailsUpdatedMessage(ConferenceDto conference);
         /// <summary>
         /// Request a participant's local mute be update. Not to be confused with remote mute (and lock).
         /// </summary>
