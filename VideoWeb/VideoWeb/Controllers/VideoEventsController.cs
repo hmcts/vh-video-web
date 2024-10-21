@@ -41,7 +41,7 @@ public class VideoEventsController(
     {
         try
         {
-            telemetryClient.TrackCustomEvent("KinlyCallback", request);
+            telemetryClient.TrackCustomEvent("SupplierCallback", request);
             
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
