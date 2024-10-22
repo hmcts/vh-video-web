@@ -610,6 +610,9 @@ export class VideoCallService {
             );
             this.justRenegotiated = false;
         } else {
+            if (this.pexipAPI.call_type === 'test_call') {
+                return;
+            }
             this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
         }
 
