@@ -47,7 +47,7 @@ namespace VideoWeb
 
             services.AddCustomTypes();
 
-            services.RegisterAuthSchemes(Configuration);
+            services.RegisterAuthSchemes(Configuration, featureToggles.Vodafone());
             services.AddMvc(opt =>
                 {
                     opt.Filters.Add(typeof(LoggingMiddleware));
