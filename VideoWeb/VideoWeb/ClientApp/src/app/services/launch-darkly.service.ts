@@ -19,7 +19,7 @@ export const FEATURE_FLAGS = {
 export class LaunchDarklyService implements OnDestroy {
     client: LDClient;
     private flagSubjects: { [key: string]: BehaviorSubject<LDFlagValue> } = {};
-    private flagsReadySubject = new ReplaySubject<boolean>(1);
+    private readonly flagsReadySubject = new ReplaySubject<boolean>(1);
 
     constructor(private configService: ConfigService) {
         this.vhInitialize();
