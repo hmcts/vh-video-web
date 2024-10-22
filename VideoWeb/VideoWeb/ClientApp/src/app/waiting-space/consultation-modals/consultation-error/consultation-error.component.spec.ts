@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 describe('ConsultationErrorComponent', () => {
     let component: ConsultationErrorComponent;
     let consultationServiceSpy: jasmine.SpyObj<ConsultationService>;
-    let errorMessageSubject = new Subject<string>();
+    const errorMessageSubject = new Subject<string>();
     beforeEach(() => {
         consultationServiceSpy = jasmine.createSpyObj('ConsultationService', [], {
             consultationError$: errorMessageSubject.asObservable()
