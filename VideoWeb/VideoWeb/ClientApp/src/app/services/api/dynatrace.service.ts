@@ -29,7 +29,7 @@ export class DynatraceService {
     /**
      * The function `addUserIdentifyScript` creates a script element to identify a user with a given
      * ID.
-     * @param userIdendify - The `userIdendify` parameter is the user identifier that will be passed to
+     * @param userIdentify - The `userIdendify` parameter is the user identifier that will be passed to
      * the `dtrum.identifyUser` function in the `addUserIdentifyScript` method. This identifier is used
      * to uniquely identify a user within the Dynatrace monitoring system.
      */
