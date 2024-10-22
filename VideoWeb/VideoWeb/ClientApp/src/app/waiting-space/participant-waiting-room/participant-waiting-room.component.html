@@ -355,6 +355,10 @@
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
 </app-modal>
 
+<app-modal id="pc-error-modal" class="modal consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>
+
 <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
 </app-confirm-non-host-leave-hearing-popup>
 

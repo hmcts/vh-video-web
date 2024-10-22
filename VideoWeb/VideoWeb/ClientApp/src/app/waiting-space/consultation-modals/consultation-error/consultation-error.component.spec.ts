@@ -1,10 +1,16 @@
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationErrorComponent } from './consultation-error.component';
+import { Subject } from 'rxjs';
 
 describe('ConsultationErrorComponent', () => {
     let component: ConsultationErrorComponent;
-
+    let consultationServiceSpy: jasmine.SpyObj<ConsultationService>;
+    let errorMessageSubject = new Subject<string>();
     beforeEach(() => {
-        component = new ConsultationErrorComponent();
+        consultationServiceSpy = jasmine.createSpyObj('ConsultationService', [], {
+            consultationError$: errorMessageSubject.asObservable()
+        });
+        component = new ConsultationErrorComponent(consultationServiceSpy);
     });
 
     it('should emit closed modal with modal name', () => {

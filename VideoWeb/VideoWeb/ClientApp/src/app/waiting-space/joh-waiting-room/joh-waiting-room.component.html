@@ -231,4 +231,8 @@
                             (closedModal)="closeAllPCModals()"></app-consultation-leave>
 </app-modal>
 
+<app-modal id="pc-error-modal" class="modal consultation">
+    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>
+
 <app-warn-join-hearing-popup *ngIf="showWarning" [hearingStartTime]="hearing?.scheduledStartTime" (popupAnswered)="dismissWarning()"></app-warn-join-hearing-popup>
