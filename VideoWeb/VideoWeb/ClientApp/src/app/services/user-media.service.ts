@@ -100,6 +100,10 @@ export class UserMediaService {
         return { hasACamera, hasAMicrophone };
     }
 
+    /**
+     * Checks if a valid camera and microphone are available. Also used to request permissions.
+     * @returns true if a valid camera or microphone are available.
+     */
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
             retry(3),

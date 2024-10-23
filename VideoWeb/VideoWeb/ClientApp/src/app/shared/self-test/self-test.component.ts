@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Subject, Subscription } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AddSelfTestFailureEventRequest,
@@ -35,7 +35,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
-    @ViewChild('selfViewVideo') videoElement: ElementRef;
+    @ViewChild('selfViewVideo', { static: false }) videoElement: ElementRef;
 
     token: TokenResponse;
     incomingStream: MediaStream | URL;
@@ -109,6 +109,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
         this.userMediaService.initialise();
+        this.userMediaStreamService.createAndPublishStream();
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
                 this.displayFeed = false;
@@ -176,21 +177,20 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.userMediaStreamService.currentStream$
-            .pipe(
-                filter(stream => !!stream),
-                takeUntil(this.destroyedSubject)
-            )
-            .subscribe(stream => {
-                // Extract audio tracks and create a new MediaStream for the microphone
-                const audioTracks = stream.getAudioTracks();
-                this.preferredMicrophoneStream = new MediaStream(audioTracks);
+        this.userMediaStreamService.currentStream$.pipe(takeUntil(this.destroyedSubject)).subscribe(stream => {
+            if (!stream) {
+                this.outgoingStream = null;
+                return;
+            }
+            // Extract audio tracks and create a new MediaStream for the microphone
+            const audioTracks = stream.getAudioTracks();
+            this.preferredMicrophoneStream = new MediaStream(audioTracks);
 
-                // Extract video tracks and create a new MediaStream for the video
-                const videoTracks = stream.getVideoTracks();
-                this.outgoingStream = new MediaStream(videoTracks);
-            });
-        this.userMediaStreamService.createAndPublishStream();
+            // Extract video tracks and create a new MediaStream for the video
+            const videoTracks = stream.getVideoTracks();
+            this.outgoingStream = new MediaStream(videoTracks);
+        });
+
         this.userMediaService
             .hasMultipleDevices()
             .pipe(takeUntil(this.destroyedSubject))
@@ -303,6 +303,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 `${this.loggerPrefix} Attempted to disconnect from pexip before the client had initialised. Moving on from self-test`
             );
         } finally {
+            this.userMediaStreamService.closeCurrentStream();
             this.closeMicStreams();
             this.incomingStream = null;
             this.outgoingStream = null;
@@ -360,6 +361,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
+        this.userMediaStreamService.closeCurrentStream();
+        this.outgoingStream = null;
         this.testCompleted.emit(this.testCallResult);
     }
 

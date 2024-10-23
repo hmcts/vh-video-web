@@ -11,7 +11,8 @@ import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/partic
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
+import { catchError } from 'rxjs/operators';
+import { NEVER } from 'rxjs';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -41,8 +42,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private errorService: ErrorService,
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamServiceV2
+        private userMediaService: UserMediaService
     ) {
         super(participantStatusUpdateService, logger);
         this.userPrompted = false;
@@ -78,34 +78,41 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         }
     }
 
-    async requestMedia() {
-        this.userMediaService.initialise();
-        this.userMediaStreamService.currentStream$.pipe().subscribe({
-            next: stream => {
-                if (!stream || !stream.active) {
-                    return;
+    requestMedia() {
+        this.userMediaService
+            .hasValidCameraAndMicAvailable()
+            .pipe(
+                catchError(error => {
+                    this.mediaAccepted = false;
+                    this.userPrompted = false;
+                    this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
+                        conference: this.conferenceId,
+                        participant: this.participantName,
+                        error: error
+                    });
+                    this.postPermissionDeniedAlert();
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
+                    return NEVER;
+                })
+            )
+            .subscribe(hasDevices => {
+                if (!hasDevices) {
+                    this.mediaAccepted = false;
+                    this.userPrompted = true;
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
+                } else {
+                    this.mediaAccepted = true;
+                    this.userPrompted = true;
                 }
-                this.mediaAccepted = true;
-                this.userPrompted = true;
-                this.userMediaStreamService.closeCurrentStream();
-            },
-            error: error => {
-                this.mediaAccepted = false;
-                this.userPrompted = false;
-                this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
-                    conference: this.conferenceId,
-                    participant: this.participantName,
-                    error: error
-                });
-                this.postPermissionDeniedAlert();
-                this.errorService.goToServiceError(
-                    'error-camera-microphone.problem-with-camera-mic',
-                    'error-camera-microphone.camera-mic-in-use',
-                    false
-                );
-            }
-        });
-        this.userMediaStreamService.createAndPublishStream();
+            });
     }
 
     goVideoTest() {
