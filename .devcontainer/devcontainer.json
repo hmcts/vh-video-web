@@ -1,0 +1,53 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+  "name": "Node.js",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": true,
+      "installDockerBuildx": true,
+      "installDockerComposeSwitch": true,
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "version": "latest"
+    }
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.aspnet/DataProtection-Keys,target=/root/.aspnet/DataProtection-Keys,type=bind",
+    "source=${localEnv:HOME}/.aspnet/https,target=/https,type=bind,readonly",
+    "source=${localEnv:HOME}/.microsoft/usersecrets,target=/root/.microsoft/usersecrets,type=bind,readonly"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": ["Angular.ng-template", "ms-dotnettools.csdevkit", "ms-dotnettools.vscodeintellicode-csharp"]
+    }
+  },
+
+  "remoteEnv": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "ASPNETCORE_Kestrel__Certificates__Default__Password": "password",
+    "ASPNETCORE_Kestrel__Certificates__Default__Path": "/https/aspnetapp-vh.pfx"
+  },
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "yarn install",
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  "remoteUser": "root"
+}
