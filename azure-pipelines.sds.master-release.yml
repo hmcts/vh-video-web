@@ -61,7 +61,7 @@ stages:
               sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
               sonar.javascript.lcov.reportPaths=**/ClientApp/coverage/lcov.info
               sonar.cpd.exclusions=**/tests/WRTestComponent.ts, **/joh-waiting-room/**, **/ClientApp/src/scripts/**
-              sonar.issue.ignore.multicriteria=e1, e2, e3, e4, e5
+              sonar.issue.ignore.multicriteria=e1, e2, e3, e4, e5, e6
               sonar.issue.ignore.multicriteria.e1.ruleKey=typescript:S107
               sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
               sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
@@ -71,6 +71,8 @@ stages:
               sonar.issue.ignore.multicriteria.e4.ruleKey=csharpsquid:S107
               sonar.issue.ignore.multicriteria.e4.resourceKey=**/*.cs
               sonar.issue.ignore.multicriteria.e5.ruleKey=typescript:S6861
+              sonar.issue.ignore.multicriteria.e5.resourceKey=**/tests/**/*.ts
+              sonar.issue.ignore.multicriteria.e5.ruleKey=typescript:S2933
               sonar.issue.ignore.multicriteria.e5.resourceKey=**/tests/**/*.ts
 
 #####################################################
