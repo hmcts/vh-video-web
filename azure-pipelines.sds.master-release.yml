@@ -72,8 +72,8 @@ stages:
               sonar.issue.ignore.multicriteria.e4.resourceKey=**/*.cs
               sonar.issue.ignore.multicriteria.e5.ruleKey=typescript:S6861
               sonar.issue.ignore.multicriteria.e5.resourceKey=**/tests/**/*.ts
-              sonar.issue.ignore.multicriteria.e5.ruleKey=typescript:S2933
-              sonar.issue.ignore.multicriteria.e5.resourceKey=**/tests/**/*.ts
+              sonar.issue.ignore.multicriteria.e6.ruleKey=typescript:S2933
+              sonar.issue.ignore.multicriteria.e6.resourceKey=**/tests/**/*.ts
 
 #####################################################
 # Manual Approval ###################################
