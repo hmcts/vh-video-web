@@ -55,4 +55,25 @@ describe('LaunchDarklyService', () => {
 
         expect(result).toBe(true);
     }));
+
+    it('should wait for flags to be loaded before returning requested flag', fakeAsync(() => {
+        // Arrange
+        service.client = ldClientSpy;
+        const flagKey = FEATURE_FLAGS.dom1SignIn;
+        const keyParam = `change:${flagKey}`;
+        const allFlags: LDFlagSet = { [flagKey]: true };
+        ldClientSpy.allFlags.and.returnValue(allFlags);
+        ldClientSpy.on.withArgs(keyParam, jasmine.anything()).and.returnValue();
+        ldClientSpy.variation.withArgs(flagKey, jasmine.any(Boolean)).and.returnValue(true);
+        let result: boolean;
+
+        // Act
+        service.getFlag<boolean>(flagKey).subscribe(val => (result = val));
+        service.loadAllFlagsAndSetupSubscriptions();
+        ldClientSpy.waitUntilReady.and.returnValue(Promise.resolve());
+        tick();
+
+        // Assert
+        expect(result).toBe(true);
+    }));
 });
