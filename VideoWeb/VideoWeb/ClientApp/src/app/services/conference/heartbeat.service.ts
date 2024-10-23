@@ -16,6 +16,8 @@ import { environment } from 'src/environments/environment';
 })
 export class HeartbeatService {
     heartbeat: HeartbeatClient;
+    initialising = false;
+
     private loggerPrefix = '[KinlyHeartbeatService] -';
     private currentParticipant: ParticipantModel;
     private currentConference: ConferenceResponse;
@@ -35,6 +37,10 @@ export class HeartbeatService {
             this.currentConference = details.conference;
             this.currentParticipant = details.participant;
 
+            if (this.heartbeat || this.initialising) {
+                return;
+            }
+            this.initialising = true;
             this.apiClient.getHeartbeatConfigForParticipant(this.currentConference.id, this.currentParticipant.id).subscribe({
                 next: heartbeatConfiguration => {
                     this.logger.info(`${this.loggerPrefix} got heartbeat configuration`, {
@@ -84,6 +90,7 @@ export class HeartbeatService {
 
         this.heartbeat.kill();
         this.heartbeat = null;
+        this.initialising = false;
         this.logger.info(`${this.loggerPrefix} Should have stopped heartbeat`);
     }
 

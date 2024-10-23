@@ -85,6 +85,12 @@ export class UserMediaStreamService {
         this.activeMicrophoneStreamSubject.next(stream);
     }
 
+    closeCurrentStream() {
+        this.currentStream?.getTracks().forEach(track => {
+            track.stop();
+        });
+    }
+
     private initialiseCurrentStream() {
         this.userMediaService.checkCameraAndMicrophonePresence().then(result => {
             const hasCameraDevices = result.hasACamera;
