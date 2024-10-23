@@ -233,6 +233,7 @@ export class VideoCallService {
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
+            this.userMediaStreamService.closeCurrentStream();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
