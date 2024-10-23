@@ -90,8 +90,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get canShowScreenShareButton(): boolean {
-        const isAllowedRole = this.participant?.hearing_role !== HearingRole.OBSERVER && this.participant?.role !== Role.QuickLinkObserver;
-        return this.deviceTypeService.isDesktop() && isAllowedRole && !this.sharingDynamicEvidence;
+        const isAnObserver = this.participant?.hearing_role === HearingRole.OBSERVER || this.participant?.role === Role.QuickLinkObserver;
+        return this.deviceTypeService.isDesktop() && !isAnObserver && !this.sharingDynamicEvidence;
     }
 
     get canShowDynamicEvidenceShareButton(): boolean {
@@ -155,13 +155,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
 
         this.userMediaService.checkCameraAndMicrophonePresence().then(result => {
-            if (this.participant.role === Role.QuickLinkObserver || this.participant.hearing_role === HearingRole.OBSERVER) {
-                this.hasACamera = false;
-                this.hasAMicrophone = false;
-            } else {
-                this.hasACamera = result.hasACamera;
-                this.hasAMicrophone = result.hasAMicrophone;
-            }
+            this.hasACamera = result.hasACamera;
+            this.hasAMicrophone = result.hasAMicrophone;
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
