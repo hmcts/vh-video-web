@@ -311,12 +311,14 @@
       </div>
     </button>
     <div *ngIf="!isObserver" id="flexbar1" class="flexBar hide-for-medium"></div>
-    <ng-container *appFeatureFlag="featureFlags.dialOutParticipant">
-      <app-hearing-control-icon
-        [iconName]="'phone-volume'"
-        [iconText]="'private-consultation-room-controls.dial-out' | translate"
-        (iconClicked)="onDialOutClicked()"
-      ></app-hearing-control-icon>
+    <ng-container *ngIf="this.isHost">
+      <ng-container *appFeatureFlag="featureFlags.dialOutParticipant">
+        <app-hearing-control-icon
+          [iconName]="'phone-volume'"
+          [iconText]="'private-consultation-room-controls.dial-out' | translate"
+          (iconClicked)="onDialOutClicked()"
+        ></app-hearing-control-icon>
+      </ng-container>
     </ng-container>
     <button
       class="icon-button"
