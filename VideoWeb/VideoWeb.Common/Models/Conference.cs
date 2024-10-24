@@ -212,6 +212,12 @@ namespace VideoWeb.Common.Models
 
         public List<Guid> GetNonScreenedParticipantsAndEndpoints()
         {
+            var hasScreening = Participants.Exists(x => x.ProtectFrom.Count > 0) ||
+                               Endpoints.Exists(x => x.ProtectFrom.Count > 0);
+            if (!hasScreening)
+            {
+                return Participants.Where(x=> x.IsHost()).Select(x=> x.Id).ToList();
+            }
             var participants = GetNonScreenedParticipants();
             var endpoints = GetNonScreenedEndpoints();
             
