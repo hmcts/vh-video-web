@@ -9,13 +9,16 @@
                 </h2>
                 <!-- Left hand side -->
                 <div class="govuk-grid-column-one-half">
-                    <div class="govuk-grid-column-full">
-                        <video appForcePlayVideo mute="true" id="preferredCameraStream"
-                            [srcObject]="selectedCameraStream" width="100%" height="auto"
-                            [ngClass]="{'selfie-view': connectWithCameraOn}">
-                            {{ 'select-media-devices.browser-support' | translate }}
-                        </video>
-                    </div>
+
+                    <ng-container *ngIf="availableCameraDevices.length > 0">
+                        <div class="govuk-grid-column-full">
+                            <video appForcePlayVideo mute="true" id="preferredCameraStream"
+                                   [srcObject]="selectedCameraStream" width="100%" height="auto"
+                                   [ngClass]="{'selfie-view': connectWithCameraOn}">
+                                {{ 'select-media-devices.browser-support' | translate }}
+                            </video>
+                        </div>
+                    </ng-container>
                     <div class="govuk-grid-column-full">
                         <app-mic-visualiser *ngIf="selectedMicrophoneStream" [stream]="selectedMicrophoneStream">
                         </app-mic-visualiser>
@@ -24,24 +27,27 @@
                 <!-- Right hand side -->
                 <div class="govuk-grid-column-one-half">
                     <form class="govuk-form-group">
-                        <div *ngIf="hasOnlyOneAvailableCameraDevice">
-                            <p class="govuk-body camera-label">
-                                {{ selectedCameraDevice.label }}
-                            </p>
-                        </div>
+                        <ng-container *ngIf="availableCameraDevices.length > 0">
+                            <div *ngIf="hasOnlyOneAvailableCameraDevice">
+                                <p class="govuk-body camera-label">
+                                    {{ selectedCameraDevice.label }}
+                                </p>
+                            </div>
 
-                        <div *ngIf="!hasOnlyOneAvailableCameraDevice" class="govuk-!-margin-bottom-6">
-                            <label class="govuk-label govuk-!-font-weight-bold" for="available-cam-list">
-                                {{ 'select-media-devices.change-camera' | translate }}</label>
+                            <div *ngIf="!hasOnlyOneAvailableCameraDevice" class="govuk-!-margin-bottom-6">
+                                <label class="govuk-label govuk-!-font-weight-bold" for="available-cam-list">
+                                    {{ 'select-media-devices.change-camera' | translate }}</label>
 
-                            <select required name="camera" [disabled]="!connectWithCameraOn"
-                                [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()"
-                                class="govuk-select govuk-!-width-two-thirds" id="available-cam-list">
-                                <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
-                                    {{ availableCam.label }}
-                                </option>
-                            </select>
-                        </div>
+                                <select required name="camera" [disabled]="!connectWithCameraOn"
+                                        [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()"
+                                        class="govuk-select govuk-!-width-two-thirds" id="available-cam-list">
+                                    <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
+                                        {{ availableCam.label }}
+                                    </option>
+                                </select>
+                            </div>
+                        </ng-container>
+
 
                         <div *ngIf="hasOnlyOneAvailableMicrophoneDevice">
                             <p class="govuk-body">

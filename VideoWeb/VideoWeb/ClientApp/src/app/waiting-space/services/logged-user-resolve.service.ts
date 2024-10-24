@@ -16,6 +16,7 @@ export class LoggedUserResolveService {
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<LoggedParticipantResponse> {
         const conferenceId = route.params['conferenceId'];
+        this.conferenceStore.dispatch(ConferenceActions.loadConference({ conferenceId }));
         return from(this.getData(conferenceId));
     }
 

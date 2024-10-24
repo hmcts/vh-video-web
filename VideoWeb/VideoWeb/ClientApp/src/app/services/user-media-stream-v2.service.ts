@@ -28,6 +28,9 @@ export class UserMediaStreamServiceV2 {
         private audioOnlyImageService: AudioOnlyImageService
     ) {
         this.userMediaService.initialise();
+        const defaultStream = this.mediaStreamService.initialiseNewStream([]);
+        this.currentStream = defaultStream;
+        this._currentStream$.next(defaultStream);
 
         const activeVideoDevice$ = this.userMediaService.activeVideoDevice$;
         const activeMicrophoneDevice$ = this.userMediaService.activeMicrophoneDevice$;

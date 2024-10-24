@@ -8,13 +8,17 @@ import { IntroductionComponent } from './introduction.component';
 import { of } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
+import {createMockStore, MockStore} from "@ngrx/store/testing";
+import {mapConferenceToVHConference} from "../../waiting-space/store/models/api-contract-to-state-model-mappers";
+import {ConferenceState} from "../../waiting-space/store/reducers/conference.reducer";
 
 describe('IntroductionComponent', () => {
-    let component: IntroductionComponent;
+        let component: IntroductionComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const confLite = new ConferenceLite(conference.id, conference.case_number);
 
+    let mockConferenceStore: MockStore<ConferenceState>;
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -38,13 +42,18 @@ describe('IntroductionComponent', () => {
     });
 
     beforeEach(() => {
+        const testData = new ConferenceTestData();
+        mockConferenceStore = createMockStore({
+            initialState: { currentConference: mapConferenceToVHConference(testData.getConferenceDetailNow()), availableRooms: [] }
+        });
+
         component = new IntroductionComponent(
             router,
             activatedRoute,
             videoWebServiceSpy,
-            profilesServiceSpy,
             participantStatusUpdateService,
-            new MockLogger()
+            new MockLogger(),
+            mockConferenceStore
         );
         router.navigate.calls.reset();
         component.ngOnInit();

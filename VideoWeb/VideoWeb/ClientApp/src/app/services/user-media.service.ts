@@ -14,11 +14,7 @@ import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-he
 })
 export class UserMediaService {
     readonly defaultStreamConstraints = {
-        audio: true,
-        video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-        }
+        audio: true
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
@@ -121,12 +117,6 @@ export class UserMediaService {
                         'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
                         false
                     );
-                } else {
-                    this.errorService.goToServiceError(
-                        'error-camera-microphone.problem-with-camera-mic',
-                        'error-camera-microphone.camera-mic-in-use',
-                        false
-                    );
                 }
                 return of(false);
             })
@@ -166,7 +156,10 @@ export class UserMediaService {
     }
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
-        return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+        if(device)
+            return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+        else
+            return of(false);
     }
 
     getConferenceSetting(conferenceId: string): ConferenceSetting {
@@ -325,13 +318,10 @@ export class UserMediaService {
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
-
-        if (cameraDevice) {
-            this.activeVideoDevice = cameraDevice;
-            this.activeVideoDeviceSubject.next(cameraDevice);
-
+        this.activeVideoDevice = cameraDevice;
+        this.activeVideoDeviceSubject.next(cameraDevice);
+        if(cameraDevice)
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
-        }
     }
 
     private setIsAudioOnly(audioOnly: boolean) {
