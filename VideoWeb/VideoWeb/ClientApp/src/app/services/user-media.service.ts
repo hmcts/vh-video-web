@@ -156,10 +156,11 @@ export class UserMediaService {
     }
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
-        if(device)
+        if (device) {
             return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
-        else
+        } else {
             return of(false);
+        }
     }
 
     getConferenceSetting(conferenceId: string): ConferenceSetting {
@@ -320,8 +321,9 @@ export class UserMediaService {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
         this.activeVideoDevice = cameraDevice;
         this.activeVideoDeviceSubject.next(cameraDevice);
-        if(cameraDevice)
+        if (cameraDevice) {
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
+        }
     }
 
     private setIsAudioOnly(audioOnly: boolean) {

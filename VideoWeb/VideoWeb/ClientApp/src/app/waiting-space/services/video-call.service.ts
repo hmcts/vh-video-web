@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
-import {filter, skip, take} from 'rxjs/operators';
+import { filter, skip, take } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -118,8 +118,13 @@ export class VideoCallService {
 
         this.userMediaService.initialise();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
-        this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(filter(e => e.active),take(1)).toPromise();
-        this.userMediaStreamService.createAndPublishStream()
+        this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$
+            .pipe(
+                filter(e => e.active),
+                take(1)
+            )
+            .toPromise();
+        this.userMediaStreamService.createAndPublishStream();
         this.logger.debug(`${this.loggerPrefix} set user media stream`);
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);

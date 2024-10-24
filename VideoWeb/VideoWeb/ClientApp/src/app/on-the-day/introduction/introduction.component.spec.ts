@@ -8,10 +8,10 @@ import { IntroductionComponent } from './introduction.component';
 import { of } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
-import {createMockStore, MockStore} from "@ngrx/store/testing";
-import {mapConferenceToVHConference} from "../../waiting-space/store/models/api-contract-to-state-model-mappers";
-import {ConferenceState} from "../../waiting-space/store/reducers/conference.reducer";
-import * as ConferenceSelectors from "../../waiting-space/store/selectors/conference.selectors";
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { mapConferenceToVHConference } from '../../waiting-space/store/models/api-contract-to-state-model-mappers';
+import { ConferenceState } from '../../waiting-space/store/reducers/conference.reducer';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
