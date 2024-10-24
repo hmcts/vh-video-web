@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { LDFlagValue, LDClient, LDContext, initialize } from 'launchdarkly-js-client-sdk';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ConfigService } from './api/config.service';
-import { first, map } from 'rxjs/operators';
+import { first, map, switchMap } from 'rxjs/operators';
 
 export const FEATURE_FLAGS = {
     dom1SignIn: 'dom1',
@@ -19,6 +19,7 @@ export const FEATURE_FLAGS = {
 export class LaunchDarklyService implements OnDestroy {
     client: LDClient;
     private flagSubjects: { [key: string]: BehaviorSubject<LDFlagValue> } = {};
+    private readonly flagsReadySubject = new ReplaySubject<boolean>(1);
 
     constructor(private configService: ConfigService) {
         this.vhInitialize();
@@ -57,12 +58,18 @@ export class LaunchDarklyService implements OnDestroy {
                 this.flagSubjects[flagKey].next(newValue);
             });
         });
+        this.flagsReadySubject.next(true);
+        this.flagsReadySubject.complete();
     }
 
     getFlag<T>(flagKey: string, defaultValue: LDFlagValue = false): Observable<T> {
-        if (!this.flagSubjects[flagKey]) {
-            this.flagSubjects[flagKey] = new BehaviorSubject<LDFlagValue>(defaultValue);
-        }
-        return this.flagSubjects[flagKey].asObservable().pipe(map(value => value as T));
+        return this.flagsReadySubject.asObservable().pipe(
+            switchMap(() => {
+                if (!this.flagSubjects[flagKey]) {
+                    this.flagSubjects[flagKey] = new BehaviorSubject<LDFlagValue>(defaultValue);
+                }
+                return this.flagSubjects[flagKey].asObservable().pipe(map(value => value as T));
+            })
+        );
     }
 }

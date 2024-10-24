@@ -11,6 +11,7 @@ import { EndpointsUpdatedMessage } from '../shared/models/endpoints-updated-mess
 import { Room } from '../shared/models/room';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import {
+    ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
@@ -106,8 +107,8 @@ export class EventsService {
             this.newConferenceAddedSubject.next(message);
         },
 
-        HearingDetailsUpdatedMessage: (conferenceId: string) => {
-            const message = new HearingDetailsUpdatedMessage(conferenceId);
+        HearingDetailsUpdatedMessage: (conference: ConferenceResponse) => {
+            const message = new HearingDetailsUpdatedMessage(conference);
             this.logger.debug('[EventsService] - HearingDetailsUpdatedMessage received', message);
             this.hearingDetailsUpdatedSubject.next(message);
         },

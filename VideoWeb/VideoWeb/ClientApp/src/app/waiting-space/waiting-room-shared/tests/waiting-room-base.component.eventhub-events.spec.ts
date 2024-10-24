@@ -39,7 +39,8 @@ import {
     hearingLayoutChangedSubjectMock,
     getEndpointLinkedUpdatedMock,
     getEndpointUnlinkedUpdatedMock,
-    getEndpointDisconnectUpdatedMock
+    getEndpointDisconnectUpdatedMock,
+    getHearingDetailsUpdatedMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -94,6 +95,8 @@ import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message'
 import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { videoWebServiceSpy } from 'src/app/vh-officer/vho-shared/tests/participant-status-base-setup';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1997,6 +2000,30 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     expect(value).toEqual(vhContactDetails.englandAndWales.phoneNumber);
                 });
             });
+        });
+    });
+
+    describe('getHearingDetailsUpdated', () => {
+        it('should update the conference', () => {
+            // Arrange
+            const newScheduledDateTime = new Date(globalConference.scheduled_date_time);
+            newScheduledDateTime.setHours(newScheduledDateTime.getHours() + 2);
+            const updatedConference = new ConferenceResponse({
+                id: globalConference.id,
+                scheduled_date_time: newScheduledDateTime,
+                audio_recording_required: !globalConference.audio_recording_required
+            });
+            updatedConference.audio_recording_required = !updatedConference.audio_recording_required;
+
+            const hearingDetailsUpdatedMessage = new HearingDetailsUpdatedMessage(updatedConference);
+
+            // Act
+            getHearingDetailsUpdatedMock.next(hearingDetailsUpdatedMessage);
+
+            // Assert
+            expect(component.conference.id).toBe(updatedConference.id);
+            expect(component.conference.scheduled_date_time).toBe(updatedConference.scheduled_date_time);
+            expect(component.conference.audio_recording_required).toBe(updatedConference.audio_recording_required);
         });
     });
 });

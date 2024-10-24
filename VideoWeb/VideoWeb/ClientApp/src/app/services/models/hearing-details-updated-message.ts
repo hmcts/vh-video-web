@@ -1,3 +1,5 @@
+import { ConferenceResponse } from '../clients/api-client';
+
 export class HearingDetailsUpdatedMessage {
-    constructor(public conferenceId: string) {}
+    constructor(public conference: ConferenceResponse) {}
 }
