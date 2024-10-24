@@ -7,11 +7,11 @@ import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-tes
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
-import { Subject } from 'rxjs';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { of, Subject } from 'rxjs';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('SelectMediaDevicesComponent', () => {
     const mockProfile: UserProfileResponse = new UserProfileResponse({
@@ -23,22 +23,18 @@ describe('SelectMediaDevicesComponent', () => {
 
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
-    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
+    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let profileService: jasmine.SpyObj<ProfileService>;
     let videoFilterService: jasmine.SpyObj<VideoFilterService>;
 
     const testData = new MediaDeviceTestData();
-    const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
-    const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+    const mockCurrentStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks', 'getVideoTracks']);
     let connectedVideoDevicesSubject: Subject<UserMediaDevice[]>;
     let connectedMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let isAudioOnlySubject: Subject<boolean>;
     let filterChangedSubject: Subject<BackgroundFilter | null>;
-
-    let activeCameraStreamSubject: Subject<MediaStream>;
-    let activeMicrophoneStreamSubject: Subject<MediaStream>;
 
     const focusServiceSpy = jasmine.createSpyObj('FocusService', ['restoreFocus']);
 
@@ -70,15 +66,12 @@ describe('SelectMediaDevicesComponent', () => {
         );
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
-        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeCameraStream$', 'activeMicrophoneStream$']);
+        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamServiceV2>([], ['currentStream$']);
 
-        activeCameraStreamSubject = new Subject<MediaStream>();
-        activeMicrophoneStreamSubject = new Subject<MediaStream>();
+        mockCurrentStream.getAudioTracks.and.returnValue(new Array<MediaStreamTrack>());
+        mockCurrentStream.getVideoTracks.and.returnValue(new Array<MediaStreamTrack>());
 
-        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeCameraStream$').and.returnValue(activeCameraStreamSubject.asObservable());
-        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeMicrophoneStream$').and.returnValue(
-            activeMicrophoneStreamSubject.asObservable()
-        );
+        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'currentStream$').and.returnValue(of(mockCurrentStream));
         getSpiedPropertyGetter(videoFilterService, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
         filterChangedSubject.next(BackgroundFilter.blur);
         videoFilterService.isFeatureEnabled.and.returnValue(true);
@@ -303,30 +296,6 @@ describe('SelectMediaDevicesComponent', () => {
         component.connectWithCameraOn = false;
         component.toggleSwitch();
         expect(component.connectWithCameraOn).toBeTrue();
-    });
-
-    describe('It should use the upto date streams from user stream service', () => {
-        beforeEach(() => {
-            component.ngOnInit();
-        });
-
-        it('should update camera stream when activeCameraStream is emitted from userMediaService', fakeAsync(() => {
-            // Act
-            activeCameraStreamSubject.next(mockCamStream);
-            flush();
-
-            // Assert
-            expect(component.selectedCameraStream).toBe(mockCamStream);
-        }));
-
-        it('should update microphone stream when activeMicrophoneStream is emitted from userMediaService', fakeAsync(() => {
-            // Act
-            activeMicrophoneStreamSubject.next(mockMicStream);
-            flush();
-
-            // Assert
-            expect(component.selectedMicrophoneStream).toBe(mockMicStream);
-        }));
     });
 
     it('should get camera text "OFF" when connectWithCameraOn is false', () => {
