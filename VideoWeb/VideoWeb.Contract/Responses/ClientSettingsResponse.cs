@@ -70,5 +70,10 @@ namespace VideoWeb.Contract.Responses
         /// Configurations for the suppliers
         /// </summary>
         public List<SupplierConfigurationResponse> SupplierConfigurations { get; set; } = [];
+
+        /// <summary>
+        /// The url to the Dynatrace Real User Monitoring javascript script.
+        /// </summary>
+        public string DynatraceRumLink { get; set; }
     }
 }
