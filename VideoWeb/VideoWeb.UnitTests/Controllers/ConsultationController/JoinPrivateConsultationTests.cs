@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -120,6 +121,60 @@ public class JoinPrivateConsultationTests
         // Assert
         result.Should().BeAssignableTo<NotFoundObjectResult>();
         result.As<NotFoundObjectResult>().Value.As<string>().Should().Contain("participant");
+        
+        _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
+            It.Is<Conference>(c => c == conference),
+            It.Is<Guid>(id => id == expectedParticipantId),
+            It.Is<string>(room => room == expectedRoomLabel)), Times.Never);
+        
+        _mocker.Mock<IVideoApiClient>().Verify(x => x.RespondToConsultationRequestAsync(It.Is<ConsultationRequestResponse>(y =>
+            y.Answer == ConsultationAnswer.Accepted &&
+            y.ConferenceId == expectedConferenceId &&
+            y.RequestedBy == expectedParticipantId &&
+            y.RequestedFor == expectedParticipantId &&
+            y.RoomLabel == expectedRoomLabel)), Times.Never);
+    }
+
+    [Test]
+    public async Task JoinPrivateConsultation_ParticipantScreened_ReturnBadRequest()
+    {
+        // Arrange
+        var expectedRoomLabel = "ExpectedRoomLabel";
+        
+        var conference = new ConferenceCacheModelBuilder()
+            .Build();
+        var nonHostParticipants = conference.Participants.Where(x => !x.IsHost()).ToList();
+        var participant = nonHostParticipants[0];
+        participant.Username = ClaimsPrincipalBuilder.Username;
+        
+        var patInRoom = nonHostParticipants[1];
+        var endpoint = conference.Endpoints[0];
+        
+        participant.ProtectFrom.Add(endpoint.ExternalReferenceId);
+        
+        var consultationRoom = new ConsultationRoom { Label = expectedRoomLabel };
+        conference.ConsultationRooms.Add(consultationRoom);
+        patInRoom.CurrentRoom = consultationRoom;
+        endpoint.CurrentRoom = consultationRoom;
+        
+        var expectedConferenceId = conference.Id;
+        var expectedParticipantId = participant.Id;
+        
+        _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(y => y == expectedConferenceId), It.IsAny<CancellationToken>())).ReturnsAsync(conference);
+        
+        JoinPrivateConsultationRequest request = new JoinPrivateConsultationRequest()
+        {
+            ConferenceId = expectedConferenceId,
+            ParticipantId = expectedParticipantId,
+            RoomLabel = expectedRoomLabel
+        };
+        
+        // Act
+        var result = await _consultationsController.JoinPrivateConsultation(request, CancellationToken.None);
+        
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+            .Be(ConsultationsController.ConsultationHasScreenedParticipantErrorMessage);
         
         _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyParticipantTransferring(
             It.Is<Conference>(c => c == conference),

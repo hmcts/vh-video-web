@@ -600,6 +600,40 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.conference.participants = [thisParticipant, otherParticipant];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
+
+    describe('getPrivateConsultationParticipants with screening', () => {
+        it('should not return a participant B is current participant is on their protect from list', () => {
+            const participant1 = new ParticipantResponse();
+            participant1.id = 'participant1';
+            participant1.external_reference_id = 'participantExternalRef1';
+            participant1.protect_from = [];
+
+            const participant2 = new ParticipantResponse();
+            participant2.id = 'participant2';
+            participant2.external_reference_id = 'participantExternalRef2';
+            participant2.protect_from = ['participantExternalRef1'];
+
+            component.participant = participant1;
+            component.conference.participants = [participant1, participant2];
+            expect(component.getPrivateConsultationParticipants().length).toBe(0);
+        });
+
+        it('should not return a Participant B if Participant B is on current participant protectFrom list', () => {
+            const participant1 = new ParticipantResponse();
+            participant1.id = 'participant1';
+            participant1.external_reference_id = 'participantExternalRef1';
+            participant1.protect_from = ['participantExternalRef2'];
+
+            const participant2 = new ParticipantResponse();
+            participant2.id = 'participant2';
+            participant2.external_reference_id = 'participantExternalRef2';
+            participant2.protect_from = [];
+
+            component.participant = participant1;
+            component.conference.participants = [participant1, participant2];
+            expect(component.getPrivateConsultationParticipants().length).toBe(0);
+        });
+    });
     it('should call consultation service when starting consultation', fakeAsync(() => {
         component.startPrivateConsultation(null, null);
         flushMicrotasks();
