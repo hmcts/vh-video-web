@@ -11,9 +11,10 @@ import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 import {createMockStore, MockStore} from "@ngrx/store/testing";
 import {mapConferenceToVHConference} from "../../waiting-space/store/models/api-contract-to-state-model-mappers";
 import {ConferenceState} from "../../waiting-space/store/reducers/conference.reducer";
+import * as ConferenceSelectors from "../../waiting-space/store/selectors/conference.selectors";
 
 describe('IntroductionComponent', () => {
-        let component: IntroductionComponent;
+    let component: IntroductionComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const confLite = new ConferenceLite(conference.id, conference.case_number);
@@ -35,7 +36,6 @@ describe('IntroductionComponent', () => {
         const profile = new UserProfileResponse({ roles: [Role.Individual] });
         profilesServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         profilesServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
         videoWebServiceSpy.checkUserHasCompletedSelfTest.and.returnValue(of(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -43,10 +43,12 @@ describe('IntroductionComponent', () => {
 
     beforeEach(() => {
         const testData = new ConferenceTestData();
+        const testConference = mapConferenceToVHConference(testData.getConferenceDetailNow());
         mockConferenceStore = createMockStore({
-            initialState: { currentConference: mapConferenceToVHConference(testData.getConferenceDetailNow()), availableRooms: [] }
+            initialState: { currentConference: mapConferenceToVHConference(conference), availableRooms: [] }
         });
-
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, testConference);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, testConference.participants[0]);
         component = new IntroductionComponent(
             router,
             activatedRoute,

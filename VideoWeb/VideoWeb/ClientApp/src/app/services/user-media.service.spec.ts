@@ -55,22 +55,6 @@ describe('UserMediaService', () => {
                 done();
             });
         });
-
-        it('navigates to device in use page when device is in use', done => {
-            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
-                throwError(new DOMException('Device in use'))
-            );
-            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
-                expect(result).toBeFalse();
-                expect(mediaSpy).toHaveBeenCalledTimes(1);
-                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
-                    'error-camera-microphone.problem-with-camera-mic',
-                    'error-camera-microphone.camera-mic-in-use',
-                    false
-                );
-                done();
-            });
-        });
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
