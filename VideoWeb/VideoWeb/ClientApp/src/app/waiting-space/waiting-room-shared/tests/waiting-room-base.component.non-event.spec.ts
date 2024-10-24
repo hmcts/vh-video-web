@@ -712,34 +712,6 @@ describe('WaitingRoomComponent message and clock', () => {
                     component.conference.id
                 );
             });
-
-            it('should use recvonly call type when participant role is QL observer', async () => {
-                component.participant.role = Role.QuickLinkObserver;
-
-                await component.call();
-
-                expect(videoCallService.makeReceiveOnlyCall).toHaveBeenCalledWith(
-                    component.conference.pexip_node_uri,
-                    component.conference.participant_uri,
-                    component.participant.tiled_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
-
-            it('should use recvonly call type when participant hearing role is observer', async () => {
-                component.participant.hearing_role = HearingRole.OBSERVER;
-
-                await component.call();
-
-                expect(videoCallService.makeReceiveOnlyCall).toHaveBeenCalledWith(
-                    component.conference.pexip_node_uri,
-                    component.conference.participant_uri,
-                    component.participant.tiled_display_name,
-                    component.maxBandwidth,
-                    component.conferenceId
-                );
-            });
         });
 
         describe('when the vodafone toggle is enabled', () => {

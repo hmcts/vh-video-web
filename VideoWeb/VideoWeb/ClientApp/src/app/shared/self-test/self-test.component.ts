@@ -259,7 +259,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             pexipDisconnectReason: reason
         });
         if (reason.reason === 'Conference terminated by another participant') {
-            await this.retrieveSelfTestScore();
+            this.retrieveSelfTestScore();
         }
     }
 
