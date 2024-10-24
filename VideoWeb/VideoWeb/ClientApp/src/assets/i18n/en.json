@@ -680,7 +680,9 @@
     "change-hearing-layout": "Change Layout",
     "change-interpreting-language": "Change Interpreting Language",
     "interpreting-for": "Interpreting for",
-    "dial-out": "Dial out"
+    "dial-out": "Dial out",
+    "pause-recording": "Pause recording placeholder text",
+    "resume-recording": "Resume recording placeholder text"
   },
   "chat-panel": {
     "heading": "VH Officer messages",

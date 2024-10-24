@@ -373,8 +373,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}",
-                conferenceId);
+            logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
         }
     }
     
