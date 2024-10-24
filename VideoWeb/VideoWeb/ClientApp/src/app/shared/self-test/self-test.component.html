@@ -18,6 +18,7 @@
   <div class="self-view-container">
     <div>
       <video
+        *ngIf="this.outgoingStream"
         #selfViewVideo
         [muted]="true"
         id="outgoingStream"

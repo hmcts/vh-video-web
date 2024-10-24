@@ -27,11 +27,6 @@ export class UserMediaStreamServiceV2 {
         private mediaStreamService: MediaStreamService,
         private audioOnlyImageService: AudioOnlyImageService
     ) {
-        this.userMediaService.initialise();
-        const defaultStream = this.mediaStreamService.initialiseNewStream([]);
-        this.currentStream = defaultStream;
-        this._currentStream$.next(defaultStream);
-
         const activeVideoDevice$ = this.userMediaService.activeVideoDevice$;
         const activeMicrophoneDevice$ = this.userMediaService.activeMicrophoneDevice$;
         const isAudioOnly$ = this.userMediaService.isAudioOnly$;
@@ -41,6 +36,7 @@ export class UserMediaStreamServiceV2 {
                 this.currentCamDevice = videoDevice;
                 this.currentMicDevice = microphoneDevice;
                 this.audioOnly = audioOnly;
+
                 this.createAndPublishStream();
             }
         );
@@ -56,6 +52,7 @@ export class UserMediaStreamServiceV2 {
      * @returns
      */
     createAndPublishStream() {
+        this.userMediaService.initialise();
         if (this.currentStream) {
             this.currentStream.getTracks().forEach(track => track.stop());
         }

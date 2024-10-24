@@ -93,6 +93,29 @@ describe('HeartbeatService', () => {
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
+        it('should do nothing if heartbeat is already initialised', fakeAsync(() => {
+            // arrange
+            const heartbeatSpy = jasmine.createSpyObj<HeartbeatClient>(['kill'], []);
+            sut.heartbeat = heartbeatSpy;
+
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
+        }));
+
+        it('should do nothing if the heartbeat is initialising', fakeAsync(() => {
+            // arrange
+            sut.initialising = true;
+
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
+        }));
+
         it('should do nothing if the current conference is null', fakeAsync(() => {
             // Act
             sut.initialiseHeartbeat(pexipApiMock);

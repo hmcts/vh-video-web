@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { filter, skip, take } from 'rxjs/operators';
+import { skip, take } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -118,13 +118,7 @@ export class VideoCallService {
 
         this.userMediaService.initialise();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
-        this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$
-            .pipe(
-                filter(e => e.active),
-                take(1)
-            )
-            .toPromise();
-        this.userMediaStreamService.createAndPublishStream();
+        this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
         this.logger.debug(`${this.loggerPrefix} set user media stream`);
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
@@ -215,22 +209,6 @@ export class VideoCallService {
         if (conferenceId && !hasMicrophoneDevices) {
             this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
         }
-    }
-
-    makeReceiveOnlyCall(
-        pexipNode: string,
-        conferenceAlias: string,
-        participantDisplayName: string,
-        maxBandwidth: number,
-        conferenceId: string
-    ) {
-        this.pexipAPI.user_media_stream = new MediaStream([]);
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.audio_source = false;
-        if (conferenceId) {
-            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
-        }
-        this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
     disconnectFromCall() {
