@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { skip, take, takeUntil } from 'rxjs/operators';
+import { skip, take } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -15,7 +15,6 @@ import { HeartbeatService } from 'src/app/services/conference/heartbeat.service'
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import {
     CallError,
@@ -37,6 +36,7 @@ import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Injectable()
 export class VideoCallService {
@@ -81,7 +81,7 @@ export class VideoCallService {
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
+        private userMediaStreamService: UserMediaStreamServiceV2,
         private apiClient: ApiClient,
         private configService: ConfigService,
         private heartbeatService: HeartbeatService,
@@ -103,7 +103,7 @@ export class VideoCallService {
     async setupClient(supplier: Supplier): Promise<void> {
         this.logger.debug(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
-        this.supplier = supplier;
+        this.supplier = supplier ?? Supplier.Vodafone;
 
         const self = this;
         this.pexipAPI = new PexRTC();
@@ -209,22 +209,6 @@ export class VideoCallService {
         if (conferenceId && !hasMicrophoneDevices) {
             this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
         }
-    }
-
-    makeReceiveOnlyCall(
-        pexipNode: string,
-        conferenceAlias: string,
-        participantDisplayName: string,
-        maxBandwidth: number,
-        conferenceId: string
-    ) {
-        this.pexipAPI.user_media_stream = new MediaStream([]);
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.audio_source = false;
-        if (conferenceId) {
-            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
-        }
-        this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
     }
 
     disconnectFromCall() {
@@ -457,8 +441,8 @@ export class VideoCallService {
         const displayStream = await this.userMediaService.selectScreenToShare();
         // capture the original screen stream to stop sharing screen when the button is clicked
         this._displayStream = displayStream;
-        this.userMediaStreamService.activeMicrophoneStream$.pipe(take(1)).subscribe(micStream => {
-            const mixStream = this.streamMixerService.mergeAudioStreams(displayStream, micStream);
+        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
+            const mixStream = this.streamMixerService.mergeAudioStreams(displayStream, currentStream);
             mixStream.addTrack(displayStream.getVideoTracks()[0]);
             // capture when the user stops screen sharing via the browser instead of the control menu
             mixStream.getVideoTracks()[0].addEventListener('ended', () => {
@@ -610,13 +594,10 @@ export class VideoCallService {
             );
             this.justRenegotiated = false;
         } else {
-            this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
-
-            if (!this.streamModifiedSubscription) {
-                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
-                    .pipe(takeUntil(this.hasDisconnected$))
-                    .subscribe(() => this.renegotiateCall());
+            if (this.pexipAPI.call_type === 'test_call') {
+                return;
             }
+            this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
         }
 
         this.onConnectedSubject.next(new ConnectedCall(stream));

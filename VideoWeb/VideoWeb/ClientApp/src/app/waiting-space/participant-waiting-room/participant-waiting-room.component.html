@@ -101,7 +101,7 @@
   </div>
 </div>
 
-<div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && isTransferringIn">
+<div *ngIf="isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
       <img
@@ -327,7 +327,7 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [showAudioOnlySetting]="allowAudioOnlyToggle"
+  [showAudioOnlySetting]="true"
   (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>

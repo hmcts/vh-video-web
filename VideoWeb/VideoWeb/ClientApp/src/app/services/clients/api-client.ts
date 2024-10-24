@@ -9366,6 +9366,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     launch_darkly_client_id?: string | undefined;
     /** Configurations for the suppliers */
     supplier_configurations?: SupplierConfigurationResponse[] | undefined;
+    /** The url to the Dynatrace Real User Monitoring javascript script. */
+    dynatrace_rum_link?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -9396,6 +9398,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
                 for (let item of _data['supplier_configurations'])
                     this.supplier_configurations!.push(SupplierConfigurationResponse.fromJS(item));
             }
+            this.dynatrace_rum_link = _data['dynatrace_rum_link'];
         }
     }
 
@@ -9424,6 +9427,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             data['supplier_configurations'] = [];
             for (let item of this.supplier_configurations) data['supplier_configurations'].push(item.toJSON());
         }
+        data['dynatrace_rum_link'] = this.dynatrace_rum_link;
         return data;
     }
 }
@@ -9453,6 +9457,8 @@ export interface IClientSettingsResponse {
     launch_darkly_client_id?: string | undefined;
     /** Configurations for the suppliers */
     supplier_configurations?: SupplierConfigurationResponse[] | undefined;
+    /** The url to the Dynatrace Real User Monitoring javascript script. */
+    dynatrace_rum_link?: string | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {

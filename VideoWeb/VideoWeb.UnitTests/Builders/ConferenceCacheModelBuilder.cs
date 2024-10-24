@@ -24,17 +24,21 @@ namespace VideoWeb.UnitTests.Builders
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Username = Faker.Internet.Email())
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .With(x => x.Id = Guid.NewGuid())
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid())
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid())
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid())
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build()
@@ -43,12 +47,12 @@ namespace VideoWeb.UnitTests.Builders
                 {
                     Builder<Endpoint>.CreateNew()
                         .With(x => x.Id = Guid.NewGuid())
-                        .With(x => x.DisplayName = "EP1")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).With(x => x.DisplayName = "EP1")
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .Build(),
                     Builder<Endpoint>.CreateNew()
                         .With(x => x.Id = Guid.NewGuid())
-                        .With(x => x.DisplayName = "EP2")
+                        .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).With(x => x.DisplayName = "EP2")
                         .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString())
                         .Build()
                 },
