@@ -5,7 +5,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'; // impor
 
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { mapParticipantToVHParticipant, mapEndpointToVHEndpoint } from '../models/api-contract-to-state-model-mappers';
+import {
+    mapParticipantToVHParticipant,
+    mapEndpointToVHEndpoint,
+    mapConferenceToVHConference
+} from '../models/api-contract-to-state-model-mappers';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -13,7 +17,7 @@ import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { VHInterpreterLanguage, VHParticipant, VHPexipParticipant } from '../models/vh-conference';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallEffects } from './video-call.effects';
-import { InterpreterType } from 'src/app/services/clients/api-client';
+import { InterpreterType, Supplier } from 'src/app/services/clients/api-client';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('VideoCallEffects', () => {
@@ -27,6 +31,7 @@ describe('VideoCallEffects', () => {
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.interpreterEnhancements).and.returnValue(of(true));
         videoCallService = jasmine.createSpyObj('VideoCallService', ['receiveAudioFromMix', 'sendParticipantAudioToMixes']);
+
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
@@ -51,8 +56,13 @@ describe('VideoCallEffects', () => {
     });
 
     describe('createAudioMixes$', () => {
+        const conferenceTestData = new ConferenceTestData();
         describe('interpreter enhancements enabled', () => {
             beforeEach(() => {
+                const conference = conferenceTestData.getConferenceDetailNow();
+                conference.supplier = Supplier.Vodafone;
+                const vhConference = mapConferenceToVHConference(conference);
+                mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
                 launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.interpreterEnhancements).and.returnValue(of(true));
                 videoCallService.receiveAudioFromMix.calls.reset();
                 videoCallService.sendParticipantAudioToMixes.calls.reset();
