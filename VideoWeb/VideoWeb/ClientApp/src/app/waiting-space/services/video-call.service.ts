@@ -211,22 +211,6 @@ export class VideoCallService {
         }
     }
 
-    makeReceiveOnlyCall(
-        pexipNode: string,
-        conferenceAlias: string,
-        participantDisplayName: string,
-        maxBandwidth: number,
-        conferenceId: string
-    ) {
-        this.pexipAPI.user_media_stream = new MediaStream([]);
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.audio_source = false;
-        if (conferenceId) {
-            this.userMediaService.updateStartWithAudioMuted(conferenceId, true);
-        }
-        this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, 'recvonly');
-    }
-
     disconnectFromCall() {
         if (this.pexipAPI) {
             this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
