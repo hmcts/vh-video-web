@@ -79,10 +79,7 @@ export class UserMediaService {
         return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
             take(1),
             map(devices => {
-                const filteredDevices = devices.filter(
-                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
-                );
-
+                const filteredDevices = devices.filter(x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput'));
                 return filteredDevices.length > 0 ? filteredDevices : devices;
             }),
             map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
@@ -106,11 +103,8 @@ export class UserMediaService {
             take(1),
             map(stream => {
                 const result =
-                    (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) ||
-                    stream.getAudioTracks().length > 0;
-
+                    (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) || stream.getAudioTracks().length > 0;
                 stream.getTracks().forEach(track => track.stop());
-
                 return result;
             }),
             catchError(error => {
@@ -213,7 +207,6 @@ export class UserMediaService {
         this.logger.debug(`${this.loggerPrefix} handle device change`);
         this.updateAvailableDeviceList().subscribe(availableDevices => {
             this.connectedDevicesSubject.next(availableDevices);
-
             this.initialiseActiveDevicesFromCache(availableDevices);
             this.checkActiveDevicesAreStillConnected(availableDevices);
         });
@@ -305,18 +298,22 @@ export class UserMediaService {
 
         return this.hasValidCameraAndMicAvailable().pipe(
             take(1),
-            filter(Boolean),
-            mergeMap(() => this.getCameraAndMicrophoneDevices())
+            map(hasValidCameraAndMic => {
+                if(hasValidCameraAndMic)
+                    return this.getCameraAndMicrophoneDevices()
+                else
+                    return of([]);
+            }),
+            mergeMap(devices => devices)
         );
     }
 
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
 
+        this.activeMicrophoneDevice = microhoneDevice;
+        this.activeMicrophoneDeviceSubject.next(microhoneDevice);
         if (microhoneDevice) {
-            this.activeMicrophoneDevice = microhoneDevice;
-            this.activeMicrophoneDeviceSubject.next(microhoneDevice);
-
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
     }

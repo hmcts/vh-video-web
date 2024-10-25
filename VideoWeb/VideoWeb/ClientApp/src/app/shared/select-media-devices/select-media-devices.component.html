@@ -9,7 +9,6 @@
                 </h2>
                 <!-- Left hand side -->
                 <div class="govuk-grid-column-one-half">
-
                     <ng-container *ngIf="availableCameraDevices.length > 0">
                         <div class="govuk-grid-column-full">
                             <video appForcePlayVideo mute="true" id="preferredCameraStream"
@@ -19,7 +18,7 @@
                             </video>
                         </div>
                     </ng-container>
-                    <div class="govuk-grid-column-full">
+                    <div class="govuk-grid-column-full" *ngIf="availableMicrophoneDevices.length > 0">
                         <app-mic-visualiser *ngIf="selectedMicrophoneStream" [stream]="selectedMicrophoneStream">
                         </app-mic-visualiser>
                     </div>
@@ -54,9 +53,7 @@
                                 {{ selectedMicrophoneDevice.label }}
                             </p>
                         </div>
-
-
-                        <div *ngIf="!hasOnlyOneAvailableMicrophoneDevice">
+                        <div *ngIf="!hasOnlyOneAvailableMicrophoneDevice && availableMicrophoneDevices.length > 0">
                             <label class="govuk-label govuk-!-font-weight-bold" for="available-mics-list">{{
                                 'select-media-devices.change-microphone' | translate
                                 }}</label>
@@ -77,6 +74,9 @@
                     </form>
                 </div>
             </div>
+            <ng-container  *ngIf="availableMicrophoneDevices.length < 1 && availableMicrophoneDevices.length < 1">
+                <p>{{ 'error-camera-microphone.camera-mic-cannot-be-found' | translate }}</p>
+            </ng-container>
             <div class="govuk-grid-row">
                 <div *ngIf="showAudioOnlySetting" class="govuk-grid-column-full">
                     <div class="govuk-warning-text">
