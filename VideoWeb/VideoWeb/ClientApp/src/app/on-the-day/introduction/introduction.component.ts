@@ -45,8 +45,6 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
             this.isRepresentative = loggedInParticipant.role === Role.Representative;
             this.isObserver =
                 loggedInParticipant.hearingRole === HearingRole.OBSERVER || loggedInParticipant.role === Role.QuickLinkObserver;
-            console.log('loggedInParticipant', loggedInParticipant);
-            console.log('activeConference', activeConference);
         });
     }
 
