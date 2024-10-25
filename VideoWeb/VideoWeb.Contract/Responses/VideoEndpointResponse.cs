@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses;
@@ -41,4 +42,14 @@ public class VideoEndpointResponse
     /// The endpoint's interpreter language, if applicable
     /// </summary>
     public InterpreterLanguageResponse InterpreterLanguage { get; set; }
+    
+    /// <summary>
+    /// A unique identifier for the participant (used by special measures)
+    /// </summary>
+    public string ExternalReferenceId { get; set; }
+
+    /// <summary>
+    /// List of external references to protect this participant from
+    /// </summary>
+    public List<string> ProtectFrom { get; set; }
 }
