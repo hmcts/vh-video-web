@@ -47,7 +47,9 @@ export function mapParticipantToVHParticipant(participant: ParticipantResponse):
             participant?.linked_participants?.map(lp => ({
                 linkedId: lp.linked_id,
                 linkedType: lp.link_type
-            })) ?? []
+            })) ?? [],
+        externalReferenceId: participant.external_reference_id,
+        protectedFrom: participant.protect_from ?? []
     };
 }
 
@@ -60,7 +62,9 @@ export function mapEndpointToVHEndpoint(endpoint: VideoEndpointResponse): VHEndp
         room: endpoint.current_room ? mapRoomToVHRoom(endpoint.current_room) : null,
         interpreterLanguage: endpoint.interpreter_language
             ? mapInterpeterLanguageToVHInterpreterLanguage(endpoint.interpreter_language)
-            : null
+            : null,
+        externalReferenceId: endpoint.external_reference_id,
+        protectedFrom: endpoint.protect_from ?? []
     };
 }
 

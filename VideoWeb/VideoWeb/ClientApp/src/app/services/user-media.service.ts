@@ -100,15 +100,23 @@ export class UserMediaService {
         return { hasACamera, hasAMicrophone };
     }
 
+    /**
+     * Checks if a valid camera and microphone are available. Also used to request permissions.
+     * @returns true if a valid camera or microphone are available.
+     */
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
             retry(3),
             take(1),
-            map(
-                stream =>
+            map(stream => {
+                const result =
                     (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) ||
-                    stream.getAudioTracks().length > 0
-            ),
+                    stream.getAudioTracks().length > 0;
+
+                stream.getTracks().forEach(track => track.stop());
+
+                return result;
+            }),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
                 if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {

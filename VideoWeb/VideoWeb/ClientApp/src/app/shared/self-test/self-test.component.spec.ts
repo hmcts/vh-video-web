@@ -15,17 +15,16 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { mockMicStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import { SelfTestComponent } from './self-test.component';
 import { ElementRef } from '@angular/core';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -36,10 +35,9 @@ describe('SelfTestComponent', () => {
 
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
-    let activateMicrophoneSubject: Subject<MediaStream>;
-    let activeCameraStreamSubject: Subject<MediaStream>;
+    let currentStreamSubject: Subject<MediaStream>;
 
-    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
+    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
@@ -66,15 +64,14 @@ describe('SelfTestComponent', () => {
         userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
-        activateMicrophoneSubject = new Subject<MediaStream>();
-        activeCameraStreamSubject = new Subject<MediaStream>();
+        currentStreamSubject = new Subject<MediaStream>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
 
-        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeMicrophoneStream$', 'activeCameraStream$']);
-        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeMicrophoneStream$').and.returnValue(
-            activateMicrophoneSubject.asObservable()
+        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamServiceV2>(
+            ['createAndPublishStream', 'closeCurrentStream'],
+            ['currentStream$']
         );
-        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeCameraStream$').and.returnValue(activeCameraStreamSubject.asObservable());
+        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>([
             'onCallConnected',
@@ -148,7 +145,7 @@ describe('SelfTestComponent', () => {
             expect(userMediaServiceSpy.initialise).toHaveBeenCalledTimes(1);
         });
 
-        describe('on connectedDevices$', () => {
+        describe('on currentStream$', () => {
             it('should setup subscribers, configure and make call; additionally only handle once', fakeAsync(() => {
                 // Arrange
                 spyOn(component, 'initialiseData');
@@ -178,20 +175,6 @@ describe('SelfTestComponent', () => {
 
                 // Assert
                 expect(errorServiceSpy.handlePexipError).toHaveBeenCalledTimes(1);
-            }));
-
-            it('should setup subscribers', fakeAsync(() => {
-                // Arrange
-                userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
-
-                // Act
-                component.setupSubscribers();
-                activateMicrophoneSubject.next(mockMicStream);
-                flush();
-
-                // Assert
-                expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
-                expect(component.showChangeDevices).toBeTrue();
             }));
         });
     });
@@ -355,21 +338,6 @@ describe('SelfTestComponent', () => {
             // Assert
             expect(component.displayDeviceChangeModal).toBeFalse();
         });
-
-        describe('on activeMicrophoneStream$', () => {
-            beforeEach(() => {
-                component.setupSubscribers();
-            });
-
-            it('should set the preferredMicrophoneStream stream', fakeAsync(() => {
-                // Act
-                activateMicrophoneSubject.next(mockMicStream);
-                flush();
-
-                // Assert
-                expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
-            }));
-        });
     });
 
     describe('call', () => {
@@ -431,11 +399,9 @@ describe('SelfTestComponent', () => {
 
             // Act
             component.replayVideo();
-            activateMicrophoneSubject.next(stream);
             flush();
 
             // Assert
-            expect(component.preferredMicrophoneStream).toBe(stream);
             expect(disconnectSpy).toHaveBeenCalledTimes(1);
             expect(callSpy).toHaveBeenCalledTimes(1);
         }));

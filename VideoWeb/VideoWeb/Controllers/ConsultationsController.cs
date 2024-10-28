@@ -33,11 +33,21 @@ namespace VideoWeb.Controllers
         IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
         : ControllerBase
     {
+        public const string ConsultationHasScreenedParticipantErrorMessage =
+            "Participant is not allowed to join the consultation room with a participant they are screened from";
+
+        public const string ConsultationHasScreenedEndpointErrorMessage =
+            "Endpoint is not allowed to join the consultation room with a participant they are screened from";
+
+        public const string ConsultationHasScreenedParticipantAndEndpointErrorMessage =
+            "Cannot start consultation with participants or endpoints that are screened from each other";
+        
+        
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeaveConsultation")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request, CancellationToken cancellationToken)
         {
             var participant = new Participant();
@@ -74,7 +84,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request, CancellationToken cancellationToken)
         {
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
@@ -115,7 +125,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request, CancellationToken cancellationToken)
         {
             try
@@ -132,6 +142,11 @@ namespace VideoWeb.Controllers
                     return NotFound("Couldn't find participant.");
                 }
 
+                if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
+                {
+                    return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
+                }
+                
                 var mappedRequest = JoinPrivateConsultationRequestMapper.Map(request);
 
                 await videoApiClient.RespondToConsultationRequestAsync(mappedRequest, cancellationToken);
@@ -150,14 +165,19 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
                 var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+                
+                if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(),
+                        request.InviteEndpoints.ToList()))
+                {
+                    return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
+                }
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
                 if (requestedBy == null)
@@ -278,7 +298,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "InviteToConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> InviteToConsultationAsync(InviteToConsultationRequest request, CancellationToken cancellationToken)
         {
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
@@ -288,6 +308,11 @@ namespace VideoWeb.Controllers
             if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
             {
                 return Unauthorized("You must be a VHO or a member of the conference");
+            }
+            
+            if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
+            {
+                return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
             }
 
             await consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
@@ -299,7 +324,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "AddEndpointToConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request, CancellationToken cancellationToken)
         {
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
@@ -309,6 +334,11 @@ namespace VideoWeb.Controllers
             if (requestedBy == null)
             {
                 return Unauthorized("You must be a VHO or a member of the conference");
+            }
+            
+            if (!conference.CanEndpointJoinConsultationRoom(request.RoomLabel, request.EndpointId))
+            {
+                return BadRequest(ConsultationHasScreenedEndpointErrorMessage);
             }
 
             try

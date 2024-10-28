@@ -17,6 +17,7 @@ import {
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -24,6 +25,8 @@ import { ModalService } from '../modal.service';
 export class ConsultationService {
     static readonly ERROR_PC_MODAL = 'pc-error-modal';
     static readonly LEAVE_PC_MODAL = 'pc-leave-modal';
+
+    consultationError$ = new Subject<string>();
 
     constructor(
         private apiClient: ApiClient,
@@ -73,7 +76,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             this.logger.error('Failed to response to consultation request', error);
         }
     }
@@ -91,7 +94,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             this.logger.error('Failed to join to consultation', error);
         }
     }
@@ -113,7 +116,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             throw error;
         }
     }
@@ -135,7 +138,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             throw error;
         }
     }
@@ -156,7 +159,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             throw error;
         }
     }
@@ -184,7 +187,7 @@ export class ConsultationService {
                 )
                 .toPromise();
         } catch (error) {
-            this.displayConsultationErrorModal();
+            this.displayConsultationErrorModal(error);
             throw error;
         }
     }
@@ -225,8 +228,16 @@ export class ConsultationService {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
-    displayConsultationErrorModal() {
+    displayConsultationErrorModal(consultationError: string | Error) {
         this.logger.debug('[ConsultationService] - Displaying consultation error modal.');
+        if (consultationError instanceof Error) {
+            consultationError = consultationError?.message;
+            this.consultationError$.next(consultationError);
+        } else if (typeof consultationError === 'string') {
+            this.consultationError$.next(consultationError);
+        } else {
+            this.consultationError$.next('');
+        }
         this.displayModal(ConsultationService.ERROR_PC_MODAL);
     }
 

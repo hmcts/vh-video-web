@@ -327,7 +327,7 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [showAudioOnlySetting]="allowAudioOnlyToggle"
+  [showAudioOnlySetting]="true"
   (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
@@ -353,6 +353,10 @@
 
 <app-modal id="pc-leave-modal" class="modal clear consultation">
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
+</app-modal>
+
+<app-modal id="pc-error-modal" class="modal consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
 </app-modal>
 
 <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">

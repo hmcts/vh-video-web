@@ -3,7 +3,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 import { Observable, Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Logger } from './logging/logger-base';
-import { UserMediaStreamService } from './user-media-stream.service';
+import { UserMediaStreamServiceV2 } from './user-media-stream-v2.service';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +16,7 @@ export class NoSleepService {
     private touchStartSubject = new Subject<void>();
 
     constructor(
-        private userMediaStreamService: UserMediaStreamService,
+        private userMediaStreamService: UserMediaStreamServiceV2,
         renderer2Factory: RendererFactory2,
         private deviceService: DeviceDetectorService,
         private document: Document,

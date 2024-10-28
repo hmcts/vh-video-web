@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var request = new AddEndpointConsultationRequest
             {
                 ConferenceId = _testConference.Id,
-                EndpointId = Guid.NewGuid(),
+                EndpointId = _testConference.Endpoints[0].Id,
                 RoomLabel = "RoomLabel"
             };
 
@@ -82,6 +82,37 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
+        public async Task should_return_badrequest_when_endpoint_is_screened()
+        {
+            // arrange
+            var roomLabel = "RoomLabel1";
+            var individual = _testConference.Participants.Find(x => x.Role == Role.Individual);
+            var endpoint = _testConference.Endpoints[0];
+            individual.ProtectFrom.Add(endpoint.ExternalReferenceId);
+            var rep = _testConference.Participants.Find(x => x.Role == Role.Representative);
+            individual.CurrentRoom = new ConsultationRoom {Label = roomLabel};
+            rep.CurrentRoom = new ConsultationRoom {Label = roomLabel};
+            
+            SetupControllerWithClaims(rep.Username);
+            var request = new AddEndpointConsultationRequest
+            {
+                ConferenceId = _testConference.Id,
+                EndpointId = endpoint.Id,
+                RoomLabel = roomLabel
+            };
+            
+            // act
+            var result = await _sut.AddEndpointToConsultationAsync(request, CancellationToken.None);
+            
+            // assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+                .Be(ConsultationsController.ConsultationHasScreenedEndpointErrorMessage);
+            
+            _mocker.Mock<IVideoApiClient>().Verify(
+                x => x.JoinEndpointToConsultationAsync(It.IsAny<EndpointConsultationRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Test]
         public async Task should_return_call_JoinEndpointToConsultationAsync_with_correct_params()
         {
             // Arrange
@@ -89,7 +120,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var request = new AddEndpointConsultationRequest
             {
                 ConferenceId = _testConference.Id,
-                EndpointId = Guid.NewGuid(),
+                EndpointId = _testConference.Endpoints[0].Id,
                 RoomLabel = "RoomLabel"
             };
 
@@ -115,7 +146,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var request = new AddEndpointConsultationRequest
             {
                 ConferenceId = _testConference.Id,
-                EndpointId = Guid.NewGuid(),
+                EndpointId = _testConference.Endpoints[0].Id,
                 RoomLabel = "RoomLabel"
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,

@@ -41,6 +41,8 @@ export interface VHParticipant {
     interpreterLanguage?: VHInterpreterLanguage;
     currentAudioMix?: string;
     linkedParticipants: Array<VHLinkedParticipant>;
+    externalReferenceId?: string;
+    protectedFrom?: string[];
 }
 
 export interface VHEndpoint {
@@ -51,6 +53,8 @@ export interface VHEndpoint {
     room: VHRoom;
     pexipInfo?: VHPexipParticipant;
     interpreterLanguage?: VHInterpreterLanguage;
+    externalReferenceId?: string;
+    protectedFrom?: string[];
 }
 
 export interface VHPexipParticipant {
