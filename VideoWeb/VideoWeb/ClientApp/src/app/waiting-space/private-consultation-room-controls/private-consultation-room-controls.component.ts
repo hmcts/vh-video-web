@@ -18,6 +18,10 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
+import { faCirclePause, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
+import { AudioRecordingService } from '../../services/audio-recording.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
+
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -37,7 +41,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
-    @Input() public wowzaUUID: string;
     @Input() public conference: ConferenceResponse;
 
     featureFlags = FEATURE_FLAGS;
@@ -46,6 +49,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     enableDynamicEvidenceSharing = false;
     isWowzaKillButtonEnabled = false;
     vodafoneEnabled = false;
+    pauseIcon = faCirclePause;
+    playIcon = faPlayCircle;
+    recordingPaused: boolean;
+    pauseButtonActioned = false;
+    resumeButtonActioned = false;
+    wowzaConnected = false;
+
     private conferenceStatus: ConferenceStatusChanged;
 
     constructor(
@@ -62,7 +72,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
-        protected conferenceStore: Store<ConferenceState>
+        protected conferenceStore: Store<ConferenceState>,
+        protected audioRecordingService: AudioRecordingService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         super(
             videoCallService,
@@ -97,8 +109,19 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
                 this.vodafoneEnabled = value;
             });
 
+        this.audioRecordingService
+            .getWowzaAgentConnectionState()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(connected => {
+                this.wowzaConnected = connected;
+            });
+
         // Needed to prevent 'this' being undefined in the callback
         this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
+
+        this.audioRecordingService.getAudioRecordingPauseState().subscribe(async (audioStopped: boolean) => {
+            this.recordingPaused = audioStopped;
+        });
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -141,10 +164,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         }
     }
 
-    killWowza() {
-        this.videoCallService.disconnectWowzaAgent(this.wowzaUUID);
-    }
-
     onLayoutUpdate(layout: HearingLayout) {
         const mappedLayout = this.mapLayout(layout);
         this.videoCallService.transformLayout(mappedLayout);
@@ -174,5 +193,20 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
                 break;
         }
         return mappedLayout;
+    }
+
+    async pauseRecording() {
+        this.pauseButtonActioned = true;
+        await this.audioRecordingService.stopRecording();
+        this.pauseButtonActioned = false;
+    }
+
+    async resumeRecording() {
+        this.pauseButtonActioned = true;
+        const failedToReconnectCallback = () => {
+            this.notificationToastrService.showAudioRecordingRestartFailure(() => {});
+        };
+        await this.audioRecordingService.reconnectToWowza(failedToReconnectCallback);
+        this.pauseButtonActioned = false;
     }
 }
