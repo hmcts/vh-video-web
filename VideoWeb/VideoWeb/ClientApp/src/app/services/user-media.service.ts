@@ -79,7 +79,9 @@ export class UserMediaService {
         return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
             take(1),
             map(devices => {
-                const filteredDevices = devices.filter(x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput'));
+                const filteredDevices = devices.filter(
+                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
+                );
                 return filteredDevices.length > 0 ? filteredDevices : devices;
             }),
             map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
@@ -103,7 +105,8 @@ export class UserMediaService {
             take(1),
             map(stream => {
                 const result =
-                    (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) || stream.getAudioTracks().length > 0;
+                    (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) ||
+                    stream.getAudioTracks().length > 0;
                 stream.getTracks().forEach(track => track.stop());
                 return result;
             }),
@@ -299,10 +302,11 @@ export class UserMediaService {
         return this.hasValidCameraAndMicAvailable().pipe(
             take(1),
             map(hasValidCameraAndMic => {
-                if(hasValidCameraAndMic)
-                    return this.getCameraAndMicrophoneDevices()
-                else
+                if (hasValidCameraAndMic) {
+                    return this.getCameraAndMicrophoneDevices();
+                } else {
                     return of([]);
+                }
             }),
             mergeMap(devices => devices)
         );
