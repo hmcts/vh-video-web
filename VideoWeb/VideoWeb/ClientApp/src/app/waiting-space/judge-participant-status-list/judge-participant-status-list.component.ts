@@ -74,6 +74,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         return this.translateService.instant('participant-status.' + participant.status.toString().toLowerCase());
     }
 
+    deleteParticipant(participant: VHParticipant) {
+        this.videoWebService.deleteParticipant(this.conference.id, participant.id);
+    }
+
     getEndpointStatus(endpoint: VHEndpoint): string {
         return this.translateService.instant('endpoint-status.' + endpoint.status.toString().toLowerCase());
     }
