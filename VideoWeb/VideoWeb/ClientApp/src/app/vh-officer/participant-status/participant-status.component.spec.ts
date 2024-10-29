@@ -266,7 +266,7 @@ describe('ParticipantStatusComponent', () => {
         });
     });
     describe('Delete quick link disconnected participant', () => {
-        fit('should delete participant, when delete button clicked', () => {
+        it('should delete participant, when delete button clicked', () => {
             videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.resolve());
             component.conferenceId = '123';
             const participantQuickLinkDisconnected = new ParticipantContactDetails(participants[5]);
@@ -274,7 +274,7 @@ describe('ParticipantStatusComponent', () => {
             expect(videoWebServiceSpy.deleteParticipant).toHaveBeenCalledWith('123', participantQuickLinkDisconnected.id);
         });
 
-        fit('should log error when delete quick link participant', () => {
+        it('should log error when delete quick link participant', () => {
             const error = new Error('Failed to delete participant');
             videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.reject(error));
             component.conferenceId = '123';
