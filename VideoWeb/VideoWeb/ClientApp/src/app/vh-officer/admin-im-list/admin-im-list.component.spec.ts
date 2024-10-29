@@ -54,7 +54,7 @@ describe('AdminImListComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(component.participants).not.toBeNull();
-        expect(component.participants.length).toBe(4);
+        expect(component.participants.length).toBe(6);
         expect(component.loadingData).toBeFalsy();
     }));
 });
