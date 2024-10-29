@@ -4751,7 +4751,9 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @param body (optional)
+     * This function updates the status of a participant in a conference and raises a video event
+    accordingly.
+     * @param body (optional) 
      * @return No Content
      */
     updateParticipantStatus(conferenceId: string, body: UpdateParticipantStatusEventRequest | undefined): Observable<void> {
@@ -4861,6 +4863,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * This C# function retrieves heartbeat data for a participant in a conference, handling
+    exceptions and returning appropriate responses.
      * @return OK
      */
     getHeartbeatDataForParticipant(conferenceId: string, participantId: string): Observable<ParticipantHeartbeatResponse[]> {
@@ -4968,7 +4972,9 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @param body (optional)
+     * This C# function updates the display name of a participant in a conference and handles
+    exceptions using VideoApiException.
+     * @param body (optional) 
      * @return No Content
      */
     updateParticipantDisplayName(
@@ -5075,8 +5081,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Get the participant details of a conference by id for VH officer
-     * @param conferenceId The unique id of the conference
+     * This C# function retrieves participants with contact details for a conference by conference
+    ID, handling error cases appropriately.
      * @return OK
      */
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
@@ -5193,6 +5199,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * This function retrieves participants for a conference by conference ID, handling exceptions
+    and returning the participants or an error response.
      * @return OK
      */
     getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantResponse[]> {
@@ -5298,6 +5306,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * This C# function retrieves the current participant information for a given conference ID,
+    handling exceptions and returning the participant details in a response.
      * @return OK
      */
     getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
@@ -5398,6 +5408,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * This C# function allows a staff member to join a conference, performing necessary checks and
+    operations before returning a response.
      * @return OK
      */
     staffMemberJoinConference(conferenceId: string): Observable<ConferenceResponse> {
@@ -5504,6 +5516,114 @@ export class ApiClient extends ApiClientBase {
             );
         }
         return _observableOf<ConferenceResponse>(null as any);
+    }
+
+    /**
+     * This C# function deletes a participant from a conference, handling exceptions and logging
+    errors.
+     * @return No Content
+     */
+    deleteParticipantFromConference(conferenceId: string, participantId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/participants/{participantId}';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('delete', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processDeleteParticipantFromConference(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processDeleteParticipantFromConference(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<void>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<void>;
+                })
+            );
+    }
+
+    protected processDeleteParticipantFromConference(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                  ? (response as any).error
+                  : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(null as any);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(null as any);
     }
 
     /**

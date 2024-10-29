@@ -26,6 +26,10 @@
         <a id="edit-link" href="javascript:void(0);" (click)="setParticipantEdit(participant)" class="govuk-body vh-ml10">
             <fa-icon [icon]="editIcon" *ngIf="!isEditingParticipant(participant.id)"></fa-icon>
         </a>
+        &nbsp;
+        <a id="delete-link" href="javascript:void(0);" (click)="deleteParticipant(participant)" class="govuk-body vh-ml10">
+            <fa-icon [icon]="deleteIcon" *ngIf="isParticipantDeletable(participant)"></fa-icon>
+        </a>
     </div>
 
     <div class="govuk-grid-column-one-third">
