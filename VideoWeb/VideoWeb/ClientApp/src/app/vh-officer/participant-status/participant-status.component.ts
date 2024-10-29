@@ -107,8 +107,8 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
      */
     isParticipantDeletable(participant) {
         return (
-            (participant.role == Role.QuickLinkParticipant || participant.role == Role.QuickLinkObserver) &&
-            participant.status == ParticipantStatus.Disconnected
+            (participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver) &&
+            participant.status === ParticipantStatus.Disconnected
         );
     }
 }
