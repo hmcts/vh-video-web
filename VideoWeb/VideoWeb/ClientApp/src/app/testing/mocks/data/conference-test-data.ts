@@ -613,10 +613,50 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant5 = new ParticipantContactDetailsResponseVho({
+            id: '9D13E6A4-035F-47B3-9F5E-72FD2F2E0DFF',
+            name: 'Quick Link Participant Available',
+            status: ParticipantStatus.Available,
+            role: Role.QuickLinkParticipant,
+            display_name: 'Quick Link Participant 1',
+            username: 'ql1.pippo@hearings.net',
+
+            conference_id: '6D4F28D0-0638-48F7-9C34-18221C3F87F2',
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'ql1.pippo@hearings.net',
+            contact_telephone: '910',
+            first_name: 'Quick',
+            last_name: 'Link 1',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E4',
+            hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+            linked_participants: []
+        });
+
+        const participant6 = new ParticipantContactDetailsResponseVho({
+            id: '9D13E6A4-035F-47B3-9F5E-72FD2F2E0DFG',
+            name: 'Quick Link Participant Disconnected',
+            status: ParticipantStatus.Disconnected,
+            role: Role.QuickLinkParticipant,
+            display_name: 'Quick Link Participant 2',
+            username: 'ql1.pippo@hearings.net',
+
+            conference_id: '6D4F28D0-0638-48F7-9C34-18221C3F87F2',
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'ql2.pippo@hearings.net',
+            contact_telephone: '910',
+            first_name: 'Quick',
+            last_name: 'Link 2',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E5',
+            hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
         participants.push(participant4);
+        participants.push(participant5);
+        participants.push(participant6);
         return participants;
     }
 

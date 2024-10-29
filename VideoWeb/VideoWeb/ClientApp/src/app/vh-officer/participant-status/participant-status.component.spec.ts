@@ -15,7 +15,8 @@ describe('ParticipantStatusComponent', () => {
     const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getParticipantsWithContactDetailsByConferenceId',
         'raiseSelfTestFailureEvent',
-        'updateParticipantDisplayName'
+        'updateParticipantDisplayName',
+        'deleteParticipant'
     ]);
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
         'goToServiceError',
@@ -262,6 +263,24 @@ describe('ParticipantStatusComponent', () => {
             component.newParticipantName = 'New Name';
             component.saveNameUpdate(component.participantBeingEdited.id);
             expect(videoWebServiceSpy.updateParticipantDisplayName).toHaveBeenCalled();
+        });
+    });
+    describe('Delete quick link disconnected participant', () => {
+        fit('should delete participant, when delete button clicked', () => {
+            videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.resolve());
+            component.conferenceId = '123';
+            const participantQuickLinkDisconnected = new ParticipantContactDetails(participants[5]);
+            component.deleteParticipant(participantQuickLinkDisconnected);
+            expect(videoWebServiceSpy.deleteParticipant).toHaveBeenCalledWith('123', participantQuickLinkDisconnected.id);
+        });
+
+        fit('should log error when delete quick link participant', () => {
+            const error = new Error('Failed to delete participant');
+            videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.reject(error));
+            component.conferenceId = '123';
+            const participantQuickLinkDisconnected = new ParticipantContactDetails(participants[5]);
+            component.deleteParticipant(participantQuickLinkDisconnected);
+            expect(videoWebServiceSpy.deleteParticipant).toHaveBeenCalled();
         });
     });
 });

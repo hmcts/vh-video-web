@@ -92,7 +92,9 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
      * relevant details.
      */
     deleteParticipant(participant) {
-        this.videoWebService.deleteParticipant(this.conferenceId, participant.id);
+        this.videoWebService.deleteParticipant(this.conferenceId, participant.id).catch(error => {
+            this.logger.error('Failed to delete participant', error);
+        });
     }
 
     /**
