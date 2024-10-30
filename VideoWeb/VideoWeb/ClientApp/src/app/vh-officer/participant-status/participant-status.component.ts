@@ -22,9 +22,6 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
     deleteIcon = faTrash;
     showError = false;
 
-    /**
-     *
-     */
     constructor(
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
