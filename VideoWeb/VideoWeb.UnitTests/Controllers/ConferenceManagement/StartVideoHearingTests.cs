@@ -99,18 +99,22 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(role).Build();
-            var hosts = TestConference.GetNonScreenedParticipantsAndEndpoints();
+            
+            var hostsForScreening = TestConference.GetNonScreenedParticipantsAndEndpoints();
+            var hosts = TestConference.Participants.Where(e => e.IsHost()).Select(e => e.Id).ToList();
 
             var controller = SetupControllerWithClaims(user);
 
             var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
+                new StartOrResumeVideoHearingRequest { Layout = HearingLayout.Dynamic }, CancellationToken.None);
+            
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r => 
-                    r.Layout == HearingLayout.Dynamic && 
+                It.Is<StartHearingRequest>(r =>
+                    r.Layout == HearingLayout.Dynamic &&
+                    r.HostsForScreening.SequenceEqual(hostsForScreening) &&
                     r.Hosts.SequenceEqual(hosts)), 
                 It.IsAny<CancellationToken>()), Times.Once);
         }
