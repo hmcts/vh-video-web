@@ -1,5 +1,11 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    LinkedParticipantResponse,
+    LinkType,
+    ParticipantContactDetailsResponseVho,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -284,50 +290,50 @@ describe('ParticipantStatusComponent', () => {
         });
     });
 
-    describe('isParticipantDeletable', () => {  
-        it('should return true if the participant is a QuickLinkParticipant and is Disconnected', () => {  
-            const participant = new ParticipantContactDetailsResponseVho({  
-                role: Role.QuickLinkParticipant,  
-                status: ParticipantStatus.Disconnected  
-            });  
+    describe('isParticipantDeletable', () => {
+        it('should return true if the participant is a QuickLinkParticipant and is Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkParticipant,
+                status: ParticipantStatus.Disconnected
+            });
 
-            expect(component.isParticipantDeletable(participant)).toBeTrue();  
-        });  
+            expect(component.isParticipantDeletable(participant)).toBeTrue();
+        });
 
-        it('should return true if the participant is a QuickLinkObserver and is Disconnected', () => {  
-            const participant = new ParticipantContactDetailsResponseVho({  
-                role: Role.QuickLinkObserver,  
-                status: ParticipantStatus.Disconnected  
-            });  
+        it('should return true if the participant is a QuickLinkObserver and is Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkObserver,
+                status: ParticipantStatus.Disconnected
+            });
 
-            expect(component.isParticipantDeletable(participant)).toBeTrue();  
-        });  
-    
-        it('should return false if the participant is a QuickLinkParticipant but is not Disconnected', () => {  
-            const participant = new ParticipantContactDetailsResponseVho({  
-                role: Role.QuickLinkParticipant,  
-                status: ParticipantStatus.Available  
-            });  
+            expect(component.isParticipantDeletable(participant)).toBeTrue();
+        });
 
-            expect(component.isParticipantDeletable(participant)).toBeFalse();  
-        });  
-    
-        it('should return false if the participant is a QuickLinkObserver but is not Disconnected', () => {  
-            const participant = new ParticipantContactDetailsResponseVho({  
-                role: Role.QuickLinkObserver,  
-                status: ParticipantStatus.Available  
-            });  
+        it('should return false if the participant is a QuickLinkParticipant but is not Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkParticipant,
+                status: ParticipantStatus.Available
+            });
 
-            expect(component.isParticipantDeletable(participant)).toBeFalse();  
-        });  
-    
-        it('should return false if the participant role is not QuickLinkParticipant or QuickLinkObserver, even if Disconnected', () => {  
-            const participant = new ParticipantContactDetailsResponseVho({  
-                role: Role.Individual,  
-                status: ParticipantStatus.Disconnected  
-            });  
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
+        });
 
-            expect(component.isParticipantDeletable(participant)).toBeFalse();   
-        });  
-    });  
+        it('should return false if the participant is a QuickLinkObserver but is not Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkObserver,
+                status: ParticipantStatus.Available
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
+        });
+
+        it('should return false if the participant role is not QuickLinkParticipant or QuickLinkObserver, even if Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.Individual,
+                status: ParticipantStatus.Disconnected
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
+        });
+    });
 });
