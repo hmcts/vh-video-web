@@ -1367,7 +1367,7 @@
     "skip-to-main-content": "Ymlaen i'r prif gynnwys"
   },
   "unread-messages": {
-    "im-image-alt": "eicon negeseuon gwib"
+    "im-alt": "eicon negeseuon gwib"
   },
   "pending-tasks": {
     "alert-icon": "eicon rhybuddion"

@@ -13,10 +13,11 @@
             [checked]="task.status === 'Done'"
             [disabled]="task.status === 'Done'"
             (click)="completeTask(task)"
+            (keydown.enter)="completeTask(task)"
           />
-          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2" for="task-created">
+          <div class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2">
             <span id="{{ task.id }}-created-date" class="govuk-body-s">{{ task.created | date: 'HH:mm' }}</span>
-          </label>
+          </div>
         </div>
       </div>
       <div class="govuk-grid-column-one-quarter task-body">

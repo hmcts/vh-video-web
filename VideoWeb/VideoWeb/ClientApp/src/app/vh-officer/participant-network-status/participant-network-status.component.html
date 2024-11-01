@@ -3,6 +3,8 @@
     id="{{ participant.id }}-network-status-icon"
     class="network-status-icon"
     src="/assets/images/{{ getParticipantNetworkStatus() }}"
+    (focus)="onMouseEnter(null)"
+    (blur)="onMouseExit(null)"
     (mouseover)="onMouseEnter($event)"
     (mouseout)="onMouseExit($event)"
     (mousemove)="updateGraphPosition($event)"
@@ -12,7 +14,7 @@
     <app-monitoring-graph
       [pakagesLostData]="packageLostArray"
       [participantGraphInfo]="monitoringParticipant"
-      (closeGraph)="setGraphVisibility(false)"
+      (close)="setGraphVisibility(false)"
     ></app-monitoring-graph>
   </div>
 </div>

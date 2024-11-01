@@ -9,6 +9,7 @@
             type="button"
             value="Cancel"
             (click)="cancelFilters()"
+            (keydown.enter)="cancelFilters()"
             id="btn-cancel-filters"
             class="govuk-button govuk-button--secondary"
             style="margin-right: 5px;"
@@ -18,6 +19,7 @@
             type="button"
             value="Apply filters"
             (click)="applyFilters()"
+            (keydown.enter)="applyFilters()"
             id="applyFilter"
             class="govuk-button"
             [disabled]="disableFilterApply"
@@ -43,6 +45,7 @@
                 id="{{ 'allRooms' + i }}"
                 name="{{ 'allRooms' + i }}"
                 (click)="allRoomOptionSelected(i)"
+                (keydown.enter)="allRoomOptionSelected(i)"
               />
               <label class="govuk-label govuk-checkboxes__label vh-bold" for="{{ 'allRooms' + i }}">Select all</label>
             </div>
@@ -56,6 +59,7 @@
                   id="{{ 'room' + i + j }}"
                   name="{{ 'room' + i + j }}"
                   (click)="roomOptionSelected(i, j)"
+                  (keydown.enter)="roomOptionSelected(i, j)"
                 />
                 <label class="govuk-label govuk-checkboxes__label vh-word" for="{{ 'room' + i + j }}">{{ room.courtRoom }}</label>
               </div>

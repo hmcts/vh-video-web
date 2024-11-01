@@ -1,5 +1,6 @@
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { NotificationSoundsService } from './notification-sounds.service';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('NotificationSoundsService', () => {
     let service: NotificationSoundsService;
@@ -13,14 +14,6 @@ describe('NotificationSoundsService', () => {
     it('should init consulation request sound', () => {
         service.initConsultationRequestRingtone();
         expect(service.consultationRequestSound).toBeDefined();
-    });
-
-    it('should play sound again when ended', async () => {
-        await service.initConsultationRequestRingtone();
-        const spy = spyOn(service.consultationRequestSound, 'play').and.resolveTo();
-
-        service.consultationRequestSound.dispatchEvent(new Event('ended'));
-        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should start playing consulation request ringing sound', () => {

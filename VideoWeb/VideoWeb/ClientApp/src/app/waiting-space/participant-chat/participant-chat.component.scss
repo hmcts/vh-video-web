@@ -2,6 +2,13 @@
 @import 'govuk-frontend/dist/govuk/core/links';
 @import 'abstracts';
 
+button {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: default;
+}
+
 .judge-chat-window {
   background: white;
   z-index: 100;

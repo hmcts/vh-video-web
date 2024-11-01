@@ -1034,7 +1034,7 @@
     "button": "OK"
   },
   "unread-messages": {
-    "im-image-alt": "instant message icon"
+    "im-alt": "instant message icon"
   },
   "court-room-filters": {
     "apply-filters-alt": "Apply selected filters",

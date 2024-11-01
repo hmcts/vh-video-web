@@ -5,7 +5,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 export class NotificationSoundsService {
     consultationRequestSound: HTMLAudioElement;
     hearingStartingAnnounced: boolean;
-    currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
     hearingAlertPlayCount: number;
 
@@ -13,18 +12,19 @@ export class NotificationSoundsService {
 
     constructor(private logger: Logger) {}
 
-    async initConsultationRequestRingtone() {
+    initConsultationRequestRingtone() {
         this.consultationRequestSound = new Audio();
-        const response = await fetch('/assets/audio/consultation_request.txt');
-        this.consultationRequestSound.src = `data:audio/mpeg;base64,${await response.text()}`;
-        this.consultationRequestSound.load();
-        this.consultationRequestSound.addEventListener(
-            'ended',
-            function () {
-                this.play();
-            },
-            false
-        );
+        fetch('/assets/audio/consultation_request.txt').then(response => {
+            this.consultationRequestSound.src = `data:audio/mpeg;base64,${response.text()}`;
+            this.consultationRequestSound.load();
+            this.consultationRequestSound.addEventListener(
+                'ended',
+                () => {
+                    this.consultationRequestSound.play();
+                },
+                false
+            );
+        });
     }
 
     async playConsultationRequestRingtone() {

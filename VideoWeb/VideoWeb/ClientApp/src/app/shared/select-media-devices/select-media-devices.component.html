@@ -90,8 +90,7 @@
                     <input type="checkbox" id="audio-only-toggle" [checked]="connectWithCameraOn"
                         (click)="toggleSwitch()" (keydown.enter)="toggleSwitch()" tabindex="0" />
                     <span class="slider round" (transitionstart)="transitionstart()" (transitionend)="transitionEnd()">
-                        <span class="govuk-heading-m" id="toggletextON"
-                            class="govuk-label govuk-!-font-weight-bold toggle-text">
+                        <span id="toggletextON" class="govuk-label govuk-!-font-weight-bold toggle-text">
                             {{ audioOnlyToggleText }}
                         </span>
                     </span>

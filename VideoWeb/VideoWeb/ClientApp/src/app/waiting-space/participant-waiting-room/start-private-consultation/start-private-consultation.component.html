@@ -34,7 +34,7 @@
                 {{ participantHearingRoleText(participant.interpreter) }} for {{ participant.displayName }}
                 <br />
               </ng-container>
-              <label
+              <div
                 id="p-{{ participant.id }}-status-participant"
                 class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
               >
@@ -46,7 +46,7 @@
                     <fa-icon *ngIf="participant.room.locked" icon="lock"></fa-icon>
                   </ng-container>
                 </ng-template>
-              </label>
+              </div>
             </label>
           </div>
         </ng-container>
@@ -65,10 +65,7 @@
             <span class="govuk-!-font-weight-bold">{{ endpoint.displayName }}</span>
             {{ 'start-private-consultation.video-access-point' | translate }}
             <br />
-            <label
-              id="p-{{ endpoint.id }}-status-participant"
-              class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
-            >
+            <div id="p-{{ endpoint.id }}-status-participant" class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}">
               <ng-container *ngIf="getEndpointDisabled(endpoint); then unavailable; else available"> </ng-container>
 
               <ng-template #available>
@@ -78,7 +75,7 @@
                   <fa-icon *ngIf="endpoint.room.locked" icon="lock"></fa-icon>
                 </ng-container>
               </ng-template>
-            </label>
+            </div>
           </label>
         </div>
       </div>

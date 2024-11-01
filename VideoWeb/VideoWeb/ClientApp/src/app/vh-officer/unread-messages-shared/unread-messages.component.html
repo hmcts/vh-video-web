@@ -1,1 +1,1 @@
-<img class="im-image" src="/assets/images/{{ getIMStatus() }}" (click)="openImChat()" [attr.alt]="'im-image-alt' | translate" />
+<img class="im-image" src="/assets/images/{{ getIMStatus() }}" (click)="openImChat()" (keydown.enter)="openImChat()" [attr.alt]="'im-alt' | translate" />

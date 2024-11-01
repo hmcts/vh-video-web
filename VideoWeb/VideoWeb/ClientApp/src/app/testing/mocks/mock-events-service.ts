@@ -43,7 +43,6 @@ export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
 export const onEventsHubReadySubjectMock = new Subject<boolean>();
-export let eventHubIsConnectedMock: boolean;
 export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdatedMessage>();
 export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>();
 export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();

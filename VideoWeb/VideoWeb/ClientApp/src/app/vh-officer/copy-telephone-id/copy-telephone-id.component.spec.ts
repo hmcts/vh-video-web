@@ -33,8 +33,7 @@ describe('CopyIdComponent', () => {
     it('should copy the telephone conference id to the clipboard', () => {
         component.copyToClipboard();
         const phoneNumbers = hearing.telephoneConferenceNumbers.split(',');
-        const expectedContent = `ENG: ${phoneNumbers[0]} (ID: ${hearing.telephoneConferenceId})
-CY: ${phoneNumbers[1]} (ID: ${hearing.telephoneConferenceId})`;
+        const expectedContent = `ENG: ${phoneNumbers[0]} (ID: ${hearing.telephoneConferenceId}) CY: ${phoneNumbers[1]} (ID: ${hearing.telephoneConferenceId})`;
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(expectedContent);
     });
 
