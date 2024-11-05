@@ -140,18 +140,26 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         return this.conference.participants.some(x => x.user_name === this.profile.username && x.hearing_role === HearingRole.OBSERVER);
     }
 
-    private handleDevices(devicesAvailable: boolean) {
+    private handleDevices(devicesAvailable: boolean): void {
         if (devicesAvailable) {
-            this.mediaAccepted = true;
-            this.userPrompted = true;
+            this.handleDevicesAvailable();
         } else {
-            this.mediaAccepted = false;
-            this.userPrompted = true;
-            this.errorService.goToServiceError(
-                'error-camera-microphone.problem-with-camera-mic',
-                'error-camera-microphone.camera-mic-in-use',
-                false
-            );
+            this.handleDevicesUnavailable();
         }
+    }
+
+    private handleDevicesAvailable(): void {
+        this.mediaAccepted = true;
+        this.userPrompted = true;
+    }
+
+    private handleDevicesUnavailable(): void {
+        this.mediaAccepted = false;
+        this.userPrompted = true;
+        this.errorService.goToServiceError(
+            'error-camera-microphone.problem-with-camera-mic',
+            'error-camera-microphone.camera-mic-in-use',
+            false
+        );
     }
 }

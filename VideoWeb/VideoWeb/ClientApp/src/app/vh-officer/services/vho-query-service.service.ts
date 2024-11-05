@@ -195,19 +195,23 @@ export class VhoQueryService {
                 if (!room.selected) {
                     return;
                 }
-
-                const judgeDisplayName = room.courtRoom;
-                const venueName = criteria.venue;
-                const matching = conferences.filter(
-                    conference =>
-                        conference.hearing_venue_name === venueName &&
-                        conference.participants.some(
-                            participant => participant.role === Role.Judge && participant.display_name === judgeDisplayName
-                        )
-                );
-                matchingConferences.push(...matching);
+                matchingConferences.push(...this.matchedConferences(conferences, room.courtRoom, criteria.venue));
             });
         });
         return matchingConferences;
+    }
+
+    private matchedConferences(
+        conferences: ConferenceForVhOfficerResponse[],
+        judgeDisplayName: string,
+        venueName: string
+    ): ConferenceForVhOfficerResponse[] {
+        return conferences.filter(
+            conference =>
+                conference.hearing_venue_name === venueName &&
+                conference.participants.some(
+                    participant => participant.role === Role.Judge && participant.display_name === judgeDisplayName
+                )
+        );
     }
 }

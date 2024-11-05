@@ -578,13 +578,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService
             .getWowzaAgentConnectionState()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe((stateIsConnected: boolean) => {
-                if (stateIsConnected) {
-                    this.handleWowzaConnectionStateConnected();
-                } else {
-                    this.handleWowzaConnectionStateDisconnected();
-                }
-            });
+            .subscribe(this.handleConnectionState.bind(this));
     }
 
     private onShouldReload(): void {
@@ -653,14 +647,22 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService.cleanupSubscriptions();
     }
 
-    private handleWowzaConnectionStateConnected() {
+    private handleConnectionState(stateIsConnected: boolean): void {
+        if (stateIsConnected) {
+            this.onWowzaConnected();
+        } else {
+            this.onWowzaDisconnected();
+        }
+    }
+
+    private onWowzaConnected() {
         if (this.audioRecordingService.restartActioned) {
             this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
         }
         this.continueWithNoRecording = false;
     }
 
-    private handleWowzaConnectionStateDisconnected() {
+    private onWowzaDisconnected() {
         if (this.audioRecordingService.restartActioned) {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         } else if (
