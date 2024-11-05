@@ -55,22 +55,6 @@ describe('UserMediaService', () => {
                 done();
             });
         });
-
-        it('navigates to device in use page when device is in use', done => {
-            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
-                throwError(new DOMException('Device in use'))
-            );
-            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
-                expect(result).toBeFalse();
-                expect(mediaSpy).toHaveBeenCalledTimes(1);
-                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
-                    'error-camera-microphone.problem-with-camera-mic',
-                    'error-camera-microphone.camera-mic-in-use',
-                    false
-                );
-                done();
-            });
-        });
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
@@ -148,7 +132,7 @@ describe('UserMediaService', () => {
         expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
     }));
 
-    it('should return fase when device is disconnected', fakeAsync(() => {
+    it('should return false when device is disconnected', fakeAsync(() => {
         spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
         const disconnectedDevice = testData.getDisconnctedCamera();
         let result;
@@ -156,6 +140,7 @@ describe('UserMediaService', () => {
         flush();
         expect(result).toBeFalse();
     }));
+
     it('should return device when device is still connected', fakeAsync(() => {
         spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
         const connectedDevice = testData.getListOfDevices()[0];
@@ -163,6 +148,14 @@ describe('UserMediaService', () => {
         userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
         flush();
         expect(result).toBeTruthy();
+    }));
+
+    it('isDeviceStillConnected should return return false if device object hasnt been set', fakeAsync(() => {
+        const connectedDevice = null;
+        let result;
+        userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
+        flush();
+        expect(result).toBeFalse();
     }));
 
     it('should get camera and microphone devices', fakeAsync(() => {

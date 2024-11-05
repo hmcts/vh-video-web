@@ -30,7 +30,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     respondWithYes() {
-        this.muteMicrophoneForm.save();
+        this.muteMicrophoneForm?.save();
         super.respondWithYes();
     }
 }

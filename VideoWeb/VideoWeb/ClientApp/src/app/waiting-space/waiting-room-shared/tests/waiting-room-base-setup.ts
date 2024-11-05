@@ -69,7 +69,7 @@ export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
 export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['active'], ['getVideoTracks']);
 export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['active'], ['getAudioTracks']);
-export const mockCamAndMicStream = jasmine.createSpyObj<MediaStream>(
+export let mockCamAndMicStream = jasmine.createSpyObj<MediaStream>(
     'MediaStream',
     ['getAudioTracks', 'getVideoTracks', 'active'],
     ['active']
