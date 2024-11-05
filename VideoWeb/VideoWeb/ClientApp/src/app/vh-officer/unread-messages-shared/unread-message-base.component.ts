@@ -52,6 +52,6 @@ export abstract class UnreadMessagesComponentBase {
     abstract getHearing(): Hearing;
     abstract resetUnreadCounter(conferenceId: string, participantId: string): void;
     abstract incrementUnreadCounter(conferenceId: string, participantId: string): void;
-    abstract openImChat();
-    abstract handleImReceived(message: InstantMessage);
+    abstract openImChat(): void;
+    abstract handleImReceived(message: InstantMessage): void;
 }

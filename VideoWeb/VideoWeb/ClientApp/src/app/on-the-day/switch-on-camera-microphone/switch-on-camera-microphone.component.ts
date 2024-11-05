@@ -99,13 +99,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
                     return NEVER;
                 })
             )
-            .subscribe(hasDevices => {
-                if (hasDevices) {
-                    this.handleDevicesAvailable();
-                } else {
-                    this.handleDevicesUnavailable();
-                }
-            });
+            .subscribe(hasDevices => this.handleDevices(hasDevices));
     }
 
     goVideoTest() {
@@ -146,18 +140,18 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         return this.conference.participants.some(x => x.user_name === this.profile.username && x.hearing_role === HearingRole.OBSERVER);
     }
 
-    private handleDevicesAvailable() {
-        this.mediaAccepted = true;
-        this.userPrompted = true;
-    }
-
-    private handleDevicesUnavailable() {
-        this.mediaAccepted = false;
-        this.userPrompted = true;
-        this.errorService.goToServiceError(
-            'error-camera-microphone.problem-with-camera-mic',
-            'error-camera-microphone.camera-mic-in-use',
-            false
-        );
+    private handleDevices(devicesAvailable: boolean) {
+        if (devicesAvailable) {
+            this.mediaAccepted = true;
+            this.userPrompted = true;
+        } else {
+            this.mediaAccepted = false;
+            this.userPrompted = true;
+            this.errorService.goToServiceError(
+                'error-camera-microphone.problem-with-camera-mic',
+                'error-camera-microphone.camera-mic-in-use',
+                false
+            );
+        }
     }
 }

@@ -7,12 +7,9 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.AuthenticationSchemes
 {
-    public class EJudiciaryScheme : AadSchemeBase
+    public class EJudiciaryScheme(string eventhubPath, EJudAdConfiguration eJudAdConfiguration)
+        : AadSchemeBase(eventhubPath, eJudAdConfiguration)
     {
-        public EJudiciaryScheme(string eventhubPath, EJudAdConfiguration eJudAdConfiguration): base(eventhubPath, eJudAdConfiguration)
-        {
-        }
-
         public override AuthProvider Provider => AuthProvider.EJudiciary;
 
         public override Task GetClaimsPostTokenValidation(TokenValidatedContext context, JwtBearerOptions options)

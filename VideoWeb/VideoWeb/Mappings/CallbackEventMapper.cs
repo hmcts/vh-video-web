@@ -67,19 +67,19 @@ public static class CallbackEventMapper
     private static bool IsEndpointJoined(CallbackEvent callbackEvent, Conference conference)
     {
         return callbackEvent.EventType == EventType.Joined &&
-               conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+               conference.Endpoints.Exists(x => x.Id == callbackEvent.ParticipantId);
     }
     
     private static bool IsEndpointDisconnected(CallbackEvent callbackEvent, Conference conference)
     {
         return callbackEvent.EventType == EventType.Disconnected &&
-               conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+               conference.Endpoints.Exists(x => x.Id == callbackEvent.ParticipantId);
     }
     
     private static bool IsEndpointTransferred(CallbackEvent callbackEvent, Conference conference)
     {
         return callbackEvent.EventType == EventType.Transfer &&
-               conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+               conference.Endpoints.Exists(x => x.Id == callbackEvent.ParticipantId);
     }
     private static bool IsOtherParticipantInConsultation(IEnumerable<Participant> otherParticipantsInVmr)
     {

@@ -17,6 +17,7 @@ namespace VideoWeb.Health;
 [ExcludeFromCodeCoverage]
 public static class HealthCheckExtensions
 {
+    private static readonly string[] Tags = ["startup", "readiness"];
     public static IServiceCollection AddVhHealthChecks(this IServiceCollection services)
     {
         var container = services.BuildServiceProvider();
@@ -24,21 +25,21 @@ public static class HealthCheckExtensions
         var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddRedis(connectionStrings.RedisCache, tags: new[] {"startup", "readiness"})
+            .AddRedis(connectionStrings.RedisCache, tags: Tags)
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.VideoApiUrl),
                     "/health/liveness"),
                 name: "Video API",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"startup", "readiness"})
+                tags:Tags)
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.BookingsApiUrl),
                     "/health/liveness"),
                 name: "Bookings API",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"startup", "readiness"});
+                tags:Tags);
         return services;
     }
     

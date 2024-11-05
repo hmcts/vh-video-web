@@ -29,26 +29,25 @@ namespace VideoWeb.EventHub.Handlers
         {
             if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
             {
-                throw new ArgumentException($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided", nameof(callbackEvent.TransferTo));
+                throw new ArgumentException($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided", nameof(callbackEvent));
             }
 
             var isRoomToEnum = Enum.TryParse<VHRoom>(callbackEvent.TransferTo, out var transferTo);
-            if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
+            if (!isRoomToEnum && callbackEvent.TransferTo.Contains("consultation", StringComparison.CurrentCultureIgnoreCase))
             {
                 return (EndpointState.InConsultation, EndpointStatus.InConsultation);
             }
 
-            if (transferTo == VHRoom.WaitingRoom || transferTo == VHRoom.HearingRoom)
+            switch (transferTo)
             {
-                return (EndpointState.Connected, EndpointStatus.Connected);
+                case VHRoom.WaitingRoom:
+                case VHRoom.HearingRoom:
+                    return (EndpointState.Connected, EndpointStatus.Connected);
+                case VHRoom.ConsultationRoom:
+                    return (EndpointState.InConsultation, EndpointStatus.InConsultation);
+                default:
+                    throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
             }
-
-            if (transferTo == VHRoom.ConsultationRoom)
-            {
-                return (EndpointState.InConsultation, EndpointStatus.InConsultation);
-            }
-
-            throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
         }
     }
 }

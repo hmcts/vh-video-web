@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Hub
     public class SendHeartbeatTests : EventHubBaseTests
     {
         [Test]
-        public async Task Should_send_heartbeat_to_vhofficers_group_and_judges()
+        public async Task Should_send_heartbeat_to_vh_officers_group_and_judges()
         {
             var participantUsername = "individual@hmcts.net";
             var conference = InitConference(participantUsername);
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task Should_send_heartbeat_to_vhofficers_group_from_judge()
+        public async Task Should_send_heartbeat_to_vh_officers_group_from_judge()
         {
             const string participantUsername = "individual@hmcts.net";
             var conference = InitConference(participantUsername);
@@ -184,7 +184,7 @@ namespace VideoWeb.UnitTests.Hub
             );
         }
         
-        private Conference InitConference(string participantUsername)
+        private static Conference InitConference(string participantUsername)
         {
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(3)

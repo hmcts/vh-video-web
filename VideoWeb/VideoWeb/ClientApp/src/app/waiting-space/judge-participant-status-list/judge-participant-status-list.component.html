@@ -14,7 +14,7 @@
       />
     </div>
 
-    <span class="govuk-grid-column-two-thirds participant-details" role="presentation">
+    <span class="govuk-grid-column-two-thirds participant-details">
       <div class="govuk-grid-row">
         <span class="govuk-heading-m govuk-!-margin-bottom-0">
           <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
@@ -32,7 +32,7 @@
         <span class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
           <strong>{{ judge.displayName }}</strong>
         </span>
-  
+
         <span *ngIf="showChangeJudgeDisplayName">
           <div class="govuk-form-group vh-mt10">
             <input
@@ -86,7 +86,7 @@
 <div class="vh-line govuk-!-margin-bottom-3"></div>
 <div
   *ngIf="displayParticipantList"
-  role="presentation"
+
   [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate"
 >
   <div *ngIf="wingers.length > 0">
@@ -100,7 +100,7 @@
         <dl
           id="p-row-{{ participant.id }}-winger"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ participant.id }}-name-winger" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
@@ -132,12 +132,12 @@
         <dl
           id="p-row-{{ participant.id }}-panel-member"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>
-          
+
           <dd class="govuk-body-m govuk-!-margin-bottom-3" *ngIf="participant.interpreterLanguage">
             {{ 'interpreter-language.' + stringToTranslateId(participant.interpreterLanguage.description) | translate }}
           </dd>
@@ -167,7 +167,7 @@
         <dl
           id="p-row-{{ participant.id }}-staff-member"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.displayName }}
@@ -243,7 +243,7 @@
         <dl
           id="p-row-{{ participant.id }}-participant"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
             <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
@@ -288,7 +288,7 @@
         <dl
           id="p-row-{{ endpoint.id }}-endpoints"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ endpoint.id }}-name-endpoint" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ endpoint.displayName }}
@@ -325,7 +325,7 @@
         <dl
           id="p-row-{{ participant.id }}-observer"
           class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-          role="presentation"
+
         >
           <dt id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}

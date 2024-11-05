@@ -53,7 +53,7 @@ export class MonitorGraphService {
         }
 
         packagesLostValues.forEach(x => {
-            if (x && x.pointX) {
+            if (x?.pointX) {
                 graphPoints[x.pointX] = x.pointY;
             }
         });

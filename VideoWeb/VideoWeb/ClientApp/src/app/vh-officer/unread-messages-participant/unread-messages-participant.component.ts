@@ -77,5 +77,7 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
         }
     }
 
-    openImChat() {}
+    openImChat() {
+        this.logger.debug('[UnreadMessagesParticipant] - Open IM chat');
+    }
 }

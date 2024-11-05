@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 using VideoApi.Contract.Requests;
@@ -19,8 +20,7 @@ namespace VideoWeb.Extensions
                 var eventProperties = new Dictionary<string, string>();
                 eventProperties.Add("sourceEventId", ReplaceWhitespaceOrNull(conferenceEventRequest.EventId));
                 eventProperties.Add("participantId", ReplaceWhitespaceOrNull(conferenceEventRequest.ParticipantId));
-                eventProperties.Add("participantRoomId",
-                    ReplaceWhitespaceOrNull(conferenceEventRequest.ParticipantRoomId));
+                eventProperties.Add("participantRoomId", ReplaceWhitespaceOrNull(conferenceEventRequest.ParticipantRoomId));
                 eventProperties.Add("eventType", conferenceEventRequest.EventType.ToString());
                 eventProperties.Add("eventTimeStampUtc", conferenceEventRequest.TimeStampUtc.ToString("u"));
                 eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
@@ -61,19 +61,19 @@ namespace VideoWeb.Extensions
                 eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
                 eventProperties.Add("isOtherParticipantsInConsultationRoom", callbackEvent.IsOtherParticipantsInConsultationRoom.ToString());
                 
-                var participantIds = "";
-                var participantDisplayNames = "";
+                var participantIds = new StringBuilder();
+                var participantDisplayNames = new StringBuilder();
                 if (callbackEvent.Participants != null)
                 {
                     foreach (var participantResponse in callbackEvent.Participants)
                     {
-                        participantIds += ReplaceWhitespaceOrNull(participantResponse?.Id.ToString());
-                        participantDisplayNames += ReplaceWhitespaceOrNull(participantResponse?.DisplayName);
+                        participantIds.Append(ReplaceWhitespaceOrNull(participantResponse?.Id.ToString()));
+                        participantDisplayNames.Append(ReplaceWhitespaceOrNull(participantResponse?.DisplayName));
                     }
                 }
                 
-                eventProperties.Add("participantIds", ReplaceWhitespaceOrNull(participantIds));
-                eventProperties.Add("participantDisplayNames", ReplaceWhitespaceOrNull(participantDisplayNames));
+                eventProperties.Add("participantIds", ReplaceWhitespaceOrNull(participantIds.ToString()));
+                eventProperties.Add("participantDisplayNames", ReplaceWhitespaceOrNull(participantDisplayNames.ToString()));
 
                 telemetryClient.TrackEvent(eventName, eventProperties);
             }

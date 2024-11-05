@@ -1,31 +1,21 @@
-using System;
 using System.Collections.Generic;
 
-namespace VideoWeb.Common.Models
-{
-    public class ConferenceVideoControlStatuses : IComparable<ConferenceVideoControlStatuses>
-    {
-        public ConferenceVideoControlStatuses()
-        {
-            ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatus>();
-        }
-        
-        public Dictionary<string, VideoControlStatus> ParticipantIdToVideoControlStatusMap { get; set; }
-        
-        public int CompareTo(ConferenceVideoControlStatuses comparisonConferenceVideoControlStatuses)
-        {
-            bool areEqual = true;
-            foreach (var (key, videoControlStatus) in ParticipantIdToVideoControlStatusMap)
-            {
-                var comparisonvideoControlStatus = comparisonConferenceVideoControlStatuses.ParticipantIdToVideoControlStatusMap[key];
-                //areEqual = areEqual && videoControlStatus.CompareTo(comparisonvideoControlStatus) > 0;
-                if (!(areEqual && videoControlStatus.CompareTo(comparisonvideoControlStatus) > 0))
-                {
-                    return 0;
-                }
-            }
+namespace VideoWeb.Common.Models;
 
-            return  1;
+public class ConferenceVideoControlStatuses
+{
+    public Dictionary<string, VideoControlStatus> ParticipantIdToVideoControlStatusMap { get; set; } = new();
+    
+    public int CompareTo(ConferenceVideoControlStatuses comparisonConferenceVideoControlStatuses)
+    {
+        foreach (var (key, videoControlStatus) in ParticipantIdToVideoControlStatusMap)
+        {
+            var comparisonvideoControlStatus = comparisonConferenceVideoControlStatuses.ParticipantIdToVideoControlStatusMap[key];
+            if (videoControlStatus.CompareTo(comparisonvideoControlStatus) <= 0)
+            {
+                return 0;
+            }
         }
+        return  1;
     }
 }

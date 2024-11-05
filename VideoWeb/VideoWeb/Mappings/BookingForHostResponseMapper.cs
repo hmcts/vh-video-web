@@ -29,7 +29,7 @@ public static class BookingForHostResponseMapper
     
     public static Contract.Responses.ConferenceForHostResponse Map(HearingDetailsResponseV2 booking, ConferenceCoreResponse conference)
     {
-        var caseInfo = booking.Cases.FirstOrDefault(c => c.IsLeadCase) ?? booking.Cases[0];
+        var caseInfo = booking.Cases.Find(c => c.IsLeadCase) ?? booking.Cases[0];
         
         var dto = new Contract.Responses.ConferenceForHostResponse();
         dto.Id = conference.Id;

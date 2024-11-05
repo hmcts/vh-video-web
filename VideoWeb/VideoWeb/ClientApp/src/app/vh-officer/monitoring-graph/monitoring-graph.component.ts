@@ -49,7 +49,7 @@ export class MonitoringGraphComponent implements OnInit {
     }
 
     @Input()
-    set pakagesLostData(packagesLost: PackageLost[]) {
+    set packagesLostData(packagesLost: PackageLost[]) {
         this.transferPackagesLost(packagesLost);
     }
 

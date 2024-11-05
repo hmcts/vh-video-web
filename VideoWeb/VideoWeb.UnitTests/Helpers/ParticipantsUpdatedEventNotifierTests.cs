@@ -115,7 +115,7 @@ class ParticipantsUpdatedEventNotifierTests
             && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
     }
     
-    private bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)
+    private static bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)
     {
         return list1.Any(x => list2.Any(y => x.Id == y.Id)) &&
                list2.Any(x => list1.Any(y => x.Id == y.Id));

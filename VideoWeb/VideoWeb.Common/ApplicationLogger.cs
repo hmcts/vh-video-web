@@ -14,7 +14,7 @@ namespace VideoWeb.Common
     public static class ApplicationLogger
     {
         private static readonly TelemetryClient TelemetryClient = InitTelemetryClient();
-        
+        private const string EventString = "Event";
         private static TelemetryClient InitTelemetryClient() {
             var config = TelemetryConfiguration.CreateDefault();
             var client = new TelemetryClient(config);
@@ -25,7 +25,7 @@ namespace VideoWeb.Common
         {
             var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
             telemetryTrace.Properties.Add("Information", information);
-            telemetryTrace.Properties.Add("Event", eventTitle);
+            telemetryTrace.Properties.Add(EventString, eventTitle);
             TelemetryClient.TrackTrace(telemetryTrace);
         }
 
@@ -33,7 +33,7 @@ namespace VideoWeb.Common
         {
             var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
 
-            telemetryTrace.Properties.Add("Event", eventTitle);
+            telemetryTrace.Properties.Add(EventString, eventTitle);
 
             telemetryTrace.Properties.Add("User", user);
 
@@ -58,7 +58,7 @@ namespace VideoWeb.Common
         {
             var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
 
-            telemetryTrace.Properties.Add("Event", eventTitle);
+            telemetryTrace.Properties.Add(EventString, eventTitle);
 
             telemetryTrace.Properties.Add("User", user);
 
@@ -77,16 +77,13 @@ namespace VideoWeb.Common
 
         public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user, IDictionary<string, string> properties)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
+            ArgumentNullException.ThrowIfNull(exception);
 
             var telemetryException = new ExceptionTelemetry(exception);
 
-            telemetryException.Properties.Add("Event", traceCategory + " " + eventTitle);
+            telemetryException.Properties.Add(EventString, traceCategory + " " + eventTitle);
 
-            if (user != null && user.Identity != null)
+            if (user is { Identity: not null })
             {
                 telemetryException.Properties.Add("User", user.Identity.Name);
             }

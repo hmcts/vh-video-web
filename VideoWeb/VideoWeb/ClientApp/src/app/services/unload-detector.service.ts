@@ -23,7 +23,11 @@ export class UnloadDetectorService {
         private logger: Logger
     ) {
         this.renderer = renderer2Factory.createRenderer(null, null);
-        this.initialise(deviceDetectorService.isDesktop());
+        if (deviceDetectorService.isDesktop()) {
+            this.initialiseEventHandlersForDesktopDevices();
+        } else {
+            this.initialiseEventHandlersForMobileDevices();
+        }
     }
 
     get shouldUnload(): Observable<void> {
@@ -58,14 +62,6 @@ export class UnloadDetectorService {
             filter(value => value === false),
             map(() => void 0)
         );
-    }
-
-    private initialise(isDesktop: boolean) {
-        if (isDesktop) {
-            this.initialiseEventHandlersForDesktopDevices();
-        } else {
-            this.initialiseEventHandlersForMobileDevices();
-        }
     }
 
     private initialiseEventHandlersForDesktopDevices() {

@@ -98,7 +98,7 @@ public class RespondToConsultationTests
         var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
             "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
+            .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         _mocker.Mock<IConsultationInvitationTracker>()
             .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);
@@ -119,7 +119,7 @@ public class RespondToConsultationTests
         var apiException = new VideoApiException("Internal Server Error",
             (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
+            .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         _mocker.Mock<IConsultationInvitationTracker>()
             .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);

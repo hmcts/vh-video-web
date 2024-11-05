@@ -28,12 +28,12 @@ namespace VideoWeb.Mappings
 
             messageResponses = messageResponses.OrderByDescending(x => x.TimeStamp).ToList();
             var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
-            return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
+            return vhoMessage == null ? messageResponses.Count : messageResponses.IndexOf(vhoMessage);
         }
 
         private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+            return !conference.Participants.Exists(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

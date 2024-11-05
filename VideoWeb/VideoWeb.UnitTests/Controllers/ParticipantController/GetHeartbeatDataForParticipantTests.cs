@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _conferenceCache = new ConferenceCache(_memoryCache);
             _eventComponentHelper = new EventComponentHelper();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConference = _eventComponentHelper.BuildConferenceForTest();            
+            _testConference = EventComponentHelper.BuildConferenceForTest();            
 
             var context = new ControllerContext
             {

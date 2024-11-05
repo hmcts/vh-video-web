@@ -20,8 +20,8 @@ public class CallbackEventMapperTests
         {
             Id = Guid.NewGuid(),
             HearingId = Guid.NewGuid(),
-            Participants = new List<Participant>()
-            {
+            Participants =
+            [
                 Builder<Participant>.CreateNew()
                     .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                     .Build(),
@@ -33,7 +33,7 @@ public class CallbackEventMapperTests
                     .With(x => x.Id = Guid.NewGuid()).Build(),
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build()
-            }
+            ]
         };
         var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
             .With(x => x.ConferenceId = testConference.Id.ToString())
@@ -170,31 +170,32 @@ public class CallbackEventMapperTests
         return testConference;
     }
     
-    private Conference CreateTestConferenceForRoomParticipantEvent()
+    private static Conference CreateTestConferenceForRoomParticipantEvent()
     {
         var conference = new Conference
         {
             Id = Guid.NewGuid(),
             HearingId = Guid.NewGuid(),
-            Participants = new List<Participant>()
-            {
+            Participants =
+            [
                 Builder<Participant>.CreateNew()
                     .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                     .Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build()
-            },
+            ],
             HearingVenueName = "Hearing Venue Test",
-            CivilianRooms = new List<CivilianRoom>
-            {
-                new () {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
-            }
+            CivilianRooms = [new CivilianRoom { Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>() }]
         };
         
         conference.CivilianRooms.First().Participants.Add(conference.Participants[1].Id);

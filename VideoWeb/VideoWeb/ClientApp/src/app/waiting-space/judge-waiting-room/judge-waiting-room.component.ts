@@ -410,7 +410,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.showVideo &&
             !this.audioErrorRetryToast &&
             !this.recordingPaused &&
-            (!this.audioRecordingService.wowzaAgent || !this.audioRecordingService.wowzaAgent.isAudioOnlyCall)
+            !this.audioRecordingService.wowzaAgent?.isAudioOnlyCall
         ) {
             this.logWowzaAlert();
             this.showAudioRecordingRestartAlert();
@@ -578,8 +578,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService
             .getWowzaAgentConnectionState()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe(state => {
-                this.handleWowzaConnectionState(state);
+            .subscribe((stateIsConnected: boolean) => {
+                if (stateIsConnected) {
+                    this.handleWowzaConnectionStateConnected();
+                } else {
+                    this.handleWowzaConnectionStateDisconnected();
+                }
             });
     }
 
@@ -649,21 +653,21 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService.cleanupSubscriptions();
     }
 
-    private handleWowzaConnectionState(isConnected: boolean) {
-        if (isConnected) {
-            if (this.audioRecordingService.restartActioned) {
-                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
-            }
-            this.continueWithNoRecording = false;
-        } else if (this.audioRecordingService.restartActioned) {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        } else {
-            this.handleWowzaAgentDisconnect();
+    private handleWowzaConnectionStateConnected() {
+        if (this.audioRecordingService.restartActioned) {
+            this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
         }
+        this.continueWithNoRecording = false;
     }
 
-    private handleWowzaAgentDisconnect() {
-        if (this.conference.audio_recording_required && this.conference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+    private handleWowzaConnectionStateDisconnected() {
+        if (this.audioRecordingService.restartActioned) {
+            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+        } else if (
+            this.conference.audio_recording_required &&
+            this.conference.status === ConferenceStatus.InSession &&
+            !this.recordingPaused
+        ) {
             this.logWowzaAlert();
             this.showAudioRecordingRestartAlert();
         }

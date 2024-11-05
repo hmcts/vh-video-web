@@ -68,12 +68,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             this.selectedVenues = [];
             this.csoAllocationStorage.clear();
             this.judgeAllocationStorage.clear();
+        } else if (this.csosSelected) {
+            await this.updateCsoSelection();
         } else {
-            if (this.csosSelected) {
-                await this.updateCsoSelection();
-            } else {
-                this.updateVenueSelection();
-            }
+            this.updateVenueSelection();
         }
 
         if (!this.venuesSelected && !this.csosSelected && !this.activeSessions) {

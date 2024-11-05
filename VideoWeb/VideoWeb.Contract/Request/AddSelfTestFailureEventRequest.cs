@@ -5,7 +5,7 @@ namespace VideoWeb.Contract.Request
 {
     public class AddSelfTestFailureEventRequest
     {
-        public EventType EventType => EventType.SelfTestFailed;
+        public static EventType EventType => EventType.SelfTestFailed;
         public SelfTestFailureReason SelfTestFailureReason { get; set; }
     }
 
