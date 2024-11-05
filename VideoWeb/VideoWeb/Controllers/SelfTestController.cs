@@ -52,13 +52,10 @@ namespace VideoWeb.Controllers
         /// <returns>OK if a test has been completed at least once, else not found</returns>
         [HttpGet("today")]
         [SwaggerOperation(OperationId = "CheckUserCompletedATestToday")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CheckUserCompletedATestTodayAsync()
-        {
-            var hasUserCompletedATestToday = await testCallCache.HasUserCompletedATestToday(User.Identity.Name);
-            return hasUserCompletedATestToday ? Ok() : NotFound();
-        }
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CheckUserCompletedATestTodayAsync() 
+            => Ok(await testCallCache.HasUserCompletedATestToday(User.Identity?.Name));
+        
         
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet]
