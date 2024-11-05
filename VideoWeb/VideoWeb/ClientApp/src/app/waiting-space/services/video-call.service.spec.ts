@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject, Subject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -16,7 +16,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamAndMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -53,7 +52,6 @@ describe('VideoCallService', () => {
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let currentStreamSubject: ReplaySubject<MediaStream>;
 
-    const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let heartbeatServiceSpy: jasmine.SpyObj<HeartbeatService>;
@@ -63,6 +61,7 @@ describe('VideoCallService', () => {
 
     beforeEach(fakeAsync(() => {
         const initialState = initialConferenceState;
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>('VideoCallEventsService', ['handleParticipantUpdated']);
         mockStore = createMockStore({ initialState });
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -88,6 +87,7 @@ describe('VideoCallService', () => {
             ['createAndPublishStream', 'closeCurrentStream'],
             ['currentStream$']
         );
+
         currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
         userMediaService.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
@@ -96,9 +96,6 @@ describe('VideoCallService', () => {
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
-
-        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
-
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -139,7 +136,7 @@ describe('VideoCallService', () => {
             streamMixerServiceSpy,
             mockStore
         );
-
+        getSpiedPropertyGetter(mockCamAndMicStream, 'active').and.returnValue(true);
         currentStreamSubject.next(mockCamAndMicStream);
 
         service.setupClient(supplier);

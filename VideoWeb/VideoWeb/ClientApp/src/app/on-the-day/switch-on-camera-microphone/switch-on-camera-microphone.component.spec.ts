@@ -13,6 +13,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { of, Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
