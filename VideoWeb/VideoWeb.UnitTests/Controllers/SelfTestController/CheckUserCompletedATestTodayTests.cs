@@ -46,18 +46,18 @@ public class CheckUserCompletedATestTodayTests
     }
 
     [Test]
-    public async Task should_return_ok_when_user_has_completed_a_test_call_today()
+    public async Task should_return_ok_true_when_user_has_completed_a_test_call_today()
     {
         await _testCallCache.AddTestCompletedForTodayAsync(_username);
         var result = await _controller.CheckUserCompletedATestTodayAsync();
-        result.Should().BeOfType<OkResult>();
+        result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(true);
     }
 
     [Test]
-    public async Task should_return_not_found_when_user_has_not_completed_a_test_call_today()
+    public async Task should_return_ok_false_when_user_has_not_completed_a_test_call_today()
     {
         var result = await _controller.CheckUserCompletedATestTodayAsync();
-        result.Should().BeOfType<NotFoundResult>();
+        result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(false);
     }
 
 }

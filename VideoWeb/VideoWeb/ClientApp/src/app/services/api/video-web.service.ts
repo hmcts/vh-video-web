@@ -28,7 +28,6 @@ import {
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
-import { catchError, map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
@@ -95,10 +94,7 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     checkUserHasCompletedSelfTest(): Observable<boolean> {
-        return this.apiClient.checkUserCompletedATestToday().pipe(
-            map(() => true),
-            catchError(() => [false])
-        );
+        return this.apiClient.checkUserCompletedATestToday();
     }
 
     getSelfTestToken(participantId: string): Promise<TokenResponse> {
