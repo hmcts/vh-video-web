@@ -12,7 +12,7 @@ RUN if [[ ${skip_client_build} = true ]]; then \
     echo "Skipping npm install and build"; \
     mkdir dist; \
 else \
-    npm install && npm run-script build-prod; \
+    npm install --ignore-scripts && npm run-script build-prod; \
 fi
 
 
