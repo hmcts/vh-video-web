@@ -8,6 +8,10 @@ import { IntroductionComponent } from './introduction.component';
 import { of } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { mapConferenceToVHConference } from '../../waiting-space/store/models/api-contract-to-state-model-mappers';
+import { ConferenceState } from '../../waiting-space/store/reducers/conference.reducer';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
@@ -15,6 +19,7 @@ describe('IntroductionComponent', () => {
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const confLite = new ConferenceLite(conference.id, conference.case_number);
 
+    let mockConferenceStore: MockStore<ConferenceState>;
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -31,20 +36,26 @@ describe('IntroductionComponent', () => {
         const profile = new UserProfileResponse({ roles: [Role.Individual] });
         profilesServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         profilesServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
         videoWebServiceSpy.checkUserHasCompletedSelfTest.and.returnValue(of(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
+        const testData = new ConferenceTestData();
+        const testConference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+        mockConferenceStore = createMockStore({
+            initialState: { currentConference: mapConferenceToVHConference(conference), availableRooms: [] }
+        });
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, testConference);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, testConference.participants[0]);
         component = new IntroductionComponent(
             router,
             activatedRoute,
             videoWebServiceSpy,
-            profilesServiceSpy,
             participantStatusUpdateService,
-            new MockLogger()
+            new MockLogger(),
+            mockConferenceStore
         );
         router.navigate.calls.reset();
         component.ngOnInit();

@@ -24,6 +24,7 @@ import { BackLinkDetails } from '../shared/models/back-link-details';
 import { StaffMemberGuard } from '../security/staff-member.guard';
 import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-selection/staff-member-hearing-selection.component';
 import { StaffMemberHearingListComponent } from './host-hearing-list/staff-member-hearing-list/staff-member-hearing-list.component';
+import { LoggedUserResolveService } from '../waiting-space/services/logged-user-resolve.service';
 
 export const routes: Routes = [
     {
@@ -136,6 +137,7 @@ export const routes: Routes = [
         path: `${pageUrls.Introduction}/:conferenceId`,
         component: IntroductionComponent,
         data: { title: 'Introduction', backLink: new BackLinkDetails() },
+        resolve: { loggedUser: LoggedUserResolveService },
         canActivate: [ParticipantStatusGuard]
     }
 ];

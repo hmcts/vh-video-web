@@ -14,11 +14,7 @@ import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-he
 })
 export class UserMediaService {
     readonly defaultStreamConstraints = {
-        audio: true,
-        video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-        }
+        audio: true
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
@@ -86,7 +82,6 @@ export class UserMediaService {
                 const filteredDevices = devices.filter(
                     x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
                 );
-
                 return filteredDevices.length > 0 ? filteredDevices : devices;
             }),
             map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
@@ -112,9 +107,7 @@ export class UserMediaService {
                 const result =
                     (!!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) ||
                     stream.getAudioTracks().length > 0;
-
                 stream.getTracks().forEach(track => track.stop());
-
                 return result;
             }),
             catchError(error => {
@@ -123,12 +116,6 @@ export class UserMediaService {
                     this.errorService.goToServiceError(
                         'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
                         'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
-                        false
-                    );
-                } else {
-                    this.errorService.goToServiceError(
-                        'error-camera-microphone.problem-with-camera-mic',
-                        'error-camera-microphone.camera-mic-in-use',
                         false
                     );
                 }
@@ -170,7 +157,11 @@ export class UserMediaService {
     }
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
-        return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+        if (device) {
+            return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+        } else {
+            return of(false);
+        }
     }
 
     getConferenceSetting(conferenceId: string): ConferenceSetting {
@@ -219,7 +210,6 @@ export class UserMediaService {
         this.logger.debug(`${this.loggerPrefix} handle device change`);
         this.updateAvailableDeviceList().subscribe(availableDevices => {
             this.connectedDevicesSubject.next(availableDevices);
-
             this.initialiseActiveDevicesFromCache(availableDevices);
             this.checkActiveDevicesAreStillConnected(availableDevices);
         });
@@ -311,29 +301,32 @@ export class UserMediaService {
 
         return this.hasValidCameraAndMicAvailable().pipe(
             take(1),
-            filter(Boolean),
-            mergeMap(() => this.getCameraAndMicrophoneDevices())
+            map(hasValidCameraAndMic => {
+                if (hasValidCameraAndMic) {
+                    return this.getCameraAndMicrophoneDevices();
+                } else {
+                    return of([]);
+                }
+            }),
+            mergeMap(devices => devices)
         );
     }
 
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
 
+        this.activeMicrophoneDevice = microhoneDevice;
+        this.activeMicrophoneDeviceSubject.next(microhoneDevice);
         if (microhoneDevice) {
-            this.activeMicrophoneDevice = microhoneDevice;
-            this.activeMicrophoneDeviceSubject.next(microhoneDevice);
-
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
     }
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
-
+        this.activeVideoDevice = cameraDevice;
+        this.activeVideoDeviceSubject.next(cameraDevice);
         if (cameraDevice) {
-            this.activeVideoDevice = cameraDevice;
-            this.activeVideoDeviceSubject.next(cameraDevice);
-
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
         }
     }
