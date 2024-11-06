@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of, ReplaySubject, zip } from 'rxjs';
+import { EMPTY, from, NEVER, Observable, of, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
@@ -125,6 +125,7 @@ export class UserMediaService {
                         'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
                         false
                     );
+                    return EMPTY;
                 }
                 return of(false);
             })

@@ -3,7 +3,7 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { UserMediaService } from './user-media.service';
 import { LocalStorageService } from './conference/local-storage.service';
 import { of, Subject, throwError } from 'rxjs';
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 import { ErrorService } from './error.service';
@@ -23,38 +23,30 @@ describe('UserMediaService', () => {
         userMediaService = new UserMediaService(errorServiceSpy, new MockLogger(), localStorageServiceSpy);
     });
 
-    describe('device access', () => {
-        it('navigates to device blocked page when device access has been blocked', done => {
-            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
-                throwError(new DOMException('Permission denied'))
-            );
-            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
-                expect(result).toBeFalse();
-                expect(mediaSpy).toHaveBeenCalledTimes(1);
-                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
-                    'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
-                    'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
-                    false
-                );
-                done();
-            });
-        });
+    describe('hasValidCameraAndMicAvailable', () => {
+        it('should go to service error when camera and microphone are blocked', fakeAsync(() => {
+            spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(throwError(new DOMException('Permission denied')));
 
-        it('navigates to device blocked page when device access request has been dismissed', done => {
-            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
-                throwError(new DOMException('Permission dismissed'))
+            userMediaService.hasValidCameraAndMicAvailable().subscribe();
+            tick();
+
+            expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
+                'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                false
             );
-            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
-                expect(result).toBeFalse();
-                expect(mediaSpy).toHaveBeenCalledTimes(1);
-                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
-                    'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
-                    'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
-                    false
-                );
-                done();
-            });
-        });
+        }));
+
+        it('should go to service error when camera and microphone are blocked', fakeAsync(() => {
+            spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(throwError(new DOMException('Overconstrained error')));
+
+            let result: boolean;
+            userMediaService.hasValidCameraAndMicAvailable().subscribe(r => (result = r));
+            tick();
+
+            expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledTimes(0);
+            expect(result).toBeFalse();
+        }));
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
