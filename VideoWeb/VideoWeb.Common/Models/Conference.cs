@@ -311,7 +311,5 @@ namespace VideoWeb.Common.Models
             
             return endpoints;
         }
-
-        
     }
 }
