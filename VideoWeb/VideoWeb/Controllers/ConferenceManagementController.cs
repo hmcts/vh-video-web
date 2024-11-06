@@ -48,18 +48,19 @@ public class ConferenceManagementController(
         {
             return validatedRequest;
         }
-        
         try
         {
             var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
-            var hosts = conference.GetNonScreenedParticipantsAndEndpoints();
+            var hostsForScreening = conference.GetNonScreenedParticipantsAndEndpoints();
+            var hosts = conference.Participants.Where(x => x.IsHost()).Select(p => p.Id).ToList();
             var apiRequest = new StartHearingRequest
             {
                 Layout = request.Layout,
                 MuteGuests = false,
                 TriggeredByHostId = triggeredById ?? Guid.Empty,
-                Hosts = hosts
+                Hosts = hosts,
+                HostsForScreening = hostsForScreening
             };
             
             await videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
