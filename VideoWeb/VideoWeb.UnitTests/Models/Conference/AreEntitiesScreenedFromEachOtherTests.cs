@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -13,6 +14,16 @@ public class AreEntitiesScreenedFromEachOtherTests
     {
         var conference = new ConferenceCacheModelBuilder()
             .Build();
+
+        var quickLinkParticipant = new Participant()
+        {
+            Id = Guid.NewGuid(),
+            ExternalReferenceId = null,
+            Role = Role.QuickLinkParticipant,
+            HearingRole = "Quick Link Participant",
+            DisplayName = "QL 1"
+        };
+        conference.AddParticipant(quickLinkParticipant);
         
         var participantIds = conference.Participants.Select(x => x.Id).ToList();
         var endpointIds = conference.Endpoints.Select(x => x.Id).ToList();

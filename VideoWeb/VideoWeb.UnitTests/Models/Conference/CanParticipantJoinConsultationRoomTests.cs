@@ -15,6 +15,7 @@ public class CanParticipantJoinConsultationRoomTests
         // Arrange
         var conference = new ConferenceCacheModelBuilder()
             .Build();
+        
         var nonHostParticipants = conference.Participants.Where(x => !x.IsHost()).ToList();
         var participant = nonHostParticipants[0];
         
@@ -26,6 +27,17 @@ public class CanParticipantJoinConsultationRoomTests
         conference.ConsultationRooms.Add(consultationRoom);
         patInRoom.CurrentRoom = consultationRoom;
         endpoint.CurrentRoom = consultationRoom;
+        
+        var quickLinkParticipant = new Participant()
+        {
+            Id = Guid.NewGuid(),
+            ExternalReferenceId = null,
+            Role = Role.QuickLinkParticipant,
+            HearingRole = "Quick Link Participant",
+            DisplayName = "QL 1",
+            CurrentRoom = consultationRoom
+        };
+        conference.AddParticipant(quickLinkParticipant);
 
         // Act
         var result = conference.CanParticipantJoinConsultationRoom(roomLabel, participant.Id);
