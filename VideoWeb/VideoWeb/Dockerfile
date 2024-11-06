@@ -8,9 +8,13 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 ARG skip_client_build=false
 WORKDIR /app
 COPY VideoWeb/VideoWeb/ClientApp .
+RUN if [[ ${skip_client_build} = true ]]; then \
+    echo "Skipping npm install and build"; \
+    mkdir dist; \
+else \
+    npm install --ignore-scripts && npm run-script build-prod; \
+fi
 
-RUN [[ ${skip_client_build} = true ]] && echo "Skipping npm install" || npm install
-RUN [[ ${skip_client_build} = true ]] && mkdir dist || npm run-script build-prod
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
