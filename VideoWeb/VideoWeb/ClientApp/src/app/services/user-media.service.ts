@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, from, NEVER, Observable, of, ReplaySubject, zip } from 'rxjs';
+import { EMPTY, from, Observable, of, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
