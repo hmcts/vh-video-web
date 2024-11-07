@@ -169,10 +169,10 @@ namespace VideoWeb.Common.Models
         public bool AreEntitiesScreenedFromEachOther(List<Guid> participantIds, List<Guid> endpointIds)
         {
             var allExternalReferenceIds = Participants
-                .Where(SupportsScreening)
+                .Where(p => participantIds.Contains(p.Id) && SupportsScreening(p))
                 .Select(x => x.ExternalReferenceId)
-                .Union(Endpoints.Select(x => x.ExternalReferenceId)).ToList();
-
+                .Union(Endpoints.Where(e => endpointIds.Contains(e.Id)).Select(e => e.ExternalReferenceId)).ToList();
+            
             foreach (var participantId in participantIds)
             {
                 var participant = Participants.Find(x => x.Id == participantId);
