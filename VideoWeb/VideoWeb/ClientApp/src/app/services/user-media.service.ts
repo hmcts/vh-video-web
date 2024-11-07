@@ -13,8 +13,15 @@ import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-he
     providedIn: 'root'
 })
 export class UserMediaService {
-    readonly defaultStreamConstraints = {
-        audio: true
+    readonly defaultStreamConstraints: MediaStreamConstraints = {
+        audio: {
+            echoCancellation: true,
+            noiseSuppression: true
+        },
+        video: {
+            echoCancellation: true,
+            noiseSuppression: true
+        }
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
