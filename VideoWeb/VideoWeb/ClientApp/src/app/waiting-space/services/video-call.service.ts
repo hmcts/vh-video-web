@@ -188,6 +188,7 @@ export class VideoCallService {
 
     initCallTag() {
         this.pexipAPI.call_tag = Guid.create().toString();
+        this.logger.debug(`${this.loggerPrefix} call tag set to ${this.pexipAPI.call_tag}`);
     }
 
     async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
@@ -579,7 +580,6 @@ export class VideoCallService {
             pexipNode: pexipNode
         });
         this.stopPresentation();
-        this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
