@@ -25,6 +25,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -59,6 +60,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     showEvidenceContextMenu: boolean;
     displayChangeLayoutPopup = false;
     displayDialOutPopup = false;
+    countdownComplete = false;
 
     hasACamera = true;
     hasAMicrophone = true;
@@ -173,6 +175,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                 filter(participant => participant && participant.role === Role.Judge)
             )
             .subscribe(participant => this.onLoggedInParticipantChanged(participant));
+
+        this.conferenceStore
+            .select(ConferenceSelectors.getCountdownComplete)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(complete => {
+                this.countdownComplete = complete;
+            });
 
         this.initialiseMuteStatus();
     }
@@ -374,6 +383,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             await this.resetMute();
             return;
         }
+
+        this.countdownComplete = true;
 
         if (this.audioMuted) {
             this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
