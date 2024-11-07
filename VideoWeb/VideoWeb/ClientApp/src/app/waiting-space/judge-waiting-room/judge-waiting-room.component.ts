@@ -578,7 +578,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService
             .getWowzaAgentConnectionState()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe(this.handleConnectionState.bind(this));
+            .subscribe(stateIsConnected => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
     }
 
     private onShouldReload(): void {
@@ -645,14 +645,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
         this.audioRecordingService.cleanupSubscriptions();
-    }
-
-    private handleConnectionState(stateIsConnected: boolean): void {
-        if (stateIsConnected) {
-            this.onWowzaConnected();
-        } else {
-            this.onWowzaDisconnected();
-        }
     }
 
     private onWowzaConnected() {

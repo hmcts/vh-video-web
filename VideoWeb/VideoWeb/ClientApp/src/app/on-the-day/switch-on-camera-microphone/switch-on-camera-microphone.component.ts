@@ -99,7 +99,13 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
                     return NEVER;
                 })
             )
-            .subscribe(hasDevices => this.handleDevices(hasDevices));
+            .subscribe(hasDevices => {
+                if (hasDevices) {
+                    this.handleDevicesAvailable();
+                } else {
+                    this.handleDevicesUnavailable();
+                }
+            });
     }
 
     goVideoTest() {
@@ -138,14 +144,6 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
             return true;
         }
         return this.conference.participants.some(x => x.user_name === this.profile.username && x.hearing_role === HearingRole.OBSERVER);
-    }
-
-    private handleDevices(devicesAvailable: boolean): void {
-        if (devicesAvailable) {
-            this.handleDevicesAvailable();
-        } else {
-            this.handleDevicesUnavailable();
-        }
     }
 
     private handleDevicesAvailable(): void {
