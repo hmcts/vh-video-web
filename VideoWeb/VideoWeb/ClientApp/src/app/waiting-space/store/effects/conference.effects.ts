@@ -97,7 +97,7 @@ export class ConferenceEffects {
                         return of();
                     }
                     // the pexip info is not set when in the waiting room so we have to default to the video call service
-                    const callTag = participant?.pexipInfo?.callTag ?? this.videoCallService.pexipAPI.call_tag;
+                    const callTag = this.videoCallService.pexipAPI?.call_tag ?? participant?.pexipInfo?.callTag;
                     if (action.reason.includes(`connected on another device ${callTag}`)) {
                         this.errorService.goToServiceError(
                             'error-service.unexpected-error',
