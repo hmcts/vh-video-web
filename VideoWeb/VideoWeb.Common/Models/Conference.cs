@@ -168,24 +168,35 @@ namespace VideoWeb.Common.Models
         /// <param name="endpointIds">List of endpoints to be in a consultation</param>
         public bool AreEntitiesScreenedFromEachOther(List<Guid> participantIds, List<Guid> endpointIds)
         {
-            var allExternalReferenceIds = Participants.Select(x => x.ExternalReferenceId)
-                .Union(Endpoints.Select(x => x.ExternalReferenceId)).ToList();
-
+            var allExternalReferenceIds = Participants
+                .Where(p => participantIds.Contains(p.Id) && SupportsScreening(p))
+                .Select(x => x.ExternalReferenceId)
+                .Union(Endpoints.Where(e => endpointIds.Contains(e.Id)).Select(e => e.ExternalReferenceId)).ToList();
+            
             foreach (var participantId in participantIds)
             {
                 var participant = Participants.Find(x => x.Id == participantId);
-                if (participant == null) continue;
-                if (participant.ProtectFrom.Exists(allExternalReferenceIds.Contains)) return true;
+                if (participant != null && participant.ProtectFrom.Exists(allExternalReferenceIds.Contains))
+                {
+                    return true;
+                }
             }
             
             foreach (var endpointId in endpointIds)
             {
                 var endpoint = Endpoints.Find(x => x.Id == endpointId);
-                if (endpoint == null) continue;
-                if (endpoint.ProtectFrom.Exists(allExternalReferenceIds.Contains)) return true;
+                if (endpoint != null && endpoint.ProtectFrom.Exists(allExternalReferenceIds.Contains))
+                {
+                    return true;
+                }
             }
 
             return false;
+        }
+
+        private static bool SupportsScreening(Participant participant1)
+        {
+            return !participant1.IsQuickLinkUser() && !participant1.IsHost() && !participant1.IsJudicialOfficeHolder();
         }
 
         /// <summary>
