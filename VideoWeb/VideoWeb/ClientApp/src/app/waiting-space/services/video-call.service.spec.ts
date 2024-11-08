@@ -209,7 +209,6 @@ describe('VideoCallService', () => {
 
         await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
-        expect(pexipSpy.call_tag).toBeDefined();
     });
 
     it('should call pexip with as receive only when user does not have devices', async () => {
@@ -223,7 +222,6 @@ describe('VideoCallService', () => {
 
         await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, '12345');
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
-        expect(pexipSpy.call_tag).toBeDefined();
         expect(userMediaService.updateStartWithAudioMuted).toHaveBeenCalledWith('12345', true);
     });
 
@@ -238,7 +236,6 @@ describe('VideoCallService', () => {
 
         await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, '12345');
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
-        expect(pexipSpy.call_tag).toBeDefined();
     });
 
     it('should init the call tag', () => {
