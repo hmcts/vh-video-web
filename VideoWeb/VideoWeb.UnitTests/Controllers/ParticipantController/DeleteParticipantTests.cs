@@ -20,6 +20,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController;
 
@@ -27,7 +28,6 @@ public class DeleteParticipantTests
 {
     private AutoMock _mocker;
     private ParticipantsController _sut;
-    private ConferenceDetailsResponse _testConference;
     
     [SetUp]
     public void Setup()
@@ -35,7 +35,6 @@ public class DeleteParticipantTests
         _mocker = AutoMock.GetLoose();
         
         var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
-        _testConference = CreateValidConferenceResponse();
         var context = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -50,70 +49,69 @@ public class DeleteParticipantTests
     [Test]
     public async Task Should_return_ok()
     {
-        var conferenceId = _testConference.Id;
-        var conference = CreateValidConference(conferenceId);
-
+        var conference = CreateValidConference();
+        var participant = conference.Participants.First(x=> x.Role == Role.QuickLinkParticipant);
+        participant.ParticipantStatus = ParticipantStatus.Disconnected;
+        
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RemoveParticipantFromConferenceAsync(It.IsAny<Guid>(), It.IsAny<Guid>()));
+            .Setup(x => x.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(conference.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
 
-        var eventHandlerMock = _mocker.Mock<IEventHandler>();
-        _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(eventHandlerMock.Object);
-
-        var result = await _sut.RemoveParticipantFromConferenceAsync(conferenceId, It.IsAny<Guid>());
+        var result = await _sut.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id, CancellationToken.None);
         var typedResult = (NoContentResult)result;
         typedResult.Should().NotBeNull();
-    }
 
-    
-    [Test]
-    public async Task Should_throw_error_when_remove_participant_from_conference()
-    {
-        var conferenceId = _testConference.Id;
-        var participant = _testConference.Participants.First(p=>p.UserRole == UserRole.QuickLinkParticipant);
-        var errorResponse = $"Unable to delete participant {participant.Id} from conference {conferenceId}";
-        var videoApiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            errorResponse, null, default, null); 
-        
         _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RemoveParticipantFromConferenceAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-            .ThrowsAsync(videoApiException);
-        
-        var result = await _sut.RemoveParticipantFromConferenceAsync(conferenceId, participant.Id);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        typedResult.Value.Should().Be(errorResponse);
-    }
-    
-    private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
-    {
-        var judge = new ParticipantResponseBuilder(UserRole.Judge).Build();
-        var staffMember = new ParticipantResponseBuilder(UserRole.StaffMember).Build();
-        var individualDefendant = new ParticipantResponseBuilder(UserRole.Individual).Build();
-        var panelMember = new ParticipantResponseBuilder(UserRole.JudicialOfficeHolder).Build();
-        var quickLinkParticipants = new ParticipantResponseBuilder(UserRole.QuickLinkParticipant).Build();
-        var participants = new List<ParticipantResponse> { individualDefendant, judge, panelMember, staffMember, quickLinkParticipants };
-        if (!string.IsNullOrWhiteSpace(username))
-        {
-            participants[0].Username = username;
-        }
-        
-        var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-            .With(x => x.Participants = participants)
-            .Build();
-        return conference;
+            .Verify(
+                x => x.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id,
+                    It.IsAny<CancellationToken>()), Times.Once);
+        conference.Participants.Should().NotContain(x=> x.Id == participant.Id);
+        _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(
+            x => x.PushParticipantsUpdatedEvent(It.IsAny<Conference>(), It.IsAny<IList<Participant>>()), Times.Once);
     }
 
-    private static Conference CreateValidConference(Guid conferenceId)
+    [Test]
+    public async Task should_return_bad_request_if_participant_is_not_disconnected()
     {
-        var conference = Builder<Conference>.CreateNew()
-            .With(x => x.Id = conferenceId)
-            .With(x => x.HearingId = Guid.NewGuid())
-            .With(x => x.HearingVenueName = "MyVenue")
-            .Build();
+        var conference = CreateValidConference();
+        var participant = conference.Participants.First(x=> x.Role == Role.QuickLinkParticipant);
+        participant.ParticipantStatus = ParticipantStatus.Available;
+        
+        
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(conference.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conference);
+
+        var result = await _sut.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id, CancellationToken.None);
+        
+        result.Should().BeOfType<ObjectResult>().Which.Value.Should().BeOfType<ValidationProblemDetails>()
+            .Subject.Errors.Should().ContainKey("participantId")
+            .WhoseValue.Contains("Participant is not disconnected").Should()
+            .BeTrue();
+
+        conference.Participants.Should().Contain(x=> x.Id == participant.Id);
+        _mocker.Mock<IVideoApiClient>()
+            .Verify(
+                x => x.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id,
+                    It.IsAny<CancellationToken>()), Times.Never);
+        conference.Participants.Should().Contain(x=> x.Id == participant.Id);
+        _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(
+            x => x.PushParticipantsUpdatedEvent(It.IsAny<Conference>(), It.IsAny<IList<Participant>>()), Times.Never);
+    }
+    
+    private static Conference CreateValidConference()
+    {
+        var conference = new ConferenceCacheModelBuilder().Build();
+        
+        var qlParticipant = Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkParticipant)
+            .With(x => x.HearingRole = "Quick link participant")
+            .With(x => x.Username = Faker.Internet.Email("quicklinkparticipant1"))
+            .With(x => x.Id = Guid.NewGuid()).Build();
+        conference.AddParticipant(qlParticipant);
         
         return conference;
     }

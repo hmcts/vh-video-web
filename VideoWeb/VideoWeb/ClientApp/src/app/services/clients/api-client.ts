@@ -4751,7 +4751,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This function updates the status of a participant in a conference and raises a video event
+     * Updates the status of a participant in a conference and raises a video event
     accordingly.
      * @param body (optional) 
      * @return No Content
@@ -4863,8 +4863,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function retrieves heartbeat data for a participant in a conference, handling
-    exceptions and returning appropriate responses.
+     * Retrieves heartbeat data for a participant in a conference
      * @return OK
      */
     getHeartbeatDataForParticipant(conferenceId: string, participantId: string): Observable<ParticipantHeartbeatResponse[]> {
@@ -4972,9 +4971,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function updates the display name of a participant in a conference and handles
-    exceptions using VideoApiException.
-     * @param body (optional) 
+     * Updates the display name of a participant in a conference
+     * @param body (optional)
      * @return No Content
      */
     updateParticipantDisplayName(
@@ -5081,8 +5079,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function retrieves participants with contact details for a conference by conference
-    ID, handling error cases appropriately.
+     * Get the participant details of a conference by id for VH officer
+     * @param conferenceId The unique id of the conference
      * @return OK
      */
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
@@ -5199,7 +5197,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This function retrieves participants for a conference by conference ID, handling exceptions
+     * Retrieves participants for a conference by conference ID, handling exceptions
     and returning the participants or an error response.
      * @return OK
      */
@@ -5306,8 +5304,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function retrieves the current participant information for a given conference ID,
-    handling exceptions and returning the participant details in a response.
+     * Retrieves the current participant information for a given conference ID
      * @return OK
      */
     getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
@@ -5408,8 +5405,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function allows a staff member to join a conference, performing necessary checks and
-    operations before returning a response.
+     * Allows a staff member to join a conference
      * @return OK
      */
     staffMemberJoinConference(conferenceId: string): Observable<ConferenceResponse> {
@@ -5519,7 +5515,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * This C# function deletes a participant from a conference, handling exceptions and logging
+     * Removes a participant from a conference  
     errors.
      * @return No Content
      */
@@ -5606,7 +5602,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
+                    result400 = ValidationProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -7593,6 +7589,82 @@ export class ProblemDetails implements IProblemDetails {
 }
 
 export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class ValidationProblemDetails implements IValidationProblemDetails {
+    errors?: { [key: string]: string[] } | undefined;
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IValidationProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property)) this[property] = _data[property];
+            }
+            if (_data['errors']) {
+                this.errors = {} as any;
+                for (let key in _data['errors']) {
+                    if (_data['errors'].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data['errors'][key] !== undefined ? _data['errors'][key] : [];
+                }
+            }
+            this.type = _data['type'];
+            this.title = _data['title'];
+            this.status = _data['status'];
+            this.detail = _data['detail'];
+            this.instance = _data['instance'];
+        }
+    }
+
+    static fromJS(data: any): ValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property)) data[property] = this[property];
+        }
+        if (this.errors) {
+            data['errors'] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key];
+            }
+        }
+        data['type'] = this.type;
+        data['title'] = this.title;
+        data['status'] = this.status;
+        data['detail'] = this.detail;
+        data['instance'] = this.instance;
+        return data;
+    }
+}
+
+export interface IValidationProblemDetails {
+    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;

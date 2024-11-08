@@ -54,6 +54,7 @@ namespace VideoWeb.Common.Caching
 
         private async Task<TResult> ReadFromCacheWithType<TResult>(TKey key, CancellationToken cancellationToken = default)
         {
+            
             try
             {
                 var data = await _distributedCache.GetAsync(GetKey(key), cancellationToken);

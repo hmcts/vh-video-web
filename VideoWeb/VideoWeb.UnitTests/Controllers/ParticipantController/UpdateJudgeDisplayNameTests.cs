@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using VideoWeb.Contract.Request;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController;
 
@@ -61,7 +63,7 @@ public class UpdateJudgeDisplayNameTests
             .Returns(Task.FromResult(default(object)));
 
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(conferenceId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Conference()
             {
                 Id = conferenceId,
@@ -89,12 +91,12 @@ public class UpdateJudgeDisplayNameTests
         var typedResult = (NoContentResult)result;
         typedResult.Should().NotBeNull();
         _mocker.Mock<IConferenceService>()
-            .Verify(x => x.ForceGetConference(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
-        _mocker.Mock<IVideoApiClient>()
+            .Verify(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
+        _mocker.Mock<IConferenceService>()
+            .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(c => c.Id == conferenceId), It.IsAny<CancellationToken>()), Times.Once);
+        _mocker.Mock<IParticipantsUpdatedEventNotifier>()
             .Verify(
-                x => x.UpdateParticipantDetailsAsync(conferenceId, participantId, It.IsAny<UpdateParticipantRequest>(),
-                    It.IsAny<CancellationToken>()), Times.Once);
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+                x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(c => c.Id == conferenceId), It.IsAny<IList<Participant>>()), Times.Once);
     }
 
     [Test]
