@@ -42,7 +42,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional) start hearing request details
      * @return Accepted
      */
-    startOrResumeVideoHearing(conferenceId: string, body: StartOrResumeVideoHearingRequest | undefined): Observable<void> {
+    startOrResumeVideoHearing(conferenceId: string, body: StartHearingRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/start';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -105,22 +105,13 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
                     return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
         } else if (status === 401) {
@@ -142,7 +133,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Returns the active layout for a conference
      * @param conferenceId conference id
-     * @return OK
+     * @return Success
      */
     getLayoutForHearing(conferenceId: string): Observable<HearingLayout> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getlayout';
@@ -204,7 +195,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -255,7 +246,7 @@ export class ApiClient extends ApiClientBase {
      * Update the active layout for a conference
      * @param conferenceId conference id
      * @param layout (optional) layout
-     * @return OK
+     * @return Success
      */
     updateLayoutForHearing(conferenceId: string, layout: HearingLayout | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/updatelayout?';
@@ -317,7 +308,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -363,7 +354,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get recommended layout for hearing
      * @param conferenceId conference id
-     * @return OK
+     * @return Success
      */
     getRecommendedLayoutForHearing(conferenceId: string): Observable<HearingLayout> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getrecommendedlayout';
@@ -425,7 +416,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -535,7 +526,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -623,7 +614,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -711,7 +702,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -737,7 +728,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Admit a participant into an active video hearing
+     * Call a witness into a video hearing
      * @param conferenceId conference id
      * @param participantId witness id
      * @return Accepted
@@ -802,7 +793,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -893,7 +884,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -984,7 +975,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1075,95 +1066,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 202) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
-     * Leave host from hearing
-     * @param conferenceId conference id
-     * @return Accepted
-     */
-    nonHostLeaveHearing(conferenceId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/non-host-leave';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('post', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processNonHostLeaveHearing(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processNonHostLeaveHearing(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<void>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<void>;
-                })
-            );
-    }
-
-    protected processNonHostLeaveHearing(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1190,7 +1093,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get conferences today for a host
-     * @return OK
+     * @return Success
      */
     getConferencesForHost(): Observable<ConferenceForHostResponse[]> {
         let url_ = this.baseUrl + '/conferences/hosts';
@@ -1250,7 +1153,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1295,7 +1198,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get conferences today for staff member with the specifed hearing venue names
      * @param hearingVenueNames (optional)
-     * @return OK
+     * @return Success
      */
     getConferencesForStaffMember(hearingVenueNames: string[] | undefined): Observable<ConferenceForHostResponse[]> {
         let url_ = this.baseUrl + '/conferences/staffmember?';
@@ -1361,7 +1264,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1405,7 +1308,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get conferences today for individual or representative excluding those that have been closed for over 120 minutes
-     * @return OK
+     * @return Success
      */
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         let url_ = this.baseUrl + '/conferences/individuals';
@@ -1465,7 +1368,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1512,7 +1415,7 @@ export class ApiClient extends ApiClientBase {
      * @param hearingVenueNames (optional)
      * @param allocatedCsoIds (optional)
      * @param includeUnallocated (optional)
-     * @return OK
+     * @return Success
      */
     getConferencesForVhOfficer(
         hearingVenueNames: string[] | undefined,
@@ -1590,7 +1493,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1629,7 +1532,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the details of a conference by id for VH officer
      * @param conferenceId The unique id of the conference
-     * @return OK
+     * @return Success
      */
     getConferenceByIdVHO(conferenceId: string): Observable<ConferenceResponseVho> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/vhofficer';
@@ -1691,7 +1594,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1710,6 +1613,12 @@ export class ApiClient extends ApiClientBase {
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('No Content', status, _responseText, _headers);
                 })
             );
         } else if (status === 401) {
@@ -1731,7 +1640,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the details of a conference by id
      * @param conferenceId The unique id of the conference
-     * @return OK
+     * @return Success
      */
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}';
@@ -1793,7 +1702,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -1908,7 +1817,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -1945,7 +1854,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Returns the video control statuses for the conference
      * @param conferenceId conference id
-     * @return OK
+     * @return Success
      */
     getVideoControlStatusesForConference(conferenceId: string): Observable<ConferenceVideoControlStatuses> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getVideoControlStatuses';
@@ -2007,7 +1916,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -2046,7 +1955,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * GetClientConfigurationSettings the configuration settings for client
-     * @return OK
+     * @return Success
      */
     getClientConfigurationSettings(): Observable<ClientSettingsResponse> {
         let url_ = this.baseUrl + '/config';
@@ -2106,7 +2015,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -2209,7 +2118,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2232,8 +2141,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2318,7 +2226,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2341,8 +2249,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2427,7 +2334,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2450,8 +2357,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2536,7 +2442,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2559,9 +2465,17 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result403: any = null;
+                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result403 = ProblemDetails.fromJS(resultData403);
+                    return throwException('Forbidden', status, _responseText, _headers, result403);
                 })
             );
         } else if (status === 401) {
@@ -2645,7 +2559,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -2753,7 +2667,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2776,8 +2690,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2862,7 +2775,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 202) {
@@ -2885,8 +2798,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
+                    result400 = ProblemDetails.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -2907,107 +2819,10 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Get all active conferences.
-    This includes conferences that are in progress or paused.
-    This includes conferences that are closed but the participants are still in consultation.
-     * @return OK
-     */
-    getActiveConferences(): Observable<ConferenceForVhOfficerResponse[]> {
-        let url_ = this.baseUrl + '/end-of-day/active-sessions';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetActiveConferences(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetActiveConferences(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<ConferenceForVhOfficerResponse[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<ConferenceForVhOfficerResponse[]>;
-                })
-            );
-    }
-
-    protected processGetActiveConferences(response: HttpResponseBase): Observable<ConferenceForVhOfficerResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ConferenceForVhOfficerResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<ConferenceForVhOfficerResponse[]>(null as any);
-    }
-
-    /**
-     * @return OK
+     * @return Success
      */
     getVideoEndpointsForConference(conferenceId: string): Observable<VideoEndpointResponse[]> {
-        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/participants';
+        let url_ = this.baseUrl + '/{conferenceId}/participants';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
@@ -3066,7 +2881,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3100,10 +2915,10 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
-        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/allowed-video-call-endpoints';
+        let url_ = this.baseUrl + '/{conferenceId}/allowed-video-call-endpoints';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
@@ -3162,7 +2977,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3205,12 +3020,10 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
-    getHeartbeatConfigForParticipant(conferenceId: string, participantId: string): Observable<HeartbeatConfigurationResponse> {
-        let url_ = this.baseUrl + '/heartbeat/conferences/{conferenceId}/GetHeartbeatConfigForParticipant/{participantId}';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');
@@ -3269,7 +3082,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3310,7 +3123,7 @@ export class ApiClient extends ApiClientBase {
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
-     * @return OK
+     * @return Success
      */
     getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantId: string): Observable<ChatResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/participant/{participantId}';
@@ -3374,7 +3187,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3419,7 +3232,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get number of unread messages for vho
      * @param conferenceId Id of the conference
-     * @return OK
+     * @return Success
      */
     getNumberOfUnreadAdminMessagesForConference(conferenceId: string): Observable<UnreadInstantMessageConferenceCountResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/unread/vho';
@@ -3483,7 +3296,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3515,7 +3328,7 @@ export class ApiClient extends ApiClientBase {
      * Get number of unread messages for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
-     * @return OK
+     * @return Success
      */
     getNumberOfUnreadAdminMessagesForConferenceByParticipant(
         conferenceId: string,
@@ -3584,7 +3397,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -3674,7 +3487,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3777,7 +3590,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3880,7 +3693,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -3987,7 +3800,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4094,7 +3907,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4201,7 +4014,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4301,201 +4114,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @param conferenceId (optional)
-     * @return No Content
-     */
-    hearingCancelled(conferenceId: string | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/internalevent/HearingCancelled?';
-        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
-        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('post', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processHearingCancelled(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processHearingCancelled(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<void>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<void>;
-                })
-            );
-    }
-
-    protected processHearingCancelled(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
-
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @param conferenceId (optional)
-     * @return No Content
-     */
-    hearingDetailsUpdated(conferenceId: string | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/internalevent/HearingDetailsUpdated?';
-        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
-        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('post', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processHearingDetailsUpdated(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processHearingDetailsUpdated(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<void>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<void>;
-                })
-            );
-    }
-
-    protected processHearingDetailsUpdated(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -4597,7 +4216,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4707,7 +4326,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4751,9 +4370,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Updates the status of a participant in a conference and raises a video event
-    accordingly.
-     * @param body (optional) 
+     * @param body (optional)
      * @return No Content
      */
     updateParticipantStatus(conferenceId: string, body: UpdateParticipantStatusEventRequest | undefined): Observable<void> {
@@ -4819,7 +4436,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 404) {
@@ -4863,8 +4480,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Retrieves heartbeat data for a participant in a conference
-     * @return OK
+     * @return Success
      */
     getHeartbeatDataForParticipant(conferenceId: string, participantId: string): Observable<ParticipantHeartbeatResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participant/{participantId}/heartbeatrecent';
@@ -4928,7 +4544,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -4971,7 +4587,6 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Updates the display name of a participant in a conference
      * @param body (optional)
      * @return No Content
      */
@@ -5044,7 +4659,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 400) {
@@ -5081,7 +4696,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get the participant details of a conference by id for VH officer
      * @param conferenceId The unique id of the conference
-     * @return OK
+     * @return Success
      */
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/vhofficer/participants';
@@ -5145,7 +4760,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5197,11 +4812,9 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Retrieves participants for a conference by conference ID, handling exceptions
-    and returning the participants or an error response.
-     * @return OK
+     * @return Success
      */
-    getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantResponse[]> {
+    getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantForUserResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participants';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -5232,14 +4845,14 @@ export class ApiClient extends ApiClientBase {
                         try {
                             return this.processGetParticipantsByConferenceId(response_ as any);
                         } catch (e) {
-                            return _observableThrow(e) as any as Observable<ParticipantResponse[]>;
+                            return _observableThrow(e) as any as Observable<ParticipantForUserResponse[]>;
                         }
-                    } else return _observableThrow(response_) as any as Observable<ParticipantResponse[]>;
+                    } else return _observableThrow(response_) as any as Observable<ParticipantForUserResponse[]>;
                 })
             );
     }
 
-    protected processGetParticipantsByConferenceId(response: HttpResponseBase): Observable<ParticipantResponse[]> {
+    protected processGetParticipantsByConferenceId(response: HttpResponseBase): Observable<ParticipantForUserResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse
@@ -5261,7 +4874,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5271,7 +4884,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     if (Array.isArray(resultData200)) {
                         result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ParticipantResponse.fromJS(item));
+                        for (let item of resultData200) result200!.push(ParticipantForUserResponse.fromJS(item));
                     } else {
                         result200 = <any>null;
                     }
@@ -5300,12 +4913,11 @@ export class ApiClient extends ApiClientBase {
                 })
             );
         }
-        return _observableOf<ParticipantResponse[]>(null as any);
+        return _observableOf<ParticipantForUserResponse[]>(null as any);
     }
 
     /**
-     * Retrieves the current participant information for a given conference ID
-     * @return OK
+     * @return Success
      */
     getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/currentparticipant';
@@ -5367,7 +4979,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5405,8 +5017,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Allows a staff member to join a conference
-     * @return OK
+     * @return Success
      */
     staffMemberJoinConference(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/joinConference';
@@ -5468,7 +5079,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5515,116 +5126,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Removes a participant from a conference  
-    errors.
-     * @return No Content
-     */
-    deleteParticipantFromConference(conferenceId: string, participantId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/participants/{participantId}';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('delete', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processDeleteParticipantFromConference(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processDeleteParticipantFromConference(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<void>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<void>;
-                })
-            );
-    }
-
-    protected processDeleteParticipantFromConference(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(null as any);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ValidationProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
      * Get profile for logged in user
-     * @return OK
+     * @return Success
      */
     getUserProfile(): Observable<UserProfileResponse> {
         let url_ = this.baseUrl + '/profile';
@@ -5684,7 +5187,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5715,7 +5218,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get profile for username
      * @param username (optional)
-     * @return OK
+     * @return Success
      */
     getProfileByUsername(username: string | undefined): Observable<UserProfileResponse> {
         let url_ = this.baseUrl + '/profile/query?';
@@ -5777,7 +5280,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5815,7 +5318,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     getQuickLinkParticipantRoles(): Observable<Role[]> {
         let url_ = this.baseUrl + '/quickjoin/GetQuickLinkParticipantRoles';
@@ -5875,7 +5378,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -5909,7 +5412,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     validateQuickLink(hearingId: string): Observable<boolean> {
         let url_ = this.baseUrl + '/quickjoin/ValidateQuickLink/{hearingId}';
@@ -5971,7 +5474,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6003,7 +5506,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * joinConferenceAsAQuickLinkUser
      * @param body (optional)
-     * @return OK
+     * @return Success
      */
     joinConferenceAsAQuickLinkUser(
         hearingId: string,
@@ -6072,7 +5575,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6102,7 +5605,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * isQuickLinkParticipantAuthorised
-     * @return OK
+     * @return Success
      */
     isQuickLinkParticipantAuthorised(): Observable<void> {
         let url_ = this.baseUrl + '/quickjoin/isQuickLinkParticipantAuthorised';
@@ -6160,7 +5663,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6195,103 +5698,8 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Get available interpreter languages
-     * @return OK
-     */
-    getAvailableInterpreterLanguages(): Observable<InterpreterLanguageResponse[]> {
-        let url_ = this.baseUrl + '/api/reference-data/interpreter-languages';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetAvailableInterpreterLanguages(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetAvailableInterpreterLanguages(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<InterpreterLanguageResponse[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<InterpreterLanguageResponse[]>;
-                })
-            );
-    }
-
-    protected processGetAvailableInterpreterLanguages(response: HttpResponseBase): Observable<InterpreterLanguageResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(InterpreterLanguageResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<InterpreterLanguageResponse[]>(null as any);
-    }
-
-    /**
      * Get the Pexip self test node.
-     * @return OK
+     * @return Success
      */
     getPexipConfig(): Observable<SelfTestPexipResponse> {
         let url_ = this.baseUrl + '/selftest';
@@ -6351,7 +5759,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6390,18 +5798,16 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Check if a user has completed a test call at least once today
-     * @return OK
+     * @return Success
      */
-    checkUserCompletedATestToday(): Observable<boolean> {
+    checkUserCompletedATestToday(): Observable<void> {
         let url_ = this.baseUrl + '/selftest/today';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
             observe: 'response',
             responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
+            headers: new HttpHeaders({})
         };
 
         return _observableFrom(this.transformOptions(options_))
@@ -6421,14 +5827,14 @@ export class ApiClient extends ApiClientBase {
                         try {
                             return this.processCheckUserCompletedATestToday(response_ as any);
                         } catch (e) {
-                            return _observableThrow(e) as any as Observable<boolean>;
+                            return _observableThrow(e) as any as Observable<void>;
                         }
-                    } else return _observableThrow(response_) as any as Observable<boolean>;
+                    } else return _observableThrow(response_) as any as Observable<void>;
                 })
             );
     }
 
-    protected processCheckUserCompletedATestToday(response: HttpResponseBase): Observable<boolean> {
+    protected processCheckUserCompletedATestToday(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse
@@ -6450,17 +5856,22 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = resultData200 !== undefined ? resultData200 : <any>null;
-
-                    return _observableOf(result200);
+                    return _observableOf<void>(null as any);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
                 })
             );
         } else if (status === 401) {
@@ -6476,11 +5887,11 @@ export class ApiClient extends ApiClientBase {
                 })
             );
         }
-        return _observableOf<boolean>(null as any);
+        return _observableOf<void>(null as any);
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     getTestCallResult(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
         let url_ = this.baseUrl + '/selftest/conferences/{conferenceId}/participants/{participantId}/selftestresult';
@@ -6544,7 +5955,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6582,7 +5993,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     getIndependentTestCallResult(participantId: string): Observable<TestCallScoreResponse> {
         let url_ = this.baseUrl + '/selftest/independentselftestresult/{participantId}';
@@ -6644,7 +6055,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6682,7 +6093,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     getTasks(conferenceId: string): Observable<TaskResponse[]> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/tasks';
@@ -6744,7 +6155,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6781,7 +6192,7 @@ export class ApiClient extends ApiClientBase {
      * Update existing tasks
      * @param conferenceId The id of the conference to update
      * @param taskId The id of the task to update
-     * @return OK
+     * @return Success
      */
     completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/tasks/{taskId}';
@@ -6845,7 +6256,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6892,7 +6303,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @return OK
+     * @return Success
      */
     getSelfTestToken(participantId: string): Observable<TokenResponse> {
         let url_ = this.baseUrl + '/participants/{participantId}/selftesttoken';
@@ -6954,7 +6365,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -6992,8 +6403,133 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * Get Court rooms accounts (judges)
+     * @param hearingVenueNames (optional)
+     * @param allocatedCsoIds (optional)
+     * @param includeUnallocated (optional)
+     * @return Success
+     */
+    getCourtRoomAccounts(
+        hearingVenueNames: string[] | undefined,
+        allocatedCsoIds: string[] | undefined,
+        includeUnallocated: boolean | undefined
+    ): Observable<CourtRoomsAccountResponse[]> {
+        let url_ = this.baseUrl + '/api/accounts/courtrooms?';
+        if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames &&
+                hearingVenueNames.forEach(item => {
+                    url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
+                });
+        if (allocatedCsoIds === null) throw new Error("The parameter 'allocatedCsoIds' cannot be null.");
+        else if (allocatedCsoIds !== undefined)
+            allocatedCsoIds &&
+                allocatedCsoIds.forEach(item => {
+                    url_ += 'AllocatedCsoIds=' + encodeURIComponent('' + item) + '&';
+                });
+        if (includeUnallocated === null) throw new Error("The parameter 'includeUnallocated' cannot be null.");
+        else if (includeUnallocated !== undefined) url_ += 'IncludeUnallocated=' + encodeURIComponent('' + includeUnallocated) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetCourtRoomAccounts(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetCourtRoomAccounts(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<CourtRoomsAccountResponse[]>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<CourtRoomsAccountResponse[]>;
+                })
+            );
+    }
+
+    protected processGetCourtRoomAccounts(response: HttpResponseBase): Observable<CourtRoomsAccountResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                  ? (response as any).error
+                  : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(CourtRoomsAccountResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<CourtRoomsAccountResponse[]>(null as any);
+    }
+
+    /**
      * Get CSOS
-     * @return OK
+     * @return Success
      */
     getCSOs(): Observable<JusticeUserResponse[]> {
         let url_ = this.baseUrl + '/api/accounts/csos';
@@ -7053,7 +6589,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -7088,7 +6624,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * Get available courts
-     * @return OK
+     * @return Success
      */
     getVenues(): Observable<HearingVenueResponse[]> {
         let url_ = this.baseUrl + '/hearing-venues/courts';
@@ -7148,7 +6684,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -7255,7 +6791,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 204) {
@@ -7292,7 +6828,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * @param participantType (optional)
-     * @return OK
+     * @return Success
      */
     getParticipantRoomForParticipant(
         conferenceId: string,
@@ -7362,7 +6898,7 @@ export class ApiClient extends ApiClientBase {
                     let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result500 = resultData500 !== undefined ? resultData500 : <any>null;
 
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
                 })
             );
         } else if (status === 200) {
@@ -7598,87 +7134,6 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
-export class ValidationProblemDetails implements IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IValidationProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property)) this[property] = _data[property];
-            }
-            if (_data['errors']) {
-                this.errors = {} as any;
-                for (let key in _data['errors']) {
-                    if (_data['errors'].hasOwnProperty(key))
-                        (<any>this.errors)![key] = _data['errors'][key] !== undefined ? _data['errors'][key] : [];
-                }
-            }
-            this.type = _data['type'];
-            this.title = _data['title'];
-            this.status = _data['status'];
-            this.detail = _data['detail'];
-            this.instance = _data['instance'];
-        }
-    }
-
-    static fromJS(data: any): ValidationProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ValidationProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property)) data[property] = this[property];
-        }
-        if (this.errors) {
-            data['errors'] = {};
-            for (let key in this.errors) {
-                if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key];
-            }
-        }
-        data['type'] = this.type;
-        data['title'] = this.title;
-        data['status'] = this.status;
-        data['detail'] = this.detail;
-        data['instance'] = this.instance;
-        return data;
-    }
-}
-
-export interface IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-}
-
-export enum ConferenceRole {
-    Host = 'Host',
-    Guest = 'Guest'
-}
-
 export enum EndpointState {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
@@ -7712,11 +7167,7 @@ export enum EventType {
     ConnectingToConference = 'ConnectingToConference',
     RoomParticipantJoined = 'RoomParticipantJoined',
     RoomParticipantDisconnected = 'RoomParticipantDisconnected',
-    RoomParticipantTransfer = 'RoomParticipantTransfer',
-    TelephoneJoined = 'TelephoneJoined',
-    TelephoneDisconnected = 'TelephoneDisconnected',
-    TelephoneTransfer = 'TelephoneTransfer',
-    RecordingConnectionFailed = 'RecordingConnectionFailed'
+    RoomParticipantTransfer = 'RoomParticipantTransfer'
 }
 
 export enum LinkedParticipantType {
@@ -7916,10 +7367,7 @@ export interface IHearingDetailRequest {
 export enum HearingLayout {
     Dynamic = 'Dynamic',
     OnePlus7 = 'OnePlus7',
-    TwoPlus21 = 'TwoPlus21',
-    NineEqual = 'NineEqual',
-    SixteenEqual = 'SixteenEqual',
-    TwentyFiveEqual = 'TwentyFiveEqual'
+    TwoPlus21 = 'TwoPlus21'
 }
 
 export class LinkedParticipantRequest implements ILinkedParticipantRequest {
@@ -8056,6 +7504,55 @@ export interface IParticipantRequest {
     case_type_group?: string | undefined;
     representee?: string | undefined;
     linked_participants?: LinkedParticipantRequest[] | undefined;
+}
+
+export class StartHearingRequest implements IStartHearingRequest {
+    layout?: HearingLayout;
+    participants_to_force_transfer?: string[] | undefined;
+    mute_guests?: boolean | undefined;
+
+    constructor(data?: IStartHearingRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.layout = _data['layout'];
+            if (Array.isArray(_data['participants_to_force_transfer'])) {
+                this.participants_to_force_transfer = [] as any;
+                for (let item of _data['participants_to_force_transfer']) this.participants_to_force_transfer!.push(item);
+            }
+            this.mute_guests = _data['mute_guests'];
+        }
+    }
+
+    static fromJS(data: any): StartHearingRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartHearingRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['layout'] = this.layout;
+        if (Array.isArray(this.participants_to_force_transfer)) {
+            data['participants_to_force_transfer'] = [];
+            for (let item of this.participants_to_force_transfer) data['participants_to_force_transfer'].push(item);
+        }
+        data['mute_guests'] = this.mute_guests;
+        return data;
+    }
+}
+
+export interface IStartHearingRequest {
+    layout?: HearingLayout;
+    participants_to_force_transfer?: string[] | undefined;
+    mute_guests?: boolean | undefined;
 }
 
 export class UpdateConferenceParticipantsRequest implements IUpdateConferenceParticipantsRequest {
@@ -8226,7 +7723,6 @@ export class EndpointResponse implements IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
-    conference_role?: ConferenceRole;
 
     constructor(data?: IEndpointResponse) {
         if (data) {
@@ -8245,7 +7741,6 @@ export class EndpointResponse implements IEndpointResponse {
             this.status = _data['status'];
             this.defence_advocate = _data['defence_advocate'];
             this.current_room = _data['current_room'] ? RoomResponse.fromJS(_data['current_room']) : <any>undefined;
-            this.conference_role = _data['conference_role'];
         }
     }
 
@@ -8265,7 +7760,6 @@ export class EndpointResponse implements IEndpointResponse {
         data['status'] = this.status;
         data['defence_advocate'] = this.defence_advocate;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
-        data['conference_role'] = this.conference_role;
         return data;
     }
 }
@@ -8278,7 +7772,6 @@ export interface IEndpointResponse {
     status?: EndpointState;
     defence_advocate?: string | undefined;
     current_room?: RoomResponse;
-    conference_role?: ConferenceRole;
 }
 
 export class ParticipantHeartbeatResponse implements IParticipantHeartbeatResponse {
@@ -8481,11 +7974,6 @@ export interface ITestCallScoreResponse {
     passed?: boolean;
 }
 
-export enum Supplier {
-    Kinly = 'Kinly',
-    Vodafone = 'Vodafone'
-}
-
 export enum ConferenceStatus {
     NotStarted = 'NotStarted',
     InSession = 'InSession',
@@ -8588,8 +8076,7 @@ export enum Role {
     JudicialOfficeHolder = 'JudicialOfficeHolder',
     QuickLinkParticipant = 'QuickLinkParticipant',
     QuickLinkObserver = 'QuickLinkObserver',
-    StaffMember = 'StaffMember',
-    Administrator = 'Administrator'
+    StaffMember = 'StaffMember'
 }
 
 export class VideoControlStatus implements IVideoControlStatus {
@@ -9183,41 +8670,6 @@ export interface ISetConferenceVideoControlStatusesRequest_VideoControlStatusReq
     is_local_video_muted?: boolean;
 }
 
-export class StartOrResumeVideoHearingRequest implements IStartOrResumeVideoHearingRequest {
-    layout?: HearingLayout;
-
-    constructor(data?: IStartOrResumeVideoHearingRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.layout = _data['layout'];
-        }
-    }
-
-    static fromJS(data: any): StartOrResumeVideoHearingRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new StartOrResumeVideoHearingRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['layout'] = this.layout;
-        return data;
-    }
-}
-
-export interface IStartOrResumeVideoHearingRequest {
-    layout?: HearingLayout;
-}
-
 export class StartPrivateConsultationRequest implements IStartPrivateConsultationRequest {
     invite_participants?: string[] | undefined;
     invite_endpoints?: string[] | undefined;
@@ -9343,8 +8795,16 @@ export interface IUpdateConferenceEndpointsRequest {
 }
 
 export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDisplayNameRequest {
+    /** Participant Fullname */
+    fullname?: string | undefined;
+    /** Participant FirstName */
+    first_name?: string | undefined;
+    /** Participant LastName */
+    last_name?: string | undefined;
     /** Participant Display Name */
     display_name?: string | undefined;
+    /** Representee */
+    representee?: string | undefined;
 
     constructor(data?: IUpdateParticipantDisplayNameRequest) {
         if (data) {
@@ -9356,7 +8816,11 @@ export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDi
 
     init(_data?: any) {
         if (_data) {
+            this.fullname = _data['fullname'];
+            this.first_name = _data['first_name'];
+            this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
+            this.representee = _data['representee'];
         }
     }
 
@@ -9369,14 +8833,26 @@ export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDi
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data['fullname'] = this.fullname;
+        data['first_name'] = this.first_name;
+        data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
+        data['representee'] = this.representee;
         return data;
     }
 }
 
 export interface IUpdateParticipantDisplayNameRequest {
+    /** Participant Fullname */
+    fullname?: string | undefined;
+    /** Participant FirstName */
+    first_name?: string | undefined;
+    /** Participant LastName */
+    last_name?: string | undefined;
     /** Participant Display Name */
     display_name?: string | undefined;
+    /** Representee */
+    representee?: string | undefined;
 }
 
 export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {
@@ -9536,6 +9012,14 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
+    /** The date to set option ON to display functionality to join hearing by phone */
+    join_by_phone_from_date?: string | undefined;
+    /** The turn server */
+    supplier_turn_server?: string | undefined;
+    /** The turn server username */
+    supplier_turn_server_user?: string | undefined;
+    /** The turn server password */
+    supplier_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
@@ -9553,10 +9037,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
-    /** Configurations for the suppliers */
-    supplier_configurations?: SupplierConfigurationResponse[] | undefined;
-    /** The url to the Dynatrace Real User Monitoring javascript script. */
-    dynatrace_rum_link?: string | undefined;
+    /** Supplier */
+    supplier?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -9570,6 +9052,10 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         if (_data) {
             this.app_insights_connection_string = _data['app_insights_connection_string'];
             this.event_hub_path = _data['event_hub_path'];
+            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
+            this.supplier_turn_server = _data['supplier_turn_server'];
+            this.supplier_turn_server_user = _data['supplier_turn_server_user'];
+            this.supplier_turn_server_credential = _data['supplier_turn_server_credential'];
             this.e_jud_idp_settings = _data['e_jud_idp_settings']
                 ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
                 : <any>undefined;
@@ -9582,12 +9068,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
             this.launch_darkly_client_id = _data['launch_darkly_client_id'];
-            if (Array.isArray(_data['supplier_configurations'])) {
-                this.supplier_configurations = [] as any;
-                for (let item of _data['supplier_configurations'])
-                    this.supplier_configurations!.push(SupplierConfigurationResponse.fromJS(item));
-            }
-            this.dynatrace_rum_link = _data['dynatrace_rum_link'];
+            this.supplier = _data['supplier'];
         }
     }
 
@@ -9602,6 +9083,10 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data = typeof data === 'object' ? data : {};
         data['app_insights_connection_string'] = this.app_insights_connection_string;
         data['event_hub_path'] = this.event_hub_path;
+        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
+        data['supplier_turn_server'] = this.supplier_turn_server;
+        data['supplier_turn_server_user'] = this.supplier_turn_server_user;
+        data['supplier_turn_server_credential'] = this.supplier_turn_server_credential;
         data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
         data['dom1_idp_settings'] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
@@ -9612,11 +9097,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         data['launch_darkly_client_id'] = this.launch_darkly_client_id;
-        if (Array.isArray(this.supplier_configurations)) {
-            data['supplier_configurations'] = [];
-            for (let item of this.supplier_configurations) data['supplier_configurations'].push(item.toJSON());
-        }
-        data['dynatrace_rum_link'] = this.dynatrace_rum_link;
+        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -9627,6 +9108,14 @@ export interface IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
+    /** The date to set option ON to display functionality to join hearing by phone */
+    join_by_phone_from_date?: string | undefined;
+    /** The turn server */
+    supplier_turn_server?: string | undefined;
+    /** The turn server username */
+    supplier_turn_server_user?: string | undefined;
+    /** The turn server password */
+    supplier_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
@@ -9644,10 +9133,8 @@ export interface IClientSettingsResponse {
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
     launch_darkly_client_id?: string | undefined;
-    /** Configurations for the suppliers */
-    supplier_configurations?: SupplierConfigurationResponse[] | undefined;
-    /** The url to the Dynatrace Real User Monitoring javascript script. */
-    dynatrace_rum_link?: string | undefined;
+    /** Supplier */
+    supplier?: string | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {
@@ -9862,7 +9349,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
-    supplier?: Supplier;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -9894,7 +9380,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.hearing_ref_id = _data['hearing_ref_id'];
             this.allocated_cso = _data['allocated_cso'];
             this.allocated_cso_id = _data['allocated_cso_id'];
-            this.supplier = _data['supplier'];
         }
     }
 
@@ -9927,7 +9412,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['hearing_ref_id'] = this.hearing_ref_id;
         data['allocated_cso'] = this.allocated_cso;
         data['allocated_cso_id'] = this.allocated_cso_id;
-        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -9966,7 +9450,6 @@ export interface IConferenceForVhOfficerResponse {
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
-    supplier?: Supplier;
 }
 
 /** Detailed information about a conference */
@@ -10006,7 +9489,6 @@ export class ConferenceResponse implements IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
-    supplier?: Supplier;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -10042,7 +9524,6 @@ export class ConferenceResponse implements IConferenceResponse {
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
             this.ingest_url = _data['ingest_url'];
-            this.supplier = _data['supplier'];
         }
     }
 
@@ -10079,7 +9560,6 @@ export class ConferenceResponse implements IConferenceResponse {
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
         data['ingest_url'] = this.ingest_url;
-        data['supplier'] = this.supplier;
         return data;
     }
 }
@@ -10121,7 +9601,6 @@ export interface IConferenceResponse {
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
-    supplier?: Supplier;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -10245,6 +9724,55 @@ export interface IConferenceResponseVho {
     hearing_id?: string;
 }
 
+export class CourtRoomsAccountResponse implements ICourtRoomsAccountResponse {
+    /** The venue name (judge first name) */
+    first_name?: string | undefined;
+    /** The list of court rooms (judge last name) */
+    last_names?: string[] | undefined;
+
+    constructor(data?: ICourtRoomsAccountResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.first_name = _data['first_name'];
+            if (Array.isArray(_data['last_names'])) {
+                this.last_names = [] as any;
+                for (let item of _data['last_names']) this.last_names!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CourtRoomsAccountResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new CourtRoomsAccountResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['first_name'] = this.first_name;
+        if (Array.isArray(this.last_names)) {
+            data['last_names'] = [];
+            for (let item of this.last_names) data['last_names'].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICourtRoomsAccountResponse {
+    /** The venue name (judge first name) */
+    first_name?: string | undefined;
+    /** The list of court rooms (judge last name) */
+    last_names?: string[] | undefined;
+}
+
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
     heartbeat_url_base?: string | undefined;
     heartbeat_jwt?: string | undefined;
@@ -10351,54 +9879,6 @@ export interface IIdpSettingsResponse {
     post_logout_redirect_uri?: string | undefined;
 }
 
-export class InterpreterLanguageResponse implements IInterpreterLanguageResponse {
-    code?: string | undefined;
-    description?: string | undefined;
-    type?: InterpreterType;
-
-    constructor(data?: IInterpreterLanguageResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.code = _data['code'];
-            this.description = _data['description'];
-            this.type = _data['type'];
-        }
-    }
-
-    static fromJS(data: any): InterpreterLanguageResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new InterpreterLanguageResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['code'] = this.code;
-        data['description'] = this.description;
-        data['type'] = this.type;
-        return data;
-    }
-}
-
-export interface IInterpreterLanguageResponse {
-    code?: string | undefined;
-    description?: string | undefined;
-    type?: InterpreterType;
-}
-
-export enum InterpreterType {
-    Sign = 'Sign',
-    Verbal = 'Verbal'
-}
-
 export class LinkedParticipantResponse implements ILinkedParticipantResponse {
     /** The id of the participant linked to */
     linked_id?: string;
@@ -10502,6 +9982,8 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     status?: ParticipantStatus;
     /** The participant's display name */
     display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The participant hearing ref id in a booking */
     ref_id?: string;
     /** The participant's first name */
@@ -10539,6 +10021,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.hearing_role = _data['hearing_role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
+            this.case_type_group = _data['case_type_group'];
             this.ref_id = _data['ref_id'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10571,6 +10054,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['hearing_role'] = this.hearing_role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
+        data['case_type_group'] = this.case_type_group;
         data['ref_id'] = this.ref_id;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10602,6 +10086,8 @@ export interface IParticipantContactDetailsResponseVho {
     status?: ParticipantStatus;
     /** The participant's display name */
     display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The participant hearing ref id in a booking */
     ref_id?: string;
     /** The participant's first name */
@@ -10628,6 +10114,12 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
     /** The participant display name during a conference */
     display_name?: string | undefined;
     role?: Role;
+    /** The representee (if participant is a representative) */
+    representee?: string | undefined;
+    /** The group a participant belongs to */
+    case_type_group?: string | undefined;
+    /** The participant hearing role in conference */
+    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantForHostResponse) {
         if (data) {
@@ -10642,6 +10134,9 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
             this.id = _data['id'];
             this.display_name = _data['display_name'];
             this.role = _data['role'];
+            this.representee = _data['representee'];
+            this.case_type_group = _data['case_type_group'];
+            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -10657,6 +10152,9 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
         data['id'] = this.id;
         data['display_name'] = this.display_name;
         data['role'] = this.role;
+        data['representee'] = this.representee;
+        data['case_type_group'] = this.case_type_group;
+        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -10667,6 +10165,12 @@ export interface IParticipantForHostResponse {
     /** The participant display name during a conference */
     display_name?: string | undefined;
     role?: Role;
+    /** The representee (if participant is a representative) */
+    representee?: string | undefined;
+    /** The group a participant belongs to */
+    case_type_group?: string | undefined;
+    /** The participant hearing role in conference */
+    hearing_role?: string | undefined;
 }
 
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
@@ -10680,6 +10184,8 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10692,13 +10198,8 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -10716,6 +10217,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
+            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10723,17 +10225,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
-            this.interpreter_language = _data['interpreter_language']
-                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
-                : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
-            }
-            this.external_reference_id = _data['external_reference_id'];
-            if (Array.isArray(_data['protect_from'])) {
-                this.protect_from = [] as any;
-                for (let item of _data['protect_from']) this.protect_from!.push(item);
             }
         }
     }
@@ -10753,6 +10247,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
+        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10760,15 +10255,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
-        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
-        }
-        data['external_reference_id'] = this.external_reference_id;
-        if (Array.isArray(this.protect_from)) {
-            data['protect_from'] = [];
-            for (let item of this.protect_from) data['protect_from'].push(item);
         }
         return data;
     }
@@ -10785,6 +10274,8 @@ export interface IParticipantForUserResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10797,13 +10288,8 @@ export interface IParticipantForUserResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -10818,6 +10304,8 @@ export class ParticipantResponse implements IParticipantResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10830,13 +10318,8 @@ export class ParticipantResponse implements IParticipantResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -10854,6 +10337,7 @@ export class ParticipantResponse implements IParticipantResponse {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
+            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
@@ -10861,17 +10345,9 @@ export class ParticipantResponse implements IParticipantResponse {
             this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
-            this.interpreter_language = _data['interpreter_language']
-                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
-                : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
-            }
-            this.external_reference_id = _data['external_reference_id'];
-            if (Array.isArray(_data['protect_from'])) {
-                this.protect_from = [] as any;
-                for (let item of _data['protect_from']) this.protect_from!.push(item);
             }
         }
     }
@@ -10891,6 +10367,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
+        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
@@ -10898,15 +10375,9 @@ export class ParticipantResponse implements IParticipantResponse {
         data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
-        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
-        }
-        data['external_reference_id'] = this.external_reference_id;
-        if (Array.isArray(this.protect_from)) {
-            data['protect_from'] = [];
-            for (let item of this.protect_from) data['protect_from'].push(item);
         }
         return data;
     }
@@ -10924,6 +10395,8 @@ export interface IParticipantResponse {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The first name of the participant */
@@ -10936,13 +10409,8 @@ export interface IParticipantResponse {
     user_name?: string | undefined;
     current_room?: RoomSummaryResponse;
     interpreter_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
     /** List of participants linked this participant */
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -10957,6 +10425,8 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The hearing role */
@@ -10982,6 +10452,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.tiled_display_name = _data['tiled_display_name'];
+            this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
@@ -11008,6 +10479,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['tiled_display_name'] = this.tiled_display_name;
+        data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['hearing_role'] = this.hearing_role;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
@@ -11032,6 +10504,8 @@ export interface IParticipantResponseVho {
     display_name?: string | undefined;
     /** The tiled display name (the fixed tile location, display name and UUID) */
     tiled_display_name?: string | undefined;
+    /** The group a participant belongs to in a case */
+    case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     /** The hearing role */
@@ -11206,65 +10680,6 @@ export interface ISharedParticipantRoom {
     participant_join_uri?: string | undefined;
     display_name?: string | undefined;
     tile_display_name?: string | undefined;
-}
-
-export class SupplierConfigurationResponse implements ISupplierConfigurationResponse {
-    supplier?: Supplier;
-    /** The date to set option ON to display functionality to join hearing by phone */
-    join_by_phone_from_date?: string | undefined;
-    /** The turn server */
-    turn_server?: string | undefined;
-    /** The turn server username */
-    turn_server_user?: string | undefined;
-    /** The turn server password */
-    turn_server_credential?: string | undefined;
-
-    constructor(data?: ISupplierConfigurationResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.supplier = _data['supplier'];
-            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
-            this.turn_server = _data['turn_server'];
-            this.turn_server_user = _data['turn_server_user'];
-            this.turn_server_credential = _data['turn_server_credential'];
-        }
-    }
-
-    static fromJS(data: any): SupplierConfigurationResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new SupplierConfigurationResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['supplier'] = this.supplier;
-        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
-        data['turn_server'] = this.turn_server;
-        data['turn_server_user'] = this.turn_server_user;
-        data['turn_server_credential'] = this.turn_server_credential;
-        return data;
-    }
-}
-
-export interface ISupplierConfigurationResponse {
-    supplier?: Supplier;
-    /** The date to set option ON to display functionality to join hearing by phone */
-    join_by_phone_from_date?: string | undefined;
-    /** The turn server */
-    turn_server?: string | undefined;
-    /** The turn server username */
-    turn_server_user?: string | undefined;
-    /** The turn server password */
-    turn_server_credential?: string | undefined;
 }
 
 export class TokenResponse implements ITokenResponse {
@@ -11464,11 +10879,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -11487,14 +10897,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.pexip_display_name = _data['pexip_display_name'];
             this.is_current_user = _data['is_current_user'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
-            this.interpreter_language = _data['interpreter_language']
-                ? InterpreterLanguageResponse.fromJS(_data['interpreter_language'])
-                : <any>undefined;
-            this.external_reference_id = _data['external_reference_id'];
-            if (Array.isArray(_data['protect_from'])) {
-                this.protect_from = [] as any;
-                for (let item of _data['protect_from']) this.protect_from!.push(item);
-            }
         }
     }
 
@@ -11514,12 +10916,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['pexip_display_name'] = this.pexip_display_name;
         data['is_current_user'] = this.is_current_user;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
-        data['interpreter_language'] = this.interpreter_language ? this.interpreter_language.toJSON() : <any>undefined;
-        data['external_reference_id'] = this.external_reference_id;
-        if (Array.isArray(this.protect_from)) {
-            data['protect_from'] = [];
-            for (let item of this.protect_from) data['protect_from'].push(item);
-        }
         return data;
     }
 }
@@ -11536,11 +10932,6 @@ export interface IVideoEndpointResponse {
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
     current_room?: RoomSummaryResponse;
-    interpreter_language?: InterpreterLanguageResponse;
-    /** A unique identifier for the participant (used by special measures) */
-    external_reference_id?: string | undefined;
-    /** List of external references to protect this participant from */
-    protect_from?: string[] | undefined;
 }
 
 export class ApiException extends Error {
