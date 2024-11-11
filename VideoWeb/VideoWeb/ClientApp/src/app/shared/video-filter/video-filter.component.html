@@ -1,8 +1,8 @@
 <button class="vh-accordion" (click)="toggleDisplayOptions()" tabindex="-1">
-  <span class="govuk-link" tabindex="0">
+  <a class="govuk-link" tabindex="0">
     {{ 'video-filter.title' | translate }}
     <fa-icon class="vh-video-filter-title fas" [icon]="showOptions ? 'chevron-up' : 'chevron-down'" id="bg-icon" aria-hidden="true"></fa-icon>
-  </span>
+  </a>
 </button>
 
 <div *ngIf="showOptions" class="v-bg-panel">
@@ -18,9 +18,12 @@
         (change)="this.backgroundChanged($event)"
         tabindex="-1"
       />
-      <label for="bg-none" tabindex="0" (keypress)="updateFilter(null)">
+      <a class="bg-option-img"
+             tabindex="0"
+             (keydown.enter)="updateFilter(null)"
+             (click)="updateFilter(null)">
         <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" [attr.alt]="'video-filter.none-alt' | translate" />
-      </label>
+      </a>
     </div>
     <div class="bg-name1">
       <div class="govuk-hint bg-option-text">{{ 'video-filter.none' | translate }}</div>
@@ -36,9 +39,9 @@
         (change)="this.backgroundChanged($event)"
         tabindex="-1"
       />
-      <label for="bg-blur" tabindex="0" (keypress)="updateFilter(filtersAvailable.blur)">
+      <a tabindex="0" (keydown.enter)="updateFilter(filtersAvailable.blur)" (click)="updateFilter(filtersAvailable.blur)">
         <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" [attr.alt]="'video-filter.blur-alt' | translate" />
-      </label>
+      </a>
     </div>
     <div class="bg-name2">
       <div class="govuk-hint bg-option-text">{{ 'video-filter.blur' | translate }}</div>
@@ -54,9 +57,9 @@
         (change)="this.backgroundChanged($event)"
         tabindex="-1"
       />
-      <label for="bg-hmcts" tabindex="0" (keypress)="updateFilter(filtersAvailable.HMCTS)">
+      <a tabindex="0" (keydown.enter)="updateFilter(filtersAvailable.HMCTS)" (click)="updateFilter(filtersAvailable.HMCTS)">
         <img src="/assets/images/VhBgFilterHMCTS-thumb.jpg" class="bg-option-img" [attr.alt]="'video-filter.hmcts-alt' | translate" />
-      </label>
+      </a>
     </div>
     <div class="bg-name3">
       <div class="govuk-hint bg-option-text">{{ 'video-filter.hmcts' | translate }}</div>
@@ -72,9 +75,9 @@
         (change)="this.backgroundChanged($event)"
         tabindex="-1"
       />
-      <label for="bg-scot" tabindex="0" (keypress)="updateFilter(filtersAvailable.SCTS)">
+      <a tabindex="0" (keydown.enter)="updateFilter(filtersAvailable.SCTS)" (click)="updateFilter(filtersAvailable.SCTS)">
         <img src="/assets/images/VhBgFilterSCTS-thumb.jpg" class="bg-option-img" [attr.alt]="'video-filter.scts-alt' | translate" />
-      </label>
+      </a>
     </div>
     <div class="bg-name4">
       <div class="govuk-hint bg-option-text">{{ 'video-filter.scts' | translate }}</div>

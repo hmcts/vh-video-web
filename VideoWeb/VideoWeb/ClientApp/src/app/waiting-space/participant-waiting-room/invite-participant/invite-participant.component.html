@@ -1,4 +1,6 @@
-<div class="icons" appTooltip  [text]="'invite-participant.invite-this-person' | translate" 
-colour="grey" [attr.alt]="'invite-participant.invite-this-person' | translate" (click)="inviteParticipant(); $event.stopPropagation()">
+<button class="icons" appTooltip
+   [text]="'invite-participant.invite-this-person' | translate"
+   colour="grey" [attr.alt]="'invite-participant.invite-this-person' | translate"
+   (click)="inviteParticipant(); $event.stopPropagation()">
   <fa-icon icon="phone-alt" class="phone" aria-hidden="true" tabindex="0" (keyup.enter)="inviteParticipant()"></fa-icon>
-</div>
+</button>

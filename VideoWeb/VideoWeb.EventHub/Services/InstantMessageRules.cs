@@ -4,16 +4,10 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.EventHub.Services;
 
-public class InstantMessageRules
+public class InstantMessageRules(IUserProfileService userProfileService)
 {
     public static string DefaultAdminName => "Admin";
-    private readonly IUserProfileService _userProfileService;
-
-    public InstantMessageRules(IUserProfileService userProfileService)
-    {
-        _userProfileService = userProfileService;
-    }
-
+    
     /// <summary>
     /// Check if the one side is in the conference and the other is an Admin or a staff member admin privileges
     /// </summary>
@@ -43,13 +37,13 @@ public class InstantMessageRules
         }
         
         // if the recipient is a participant, sender must be an admin (note: staff members who can access the CC have the admin role too)
-        var fromUser = await _userProfileService.GetUserAsync(from);
+        var fromUser = await userProfileService.GetUserAsync(from);
         return fromUser.IsAdmin;
     }
 
     public async Task<SendMessageDto> BuildSendMessageDtoFromAdmin(Conference conference, Guid messageUuid, string message, string username, Guid participantId)
     {
-        var fromUser = await _userProfileService.GetUserAsync(username);
+        var fromUser = await userProfileService.GetUserAsync(username);
         var participant = conference.GetParticipant(participantId);
         var dto = new SendMessageDto()
         {
@@ -66,7 +60,7 @@ public class InstantMessageRules
         return dto;
     }
 
-    public SendMessageDto BuildSendMessageDtoFromParticipant(Conference conference, Guid messageUuid,
+    public static SendMessageDto BuildSendMessageDtoFromParticipant(Conference conference, Guid messageUuid,
         string message, string username)
     {
         var participant = conference.GetParticipant(username);

@@ -28,7 +28,7 @@ public static class UnreadInstantMessageConferenceCountResponseMapper
                 .Where(p => p.From == participant.Username || p.To == participant.Username)
                 .OrderByDescending(x => x.TimeStamp).ToList();
             
-            var vhoMessage = participantMessageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
+            var vhoMessage = participantMessageResponses.Find(m => IsNonParticipantMessage(conference, m));
             var participantMessageCount = vhoMessage == null ? participantMessageResponses.Count : participantMessageResponses.IndexOf(vhoMessage);
             unreadMessagesPerParticipant.Add(new UnreadAdminMessageResponse
             {
@@ -41,6 +41,6 @@ public static class UnreadInstantMessageConferenceCountResponseMapper
     
     private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
     {
-        return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+        return !conference.Participants.Exists(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
     }
 }

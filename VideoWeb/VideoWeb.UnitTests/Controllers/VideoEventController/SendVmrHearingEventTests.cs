@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_raise_transfer_event_when_participant_joins_and_other_vmr_participants_are_in_consultation()
         {
             // Arrange
-            var vmr = TestConference.CivilianRooms.First(x => x.Participants.Any());
+            var vmr = TestConference.CivilianRooms.First(x => x.Participants.Count > 0);
             vmr.Participants.ForEach(x => TestConference.Participants.First(y => y.Id == x).ParticipantStatus = ParticipantStatus.InConsultation);
             
             var finalParticipantCount = vmr.Participants.Count + 1;
@@ -128,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_not_call_multiple_callback_events_for_vho_call_events()
         {
             // arrange
-            var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
+            var room = TestConference.CivilianRooms.First(x => x.Participants.Count > 0);
 
             var request = CreateRequest();
             request.ParticipantId = room.Id.ToString();
@@ -151,7 +151,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_publish_transfer_event_to_all_participants_in_room()
         {
             // Arrange
-            var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
+            var room = TestConference.CivilianRooms.First(x => x.Participants.Count > 0);
             var participantCount = room.Participants.Count;
 
             var request = CreateRequest();

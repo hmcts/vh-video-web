@@ -221,7 +221,7 @@ public class ConferenceCacheMapperTests
         resultEndpoint.ProtectFrom.Should().BeEquivalentTo(endpointToScreen.Screening.ProtectedFrom);
     }
     
-    private HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
+    private static HearingDetailsResponseV2 BuildHearingDetailsResponse(ConferenceDetailsResponse conference)
     {
         var participants = new List<ParticipantResponseV2>();
         var joh = new List<JudiciaryParticipantResponse>();

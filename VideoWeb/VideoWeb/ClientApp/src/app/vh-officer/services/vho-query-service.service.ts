@@ -59,15 +59,13 @@ export class VhoQueryService {
 
     async runQuery() {
         if (this.activeSessionsOnly) {
-            const activeConferences = await this.getActiveConferences();
-            this.vhoConferences = activeConferences;
+            this.vhoConferences = await this.getActiveConferences();
             this.vhoConferencesSubject.next(this.vhoConferences);
             return;
         }
-        const conferences = await this.apiClient
+        this.vhoConferences = await this.apiClient
             .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
-        this.vhoConferences = conferences;
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
@@ -90,27 +88,7 @@ export class VhoQueryService {
                         if (!filterCriteria || filterCriteria.length === 0) {
                             return conferences;
                         }
-                        const matchingConferences: ConferenceForVhOfficerResponse[] = [];
-
-                        filterCriteria.forEach(criteria => {
-                            criteria.courtsRooms.forEach(room => {
-                                if (!room.selected) {
-                                    return;
-                                }
-
-                                const judgeDisplayName = room.courtRoom;
-                                const venueName = criteria.venue;
-                                const matching = conferences.filter(
-                                    conference =>
-                                        conference.hearing_venue_name === venueName &&
-                                        conference.participants.some(
-                                            participant => participant.role === Role.Judge && participant.display_name === judgeDisplayName
-                                        )
-                                );
-                                matchingConferences.push(...matching);
-                            });
-                        });
-                        return matchingConferences;
+                        return this.mapFilteredConferences(filterCriteria, conferences);
                     })
                 )
             )
@@ -204,5 +182,36 @@ export class VhoQueryService {
                     )
             )
             .sort((a, b) => a.venue.localeCompare(b.venue));
+    }
+
+    private mapFilteredConferences(
+        filterCriteria: CourtRoomsAccounts[],
+        conferences: ConferenceForVhOfficerResponse[]
+    ): ConferenceForVhOfficerResponse[] {
+        const matchingConferences: ConferenceForVhOfficerResponse[] = [];
+
+        filterCriteria.forEach(criteria => {
+            criteria.courtsRooms.forEach(room => {
+                if (!room.selected) {
+                    return;
+                }
+                matchingConferences.push(...this.matchedConferences(conferences, room.courtRoom, criteria.venue));
+            });
+        });
+        return matchingConferences;
+    }
+
+    private matchedConferences(
+        conferences: ConferenceForVhOfficerResponse[],
+        judgeDisplayName: string,
+        venueName: string
+    ): ConferenceForVhOfficerResponse[] {
+        return conferences.filter(
+            conference =>
+                conference.hearing_venue_name === venueName &&
+                conference.participants.some(
+                    participant => participant.role === Role.Judge && participant.display_name === judgeDisplayName
+                )
+        );
     }
 }

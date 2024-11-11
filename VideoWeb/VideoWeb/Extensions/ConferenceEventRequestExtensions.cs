@@ -16,13 +16,13 @@ namespace VideoWeb.Extensions
 
         public static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
         {
-            return conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId) && conference
+            return conference.CivilianRooms.Exists(x => x.Id.ToString() == request.ParticipantRoomId) && conference
                 .CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
-                .Participants.Any(x => x.ToString() == request.ParticipantId);
+                .Participants.Exists(x => x.ToString() == request.ParticipantId);
         }
         public static IEnumerable<Participant> GetOtherParticipantsInVmr(this ConferenceEventRequest request, Conference conference)
         {
-            if (conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId))
+            if (conference.CivilianRooms.Exists(x => x.Id.ToString() == request.ParticipantRoomId))
             {
                 var participantIds = conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                     .Participants.FindAll(x => x.ToString() != request.ParticipantId);
@@ -37,7 +37,7 @@ namespace VideoWeb.Extensions
         {
             if (!long.TryParse(request.ParticipantId, out roomId)) return false;
             var id = roomId;
-            return conference.CivilianRooms.Any(x => x.Id == id);
+            return conference.CivilianRooms.Exists(x => x.Id == id);
         }
 
         public static List<ConferenceEventRequest> CreateEventsForParticipantsInRoom(

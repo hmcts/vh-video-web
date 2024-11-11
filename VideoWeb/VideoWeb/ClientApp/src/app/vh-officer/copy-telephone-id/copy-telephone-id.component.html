@@ -1,10 +1,11 @@
-<span 
+<a
 appTooltip
 [text]="tooltip"
 [id]="propertyIdName"
 (tooltipShown)="resetText()"
 [attr.alt]="'copy-telephone-id.alt' | translate"
-(click)="copyToClipboard(); $event.stopPropagation()">
+(click)="copyToClipboard(); $event.stopPropagation()"
+class="copy-link-text" [routerLink]="[]">
   <fa-icon icon="phone" aria-hidden="true"></fa-icon>
-  <a class="copy-link-text" [routerLink]="[]">{{'copy-telephone-id.display-text' | translate}}</a>
-</span>
+  {{'copy-telephone-id.display-text' | translate}}
+</a>

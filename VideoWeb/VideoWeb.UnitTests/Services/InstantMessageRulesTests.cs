@@ -137,7 +137,7 @@ public class InstantMessageRulesTests
             conference.AddParticipant(participant);
 
             // Act
-            var result = _instantMessageRules.BuildSendMessageDtoFromParticipant(conference, messageUuid, message, username);
+            var result = InstantMessageRules.BuildSendMessageDtoFromParticipant(conference, messageUuid, message, username);
 
             // Assert
             result.Should().NotBeNull();

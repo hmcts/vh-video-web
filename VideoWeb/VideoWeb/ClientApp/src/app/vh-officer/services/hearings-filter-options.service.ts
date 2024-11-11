@@ -95,7 +95,7 @@ export class HearingsFilterOptionsService {
     }
 
     private setHearingsStatuses(conferenceStatus: ConferenceStatus) {
-        let description = '';
+        let description: string;
         switch (conferenceStatus) {
             case ConferenceStatus.Suspended:
                 description = 'Suspended';

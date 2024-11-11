@@ -3,6 +3,8 @@
     id="{{ participant.id }}-network-status-icon"
     class="network-status-icon"
     src="/assets/images/{{ getParticipantNetworkStatus() }}"
+    (focus)="onMouseEnter(null)"
+    (blur)="onMouseExit(null)"
     (mouseover)="onMouseEnter($event)"
     (mouseout)="onMouseExit($event)"
     (mousemove)="updateGraphPosition($event)"
@@ -10,9 +12,9 @@
   />
   <div *ngIf="displayGraph" #graphContainer class="graph-container" style="margin-left: 7px;" (mouseleave)="setGraphVisibility(false)">
     <app-monitoring-graph
-      [pakagesLostData]="packageLostArray"
+      [packagesLostData]="packageLostArray"
       [participantGraphInfo]="monitoringParticipant"
-      (closeGraph)="setGraphVisibility(false)"
+      (close)="setGraphVisibility(false)"
     ></app-monitoring-graph>
   </div>
 </div>

@@ -11,7 +11,7 @@ public static class LinkedParticipantResponseMapper
     /// <summary>
     /// Mapped from DTO to response
     /// </summary>
-    /// <param name="participant"></param>
+    /// <param name="input">LinkedParticipant</param>
     /// <returns></returns>
     public static LinkedParticipantResponse Map(LinkedParticipant input)
     {
@@ -25,7 +25,7 @@ public static class LinkedParticipantResponseMapper
     /// <summary>
     /// Mapped from video-api response to response
     /// </summary>
-    /// <param name="participant"></param>
+    /// <param name="input">LinkedParticipant</param>
     /// <returns></returns>
     public static LinkedParticipantResponse Map(VHLinkedParticipantResponse input)
     {

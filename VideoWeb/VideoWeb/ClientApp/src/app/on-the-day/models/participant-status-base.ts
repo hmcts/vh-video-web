@@ -7,7 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 export abstract class ParticipantStatusBaseDirective {
     abstract conferenceId: string;
 
-    constructor(
+    protected constructor(
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {}

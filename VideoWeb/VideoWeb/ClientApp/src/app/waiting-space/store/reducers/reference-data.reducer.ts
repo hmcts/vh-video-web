@@ -1,5 +1,4 @@
-import { createFeatureSelector, createReducer } from '@ngrx/store';
-import { on } from '@ngrx/store';
+import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ReferenceActions } from '../actions/reference-data.actions';
 import { VHInterpreterLanguage } from '../models/vh-conference';
 

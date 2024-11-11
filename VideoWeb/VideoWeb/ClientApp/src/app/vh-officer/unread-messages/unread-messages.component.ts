@@ -41,7 +41,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         let unreadTotal = 0;
 
         if (unreadTotalList.length > 0) {
-            unreadTotal = unreadTotalList.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
+            unreadTotal = unreadTotalList.map(m => m.number_of_unread_messages).reduce((a, b) => a + b, 0);
         }
         return unreadTotal;
     }

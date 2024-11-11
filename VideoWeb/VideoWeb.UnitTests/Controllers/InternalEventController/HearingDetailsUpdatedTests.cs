@@ -12,7 +12,7 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
-    public class HearingDetailsUpdatedTests : InternalEventControllerTests
+    public class HearingDetailsUpdatedTests : InternalEventControllerTestsBase<VideoWeb.Controllers.InternalEventControllers.InternalEventController>
     {
         private Conference _conference;
         private Mock<IHearingDetailsUpdatedEventNotifier> _notifierMock;

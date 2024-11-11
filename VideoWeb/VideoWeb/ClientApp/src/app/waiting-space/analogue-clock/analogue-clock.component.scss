@@ -22,10 +22,6 @@
     background: govuk-colour('black');
   }
 
-  &.delayed {
-    background: govuk-colour('yellow');
-  }
-
   &::after {
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);

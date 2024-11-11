@@ -14,16 +14,16 @@ namespace VideoWeb.UnitTests.Common.Caching
     public class DistributedJOHConsultationRoomLockCacheTests
     {
         private Mock<IDistributedCache> _distributedCacheMock;
-        private DistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
-        private Mock<ILogger<DistributedJOHConsultationRoomLockCache>> _loggerMock;
+        private DistributedJohConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
+        private Mock<ILogger<DistributedJohConsultationRoomLockCache>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
-            _loggerMock = new Mock<ILogger<DistributedJOHConsultationRoomLockCache>>();
+            _loggerMock = new Mock<ILogger<DistributedJohConsultationRoomLockCache>>();
             _distributedJohConsultationRoomLockCache =
-                new DistributedJOHConsultationRoomLockCache(_distributedCacheMock.Object, _loggerMock.Object);
+                new DistributedJohConsultationRoomLockCache(_distributedCacheMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Common.Caching
 
             await _distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(expectedIsLockedValue,
                 keyName);            
-            var result = await _distributedJohConsultationRoomLockCache.IsJOHRoomLocked(keyName);
+            var result = await _distributedJohConsultationRoomLockCache.IsJohRoomLocked(keyName);
 
             result.Should().Be(expectedIsLockedValue);
         }

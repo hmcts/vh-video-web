@@ -125,7 +125,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_accepted_when_participant_is_witness_and_judge_is_in_conference()
         {
             var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.IsWitness() && !x.LinkedParticipants.Any());
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Count == 0);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -147,7 +147,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_accepted_when_participant_is_witness_and_has_an_interpreter_and_judge_is_in_conference()
         {
             var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Any());
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Count > 0);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -169,7 +169,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_accepted_when_participant_is_witness_and_has_an_interpreter_and_witness_is_not_in_the_cache_but_returned_from_api()
         {
             var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Any());
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Count > 0);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -205,7 +205,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task Should_return_unauthorized_when_participant_is_witness_and_has_an_interpreter_and_witness_is_not_in_the_room()
         {
             var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Any());
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Count > 0);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
@@ -230,7 +230,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var judge = TestConference.GetJudge();
             var interpreterRoom = TestConference.CivilianRooms[0];
             var witnessIds = TestConference.Participants
-                .Where(p => p.IsWitness() && p.LinkedParticipants.Any())
+                .Where(p => p.IsWitness() && p.LinkedParticipants.Count > 0)
                 .Select(p => p.Id).ToList();
             // update room to not include interpreter
             interpreterRoom.Participants = interpreterRoom.Participants.Where(p => witnessIds.Contains(p)).ToList();

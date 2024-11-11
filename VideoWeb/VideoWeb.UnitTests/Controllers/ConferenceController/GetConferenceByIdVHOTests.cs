@@ -76,7 +76,7 @@ public class GetConferenceByIdVhoTests
         typedResult?.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
     }
     
-    private Conference CreateValidConferenceDto()
+    private static Conference CreateValidConferenceDto()
     {
         var judge = new ParticipantBuilder(Role.Judge).Build();
         var individualDefendant = new ParticipantBuilder(Role.Individual).Build();

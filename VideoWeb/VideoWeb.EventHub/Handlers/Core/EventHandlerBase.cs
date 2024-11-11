@@ -16,14 +16,12 @@ namespace VideoWeb.EventHub.Handlers.Core
         ILogger<EventHandlerBase> logger)
         : IEventHandler
     {
+        public abstract EventType EventType { get; }
+        public Participant SourceParticipant { get; set; }
+        protected Conference SourceConference { get; set; }
+        protected Endpoint SourceEndpoint { get; set; }
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext = hubContext;
         protected readonly ILogger<EventHandlerBase> Logger = logger;
-        
-        protected Conference SourceConference { get; set; }
-        public Participant SourceParticipant { get; set; }
-        protected Endpoint SourceEndpoint { get; set; }
-
-        public abstract EventType EventType { get; }
 
         public virtual async Task HandleAsync(CallbackEvent callbackEvent)
         {
@@ -53,14 +51,14 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus);
             await conferenceService.UpdateConferenceAsync(SourceConference);
-            foreach (var participant in SourceConference.Participants)
+            foreach (var username in SourceConference.Participants.Select(x => x.Username.ToLowerInvariant()))
             {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                await HubContext.Clients.Group(username)
                     .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
                         participantState, reason);
                 Logger.LogTrace(
                     "Informing {Username} in conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
-                    participant.Username.ToLowerInvariant(), SourceConference.Id, SourceParticipant.Id,
+                    username, SourceConference.Id, SourceParticipant.Id,
                     SourceParticipant.Role, participantState);
             }
 

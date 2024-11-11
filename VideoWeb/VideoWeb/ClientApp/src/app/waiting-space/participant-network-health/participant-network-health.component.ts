@@ -11,7 +11,7 @@ import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-
     styleUrls: ['./participant-network-health.component.scss']
 })
 export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthBaseDirective {
-    static GUIDANCE_MODAL = 'more-info-modal';
+    static readonly GUIDANCE_MODAL = 'more-info-modal';
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
 

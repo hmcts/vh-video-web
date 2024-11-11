@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using BookingsApi.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,7 +20,6 @@ namespace VideoWeb.Controllers;
 [ApiController]
 public class EndOfDayController(
     IVideoApiClient videoApiClient,
-    IBookingsApiClient bookingsApiClient,
     IConferenceService conferenceService,
     ILogger<EndOfDayController> logger)
     : ControllerBase
@@ -31,6 +29,7 @@ public class EndOfDayController(
     /// This includes conferences that are in progress or paused.
     /// This includes conferences that are closed but the participants are still in consultation.
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet("active-sessions")]
     [SwaggerOperation(OperationId = "GetActiveConferences")]
@@ -45,7 +44,7 @@ public class EndOfDayController(
             var retrieveCachedConferencesTask = conferenceService.GetConferences(activeConferences.Select(e => e.Id), cancellationToken);
             var conferences = await retrieveCachedConferencesTask;
             var response = conferences
-                .Select(c => ConferenceForVhOfficerResponseMapper.Map(c)).ToList();
+                .Select(ConferenceForVhOfficerResponseMapper.Map).ToList();
             response.Sort(new SortConferenceForVhoOfficerHelper());
             return Ok(response);
         }

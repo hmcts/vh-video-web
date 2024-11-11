@@ -66,7 +66,7 @@ namespace VideoWeb.EventHub.Models
         public int IncomingVideoPacketReceived { get; set; }
         [JsonProperty("incomingVideoPacketsLost")]
         public int IncomingVideoPacketsLost { get; set; }
-        [JsonProperty("Device")]
+        [JsonProperty(nameof(Device))]
         public string Device { get; set; }
     }
 }

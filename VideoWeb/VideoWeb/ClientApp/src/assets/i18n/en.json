@@ -515,7 +515,7 @@
     "lock-the-room": "Lock the room to prevent others joining",
     "invite-others": "Invite others by calling them or unlock the room for others to join",
     "witness-transferring-warning-img": "Witness transferring warning image",
-    "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
+    "hearing-ready": "Please get ready <br/> You'll join the hearing in a few seconds",
     "your-video-hearing": "Your video hearing",
     "choose-camera-and-microphone": "Choose camera and microphone",
     "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
@@ -1034,7 +1034,7 @@
     "button": "OK"
   },
   "unread-messages": {
-    "im-image-alt": "instant message icon"
+    "im-alt": "instant message icon"
   },
   "court-room-filters": {
     "apply-filters-alt": "Apply selected filters",

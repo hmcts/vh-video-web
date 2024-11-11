@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
@@ -8,19 +9,14 @@ using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Helpers
 {
-    public class ConferenceVideoControlStatusService : IConferenceVideoControlStatusService
+    public class ConferenceVideoControlStatusService(
+        IConferenceVideoControlStatusCache conferenceVideoControlStatusCache)
+        : IConferenceVideoControlStatusService
     {
-        private readonly IConferenceVideoControlStatusCache _conferenceVideoControlStatusCache;
-
-        public ConferenceVideoControlStatusService(IConferenceVideoControlStatusCache conferenceVideoControlStatusCache)
-        {
-            _conferenceVideoControlStatusCache = conferenceVideoControlStatusCache;
-        }
-
         public async Task UpdateMediaStatusForParticipantInConference(Guid conferenceId, string participantId,
             ParticipantMediaStatus mediaStatus, CancellationToken cancellationToken = default)
         {
-            var conferenceVideoControlStatuses = await _conferenceVideoControlStatusCache.ReadFromCache(conferenceId) ?? new ConferenceVideoControlStatuses();
+            var conferenceVideoControlStatuses = await conferenceVideoControlStatusCache.ReadFromCache(conferenceId, cancellationToken) ?? new ConferenceVideoControlStatuses();
 
             if (conferenceVideoControlStatuses.ParticipantIdToVideoControlStatusMap.ContainsKey(participantId))
             {
@@ -37,18 +33,18 @@ namespace VideoWeb.Helpers
                 });
             }
 
-            await _conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses);
+            await conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses, cancellationToken);
         }
         
         public async Task SetVideoControlStateForConference(Guid conferenceId,
             ConferenceVideoControlStatuses? conferenceVideoControlStatuses, CancellationToken cancellationToken = default)
         {
-            await _conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses);
+            await conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses, cancellationToken);
         }
         
         public async Task<ConferenceVideoControlStatuses?> GetVideoControlStateForConference(Guid conferenceId, CancellationToken cancellationToken = default)
         {
-            return await _conferenceVideoControlStatusCache.ReadFromCache(conferenceId);
+            return await conferenceVideoControlStatusCache.ReadFromCache(conferenceId, cancellationToken);
         }
     }
 }

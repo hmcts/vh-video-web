@@ -153,7 +153,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     
         }
 
-        private (List<ConferenceDetailsResponse> conferences, List<HearingDetailsResponseV2> hearings) CreateHearingsAndConferences(bool includeAllocation)
+        private static (List<ConferenceDetailsResponse> conferences, List<HearingDetailsResponseV2> hearings) CreateHearingsAndConferences(bool includeAllocation)
         {
             var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()

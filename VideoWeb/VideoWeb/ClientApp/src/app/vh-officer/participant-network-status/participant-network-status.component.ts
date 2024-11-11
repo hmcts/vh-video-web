@@ -115,16 +115,12 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
             } else {
                 return 'not-signed-in.png';
             }
+        } else if (this.isUnsupportedBrowser(this.participant.participantHertBeatHealth.browserName)) {
+            return 'incompatible-browser-signal.png';
+        } else if (this.participant.status === ParticipantStatus.Disconnected) {
+            return 'disconnected.png';
         } else {
-            if (this.isUnsupportedBrowser(this.participant.participantHertBeatHealth.browserName)) {
-                return 'incompatible-browser-signal.png';
-            } else {
-                if (this.participant.status === ParticipantStatus.Disconnected) {
-                    return 'disconnected.png';
-                } else {
-                    return this.getIconForParticipantNetworkStatus();
-                }
-            }
+            return this.getIconForParticipantNetworkStatus();
         }
     }
 

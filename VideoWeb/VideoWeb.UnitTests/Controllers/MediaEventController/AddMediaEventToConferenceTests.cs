@@ -29,7 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         [SetUp]
         public void Setup()
         {
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
+            _testConference = EventComponentHelper.BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
             
             _conferenceServiceMock = new Mock<IConferenceService>();

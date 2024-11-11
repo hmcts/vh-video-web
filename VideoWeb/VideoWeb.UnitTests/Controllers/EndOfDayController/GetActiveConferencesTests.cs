@@ -57,13 +57,6 @@ public class GetActiveConferencesTests
     public async Task should_return_active_conferences()
     {
         // arrange
-        var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
-            .All()
-            .With(x => x.Username = Internet.Email())
-            .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
-            .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
-            .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
-        
         var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
             .With((x, i) => x.CaseName = $"Test case name {i + 1}")
             .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
@@ -91,10 +84,6 @@ public class GetActiveConferencesTests
         _mocker.Mock<IVideoApiClient>()
             .Setup(x => x.GetActiveConferencesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(conferences);
-        
-        _mocker.Mock<IBookingsApiClient>()
-            .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(allocatedCsoResponses);
         
         // act
         var result = await _sut.GetActiveConferences(CancellationToken.None);

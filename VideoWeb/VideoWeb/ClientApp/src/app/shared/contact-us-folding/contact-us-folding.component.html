@@ -1,10 +1,10 @@
 <div class="govuk-!-margin-top-7">
   <details class="govuk-details" data-module="govuk-details">
-    <summary class="govuk-details__summary" (click)="toggle()" tabindex="0" role="button" [attr.aria-expanded]="expanded">
+    <a class="govuk-details__summary" (click)="toggle()" (keydown.enter)="toggle()" tabindex="0" [attr.aria-expanded]="expanded">
       <span class="govuk-details__summary-text" id="citizen-contact-details">
-        {{'contact-us-folding.contact-for-help' | translate}} 
+        {{'contact-us-folding.contact-for-help' | translate}}
       </span>
-    </summary>
+    </a>
     <div class="govuk-details__text" *ngIf="expanded">
       <p class="govuk-body govuk-!-margin-bottom-0">
         <strong>{{'contact-us-folding.england-and-wales' | translate}}</strong>

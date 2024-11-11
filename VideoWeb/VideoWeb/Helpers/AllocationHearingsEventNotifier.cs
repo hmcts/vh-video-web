@@ -10,48 +10,41 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers.Interfaces;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
-namespace VideoWeb.Helpers
-{
-    public class AllocationHearingsEventNotifier: IAllocationHearingsEventNotifier
-    {     
-        private readonly IEventHandlerFactory _eventHandlerFactory;
-        private readonly ILogger<AllocationHearingsEventNotifier> _logger;
+namespace VideoWeb.Helpers;
 
-        public AllocationHearingsEventNotifier(IEventHandlerFactory eventHandlerFactory, ILogger<AllocationHearingsEventNotifier> logger)
+public class AllocationHearingsEventNotifier(
+    IEventHandlerFactory eventHandlerFactory,
+    ILogger<AllocationHearingsEventNotifier> logger)
+    : IAllocationHearingsEventNotifier
+{
+    public Task PushAllocationHearingsEvent(string csoUserName, IList<HearingDetailRequest> hearings)
+    {
+        if (!hearings.Any())
         {
-            _eventHandlerFactory = eventHandlerFactory;
-            _logger = logger;
+            return Task.CompletedTask;
         }
         
-        public Task PushAllocationHearingsEvent(string csoUserName, IList<HearingDetailRequest> hearings)
+        CallbackEvent callbackEvent = new CallbackEvent()
         {
-            if (!hearings.Any())
-            {
-                return Task.CompletedTask;
-            }
-            
-            CallbackEvent callbackEvent = new CallbackEvent()
-            {
-                EventType = EventType.AllocationHearings,
-                TimeStampUtc = DateTime.UtcNow,
-                AllocatedHearingsDetails = hearings.ToList(),
-                CsoAllocatedUserName = csoUserName
-            };
-
-            _logger.LogTrace("Publishing event to UI: {event}", JsonSerializer.Serialize(callbackEvent));
-            return PublishEventToUi(callbackEvent);
-        }
-
-        private Task PublishEventToUi(CallbackEvent callbackEvent)
+            EventType = EventType.AllocationHearings,
+            TimeStampUtc = DateTime.UtcNow,
+            AllocatedHearingsDetails = hearings.ToList(),
+            CsoAllocatedUserName = csoUserName
+        };
+        
+        logger.LogTrace("Publishing event to UI: {Event}", JsonSerializer.Serialize(callbackEvent));
+        return PublishEventToUi(callbackEvent);
+    }
+    
+    private Task PublishEventToUi(CallbackEvent callbackEvent)
+    {
+        if (callbackEvent == null)
         {
-            if (callbackEvent == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-            
-            return handler.HandleAsync(callbackEvent);
+            return Task.CompletedTask;
         }
+        
+        var handler = eventHandlerFactory.Get(callbackEvent.EventType);
+        
+        return handler.HandleAsync(callbackEvent);
     }
 }

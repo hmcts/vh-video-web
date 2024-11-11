@@ -23,281 +23,299 @@ using VideoWeb.Middleware;
 using VideoWeb.Services;
 using ParticipantResponse = VideoWeb.Contract.Responses.ParticipantResponse;
 
-namespace VideoWeb.Controllers
+namespace VideoWeb.Controllers;
+
+[Produces("application/json")]
+[ApiController]
+[Route("conferences")]
+public class ParticipantsController(
+    IVideoApiClient videoApiClient,
+    IEventHandlerFactory eventHandlerFactory,
+    ILogger<ParticipantsController> logger,
+    IParticipantService participantService,
+    IConferenceService conferenceService)
+    : ControllerBase
 {
-    [Produces("application/json")]
-    [ApiController]
-    [Route("conferences")]
-    public class ParticipantsController(
-        IVideoApiClient videoApiClient,
-        IEventHandlerFactory eventHandlerFactory,
-        ILogger<ParticipantsController> logger,
-        IParticipantService participantService,
-        IConferenceService conferenceService)
-        : ControllerBase
+    [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
+    [HttpPost("{conferenceId}/participantstatus")]
+    [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest, CancellationToken cancellationToken)
     {
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
-        [HttpPost("{conferenceId}/participantstatus")]
-        [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest, CancellationToken cancellationToken)
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var participantId = GetIdForParticipantByUsernameInConference(conference);
+        var conferenceEventRequest = new ConferenceEventRequest
         {
-            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-            var participantId = GetIdForParticipantByUsernameInConference(conference);
-            var conferenceEventRequest = new ConferenceEventRequest
-            {
-                ConferenceId = conferenceId.ToString(),
-                ParticipantId = participantId.ToString(),
-                EventId = Guid.NewGuid().ToString(),
-                EventType = updateParticipantStatusEventRequest.EventType,
-                TimeStampUtc = DateTime.UtcNow,
-                Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
-            };
-
-            var callbackEvent = CallbackEventMapper.Map(conferenceEventRequest, conference);
-            var handler = eventHandlerFactory.Get(callbackEvent.EventType);
-            try
-            {
-                await handler.HandleAsync(callbackEvent);
-            }
-            catch (ConferenceNotFoundException e)
-            {
-                logger.LogError(e, "Unable to retrieve conference details");
-                return BadRequest(e);
-            }
-
-            try
-            {
-                await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest, cancellationToken);
-
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Unable to update participant status for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            ConferenceId = conferenceId.ToString(),
+            ParticipantId = participantId.ToString(),
+            EventId = Guid.NewGuid().ToString(),
+            EventType = updateParticipantStatusEventRequest.EventType,
+            TimeStampUtc = DateTime.UtcNow,
+            Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
+        };
+        
+        var callbackEvent = CallbackEventMapper.Map(conferenceEventRequest, conference);
+        var handler = eventHandlerFactory.Get(callbackEvent.EventType);
+        try
+        {
+            await handler.HandleAsync(callbackEvent);
         }
-
-        private Guid GetIdForParticipantByUsernameInConference(Conference conference)
+        catch (ConferenceNotFoundException e)
         {
-            var username = User.Identity!.Name;
-            return conference.Participants
-                .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
+            logger.LogError(e, "Unable to retrieve conference details");
+            return BadRequest(e);
         }
-       
-        [Authorize(AppRoles.VhOfficerRole)]
-        [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
-        [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
-        [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+        
+        try
         {
-            try
-            {
-                var response = await videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, cancellationToken);
-                return Ok(response);
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e,
-                    "Unable to get heartbeat data for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
-        [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
-        [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, new UpdateParticipantRequest
-                {
-                    DisplayName = participantRequest.DisplayName
-                }, cancellationToken);
-                await UpdateCacheAndPublishUpdate(conferenceId);
-            }
-            catch (VideoApiException ex)
-            {
-                logger.LogError(ex,
-                    "Unable to update participant details for participant: {ParticipantId} in conference: {ConferenceId}",
-                    participantId, conferenceId);
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
+            await videoApiClient.RaiseVideoEventAsync(conferenceEventRequest, cancellationToken);
+            
             return NoContent();
         }
-
-        private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
+        catch (VideoApiException e)
         {
-            var conference = await conferenceService.ForceGetConference(conferenceId);
-            var mappedParticipants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
-            await eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
-            {
-                Participants = mappedParticipants,
-                ParticipantsToNotify = mappedParticipants,
-                ConferenceId = conferenceId,
-                EventType = EventHub.Enums.EventType.ParticipantsUpdated,
-                Reason = "Participant display name updated",
-                TimeStampUtc = DateTime.UtcNow
-            });
+            logger.LogError(e, "Unable to update participant status for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
+            return StatusCode(e.StatusCode, e.Response);
         }
-
-        /// <summary>
-        /// Get the participant details of a conference by id for VH officer
-        /// </summary>
-        /// <param name="conferenceId">The unique id of the conference</param>
-        /// <returns>the participant details, if permitted</returns>
-        [HttpGet("{conferenceId}/vhofficer/participants")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
-        [Authorize(AppRoles.VhOfficerRole)]
-        public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
+    }
+    
+    private Guid GetIdForParticipantByUsernameInConference(Conference conference)
+    {
+        var username = User.Identity!.Name;
+        return conference.Participants
+            .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
+    }
+    
+    [Authorize(AppRoles.VhOfficerRole)]
+    [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
+    [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
+    [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+    {
+        try
         {
-            if (conferenceId == Guid.Empty)
+            var response = await videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, cancellationToken);
+            return Ok(response);
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e,
+                "Unable to get heartbeat data for participant: {ParticipantId} in conference: {ConferenceId}", participantId, conferenceId);
+            return StatusCode(e.StatusCode, e.Response);
+        }
+    }
+    
+    [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
+    [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
+    [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantDisplayNameRequest participantRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, new UpdateParticipantRequest
             {
-                logger.LogWarning("Unable to get conference when id is not provided");
-                ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
-                return BadRequest(ModelState);
-            }
-            try
+                DisplayName = participantRequest.DisplayName
+            }, cancellationToken);
+            await UpdateCacheAndPublishUpdate(conferenceId);
+        }
+        catch (VideoApiException ex)
+        {
+            logger.LogError(ex,
+                "Unable to update participant details for participant: {ParticipantId} in conference: {ConferenceId}",
+                participantId, conferenceId);
+            return StatusCode(ex.StatusCode, ex.Response);
+        }
+        return NoContent();
+    }
+    
+    private async Task UpdateCacheAndPublishUpdate(Guid conferenceId)
+    {
+        var conference = await conferenceService.ForceGetConference(conferenceId);
+        var mappedParticipants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
+        await eventHandlerFactory.Get(EventHub.Enums.EventType.ParticipantsUpdated).HandleAsync(new CallbackEvent
+        {
+            Participants = mappedParticipants,
+            ParticipantsToNotify = mappedParticipants,
+            ConferenceId = conferenceId,
+            EventType = EventHub.Enums.EventType.ParticipantsUpdated,
+            Reason = "Participant display name updated",
+            TimeStampUtc = DateTime.UtcNow
+        });
+    }
+    
+    /// <summary>
+    /// Get the participant details of a conference by id for VH officer
+    /// </summary>
+    /// <param name="conferenceId">The unique id of the conference</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>the participant details, if permitted</returns>
+    [HttpGet("{conferenceId}/vhofficer/participants")]
+    [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
+    [Authorize(AppRoles.VhOfficerRole)]
+    public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
+    {
+        if (conferenceId == Guid.Empty)
+        {
+            logger.LogWarning("Unable to get conference when id is not provided");
+            ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+            
+            logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
+            
+            var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync(cancellationToken);
+            var response = ParticipantStatusResponseForVhoMapper.Map(conference, hostsInHearingsToday);
+            
+            return Ok(response);
+        }
+        catch (VideoApiException ex)
+        {
+            logger.LogError(ex, "Unable to retrieve conference: {ConferenceId}", conferenceId);
+            
+            return StatusCode(ex.StatusCode, ex.Response);
+        }
+    }
+    
+    /// <summary>
+    /// Get participants for a conference
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
+    [HttpGet("{conferenceId}/participants")]
+    [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
+    [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+            var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
+            return Ok(participants);
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e, "Unable to retrieve participants for conference: {ConferenceId}", conferenceId);
+            return StatusCode(e.StatusCode, e.Response);
+        }
+    }
+    
+    /// <summary>
+    /// Get Participant details for the user logged in
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet("{conferenceId}/currentparticipant")]
+    [SwaggerOperation(OperationId = "GetCurrentParticipant")]
+    [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId, CancellationToken cancellationToken)
+    {
+        var participantsRoles = new List<Role>
+        {
+            Role.Judge,
+            Role.Individual,
+            Role.Representative,
+            Role.JudicialOfficeHolder,
+            Role.QuickLinkParticipant,
+            Role.QuickLinkObserver,
+            Role.StaffMember
+        };
+        
+        try
+        {
+            var profile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
+            var response = new LoggedParticipantResponse
+            {
+                AdminUsername = User.Identity?.Name,
+                DisplayName = "Admin",
+                Role = Role.VideoHearingsOfficer
+            };
+            
+            if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
             {
                 var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-
-                logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
+                var participantFromCache = conference.Participants
+                    .SingleOrDefault(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
                 
-                var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync(cancellationToken);
-                var response = ParticipantStatusResponseForVhoMapper.Map(conference, hostsInHearingsToday);
-
-                return Ok(response);
-            }
-            catch (VideoApiException ex)
-            {
-                logger.LogError(ex, "Unable to retrieve conference: {ConferenceId}", conferenceId);
-
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
-        }
-
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
-        [HttpGet("{conferenceId}/participants")]
-        [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
-        [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
-                var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
-                return Ok(participants);
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Unable to retrieve participants for conference: {ConferenceId}", conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
-        [HttpGet("{conferenceId}/currentparticipant")]
-        [SwaggerOperation(OperationId = "GetCurrentParticipant")]
-        [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId, CancellationToken cancellationToken)
-        {
-            var participantsRoles = new List<Role>
-            {
-                Role.Judge,
-                Role.Individual,
-                Role.Representative,
-                Role.JudicialOfficeHolder,
-                Role.QuickLinkParticipant,
-                Role.QuickLinkObserver,
-                Role.StaffMember
-            };
-
-            try
-            {
-                var profile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
-                var response = new LoggedParticipantResponse
+                if (participantFromCache == null)
                 {
-                    AdminUsername = User.Identity?.Name,
-                    DisplayName = "Admin",
-                    Role = Role.VideoHearingsOfficer
+                    conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+                    participantFromCache = conference.Participants
+                        .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+                }
+                
+                response = new LoggedParticipantResponse
+                {
+                    ParticipantId = participantFromCache.Id,
+                    DisplayName = participantFromCache.DisplayName,
+                    Role = participantFromCache.Role
                 };
-
-                if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
-                {
-                    var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-                    var participantFromCache = conference.Participants
-                        .SingleOrDefault(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
-
-                    if (participantFromCache == null)
-                    {
-                        conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
-                        participantFromCache = conference.Participants
-                            .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
-                    }
-                    
-                    response = new LoggedParticipantResponse
-                    {
-                        ParticipantId = participantFromCache.Id,
-                        DisplayName = participantFromCache.DisplayName,
-                        Role = participantFromCache.Role
-                    };
-                }
-
-                return Ok(response);
             }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Unable to get current participant Id for conference: {ConferenceId}", conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            
+            return Ok(response);
         }
-
-        [HttpPost("{conferenceId}/joinConference")]
-        [SwaggerOperation(OperationId = "StaffMemberJoinConference")]
-        [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [Authorize(AppRoles.StaffMember)]
-        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, CancellationToken cancellationToken)
+        catch (VideoApiException e)
         {
-            try
+            logger.LogError(e, "Unable to get current participant Id for conference: {ConferenceId}", conferenceId);
+            return StatusCode(e.StatusCode, e.Response);
+        }
+    }
+    
+    /// <summary>
+    /// Join a conference as a staff member
+    /// </summary>
+    /// <param name="conferenceId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("{conferenceId}/joinConference")]
+    [SwaggerOperation(OperationId = "StaffMemberJoinConference")]
+    [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [Authorize(AppRoles.StaffMember)]
+    public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var username = User.Identity!.Name!.ToLower().Trim();
+            var originalConference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
+            
+            if (!participantService.CanStaffMemberJoinConference(originalConference))
             {
-                var username = User.Identity!.Name!.ToLower().Trim();
-                var originalConference = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
-
-                if (!participantService.CanStaffMemberJoinConference(originalConference))
-                {
-                    logger.LogWarning("Staff Member only can view hearing within 30 minutes of the Start time and 2 hours after the hearing has closed");
-                    ModelState.AddModelError(nameof(conferenceId), $"Please select a valid conference {nameof(conferenceId)}");
-                    return BadRequest(ModelState);
-                }
-                
-                logger.LogDebug("Attempting to assign {StaffMember} to conference {ConferenceId}", username, conferenceId);
-                
-                var staffMemberProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
-
-                var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username), cancellationToken);
-                await participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
-                var updatedConference = await conferenceService.GetConference(conferenceId, cancellationToken);
-                var mappedUpdatedConference = ConferenceResponseMapper.Map(updatedConference);
-                return Ok(mappedUpdatedConference);
+                logger.LogWarning("Staff Member only can view hearing within 30 minutes of the Start time and 2 hours after the hearing has closed");
+                ModelState.AddModelError(nameof(conferenceId), $"Please select a valid conference {nameof(conferenceId)}");
+                return BadRequest(ModelState);
             }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Unable to add staff member for conference: {ConferenceId}", conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            
+            logger.LogDebug("Attempting to assign {StaffMember} to conference {ConferenceId}", username, conferenceId);
+            
+            var staffMemberProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
+            
+            var response = await videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username), cancellationToken);
+            await participantService.AddParticipantToConferenceCache(response.ConferenceId, response.Participant);
+            var updatedConference = await conferenceService.GetConference(conferenceId, cancellationToken);
+            var mappedUpdatedConference = ConferenceResponseMapper.Map(updatedConference);
+            return Ok(mappedUpdatedConference);
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e, "Unable to add staff member for conference: {ConferenceId}", conferenceId);
+            return StatusCode(e.StatusCode, e.Response);
         }
     }
 }

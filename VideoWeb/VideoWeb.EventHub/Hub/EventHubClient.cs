@@ -102,7 +102,7 @@ public class EventHub(
             SendMessageDto sendMessageDto;
             if (isTargetAdmin)
             {
-                sendMessageDto = imRules.BuildSendMessageDtoFromParticipant(conference, messageUuid, message, from);
+                sendMessageDto = InstantMessageRules.BuildSendMessageDtoFromParticipant(conference, messageUuid, message, from);
             }
             else
             {

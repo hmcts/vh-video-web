@@ -23,7 +23,7 @@ export class ConnectionStatusService {
         private logger: Logger,
         private http: HttpClient
     ) {
-        this.pings.every(x => (x = true));
+        this.pings.every(() => {});
     }
 
     get onUserTriggeredReconnect(): Observable<boolean> {

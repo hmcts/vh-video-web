@@ -65,7 +65,7 @@ public class GetParticipantsByConferenceIdTest
         
     }
     
-    private Conference CreateValidParticipantConferenceDto()
+    private static Conference CreateValidParticipantConferenceDto()
     {
         var participants = Builder<Participant>
             .CreateListOfSize(3).All()
