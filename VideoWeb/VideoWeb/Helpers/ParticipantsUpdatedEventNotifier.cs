@@ -29,7 +29,7 @@ namespace VideoWeb.Helpers
                 ParticipantsToNotify = participantsToNotify.Select(ParticipantDtoForResponseMapper.Map).ToList()
             };
 
-            logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
+            logger.LogTrace("Publishing event to UI: {Serialize}", JsonSerializer.Serialize(callbackEvent));
             return PublishEventToUi(callbackEvent);
         }
 

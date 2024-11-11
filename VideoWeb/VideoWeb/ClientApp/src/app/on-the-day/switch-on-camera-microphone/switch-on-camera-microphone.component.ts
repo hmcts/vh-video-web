@@ -146,12 +146,12 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         return this.conference.participants.some(x => x.user_name === this.profile.username && x.hearing_role === HearingRole.OBSERVER);
     }
 
-    private handleDevicesAvailable() {
+    private handleDevicesAvailable(): void {
         this.mediaAccepted = true;
         this.userPrompted = true;
     }
 
-    private handleDevicesUnavailable() {
+    private handleDevicesUnavailable(): void {
         this.mediaAccepted = false;
         this.userPrompted = true;
         this.errorService.goToServiceError(

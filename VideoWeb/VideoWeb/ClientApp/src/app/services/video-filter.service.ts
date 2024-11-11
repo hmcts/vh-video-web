@@ -227,7 +227,7 @@ export class VideoFilterService {
         console.defaultWarn = console.warn.bind(console);
         console.warn = function () {
             // default &  console.warn()
-            console.defaultWarn.apply(console, arguments);
+            console.defaultWarn.apply(...arguments);
             // new & array data
             const args = Array.from(arguments);
             if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {

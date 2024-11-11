@@ -99,30 +99,32 @@ public class EventComponentHelper
             .Returns(EventHubClientMock.Object);
     }
 
-    public Conference BuildConferenceForTest()
+    public static Conference BuildConferenceForTest()
     {
         return new Conference
         {
             Id = Guid.NewGuid(),
             HearingId = Guid.NewGuid(),
-            Participants = new List<Participant>()
-            {
+            Participants =
+            [
                 Builder<Participant>.CreateNew()
                     .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                     .Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                     .With(x => x.Id = Guid.NewGuid()).Build(),
+                
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build()
-            },
-            CivilianRooms = new List<CivilianRoom>
-            {
-                new () {Id = 1, RoomLabel = "Interpreter1", Participants = {Guid.NewGuid(), Guid.NewGuid()}}
-            }
+            ],
+            CivilianRooms =
+                [new CivilianRoom { Id = 1, RoomLabel = "Interpreter1", Participants = { Guid.NewGuid(), Guid.NewGuid() } }]
         };
     }
 }

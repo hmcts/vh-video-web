@@ -8,15 +8,16 @@ using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Controllers.InternalEventControllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.InternalEventController
+namespace VideoWeb.UnitTests.Controllers.InternalEventControllers
 {
     public class AllocationHearingsTests
     {
         private AutoMock _mocker;
-        protected VideoWeb.Controllers.InternalEventController _controller;
+        private InternalEventAllocationController allocationController;
 
         [SetUp]
         public void Setup()
@@ -30,9 +31,9 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                     User = claimsPrincipal
                 }
             };
-
-            _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
-            _controller.ControllerContext = context;
+            
+            allocationController = _mocker.Create<InternalEventAllocationController>();
+            allocationController.ControllerContext = context;
 
             _mocker.Mock<IAllocationHearingsEventNotifier>();
         }
@@ -51,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             
 
             // Act
-            var result = await _controller.AllocationHearings(allocationHearingsToCsoRequest);
+            var result = await allocationController.AllocationHearings(allocationHearingsToCsoRequest);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
@@ -75,7 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             
 
             // Act
-            var result = await _controller.AllocationHearings(allocationHearingsToCsoRequest);
+            var result = await allocationController.AllocationHearings(allocationHearingsToCsoRequest);
 
             // Assert
             result.Should().BeOfType<ObjectResult>();

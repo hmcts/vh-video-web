@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace VideoWeb.Common.Caching
+namespace VideoWeb.Common.Caching;
+
+public interface IDistributedJohConsultationRoomLockCache
 {
-    public interface IDistributedJOHConsultationRoomLockCache
-    {
-        Task UpdateJohConsultationRoomLockStatus(bool isLocked, string keyName, CancellationToken cancellationToken = default);
-        Task<bool> IsJOHRoomLocked(string johConsultationRoomKey, CancellationToken cancellationToken = default);
-    }
+    Task UpdateJohConsultationRoomLockStatus(bool isLocked, string keyName, CancellationToken cancellationToken = default);
+    Task<bool> IsJohRoomLocked(string johConsultationRoomKey, CancellationToken cancellationToken = default);
 }

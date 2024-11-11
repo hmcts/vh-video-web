@@ -2,6 +2,12 @@
   cursor: pointer;
 }
 
+button {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: default;
+}
 .phone {
   color: rgba(255, 255, 255, 0.7);
   &:hover {

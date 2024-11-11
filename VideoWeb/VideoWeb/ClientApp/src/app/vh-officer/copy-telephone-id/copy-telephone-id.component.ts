@@ -24,8 +24,7 @@ export class CopyTelephoneIdComponent implements OnInit {
 
     copyToClipboard() {
         const phoneNumbers = this.telephoneNumbers.split(',');
-        const text = `ENG: ${phoneNumbers[0]} (ID: ${this.telephoneId})
-CY: ${phoneNumbers[1]} (ID: ${this.telephoneId})`;
+        const text = `ENG: ${phoneNumbers[0]} (ID: ${this.telephoneId}) CY: ${phoneNumbers[1]} (ID: ${this.telephoneId})`;
         this.clipboardService.copyFromContent(text);
         this.tooltip = this.translateService.instant('copy-telephone-id.tooltip-copied');
     }

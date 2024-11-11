@@ -29,7 +29,7 @@ public static class ConferenceCacheMapper
 
         var endpointsForHearing = hearingDetailsResponse.Endpoints.ToList();
         
-        var caseInformation = hearingDetailsResponse.Cases.FirstOrDefault(c => c.IsLeadCase) ?? hearingDetailsResponse.Cases[0];
+        var caseInformation = hearingDetailsResponse.Cases.Find(c => c.IsLeadCase) ?? hearingDetailsResponse.Cases[0];
         
         var endpoints = conferenceResponse.Endpoints == null
             ? new List<Endpoint>()

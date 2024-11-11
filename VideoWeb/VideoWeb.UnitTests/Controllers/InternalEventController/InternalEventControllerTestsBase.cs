@@ -6,10 +6,10 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
-    public abstract class InternalEventControllerTests
+    public abstract class InternalEventControllerTestsBase<T> where T : ControllerBase
     {
         protected AutoMock Mocker;
-        protected VideoWeb.Controllers.InternalEventController Controller;
+        protected T Controller;
 
         [SetUp]
         public virtual void SetUp()
@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
                 }
             };
 
-            Controller = Mocker.Create<VideoWeb.Controllers.InternalEventController>();
+            Controller = Mocker.Create<T>();
             Controller.ControllerContext = context;
         }
     }

@@ -14,7 +14,7 @@ public interface IFeatureToggles
 
 public class FeatureToggles : IFeatureToggles
 {
-    private readonly ILdClient _ldClient;
+    private readonly LdClient _ldClient;
     private readonly Context _context;
     private const string LdUser = "vh-video-web";
     private const string VodafoneToggleKey = "vodafone";
@@ -27,7 +27,7 @@ public class FeatureToggles : IFeatureToggles
         _context = Context.Builder(LdUser).Name(environmentName).Build();
         _ldClient = new LdClient(config);
     }
-
+    
     public bool Vodafone()
     {
         return GetBoolValueWithKey(VodafoneToggleKey);

@@ -122,7 +122,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(claims.Identity.Name);
         }
         
-        protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
+        protected static Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(6)

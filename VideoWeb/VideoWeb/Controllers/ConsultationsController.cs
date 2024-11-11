@@ -19,352 +19,374 @@ using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
-namespace VideoWeb.Controllers
+namespace VideoWeb.Controllers;
+
+[Produces("application/json")]
+[ApiController]
+[Route("consultations")]
+public class ConsultationsController(
+    IVideoApiClient videoApiClient,
+    IConferenceService conferenceService,
+    ILogger<ConsultationsController> logger,
+    IConsultationNotifier consultationNotifier,
+    IConsultationInvitationTracker consultationInvitationTracker,
+    IDistributedJohConsultationRoomLockCache distributedJohConsultationRoomLockCache)
+    : ControllerBase
 {
-    [Produces("application/json")]
-    [ApiController]
-    [Route("consultations")]
-    public class ConsultationsController(
-        IVideoApiClient videoApiClient,
-        IConferenceService conferenceService,
-        ILogger<ConsultationsController> logger,
-        IConsultationNotifier consultationNotifier,
-        IConsultationInvitationTracker consultationInvitationTracker,
-        IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
-        : ControllerBase
+    public const string ConsultationHasScreenedParticipantErrorMessage =
+        "Participant is not allowed to join the consultation room with a participant they are screened from";
+    
+    public const string ConsultationHasScreenedEndpointErrorMessage =
+        "Endpoint is not allowed to join the consultation room with a participant they are screened from";
+    
+    public const string ConsultationHasScreenedParticipantAndEndpointErrorMessage =
+        "Cannot start consultation with participants or endpoints that are screened from each other";
+    
+    /// <summary>
+    /// Leave the Consultation
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("leave")]
+    [SwaggerOperation(OperationId = "LeaveConsultation")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request, CancellationToken cancellationToken)
     {
-        public const string ConsultationHasScreenedParticipantErrorMessage =
-            "Participant is not allowed to join the consultation room with a participant they are screened from";
-
-        public const string ConsultationHasScreenedEndpointErrorMessage =
-            "Endpoint is not allowed to join the consultation room with a participant they are screened from";
-
-        public const string ConsultationHasScreenedParticipantAndEndpointErrorMessage =
-            "Cannot start consultation with participants or endpoints that are screened from each other";
-        
-        
-        [HttpPost("leave")]
-        [SwaggerOperation(OperationId = "LeaveConsultation")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request, CancellationToken cancellationToken)
-        {
-            var participant = new Participant();
-            try
-            {
-                var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-                participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
-                if (participant == null)
-                {
-                    return NotFound();
-                }
-
-                var mappedRequest = LeavePrivateConsultationRequestMapper.Map(request);
-                await videoApiClient.LeaveConsultationAsync(mappedRequest, cancellationToken);
-
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                if (participant != null)
-                {
-                    logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
-                }
-                else
-                {
-                    logger.LogError(e, "Invalid participant");
-                }
-
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
-        [HttpPost("respond")]
-        [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request, CancellationToken cancellationToken)
+        var participant = new Participant();
+        try
         {
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
-            if (participant == null && request.RequestedById != Guid.Empty)
+            participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
+            if (participant == null)
             {
-                // Participants other than VHO
                 return NotFound();
             }
-
-            var mappedRequest = PrivateConsultationRequestMapper.Map(request);
-
-            try
-            {
-                await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
-                var haveAllAccepted = await consultationInvitationTracker.HaveAllParticipantsAccepted(request.InvitationId);
-                if (haveAllAccepted)
-                {
-                    await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
-                    await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                }
-                else if (request.Answer != ConsultationAnswer.Accepted)
-                {
-                    await videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                }
-
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
-                logger.LogError(e, "Consultation request could not be responded to");
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            
+            var mappedRequest = LeavePrivateConsultationRequestMapper.Map(request);
+            await videoApiClient.LeaveConsultationAsync(mappedRequest, cancellationToken);
+            
+            return NoContent();
         }
-
-        [HttpPost("joinPrivateConsultation")]
-        [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request, CancellationToken cancellationToken)
+        catch (VideoApiException e)
         {
-            try
+            if (participant != null)
             {
-                logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
-                    request.ConferenceId, request.ParticipantId, request.RoomLabel);
-                var authenticatedUsername = User.Identity?.Name?.ToLower().Trim();
-                var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
-
-                if (participant == null)
-                {
-                    logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
-                    return NotFound("Couldn't find participant.");
-                }
-
-                if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
-                {
-                    return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
-                }
-                
-                var mappedRequest = JoinPrivateConsultationRequestMapper.Map(request);
-
-                await videoApiClient.RespondToConsultationRequestAsync(mappedRequest, cancellationToken);
-                await consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
-                return StatusCode(e.StatusCode);
-            }
-
-            return Accepted();
-        }
-
-        [HttpPost("start")]
-        [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
-                var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-                
-                if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(),
-                        request.InviteEndpoints.ToList()))
-                {
-                    return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
-                }
-
-                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
-                if (requestedBy == null)
-                {
-                    logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
-                    return NotFound();
-                }
-
-                var mappedRequest = StartPrivateConsultationRequestMapper.Map(request);
-
-                if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
-                {
-                    await StartParticipantConsultation(request, cancellationToken, mappedRequest, conference, username);
-                }
-                else
-                {
-                    if (!CanStartJohConsultation())
-                    {
-                        return Forbid();
-                    }
-
-                    await StartJudicialConsultation(cancellationToken, conference, mappedRequest);
-                }
-
-                return Accepted();
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Start consultation error Conference");
-                return StatusCode(e.StatusCode);
-            }
-        }
-
-        private async Task StartJudicialConsultation(CancellationToken cancellationToken, Conference conference,
-            StartConsultationRequest mappedRequest)
-        {
-            var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
-            var isLocked =
-                await distributedJohConsultationRoomLockCache.IsJOHRoomLocked(johConsultationRoomLockedStatusKeyName, cancellationToken);
-
-            if (isLocked)
-            {
-                Thread.Sleep(3000);
+                logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
             }
             else
             {
-                await distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(true,
-                    johConsultationRoomLockedStatusKeyName, cancellationToken);
+                logger.LogError(e, "Invalid participant");
             }
-                    
-            await videoApiClient.StartPrivateConsultationAsync(mappedRequest, cancellationToken);
+            
+            return StatusCode(e.StatusCode, e.Response);
         }
-
-        private async Task StartParticipantConsultation(StartPrivateConsultationRequest request,
-            CancellationToken cancellationToken, StartConsultationRequest mappedRequest, Conference conference, string username)
+    }
+    
+    /// <summary>
+    /// Send response to Consultation Request
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("respond")]
+    [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request, CancellationToken cancellationToken)
+    {
+        var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+        var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
+        if (participant == null && request.RequestedById != Guid.Empty)
         {
-            var room = await videoApiClient.CreatePrivateConsultationAsync(mappedRequest, cancellationToken);
-            conference.UpsertConsultationRoom(room.Label, room.Locked);
-            await conferenceService.UpdateConferenceAsync(conference, cancellationToken);
-            await consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
-            foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
-            {
-                await consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
-            }
-
-            var validSelectedEndpoints = request.InviteEndpoints
-                .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
-                    
-            foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
-            {
-                try
-                {
-                    await videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
-                    {
-                        ConferenceId = request.ConferenceId,
-                        EndpointId = endpointId,
-                        RoomLabel = room.Label,
-                                
-                    }, cancellationToken);
-                    break;
-                }
-                catch (VideoApiException e)
-                {
-                    // As endpoints cannot be linked participants just use and Empty GUID
-                    await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, room.Label, endpointId, ConsultationAnswer.Failed);
-                    logger.LogError(e, "Unable to add {EndpointId} to consultation",endpointId);
-                }
-            }
+            // Participants other than VHO
+            return NotFound();
         }
-
-        [HttpPost("lock")]
-        [SwaggerOperation(OperationId = "LockConsultationRoomRequest")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LockConsultationRoomRequestAsync(LockConsultationRoomRequest request, CancellationToken cancellationToken)
+        
+        var mappedRequest = PrivateConsultationRequestMapper.Map(request);
+        
+        try
         {
-            try
+            await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
+            var haveAllAccepted = await consultationInvitationTracker.HaveAllParticipantsAccepted(request.InvitationId);
+            if (haveAllAccepted)
             {
-                var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-                var mappedRequest = LockRoomRequestMapper.Map(request);
-                await videoApiClient.LockRoomAsync(mappedRequest, cancellationToken);
-
-                await consultationNotifier.NotifyRoomUpdateAsync(conference,
-                    new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
-
-                return NoContent();
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                await videoApiClient.RespondToConsultationRequestAsync(mappedRequest, cancellationToken);
             }
-            catch (VideoApiException e)
+            else if (request.Answer != ConsultationAnswer.Accepted)
             {
-                logger.LogError(e, "Could not update the lock state of the consultation room");
-                return StatusCode(e.StatusCode, e.Response);
+                await videoApiClient.RespondToConsultationRequestAsync(mappedRequest, cancellationToken);
             }
+            
+            return NoContent();
         }
-
-        [HttpPost("invite")]
-        [SwaggerOperation(OperationId = "InviteToConsultation")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> InviteToConsultationAsync(InviteToConsultationRequest request, CancellationToken cancellationToken)
+        catch (VideoApiException e)
         {
+            await consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
+            logger.LogError(e, "Consultation request could not be responded to");
+            return StatusCode(e.StatusCode, e.Response);
+        }
+    }
+    
+    /// <summary>
+    /// Join a private consultation
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("joinPrivateConsultation")]
+    [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
+                request.ConferenceId, request.ParticipantId, request.RoomLabel);
+            var authenticatedUsername = User.Identity?.Name?.ToLower().Trim();
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-            var username = User.Identity?.Name?.ToLower().Trim();
-            var requestedBy = conference.Participants.SingleOrDefault(x =>
-                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
-            if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
+            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
+            
+            if (participant == null)
             {
-                return Unauthorized("You must be a VHO or a member of the conference");
+                logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                return NotFound("Couldn't find participant.");
             }
             
             if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
             {
                 return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
             }
-
-            await consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
-
-            return Accepted();
-        }
-
-        [HttpPost("addendpoint")]
-        [SwaggerOperation(OperationId = "AddEndpointToConsultation")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request, CancellationToken cancellationToken)
-        {
-            var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
-            var username = User.Identity?.Name?.ToLower().Trim();
-            var requestedBy = conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             
+            var mappedRequest = JoinPrivateConsultationRequestMapper.Map(request);
+            
+            await videoApiClient.RespondToConsultationRequestAsync(mappedRequest, cancellationToken);
+            await consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+            return StatusCode(e.StatusCode);
+        }
+        
+        return Accepted();
+    }
+    
+    /// <summary>
+    /// Start a private consultation
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="UnauthorizedAccessException"></exception>
+    [HttpPost("start")]
+    [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
+            var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+            
+            if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(),
+                    request.InviteEndpoints.ToList()))
+            {
+                return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
+            }
+            
+            var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null)
             {
-                return Unauthorized("You must be a VHO or a member of the conference");
+                logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
+                return NotFound();
             }
             
-            if (!conference.CanEndpointJoinConsultationRoom(request.RoomLabel, request.EndpointId))
+            var mappedRequest = StartPrivateConsultationRequestMapper.Map(request);
+            
+            if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
             {
-                return BadRequest(ConsultationHasScreenedEndpointErrorMessage);
+                await StartParticipantConsultation(request, mappedRequest, conference, username, cancellationToken);
             }
-
+            else
+            {
+                if (!CanStartJohConsultation())
+                {
+                    return Forbid();
+                }
+                
+                await StartJudicialConsultation(conference, mappedRequest, cancellationToken);
+            }
+            
+            return Accepted();
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e, "Start consultation error Conference");
+            return StatusCode(e.StatusCode);
+        }
+    }
+    
+    [HttpPost("lock")]
+    [SwaggerOperation(OperationId = "LockConsultationRoomRequest")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> LockConsultationRoomRequestAsync(LockConsultationRoomRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+            var mappedRequest = LockRoomRequestMapper.Map(request);
+            await videoApiClient.LockRoomAsync(mappedRequest, cancellationToken);
+            
+            await consultationNotifier.NotifyRoomUpdateAsync(conference,
+                new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
+            
+            return NoContent();
+        }
+        catch (VideoApiException e)
+        {
+            logger.LogError(e, "Could not update the lock state of the consultation room");
+            return StatusCode(e.StatusCode, e.Response);
+        }
+    }
+    
+    [HttpPost("invite")]
+    [SwaggerOperation(OperationId = "InviteToConsultation")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> InviteToConsultationAsync(InviteToConsultationRequest request, CancellationToken cancellationToken)
+    {
+        var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+        var username = User.Identity?.Name?.ToLower().Trim();
+        var requestedBy = conference.Participants.SingleOrDefault(x =>
+            x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+        if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
+        {
+            return Unauthorized("You must be a VHO or a member of the conference");
+        }
+        
+        if (!conference.CanParticipantJoinConsultationRoom(request.RoomLabel, request.ParticipantId))
+        {
+            return BadRequest(ConsultationHasScreenedParticipantErrorMessage);
+        }
+        
+        await consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
+        
+        return Accepted();
+    }
+    
+    [HttpPost("addendpoint")]
+    [SwaggerOperation(OperationId = "AddEndpointToConsultation")]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request, CancellationToken cancellationToken)
+    {
+        var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
+        var username = User.Identity?.Name?.ToLower().Trim();
+        var requestedBy = conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+        
+        if (requestedBy == null)
+        {
+            return Unauthorized("You must be a VHO or a member of the conference");
+        }
+        
+        if (!conference.CanEndpointJoinConsultationRoom(request.RoomLabel, request.EndpointId))
+        {
+            return BadRequest(ConsultationHasScreenedEndpointErrorMessage);
+        }
+        
+        try
+        {
+            await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+            await videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+            {
+                ConferenceId = request.ConferenceId,
+                EndpointId = request.EndpointId,
+                RoomLabel = request.RoomLabel
+            }, cancellationToken);
+        }
+        catch (VideoApiException e)
+        {
+            // As endpoints cannot be linked participants just use and Empty GUID
+            await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+            logger.LogError(e, "Join endpoint to consultation error");
+            return StatusCode(e.StatusCode);
+        }
+        
+        return Accepted();
+    }
+    
+    private async Task StartJudicialConsultation(Conference conference, StartConsultationRequest mappedRequest, CancellationToken cancellationToken)
+    {
+        var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
+        var isLocked =
+            await distributedJohConsultationRoomLockCache.IsJohRoomLocked(johConsultationRoomLockedStatusKeyName, cancellationToken);
+        
+        if (isLocked)
+        {
+            Thread.Sleep(3000);
+        }
+        else
+        {
+            await distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(true,
+                johConsultationRoomLockedStatusKeyName, cancellationToken);
+        }
+        
+        await videoApiClient.StartPrivateConsultationAsync(mappedRequest, cancellationToken);
+    }
+    
+    private async Task StartParticipantConsultation(StartPrivateConsultationRequest request, StartConsultationRequest mappedRequest, Conference conference, string username,
+        CancellationToken cancellationToken)
+    {
+        var room = await videoApiClient.CreatePrivateConsultationAsync(mappedRequest, cancellationToken);
+        conference.UpsertConsultationRoom(room.Label, room.Locked);
+        await conferenceService.UpdateConferenceAsync(conference, cancellationToken);
+        await consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
+        foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Exists(p => p.Id == participantId)))
+        {
+            await consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
+        }
+        
+        var validSelectedEndpoints = request.InviteEndpoints
+            .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
+            .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+        
+        foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
+        {
             try
             {
-                await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
                 await videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = request.ConferenceId,
-                    EndpointId = request.EndpointId,
-                    RoomLabel = request.RoomLabel
+                    EndpointId = endpointId,
+                    RoomLabel = room.Label,
+                    
                 }, cancellationToken);
+                break;
             }
             catch (VideoApiException e)
             {
                 // As endpoints cannot be linked participants just use and Empty GUID
-                await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
-                logger.LogError(e, "Join endpoint to consultation error");
-                return StatusCode(e.StatusCode);
+                await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, room.Label, endpointId, ConsultationAnswer.Failed);
+                logger.LogError(e, "Unable to add {EndpointId} to consultation",endpointId);
             }
-
-            return Accepted();
         }
-
-        private bool CanStartJohConsultation()
-        {
-            return User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.StaffMember) || User.IsInRole(AppRoles.JudicialOfficeHolderRole);
-        }
+    }
+    
+    private bool CanStartJohConsultation()
+    {
+        return User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.StaffMember) || User.IsInRole(AppRoles.JudicialOfficeHolderRole);
     }
 }

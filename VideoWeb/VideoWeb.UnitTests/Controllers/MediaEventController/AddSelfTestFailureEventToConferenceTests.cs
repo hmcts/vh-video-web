@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
+            _testConference = EventComponentHelper.BuildConferenceForTest();
             _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
             _testParticipant.Username = ClaimsPrincipalBuilder.Username;
             

@@ -1,11 +1,13 @@
-<img
-  src="assets/images/elipses.png"
-  class="panel-icon"
-  (click)="toggleDropdown()"
-  [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
-  (keyup.enter)="toggleDropdown()"
-  onKeyUp="toggleDropdown()"
-/>
+<a
+    (click)="toggleDropdown()"
+    (keyup.enter)="toggleDropdown()"
+    onKeyUp="toggleDropdown()">
+    <img
+        [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
+        src="assets/images/elipses.png"
+        class="panel-icon"
+    />
+</a>
 <div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (1 | random)">
   <p class="govuk-body-s dropdown-header">
     <span [id]="idPrefix + '-display-name-' + (1 | random)">

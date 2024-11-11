@@ -1,9 +1,8 @@
 using VideoApi.Contract.Enums;
 
-namespace VideoWeb.Contract.Request
+namespace VideoWeb.Contract.Request;
+
+public class AddMediaEventRequest
 {
-    public class AddMediaEventRequest
-    {
-        public EventType EventType => EventType.MediaPermissionDenied;
-    }
+    public EventType EventType => EventType.MediaPermissionDenied;
 }

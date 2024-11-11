@@ -9,11 +9,9 @@ import { HearingsFilterOptionsService } from '../services/hearings-filter-option
 })
 export class VhoHearingsFilterComponent implements OnInit {
     @Output()
-    fiterOptionsEvent = new EventEmitter<HearingsFilter>();
-
+    filterOptionsEvent = new EventEmitter<HearingsFilter>();
     statusAllChecked = true;
     alertsAllChecked = true;
-    filterOptionsCounter = 0;
     disableFilterApply = true;
 
     hearingsFilter: HearingsFilter;
@@ -58,7 +56,7 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     applyFilters() {
         this.hearingsFilter.numberFilterOptions = this.hearingsFilterOptionsService.countOptions(this.hearingsFilter);
-        this.fiterOptionsEvent.emit(this.hearingsFilter);
+        this.filterOptionsEvent.emit(this.hearingsFilter);
     }
 
     private removeOptions(options: ListFilter[]) {

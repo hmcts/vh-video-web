@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController;
 public class ParticipantsUpdatedTests
 {
     private AutoMock _mocker;
-    private VideoWeb.Controllers.InternalEventController _controller;
+    private VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController _participantController;
     private Guid _testConferenceId;
     Mock<Conference> _mockConference;
     Guid _removedId =  Guid.NewGuid();
@@ -38,8 +38,8 @@ public class ParticipantsUpdatedTests
             }
         };
         
-        _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
-        _controller.ControllerContext = context;
+        _participantController = _mocker.Create<VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController>();
+        _participantController.ControllerContext = context;
         _testConferenceId = Guid.NewGuid();
         _mockConference = _mocker.Mock<Conference>();
         _mockConference.Object.Participants =
@@ -74,7 +74,7 @@ public class ParticipantsUpdatedTests
             .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _testConferenceId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(updateConference);
         // Act
-        var result = await _controller.ParticipantsUpdated(_testConferenceId, updateParticipantsRequest);
+        var result = await _participantController.ParticipantsUpdated(_testConferenceId, updateParticipantsRequest);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();

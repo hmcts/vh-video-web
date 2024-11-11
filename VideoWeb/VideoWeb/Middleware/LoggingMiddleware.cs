@@ -6,48 +6,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Helpers;
 
-namespace VideoWeb.Middleware
+namespace VideoWeb.Middleware;
+
+public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ILoggingDataExtractor loggingDataExtractor)
+    : IAsyncActionFilter
 {
-    public class LoggingMiddleware : IAsyncActionFilter
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        private readonly ILogger<LoggingMiddleware> _logger;
-
-        private readonly ILoggingDataExtractor _loggingDataExtractor;
-
-        public LoggingMiddleware(ILogger<LoggingMiddleware> logger, ILoggingDataExtractor loggingDataExtractor)
+        var properties = context.ActionDescriptor.Parameters
+            .Select(p => context.ActionArguments.SingleOrDefault(x => x.Key == p.Name))
+            .SelectMany(pv => loggingDataExtractor.ConvertToDictionary(pv.Value, pv.Key))
+            .ToDictionary(x => x.Key, x => x.Value);
+        
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            _logger = logger;
-            _loggingDataExtractor = loggingDataExtractor;
+            properties.Add(nameof(actionDescriptor.ControllerName), actionDescriptor.ControllerName);
+            properties.Add(nameof(actionDescriptor.ActionName), actionDescriptor.ActionName);
+            properties.Add(nameof(actionDescriptor.DisplayName), actionDescriptor.DisplayName);
         }
-
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        
+        using (logger.BeginScope(properties))
         {
-            var properties = context.ActionDescriptor.Parameters
-                .Select(p => context.ActionArguments.SingleOrDefault(x => x.Key == p.Name))
-                .SelectMany(pv => _loggingDataExtractor.ConvertToDictionary(pv.Value, pv.Key))
-                .ToDictionary(x => x.Key, x => x.Value);
-
-            if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
+            logger.LogDebug("Starting request");
+            var sw = Stopwatch.StartNew();
+            var action = await next();
+            if (action.Exception != null)
             {
-                properties.Add(nameof(actionDescriptor.ControllerName), actionDescriptor.ControllerName);
-                properties.Add(nameof(actionDescriptor.ActionName), actionDescriptor.ActionName);
-                properties.Add(nameof(actionDescriptor.DisplayName), actionDescriptor.DisplayName);
+                var ex = action.Exception;
+                logger.LogError(ex, "An error occurred: {Message}", ex.Message);
             }
-
-            using (_logger.BeginScope(properties))
-            {
-                _logger.LogDebug("Starting request");
-                var sw = Stopwatch.StartNew();
-                var action = await next();
-                if (action.Exception != null)
-                {
-                    var ex = action.Exception;
-                    _logger.LogError(ex, ex.Message);
-                }
-
-                _logger.LogDebug("Handled request in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
-            }
+            
+            logger.LogDebug("Handled request in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
         }
     }
 }
-

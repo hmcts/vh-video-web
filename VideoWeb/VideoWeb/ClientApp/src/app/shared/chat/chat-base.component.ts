@@ -93,7 +93,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
             .subscribe(async ud => {
                 const from = message.from.toUpperCase();
                 const username =
-                    this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+                    this.loggedInUser?.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
                         ? this.loggedInUser.participant_id
                         : ud.preferred_username.toUpperCase();
                 if (from === username.toUpperCase()) {

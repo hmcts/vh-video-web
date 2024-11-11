@@ -325,7 +325,7 @@ public class StartConsultationTest
                 ConsultationHelper.GetStartJohConsultationRequest(_testConference), CancellationToken.None);
         
         result.Should().BeOfType<AcceptedResult>();
-        _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
+        _mocker.Mock<IDistributedJohConsultationRoomLockCache>()
             .Verify(x => x.UpdateJohConsultationRoomLockStatus(true, expectedKeyName, It.IsAny<CancellationToken>()),
                 Times.Once);
     }
@@ -336,7 +336,7 @@ public class StartConsultationTest
         var controller = GetControllerWithContextForRole(AppRoles.JudgeRole);
         var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
         var expectedKeyName = $"johConsultationRoomLockedStatus_{request.ConferenceId}";
-        _mocker.Mock<IDistributedJOHConsultationRoomLockCache>().Setup(x => x.IsJOHRoomLocked(expectedKeyName, It.IsAny<CancellationToken>()))
+        _mocker.Mock<IDistributedJohConsultationRoomLockCache>().Setup(x => x.IsJohRoomLocked(expectedKeyName, It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(true));
         
         var result =
@@ -344,7 +344,7 @@ public class StartConsultationTest
                 ConsultationHelper.GetStartJohConsultationRequest(_testConference), CancellationToken.None);
         
         result.Should().BeOfType<AcceptedResult>();
-        _mocker.Mock<IDistributedJOHConsultationRoomLockCache>()
+        _mocker.Mock<IDistributedJohConsultationRoomLockCache>()
             .Verify(x => x.UpdateJohConsultationRoomLockStatus(true, expectedKeyName, It.IsAny<CancellationToken>()), Times.Never);
     }
     

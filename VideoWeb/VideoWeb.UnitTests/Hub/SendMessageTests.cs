@@ -31,7 +31,8 @@ namespace VideoWeb.UnitTests.Hub
         private Mock<IEventHubClient> IndividualGroupChannel { get; set; }
         private Mock<IEventHubClient> RepresentativeGroupChannel { get; set; }
 
-        private List<Mock<IEventHubClient>> ParticipantChannels => new List<Mock<IEventHubClient>> {JudgeGroupChannel, IndividualGroupChannel, RepresentativeGroupChannel};
+        private List<Mock<IEventHubClient>> ParticipantChannels =>
+            [JudgeGroupChannel, IndividualGroupChannel, RepresentativeGroupChannel];
 
         private Conference Conference { get; set; }
 
@@ -269,7 +270,7 @@ namespace VideoWeb.UnitTests.Hub
             ConferenceServiceMock.Setup(c => c.GetConference(Conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(Conference);
         }
 
-        private Conference InitConference()
+        private static Conference InitConference()
         {
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(3)
@@ -285,12 +286,12 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
         }
 
-        private UserProfile InitProfile(string username, string role)
+        private static UserProfile InitProfile(string username, string role)
         {
             var userRole = Enum.Parse<Role>(role);
             return Builder<UserProfile>.CreateNew()
                 .With(x => x.UserName = username)
-                .With(x => x.Roles = new List<Role> { userRole })
+                .With(x => x.Roles = [userRole])
                 .With(x => x.IsAdmin = userRole == Role.VideoHearingsOfficer )
                 .Build();
         }

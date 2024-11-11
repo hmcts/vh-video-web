@@ -42,7 +42,7 @@ public class UpdateParticipantStatusTests
         
         var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
         var eventComponentHelper = new EventComponentHelper();
-        _testConference = eventComponentHelper.BuildConferenceForTest();
+        _testConference = EventComponentHelper.BuildConferenceForTest();
         _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
         
         var context = new ControllerContext

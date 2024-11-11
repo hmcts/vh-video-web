@@ -112,8 +112,6 @@ export abstract class ParticipantStatusDirective {
         const participantInThisConference = this.participants.find(x => x.id === message.participantId);
         if (participantInThisConference) {
             this.setParticipantStatus(message.status, participantInThisConference);
-
-            return;
         }
     }
 

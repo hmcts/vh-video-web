@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Contract.Request;
 using VideoApi.Client;
@@ -79,7 +78,7 @@ namespace VideoWeb.Controllers
                     ConferenceId = conferenceId.ToString(),
                     ParticipantId = participantId.ToString(),
                     EventId = Guid.NewGuid().ToString(),
-                    EventType = addSelfTestFailureEventRequest.EventType,
+                    EventType = AddSelfTestFailureEventRequest.EventType,
                     TimeStampUtc = DateTime.UtcNow,
                     Reason = $"Failed self-test ({addSelfTestFailureEventRequest.SelfTestFailureReason.DescriptionAttr()})"
                 };
