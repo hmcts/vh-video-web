@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, from, Observable, of, ReplaySubject, zip } from 'rxjs';
+import { from, Observable, of, ReplaySubject, zip } from 'rxjs';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
