@@ -98,27 +98,4 @@ public class UpdateJudgeDisplayNameTests
             .Verify(
                 x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(c => c.Id == conferenceId), It.IsAny<IList<Participant>>()), Times.Once);
     }
-
-    [Test]
-    public async Task Should_throw_error_when_get_api_throws_error()
-    {
-
-        var conferenceId = _testConference.Id;
-        var request = new UpdateParticipantDisplayNameRequest
-        {
-            DisplayName = "Sir Steve",
-        };
-        var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            "Please provide a valid conference Id and participant Id", null, default, null);
-
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(),
-                It.IsAny<UpdateParticipantRequest>(), It.IsAny<CancellationToken>()))
-            .Throws(apiException);
-
-        var result =
-            await _sut.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-    }
 }

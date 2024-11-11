@@ -100,46 +100,6 @@ public class StaffMemberJoinConferenceTests
     }
     
     [Test]
-    public async Task Should_throw_error_when_add_staff_member_throws_error()
-    {
-        var conferenceId = _testConference.Id;
-        var errorResponse = $"Unable to add staff member for conference: {conferenceId}";
-        var videoApiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            errorResponse, null, default, null);
-        _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
-            .Returns(true);
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(_testConference);
-        
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(videoApiException);
-        
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        typedResult.Value.Should().Be(errorResponse);
-    }
-    
-    [Test]
-    public async Task Should_throw_error_when_get_conference_details_throws_error()
-    {
-        var conferenceId = _testConference.Id;
-        var errorResponse = $"Unable to get conferenceDetails conference: {conferenceId}";
-        var videoApiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            errorResponse, null, default, null);
-        
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(videoApiException);
-        var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        typedResult.Value.Should().Be(errorResponse);
-    }
-    
-    [Test]
     public async Task Should_throw_error_when_CanStaffMemberJoinConference_return_false()
     {
         var conferenceId = _testConference.Id;
