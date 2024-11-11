@@ -30,17 +30,26 @@ public class VhApiLoggingDelegatingHandler(
         }
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         // Proceed with the request
-        var response = await base.SendAsync(request, cancellationToken);
+        try
+        {
+            var response = await base.SendAsync(request, cancellationToken);
+            
 
-        stopwatch.Stop();
-        requestTelemetry.Duration = stopwatch.Elapsed;
-        requestTelemetry.ResponseCode = response.StatusCode.ToString();
-        requestTelemetry.Success = response.IsSuccessStatusCode;
-        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-        requestTelemetry.Properties.Add("VHApiResponseBody", responseBody);
+            stopwatch.Stop();
+            requestTelemetry.Duration = stopwatch.Elapsed;
+            requestTelemetry.ResponseCode = response.StatusCode.ToString();
+            requestTelemetry.Success = response.IsSuccessStatusCode;
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            requestTelemetry.Properties.Add("VHApiResponseBody", responseBody);
 
-        telemetryClient.TrackRequest(requestTelemetry);
+            telemetryClient.TrackRequest(requestTelemetry);
 
-        return response;
+            return response;
+        }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogError(ex, "Request was canceled.");
+            throw;
+        }
     }
 }
