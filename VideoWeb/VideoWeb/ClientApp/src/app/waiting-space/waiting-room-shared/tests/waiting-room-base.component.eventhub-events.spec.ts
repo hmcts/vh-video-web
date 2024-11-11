@@ -96,7 +96,6 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
-import { videoWebServiceSpy } from 'src/app/vh-officer/vho-shared/tests/participant-status-base-setup';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;

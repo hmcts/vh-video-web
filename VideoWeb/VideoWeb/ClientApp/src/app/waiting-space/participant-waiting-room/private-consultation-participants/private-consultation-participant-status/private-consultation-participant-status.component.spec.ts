@@ -1,13 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MockComponent, MockPipe } from 'ng-mocks';
-import {
-    VideoEndpointResponse,
-    EndpointStatus,
-    ParticipantResponse,
-    ParticipantStatus,
-    RoomSummaryResponse
-} from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 import { PrivateConsultationParticipantStatusComponent } from './private-consultation-participant-status.component';

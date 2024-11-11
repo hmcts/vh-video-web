@@ -1,13 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NotificationEffects } from './notification.effects';
 import { ConferenceActions } from '../actions/conference.actions';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
-import { Store } from '@ngrx/store';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';

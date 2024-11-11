@@ -1,4 +1,4 @@
-import { Component, Directive, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DeviceTypeService } from 'src/app/services/device-type.service';

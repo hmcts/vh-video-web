@@ -3,7 +3,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { AdminHearingComponent } from './admin-hearing.component';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 
 describe('AdminHearingComponent', () => {
     let component: AdminHearingComponent;

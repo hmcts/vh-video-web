@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import * as moment from 'moment';
-import { ToastrService, ActiveToast, Toast } from 'ngx-toastr';
+import { ToastrService, ActiveToast } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';

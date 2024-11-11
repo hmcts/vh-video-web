@@ -24,9 +24,17 @@ module.exports = {
         project: 'tsconfig.json',
         sourceType: 'module'
     },
-    plugins: ['eslint-plugin-import', '@angular-eslint/eslint-plugin', '@typescript-eslint', '@typescript-eslint/tslint', 'jasmine'],
+    plugins: [
+        'eslint-plugin-import',
+        '@angular-eslint/eslint-plugin',
+        '@typescript-eslint',
+        '@typescript-eslint/tslint',
+        'jasmine',
+        'unused-imports'
+    ],
     root: true,
     rules: {
+        'unused-imports/no-unused-imports': 'error',
         'jasmine/no-focused-tests': 'error',
         '@angular-eslint/component-class-suffix': 'error',
         '@angular-eslint/directive-class-suffix': 'error',

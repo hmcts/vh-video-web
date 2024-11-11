@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { MultipleIdpInterceptorService } from './multiple-idp-interceptor.service';
 import { SecurityServiceProvider } from './authentication/security-provider.service';

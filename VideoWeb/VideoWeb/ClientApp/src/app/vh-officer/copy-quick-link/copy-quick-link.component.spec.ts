@@ -5,9 +5,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateService } from '@ngx-translate/core';
 import { MockComponent } from 'ng-mocks';
 import { ClipboardService } from 'ngx-clipboard';
-import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
-import { VhoQueryService } from '../services/vho-query-service.service';
 import { CopyQuickLinkComponent } from './copy-quick-link.component';
 
 describe('CopyQuickLinkComponent', () => {
