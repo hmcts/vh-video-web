@@ -113,6 +113,6 @@ export class UserMediaStreamServiceV2 {
     }
 
     private combineAudioAndVideoStreams(audioStream: MediaStream, videoStream: MediaStream): MediaStream {
-        return this.mediaStreamService.initialiseNewStream([...audioStream.getAudioTracks(), ...videoStream.getVideoTracks()]);
+        return this.mediaStreamService.initialiseNewStream([...audioStream?.getAudioTracks(), ...videoStream?.getVideoTracks()]);
     }
 }
