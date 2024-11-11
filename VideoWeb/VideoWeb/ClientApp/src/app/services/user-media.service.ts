@@ -103,7 +103,13 @@ export class UserMediaService {
                     .sort((a, b) => {
                         const aIsDefault = a.groupId === defaultCamGroupId || a.groupId === defaultMicGroupId;
                         const bIsDefault = b.groupId === defaultCamGroupId || b.groupId === defaultMicGroupId;
-                        return aIsDefault === bIsDefault ? 0 : aIsDefault ? -1 : 1;
+                        if (aIsDefault === bIsDefault) {
+                            return 0;
+                        } else if (aIsDefault) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
                     });
 
                 return sortedDevices;

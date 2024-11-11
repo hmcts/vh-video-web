@@ -89,8 +89,8 @@ export class UserMediaStreamServiceV2 {
 
         this.logger.debug(`${this.loggerPrefix} Creating and publishing new stream.`, {
             audioOnly: this.audioOnly,
-            currentMicDevice: this.currentMicDevice?.label,
-            currentCamDevice: this.currentCamDevice?.label
+            currentMicDevice: this.currentMicDevice?.label ?? 'No Microphone Device',
+            currentCamDevice: this.currentCamDevice?.label ?? 'No Camera Device'
         });
 
         zip(audioStream$, videoStream$)
@@ -113,6 +113,9 @@ export class UserMediaStreamServiceV2 {
     }
 
     private combineAudioAndVideoStreams(audioStream: MediaStream, videoStream: MediaStream): MediaStream {
-        return this.mediaStreamService.initialiseNewStream([...audioStream?.getAudioTracks(), ...videoStream?.getVideoTracks()]);
+        return this.mediaStreamService.initialiseNewStream([
+            ...(audioStream ? audioStream.getAudioTracks() : []),
+            ...(videoStream ? videoStream.getVideoTracks() : [])
+        ]);
     }
 }
