@@ -72,21 +72,5 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(responses);
         }
-        
-        [Test]
-        public async Task Should_throw_error_when_get_heartbeat_data_for_participant()
-        {
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid participant Id", null, default, null);
-            var conferenceId = Guid.NewGuid();
-            var participantId = Guid.NewGuid();
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, It.IsAny<CancellationToken>()))
-                .Throws(apiException);
-
-            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId, CancellationToken.None);
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
     }
 }
