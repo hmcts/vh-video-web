@@ -11,6 +11,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
+using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -65,32 +66,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()), Times.Never);
         }
 
-        [Test]
-        public async Task Should_return_video_api_error()
-        {
-            var participant = TestConference.GetJudge();
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(participant.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not start a video hearing";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(apiException);
-
-            var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
-            var typedResult = (ObjectResult) result;
-            typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-        }
-
         [TestCase(AppRoles.JudgeRole)]
         [TestCase(AppRoles.StaffMember)]
         public async Task Should_return_accepted_when_user_is_host_in_conference(string role)
@@ -100,8 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(role).Build();
             
-            var hostsForScreening = TestConference.GetNonScreenedParticipantsAndEndpoints();
-            var hosts = TestConference.Participants.Where(e => e.IsHost()).Select(e => e.Id).ToList();
+            
 
             var controller = SetupControllerWithClaims(user);
 
@@ -111,12 +85,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r =>
-                    r.Layout == HearingLayout.Dynamic &&
-                    r.HostsForScreening.SequenceEqual(hostsForScreening) &&
-                    r.Hosts.SequenceEqual(hosts)), 
-                It.IsAny<CancellationToken>()), Times.Once);
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.StartOrResumeVideoHearingAsync(TestConference.Id, participant.Username, HearingLayout.Dynamic,
+                    CancellationToken.None), Times.Once);
+
+            // _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
+            //     It.Is<StartHearingRequest>(r =>
+            //         r.Layout == HearingLayout.Dynamic &&
+            //         r.HostsForScreening.SequenceEqual(hostsForScreening) &&
+            //         r.Hosts.SequenceEqual(hosts)), 
+            //     It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

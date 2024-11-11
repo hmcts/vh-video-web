@@ -41,39 +41,22 @@ public class ConferenceManagementController(
     [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
     [ProducesResponseType((int)HttpStatusCode.Accepted)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartOrResumeVideoHearingRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId,
+        StartOrResumeVideoHearingRequest request, CancellationToken cancellationToken)
     {
         var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
         if (validatedRequest != null)
         {
             return validatedRequest;
         }
-        try
-        {
-            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-            var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
-            var hostsForScreening = conference.GetNonScreenedParticipantsAndEndpoints();
-            var hosts = conference.Participants.Where(x => x.IsHost()).Select(p => p.Id).ToList();
-            var apiRequest = new StartHearingRequest
-            {
-                Layout = request.Layout,
-                MuteGuests = false,
-                TriggeredByHostId = triggeredById ?? Guid.Empty,
-                Hosts = hosts,
-                HostsForScreening = hostsForScreening
-            };
-            
-            await videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
-            logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
-            return Accepted();
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "Unable to start video hearing {Conference}", conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
+
+        await conferenceManagementService.StartOrResumeVideoHearingAsync(conferenceId, User.Identity!.Name,
+            request.Layout, cancellationToken);
+        logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
+        return Accepted();
+
     }
-    
+
     /// <summary>
     /// Returns the active layout for a conference
     /// </summary>
