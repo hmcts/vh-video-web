@@ -29,6 +29,14 @@ describe('UserMediaService', () => {
 
             expect(result$).toBeObservable(cold('#', null, new Error('Permission denied')));
         });
+
+        it('should return false when hasValidCameraAndMicAvailable fails and is not related to permission denied', () => {
+            spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(throwError(new DOMException('Not a permission denied')));
+
+            const result$ = userMediaService.hasValidCameraAndMicAvailable();
+
+            expect(result$).toBeObservable(cold('(a|)', { a: false }));
+        });
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
