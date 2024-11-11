@@ -18,6 +18,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
@@ -33,7 +34,8 @@ public class ParticipantsController(
     IEventHandlerFactory eventHandlerFactory,
     ILogger<ParticipantsController> logger,
     IParticipantService participantService,
-    IConferenceService conferenceService)
+    IConferenceService conferenceService,
+    IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
     : ControllerBase
 {
     [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
@@ -81,13 +83,6 @@ public class ParticipantsController(
         }
     }
     
-    private Guid GetIdForParticipantByUsernameInConference(Conference conference)
-    {
-        var username = User.Identity!.Name;
-        return conference.Participants
-            .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
-    }
-    
     [Authorize(AppRoles.VhOfficerRole)]
     [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
     [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
@@ -121,7 +116,9 @@ public class ParticipantsController(
             {
                 DisplayName = participantRequest.DisplayName
             }, cancellationToken);
-            await UpdateCacheAndPublishUpdate(conferenceId);
+            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+            conference.GetParticipant(participantId).DisplayName = participantRequest.DisplayName;
+            await UpdateCacheAndPublishUpdatedParticipantList(conference, cancellationToken);
         }
         catch (VideoApiException ex)
         {
@@ -318,4 +315,45 @@ public class ParticipantsController(
             return StatusCode(e.StatusCode, e.Response);
         }
     }
+    
+    /// <summary>  
+         /// Removes a participant from a conference  
+         /// errors.  
+         /// </summary>  
+         /// <returns>  
+         /// No content result  
+         /// </returns>  
+         [HttpDelete("{conferenceId}/participants/{participantId}")]
+         [SwaggerOperation(OperationId = "DeleteParticipantFromConference")]
+         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+         public async Task<IActionResult> RemoveParticipantFromConferenceAsync(Guid conferenceId, Guid participantId,
+             CancellationToken cancellationToken)
+         {
+             var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+             if(conference.GetParticipant(participantId).ParticipantStatus is not ParticipantStatus.Disconnected)
+             {
+                 ModelState.AddModelError(nameof(participantId), "Participant is not disconnected");
+                 return ValidationProblem(ModelState);
+             }
+             await videoApiClient.RemoveParticipantFromConferenceAsync(conferenceId, participantId, cancellationToken);
+
+             conference.RemoveParticipantById(participantId);
+             await UpdateCacheAndPublishUpdatedParticipantList(conference, cancellationToken);
+             return NoContent();
+         }
+
+         private async Task UpdateCacheAndPublishUpdatedParticipantList(Conference conference,CancellationToken cancellationToken)
+         {
+             await conferenceService.UpdateConferenceAsync(conference, cancellationToken);
+             await participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants.ToList());
+         }
+
+         private Guid GetIdForParticipantByUsernameInConference(Conference conference)
+         {
+             var username = User.Identity!.Name;
+             return conference.Participants
+                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
+         }
 }
