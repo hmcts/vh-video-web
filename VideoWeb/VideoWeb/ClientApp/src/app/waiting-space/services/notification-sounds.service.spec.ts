@@ -15,6 +15,14 @@ describe('NotificationSoundsService', () => {
         expect(service.consultationRequestSound).toBeDefined();
     });
 
+    it('should play sound again when ended', async () => {
+        await service.initConsultationRequestRingtone();
+        const spy = spyOn(service.consultationRequestSound, 'play').and.resolveTo();
+
+        service.consultationRequestSound.dispatchEvent(new Event('ended'));
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+
     it('should start playing consulation request ringing sound', () => {
         const audio = new Audio();
         spyOn(audio, 'play').and.resolveTo();
