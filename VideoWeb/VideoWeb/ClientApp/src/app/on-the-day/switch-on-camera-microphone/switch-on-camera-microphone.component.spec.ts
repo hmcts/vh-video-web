@@ -14,7 +14,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
-describe('SwitchOnCameraMicrophoneComponent', () => {
+fdescribe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
     let conference: ConferenceResponse = new ConferenceTestData().getConferenceDetailFuture();
@@ -165,6 +165,16 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         flush();
         expect(component.userPrompted).toBeTrue();
         expect(component.mediaAccepted).toBeTrue();
+    }));
+
+    it('should handle no media devices detected', fakeAsync(() => {
+        userMediaServiceSpy.hasValidCameraAndMicAvailable.and.returnValue(of(false));
+
+        component.requestMedia();
+        flush();
+        expect(component.userPrompted).toBeTrue();
+        expect(component.mediaAccepted).toBeFalse();
+        expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
     }));
 
     it('should update mediaAccepted and userPrompted to false when request media throw an error permission denied', fakeAsync(() => {
