@@ -32,7 +32,7 @@ public interface IConferenceManagementService
     /// <param name="participantId"></param>
     /// <param name="isRaised"></param>
     /// <returns></returns>
-    Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised, CancellationToken eacancellationToken = default);
+    Task UpdateParticipantHandStatusInConference(Guid conferenceId, Guid participantId, bool isRaised, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// A non-host participant leaves the conference. Not to be confused with a host leaving or a host dismissing a participant.

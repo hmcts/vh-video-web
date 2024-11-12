@@ -34,7 +34,6 @@ public class VhApiLoggingDelegatingHandler(
         {
             var response = await base.SendAsync(request, cancellationToken);
             
-
             stopwatch.Stop();
             requestTelemetry.Duration = stopwatch.Elapsed;
             requestTelemetry.ResponseCode = response.StatusCode.ToString();
@@ -49,7 +48,7 @@ public class VhApiLoggingDelegatingHandler(
         catch (TaskCanceledException ex)
         {
             logger.LogError(ex, "Request was canceled.");
-            throw;
+            throw new TaskCanceledException($"Request to {request.RequestUri} was canceled.", ex);
         }
     }
 }
