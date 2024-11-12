@@ -14,7 +14,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
-fdescribe('SwitchOnCameraMicrophoneComponent', () => {
+describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
     let conference: ConferenceResponse = new ConferenceTestData().getConferenceDetailFuture();
