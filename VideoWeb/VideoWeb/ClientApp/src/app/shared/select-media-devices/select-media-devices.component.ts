@@ -82,6 +82,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         });
 
         this.userMediaStreamService.currentStream$.pipe(takeUntil(this.destroyedSubject)).subscribe(stream => {
+            if (!stream) {
+                this.selectedCameraStream = null;
+                this.selectedMicrophoneStream = null;
+                return;
+            }
             // Extract audio tracks and create a new MediaStream for the microphone
             const audioTracks = stream.getAudioTracks();
             this.selectedMicrophoneStream = new MediaStream(audioTracks);
