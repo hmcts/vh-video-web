@@ -100,18 +100,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var typedResult = (BadRequestObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
-        
-        [Test]
-        public async Task Should_throw_error_when_get_video_api_throws_error()
-        {
-            var conferenceId = Guid.NewGuid();
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id and participant Id", null, default, null);
-            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
-            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId, CancellationToken.None);
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
 
         private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, Guid conferenceId, bool isInAnotherHearing)
         {

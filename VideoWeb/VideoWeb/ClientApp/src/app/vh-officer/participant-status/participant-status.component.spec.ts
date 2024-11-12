@@ -1,5 +1,11 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
+import {
+    LinkedParticipantResponse,
+    LinkType,
+    ParticipantContactDetailsResponseVho,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -15,7 +21,8 @@ describe('ParticipantStatusComponent', () => {
     const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getParticipantsWithContactDetailsByConferenceId',
         'raiseSelfTestFailureEvent',
-        'updateParticipantDisplayName'
+        'updateParticipantDisplayName',
+        'deleteParticipant'
     ]);
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
         'goToServiceError',
@@ -51,7 +58,7 @@ describe('ParticipantStatusComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(component.participants).not.toBeNull();
-        expect(component.participants.length).toBe(4);
+        expect(component.participants.length).toBe(6);
         expect(component.loadingData).toBeFalsy();
     }));
 
@@ -262,6 +269,71 @@ describe('ParticipantStatusComponent', () => {
             component.newParticipantName = 'New Name';
             component.saveNameUpdate(component.participantBeingEdited.id);
             expect(videoWebServiceSpy.updateParticipantDisplayName).toHaveBeenCalled();
+        });
+    });
+    describe('Delete quick link disconnected participant', () => {
+        it('should delete participant, when delete button clicked', () => {
+            videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.resolve());
+            component.conferenceId = '123';
+            const participantQuickLinkDisconnected = new ParticipantContactDetails(participants[5]);
+            component.deleteParticipant(participantQuickLinkDisconnected);
+            expect(videoWebServiceSpy.deleteParticipant).toHaveBeenCalledWith('123', participantQuickLinkDisconnected.id);
+        });
+
+        it('should log error when delete quick link participant', () => {
+            const error = new Error('Failed to delete participant');
+            videoWebServiceSpy.deleteParticipant.and.returnValue(Promise.reject(error));
+            component.conferenceId = '123';
+            const participantQuickLinkDisconnected = new ParticipantContactDetails(participants[5]);
+            component.deleteParticipant(participantQuickLinkDisconnected);
+            expect(videoWebServiceSpy.deleteParticipant).toHaveBeenCalled();
+        });
+    });
+
+    describe('isParticipantDeletable', () => {
+        it('should return true if the participant is a QuickLinkParticipant and is Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkParticipant,
+                status: ParticipantStatus.Disconnected
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeTrue();
+        });
+
+        it('should return true if the participant is a QuickLinkObserver and is Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkObserver,
+                status: ParticipantStatus.Disconnected
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeTrue();
+        });
+
+        it('should return false if the participant is a QuickLinkParticipant but is not Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkParticipant,
+                status: ParticipantStatus.Available
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
+        });
+
+        it('should return false if the participant is a QuickLinkObserver but is not Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.QuickLinkObserver,
+                status: ParticipantStatus.Available
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
+        });
+
+        it('should return false if the participant role is not QuickLinkParticipant or QuickLinkObserver, even if Disconnected', () => {
+            const participant = new ParticipantContactDetailsResponseVho({
+                role: Role.Individual,
+                status: ParticipantStatus.Disconnected
+            });
+
+            expect(component.isParticipantDeletable(participant)).toBeFalse();
         });
     });
 });

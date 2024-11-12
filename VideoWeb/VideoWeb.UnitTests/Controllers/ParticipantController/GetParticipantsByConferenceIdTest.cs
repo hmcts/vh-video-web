@@ -48,23 +48,6 @@ public class GetParticipantsByConferenceIdTest
         participants.Count.Should().Be(3);
     }
     
-    [Test]
-    public async Task Should_throw_exception()
-    {
-        var conferenceId = Guid.NewGuid();
-        var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            "Please provide a valid conference Id", null, default, null);
-        
-        _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .Throws(apiException);
-        
-        var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        
-    }
-    
     private static Conference CreateValidParticipantConferenceDto()
     {
         var participants = Builder<Participant>

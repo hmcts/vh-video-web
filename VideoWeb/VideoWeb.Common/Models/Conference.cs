@@ -120,6 +120,11 @@ namespace VideoWeb.Common.Models
             }
         }
         
+        public void RemoveParticipantById(Guid participantId)
+        {
+            Participants.RemoveAll(x => x.Id == participantId);
+        }
+        
         public bool IsParticipantInConference(string username)
         {
             return Participants.Exists(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));

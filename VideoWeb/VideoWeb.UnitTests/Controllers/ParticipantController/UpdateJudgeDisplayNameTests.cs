@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using VideoWeb.Contract.Request;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController;
 
@@ -61,7 +63,7 @@ public class UpdateJudgeDisplayNameTests
             .Returns(Task.FromResult(default(object)));
 
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(conferenceId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Conference()
             {
                 Id = conferenceId,
@@ -89,34 +91,11 @@ public class UpdateJudgeDisplayNameTests
         var typedResult = (NoContentResult)result;
         typedResult.Should().NotBeNull();
         _mocker.Mock<IConferenceService>()
-            .Verify(x => x.ForceGetConference(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
-        _mocker.Mock<IVideoApiClient>()
+            .Verify(x => x.GetConference(conferenceId, It.IsAny<CancellationToken>()), Times.Once);
+        _mocker.Mock<IConferenceService>()
+            .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(c => c.Id == conferenceId), It.IsAny<CancellationToken>()), Times.Once);
+        _mocker.Mock<IParticipantsUpdatedEventNotifier>()
             .Verify(
-                x => x.UpdateParticipantDetailsAsync(conferenceId, participantId, It.IsAny<UpdateParticipantRequest>(),
-                    It.IsAny<CancellationToken>()), Times.Once);
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-    }
-
-    [Test]
-    public async Task Should_throw_error_when_get_api_throws_error()
-    {
-
-        var conferenceId = _testConference.Id;
-        var request = new UpdateParticipantDisplayNameRequest
-        {
-            DisplayName = "Sir Steve",
-        };
-        var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-            "Please provide a valid conference Id and participant Id", null, default, null);
-
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(),
-                It.IsAny<UpdateParticipantRequest>(), It.IsAny<CancellationToken>()))
-            .Throws(apiException);
-
-        var result =
-            await _sut.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+                x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(c => c.Id == conferenceId), It.IsAny<IList<Participant>>()), Times.Once);
     }
 }

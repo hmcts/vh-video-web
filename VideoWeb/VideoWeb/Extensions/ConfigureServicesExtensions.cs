@@ -185,7 +185,7 @@ namespace VideoWeb.Extensions
                     BacklogPolicy = BacklogPolicy.FailFast,
                     AbortOnConnectFail = false,
                     ConnectTimeout = 3000,
-                    Ssl = true
+                    Ssl = true,
                 };
             });
             return services;

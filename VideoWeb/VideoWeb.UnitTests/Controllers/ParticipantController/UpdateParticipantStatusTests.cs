@@ -92,23 +92,4 @@ public class UpdateParticipantStatusTests
         await _sut.UpdateParticipantStatusAsync(conferenceId, request, CancellationToken.None);
         _mocker.Mock<IConferenceService>().Verify(x => x.GetConference(_testConference.Id, It.IsAny<CancellationToken>()), Times.Once);
     }
-    
-    [Test]
-    public async Task Should_throw_error_when_get_api_throws_error()
-    {
-        var conferenceId = _testConference.Id;
-        var request = new UpdateParticipantStatusEventRequest
-        {
-            EventType = EventType.Joined
-        };
-        var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-            "Please provide a valid conference Id", null, default, null);
-        _mocker.Mock<IVideoApiClient>()
-            .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(apiException);
-        
-        var result = await _sut.UpdateParticipantStatusAsync(conferenceId, request, CancellationToken.None);
-        var typedResult = (ObjectResult)result;
-        typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-    }
 }

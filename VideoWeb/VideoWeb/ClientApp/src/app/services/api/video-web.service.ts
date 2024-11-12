@@ -191,4 +191,18 @@ export class VideoWebService implements IVideoWebApiService {
     getCurrentParticipant(conferenceId: string): Promise<LoggedParticipantResponse> {
         return this.apiClient.getCurrentParticipant(conferenceId).toPromise();
     }
+
+    /**
+     * The function `deleteParticipant` removes a participant from a conference using the provided
+     * conference ID and participant ID.
+     * @param {string} conferenceId - The `conferenceId` parameter is a string that represents the
+     * unique identifier of the conference from which you want to delete a participant.
+     * @param {string} participantId - The `participantId` parameter is a string that represents the
+     * unique identifier of the participant you want to delete from the conference. This identifier is
+     * used to identify the specific participant within the conference system.
+     * @returns A Promise<void> is being returned.
+     */
+    deleteParticipant(conferenceId: string, participantId: string): Promise<void> {
+        return this.apiClient.deleteParticipantFromConference(conferenceId, participantId).toPromise();
+    }
 }

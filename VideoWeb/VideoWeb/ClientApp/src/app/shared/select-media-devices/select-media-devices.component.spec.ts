@@ -204,6 +204,14 @@ describe('SelectMediaDevicesComponent', () => {
             expect(component.connectWithCameraOn).toBeFalsy();
         }));
 
+        it('should handle null streams', fakeAsync(() => {
+            getSpiedPropertyGetter(userMediaStreamServiceSpy, 'currentStream$').and.returnValue(of(null));
+            component.ngOnInit();
+            flushMicrotasks();
+            expect(component.selectedCameraStream).toBeNull();
+            expect(component.selectedMicrophoneStream).toBeNull();
+        }));
+
         it('should initialise the device form on init', fakeAsync(() => {
             component.ngOnInit();
             flushMicrotasks();

@@ -173,18 +173,18 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "3.0.3",
-        "contentHash": "LhYCQo4ot4cepjL8y659VAi/UD1R6ujIUjpklutyoCwGGPx9kLp3IEyiZXYywojUGUJl6EHx8o/he2IbZKbsBQ==",
+        "resolved": "3.0.5",
+        "contentHash": "2H8DS11nNgreD6RdChNUxDUzMG6nSvXmm14w1TPZCXb0hUbPxg6Cc9iVZZmxdvP7aH62A0RGDoWNE5Wz0ClJwQ==",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "3.0.3",
+          "BookingsApi.Common.DotNet6": "3.0.5",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "System.Text.Json": "8.0.0"
         }
       },
       "BookingsApi.Common.DotNet6": {
         "type": "Transitive",
-        "resolved": "3.0.3",
-        "contentHash": "gkiALOAs+FD6Zn6vsgKqI6R+Ko+qGY6vm+WyIPsuXpaZQ4jqGJ6Z56rNmfNXD87KrKwtwk7uE/B63HIS1ZKX/w==",
+        "resolved": "3.0.5",
+        "contentHash": "31drJq2GLeosigbFD7xXywZRCCGAEYF0JdiqI1hvu3dNDN6Cacr+xwvIoA5UmpdgAo8J1CX1ba6LfGNnPhHNiw==",
         "dependencies": {
           "System.Text.Json": "8.0.0"
         }
@@ -2352,7 +2352,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
-          "BookingsApi.Client": "[3.0.3, )",
+          "BookingsApi.Client": "[3.0.5, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
@@ -2380,7 +2380,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.0.3, )",
+          "BookingsApi.Client": "[3.0.5, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.ApplicationInsights": "[2.22.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
@@ -2396,7 +2396,7 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.0.3, )",
+          "BookingsApi.Client": "[3.0.5, )",
           "VideoApi.Client": "[3.0.3, )",
           "VideoWeb.Common": "[1.0.0, )"
         }

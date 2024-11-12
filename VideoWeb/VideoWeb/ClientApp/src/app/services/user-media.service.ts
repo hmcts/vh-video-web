@@ -86,9 +86,32 @@ export class UserMediaService {
                 const filteredDevices = devices.filter(
                     x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
                 );
-                return filteredDevices.length > 0 ? filteredDevices : devices;
+                const defaultMicGroupId = devices.find(x => x.kind === 'audioinput' && x.deviceId === 'default')?.groupId;
+                const defaultCamGroupId = devices.find(x => x.kind === 'videoinput' && x.deviceId === 'default')?.groupId;
+                const resultDevices = filteredDevices.length > 0 ? filteredDevices : devices;
+                return {
+                    defaultCamGroupId,
+                    defaultMicGroupId,
+                    resultDevices
+                };
             }),
-            map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
+            map(({ defaultCamGroupId, defaultMicGroupId, resultDevices }) => {
+                const sortedDevices = resultDevices
+                    .map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId))
+                    .sort((a, b) => {
+                        const aIsDefault = a.groupId === defaultCamGroupId || a.groupId === defaultMicGroupId;
+                        const bIsDefault = b.groupId === defaultCamGroupId || b.groupId === defaultMicGroupId;
+                        if (aIsDefault === bIsDefault) {
+                            return 0;
+                        } else if (aIsDefault) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    });
+
+                return sortedDevices;
+            })
         );
     }
 
