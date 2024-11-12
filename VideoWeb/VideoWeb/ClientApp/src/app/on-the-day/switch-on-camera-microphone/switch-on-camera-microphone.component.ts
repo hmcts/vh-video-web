@@ -170,5 +170,6 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
             'error-camera-microphone.camera-mic-in-use',
             false
         );
+        this.participantStatusUpdateService.postParticipantStatus(EventType.Disconnected, this.conferenceId);
     }
 }
