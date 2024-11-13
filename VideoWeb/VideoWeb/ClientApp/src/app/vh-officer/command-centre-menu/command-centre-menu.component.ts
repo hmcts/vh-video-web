@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Role, UserProfileResponse } from '../../services/clients/api-client';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ProfileService } from '../../services/api/profile.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-command-centre-menu',
@@ -17,6 +18,8 @@ import { ProfileService } from '../../services/api/profile.service';
 export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     @Output() selectedMenu = new EventEmitter<MenuOption>();
     @Input() conferenceId: string | null;
+
+    featureFlags = FEATURE_FLAGS;
 
     subscriptions$ = new Subscription();
     currentMenu: MenuOption;

@@ -10,7 +10,8 @@ export const FEATURE_FLAGS = {
     vodafone: 'vodafone',
     activeSessionFilter: 'active-sessions-filter',
     interpreterEnhancements: 'interpreter-enhancements',
-    dialOutParticipant: 'dial-out-participant'
+    dialOutParticipant: 'dial-out-participant',
+    instantMessaging: 'instant-messaging'
 };
 
 @Injectable({
