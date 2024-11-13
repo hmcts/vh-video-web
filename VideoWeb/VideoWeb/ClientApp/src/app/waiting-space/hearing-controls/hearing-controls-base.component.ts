@@ -25,6 +25,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -59,6 +60,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     showEvidenceContextMenu: boolean;
     displayChangeLayoutPopup = false;
     displayDialOutPopup = false;
+    conferenceStarted = false;
 
     hasACamera = true;
     hasAMicrophone = true;
@@ -151,6 +153,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit(): void {
+        this.conferenceStore
+            .select(ConferenceSelectors.getVHConferenceStarted)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(started => {
+                this.conferenceStarted = started;
+            });
+
         this.audioMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
         this.videoMuted = this.videoCallService.pexipAPI.call?.mutedVideo || this.audioOnly;
 

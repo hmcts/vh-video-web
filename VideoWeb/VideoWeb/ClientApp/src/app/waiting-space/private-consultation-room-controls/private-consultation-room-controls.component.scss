@@ -6,6 +6,10 @@
   z-index: 200;
 }
 
+.block-actions {
+  pointer-events: none;
+}
+
 .yellow {
   color: govuk-colour('yellow');
 }

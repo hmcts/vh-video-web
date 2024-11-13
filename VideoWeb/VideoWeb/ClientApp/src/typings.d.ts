@@ -49,6 +49,8 @@ declare type PexipProtocol = 'sip' | 'h323' | 'rtmp' | 'mssip' | 'auto';
 
 declare type PexipRole = 'GUEST' | 'HOST';
 
+declare type PexipParticipantRole = 'GUEST' | 'chair';
+
 declare interface PexipDialOutResponse {
     /**
      * "success" or "error"
@@ -292,6 +294,13 @@ declare interface PexipParticipant {
 
     /** the name of the audio a participant is receiving a mix */
     receive_from_audio_mix: string;
+
+    /** The level of privileges the participant has in the conference:
+     * "chair": the participant has Host privileges
+     * "guest": the participant has Guest privileges
+     *
+     */
+    role: PexipParticipantRole;
 }
 
 declare interface PexipConference {
@@ -303,6 +312,9 @@ declare interface PexipConference {
 
     /** Whether the conference has been started. */
     started: boolean;
+
+    /** Specifies if the conference is using direct media. */
+    direct_media: boolean;
 }
 
 declare interface PexRTCCall {

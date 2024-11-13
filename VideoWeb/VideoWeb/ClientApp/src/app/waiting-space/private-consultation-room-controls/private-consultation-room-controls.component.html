@@ -1,5 +1,5 @@
 <div class="controls-container" id="div-controls-container">
-  <div class="icons-container">
+  <div [ngClass]="{ 'vh-no-pointer': !conferenceStarted && !isPrivateConsultation }" class="icons-container">
     <button
       class="icon-button dropdown"
       id="toggle-context-menu"
@@ -8,7 +8,7 @@
       (click)="showContextMenu = !showContextMenu"
       (keydown.enter)="$event.preventDefault(); showContextMenu = !showContextMenu"
       (keydown.space)="showContextMenu = !showContextMenu"
-      tabindex="0"
+      [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
     >
       <fa-icon icon="ellipsis-h"></fa-icon>
       <div class="dropdown-content" [class]="{ show: showContextMenu }">
@@ -18,7 +18,7 @@
           *ngIf="isHost && !isPrivateConsultation"
           colour="grey"
           (click)="togglePanelStatus('Chat')"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           (keydown.enter)="togglePanelStatus('Chat')"
           (keydown.space)="togglePanelStatus('Chat')"
         >
@@ -39,7 +39,7 @@
           colour="grey"
           (click)="startScreenShare()"
           (keydown.enter)="startScreenShare()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="share-square"></fa-icon>
           <span class="context-item">
@@ -52,7 +52,7 @@
           colour="red"
           (click)="stopScreenShare()"
           (keydown.enter)="stopScreenShare()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="share-square" rotate="180.0"></fa-icon>
           <span class="context-item">
@@ -65,10 +65,15 @@
           colour="grey"
           (click)="changeDeviceSelected()"
           (keydown.enter)="changeDeviceSelected()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
-            <fa-icon icon="sliders-h" tabindex="0" (keyup.enter)="changeDeviceSelected()" (keyup.space)="changeDeviceSelected()"></fa-icon>
+            <fa-icon
+              icon="sliders-h"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
+              (keyup.enter)="changeDeviceSelected()"
+              (keyup.space)="changeDeviceSelected()"
+            ></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.change-camera-mic' | translate }}</span>
           </span>
         </button>
@@ -78,12 +83,12 @@
           colour="grey"
           (click)="toggleView()"
           (keydown.enter)="toggleView()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon
               [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="toggleView()"
               (keyup.space)="toggleView()"
             ></fa-icon>
@@ -103,12 +108,12 @@
           colour="grey"
           (click)="toggleVideoMute()"
           (keydown.enter)="toggleVideoMute()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon
               [icon]="videoMuted ? 'video-slash' : 'video'"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="toggleVideoMute()"
               (keyup.space)="toggleVideoMute()"
             ></fa-icon>
@@ -129,12 +134,12 @@
           colour="grey"
           (click)="toggleMute()"
           (keydown.enter)="toggleMute()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon
               [icon]="audioMuted ? 'microphone-slash' : 'microphone'"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="toggleMute()"
               (keyup.space)="toggleMute()"
             ></fa-icon>
@@ -171,12 +176,12 @@
           colour="grey"
           (click)="toggleHandRaised()"
           (keydown.enter)="toggleHandRaised()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon
               [icon]="['far', 'hand-paper']"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="toggleHandRaised()"
               (keyup.space)="toggleHandRaised()"
             ></fa-icon>
@@ -196,7 +201,7 @@
             *ngIf="isInterpreter"
             id="changeLanguageBtn"
             colour="grey"
-            tabindex="0"
+            [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
             (click)="displayLanguageChange()"
             (keydown.enter)="displayLanguageChange()"
           >
@@ -214,7 +219,7 @@
           data-module="govuk-button"
           (click)="displayConfirmationLeaveHearingDialog()"
           (keydown.enter)="displayConfirmationLeaveHearingDialog()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal"></fa-icon
           ><span class="context-item">{{ 'private-consultation-room-controls.leave-hearing' | translate }}</span>
@@ -226,11 +231,16 @@
           data-module="govuk-button"
           (click)="pause()"
           (keydown.enter)="pause()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
-            <fa-icon [icon]="['far', 'pause-circle']" tabindex="0" (keyup.enter)="pause()" (keyup.space)="pause()"></fa-icon>
+            <fa-icon
+              [icon]="['far', 'pause-circle']"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
+              (keyup.enter)="pause()"
+              (keyup.space)="pause()"
+            ></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.pause' | translate }} </span>
           </span>
         </button>
@@ -242,13 +252,13 @@
           data-module="govuk-button"
           (click)="displayConfirmationDialog()"
           (keydown.enter)="displayConfirmationDialog()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
             <fa-icon
               [icon]="['far', 'stop-circle']"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="displayConfirmationDialog()"
               (keyup.space)="displayConfirmationDialog()"
             ></fa-icon>
@@ -263,12 +273,12 @@
           data-module="govuk-button"
           (click)="lockPrivateConsultation(!roomLocked)"
           (keydown.enter)="lockPrivateConsultation(!roomLocked)"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon
               class="lock"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
               (keyup.enter)="lockPrivateConsultation(!roomLocked)"
               (keyup.space)="lockPrivateConsultation(!roomLocked)"
             ></fa-icon>
@@ -283,7 +293,7 @@
           data-module="govuk-button"
           (click)="joinHearingFromConsultation()"
           (keydown.enter)="joinHearingFromConsultation()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <span>
             <fa-icon icon="sign-in-alt"></fa-icon>
@@ -299,7 +309,7 @@
           data-module="govuk-button"
           (click)="leavePrivateConsultation()"
           [hidden]="!canLeaveConsultation()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           (keydown.enter)="leavePrivateConsultation()"
         >
           <span>
@@ -315,6 +325,7 @@
         <app-hearing-control-icon
           [iconName]="'phone-volume'"
           [iconText]="'private-consultation-room-controls.dial-out' | translate"
+          [blockNavigation]="!conferenceStarted && !isPrivateConsultation"
           (iconClicked)="onDialOutClicked()"
         ></app-hearing-control-icon>
       </ng-container>
@@ -329,7 +340,7 @@
       [attr.aria-label]="'private-consultation-room-controls.participants-panel' | translate"
       (click)="togglePanelStatus('Participants')"
       (keydown.enter)="$event.preventDefault(); togglePanelStatus('Participants')"
-      tabindex="0"
+      [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
     >
       <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
     </button>
@@ -346,7 +357,7 @@
           [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
           (click)="displayConfirmationLeaveHearingDialog()"
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </button>
@@ -412,7 +423,7 @@
         [attr.aria-label]="'private-consultation-room-controls.chat-panel' | translate"
         (click)="togglePanelStatus('Chat')"
         (keydown.enter)="$event.preventDefault(); togglePanelStatus('Chat')"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
@@ -423,6 +434,7 @@
           *ngIf="!screenShareStream && canShowScreenShareButton"
           [iconName]="'share-square'"
           [iconText]="'private-consultation-room-controls.share-my-screen' | translate"
+          [blockNavigation]="!conferenceStarted && !isPrivateConsultation"
           (iconClicked)="showEvidenceContextMenu = !showEvidenceContextMenu"
         >
           <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
@@ -436,13 +448,13 @@
               [text]="'private-consultation-room-controls.share-video-evidence' | translate"
               [attr.aria-label]="'private-consultation-room-controls.share-video-evidence' | translate"
               (keydown.enter)="startScreenShareWithMicrophone()"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
             >
               <span class="action"
                 ><fa-icon
                   [icon]="['far', 'play-circle']"
                   aria-hidden="true"
-                  tabindex="0"
+                  [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
                   (keyup.enter)="startScreenShareWithMicrophone()"
                   (keyup.space)="startScreenShareWithMicrophone()"
                 ></fa-icon>
@@ -469,10 +481,15 @@
               [colour]="'grey'"
               [text]="'private-consultation-room-controls.share-document-evidence' | translate"
               [attr.aria-label]="'private-consultation-room-controls.share-document-evidence' | translate"
-              tabindex="0"
+              [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
             >
               <span class="action"
-                ><fa-icon icon="file-alt" tabindex="0" (keydown.enter)="startScreenShare()" (keydown.space)="startScreenShare()"></fa-icon>
+                ><fa-icon
+                  icon="file-alt"
+                  [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
+                  (keydown.enter)="startScreenShare()"
+                  (keydown.space)="startScreenShare()"
+                ></fa-icon>
                 <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
               </span>
             </button>
@@ -490,7 +507,7 @@
         [attr.aria-label]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
         (click)="stopScreenShare()"
         (keydown.enter)="stopScreenShare()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon icon="share-square" class="yellow" rotate="180.0" (keyup.enter)="stopScreenShare()"></fa-icon>
       </button>
@@ -508,7 +525,7 @@
         (click)="changeDeviceSelected()"
         (keydown.enter)="changeDeviceSelected()"
         (keydown.space)="changeDeviceSelected()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon icon="sliders-h"></fa-icon>
       </button>
@@ -525,7 +542,7 @@
           (click)="displayLanguageChange()"
           (keydown.enter)="displayLanguageChange()"
           (keydown.space)="displayLanguageChange()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="language"></fa-icon>
         </button>
@@ -550,7 +567,7 @@
         (click)="toggleView()"
         (keydown.enter)="$event.preventDefault(); toggleView()"
         (keydown.space)="$event.preventDefault(); toggleView()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
       </button>
@@ -576,7 +593,7 @@
         (click)="toggleVideoMute()"
         (keydown.enter)="$event.preventDefault(); toggleVideoMute()"
         (keydown.space)="$event.preventDefault(); toggleVideoMute()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
       </button>
@@ -602,7 +619,7 @@
         (click)="toggleMute()"
         (keydown.enter)="$event.preventDefault(); toggleMute()"
         (keydown.space)="$event.preventDefault(); toggleMute()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
       </button>
@@ -616,7 +633,7 @@
         [text]="'private-consultation-room-controls.remote-muted' | translate"
         [attr.aria-label]="'private-consultation-room-controls.remote-muted' | translate"
       >
-        <fa-icon icon="microphone-slash" class="red" tabindex="0"></fa-icon>
+        <fa-icon icon="microphone-slash" class="red" [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"></fa-icon>
       </div>
 
       <button
@@ -640,7 +657,7 @@
         (click)="toggleHandRaised()"
         (keydown.enter)="$event.preventDefault(); toggleHandRaised()"
         (keydown.space)="$event.preventDefault(); toggleHandRaised()"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
       </button>
@@ -654,7 +671,7 @@
           colour="green"
           [text]="'private-consultation-room-controls.resume-recording' | translate"
           [attr.aria-label]="'private-consultation-room-controls.resume-recording' | translate"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           (click)="resumeRecording()"
           (keydown.enter)="$event.preventDefault(); resumeRecording()"
           (keydown.space)="$event.preventDefault(); resumeRecording()"
@@ -672,7 +689,7 @@
           colour="red"
           [text]="'private-consultation-room-controls.pause-recording' | translate"
           [attr.aria-label]="'private-consultation-room-controls.pause-recording' | translate"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
           (click)="pauseRecording()"
           (keydown.enter)="$event.preventDefault(); pauseRecording()"
           (keydown.space)="$event.preventDefault(); pauseRecording()"
@@ -691,7 +708,7 @@
           [attr.aria-label]="'private-consultation-room-controls.leave-hearing' | translate"
           (keydown.enter)="$event.preventDefault(); displayConfirmationLeaveHearingDialog()"
           (click)="displayConfirmationLeaveHearingDialog()"
-          tabindex="0"
+          [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
         >
           <fa-icon icon="sign-out-alt" flip="horizontal" class="leave-hearing-button"></fa-icon>
         </button>
@@ -733,7 +750,7 @@
         data-module="govuk-button"
         (click)="lockPrivateConsultation(!roomLocked)"
         type="button"
-        tabindex="0"
+        [attr.tabindex]="!conferenceStarted && !isPrivateConsultation ? -1 : 0"
       >
         {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}
       </button>

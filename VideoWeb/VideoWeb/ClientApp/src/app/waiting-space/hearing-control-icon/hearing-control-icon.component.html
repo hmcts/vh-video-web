@@ -8,6 +8,7 @@
       [text]="iconText"
       [attr.aria-label]="iconText"
       tabindex="0"
+      [attr.tabindex]="blockNavigation ? -1 : 0"
       (click)="$event.preventDefault(); onIconClicked()"
     >
       <fa-icon [icon]="['fas', iconName]"></fa-icon>

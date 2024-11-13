@@ -9,6 +9,7 @@ export class HearingControlIconComponent {
     @Input() iconName: string;
     @Input() iconText: string;
     @Input() showText = false;
+    @Input() blockNavigation = false;
 
     @Output() iconClicked = new EventEmitter();
 
