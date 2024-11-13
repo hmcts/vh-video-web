@@ -1,5 +1,5 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
-import { APP_ID, ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
+import { APP_ID, APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -9,7 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { SecurityModule } from './security/security.module';
 import { ConfigService } from './services/api/config.service';
-import { API_BASE_URL } from './services/clients/api-client';
+import { API_BASE_URL, Supplier } from './services/clients/api-client';
 import { PageTrackerService } from './services/page-tracker.service';
 import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
 import { GlobalErrorHandler } from './shared/providers/global-error-handler';
@@ -27,12 +27,17 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { DynatraceService } from './services/api/dynatrace.service';
+import { SupplierClientService } from './services/api/supplier-client.service';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
     // resulting in a null context when trying to load the translatons
     const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
     return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
+}
+
+export function loadDefaultPexipClient(supplierClientService: SupplierClientService) {
+    return () => supplierClientService.loadSupplierScript(Supplier.Vodafone);
 }
 
 export function getLocale() {
@@ -70,6 +75,12 @@ export function getLocale() {
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         { provide: Navigator, useValue: window.navigator },
         { provide: Document, useValue: window.document },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: loadDefaultPexipClient,
+            deps: [SupplierClientService],
+            multi: true
+        },
         ConfigService,
         DynatraceService,
         Title,

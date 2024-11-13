@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { AddMediaEventRequest, ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { AddMediaEventRequest, ConferenceResponse, EventType, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
@@ -82,7 +82,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         this.userMediaService
             .hasValidCameraAndMicAvailable()
             .pipe(
-                catchError(error => {
+                catchError((error: Error) => {
                     this.mediaAccepted = false;
                     this.userPrompted = false;
                     this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
@@ -90,12 +90,21 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
                         participant: this.participantName,
                         error: error
                     });
-                    this.postPermissionDeniedAlert();
-                    this.errorService.goToServiceError(
-                        'error-camera-microphone.problem-with-camera-mic',
-                        'error-camera-microphone.camera-mic-in-use',
-                        false
-                    );
+                    if (error.message === 'Permission denied') {
+                        this.postPermissionDeniedAlert();
+                        this.errorService.goToServiceError(
+                            'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                            'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                            false
+                        );
+                    } else {
+                        this.errorService.goToServiceError(
+                            'error-camera-microphone.problem-with-camera-mic',
+                            'error-camera-microphone.camera-mic-in-use',
+                            false
+                        );
+                    }
+
                     return NEVER;
                 })
             )
@@ -137,6 +146,8 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         } catch (error) {
             this.logger.error('[SwitchOnCameraMicrophone] - Failed to post media permission denied alert', error, payload);
         }
+
+        this.participantStatusUpdateService.postParticipantStatus(EventType.Disconnected, this.conferenceId);
     }
 
     private isObserver() {
@@ -159,5 +170,6 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
             'error-camera-microphone.camera-mic-in-use',
             false
         );
+        this.participantStatusUpdateService.postParticipantStatus(EventType.Disconnected, this.conferenceId);
     }
 }

@@ -4,7 +4,6 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
-import { ErrorService } from './error.service';
 import { ConferenceSetting } from '../shared/models/conference-setting';
 import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-helper';
 
@@ -39,7 +38,6 @@ export class UserMediaService {
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
 
     constructor(
-        private errorService: ErrorService,
         private logger: Logger,
         private localStorageService: LocalStorageService
     ) {}
@@ -142,11 +140,7 @@ export class UserMediaService {
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
                 if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {
-                    this.errorService.goToServiceError(
-                        'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
-                        'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
-                        false
-                    );
+                    throw error;
                 }
                 return of(false);
             })
