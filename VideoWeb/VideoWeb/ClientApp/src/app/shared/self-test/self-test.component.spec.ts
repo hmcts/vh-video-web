@@ -780,5 +780,19 @@ describe('SelfTestComponent', () => {
             // Assert
             expect(retrieveSelfTestScoreSpy).toHaveBeenCalledTimes(1);
         }));
+
+        it('should retrieve test score when disconnect reason is Test call finished', fakeAsync(() => {
+            // Arrange
+            const reason = 'Test call finished';
+
+            const retrieveSelfTestScoreSpy = spyOn(component, 'retrieveSelfTestScore');
+
+            // Act
+            component.handleCallDisconnect(new DisconnectedCall(reason));
+            flush();
+
+            // Assert
+            expect(retrieveSelfTestScoreSpy).toHaveBeenCalledTimes(1);
+        }));
     });
 });
