@@ -31,7 +31,7 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
+            var envName = Configuration["AzureAd:PostLogoutRedirectUri"];
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
             var featureToggles = new FeatureToggles(sdkKey, envName);
             services.AddSingleton<IFeatureToggles>(featureToggles);
@@ -79,7 +79,7 @@ namespace VideoWeb
             {
                 Configuration.Bind("EJudAd", options);
             });
-            
+
             services.Configure<Dom1AdConfiguration>(options =>
             {
                 Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
@@ -103,7 +103,7 @@ namespace VideoWeb
             var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(kinlyTokenSettings);
-            
+
             var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
             services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
             services.AddSingleton(vodafoneTokenSettings);
@@ -116,7 +116,7 @@ namespace VideoWeb
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
-  
+
             services.AddVhHealthChecks();
         }
 
@@ -147,7 +147,8 @@ namespace VideoWeb
             app.UseHsts();
             // this is a workaround to set HSTS in a docker
             // reference from https://github.com/dotnet/dotnet-docker/issues/2268#issuecomment-714613811
-            app.Use(async (context, next) => {
+            app.Use(async (context, next) =>
+            {
                 if (!context.Response.Headers.ContainsKey("Strict-Transport-Security"))
                 {
                     context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
@@ -155,7 +156,7 @@ namespace VideoWeb
                 await next.Invoke();
             });
 
-            if (!env.IsDevelopment() || Settings.ZapScan)
+            if (!Settings.UseSpaProxy || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
             }
@@ -185,7 +186,7 @@ namespace VideoWeb
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                if (env.IsDevelopment() && !Settings.ZapScan)
+                if (Settings.UseSpaProxy && !Settings.ZapScan)
                 {
                     var ngBaseUri = Configuration.GetValue<string>("VhServices:NgBaseUri");
                     spa.UseProxyToSpaDevelopmentServer(ngBaseUri);

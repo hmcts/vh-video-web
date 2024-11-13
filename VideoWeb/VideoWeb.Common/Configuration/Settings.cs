@@ -5,5 +5,6 @@ namespace VideoWeb.Common.Configuration
         public bool DisableHttpsRedirection { get; set; }
 
         public bool ZapScan { get; set; }
+        public bool UseSpaProxy { get; set; }
     }
 }
