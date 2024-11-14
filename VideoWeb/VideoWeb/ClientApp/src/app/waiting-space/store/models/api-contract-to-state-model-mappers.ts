@@ -5,8 +5,16 @@ import {
     RoomSummaryResponse,
     VideoEndpointResponse
 } from '../../../services/clients/api-client';
-import { VHConference, VHEndpoint, VHInterpreterLanguage, VHParticipant, VHPexipParticipant, VHRoom } from './vh-conference';
-import { ParticipantUpdated } from '../../models/video-call-models';
+import {
+    VHConference,
+    VHEndpoint,
+    VHInterpreterLanguage,
+    VHParticipant,
+    VHPexipConference,
+    VHPexipParticipant,
+    VHRoom
+} from './vh-conference';
+import { ConferenceUpdated, ParticipantUpdated } from '../../models/video-call-models';
 
 export function mapConferenceToVHConference(conference: ConferenceResponse): VHConference {
     return {
@@ -79,6 +87,14 @@ export function mapPexipParticipantToVHPexipParticipant(pexipParticipant: Partic
     return {
         ...pexipParticipant
     } as VHPexipParticipant;
+}
+
+export function mapPexipConferenceToVhPexipConference(pexipConference: ConferenceUpdated) {
+    return {
+        guestsMuted: pexipConference.guestedMuted,
+        locked: pexipConference.locked,
+        started: pexipConference.started
+    } as VHPexipConference;
 }
 
 export function mapInterpeterLanguageToVHInterpreterLanguage(interpreterLanguage: InterpreterLanguageResponse): VHInterpreterLanguage {

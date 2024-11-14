@@ -30,6 +30,7 @@ export class ParticipantUpdated {
     public protocol: string;
     public receivingAudioMix: string;
     public sentAudioMixes: PexipAudioMix[];
+    public role: PexipParticipantRole;
 
     private constructor(
         isRemoteMuted: string,
@@ -41,6 +42,7 @@ export class ParticipantUpdated {
         isAudioOnlyCall: string,
         isVideoCall: string,
         protocol: string,
+        role: PexipParticipantRole,
         receivingAudioMix?: string,
         sentAudioMixes?: PexipAudioMix[]
     ) {
@@ -53,6 +55,7 @@ export class ParticipantUpdated {
         this.isAudioOnlyCall = isAudioOnlyCall?.toUpperCase() === 'YES';
         this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
         this.protocol = protocol;
+        this.role = role;
         this.receivingAudioMix = receivingAudioMix;
         this.sentAudioMixes = sentAudioMixes;
     }
@@ -68,6 +71,7 @@ export class ParticipantUpdated {
             pexipParticipant.is_audio_only_call,
             pexipParticipant.is_video_call,
             pexipParticipant.protocol,
+            pexipParticipant.role,
             pexipParticipant.receive_from_audio_mix,
             pexipParticipant.send_to_audio_mixes
         );
@@ -75,7 +79,15 @@ export class ParticipantUpdated {
 }
 
 export class ConferenceUpdated {
-    constructor(public guestedMuted: boolean) {}
+    constructor(
+        public guestedMuted: boolean,
+        public locked: boolean,
+        public started: boolean
+    ) {}
+
+    static fromPexipConference(pexipConference: PexipConference) {
+        return new ConferenceUpdated(pexipConference.guests_muted, pexipConference.locked, pexipConference.started);
+    }
 }
 
 export class Presentation {
