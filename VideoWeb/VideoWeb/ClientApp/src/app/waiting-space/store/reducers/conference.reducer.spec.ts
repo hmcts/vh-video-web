@@ -1,6 +1,6 @@
 import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
 
@@ -182,6 +182,19 @@ describe('Conference Reducer', () => {
 
             expect(result.currentConference.caseName).toEqual('Updating conference');
             expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
+        });
+    });
+
+    describe('upsertPexipConference', () => {
+        it('should set the pexip conference', () => {
+            const pexipConference = {
+                guestsMuted: true,
+                locked: false,
+                started: true
+            } as VHPexipConference;
+            const result = conferenceReducer(initialState, ConferenceActions.upsertPexipConference({ pexipConference }));
+
+            expect(result.pexipConference).toEqual(pexipConference);
         });
     });
 

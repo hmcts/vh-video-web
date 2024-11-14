@@ -17,7 +17,7 @@ import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
+import { ConferenceUpdated, ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamAndMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
@@ -504,6 +504,24 @@ describe('VideoCallService', () => {
             flush();
             discardPeriodicTasks();
             expect(service['renegotiateCall']).toHaveBeenCalled();
+        }));
+    });
+
+    describe('handleConferenceUpdate', () => {
+        it('should publish the conference update', fakeAsync(() => {
+            // Arrange
+            const pexipConference: PexipConference = { started: true, locked: false, guests_muted: true, direct_media: false };
+            // Act
+            let result: ConferenceUpdated | null = null;
+            const expectedUpdated = ConferenceUpdated.fromPexipConference(pexipConference);
+            service.onConferenceUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onConferenceUpdate(pexipConference);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdated);
         }));
     });
 

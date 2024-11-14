@@ -7,7 +7,7 @@ export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
-    pexipConference?: VHPexipConference | undefined;
+    pexipConference?: VHPexipConference;
     loggedInParticipant?: VHParticipant;
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
@@ -53,7 +53,7 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, status: status, countdownComplete: null };
         return { ...state, currentConference: updatedConference };
     }),
-    on(ConferenceActions.upsertPexipConference, (state, { conference }) => ({ ...state, pexipConference: conference })),
+    on(ConferenceActions.upsertPexipConference, (state, { pexipConference: conference }) => ({ ...state, pexipConference: conference })),
     on(ConferenceActions.countdownComplete, (state, { conferenceId }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {

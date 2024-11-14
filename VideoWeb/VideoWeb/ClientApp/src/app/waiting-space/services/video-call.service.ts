@@ -142,7 +142,9 @@ export class VideoCallService {
             const conference = ConferenceUpdated.fromPexipConference(conferenceUpdate);
             self.onConferenceUpdatedSubject.next(conference);
 
-            self.store.dispatch(ConferenceActions.upsertPexipConference({ conference: mapPexipConferenceToVhPexipConference(conference) }));
+            self.store.dispatch(
+                ConferenceActions.upsertPexipConference({ pexipConference: mapPexipConferenceToVhPexipConference(conference) })
+            );
         };
 
         this.pexipAPI.onCallTransfer = function (alias) {

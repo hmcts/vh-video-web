@@ -40,7 +40,7 @@ export const ConferenceActions = createActionGroup({
         'Update Existing Endpoints': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
         'Remove Existing Endpoints': props<{ conferenceId: string; removedEndpointIds: string[] }>(),
 
-        'Upsert Pexip Conference': props<{ conference: VHPexipConference }>(),
+        'Upsert Pexip Conference': props<{ pexipConference: VHPexipConference }>(),
         'Create Pexip Participant': props<{ participant: VHPexipParticipant }>(),
         'Upsert Pexip Participant': props<{ participant: VHPexipParticipant }>(),
         'Delete Pexip Participant': props<{ pexipUUID: string }>(),
