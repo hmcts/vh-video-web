@@ -647,7 +647,7 @@
 
       <ng-container *ngIf="isHost && recordingPaused">
         <button
-          [disabled]="resumeButtonActioned"
+          [disabled]="recordingButtonDisabled"
           id="change-hearing-layout"
           class="icon-button"
           appTooltip
@@ -665,7 +665,7 @@
 
       <ng-container *ngIf="isHost && !recordingPaused && wowzaConnected">
         <button
-          [disabled]="pauseButtonActioned"
+          [disabled]="recordingButtonDisabled"
           id="mute-recording"
           class="icon-button"
           appTooltip

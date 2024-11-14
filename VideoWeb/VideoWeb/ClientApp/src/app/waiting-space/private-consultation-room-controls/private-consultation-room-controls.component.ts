@@ -52,8 +52,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     pauseIcon = faCirclePause;
     playIcon = faPlayCircle;
     recordingPaused: boolean;
-    pauseButtonActioned = false;
-    resumeButtonActioned = false;
+    recordingButtonDisabled = false;
     wowzaConnected = false;
 
     private conferenceStatus: ConferenceStatusChanged;
@@ -196,17 +195,24 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     async pauseRecording() {
-        this.pauseButtonActioned = true;
+        if (this.recordingButtonDisabled) {
+            return;
+        }
+        this.recordingButtonDisabled = true;
         await this.audioRecordingService.stopRecording();
-        this.pauseButtonActioned = false;
+        setTimeout(() => {
+            this.recordingButtonDisabled = false;
+        }, 5000);
     }
 
     async resumeRecording() {
-        this.pauseButtonActioned = true;
-        const failedToReconnectCallback = () => {
-            this.notificationToastrService.showAudioRecordingRestartFailure(() => {});
-        };
-        await this.audioRecordingService.reconnectToWowza(failedToReconnectCallback);
-        this.pauseButtonActioned = false;
+        if (this.recordingButtonDisabled) {
+            return;
+        }
+        this.recordingButtonDisabled = true;
+        await this.audioRecordingService.reconnectToWowza(null);
+        setTimeout(() => {
+            this.recordingButtonDisabled = false;
+        }, 5000);
     }
 }
