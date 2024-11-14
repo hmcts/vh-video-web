@@ -383,11 +383,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     verifyAudioRecordingStream() {
         // has not been set to continue without recording,
+        // video is open,
         // the alert isn't open already,
         // Recording is not paused
         // and the audio streaming agent cannot be validated, then show the alert
-        if (
-            !this.continueWithNoRecording &&
+        if (!this.continueWithNoRecording &&
+            this.showVideo &&
             !this.audioErrorRetryToast &&
             !this.recordingPaused &&
             !this.audioRecordingService.wowzaAgent?.isAudioOnlyCall
