@@ -7,7 +7,7 @@ export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
-    pexipConference: VHPexipConference | undefined;
+    pexipConference?: VHPexipConference | undefined;
     loggedInParticipant?: VHParticipant;
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;

@@ -37,11 +37,11 @@ describe('ParticipantUpdated', () => {
         expect(participantUpdated.handRaised).toBeTruthy();
     });
     it('should create conference updated model for muted status', () => {
-        const conferenceUpdated = new ConferenceUpdated(true);
+        const conferenceUpdated = new ConferenceUpdated(true, false, false);
         expect(conferenceUpdated).toBeTruthy();
     });
     it('should create conference updated model for unmuted status', () => {
-        const conferenceUpdated = new ConferenceUpdated(false);
+        const conferenceUpdated = new ConferenceUpdated(false, false, false);
         expect(conferenceUpdated).toBeTruthy();
     });
     it('should return spotlighted true', () => {

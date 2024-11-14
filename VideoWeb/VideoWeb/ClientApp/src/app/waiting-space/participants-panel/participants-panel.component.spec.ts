@@ -639,7 +639,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should update conference mute all true', () => {
         component.setupVideoCallSubscribers();
         component.isMuteAll = false;
-        const payload = new ConferenceUpdated(true);
+        const payload = new ConferenceUpdated(true, true, true);
 
         onConferenceUpdatedMock.next(payload);
         expect(component.isMuteAll).toBeTruthy();
@@ -648,7 +648,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should update conference mute all false', () => {
         component.setupVideoCallSubscribers();
         component.isMuteAll = true;
-        const payload = new ConferenceUpdated(false);
+        const payload = new ConferenceUpdated(false, true, true);
 
         onConferenceUpdatedMock.next(payload);
         expect(component.isMuteAll).toBeFalsy();

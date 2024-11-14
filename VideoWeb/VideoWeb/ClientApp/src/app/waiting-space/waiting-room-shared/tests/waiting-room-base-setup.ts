@@ -58,7 +58,6 @@ export let errorService: jasmine.SpyObj<ErrorService>;
 export let clockService: jasmine.SpyObj<ClockService>;
 export let consultationInvitiationService: jasmine.SpyObj<ConsultationInvitationService>;
 export let router: jasmine.SpyObj<Router>;
-export let heartbeatModelMapper: HeartbeatModelMapper;
 export let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
 export const videoCallService = videoCallServiceSpy;
 export let consultationService: jasmine.SpyObj<ConsultationService>;
@@ -118,7 +117,6 @@ export function initAllWRDependencies() {
     clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
     clockService.getClock.and.returnValue(of(new Date()));
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    heartbeatModelMapper = new HeartbeatModelMapper();
     deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
         'getBrowserName',
         'getBrowserVersion',

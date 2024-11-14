@@ -25,6 +25,7 @@ describe('AudioRecordingService', () => {
         callTag: 'call-tag',
         isAudioOnlyCall: true,
         isVideoCall: false,
+        role: 'guest',
         protocol: 'protocol-type',
         receivingAudioMix: 'audio-mix',
         sentAudioMixes: []
