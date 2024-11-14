@@ -4,6 +4,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
 import { ParticipantStatusDirective } from '../vho-shared/participant-status-base/participant-status-base.component';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 @Component({
     selector: 'app-admin-im-list',
     templateUrl: './admin-im-list.component.html',
@@ -12,6 +13,8 @@ import { ParticipantStatusDirective } from '../vho-shared/participant-status-bas
 export class AdminImListComponent extends ParticipantStatusDirective implements OnInit {
     @Input() hearing: Hearing;
     @Output() selectedParticipant = new EventEmitter<ParticipantContactDetails>();
+
+    featureFlags = FEATURE_FLAGS;
 
     currentParticipant: ParticipantContactDetails;
     roles = Role;
