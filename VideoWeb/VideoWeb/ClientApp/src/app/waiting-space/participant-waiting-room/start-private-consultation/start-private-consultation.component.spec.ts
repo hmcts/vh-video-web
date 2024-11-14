@@ -4,7 +4,6 @@ import {
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';

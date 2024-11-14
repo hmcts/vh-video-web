@@ -58,7 +58,6 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-par
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PexipDisplayNameModel } from '../../services/conference/models/pexip-display-name.model';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { videoCallServiceSpy } from '../../testing/mocks/mock-video-call.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';

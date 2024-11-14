@@ -3,7 +3,7 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { UserMediaService } from './user-media.service';
 import { LocalStorageService } from './conference/local-storage.service';
 import { of, Subject, throwError } from 'rxjs';
-import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 import { ConferenceSetting } from '../shared/models/conference-setting';

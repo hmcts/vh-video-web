@@ -1,6 +1,6 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { Hearing } from '../../../shared/models/hearing';

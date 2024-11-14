@@ -1,5 +1,4 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
 import {
     ConferenceResponse,
     ConferenceStatus,

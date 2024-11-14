@@ -8,7 +8,7 @@ import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { pageUrls } from '../../shared/page-url.constants';
-import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { IdpProviders } from '../idp-providers';
 
 describe('LogoutComponent', () => {

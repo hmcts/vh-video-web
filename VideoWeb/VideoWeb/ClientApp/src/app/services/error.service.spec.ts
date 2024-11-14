@@ -10,8 +10,7 @@ import { ErrorMessage } from '../shared/models/error-message';
 import { ConnectionStatusService } from './connection-status.service';
 import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 import { LocationService } from './location.service';
-import { Observable, of } from 'rxjs';
-import { Subject } from 'rxjs';
+import { of } from 'rxjs';
 
 describe('ErrorService', () => {
     const mockLogger: Logger = new MockLogger();

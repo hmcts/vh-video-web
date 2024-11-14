@@ -1,4 +1,4 @@
-import { ConferenceForHostResponse, ConferenceStatus, ParticipantForHostResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingSummary } from './hearing-summary';

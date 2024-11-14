@@ -1,4 +1,4 @@
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { LoggerService } from '../logging/logger.service';
 import { LocalStorageService } from './local-storage.service';
 

@@ -1,4 +1,3 @@
-import { async } from '@angular/core/testing';
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';

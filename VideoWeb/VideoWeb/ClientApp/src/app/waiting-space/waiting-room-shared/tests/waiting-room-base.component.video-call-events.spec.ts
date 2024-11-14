@@ -1,7 +1,7 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, of, Subject } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -16,7 +16,6 @@ import {
     onPresentationConnectedMock,
     onPresentationDisconnectedMock,
     onPresentationMock,
-    videoCallServiceSpy,
     onParticipantUpdatedMock
 } from 'src/app/testing/mocks/mock-video-call.service';
 import {
