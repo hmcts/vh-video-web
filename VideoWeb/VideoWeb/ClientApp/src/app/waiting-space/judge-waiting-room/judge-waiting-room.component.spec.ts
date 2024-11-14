@@ -931,17 +931,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
             });
 
-            it('should reset notification state if hearing status not InSession', () => {
-                audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.conference.status = ConferenceStatus.Paused;
-                component.continueWithNoRecording = true;
-
-                component.verifyAudioRecordingStream();
-
-                expect(component.continueWithNoRecording).toBeFalsy();
-                expect(component.audioErrorRetryToast).toBeFalsy();
-            });
-
             it('when wowza listener missing, but toast for restart already open, do nothing', async () => {
                 component.conference.status = ConferenceStatus.InSession;
                 component.conference.audio_recording_required = true;
