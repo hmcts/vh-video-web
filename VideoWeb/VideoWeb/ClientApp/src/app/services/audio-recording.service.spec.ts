@@ -104,6 +104,21 @@ describe('AudioRecordingService', () => {
                 expect(failedToConnectCallback).toHaveBeenCalled();
             });
 
+            it('should call push false to wowzaAgentConnection$ if reconnect to Wowza fails', async () => {
+                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
+                videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
+                    callback({ status: 'failure' });
+                });
+
+                let emittedValue: boolean | undefined;
+                service.getWowzaAgentConnectionState().subscribe(value => (emittedValue = value));
+
+                await service.reconnectToWowza();
+
+                // Assert that `false` was emitted by the observable
+                expect(emittedValue).toBe(false);
+            });
+
             it('should clean up dial out connections', () => {
                 service.dialOutUUID = ['uuid1', 'uuid2'];
                 service.cleanupDialOutConnections();

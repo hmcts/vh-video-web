@@ -308,11 +308,7 @@ export class NotificationToastrService {
         const id = 'notification-toastr-audio-recording-error-restart-failure.dismiss';
         const label = 'audio-alert-restart-failure.button';
 
-        if (callback) {
-            return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
-        } else {
-            return this.generateAudioAlertToastrComponent(message, null, id, label);
-        }
+        return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
