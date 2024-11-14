@@ -81,7 +81,7 @@ describe('AudioRecordingService', () => {
         describe('reconnectToWowza', () => {
             it('should reconnect to Wowza', async () => {
                 const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
-                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
+                service.conference = { id: globalConference.id, audioRecordingIngestUrl: 'ingestUrl' } as any;
                 videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
                     callback({ status: 'success', result: ['newUUID'] });
                 });
@@ -89,7 +89,7 @@ describe('AudioRecordingService', () => {
                 await service.reconnectToWowza(failedToConnectCallback);
                 expect(service.restartActioned).toBeTrue();
                 expect(videoCallServiceSpy.connectWowzaAgent).toHaveBeenCalledWith('ingestUrl', jasmine.any(Function));
-                expect(eventServiceSpy.sendAudioRecordingPaused).toHaveBeenCalledWith('conferenceId', false);
+                expect(eventServiceSpy.sendAudioRecordingPaused).toHaveBeenCalledWith(globalConference.id, false);
                 expect(failedToConnectCallback).not.toHaveBeenCalled();
             });
 
