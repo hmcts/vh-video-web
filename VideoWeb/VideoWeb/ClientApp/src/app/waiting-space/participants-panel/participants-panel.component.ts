@@ -1,5 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
