@@ -1,8 +1,8 @@
-import { Component, Pipe, PipeTransform } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync, getTestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';

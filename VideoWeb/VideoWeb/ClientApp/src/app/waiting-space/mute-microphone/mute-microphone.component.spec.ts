@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture } from '@angular/core/testing';
 
 import { MuteMicrophoneComponent } from './mute-microphone.component';
 import { FormBuilder } from '@angular/forms';

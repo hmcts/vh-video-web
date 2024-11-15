@@ -1,5 +1,4 @@
 import { ElementRef, Renderer2 } from '@angular/core';
-import * as exp from 'constants';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { TooltipDirective } from './tooltip.directive';
 

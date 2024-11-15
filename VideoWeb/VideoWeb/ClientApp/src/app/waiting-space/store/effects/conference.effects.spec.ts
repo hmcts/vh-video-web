@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing'; // import this
 
 import { ConferenceEffects } from './conference.effects';
-import { ApiClient, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ApiClient, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../models/api-contract-to-state-model-mappers';

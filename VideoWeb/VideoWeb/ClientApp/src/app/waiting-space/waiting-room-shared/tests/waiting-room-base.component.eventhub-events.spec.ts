@@ -53,7 +53,6 @@ import {
     globalEndpoint,
     globalParticipant,
     globalWitness,
-    heartbeatModelMapper,
     initAllWRDependencies,
     logger,
     notificationSoundsService,
@@ -77,7 +76,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ErrorService } from 'src/app/services/error.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { VideoCallService } from '../../services/video-call.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -96,7 +94,6 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
-import { videoWebServiceSpy } from 'src/app/vh-officer/vho-shared/tests/participant-status-base-setup';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -140,7 +137,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: EventsService, useValue: eventsService },
                 { provide: Logger, useValue: logger },
                 { provide: ErrorService, useValue: errorService },
-                { provide: HeartbeatModelMapper, useValue: heartbeatModelMapper },
                 { provide: VideoCallService, useValue: videoCallService },
                 { provide: DeviceTypeService, useValue: deviceTypeService },
                 { provide: Router, useValue: router },

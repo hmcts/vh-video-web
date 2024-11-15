@@ -630,6 +630,7 @@ describe('HearingControlsBaseComponent', () => {
             isVideoCall: false,
             protocol: '',
             receivingAudioMix: 'main',
+            role: 'GUEST',
             sentAudioMixes: [{ mix_name: 'main', prominent: false }]
         };
         component.audioMuted = true;

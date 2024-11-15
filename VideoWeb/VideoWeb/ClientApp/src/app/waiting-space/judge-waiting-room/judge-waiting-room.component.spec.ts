@@ -23,7 +23,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -58,7 +57,6 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-par
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PexipDisplayNameModel } from '../../services/conference/models/pexip-display-name.model';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { videoCallServiceSpy } from '../../testing/mocks/mock-video-call.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
@@ -240,7 +238,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,
@@ -307,6 +304,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         protocol: 'webrtc',
         disconnect_supported: 'Yes',
         transfer_supported: 'Yes',
+        is_video_silent: false,
+        role: 'GUEST',
         is_main_video_dropped_out: false,
         is_video_muted: false,
         is_streaming_conference: false,

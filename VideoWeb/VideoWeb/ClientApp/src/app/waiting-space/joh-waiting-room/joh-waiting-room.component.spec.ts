@@ -1,5 +1,4 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -19,7 +18,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -87,7 +85,6 @@ describe('JohWaitingRoomComponent', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,

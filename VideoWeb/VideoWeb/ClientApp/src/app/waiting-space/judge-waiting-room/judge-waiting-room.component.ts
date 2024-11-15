@@ -21,7 +21,6 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -76,7 +75,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
-        protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
@@ -108,7 +106,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             eventService,
             logger,
             errorService,
-            heartbeatMapper,
             videoCallService,
             deviceTypeService,
             router,

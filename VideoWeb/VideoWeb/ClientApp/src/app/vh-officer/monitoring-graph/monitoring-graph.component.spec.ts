@@ -1,6 +1,5 @@
 import { MonitoringGraphComponent } from '../monitoring-graph/monitoring-graph.component';
 import { MonitorGraphService } from '../services/monitor-graph.service';
-import { GraphSettings } from '../services/models/graph-settings';
 import { PackageLost } from '../services/models/package-lost';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 

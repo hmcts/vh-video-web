@@ -1240,6 +1240,7 @@ describe('ParticipantService', () => {
                 handRaised: false,
                 isAudioOnlyCall: false,
                 isVideoCall: false,
+                role: 'GUEST',
                 protocol: '',
                 receivingAudioMix: 'main',
                 sentAudioMixes: [{ mix_name: 'main', prominent: false }]

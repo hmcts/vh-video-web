@@ -13,7 +13,6 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { of, Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
@@ -168,8 +167,18 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(component.mediaAccepted).toBeTrue();
     }));
 
-    it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
-        userMediaServiceSpy.hasValidCameraAndMicAvailable.and.returnValue(throwError(new Error('Fake error')));
+    it('should handle no media devices detected', fakeAsync(() => {
+        userMediaServiceSpy.hasValidCameraAndMicAvailable.and.returnValue(of(false));
+
+        component.requestMedia();
+        flush();
+        expect(component.userPrompted).toBeTrue();
+        expect(component.mediaAccepted).toBeFalse();
+        expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should update mediaAccepted and userPrompted to false when request media throw an error permission denied', fakeAsync(() => {
+        userMediaServiceSpy.hasValidCameraAndMicAvailable.and.returnValue(throwError(new Error('Permission denied')));
         spyOn(component, 'postPermissionDeniedAlert');
 
         component.requestMedia();
@@ -177,6 +186,18 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(component.userPrompted).toBeFalse();
         expect(component.mediaAccepted).toBeFalse();
         expect(component.postPermissionDeniedAlert).toHaveBeenCalledTimes(1);
+        expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
+        userMediaServiceSpy.hasValidCameraAndMicAvailable.and.returnValue(throwError(new Error('Overcontrained Error')));
+        spyOn(component, 'postPermissionDeniedAlert');
+
+        component.requestMedia();
+        flush();
+        expect(component.userPrompted).toBeFalse();
+        expect(component.mediaAccepted).toBeFalse();
+        expect(component.postPermissionDeniedAlert).toHaveBeenCalledTimes(0);
         expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
     }));
 

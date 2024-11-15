@@ -11,7 +11,6 @@ import {
     errorService,
     eventsService,
     focusService,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -33,7 +32,7 @@ import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -66,7 +65,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,

@@ -1,5 +1,4 @@
 import { CourtRoomsFiltersComponent } from './court-rooms-filters.component';
-import { EventBusService } from 'src/app/services/event-bus.service';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { VhoQueryService } from '../services/vho-query-service.service';
 

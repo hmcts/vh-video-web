@@ -1,4 +1,3 @@
-import { async, waitForAsync } from '@angular/core/testing';
 import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 import { AccessibilityComponent } from './accessibility.component';
 
