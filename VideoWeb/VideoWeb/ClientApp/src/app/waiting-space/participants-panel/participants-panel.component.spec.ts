@@ -1,18 +1,13 @@
-import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { LowerCasePipe } from '@angular/common';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
 import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
-import { of, Subject } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { of } from 'rxjs';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
@@ -23,31 +18,17 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
-import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
-import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
-import {
-    endpointStatusSubjectMock,
-    eventsServiceSpy,
-    getEndpointsUpdatedMessageSubjectMock,
-    getParticipantsUpdatedSubjectMock,
-    hearingTransferSubjectMock,
-    participantHandRaisedStatusSubjectMock,
-    participantMediaStatusSubjectMock,
-    participantStatusSubjectMock
-} from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import {
     ConferenceResponse,
-    ConferenceStatus,
-    EndpointStatus,
     ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -59,21 +40,14 @@ import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
-import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import {
-    conferenceParticipantsStatusSubject,
-    createParticipantRemoteMuteStoreServiceSpy
-} from '../services/mock-participant-remote-mute-store.service';
-import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
-import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
-import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ParticipantsPanelItemComponent } from './participants-panel-item/participants-panel-item.component';
 import { ConferenceState } from '../store/reducers/conference.reducer';
@@ -87,36 +61,26 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
-    const conferenceId = '1111-1111-1111';
-    let participants = testData.getListOfParticipants();
-    participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
-    const endpoints = testData.getListOfEndpoints();
-    const videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
-        'getParticipantsByConferenceId',
-        'getEndpointsForConference',
-        'getConferenceById'
-    ]);
-    videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
-    videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
-    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conferenceId }) } };
+
+    let conference: ConferenceResponse;
+    let conferenceId: string;
+    let participants: ParticipantForUserResponse[];
+    let endpoints: VideoEndpointResponse[];
+
     const videocallService = videoCallServiceSpy;
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
-    let participantPanelModelMapperSpy: jasmine.SpyObj<ParticipantPanelModelMapper>;
+
     let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     let component: ParticipantsPanelComponent;
     let fixture: ComponentFixture<ParticipantsPanelComponent>;
     const mapper = new ParticipantPanelModelMapper();
-    const participantsUpdatedSubject = new Subject<boolean>();
 
-    let hyphenateSpy: jasmine.Spy;
-    let translateSpy: jasmine.Spy;
-    let lowerCaseSpy: jasmine.Spy;
+    let initialState: ConferenceState;
 
     let mockConferenceStore: MockStore<ConferenceState>;
 
@@ -125,16 +89,28 @@ describe('ParticipantsPanelComponent', () => {
     });
     afterAll(() => {
         jasmine.getEnv().allowRespy(false);
+        mockConferenceStore.resetSelectors();
     });
 
     beforeEach(async () => {
-        mockConferenceStore = createMockStore({
-            initialState: { currentConference: mapConferenceToVHConference(testData.getConferenceDetailNow()), availableRooms: [] }
-        });
+        conference = testData.getConferenceDetailNow();
+        conferenceId = conference.id;
 
-        hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
-        translateSpy = jasmine.createSpy('transform').and.callThrough();
-        lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
+        participants = testData.getListOfParticipants();
+        participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
+        conference.participants = participants;
+        endpoints = conference.endpoints;
+
+        initialState = {
+            currentConference: mapConferenceToVHConference(conference),
+            availableRooms: [],
+            pexipConference: { guestsMuted: true, locked: false, started: true },
+            countdownComplete: true
+        };
+
+        mockConferenceStore = createMockStore({
+            initialState
+        });
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone).and.returnValue(of(false));
@@ -145,17 +121,6 @@ describe('ParticipantsPanelComponent', () => {
             'setRemoteMuteStatusById'
         ]);
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['onParticipantsUpdated$', 'nonEndpointParticipants']
-        );
-
-        participantPanelModelMapperSpy = jasmine.createSpyObj<ParticipantPanelModelMapper>('ParticipantPanelModelMapper', [
-            'mapFromParticipantModel',
-            'mapFromParticipantUserResponseArray'
-        ]);
-        spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
@@ -165,22 +130,14 @@ describe('ParticipantsPanelComponent', () => {
                 MockComponent(ParticipantAlertComponent),
                 MockComponent(FaIconComponent),
                 MockDirective(TooltipDirective),
-                MockPipe(TranslatePipe, translateSpy),
-                MockPipe(HyphenatePipe, hyphenateSpy),
-                MockPipe(LowerCasePipe, lowerCaseSpy),
+                MockPipe(TranslatePipe),
+                MockPipe(HyphenatePipe),
+                MockPipe(LowerCasePipe),
                 MockPipe(MultilinePipe),
                 MockPipe(RoomNamePipe),
                 MockComponent(ParticipantsPanelItemComponent)
             ],
             providers: [
-                {
-                    provide: VideoWebService,
-                    useValue: videoWebServiceSpy
-                },
-                {
-                    provide: ActivatedRoute,
-                    useValue: activatedRoute
-                },
                 {
                     provide: VideoCallService,
                     useValue: videocallService
@@ -198,16 +155,8 @@ describe('ParticipantsPanelComponent', () => {
                     useValue: logger
                 },
                 {
-                    provide: ParticipantService,
-                    useValue: participantServiceSpy
-                },
-                {
                     provide: TranslateService,
                     useValue: translateService
-                },
-                {
-                    provide: ParticipantPanelModelMapper,
-                    useValue: participantPanelModelMapperSpy
                 },
                 {
                     provide: ParticipantRemoteMuteStoreService,
@@ -232,6 +181,9 @@ describe('ParticipantsPanelComponent', () => {
             ConferenceSelectors.getParticipants,
             participants.map(x => mapParticipantToVHParticipant(x))
         );
+
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, initialState.currentConference);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getPexipConference, initialState.pexipConference);
     });
 
     beforeEach(() => {
@@ -267,12 +219,7 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
-        const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-        const allJOHs = participants.filter(x => x.role === Role.JudicialOfficeHolder);
-        const expectedCount = endpoints.length + participants.length - 2 - (allJOHs.length - 1); // take away 2 interpreters and additional joh
+        const expectedCount = endpoints.length + participants.length;
 
         component.participants = [];
         component.ngOnInit();
@@ -289,15 +236,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.participants[component.participants.length - 1].role).toBe(Role.QuickLinkObserver);
     }));
 
-    it('should log error when api returns error', async () => {
-        videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.reject(participants));
-        spyOn(logger, 'error');
-
-        await component.getParticipantsList();
-
-        expect(logger.error).toHaveBeenCalled();
-    });
-
     it('should scroll to element', () => {
         const elementId = 'testElement';
         const element = document.createElement('div');
@@ -308,165 +246,6 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(document.getElementById).toHaveBeenCalledWith(elementId);
         expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth' });
-    });
-
-    describe('conferenceParticipantsStatusSubject updated', () => {
-        it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
-            // Arrange
-            const participant = component.participants[0];
-            const participantId = participant.id;
-            const isMuted = true;
-            const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-            videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
-
-            participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
-
-            const state: IConferenceParticipantsStatus = {};
-            state[participantId] = { isRemoteMuted: isMuted };
-
-            component.ngOnInit();
-            flush();
-
-            // Act
-            conferenceParticipantsStatusSubject.next(state);
-            flush();
-
-            // Assert
-            expect(participant.isMicRemoteMuted()).toEqual(isMuted);
-        }));
-
-        describe('assignPexipId', () => {
-            let participant: PanelModel;
-            let participantId: string;
-            let state: IConferenceParticipantsStatus;
-
-            beforeEach(() => {
-                participant = component.participants[0];
-                participantId = participant.id;
-                spyOn(participant, 'assignPexipId');
-                state = {};
-                const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-                videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
-            });
-
-            it('should call assignPexipId when state contains pexipId', fakeAsync(() => {
-                const testPexipId = 'testPexipId';
-                state[participantId] = { pexipId: testPexipId };
-
-                component.ngOnInit();
-                flush();
-
-                // Act
-                conferenceParticipantsStatusSubject.next(state);
-                flush();
-
-                // Assert
-                expect(participant.assignPexipId).toHaveBeenCalledTimes(1);
-                expect(participant.assignPexipId).toHaveBeenCalledWith(testPexipId);
-            }));
-
-            it('should NOT call assignPexipId when state does not contain pexipId', fakeAsync(() => {
-                state[participantId] = { pexipId: undefined };
-
-                component.ngOnInit();
-                flush();
-
-                // Act
-                conferenceParticipantsStatusSubject.next(state);
-                flush();
-
-                // Assert
-                expect(participant.assignPexipId).not.toHaveBeenCalled();
-            }));
-        });
-    });
-
-    it('should process eventhub participant updates', () => {
-        component.setupEventhubSubscribers();
-        const status = ParticipantStatus.InConsultation;
-        const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantStatusMessage(pat.id, '', conferenceId, status);
-
-        participantStatusSubjectMock.next(message);
-
-        const updatedPat = component.participants.find(x => x.id === message.participantId);
-        expect(updatedPat).toBeInstanceOf(ParticipantPanelModel);
-        expect((<ParticipantPanelModel>updatedPat).status).toBe(status);
-    });
-
-    it('should process eventhub participant updates for linked participant', () => {
-        component.setupEventhubSubscribers();
-        const status = ParticipantStatus.InConsultation;
-        const linkedParticipant = participants.filter(
-            x => x.role === Role.Individual && x.linked_participants.length > 0 && x.interpreter_room
-        )[0];
-        const message = new ParticipantStatusMessage(linkedParticipant.id, '', conferenceId, status);
-
-        participantStatusSubjectMock.next(message);
-
-        const updatedPat = component.participants.find(x => x.id === linkedParticipant.interpreter_room.id);
-        expect(updatedPat).toBeInstanceOf(LinkedParticipantPanelModel);
-        const updatedLinked = updatedPat as LinkedParticipantPanelModel;
-        expect(updatedLinked.isInConsultation()).toBe(true);
-    });
-
-    it('should not process eventhub participant updates not in list', () => {
-        component.setupEventhubSubscribers();
-        const status = ParticipantStatus.InConsultation;
-        const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantStatusMessage(Guid.create().toString(), '', conferenceId, status);
-
-        participantStatusSubjectMock.next(message);
-
-        expect(component.participants.find(x => x.id === message.participantId)).toBeUndefined();
-    });
-
-    it('should process eventhub endpoint updates', () => {
-        component.setupEventhubSubscribers();
-        const status = EndpointStatus.InConsultation;
-        const ep = endpoints[0];
-        const message = new EndpointStatusMessage(ep.id, conferenceId, status);
-        endpointStatusSubjectMock.next(message);
-
-        const updatedEp = component.participants.find(x => x.id === message.endpointId);
-        expect(updatedEp).toBeInstanceOf(VideoEndpointPanelModel);
-        expect((<VideoEndpointPanelModel>updatedEp).status).toBe(status);
-    });
-
-    it('should not process eventhub endpoint updates not in list', () => {
-        component.setupEventhubSubscribers();
-        const status = EndpointStatus.InConsultation;
-        const message = new EndpointStatusMessage(Guid.create().toString(), conferenceId, status);
-
-        endpointStatusSubjectMock.next(message);
-
-        expect(component.participants.find(x => x.id === message.endpointId)).toBeUndefined();
-    });
-
-    it('should set transferring in when HearingTransfer In event received', () => {
-        component.setupEventhubSubscribers();
-        const p = participants[0];
-        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, p.id, TransferDirection.In));
-
-        const resultParticipant = component.participants.find(x => x.id === p.id);
-        expect(resultParticipant.transferringIn).toBeTrue();
-    });
-
-    it('should set transferring in to false when HearingTransfer Out event received', () => {
-        component.setupEventhubSubscribers();
-        const p = participants[0];
-        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, p.id, TransferDirection.Out));
-
-        const resultParticipant = component.participants.find(x => x.id === p.id);
-        expect(resultParticipant.transferringIn).toBeFalse();
-    });
-
-    it('should handle invalid participant id - HearingTransfer', () => {
-        component.setupEventhubSubscribers();
-        const currentTrasnferringStatuses = component.participants.map(x => x.transferringIn);
-        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, 'InvalidId', TransferDirection.In));
-        const afterTrasnferringStatuses = component.participants.map(x => x.transferringIn);
-        expect(afterTrasnferringStatuses).toEqual(currentTrasnferringStatuses);
     });
 
     it('should return true when participant is in hearing', () => {
@@ -634,116 +413,6 @@ describe('ParticipantsPanelComponent', () => {
             expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalledTimes(0);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
         });
-    });
-
-    it('should update conference mute all true', () => {
-        component.setupVideoCallSubscribers();
-        component.isMuteAll = false;
-        const payload = new ConferenceUpdated(true, true, true);
-
-        onConferenceUpdatedMock.next(payload);
-        expect(component.isMuteAll).toBeTruthy();
-    });
-
-    it('should update conference mute all false', () => {
-        component.setupVideoCallSubscribers();
-        component.isMuteAll = true;
-        const payload = new ConferenceUpdated(false, true, true);
-
-        onConferenceUpdatedMock.next(payload);
-        expect(component.isMuteAll).toBeFalsy();
-    });
-
-    describe('handleParticipantUpdatedInVideoCall', () => {
-        let pat: PanelModel;
-        let pexipParticipant: PexipParticipant;
-        let updatedParticipant: ParticipantUpdated;
-        beforeEach(() => {
-            pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-            pexipParticipant = VideoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
-            updatedParticipant = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        });
-
-        describe('uuid update', () => {
-            beforeEach(() => {
-                spyOn(pat, 'assignPexipId');
-            });
-
-            it('should not assignPexipId when no uuid', () => {
-                updatedParticipant.uuid = undefined;
-                component.handleParticipantUpdatedInVideoCall(updatedParticipant);
-                expect(pat.assignPexipId).not.toHaveBeenCalled();
-            });
-
-            it('should assignPexipId when uuid', () => {
-                const testUuid = '2ae17bd3-39df-41ae-a382-950d3480ea7c';
-                updatedParticipant.uuid = testUuid;
-                component.handleParticipantUpdatedInVideoCall(updatedParticipant);
-
-                expect(pat.assignPexipId).toHaveBeenCalledTimes(1);
-                expect(pat.assignPexipId).toHaveBeenCalledWith(testUuid);
-            });
-
-            it('should handle pexip participant that does not have a display name', () => {
-                const user: ParticipantUpdated = { ...updatedParticipant, pexipDisplayName: undefined };
-                component.handleParticipantUpdatedInVideoCall(user);
-                expect(pat.pexipId).toBeUndefined();
-            });
-        });
-    });
-
-    it('should process video call participant updates', () => {
-        component.setupVideoCallSubscribers();
-        const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
-        pexipParticipant.is_muted = 'YES';
-        pexipParticipant.buzz_time = 1;
-        pexipParticipant.spotlight = 1;
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-
-        onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.id === pat.id);
-        expect(result.pexipId).toBe(payload.uuid);
-        expect(result.isMicRemoteMuted()).toBeTruthy();
-        expect(result.hasHandRaised()).toBeTruthy();
-        expect(result.hasSpotlight()).toBeTruthy();
-    });
-
-    it('should process video call participant updates for linked participant and publish remote mute status', () => {
-        component.setupVideoCallSubscribers();
-        const pat = component.participants.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
-        const displayName = `I1;${pat.pexipDisplayName};${pat.id}`;
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(displayName);
-        pexipParticipant.is_muted = 'YES';
-        pexipParticipant.buzz_time = 0;
-        pexipParticipant.spotlight = 0;
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-
-        onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.id === pat.id);
-        expect(result.pexipId).toBe(payload.uuid);
-        expect(result.isMicRemoteMuted()).toBeTruthy();
-
-        pat.participants.forEach(lp => {
-            expect(eventService.publishRemoteMuteStatus).toHaveBeenCalledWith(conferenceId, lp.id, true);
-        });
-    });
-
-    it('should not process video call participant updates not in list', () => {
-        component.setupVideoCallSubscribers();
-        const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant();
-        pexipParticipant.is_muted = 'YES';
-        pexipParticipant.buzz_time = 1;
-        pexipParticipant.spotlight = 1;
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-
-        onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.id === pat.id);
-        expect(result.pexipId).toBeUndefined();
-        expect(result.isMicRemoteMuted()).toBeFalsy();
-        expect(result.hasHandRaised()).toBeFalsy();
-        expect(result.hasSpotlight()).toBeFalsy();
     });
 
     it('should unlock all participants', () => {
@@ -1015,7 +684,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}`
+            `${p.display_name}<br/>hearing-role.litigant-in-person participants-panel.for ${p.representee}`
         );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
@@ -1149,156 +818,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.dismissParticipantFromHearing).toHaveBeenCalledWith(model);
     });
 
-    it('should process eventhub device status message for participant in hearing', () => {
-        component.setupEventhubSubscribers();
-        const mediaStatus = new ParticipantMediaStatus(true, false);
-        const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantMediaStatusMessage(conferenceId, pat.id, mediaStatus);
-
-        participantMediaStatusSubjectMock.next(message);
-
-        const updatedPat = component.participants.find(x => x.id === message.participantId);
-        expect(updatedPat.isLocalMicMuted()).toBe(mediaStatus.is_local_audio_muted);
-        expect(updatedPat.isLocalCameraOff()).toBe(mediaStatus.is_local_video_muted);
-    });
-
-    it('should not process eventhub device status message for participant not in list', fakeAsync(() => {
-        component.setupEventhubSubscribers();
-        const mediaStatus = new ParticipantMediaStatus(true, true);
-        const message = new ParticipantMediaStatusMessage(conferenceId, Guid.create().toString(), mediaStatus);
-        const beforeMicCount = component.participants.filter(x => x.isLocalMicMuted()).length;
-        const beforeCamCount = component.participants.filter(x => x.isLocalCameraOff()).length;
-
-        participantMediaStatusSubjectMock.next(message);
-        flushMicrotasks();
-
-        const updatedAudioCount = component.participants.filter(x => x.isLocalMicMuted()).length;
-        const updatedVideoCount = component.participants.filter(x => x.isLocalCameraOff()).length;
-        expect(updatedAudioCount).toBe(beforeMicCount);
-        expect(updatedVideoCount).toBe(beforeCamCount);
-    }));
-
-    it('should process event hub hand raise message for participant in hearing', () => {
-        component.setupEventhubSubscribers();
-        const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantHandRaisedMessage(conferenceId, pat.id, true);
-
-        participantHandRaisedStatusSubjectMock.next(message);
-
-        const updatedPat = component.participants.find(x => x.id === message.participantId);
-        expect(updatedPat.hasHandRaised()).toBe(message.handRaised);
-    });
-
-    it('should not process event hub hand raise message for participant not in list', () => {
-        component.setupEventhubSubscribers();
-        const message = new ParticipantHandRaisedMessage(conferenceId, Guid.create().toString(), true);
-
-        participantHandRaisedStatusSubjectMock.next(message);
-        const updatedHandRaiseCount = component.participants.filter(x => x.hasHandRaised()).length;
-        expect(updatedHandRaiseCount).toBe(0);
-    });
-
-    it('should update participants', () => {
-        component.nonEndpointParticipants = [];
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-
-        component.setupEventhubSubscribers();
-        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
-
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
-    });
-
-    it('should remove participants not in conference after participants updated message received', () => {
-        const participant1 = new ParticipantForUserResponse({
-            display_name: 'Judge 1',
-            id: '1111-1111-1111-1111',
-            first_name: 'Judge 1',
-            role: Role.Judge,
-            hearing_role: HearingRole.JUDGE,
-            user_name: 'judge1@hmcts.net'
-        });
-
-        const participant2 = new ParticipantForUserResponse({
-            display_name: 'Judge 2',
-            id: '2222-2222-2222-2222',
-            first_name: 'Judge 2',
-            role: Role.Judge,
-            hearing_role: HearingRole.JUDGE,
-            user_name: 'judge2@hmcts.net'
-        });
-
-        const initialParticipants: PanelModel[] = [];
-        initialParticipants.push(mapper.mapFromParticipantUserResponse(participant1));
-
-        const updatedParticipants: ParticipantForUserResponse[] = [];
-        updatedParticipants.push(participant2);
-
-        const mappedUpdatedParticipants = mapper.mapFromParticipantUserResponseArray(updatedParticipants);
-
-        component.nonEndpointParticipants = initialParticipants;
-
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedUpdatedParticipants);
-
-        component.setupEventhubSubscribers();
-
-        const message = new ParticipantsUpdatedMessage(conferenceId, updatedParticipants);
-
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        expect(component.nonEndpointParticipants).toEqual(mappedUpdatedParticipants);
-    });
-
-    it('it should persist states for participants when new participants added', () => {
-        const newParticipantAdded = new ParticipantForUserResponse({
-            display_name: 'participant 1',
-            id: '85dfea9b-d8ec-477e-825f-7e4e3611db99',
-            first_name: 'participant 1',
-            role: Role.Individual,
-            hearing_role: HearingRole.APPELLANT,
-            user_name: 'Appellant 1'
-        });
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray([...participants, newParticipantAdded]);
-        const newParticipant = mapper.mapFromParticipantUserResponse(newParticipantAdded);
-        component.nonEndpointParticipants = mappedParticipants;
-        component.setupEventhubSubscribers();
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-        const message = new ParticipantsUpdatedMessage(conferenceId, [...participants, newParticipantAdded]);
-
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        expect(component.nonEndpointParticipants).toContain(newParticipant);
-        // assert the state of existing participants
-        expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
-    });
-
-    it('it should update participant display name, when update event recieved', () => {
-        const participant = participants[0];
-        const updatedParticipant = new ParticipantForUserResponse({
-            display_name: 'Updated display name',
-            id: participant.id,
-            first_name: participant.first_name,
-            last_name: participant.last_name,
-            role: participant.role,
-            hearing_role: participant.hearing_role,
-            user_name: participant.user_name
-        });
-        participants.splice(0, 1, updatedParticipant);
-        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-        component.nonEndpointParticipants = mappedParticipants;
-        component.setupEventhubSubscribers();
-        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-
-        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
-
-        getParticipantsUpdatedSubjectMock.next(message);
-
-        const updatedParticipantModel = component.nonEndpointParticipants.find(x => x.id === updatedParticipant.id);
-        expect(updatedParticipantModel.displayName).toBe(updatedParticipant.display_name);
-    });
-
     describe('isWitness', () => {
         let participant: PanelModel;
         beforeEach(() => {
@@ -1311,118 +830,5 @@ describe('ParticipantsPanelComponent', () => {
                 expect(component.isWitness(participant)).toBe(testCase);
             });
         });
-    });
-
-    describe('getParticipantsList', () => {
-        it('should list participants and endpoints in correct order', async () => {
-            const judge = new ParticipantResponse({
-                current_room: undefined,
-                display_name: 'Manual Judge_26',
-                first_name: 'Manual',
-                hearing_role: 'Judge',
-                id: '85dfea9b-d8ec-477e-825f-7e4e3611db99',
-                interpreter_room: undefined,
-                last_name: 'Judge_26',
-                linked_participants: [],
-                name: null,
-                representee: null,
-                role: Role.Judge,
-                status: ParticipantStatus.NotSignedIn,
-                tiled_display_name: 'JUDGE;HEARTBEAT;Manual Judge_26;85dfea9b-d8ec-477e-825f-7e4e3611db99',
-                user_name: null
-            });
-            const staffMembers = new ConferenceTestData().getFullListOfStaffMembers();
-            const nonJudgeParticipants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
-            const panelMembers = new ConferenceTestData().getFullListOfPanelMembers();
-            const observers = new ConferenceTestData().getFullListOfObservers();
-            const fullListOfEndpoints = new ConferenceTestData().getFullListOfEndpoints();
-
-            const fullListOfParticipants = [...staffMembers, ...nonJudgeParticipants, ...panelMembers, ...observers];
-            fullListOfParticipants.push(judge);
-            const mappedParticipants = fullListOfParticipants.map(p => new ParticipantForUserResponse(p));
-
-            videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(mappedParticipants));
-            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(fullListOfEndpoints));
-
-            const mappedPanelParticipants = mapper.mapFromParticipantUserResponseArray(fullListOfParticipants);
-            participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedPanelParticipants);
-
-            await component.getParticipantsList();
-
-            const participantList = component.participants;
-            const endpointList = component.endpointParticipants;
-
-            // Judge
-            const judgeIndex = participantList.findIndex(x => x.displayName === 'Manual Judge_26');
-            expect(judgeIndex).toEqual(0);
-
-            // Panel members
-            const panelMembersIndex = participantList.findIndex(x => x.displayName === 'Mr Panel Member A, Mr Panel Member B');
-            expect(panelMembersIndex).toEqual(1);
-
-            // Staff members
-            const staffMember1Index = participantList.findIndex(x => x.displayName === 'A StaffMember');
-            const staffMember2Index = participantList.findIndex(x => x.displayName === 'B StaffMember');
-            const staffMember3Index = participantList.findIndex(x => x.displayName === 'C StaffMember');
-            expect(staffMember1Index).toEqual(2);
-            expect(staffMember2Index).toEqual(3);
-            expect(staffMember3Index).toEqual(4);
-
-            // Non-judge participants
-            const applicant1Index = participantList.findIndex(x => x.displayName === 'B, A'); // Litigant in person + Interpreter
-            const applicant2Index = participantList.findIndex(x => x.displayName === 'G');
-            const respondent1Index = participantList.findIndex(x => x.displayName === 'E');
-            const respondent2Index = participantList.findIndex(x => x.displayName === 'F, H');
-            const quickLinkParticipant1Index = participantList.findIndex(x => x.displayName === 'Mr C Smith');
-            const quickLinkParticipant2Index = participantList.findIndex(x => x.displayName === 'Mr D Smith');
-            // No longer sorting appellants and respondents as caseTypesGroups don't exist (arnt populated in real life) so order is more flexible
-            const suitableIndicies = [5, 6, 7, 8];
-            expect(suitableIndicies.includes(applicant1Index)).toBeTruthy();
-            expect(suitableIndicies.includes(applicant2Index)).toBeTruthy();
-            expect(suitableIndicies.includes(respondent1Index)).toBeTruthy();
-            expect(suitableIndicies.includes(respondent2Index)).toBeTruthy();
-            expect(quickLinkParticipant1Index).toEqual(9);
-            expect(quickLinkParticipant2Index).toEqual(10);
-
-            // Endpoints
-            const endpoint1Index = participantList.findIndex(x => x.displayName === 'Endpoint A');
-            const endpoint2Index = participantList.findIndex(x => x.displayName === 'Endpoint B');
-            expect(endpoint1Index).toEqual(11);
-            expect(endpoint2Index).toEqual(12);
-
-            // Observers
-            const observer1Index = participantList.findIndex(x => x.displayName === 'Mr Observer A');
-            const observer2Index = participantList.findIndex(x => x.displayName === 'Mr Observer B');
-            const qlObserver1Index = participantList.findIndex(x => x.displayName === 'A QL Observer');
-            const qlObserver2Index = participantList.findIndex(x => x.displayName === 'QL Observer A');
-            expect(observer1Index).toEqual(13);
-            expect(observer2Index).toEqual(14);
-            expect(qlObserver1Index).toEqual(15);
-            expect(qlObserver2Index).toEqual(16);
-        });
-    });
-
-    describe('EventHub getEndpointsUpdated', () => {
-        beforeEach(() => {
-            component.setupEventhubSubscribers();
-        });
-        it('should update endpoint participants when message has been received', fakeAsync(() => {
-            // arrange
-            const fullListOfEndpoints = new ConferenceTestData().getFullListOfEndpoints();
-            fullListOfEndpoints.push(
-                new VideoEndpointResponse({
-                    display_name: 'Endpoint C',
-                    id: 'Endpoint C',
-                    status: EndpointStatus.NotYetJoined
-                })
-            );
-            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(fullListOfEndpoints));
-
-            // act
-            getEndpointsUpdatedMessageSubjectMock.next(new EndpointsUpdatedMessage(conferenceId, new UpdateEndpointsDto()));
-            tick();
-            // assert
-            expect(component.endpointParticipants).toContain(jasmine.objectContaining({ displayName: 'Endpoint C' }));
-        }));
     });
 });

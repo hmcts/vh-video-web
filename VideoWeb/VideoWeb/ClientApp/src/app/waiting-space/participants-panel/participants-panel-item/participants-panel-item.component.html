@@ -57,13 +57,19 @@
           <img
             *ngIf="participant.isMicRemoteMuted()"
             appTooltip
-            [text]="participant.isMicRemoteMuted() ? 'participants-panel.unmute-lock' : ('participants-panel.mute-participant' | translate)"
+            [text]="
+              participant.isMicRemoteMuted()
+                ? ('participants-panel.unmute-lock' | translate)
+                : ('participants-panel.mute-participant' | translate)
+            "
             colour="grey"
             [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
             class="panel-icon"
             [attr.alt]="
-              (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
-                | translate
+              (participant.isMicRemoteMuted()
+                ? ('participants-panel.microphone-muted-icon' | translate)
+                : 'participants-panel.microphone-on-icon'
+              ) | translate
             "
             (click)="toggleParticipantMute(); $event.stopPropagation()"
             tabindex="0"

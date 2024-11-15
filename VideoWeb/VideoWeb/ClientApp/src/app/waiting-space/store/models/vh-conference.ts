@@ -43,6 +43,12 @@ export interface VHParticipant {
     linkedParticipants: Array<VHLinkedParticipant>;
     externalReferenceId?: string;
     protectedFrom?: string[];
+    localMediaStatus?: LocalDeviceStatus;
+}
+
+export interface LocalDeviceStatus {
+    isCameraOff: boolean;
+    isMicrophoneMuted: boolean;
 }
 
 export interface VHEndpoint {
@@ -60,6 +66,7 @@ export interface VHEndpoint {
 export interface VHPexipParticipant {
     isRemoteMuted: boolean;
     isSpotlighted: boolean;
+    isVideoMuted: boolean;
     handRaised: boolean;
     pexipDisplayName: string;
     uuid: string;

@@ -1,16 +1,13 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, Subject, Subscription } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { combineLatest, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
@@ -26,7 +23,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
-import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -36,6 +32,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VHEndpoint, VHParticipant, VHPexipConference } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-participants-panel',
@@ -43,8 +40,6 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
-    @Input() isCountdownCompleted: boolean;
-
     participants: PanelModel[] = [];
     nonEndpointParticipants: PanelModel[] = [];
     endpointParticipants: PanelModel[] = [];
@@ -52,10 +47,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     totalParticipantsInWaitingRoom: number;
     isMuteAll = false;
     conferenceId: string;
-
-    videoCallSubscription$ = new Subscription();
-    eventhubSubscription$ = new Subscription();
-    participantsSubscription$ = new Subscription();
 
     vodafoneEnabled = false;
 
@@ -65,18 +56,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     private onDestroy$ = new Subject<void>();
+    private mapper: ParticipantPanelModelMapper = new ParticipantPanelModelMapper();
     constructor(
-        private videoWebService: VideoWebService,
-        private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
         private translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         private store: Store<ConferenceState>,
-        private changeDetector: ChangeDetectorRef,
         private ldService: LaunchDarklyService
     ) {}
 
@@ -92,18 +80,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         return this.participants.filter(x => !x.isAvailable() && !x.isInHearing());
     }
 
-    private static updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
-        participant.updateParticipant(
-            participantToBeUpdated?.isMicRemoteMuted(),
-            participantToBeUpdated?.hasHandRaised(),
-            participantToBeUpdated?.hasSpotlight(),
-            participantToBeUpdated?.id,
-            participantToBeUpdated?.isLocalMicMuted(),
-            participantToBeUpdated?.isLocalCameraOff()
-        );
-        participant.assignPexipId(participantToBeUpdated?.pexipId);
-    }
-
     ngOnInit() {
         this.ldService
             .getFlag<boolean>(FEATURE_FLAGS.vodafone)
@@ -112,48 +88,33 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 this.vodafoneEnabled = flag;
             });
 
-        this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        this.store
+            .select(ConferenceSelectors.getActiveConference)
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(x => !!x)
+            )
+            .subscribe(conference => {
+                this.conferenceId = conference.id;
+            });
+
+        this.store
+            .select(ConferenceSelectors.getPexipConference)
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(x => !!x)
+            )
+            .subscribe(conference => {
+                this.handleUpdatedConferenceVideoCall(conference);
+            });
+
         const participants$ = this.store.select(ConferenceSelectors.getParticipants);
         const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
-
         combineLatest([participants$, endpoints$])
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(([participants, endpoints]) => {
-                this.totalParticipants = participants.length + endpoints.length;
-                this.totalParticipantsInWaitingRoom =
-                    participants.filter(x => x.status === ParticipantStatus.Available).length +
-                    endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
+                this.processParticipantAndEndpointUpdates(participants, endpoints);
             });
-        this.getParticipantsList().then(() => {
-            this.postGetParticipantsListHandler();
-            this.setupVideoCallSubscribers();
-            this.setupEventhubSubscribers();
-        });
-    }
-
-    postGetParticipantsListHandler() {
-        this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
-            this.participants.forEach(participant => {
-                if (state.hasOwnProperty(participant.id)) {
-                    this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
-                        participantId: participant.id,
-                        pexipId: state[participant.id].pexipId,
-                        state: state
-                    });
-                    if (state[participant.id].pexipId) {
-                        participant.assignPexipId(state[participant.id].pexipId);
-                    }
-                }
-                participant.updateParticipant(
-                    state[participant.id]?.isRemoteMuted,
-                    false,
-                    participant.hasSpotlight(),
-                    participant.id,
-                    state[participant.id]?.isLocalAudioMuted,
-                    state[participant.id]?.isLocalVideoMuted
-                );
-            });
-        });
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -190,9 +151,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
-        this.videoCallSubscription$.unsubscribe();
-        this.eventhubSubscription$.unsubscribe();
-        this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
     }
 
@@ -220,105 +178,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         for (const participantId of Object.keys(this.transferTimeout)) {
             this.resetWitnessTransferTimeout(participantId);
         }
-    }
-
-    setupVideoCallSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Setting up pexip video call subscribers`);
-
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onParticipantCreated()
-                .subscribe(createdParticipant => this.handleParticipantUpdatedInVideoCall(createdParticipant))
-        );
-
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onParticipantUpdated()
-                .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
-        );
-
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onConferenceUpdated()
-                .subscribe(updatedConference => this.handleUpdatedConferenceVideoCall(updatedConference))
-        );
-    }
-
-    setupEventhubSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Setting up EventHub subscribers`);
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.handleParticipantStatusChange(message);
-                this.changeDetector.detectChanges();
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getEndpointStatusMessage().subscribe(message => {
-                this.handleEndpointStatusChange(message);
-                this.changeDetector.detectChanges();
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getHearingTransfer().subscribe(async message => {
-                this.handleHearingTransferChange(message);
-                this.changeDetector.detectChanges();
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantMediaStatusMessage().subscribe(async message => {
-                this.handleParticipantMediaStatusChange(message);
-                this.changeDetector.detectChanges();
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
-                this.handleParticipantHandRaiseChange(message);
-                this.changeDetector.detectChanges();
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantsUpdated().subscribe(async message => {
-                if (message.conferenceId === this.conferenceId) {
-                    const mappedList = this.mapper.mapFromParticipantUserResponseArray(message.participants);
-                    mappedList.forEach(pm => {
-                        const index = this.nonEndpointParticipants.findIndex(x => x.id === pm.id);
-                        if (index > -1) {
-                            this.nonEndpointParticipants.splice(index, 1, pm);
-                        } else {
-                            this.nonEndpointParticipants.push(pm);
-                        }
-                    });
-
-                    const nonEndpointParticipantsLinkedParticipantPanelIndex = this.nonEndpointParticipants.findIndex(
-                        x => x.role === Role.JudicialOfficeHolder
-                    );
-                    const mappedListLinkedParticipantPanelIndex = mappedList.findIndex(x => x.role === Role.JudicialOfficeHolder);
-
-                    if (nonEndpointParticipantsLinkedParticipantPanelIndex > -1 && mappedListLinkedParticipantPanelIndex > -1) {
-                        const index = nonEndpointParticipantsLinkedParticipantPanelIndex;
-                        const newParticipant = mappedList[mappedListLinkedParticipantPanelIndex];
-                        this.replaceNonEndpointLinkedParticipant(index, newParticipant);
-                    }
-
-                    this.removeParticipantsNotInConference(mappedList);
-                    this.updateParticipants();
-                    this.changeDetector.detectChanges();
-                }
-            })
-        );
-
-        this.eventhubSubscription$.add(
-            this.eventService.getEndpointsUpdated().subscribe(async () => {
-                const updatedEndpoints = await this.videoWebService.getEndpointsForConference(this.conferenceId);
-                this.endpointParticipants = updatedEndpoints.map(x => new VideoEndpointPanelModel(x));
-                this.updateParticipants();
-            })
-        );
     }
 
     handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
@@ -388,113 +247,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
     }
 
-    handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
+    handleUpdatedConferenceVideoCall(updatedConference: VHPexipConference): void {
         this.logger.debug(`${this.loggerPrefix} Conference has been muted`, {
             conference: this.conferenceId,
-            guestedMuted: updatedConference.guestedMuted
+            guestedMuted: updatedConference.guestsMuted
         });
-        this.isMuteAll = updatedConference.guestedMuted;
-    }
-
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        if (!updatedParticipant.pexipDisplayName) {
-            return;
-        }
-        const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
-        if (!participant) {
-            this.logger.info(`${this.loggerPrefix} could NOT update participant in call`, {
-                displayName: updatedParticipant.pexipDisplayName
-            });
-            return;
-        }
-
-        if (updatedParticipant.uuid) {
-            participant.assignPexipId(updatedParticipant.uuid);
-        }
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(
-                updatedParticipant.isRemoteMuted,
-                null,
-                updatedParticipant.isSpotlighted,
-                participant.id,
-                participant.isLocalMicMuted(),
-                participant.isLocalCameraOff()
-            );
-        } else {
-            participant.updateParticipant(
-                updatedParticipant.isRemoteMuted,
-                updatedParticipant.handRaised,
-                updatedParticipant.isSpotlighted,
-                participant.id,
-                participant.isLocalMicMuted(),
-                participant.isLocalCameraOff()
-            );
-        }
-
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async p => {
-                await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
-            });
-        }
-
-        this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, participant.isMicRemoteMuted());
-
-        this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            participants: this.participants,
-            pexipParticipant: participant.pexipId,
-            isRemoteMuted: participant.isMicRemoteMuted(),
-            handRaised: participant.hasHandRaised(),
-            isSpotlighted: participant.hasSpotlight()
-        });
-    }
-
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
-        if (!participant) {
-            return;
-        }
-
-        participant.updateStatus(message.status, message.participantId);
-        participant.updateTransferringInStatus(false, message.participantId);
-
-        this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            participants: this.participants,
-            status: message.status
-        });
-    }
-
-    handleEndpointStatusChange(message: EndpointStatusMessage) {
-        const endpoint = this.participants.find(x => x.id === message.endpointId);
-        if (!endpoint) {
-            return;
-        }
-        this.logger.debug(`${this.loggerPrefix} Endpoint status has been updated`, {
-            conference: this.conferenceId,
-            endpoint: endpoint.id,
-            status: message.status
-        });
-        endpoint.updateStatus(message.status);
-    }
-
-    async getParticipantsList() {
-        try {
-            const pats = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
-            const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
-            this.nonEndpointParticipants = this.mapper.mapFromParticipantUserResponseArray(pats);
-            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
-            (await eps).forEach(x => {
-                const endpoint = new VideoEndpointPanelModel(x);
-                this.endpointParticipants.push(endpoint);
-            });
-            this.logger.debug(`${this.loggerPrefix} Retrieved endpoints in conference`, { conference: this.conferenceId });
-            this.setParticipants();
-        } catch (err) {
-            this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
-        }
+        this.isMuteAll = updatedConference.guestsMuted;
     }
 
     scrollToElement(elementId: string) {
@@ -759,6 +517,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isWitness(participant: PanelModel) {
         return participant.isWitness;
     }
+    private processParticipantAndEndpointUpdates(participants: VHParticipant[], endpoints: VHEndpoint[]) {
+        this.totalParticipants = participants.length + endpoints.length;
+        this.totalParticipantsInWaitingRoom =
+            participants.filter(x => x.status === ParticipantStatus.Available).length +
+            endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
+
+        this.nonEndpointParticipants = this.mapper.mapFromVHParticipants(participants);
+        this.endpointParticipants = endpoints.map(x => new VideoEndpointPanelModel(x));
+        this.updateParticipants();
+    }
 
     private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
         if (participant instanceof LinkedParticipantPanelModel) {
@@ -797,62 +565,5 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
         this.participants = combined;
-    }
-
-    private setParticipants() {
-        const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
-        combined.forEach(item => {
-            const currentParticipant = this.participants.find(r => r.id === item.id);
-            if (currentParticipant) {
-                if (currentParticipant instanceof LinkedParticipantPanelModel) {
-                    currentParticipant.participants.forEach(linkedParticpant => {
-                        ParticipantsPanelComponent.updateParticipant(item, linkedParticpant);
-                    });
-                } else {
-                    ParticipantsPanelComponent.updateParticipant(item, currentParticipant);
-                }
-            } else {
-                this.logger.warn(`${this.loggerPrefix} current participant is not in the list`, {
-                    conference: this.conferenceId,
-                    participant: item.id
-                });
-            }
-        });
-
-        this.getOrderedParticipants(combined);
-    }
-
-    private replaceNonEndpointLinkedParticipant(nonEndpointParticipantsIndex: number, newParticipant: PanelModel) {
-        const linkedParticipant = this.nonEndpointParticipants[nonEndpointParticipantsIndex] as LinkedParticipantPanelModel;
-
-        this.nonEndpointParticipants.splice(nonEndpointParticipantsIndex, 1, newParticipant);
-
-        // Re-apply the state properties
-        const linkedParticipantToUpdate = this.nonEndpointParticipants[nonEndpointParticipantsIndex] as LinkedParticipantPanelModel;
-        linkedParticipantToUpdate.participants.forEach(p => {
-            const linkedParticipantParticipant = linkedParticipant.participants.find(lp => lp.id === p.id);
-            if (!linkedParticipantParticipant) {
-                return;
-            }
-
-            linkedParticipantToUpdate.updateParticipant(
-                linkedParticipant.isMicRemoteMuted(),
-                linkedParticipant.hasHandRaised(),
-                linkedParticipant.hasSpotlight(),
-                linkedParticipantParticipant.id,
-                linkedParticipantParticipant.isLocalMicMuted(),
-                linkedParticipantParticipant.isLocalCameraOff()
-            );
-        });
-        linkedParticipantToUpdate.assignPexipId(linkedParticipant.pexipId);
-    }
-
-    private removeParticipantsNotInConference(conferenceParticipants: PanelModel[]) {
-        this.nonEndpointParticipants.forEach((participant, index) => {
-            const participantInConference = conferenceParticipants.find(p => p.id === participant.id);
-            if (!participantInConference) {
-                this.nonEndpointParticipants.splice(index, 1);
-            }
-        });
     }
 }

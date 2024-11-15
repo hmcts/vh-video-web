@@ -3,6 +3,7 @@ import { ConferenceActions } from '../actions/conference.actions';
 import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -156,6 +157,7 @@ describe('Conference Reducer', () => {
                         pexipInfo: {
                             isRemoteMuted: false,
                             isSpotlighted: false,
+                            isVideoMuted: false,
                             handRaised: false,
                             pexipDisplayName: '1922_John Doe',
                             uuid: '1922_John Doe',
@@ -395,6 +397,43 @@ describe('Conference Reducer', () => {
             expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
             expect(updatedResult.currentConference.endpoints[0].room).toBeNull();
             expect(updatedResult.currentConference.endpoints[0].pexipInfo).toBeNull();
+        });
+    });
+
+    describe('updateParticipantMediaStatus', () => {
+        it('should return the previous state if the conference id does not match', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantMediaStatus({
+                    conferenceId: 'unknown',
+                    participantId: conferenceTestData.participants[0].id,
+                    mediaStatus: {
+                        is_local_audio_muted: false,
+                        is_local_video_muted: false
+                    }
+                })
+            );
+
+            expect(result).toBe(existingInitialState);
+        });
+
+        it('should update the media status of a participant', () => {
+            const mediaStatus: ParticipantMediaStatus = {
+                is_local_audio_muted: true,
+                is_local_video_muted: false
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantMediaStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.participants[0].id,
+                    mediaStatus
+                })
+            );
+
+            const updatedParticipant = result.currentConference.participants[0];
+            expect(updatedParticipant.localMediaStatus.isCameraOff).toBeFalse();
+            expect(updatedParticipant.localMediaStatus.isMicrophoneMuted).toBeTrue();
         });
     });
 
@@ -649,6 +688,7 @@ describe('Conference Reducer', () => {
                 isRemoteMuted: false,
                 isSpotlighted: false,
                 handRaised: false,
+                isVideoMuted: false,
                 pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
                 uuid: '1922_John Doe',
                 callTag: 'john-call-tag',
@@ -672,6 +712,7 @@ describe('Conference Reducer', () => {
                 isRemoteMuted: false,
                 isSpotlighted: false,
                 handRaised: false,
+                isVideoMuted: false,
                 pexipDisplayName: 'vh-wowza',
                 uuid: 'wowza12345',
                 callTag: 'wowza',
@@ -694,6 +735,7 @@ describe('Conference Reducer', () => {
             const pexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
+                isVideoMuted: false,
                 handRaised: false,
                 pexipDisplayName: `PTSN;${conferenceTestData.endpoints[0].displayName};${conferenceTestData.endpoints[0].id}`,
                 uuid: '1922_John Doe',
@@ -718,6 +760,7 @@ describe('Conference Reducer', () => {
                 isRemoteMuted: false,
                 isSpotlighted: false,
                 handRaised: false,
+                isVideoMuted: false,
                 pexipDisplayName: '1922_John Doe_unknown',
                 uuid: '1922_John Doe',
                 callTag: 'john-call-tag',
@@ -750,6 +793,7 @@ describe('Conference Reducer', () => {
                                 isRemoteMuted: false,
                                 isSpotlighted: false,
                                 handRaised: false,
+                                isVideoMuted: false,
                                 pexipDisplayName: 'vh-wowza',
                                 uuid: 'wowza',
                                 callTag: 'wowza',
@@ -783,6 +827,7 @@ describe('Conference Reducer', () => {
                             pexipInfo: {
                                 isRemoteMuted: false,
                                 isSpotlighted: false,
+                                isVideoMuted: false,
                                 handRaised: false,
                                 pexipDisplayName: `1922_John Doe${conferenceTestData.endpoints[0].id}`,
                                 uuid: '1922_John Doe',
@@ -818,6 +863,7 @@ describe('Conference Reducer', () => {
                                 isRemoteMuted: false,
                                 isSpotlighted: false,
                                 handRaised: false,
+                                isVideoMuted: false,
                                 pexipDisplayName: `1922_John Doe${conferenceTestData.participants[0].id}`,
                                 uuid: '1922_John Doe',
                                 callTag: 'john-call-tag',
