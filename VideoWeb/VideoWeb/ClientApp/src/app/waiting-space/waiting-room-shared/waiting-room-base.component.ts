@@ -34,7 +34,6 @@ import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-cha
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
@@ -145,7 +144,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
-        protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,

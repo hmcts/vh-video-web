@@ -69,6 +69,13 @@ export interface VHPexipParticipant {
     protocol: string;
     receivingAudioMix: string;
     sentAudioMixes: Array<PexipAudioMix>;
+    role: string;
+}
+
+export interface VHPexipConference {
+    guestsMuted: boolean;
+    locked: boolean;
+    started: boolean;
 }
 
 export interface VHRoom {

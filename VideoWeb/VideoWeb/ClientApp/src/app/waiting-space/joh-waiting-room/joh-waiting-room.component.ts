@@ -14,7 +14,6 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -50,7 +49,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
-        protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
@@ -76,7 +74,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             eventService,
             logger,
             errorService,
-            heartbeatMapper,
             videoCallService,
             deviceTypeService,
             router,

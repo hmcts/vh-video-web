@@ -17,7 +17,7 @@ import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
+import { ConferenceUpdated, ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamAndMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
@@ -507,6 +507,24 @@ describe('VideoCallService', () => {
         }));
     });
 
+    describe('handleConferenceUpdate', () => {
+        it('should publish the conference update', fakeAsync(() => {
+            // Arrange
+            const pexipConference: PexipConference = { started: true, locked: false, guests_muted: true, direct_media: false };
+            // Act
+            let result: ConferenceUpdated | null = null;
+            const expectedUpdated = ConferenceUpdated.fromPexipConference(pexipConference);
+            service.onConferenceUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onConferenceUpdate(pexipConference);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdated);
+        }));
+    });
+
     describe('handleParticipantCreated', () => {
         it('should raise the event through the video call events service', fakeAsync(() => {
             // Arrange
@@ -528,6 +546,8 @@ describe('VideoCallService', () => {
                 protocol: 'protocol',
                 disconnect_supported: 'Yes',
                 transfer_supported: 'Yes',
+                role: 'GUEST',
+                is_video_silent: false,
                 is_main_video_dropped_out: false,
                 is_video_muted: false,
                 is_streaming_conference: false,
@@ -567,6 +587,8 @@ describe('VideoCallService', () => {
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
                 protocol: undefined,
+                role: undefined,
+                is_video_silent: undefined,
                 disconnect_supported: undefined,
                 transfer_supported: undefined,
                 is_main_video_dropped_out: undefined,
@@ -609,6 +631,8 @@ describe('VideoCallService', () => {
                 protocol: 'protocol',
                 disconnect_supported: 'Yes',
                 transfer_supported: 'Yes',
+                role: 'GUEST',
+                is_video_silent: false,
                 is_main_video_dropped_out: false,
                 is_video_muted: false,
                 is_streaming_conference: false,
@@ -648,6 +672,8 @@ describe('VideoCallService', () => {
                 call_tag: undefined,
                 is_audio_only_call: undefined,
                 is_video_call: undefined,
+                role: 'GUEST',
+                is_video_silent: false,
                 protocol: undefined,
                 disconnect_supported: undefined,
                 transfer_supported: undefined,

@@ -1,5 +1,13 @@
 import { createActionGroup, props } from '@ngrx/store';
-import { VHConference, VHEndpoint, VHInterpreterLanguage, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import {
+    VHConference,
+    VHEndpoint,
+    VHInterpreterLanguage,
+    VHParticipant,
+    VHPexipConference,
+    VHPexipParticipant,
+    VHRoom
+} from '../models/vh-conference';
 import {
     ConferenceStatus,
     ConsultationAnswer,
@@ -32,6 +40,7 @@ export const ConferenceActions = createActionGroup({
         'Update Existing Endpoints': props<{ conferenceId: string; endpoints: VHEndpoint[] }>(),
         'Remove Existing Endpoints': props<{ conferenceId: string; removedEndpointIds: string[] }>(),
 
+        'Upsert Pexip Conference': props<{ pexipConference: VHPexipConference }>(),
         'Create Pexip Participant': props<{ participant: VHPexipParticipant }>(),
         'Upsert Pexip Participant': props<{ participant: VHPexipParticipant }>(),
         'Delete Pexip Participant': props<{ pexipUUID: string }>(),

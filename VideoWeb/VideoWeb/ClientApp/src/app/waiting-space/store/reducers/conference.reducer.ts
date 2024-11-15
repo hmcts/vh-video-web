@@ -1,12 +1,13 @@
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export const conferenceFeatureKey = 'active-conference';
 
 export interface ConferenceState {
     currentConference: VHConference | undefined;
+    pexipConference?: VHPexipConference;
     loggedInParticipant?: VHParticipant;
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
@@ -15,6 +16,7 @@ export interface ConferenceState {
 
 export const initialState: ConferenceState = {
     currentConference: undefined,
+    pexipConference: undefined,
     loggedInParticipant: undefined,
     availableRooms: [],
     wowzaParticipant: undefined,
@@ -51,6 +53,7 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, status: status, countdownComplete: null };
         return { ...state, currentConference: updatedConference };
     }),
+    on(ConferenceActions.upsertPexipConference, (state, { pexipConference: conference }) => ({ ...state, pexipConference: conference })),
     on(ConferenceActions.countdownComplete, (state, { conferenceId }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {

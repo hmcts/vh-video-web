@@ -9,7 +9,6 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
@@ -58,7 +57,6 @@ export let errorService: jasmine.SpyObj<ErrorService>;
 export let clockService: jasmine.SpyObj<ClockService>;
 export let consultationInvitiationService: jasmine.SpyObj<ConsultationInvitationService>;
 export let router: jasmine.SpyObj<Router>;
-export let heartbeatModelMapper: HeartbeatModelMapper;
 export let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
 export const videoCallService = videoCallServiceSpy;
 export let consultationService: jasmine.SpyObj<ConsultationService>;
@@ -118,7 +116,6 @@ export function initAllWRDependencies() {
     clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
     clockService.getClock.and.returnValue(of(new Date()));
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    heartbeatModelMapper = new HeartbeatModelMapper();
     deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
         'getBrowserName',
         'getBrowserVersion',

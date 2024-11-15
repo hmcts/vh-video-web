@@ -1,6 +1,6 @@
 import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
 
@@ -163,6 +163,7 @@ describe('Conference Reducer', () => {
                             isAudioOnlyCall: false,
                             isVideoCall: true,
                             protocol: 'sip',
+                            role: 'Guest',
                             sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                             receivingAudioMix: 'main'
                         }
@@ -181,6 +182,19 @@ describe('Conference Reducer', () => {
 
             expect(result.currentConference.caseName).toEqual('Updating conference');
             expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
+        });
+    });
+
+    describe('upsertPexipConference', () => {
+        it('should set the pexip conference', () => {
+            const pexipConference = {
+                guestsMuted: true,
+                locked: false,
+                started: true
+            } as VHPexipConference;
+            const result = conferenceReducer(initialState, ConferenceActions.upsertPexipConference({ pexipConference }));
+
+            expect(result.pexipConference).toEqual(pexipConference);
         });
     });
 
@@ -642,7 +656,8 @@ describe('Conference Reducer', () => {
                 isVideoCall: true,
                 protocol: 'sip',
                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                receivingAudioMix: 'main'
+                receivingAudioMix: 'main',
+                role: 'Guest'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -664,7 +679,8 @@ describe('Conference Reducer', () => {
                 isVideoCall: false,
                 protocol: 'sip',
                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                receivingAudioMix: 'main'
+                receivingAudioMix: 'main',
+                role: 'Guest'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -686,7 +702,8 @@ describe('Conference Reducer', () => {
                 isVideoCall: true,
                 protocol: 'sip',
                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                receivingAudioMix: 'main'
+                receivingAudioMix: 'main',
+                role: 'Guest'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -708,7 +725,8 @@ describe('Conference Reducer', () => {
                 isVideoCall: true,
                 protocol: 'sip',
                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                receivingAudioMix: 'main'
+                receivingAudioMix: 'main',
+                role: 'Guest'
             };
             const result = conferenceReducer(
                 existingInitialState,
@@ -739,7 +757,8 @@ describe('Conference Reducer', () => {
                                 isVideoCall: false,
                                 protocol: 'sip',
                                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                                receivingAudioMix: 'main'
+                                receivingAudioMix: 'main',
+                                role: 'Guest'
                             }
                         }
                     ]
@@ -772,7 +791,8 @@ describe('Conference Reducer', () => {
                                 isVideoCall: true,
                                 protocol: 'sip',
                                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                                receivingAudioMix: 'main'
+                                receivingAudioMix: 'main',
+                                role: 'Guest'
                             }
                         }
                     ]
@@ -804,6 +824,7 @@ describe('Conference Reducer', () => {
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
                                 protocol: 'sip',
+                                role: 'Guest',
                                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                                 receivingAudioMix: 'main'
                             }
@@ -833,10 +854,11 @@ describe('Conference Reducer', () => {
                                 callTag: 'john-call-tag',
                                 isAudioOnlyCall: false,
                                 isVideoCall: true,
+                                role: 'Guest',
                                 protocol: 'sip',
                                 sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                                 receivingAudioMix: 'main'
-                            }
+                            } as VHPexipParticipant
                         }
                     ]
                 }

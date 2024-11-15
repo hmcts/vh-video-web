@@ -53,7 +53,6 @@ import {
     globalEndpoint,
     globalParticipant,
     globalWitness,
-    heartbeatModelMapper,
     initAllWRDependencies,
     logger,
     notificationSoundsService,
@@ -77,7 +76,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ErrorService } from 'src/app/services/error.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { VideoCallService } from '../../services/video-call.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -139,7 +137,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: EventsService, useValue: eventsService },
                 { provide: Logger, useValue: logger },
                 { provide: ErrorService, useValue: errorService },
-                { provide: HeartbeatModelMapper, useValue: heartbeatModelMapper },
                 { provide: VideoCallService, useValue: videoCallService },
                 { provide: DeviceTypeService, useValue: deviceTypeService },
                 { provide: Router, useValue: router },
