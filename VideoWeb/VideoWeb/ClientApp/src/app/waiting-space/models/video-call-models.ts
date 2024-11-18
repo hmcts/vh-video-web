@@ -19,18 +19,30 @@ export class ParticipantDeleted {
 }
 
 export class ParticipantUpdated {
+    /** Has been administratively audio muted. */
     public isRemoteMuted: boolean;
+    /** Is spotlighted. */
     public isSpotlighted: boolean;
+    /** Is hand raised. */
     public handRaised: boolean;
+    /** Pexip display name (string delimited values). */
     public pexipDisplayName: string;
+    /** Pexip UUID of participant. */
     public uuid: string;
+    /** Participant call tag. */
     public callTag: string;
+    /** Is the participant an audio only call. */
     public isAudioOnlyCall: boolean;
+    /** IDoes the participant have video capability. */
     public isVideoCall: boolean;
     public protocol: string;
+    /** The audio mix this participant is receiving e.g. "main". */
     public receivingAudioMix: string;
+    /** The audio mixes this participant is sending to. */
     public sentAudioMixes: PexipAudioMix[];
     public role: PexipParticipantRole;
+    /** Has the participant muted their video */
+    public isVideoMuted: boolean;
 
     private constructor(
         isRemoteMuted: string,
@@ -61,7 +73,7 @@ export class ParticipantUpdated {
     }
 
     static fromPexipParticipant(pexipParticipant: PexipParticipant) {
-        return new ParticipantUpdated(
+        const p = new ParticipantUpdated(
             pexipParticipant.is_muted,
             pexipParticipant.buzz_time,
             pexipParticipant.display_name,
@@ -75,6 +87,10 @@ export class ParticipantUpdated {
             pexipParticipant.receive_from_audio_mix,
             pexipParticipant.send_to_audio_mixes
         );
+
+        p.isVideoMuted = pexipParticipant.is_video_muted;
+
+        return p;
     }
 }
 

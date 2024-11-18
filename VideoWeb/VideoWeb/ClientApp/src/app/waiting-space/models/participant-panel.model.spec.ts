@@ -45,11 +45,11 @@ describe('ParticipantPanelModel', () => {
         expect(model.isAvailable()).toBe(true);
     });
 
-    it('returns isAvailable: false when participant is not quick link user and status is in consultation', () => {
+    it('returns isAvailable: true when participant is not quick link user and status is in consultation', () => {
         participant.status = ParticipantStatus.InConsultation;
         model = mapper.mapFromParticipantUserResponse(participant);
         spyOnProperty(model, 'isQuickLinkUser').and.returnValue(false);
-        expect(model.isAvailable()).toBe(false);
+        expect(model.isAvailable()).toBe(true);
     });
 
     it('returns isAvailable: true when participant is quick link user and status is available', () => {

@@ -150,7 +150,7 @@ namespace VideoWeb
             app.Use(async (context, next) => {
                 if (!context.Response.Headers.ContainsKey("Strict-Transport-Security"))
                 {
-                    context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+                    context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000";
                 }
                 await next.Invoke();
             });

@@ -109,6 +109,38 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, endpoints: endpoints };
         return { ...state, currentConference: updatedConference };
     }),
+    on(ConferenceActions.updateParticipantHearingTransferStatus, (state, { conferenceId, participantId, transferDirection }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+
+        const participants = conference.participants.map(p =>
+            p.id === participantId ? { ...p, transferDirection: transferDirection } : p
+        );
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    }),
+    on(ConferenceActions.updateParticipantMediaStatus, (state, { participantId, conferenceId, mediaStatus }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+
+        const participants = conference.participants.map(p =>
+            p.id === participantId
+                ? {
+                      ...p,
+                      localMediaStatus: {
+                          isCameraOff: mediaStatus.is_local_video_muted,
+                          isMicrophoneMuted: mediaStatus.is_local_audio_muted
+                      }
+                  }
+                : p
+        );
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    }),
     on(ConferenceActions.updateParticipantList, (state, { conferenceId, participants }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {
@@ -118,7 +150,11 @@ export const conferenceReducer = createReducer(
         // retain the pexip info for the participants (this does not come from the API)
         const updatedParticipants = participants.map(p => {
             const existingParticipant: VHParticipant = conference.participants.find(cp => cp.id === p.id);
-            const updatedParticipant: VHParticipant = { ...p, pexipInfo: existingParticipant?.pexipInfo };
+            const updatedParticipant: VHParticipant = {
+                ...p,
+                pexipInfo: existingParticipant?.pexipInfo,
+                localMediaStatus: existingParticipant?.localMediaStatus
+            };
             return updatedParticipant;
         });
 
