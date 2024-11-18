@@ -53,8 +53,7 @@
                             [roomLabel]="this.participant.current_room?.label"
                         >
                         </app-private-consultation-participants>
-                        <app-participants-panel *ngIf="!isPrivateConsultation"
-                                                [isCountdownCompleted]='countdownComplete'></app-participants-panel>
+                        <app-participants-panel></app-participants-panel>
                     </div>
                     <div *ngIf="hearing && !isPrivateConsultation" class="panel-wrapper"
                          [ngClass]="{ 'hide-panel': !panelStates['Chat'] }">
