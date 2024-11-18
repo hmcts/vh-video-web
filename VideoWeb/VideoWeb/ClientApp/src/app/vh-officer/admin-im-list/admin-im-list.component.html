@@ -8,7 +8,7 @@
       'im-list-top': participant.isJudge
     }"
   >
-    <div id="{{ participant.id }}-unread-messages-image" class="im-icon">
+    <div *appFeatureFlag="featureFlags.instantMessaging" id="{{ participant.id }}-unread-messages-image" class="im-icon">
       <app-unread-messages-participant [hearing]="hearing" [participant]="participant"></app-unread-messages-participant>
     </div>
     <div class="name list-item" [ngClass]="isParticipantAvailable(participant) ? 'available' : 'unavailable'">

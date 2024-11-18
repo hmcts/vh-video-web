@@ -280,7 +280,7 @@
     </div>
 
     <app-participant-chat
-        *ngIf="defineIsIMEnabled() && !isAdminConsultation && !showVideo"
+        *ngIf="defineIsIMEnabled() && !isAdminConsultation && !showVideo && instantMessagingEnabled"
         [hearing]="hearing"
         [alwaysOn]="hearing.isInSession()"
     ></app-participant-chat>

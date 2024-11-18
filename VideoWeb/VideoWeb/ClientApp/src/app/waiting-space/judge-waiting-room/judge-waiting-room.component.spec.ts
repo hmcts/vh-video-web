@@ -231,6 +231,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
 
         component = new JudgeWaitingRoomComponent(
             activatedRoute,

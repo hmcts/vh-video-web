@@ -3,6 +3,7 @@ import { ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -12,6 +13,8 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 export class VhoHearingListComponent {
     @Input() conferences: HearingSummary[];
     @Output() selectedConference = new EventEmitter<HearingSummary>();
+
+    featureFlags = FEATURE_FLAGS;
 
     currentConference: HearingSummary;
 
