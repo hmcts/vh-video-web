@@ -18,7 +18,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -79,6 +78,7 @@ describe('JohWaitingRoomComponent', () => {
 
     beforeEach(async () => {
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
             activatedRoute,
@@ -86,7 +86,6 @@ describe('JohWaitingRoomComponent', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,

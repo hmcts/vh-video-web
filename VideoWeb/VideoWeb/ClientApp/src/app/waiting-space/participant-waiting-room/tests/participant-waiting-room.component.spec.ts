@@ -28,7 +28,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -88,6 +87,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     beforeEach(() => {
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
             [],
@@ -120,7 +120,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,

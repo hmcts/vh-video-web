@@ -86,6 +86,7 @@ describe('VideoCallEffects', () => {
                     isAudioOnlyCall: false,
                     isVideoCall: true,
                     protocol: 'sip',
+                    role: 'Guest',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                     receivingAudioMix: 'main'
                 };
@@ -118,6 +119,7 @@ describe('VideoCallEffects', () => {
                         isAudioOnlyCall: false,
                         isVideoCall: true,
                         protocol: 'sip',
+                        role: 'Guest',
                         sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                         receivingAudioMix: 'main'
                     }
@@ -135,6 +137,7 @@ describe('VideoCallEffects', () => {
                     isAudioOnlyCall: false,
                     isVideoCall: true,
                     protocol: 'sip',
+                    role: 'Guest',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                     receivingAudioMix: 'main'
                 };
@@ -166,6 +169,7 @@ describe('VideoCallEffects', () => {
                         isAudioOnlyCall: false,
                         isVideoCall: true,
                         protocol: 'sip',
+                        role: 'Guest',
                         sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                         receivingAudioMix: 'main'
                     }
@@ -183,6 +187,7 @@ describe('VideoCallEffects', () => {
                     isAudioOnlyCall: false,
                     isVideoCall: true,
                     protocol: 'sip',
+                    role: 'Guest',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                     receivingAudioMix: 'main'
                 };
@@ -220,6 +225,7 @@ describe('VideoCallEffects', () => {
                         isAudioOnlyCall: false,
                         isVideoCall: true,
                         protocol: 'sip',
+                        role: 'Guest',
                         sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                         receivingAudioMix: 'main'
                     }
@@ -237,6 +243,7 @@ describe('VideoCallEffects', () => {
                     isAudioOnlyCall: false,
                     isVideoCall: true,
                     protocol: 'sip',
+                    role: 'Guest',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                     receivingAudioMix: 'main'
                 };
@@ -274,6 +281,7 @@ describe('VideoCallEffects', () => {
                         isAudioOnlyCall: false,
                         isVideoCall: true,
                         protocol: 'sip',
+                        role: 'Guest',
                         sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                         receivingAudioMix: 'main'
                     }
@@ -291,6 +299,7 @@ describe('VideoCallEffects', () => {
                     isAudioOnlyCall: false,
                     isVideoCall: true,
                     protocol: 'sip',
+                    role: 'Guest',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                     receivingAudioMix: 'main'
                 };
@@ -338,6 +347,7 @@ describe('VideoCallEffects', () => {
                         isAudioOnlyCall: false,
                         isVideoCall: true,
                         protocol: 'sip',
+                        role: 'Guest',
                         sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                         receivingAudioMix: 'main'
                     }
@@ -356,7 +366,8 @@ describe('VideoCallEffects', () => {
                     isVideoCall: true,
                     protocol: 'sip',
                     sentAudioMixes: [{ mix_name: 'main', prominent: false }],
-                    receivingAudioMix: 'main'
+                    receivingAudioMix: 'main',
+                    role: 'Guest'
                 };
 
                 const action = ConferenceActions.createPexipParticipant({ participant: pexipParticipant });

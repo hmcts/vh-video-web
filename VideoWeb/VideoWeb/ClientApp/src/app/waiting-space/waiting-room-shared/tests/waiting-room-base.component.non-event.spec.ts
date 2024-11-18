@@ -32,7 +32,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -82,13 +81,13 @@ describe('WaitingRoomComponent message and clock', () => {
     beforeEach(() => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,

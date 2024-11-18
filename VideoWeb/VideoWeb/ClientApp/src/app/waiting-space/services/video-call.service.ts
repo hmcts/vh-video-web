@@ -35,7 +35,10 @@ import { VideoCallEventsService } from './video-call-events.service';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ConferenceState } from '../store/reducers/conference.reducer';
-import { mapPexipParticipantToVHPexipParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import {
+    mapPexipConferenceToVhPexipConference,
+    mapPexipParticipantToVHPexipParticipant
+} from '../store/models/api-contract-to-state-model-mappers';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Injectable()
@@ -135,8 +138,13 @@ export class VideoCallService {
         this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
         this.pexipAPI.onParticipantDelete = this.handleParticipantDeleted.bind(this);
 
-        this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
-            self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
+        this.pexipAPI.onConferenceUpdate = function (conferenceUpdate: PexipConference) {
+            const conference = ConferenceUpdated.fromPexipConference(conferenceUpdate);
+            self.onConferenceUpdatedSubject.next(conference);
+
+            self.store.dispatch(
+                ConferenceActions.upsertPexipConference({ pexipConference: mapPexipConferenceToVhPexipConference(conference) })
+            );
         };
 
         this.pexipAPI.onCallTransfer = function (alias) {

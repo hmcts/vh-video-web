@@ -49,6 +49,8 @@ declare type PexipProtocol = 'sip' | 'h323' | 'rtmp' | 'mssip' | 'auto';
 
 declare type PexipRole = 'GUEST' | 'HOST';
 
+declare type PexipParticipantRole = 'GUEST' | 'chair';
+
 declare interface PexipDialOutResponse {
     /**
      * "success" or "error"
@@ -115,6 +117,7 @@ declare interface PexipClient {
     call: PexRTCCall;
     protocol: string;
     turn_server: TurnServer;
+    role: PexipRole;
 
     /**
      * The WebRTC incoming full-frame rate presentation stream has been set up successfully.
@@ -272,6 +275,9 @@ declare interface PexipParticipant {
     /** Boolean indicating whether this participant has muted their video. */
     is_video_muted: boolean;
 
+    /** Boolean indicating if the user has moved away (silent video detection in an Adaptive Composition layout). */
+    is_video_silent: boolean;
+
     /** The call protocol. Values: "api", "webrtc", "sip", "rtmp", "h323" or "mssip" */
     protocol: string;
 
@@ -292,6 +298,13 @@ declare interface PexipParticipant {
 
     /** the name of the audio a participant is receiving a mix */
     receive_from_audio_mix: string;
+
+    /** The level of privileges the participant has in the conference:
+     * "chair": the participant has Host privileges
+     * "guest": the participant has Guest privileges
+     *
+     */
+    role: PexipParticipantRole;
 }
 
 declare interface PexipConference {
@@ -303,6 +316,9 @@ declare interface PexipConference {
 
     /** Whether the conference has been started. */
     started: boolean;
+
+    /** Specifies if the conference is using direct media. */
+    direct_media: boolean;
 }
 
 declare interface PexRTCCall {

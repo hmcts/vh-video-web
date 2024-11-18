@@ -10,7 +10,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
-import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -62,7 +61,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
-        protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
@@ -89,7 +87,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             eventService,
             logger,
             errorService,
-            heartbeatMapper,
             videoCallService,
             deviceTypeService,
             router,

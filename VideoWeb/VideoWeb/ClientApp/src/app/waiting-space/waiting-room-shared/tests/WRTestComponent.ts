@@ -6,7 +6,6 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
@@ -34,7 +33,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
-        protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
@@ -58,7 +56,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             eventService,
             logger,
             errorService,
-            heartbeatMapper,
             videoCallService,
             deviceTypeService,
             router,

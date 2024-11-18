@@ -4,7 +4,8 @@
   </div>
 </div>
 <div id="conference-list" class="govuk-!-padding-3">
-  <div onKeyPress=""
+  <div
+    onKeyPress=""
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
     *ngFor="let conference of conferences; trackBy: trackConference"
@@ -48,21 +49,15 @@
 
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
     <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
-    <div class="cso listItem" id="{{ conference.id }}-cso">
-      Allocated To: {{ conference.allocatedCso }}
-    </div>
+    <div class="cso listItem" id="{{ conference.id }}-cso">Allocated To: {{ conference.allocatedCso }}</div>
     <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
-    <div class="message"><app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages></div>
-    <div
-      id="{{ conference.id }}-hearing-status"
-      [ngClass]="{ 'status-down': true }"
-    >
+    <div *appFeatureFlag="featureFlags.instantMessaging" class="message">
+      <app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages>
+    </div>
+    <div id="{{ conference.id }}-hearing-status" [ngClass]="{ 'status-down': true }">
       <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
     </div>
-    <div
-      class="vh-top-padding"
-      [ngClass]="{ 'pIcons-down': true }"
-    >
+    <div class="vh-top-padding" [ngClass]="{ 'pIcons-down': true }">
       <div *ngFor="let participant of getParticipantsForConference(conference)" class="vh-pIcons">
         <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
       </div>

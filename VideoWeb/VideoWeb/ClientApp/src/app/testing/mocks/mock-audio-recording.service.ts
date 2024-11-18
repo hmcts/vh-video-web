@@ -24,6 +24,7 @@ const mockWowzaAgent: VHPexipParticipant = {
     isVideoCall: false,
     pexipDisplayName: 'vh-wowza',
     protocol: '',
+    role: 'guest',
     receivingAudioMix: '',
     sentAudioMixes: undefined,
     uuid: 'wowzaUUID',

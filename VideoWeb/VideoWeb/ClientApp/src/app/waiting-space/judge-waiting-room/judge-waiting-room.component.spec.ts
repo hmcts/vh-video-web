@@ -23,7 +23,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -232,6 +231,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
 
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
@@ -239,7 +239,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,
@@ -302,6 +301,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         protocol: 'webrtc',
         disconnect_supported: 'Yes',
         transfer_supported: 'Yes',
+        is_video_silent: false,
+        role: 'GUEST',
         is_main_video_dropped_out: false,
         is_video_muted: false,
         is_streaming_conference: false,

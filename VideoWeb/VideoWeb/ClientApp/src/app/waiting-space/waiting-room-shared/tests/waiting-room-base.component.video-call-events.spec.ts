@@ -41,7 +41,6 @@ import {
     focusService,
     globalConference,
     globalParticipant,
-    heartbeatModelMapper,
     hideComponentsService,
     initAllWRDependencies,
     logger,
@@ -89,6 +88,8 @@ describe('WaitingRoomComponent Video Call', () => {
         initAllWRDependencies();
 
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
+        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
+        launchDarklyService.getFlag.and.returnValue(of(true));
 
         component = new WRTestComponent(
             activatedRoute,
@@ -96,7 +97,6 @@ describe('WaitingRoomComponent Video Call', () => {
             eventsService,
             logger,
             errorService,
-            heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
             router,
@@ -171,6 +171,8 @@ describe('WaitingRoomComponent Video Call', () => {
                 local_alias: '',
                 mute_supported: 'true',
                 protocol: '',
+                role: 'GUEST',
+                is_video_silent: false,
                 spotlight: 0,
                 start_time: 0,
                 uuid: '',
