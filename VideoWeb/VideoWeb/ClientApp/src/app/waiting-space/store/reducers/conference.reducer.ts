@@ -109,6 +109,18 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, endpoints: endpoints };
         return { ...state, currentConference: updatedConference };
     }),
+    on(ConferenceActions.updateParticipantHearingTransferStatus, (state, { conferenceId, participantId, transferDirection }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+
+        const participants = conference.participants.map(p =>
+            p.id === participantId ? { ...p, transferDirection: transferDirection } : p
+        );
+        const updatedConference: VHConference = { ...conference, participants: participants };
+        return { ...state, currentConference: updatedConference };
+    }),
     on(ConferenceActions.updateParticipantMediaStatus, (state, { participantId, conferenceId, mediaStatus }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {

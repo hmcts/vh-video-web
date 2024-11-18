@@ -4,6 +4,7 @@ import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipPart
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -397,6 +398,34 @@ describe('Conference Reducer', () => {
             expect(updatedResult.currentConference.endpoints[0].status).toBe(updatedStatus);
             expect(updatedResult.currentConference.endpoints[0].room).toBeNull();
             expect(updatedResult.currentConference.endpoints[0].pexipInfo).toBeNull();
+        });
+    });
+
+    describe('updateParticipantHearingTransferStatus', () => {
+        it('should return the previous state if the conference id does not match', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantHearingTransferStatus({
+                    conferenceId: 'unknown',
+                    participantId: conferenceTestData.participants[0].id,
+                    transferDirection: TransferDirection.In
+                })
+            );
+
+            expect(result).toBe(existingInitialState);
+        });
+
+        it('should update the transfer status of a participant', () => {
+            const updatedResult = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantHearingTransferStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.participants[0].id,
+                    transferDirection: TransferDirection.In
+                })
+            );
+
+            expect(updatedResult.currentConference.participants[0].transferDirection).toBe(TransferDirection.In);
         });
     });
 
