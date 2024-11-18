@@ -53,6 +53,10 @@ public class DeleteParticipantTests
         var participant = conference.Participants.First(x=> x.Role == Role.QuickLinkParticipant);
         participant.ParticipantStatus = ParticipantStatus.Disconnected;
         
+        // expected notification list should be all participants except the one being removed (after cache object updated) who will be added at the end
+        var expectedNotificationList = conference.Participants.Where(x => x.Id != participant.Id).ToList();
+        expectedNotificationList.Add(participant);
+        
         _mocker.Mock<IVideoApiClient>()
             .Setup(x => x.RemoveParticipantFromConferenceAsync(conference.Id, participant.Id, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -71,7 +75,10 @@ public class DeleteParticipantTests
                     It.IsAny<CancellationToken>()), Times.Once);
         conference.Participants.Should().NotContain(x=> x.Id == participant.Id);
         _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(
-            x => x.PushParticipantsUpdatedEvent(It.IsAny<Conference>(), It.IsAny<IList<Participant>>()), Times.Once);
+            x => x.PushParticipantsUpdatedEvent(
+                It.Is<Conference>(c=> c.Id == conference.Id), 
+                expectedNotificationList), 
+            Times.Once);
     }
 
     [Test]
