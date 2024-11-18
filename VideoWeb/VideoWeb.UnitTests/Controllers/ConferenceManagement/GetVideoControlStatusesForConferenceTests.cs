@@ -46,16 +46,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_NoContent_status_code_if_video_control_statuses_is_null()
+        public async Task should_return_empty_dictionary_if_video_control_statuses_is_null()
         {
-
+            var conferenceVideoControlStatuses = new ConferenceVideoControlStatuses();
+            
             _mocker.Mock<IConferenceVideoControlStatusService>()
                 .Setup(x => x.GetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => default);
 
-            var response = await _sut.GetVideoControlStatusesForConference(_conferenceId) as NoContentResult;
+            var response = await _sut.GetVideoControlStatusesForConference(_conferenceId);
 
-            ClassicAssert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
+            
+            response.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeEquivalentTo(conferenceVideoControlStatuses);
         }
 
         [Test]

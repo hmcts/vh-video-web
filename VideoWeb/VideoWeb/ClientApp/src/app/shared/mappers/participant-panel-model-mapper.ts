@@ -4,8 +4,37 @@ import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-panel-model';
 import { ParticipantModel } from '../models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
 
 export class ParticipantPanelModelMapper {
+    mapFromVHParticipants(participants: VHParticipant[]): PanelModel[] {
+        const panelModels: PanelModel[] = [];
+        participants.forEach(p => {
+            const panelModel = new ParticipantPanelModel(
+                p.id,
+                p.displayName,
+                p.role,
+                p.tiledDisplayName,
+                p.hearingRole,
+                p.representee,
+                p.status
+            );
+            if (p.pexipInfo) {
+                panelModel.assignPexipId(p.pexipInfo.uuid);
+                panelModel.updateParticipant(
+                    p.pexipInfo.isRemoteMuted,
+                    p.pexipInfo.handRaised,
+                    p.pexipInfo.isSpotlighted,
+                    p.id,
+                    p.localMediaStatus?.isMicrophoneMuted,
+                    p.localMediaStatus?.isCameraOff
+                );
+            }
+            panelModels.push(panelModel);
+        });
+        return panelModels;
+    }
+
     mapFromParticipantUserResponseArray(pats: ParticipantForUserResponse[]): PanelModel[] {
         const participants: PanelModel[] = [];
         pats.forEach(x => {

@@ -20,6 +20,7 @@ describe('AudioRecordingService', () => {
         isRemoteMuted: false,
         isSpotlighted: false,
         handRaised: false,
+        isVideoMuted: false,
         pexipDisplayName: 'vh-wowza',
         uuid: 'unique-identifier',
         callTag: 'call-tag',

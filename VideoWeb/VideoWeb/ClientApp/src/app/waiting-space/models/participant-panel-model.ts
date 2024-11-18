@@ -34,7 +34,7 @@ export class ParticipantPanelModel extends IndividualPanelModel {
     }
 
     isAvailable(): boolean {
-        return (this.isQuickLinkUser && this.status === ParticipantStatus.InConsultation) || this.status === ParticipantStatus.Available;
+        return this.status === ParticipantStatus.InConsultation || this.status === ParticipantStatus.Available;
     }
 
     isInConsultation(): boolean {
