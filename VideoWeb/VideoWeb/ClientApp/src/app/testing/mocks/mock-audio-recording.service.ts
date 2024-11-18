@@ -20,6 +20,7 @@ const mockWowzaAgent: VHPexipParticipant = {
     handRaised: false,
     isAudioOnlyCall: true,
     isRemoteMuted: false,
+    isVideoMuted: false,
     isSpotlighted: false,
     isVideoCall: false,
     pexipDisplayName: 'vh-wowza',

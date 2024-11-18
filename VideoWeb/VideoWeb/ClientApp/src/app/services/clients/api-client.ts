@@ -2019,15 +2019,6 @@ export class ApiClient extends ApiClientBase {
                     return _observableOf(result200);
                 })
             );
-        } else if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result204: any = null;
-                    let resultData204 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result204 = ConferenceVideoControlStatuses.fromJS(resultData204);
-                    return _observableOf(result204);
-                })
-            );
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {

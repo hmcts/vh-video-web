@@ -623,6 +623,7 @@ describe('HearingControlsBaseComponent', () => {
             pexipDisplayName: undefined,
             isRemoteMuted: false,
             isSpotlighted: true,
+            isVideoMuted: false,
             handRaised: false,
             uuid: undefined,
             callTag: undefined,

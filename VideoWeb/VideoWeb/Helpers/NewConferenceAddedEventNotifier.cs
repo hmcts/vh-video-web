@@ -14,12 +14,10 @@ namespace VideoWeb.Helpers
     public class NewConferenceAddedEventNotifier : INewConferenceAddedEventNotifier
     {
         private readonly IEventHandlerFactory _eventHandlerFactory;
-        private readonly ILogger<NewConferenceAddedEventNotifier> _logger;
 
         public NewConferenceAddedEventNotifier(IEventHandlerFactory eventHandlerFactory, ILogger<NewConferenceAddedEventNotifier> logger)
         {
             _eventHandlerFactory = eventHandlerFactory;
-            _logger = logger;
         }
 
         public Task PushNewConferenceAddedEvent(Guid conferenceId)
