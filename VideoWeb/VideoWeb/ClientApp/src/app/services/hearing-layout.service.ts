@@ -125,6 +125,7 @@ export class HearingLayoutService {
 
     getCurrentLayout(): Observable<HearingLayout> {
         return this.conferenceService.currentConference$.pipe(
+            filter(conference => conference !== null),
             take(1),
             map(conference => conference.id),
             mergeMap(currentConferenceId => this.apiClient.getLayoutForHearing(currentConferenceId))

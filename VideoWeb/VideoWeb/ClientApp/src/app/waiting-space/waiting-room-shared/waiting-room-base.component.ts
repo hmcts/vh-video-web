@@ -75,6 +75,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
     vodafoneEnabled = false;
+    instantMessagingEnabled = false;
 
     maxBandwidth = null;
     audioOnly: boolean;
@@ -168,10 +169,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.vodafoneEnabled = flag;
             });
         this.launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
+            .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(flag => {
-                this.vodafoneEnabled = flag;
+                this.instantMessagingEnabled = flag;
             });
         this.isAdminConsultation = false;
         this.loadingData = true;
