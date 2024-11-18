@@ -519,7 +519,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private processParticipantAndEndpointUpdates(participants: VHParticipant[], endpoints: VHEndpoint[]) {
         this.totalParticipants = participants.length + endpoints.length;
         this.totalParticipantsInWaitingRoom =
-            participants.filter(x => x.status === ParticipantStatus.Available).length +
+            participants.filter(x => x.status === ParticipantStatus.Available || x.status === ParticipantStatus.InConsultation).length +
             endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
 
         this.nonEndpointParticipants = this.mapper.mapFromVHParticipants(participants);
