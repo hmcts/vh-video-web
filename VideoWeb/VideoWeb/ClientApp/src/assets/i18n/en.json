@@ -415,6 +415,9 @@
     "unpin": "Remove spotlight",
     "pin": "Spotlight"
   },
+  "self-view": {
+    "user-spotlighted": "The judge has pinned your video"
+  },
   "judge-participant-status-list": {
     "crest-alt": "HM Courts &amp; Tribunals Service crest",
     "scottish-crest": "SCTS Crest",
