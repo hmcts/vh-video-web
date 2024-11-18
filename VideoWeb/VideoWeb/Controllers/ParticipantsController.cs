@@ -125,7 +125,7 @@ public class ParticipantsController(
         }, cancellationToken);
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         conference.GetParticipant(participantId).DisplayName = participantRequest.DisplayName;
-        await UpdateCacheAndPublishUpdatedParticipantList(conference, cancellationToken);
+        await UpdateCacheAndPublishUpdatedParticipantList(conference, null, cancellationToken);
 
         return NoContent();
     }
@@ -212,7 +212,7 @@ public class ParticipantsController(
         };
 
         if (!profile.Roles.Exists(role => participantsRoles.Contains(role))) return Ok(response);
-        
+
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participantFromCache = conference.Participants
             .SingleOrDefault(
@@ -292,6 +292,7 @@ public class ParticipantsController(
         CancellationToken cancellationToken)
     {
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var participantToRemove = conference.GetParticipant(participantId);
         if (conference.GetParticipant(participantId).ParticipantStatus is not ParticipantStatus.Disconnected)
         {
             ModelState.AddModelError(nameof(participantId), "Participant is not disconnected");
@@ -301,16 +302,21 @@ public class ParticipantsController(
         await videoApiClient.RemoveParticipantFromConferenceAsync(conferenceId, participantId, cancellationToken);
 
         conference.RemoveParticipantById(participantId);
-        await UpdateCacheAndPublishUpdatedParticipantList(conference, cancellationToken);
+        await UpdateCacheAndPublishUpdatedParticipantList(conference, participantToRemove, cancellationToken);
         return NoContent();
     }
 
-    private async Task UpdateCacheAndPublishUpdatedParticipantList(Conference conference,
+    private async Task UpdateCacheAndPublishUpdatedParticipantList(Conference conference, Participant removedParticipant,
         CancellationToken cancellationToken)
     {
         await conferenceService.UpdateConferenceAsync(conference, cancellationToken);
-        await participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference,
-            conference.Participants.ToList());
+        var participantsToNotify = conference.Participants.ToList();
+        if (removedParticipant != null)
+        {
+            // removed participant needs an updated object without themselves in it
+            participantsToNotify.Add(removedParticipant);
+        }
+        await participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
     }
 
     private Guid GetIdForParticipantByUsernameInConference(Conference conference)
