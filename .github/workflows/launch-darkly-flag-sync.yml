@@ -17,4 +17,4 @@ jobs:
         uses: launchdarkly/find-code-references@v2
         with:
           accessToken: ${{ secrets.LD_ACCESS_TOKEN }}
-          projKey: VH
+          projKey: Video Hearings
