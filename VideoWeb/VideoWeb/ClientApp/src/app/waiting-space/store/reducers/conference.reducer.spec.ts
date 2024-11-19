@@ -58,7 +58,8 @@ describe('Conference Reducer', () => {
                     hearingRole: HearingRole.REPRESENTATIVE,
                     pexipInfo: undefined,
                     role: Role.Representative,
-                    linkedParticipants: []
+                    linkedParticipants: [],
+                    localMediaStatus: undefined
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
@@ -72,7 +73,8 @@ describe('Conference Reducer', () => {
                     hearingRole: HearingRole.JUDGE,
                     pexipInfo: undefined,
                     role: Role.Judge,
-                    linkedParticipants: []
+                    linkedParticipants: [],
+                    localMediaStatus: undefined
                 },
                 {
                     id: '729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
@@ -88,7 +90,8 @@ describe('Conference Reducer', () => {
                     hearingRole: HearingRole.REPRESENTATIVE,
                     pexipInfo: undefined,
                     role: Role.Representative,
-                    linkedParticipants: []
+                    linkedParticipants: [],
+                    localMediaStatus: undefined
                 },
                 {
                     id: 'Xf497ffa-802c-4dfb-a3f2-208de0c12345',
@@ -104,7 +107,8 @@ describe('Conference Reducer', () => {
                     hearingRole: undefined,
                     pexipInfo: undefined,
                     role: undefined,
-                    linkedParticipants: []
+                    linkedParticipants: [],
+                    localMediaStatus: undefined
                 }
             ],
             endpoints: [
@@ -113,14 +117,16 @@ describe('Conference Reducer', () => {
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
                     defenceAdvocate: 'john.doe@test.com',
-                    room: originalRoom
+                    room: originalRoom,
+                    pexipInfo: undefined
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
                     displayName: 'Endpoint 2',
                     status: EndpointStatus.NotYetJoined,
                     defenceAdvocate: null,
-                    room: null
+                    room: null,
+                    pexipInfo: undefined
                 }
             ],
             supplier: Supplier.Vodafone
@@ -169,6 +175,10 @@ describe('Conference Reducer', () => {
                             role: 'Guest',
                             sentAudioMixes: [{ mix_name: 'main', prominent: false }],
                             receivingAudioMix: 'main'
+                        },
+                        localMediaStatus: {
+                            isCameraOff: true,
+                            isMicrophoneMuted: true
                         }
                     },
                     conferenceTestData.participants[1]
@@ -185,6 +195,46 @@ describe('Conference Reducer', () => {
 
             expect(result.currentConference.caseName).toEqual('Updating conference');
             expect(result.currentConference.participants[0].pexipInfo).toBeTruthy();
+            expect(result.currentConference.participants[0].localMediaStatus.isCameraOff).toBeTrue();
+            expect(result.currentConference.participants[0].localMediaStatus.isMicrophoneMuted).toBeTrue();
+        });
+
+        it('should replace the existing conference with the new conference and maintain pexip info for endpoints', () => {
+            const conferenceWithPexipInfo: VHConference = {
+                ...conferenceTestData,
+                endpoints: [
+                    {
+                        ...conferenceTestData.endpoints[0],
+                        pexipInfo: {
+                            isRemoteMuted: false,
+                            isSpotlighted: false,
+                            isVideoMuted: false,
+                            handRaised: false,
+                            pexipDisplayName: '1922_John Doe',
+                            uuid: '1922_John Doe',
+                            callTag: 'john-cal-tag',
+                            isAudioOnlyCall: false,
+                            isVideoCall: true,
+                            protocol: 'sip',
+                            role: 'Guest',
+                            sentAudioMixes: [{ mix_name: 'main', prominent: false }],
+                            receivingAudioMix: 'main'
+                        }
+                    },
+                    conferenceTestData.endpoints[1]
+                ]
+            };
+
+            const initialStateWithPexipInfo: ConferenceState = { ...initialState, currentConference: conferenceWithPexipInfo };
+
+            const conferenceWithoutPexipInfo: VHConference = { ...existingInitialState.currentConference, caseName: 'Updating conference' };
+            const result = conferenceReducer(
+                initialStateWithPexipInfo,
+                ConferenceActions.loadConferenceSuccess({ conference: conferenceWithoutPexipInfo })
+            );
+
+            expect(result.currentConference.caseName).toEqual('Updating conference');
+            expect(result.currentConference.endpoints[0].pexipInfo).toBeTruthy();
         });
     });
 

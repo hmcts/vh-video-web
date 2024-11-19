@@ -34,12 +34,16 @@ function getCurrentConference(state: ConferenceState, conferenceId: string): VHC
 export const conferenceReducer = createReducer(
     initialState,
     on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
-        // retain the pexip info for the participants (this does not come from the API)
+        // retain the pexip info and media device status for the participants (this does not come from the API)
         const updatedParticipants = conference.participants.map(p => {
             const existingParticipant = state.currentConference?.participants.find(cp => cp.id === p.id);
-            return { ...p, pexipInfo: existingParticipant?.pexipInfo };
+            return { ...p, pexipInfo: existingParticipant?.pexipInfo, localMediaStatus: existingParticipant?.localMediaStatus };
         });
-        const updatedConference: VHConference = { ...conference, participants: updatedParticipants };
+        const updatedEndpoints = conference.endpoints.map(e => {
+            const existingEndpoint = state.currentConference?.endpoints.find(ce => ce.id === e.id);
+            return { ...e, pexipInfo: existingEndpoint?.pexipInfo };
+        });
+        const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
         const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
         return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete };
