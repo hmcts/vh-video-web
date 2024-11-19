@@ -61,7 +61,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     private destroyedSubject = new Subject();
     private readonly loggerPrefix = '[SelfTest] -';
-
+    private readonly validDisconnectReasons = ['Conference terminated by another participant', 'Test call finished'];
     constructor(
         private logger: Logger,
         private videoWebService: VideoWebService,
@@ -258,8 +258,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId,
             pexipDisconnectReason: reason
         });
-        if (reason.reason === 'Conference terminated by another participant' || reason.reason === 'Test call finished') {
-            this.retrieveSelfTestScore();
+        if (this.validDisconnectReasons.includes(reason.reason)) {
+            await this.retrieveSelfTestScore();
         }
     }
 
