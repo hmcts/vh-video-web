@@ -43,18 +43,7 @@ export class AudioRecordingService {
                 takeUntil(this.onDestroy$),
                 distinctUntilChanged((prev, curr) => prev?.uuid === curr?.uuid)
             )
-            .subscribe(participant => {
-                if (participant) {
-                    this.dialOutUUID = [...new Set([...this.dialOutUUID, participant?.uuid])];
-                }
-                this.wowzaAgent = participant;
-                if (participant?.isAudioOnlyCall) {
-                    this.wowzaAgentConnection$.next(true);
-                    this.restartActioned = false;
-                } else {
-                    this.wowzaAgentConnection$.next(false);
-                }
-            });
+            .subscribe(wowzaParticipant => this.handleWowzaParticipantAdded(wowzaParticipant));
 
         this.eventService.getAudioPaused().subscribe(async (message: AudioRecordingPauseStateMessage) => {
             if (this.conference.id === message.conferenceId) {
@@ -77,28 +66,52 @@ export class AudioRecordingService {
         this.dialOutUUID = this.dialOutUUID.filter(uuid => uuid !== this.wowzaAgent.uuid);
     }
 
-    async reconnectToWowza(failedToConnectCallback: Function) {
+    async reconnectToWowza(callback: Function = null) {
         this.restartActioned = true;
-        this.cleanupDialOutConnections();
         this.videoCallService.connectWowzaAgent(this.conference.audioRecordingIngestUrl, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
-                await this.eventService.sendAudioRecordingPaused(this.conference.id, false);
+                this.logger.debug(`${this.loggerPrefix} dial-out request successful`);
             } else {
-                failedToConnectCallback();
+                this.restartActioned = false;
+                if (callback) {
+                    callback();
+                } else {
+                    this.wowzaAgentConnection$.next(false);
+                }
             }
         });
     }
 
-    cleanupDialOutConnections() {
+    cleanupDialOutConnections(): void {
         this.logger.debug(`${this.loggerPrefix} Cleaning up dial out connections, if any {dialOutUUID: ${this.dialOutUUID}}`);
-        this.dialOutUUID?.forEach(uuid => {
-            this.videoCallService.disconnectWowzaAgent(uuid);
-        });
+
+        if (this.dialOutUUID.length > 0) {
+            this.dialOutUUID?.forEach(uuid => {
+                if (uuid) {
+                    this.videoCallService.disconnectWowzaAgent(uuid);
+                }
+            });
+        }
+
         this.dialOutUUID = [];
     }
 
-    cleanupSubscriptions() {
+    cleanupSubscriptions(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
+    }
+
+    private async handleWowzaParticipantAdded(participant: VHPexipParticipant) {
+        if (participant) {
+            this.dialOutUUID = [...new Set([...this.dialOutUUID, participant?.uuid])];
+        }
+        this.wowzaAgent = participant;
+        if (participant?.isAudioOnlyCall) {
+            this.wowzaAgentConnection$.next(true);
+            this.restartActioned = false;
+            await this.eventService.sendAudioRecordingPaused(this.conference.id, false);
+        } else {
+            this.wowzaAgentConnection$.next(false);
+        }
     }
 }
