@@ -213,6 +213,9 @@ export class ParticipantService {
         this.logger.debug(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
+        if (!conferenceId) {
+            return;
+        }
         return zip(
             this.conferenceService.getParticipantsForConference(conferenceId),
             this.conferenceService.getEndpointsForConference(conferenceId)

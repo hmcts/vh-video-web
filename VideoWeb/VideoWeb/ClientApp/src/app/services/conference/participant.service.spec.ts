@@ -1237,6 +1237,7 @@ describe('ParticipantService', () => {
                 callTag: undefined,
                 isRemoteMuted: false,
                 isSpotlighted: false,
+                isVideoMuted: false,
                 handRaised: false,
                 isAudioOnlyCall: false,
                 isVideoCall: false,

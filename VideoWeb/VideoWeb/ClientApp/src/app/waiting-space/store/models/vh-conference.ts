@@ -7,6 +7,7 @@ import {
     Role,
     Supplier
 } from 'src/app/services/clients/api-client';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 export interface VHConference {
     id: string;
@@ -43,6 +44,13 @@ export interface VHParticipant {
     linkedParticipants: Array<VHLinkedParticipant>;
     externalReferenceId?: string;
     protectedFrom?: string[];
+    localMediaStatus?: LocalDeviceStatus;
+    transferDirection?: TransferDirection;
+}
+
+export interface LocalDeviceStatus {
+    isCameraOff: boolean;
+    isMicrophoneMuted: boolean;
 }
 
 export interface VHEndpoint {
@@ -60,6 +68,7 @@ export interface VHEndpoint {
 export interface VHPexipParticipant {
     isRemoteMuted: boolean;
     isSpotlighted: boolean;
+    isVideoMuted: boolean;
     handRaised: boolean;
     pexipDisplayName: string;
     uuid: string;

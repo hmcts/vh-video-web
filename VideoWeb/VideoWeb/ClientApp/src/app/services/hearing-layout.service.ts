@@ -117,6 +117,7 @@ export class HearingLayoutService {
 
     getCurrentRecommendedLayout(): Observable<HearingLayout> {
         return this.conferenceService.currentConference$.pipe(
+            filter(conference => conference !== null),
             take(1),
             map(conference => conference.id),
             mergeMap(conferenceId => this.apiClient.getRecommendedLayoutForHearing(conferenceId))
@@ -135,6 +136,7 @@ export class HearingLayoutService {
     updateCurrentLayout(layout: HearingLayout) {
         this.conferenceService.currentConference$
             .pipe(
+                filter(conference => conference !== null),
                 take(1),
                 map(conference => conference.id)
             )
