@@ -12,19 +12,18 @@ export class NotificationSoundsService {
 
     constructor(private logger: Logger) {}
 
-    initConsultationRequestRingtone() {
+    async initConsultationRequestRingtone() {
         this.consultationRequestSound = new Audio();
-        fetch('/assets/audio/consultation_request.txt').then(response => {
-            this.consultationRequestSound.src = `data:audio/mpeg;base64,${response.text()}`;
-            this.consultationRequestSound.load();
-            this.consultationRequestSound.addEventListener(
-                'ended',
-                () => {
-                    this.consultationRequestSound.play();
-                },
-                false
-            );
-        });
+        const response = await fetch('/assets/audio/consultation_request.txt');
+        this.consultationRequestSound.src = `data:audio/mpeg;base64,${await response.text()}`;
+        this.consultationRequestSound.load();
+        this.consultationRequestSound.addEventListener(
+            'ended',
+            function () {
+                this.play();
+            },
+            false
+        );
     }
 
     async playConsultationRequestRingtone() {
