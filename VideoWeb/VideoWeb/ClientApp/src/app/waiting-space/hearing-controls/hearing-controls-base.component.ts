@@ -25,6 +25,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -167,24 +168,17 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
 
-        this.participantService.loggedInParticipant$
+        this.conferenceStore
+            .select(ConferenceSelectors.getLoggedInParticipant)
             .pipe(
                 takeUntil(this.destroyedSubject),
-                filter(participant => participant && participant.role === Role.Judge)
+                filter(x => !!x)
             )
-            .subscribe(participant => this.onLoggedInParticipantChanged(participant));
+            .subscribe(loggedInParticipant => {
+                this.isSpotlighted = loggedInParticipant.pexipInfo?.isSpotlighted;
+            });
 
         this.initialiseMuteStatus();
-    }
-
-    onLoggedInParticipantChanged(participant: ParticipantModel): void {
-        this.isSpotlighted = participant.isSpotlighted;
-        this.participantSpotlightUpdateSubscription?.unsubscribe();
-        this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
-            .pipe(filter(updatedParticipant => updatedParticipant.id === participant.id))
-            .subscribe(updatedParticipant => {
-                this.isSpotlighted = updatedParticipant.isSpotlighted;
-            });
     }
 
     initialiseMuteStatus() {

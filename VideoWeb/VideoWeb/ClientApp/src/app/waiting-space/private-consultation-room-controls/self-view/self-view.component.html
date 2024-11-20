@@ -1,6 +1,31 @@
 <div class="video-container">
-    <video appForcePlayVideo [muted]="true" [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
-        id="outgoingFeedVideo" [srcObject]="this.videoSource" width="100%" height="auto">
-        {{ 'private-consultation-room-controls.browser-support' | translate }}
-    </video>
+  <video
+    *ngIf="showSpotlightedBorder"
+    appTooltip
+    [text]="'self-view.user-spotlighted' | translate"
+    appForcePlayVideo
+    [muted]="true"
+    [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
+    id="outgoingFeedVideo"
+    [srcObject]="this.videoSource"
+    width="100%"
+    height="auto"
+    class="hover-events-enabled"
+  >
+    {{ 'private-consultation-room-controls.browser-support' | translate }}
+  </video>
+
+  <video
+    *ngIf="!showSpotlightedBorder"
+    appForcePlayVideo
+    [muted]="true"
+    [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
+    id="outgoingFeedVideo"
+    [srcObject]="this.videoSource"
+    width="100%"
+    height="auto"
+    class="hover-events-enabled"
+  >
+    {{ 'private-consultation-room-controls.browser-support' | translate }}
+  </video>
 </div>
