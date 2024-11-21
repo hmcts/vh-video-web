@@ -54,7 +54,8 @@ public class ConferencesController(
         var username = User.Identity!.Name;
         var hearings =
             await bookingApiClient.GetConfirmedHearingsByUsernameForTodayV2Async(username, cancellationToken);
-        var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
+        var request = new GetConferencesByHearingIdsRequest
+            { HearingRefIds = hearings.Select(x => x.Id).ToArray(), IncludeClosed = true };
         ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
         if (hearings.Count > 0)
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
@@ -90,7 +91,7 @@ public class ConferencesController(
         var hearingsForToday =
             await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
         var request = new GetConferencesByHearingIdsRequest
-            { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
+            { HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray(), IncludeClosed = true };
         ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
         if (hearingsForToday.Count > 0)
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
@@ -185,7 +186,7 @@ public class ConferencesController(
         }
 
         var request = new GetConferencesByHearingIdsRequest
-            { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray() };
+            { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray(), IncludeClosed = true };
         var conferences = await videoApiClient.GetConferenceDetailsByHearingRefIdsAsync(request, cancellationToken);
         var openConferences = conferences.Where(x => x.IsWaitingRoomOpen).ToList();
         var responses = openConferences.Select(x =>
