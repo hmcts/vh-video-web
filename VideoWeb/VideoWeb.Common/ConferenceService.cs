@@ -19,6 +19,7 @@ public interface IConferenceService
     public Task UpdateConferenceAsync(Conference conference, CancellationToken cancellationToken = default);
     public Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default);
     public Task RemoveConference(Conference conference, CancellationToken cancellationToken = default);
+    public Task PopulateConferenceCacheForToday(CancellationToken cancellationToken = default);
 }
 
 public class ConferenceService(
@@ -67,12 +68,24 @@ public class ConferenceService(
     
     public async Task<IEnumerable<Conference>> GetConferences(IEnumerable<Guid> conferenceIds, CancellationToken cancellationToken = default)
     {
-        var ids = conferenceIds.ToArray();
-        return await Task.WhenAll(ids.Select(id => GetConference(id, cancellationToken)));
+        return await Task.WhenAll(conferenceIds.Select(id => GetConference(id, cancellationToken)));
     }
     
     public async Task RemoveConference(Conference conference, CancellationToken cancellationToken = default)
     {
         await conferenceCache.RemoveConferenceAsync(conference, cancellationToken);
+    }
+    
+    public async Task PopulateConferenceCacheForToday(CancellationToken cancellationToken = default)
+    {
+        var hearings = await bookingApiClient.GetHearingsForTodayV2Async(cancellationToken);
+        var conferences = await videoApiClient.GetConferencesTodayAsync(null, cancellationToken);
+        var hearingConferences = conferences
+            .SelectMany(c => hearings.Where(h => h.Id == c.HearingId)
+                .Select(h => (c, h)));
+        foreach (var (conference, hearing) in hearingConferences)
+        {
+            await conferenceCache.AddConferenceAsync(conference, hearing, cancellationToken);
+        }
     }
 }

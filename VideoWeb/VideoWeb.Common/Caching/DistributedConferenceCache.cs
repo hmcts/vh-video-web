@@ -6,23 +6,21 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.Common.Caching
 {
-    public sealed class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
+    public sealed class DistributedConferenceCache(
+        IDistributedCache distributedCache,
+        ILogger<DistributedConferenceCache> logger,
+        CacheSettings settings)
+        : RedisCacheBase<Guid, Conference>(distributedCache, logger), IConferenceCache
     {
-        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
-
-        public DistributedConferenceCache(
-            IDistributedCache distributedCache, 
-            ILogger<DistributedConferenceCache> logger) : base(distributedCache, logger)
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; } = new()
         {
-            CacheEntryOptions = new DistributedCacheEntryOptions
-            {
-                SlidingExpiration = TimeSpan.FromHours(4)
-            };
-        }
-
+            SlidingExpiration = TimeSpan.FromHours(settings.CacheDuration),
+        };
+        
         public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse, HearingDetailsResponseV2 hearingDetailsResponse, CancellationToken cancellationToken = default)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse, hearingDetailsResponse);
