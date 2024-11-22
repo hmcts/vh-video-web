@@ -281,10 +281,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
-
-        if (component.audioRecordingInterval) {
-            clearInterval(component.callbackTimeout);
-        }
     });
 
     const pexipParticipant: PexipParticipant = {
@@ -542,51 +538,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
             });
-        });
-    });
-
-    describe('verifyAudioRecordingStream', () => {
-        const currentConferenceRecordingInSessionForSeconds = 10;
-        const currentAudioRecordingStreamCheckIntervalSeconds = 30;
-
-        beforeEach(() => {
-            component.continueWithNoRecording = false;
-            component.recordingSessionSeconds = currentConferenceRecordingInSessionForSeconds;
-            component.audioStreamIntervalSeconds = currentAudioRecordingStreamCheckIntervalSeconds;
-        });
-
-        it('should init audio recording interval', () => {
-            spyOn(component, 'verifyAudioRecordingStream');
-            component.initAudioRecordingInterval();
-            expect(component.audioRecordingInterval).toBeDefined();
-        });
-
-        it('should accumulate when conference is in session', async () => {
-            component.conference.status = ConferenceStatus.InSession;
-            await component.verifyAudioRecordingStream();
-            expect(component.recordingSessionSeconds).toBe(
-                currentConferenceRecordingInSessionForSeconds + currentAudioRecordingStreamCheckIntervalSeconds
-            );
-        });
-
-        it('should reset when conference is not in session', async () => {
-            component.conference.status = ConferenceStatus.Paused;
-            await component.verifyAudioRecordingStream();
-            expect(component.recordingSessionSeconds).toBe(0);
-        });
-
-        it('should switch the continueWithNoRecording flag to false when conference is not in session', async () => {
-            component.conference.status = ConferenceStatus.Paused;
-            component.continueWithNoRecording = true;
-            await component.verifyAudioRecordingStream();
-            expect(component.continueWithNoRecording).toBe(false);
-        });
-
-        it('should not switch the continueWithNoRecording flag when conference is in session', async () => {
-            component.conference.status = ConferenceStatus.InSession;
-            component.continueWithNoRecording = true;
-            await component.verifyAudioRecordingStream();
-            expect(component.continueWithNoRecording).toBe(true);
         });
     });
 
@@ -937,11 +888,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 eventsService.sendAudioRestartActioned.calls.reset();
             });
 
-            it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
+            it('should continue with no recording when judge dismisses the audio recording alert mid hearing', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.verifyAudioRecordingStream();
+
+                component.verifyAudioRecordingStream();
 
                 component.audioRestartCallback(true);
 
@@ -949,60 +900,36 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(component.continueWithNoRecording).toBeTruthy();
             });
 
-            it('should only display one toast for audio recording issues', async () => {
+            it('should only display one toast for audio recording issues', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.verifyAudioRecordingStream();
+
+                component.verifyAudioRecordingStream();
+
                 expect(component.audioErrorRetryToast).toBeTruthy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
             });
 
-            it('should display audio recording alert when wowza agent not assigned', async () => {
+            it('should display audio recording alert when wowza agent not assigned', () => {
                 audioRecordingServiceSpy.wowzaAgent = null;
-                component.recordingSessionSeconds = 61;
+
                 component.conference.status = ConferenceStatus.InSession;
-                await component.verifyAudioRecordingStream();
+
+                component.verifyAudioRecordingStream();
+
                 expect(component.audioErrorRetryToast).toBeTruthy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
             });
 
-            it('should not display audio recording alert before 20 seconds has passed', async () => {
-                audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 0;
-                component.conference.status = ConferenceStatus.InSession;
-                await component.verifyAudioRecordingStream();
-                expect(component.audioErrorRetryToast).toBeFalsy();
-                expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
-            });
-
             it('should not preform audio recording check if continuing with no recording', async () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 100;
                 component.conference.status = ConferenceStatus.InSession;
                 component.continueWithNoRecording = true;
-                await component.verifyAudioRecordingStream();
+
+                component.verifyAudioRecordingStream();
+
                 expect(component.audioErrorRetryToast).toBeFalsy();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
-            });
-
-            it('should not preform audio recording check if hearing isnt InSession', async () => {
-                audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 100;
-                component.conference.status = ConferenceStatus.Paused;
-                await component.verifyAudioRecordingStream();
-                expect(component.audioErrorRetryToast).toBeFalsy();
-                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
-            });
-
-            it('should reset notification state if hearing status not InSession', async () => {
-                audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
-                component.recordingSessionSeconds = 100;
-                component.conference.status = ConferenceStatus.Paused;
-                component.continueWithNoRecording = true;
-                await component.verifyAudioRecordingStream();
-                expect(component.continueWithNoRecording).toBeFalsy();
-                expect(component.audioErrorRetryToast).toBeFalsy();
             });
 
             it('when wowza listener missing, but toast for restart already open, do nothing', async () => {
@@ -1015,27 +942,27 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
             });
 
-            it('when audio stream triggered again before action, but toast for restart already open, do nothing', async () => {
+            it('when audio stream triggered again before action, but toast for restart already open, do nothing', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
                 component.continueWithNoRecording = false;
                 component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
-                component.recordingSessionSeconds = 61;
                 component.conference.status = ConferenceStatus.InSession;
-                await component.verifyAudioRecordingStream();
+
+                component.verifyAudioRecordingStream();
+
                 expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
             });
 
             describe('Multiple Hosts Audio Alert', () => {
-                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user', async () => {
+                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user', () => {
                     // Arrange
                     audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
                     component.continueWithNoRecording = false;
                     component.audioErrorRetryToast = null;
-                    component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     // Act
-                    await component.verifyAudioRecordingStream();
+                    component.verifyAudioRecordingStream();
                     // Assert
                     expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
                     expect(component.audioErrorRetryToast).toBeTruthy();
