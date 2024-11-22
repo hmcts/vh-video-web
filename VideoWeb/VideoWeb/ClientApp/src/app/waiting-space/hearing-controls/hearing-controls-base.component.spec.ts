@@ -1,6 +1,6 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import {
     ClientSettingsResponse,
     ConferenceResponse,
@@ -58,6 +58,8 @@ import { ConferenceActions } from '../store/actions/conference.actions';
 import { take } from 'rxjs/operators';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
+import { mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -114,6 +116,8 @@ describe('HearingControlsBaseComponent', () => {
     beforeEach(() => {
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
+
+        mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
 
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
@@ -192,6 +196,7 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+        mockStore.resetSelectors();
     });
     it('should return true for staff member', () => {
         component.participant = conference.participants.find(x => x.role === Role.StaffMember);
@@ -253,73 +258,6 @@ describe('HearingControlsBaseComponent', () => {
                 expect(component.videoMuted).toBeFalse();
             }));
         });
-    });
-
-    describe('onLoggedInParticipantChanged', () => {
-        it('should unsubscribe from the existing subscription and resubscribe', fakeAsync(() => {
-            // Arrange
-            const firstSubscription = new Subscription();
-            spyOn(firstSubscription, 'unsubscribe');
-            const secondSubscription = new Subscription();
-            spyOn(secondSubscription, 'unsubscribe');
-            const observable = new Observable<ParticipantModel>();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(observable);
-            spyOn(observable, 'pipe').and.returnValue(observable);
-            spyOn(observable, 'subscribe').and.returnValues(firstSubscription, secondSubscription);
-
-            // Act
-            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
-            flush();
-            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
-            flush();
-
-            // Assert
-            expect(firstSubscription.unsubscribe).toHaveBeenCalledTimes(1);
-            expect(secondSubscription.unsubscribe).not.toHaveBeenCalledTimes(1);
-            expect(component['participantSpotlightUpdateSubscription']).toBe(secondSubscription);
-        }));
-
-        it('should update isSpotlighted when spotlight changed event is emitted', fakeAsync(() => {
-            // Arrange
-            const spotlightChangedSubject = new Subject<ParticipantModel>();
-            const spotlightChanged$ = spotlightChangedSubject.asObservable();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
-            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
-
-            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
-            participant.isSpotlighted = false;
-
-            // Act
-            component.onLoggedInParticipantChanged(participant);
-            flush();
-
-            participant.isSpotlighted = true;
-            spotlightChangedSubject.next(participant);
-
-            // Assert
-            expect(component.isSpotlighted).toBeTrue();
-        }));
-
-        it('should NOT update isSpotlighted when spotlight changed event is emitted if the participant IDs dont match', fakeAsync(() => {
-            // Arrange
-            const spotlightChangedSubject = new Subject<ParticipantModel>();
-            const spotlightChanged$ = spotlightChangedSubject.asObservable();
-            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
-            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
-
-            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
-            participant.isSpotlighted = false;
-
-            // Act
-            component.onLoggedInParticipantChanged(participant);
-            flush();
-
-            participant.id = Guid.create().toString();
-            spotlightChangedSubject.next(participant);
-
-            // Assert
-            expect(component.isSpotlighted).toBeFalse();
-        }));
     });
 
     describe('onVideoEvidenceSharing', () => {

@@ -41,6 +41,7 @@ import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
+import { getCountdownComplete } from '../store/selectors/conference.selectors';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -48,10 +49,7 @@ import { AudioRecordingService } from '../../services/audio-recording.service';
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
-    audioRecordingInterval: NodeJS.Timer;
     continueWithNoRecording = false;
-    audioStreamIntervalSeconds = 10;
-    recordingSessionSeconds = 0;
     expanedPanel = true;
     hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
@@ -375,34 +373,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hostWantsToJoinHearing = false;
     }
 
-    initAudioRecordingInterval() {
-        this.audioRecordingInterval = setInterval(async () => {
-            await this.verifyAudioRecordingStream();
-        }, this.audioStreamIntervalSeconds * 1000);
-    }
-
     audioRestartCallback(continueWithNoRecording: boolean) {
         this.continueWithNoRecording = continueWithNoRecording;
         this.audioErrorRetryToast = null;
     }
 
-    async verifyAudioRecordingStream(): Promise<void> {
-        if (this.conference.status === ConferenceStatus.InSession) {
-            this.logger.debug(`${this.loggerPrefixJudge} Recording Session Seconds: ${this.recordingSessionSeconds}`);
-            this.recordingSessionSeconds += this.audioStreamIntervalSeconds;
-        } else {
-            this.recordingSessionSeconds = 0;
-            this.continueWithNoRecording = false;
-        }
-
-        // If the recording session is greater than 20 seconds,
+    verifyAudioRecordingStream() {
         // has not been set to continue without recording,
-        // conference is in-session,
+        // video is open,
         // the alert isn't open already,
         // Recording is not paused
         // and the audio streaming agent cannot be validated, then show the alert
         if (
-            this.recordingSessionSeconds > 20 &&
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
@@ -431,11 +413,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.unreadMessageCount = count;
     }
 
-    leaveConsultation() {
+    async leaveConsultation() {
         if (this.isPrivateConsultation) {
             this.showLeaveConsultationModal();
         } else {
-            this.leaveJudicialConsultation();
+            await this.leaveJudicialConsultation();
         }
     }
 
@@ -538,9 +520,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.subscribeToClock();
                 this.startEventHubSubscribers();
                 this.connectToPexip();
-                if (this.conference.audio_recording_required) {
-                    this.initAudioRecordingInterval();
-                }
             });
         } catch (error) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
@@ -558,24 +537,30 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 }
             });
 
-        this.eventService.getHearingStatusMessage().subscribe(message => {
-            this.handleHearingStatusMessage(message);
-        });
+        this.eventService
+            .getHearingStatusMessage()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((message: ConferenceStatusMessage) => this.handleHearingStatusMessage(message));
 
         this.audioRecordingService
             .getAudioRecordingPauseState()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe((recordingPaused: boolean) => {
-                this.recordingPaused = recordingPaused;
-                if (!this.recordingPaused) {
-                    this.initAudioRecordingInterval();
-                }
-            });
+            .subscribe((recordingPaused: boolean) => (this.recordingPaused = recordingPaused));
 
         this.audioRecordingService
             .getWowzaAgentConnectionState()
             .pipe(takeUntil(this.onDestroy$))
-            .subscribe(stateIsConnected => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
+            .subscribe((stateIsConnected: boolean) => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
+
+        this.store
+            .select(getCountdownComplete)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(complete => {
+                if (complete) {
+                    this.logger.debug(`${this.loggerPrefixJudge} Hearing countdown complete`);
+                    this.verifyAudioRecordingStream();
+                }
+            });
     }
 
     private onShouldReload(): void {
@@ -634,11 +619,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private cleanUp() {
-        this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for JOH waiting room`, {
-            conference: this.conference?.id
-        });
-
-        clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
         this.audioRecordingService.cleanupSubscriptions();
@@ -652,15 +632,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private onWowzaDisconnected() {
-        if (this.audioRecordingService.restartActioned) {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        } else if (
-            this.conference.audio_recording_required &&
-            this.conference.status === ConferenceStatus.InSession &&
-            !this.recordingPaused
-        ) {
-            this.logWowzaAlert();
-            this.showAudioRecordingRestartAlert();
+        if (this.conference.audio_recording_required && this.conference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+            if (this.audioRecordingService.restartActioned) {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            } else {
+                this.logWowzaAlert();
+                this.showAudioRecordingRestartAlert();
+            }
         }
     }
 
@@ -680,13 +658,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.audioErrorRetryToast) {
             return;
         }
-        this.recordingSessionSeconds = 0;
-        clearInterval(this.audioRecordingInterval);
-        const failedToReconnectCallback = () => {
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectWowzaAgent);
+    }
+
+    private reconnectWowzaAgent(): void {
+        this.audioRecordingService.cleanupDialOutConnections();
+        this.audioRecordingService.reconnectToWowza.bind(this, () => {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        };
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(
-            this.audioRecordingService.reconnectToWowza.bind(this, failedToReconnectCallback)
-        );
+        });
     }
 }
