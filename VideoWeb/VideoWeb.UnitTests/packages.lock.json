@@ -173,20 +173,20 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "3.0.5",
-        "contentHash": "2H8DS11nNgreD6RdChNUxDUzMG6nSvXmm14w1TPZCXb0hUbPxg6Cc9iVZZmxdvP7aH62A0RGDoWNE5Wz0ClJwQ==",
+        "resolved": "3.1.2-pr-0919-0010",
+        "contentHash": "uTjHes/RCMLANtbDLm2sfQTdqSA/90fwUGb2KthKSsZWpjoYdZtJYDjLtTNFqeH7qAKQTV0herli/gAyAAP0hg==",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "3.0.5",
+          "BookingsApi.Common.DotNet6": "3.1.2-pr-0919-0010",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "System.Text.Json": "8.0.0"
+          "System.Text.Json": "8.0.5"
         }
       },
       "BookingsApi.Common.DotNet6": {
         "type": "Transitive",
-        "resolved": "3.0.5",
-        "contentHash": "31drJq2GLeosigbFD7xXywZRCCGAEYF0JdiqI1hvu3dNDN6Cacr+xwvIoA5UmpdgAo8J1CX1ba6LfGNnPhHNiw==",
+        "resolved": "3.1.2-pr-0919-0010",
+        "contentHash": "JBKWH0dvKUOBh9AnUV0C6ExjeV0Wem3bfmk7Gkxrqnc+Iz5cUvz6zyMMnGVX1mFlsEgrxVeJXj/DoTV0YCyN0Q==",
         "dependencies": {
-          "System.Text.Json": "8.0.0"
+          "System.Text.Json": "8.0.5"
         }
       },
       "Castle.Core": {
@@ -2349,7 +2349,7 @@
         "dependencies": {
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
-          "BookingsApi.Client": "[3.0.5, )",
+          "BookingsApi.Client": "[3.1.2-pr-0919-0010, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.3.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
@@ -2377,7 +2377,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.0.5, )",
+          "BookingsApi.Client": "[3.1.2-pr-0919-0010, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.ApplicationInsights": "[2.22.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
@@ -2393,7 +2393,7 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.0.5, )",
+          "BookingsApi.Client": "[3.1.2-pr-0919-0010, )",
           "VideoApi.Client": "[3.1.4, )",
           "VideoWeb.Common": "[1.0.0, )"
         }

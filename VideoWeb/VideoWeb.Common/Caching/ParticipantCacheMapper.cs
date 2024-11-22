@@ -1,5 +1,4 @@
 using System;
-using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;

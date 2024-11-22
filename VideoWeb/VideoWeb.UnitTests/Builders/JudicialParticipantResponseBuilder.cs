@@ -1,6 +1,5 @@
-using BookingsApi.Contract.V1.Enums;
-using BookingsApi.Contract.V1.Requests.Enums;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
+using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 
 namespace VideoWeb.UnitTests.Builders
@@ -9,10 +8,10 @@ namespace VideoWeb.UnitTests.Builders
     {
         private readonly ISingleObjectBuilder<JudiciaryParticipantResponse> _participant;
 
-        public JudicialParticipantResponseBuilder(bool IsJudge)
+        public JudicialParticipantResponseBuilder(bool isJudge)
         {
             _participant = Builder<JudiciaryParticipantResponse>.CreateNew()
-                .With(x => x.HearingRoleCode = IsJudge
+                .With(x => x.HearingRoleCode = isJudge
                     ? JudiciaryParticipantHearingRoleCode.Judge
                     : JudiciaryParticipantHearingRoleCode.PanelMember);
         }
