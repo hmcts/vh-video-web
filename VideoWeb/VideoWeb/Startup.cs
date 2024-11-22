@@ -99,6 +99,11 @@ namespace VideoWeb
             {
                 Configuration.Bind("DynatraceConfiguration", options);
             });
+            
+            services.Configure<CacheSettings>(options =>
+            {
+                Configuration.Bind("CacheSettings", options);
+            });
 
             var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
@@ -116,6 +121,9 @@ namespace VideoWeb
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
+            
+            var cacheSettings = Configuration.GetSection("CacheSettings").Get<CacheSettings>();
+            services.AddSingleton(cacheSettings);
   
             services.AddVhHealthChecks();
         }

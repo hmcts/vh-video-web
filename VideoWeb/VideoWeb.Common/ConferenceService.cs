@@ -78,8 +78,14 @@ public class ConferenceService(
     
     public async Task PopulateConferenceCacheForToday(CancellationToken cancellationToken = default)
     {
-        var conferences = await videoApiClient
-            .GetConferencesTodayForAdminByHearingVenueNameAsync(Array.Empty<string>(), cancellationToken);
-        await GetConferences(conferences.Select(c => c.Id), cancellationToken);
+        var hearings = await bookingApiClient.GetHearingsForTodayV2Async(cancellationToken);
+        var conferences = await videoApiClient.GetConferencesTodayAsync(null, cancellationToken);
+        var hearingConferences = conferences
+            .SelectMany(c => hearings.Where(h => h.Id == c.HearingId)
+                .Select(h => (c, h)));
+        foreach (var (conference, hearing) in hearingConferences)
+        {
+            await conferenceCache.AddConferenceAsync(conference, hearing, cancellationToken);
+        }
     }
 }
