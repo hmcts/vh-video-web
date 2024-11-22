@@ -11,7 +11,7 @@ using VideoWeb.Services;
 namespace VideoWeb.UnitTests.Services;
 
 [TestFixture]
-public class ConferenceBackgroundServiceTests
+public class ConferenceCacheLoaderServiceTests
 {
     private Mock<ICacheLock> _cacheLock;
     private Mock<IConferenceService> _conferenceService;

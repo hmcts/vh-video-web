@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.Services.BackgroundService;
 
+[ExcludeFromCodeCoverage]
 public class ConferenceBackgroundService(IServiceProvider serviceProvider, CacheSettings cacheSettings) : Microsoft.Extensions.Hosting.BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
