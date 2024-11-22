@@ -736,8 +736,8 @@
     "change-interpreting-language": "Newid iaith dehongli",
     "interpreting-for": "Dehongli ar gyfer",
     "dial-out": "Deialu allan",
-    "pause-recording": "Pause recording placeholder text",
-    "resume-recording": "Resume recording placeholder text"
+    "pause-recording": "Egwyl recordio",
+    "resume-recording": "Parhau â recordio"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -976,6 +976,9 @@
     "unmute-lock": "Datgloi mudo",
     "unpin": "Peidio amlygu",
     "pin": "Amlygu"
+  },
+  "self-view": {
+    "user-spotlighted": "Mae'r barnwr wedi pinio'ch fideo"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",

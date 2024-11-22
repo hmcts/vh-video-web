@@ -38,7 +38,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
@@ -902,14 +902,42 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('Pause Resume Audio Recording', () => {
-        it('should call audioRecordingService.pauseRecording', () => {
-            component.pauseRecording();
-            expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalled();
+        beforeEach(() => {
+            audioRecordingServiceSpy.stopRecording.calls.reset();
+            audioRecordingServiceSpy.reconnectToWowza.calls.reset();
+            component.recordingButtonDisabled = false;
         });
 
-        it('should call audioRecordingService.resumeRecording', () => {
-            component.resumeRecording();
-            expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalled();
+        describe('when recording button disabled', () => {
+            it('should not call audioRecordingService.pauseRecording', () => {
+                component.recordingButtonDisabled = true;
+                component.pauseRecording();
+                expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalledTimes(0);
+            });
+
+            it('should call audioRecordingService.resumeRecording', () => {
+                component.recordingButtonDisabled = true;
+                component.resumeRecording();
+                expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        describe('when recording button enabled', () => {
+            it('should call audioRecordingService.pauseRecording', fakeAsync(() => {
+                component.pauseRecording();
+                expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalled();
+                expect(component.recordingButtonDisabled).toBeTrue();
+                tick(5000);
+                expect(component.recordingButtonDisabled).toBeFalse();
+            }));
+
+            it('should call audioRecordingService.resumeRecording', fakeAsync(() => {
+                component.resumeRecording();
+                expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalled();
+                expect(component.recordingButtonDisabled).toBeTrue();
+                tick(5000);
+                expect(component.recordingButtonDisabled).toBeFalse();
+            }));
         });
     });
 });
