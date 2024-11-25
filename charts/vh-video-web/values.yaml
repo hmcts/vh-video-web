@@ -76,9 +76,6 @@ java:
           alias: azuread--resourceid
         - redisconfiguration--endpoint
         - redisconfiguration--password
-        - CacheSettings--DailyRoutineTime
-        - CacheSettings--CacheDuration
-        - CacheSettings--LockDuration
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
