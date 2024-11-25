@@ -68,7 +68,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
+                await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name);
                 return Ok(score);
             }
             catch (VideoApiException e)
@@ -89,7 +89,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await videoApiClient.GetIndependentTestCallResultAsync(participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity.Name);
+                await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name);
                 return Ok(score);
             }
             catch (VideoApiException e)
