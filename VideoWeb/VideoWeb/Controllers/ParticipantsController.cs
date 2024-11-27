@@ -176,7 +176,7 @@ public class ParticipantsController(
     public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId,
         CancellationToken cancellationToken)
     {
-        var conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
         return Ok(participants);
     }
@@ -220,7 +220,7 @@ public class ParticipantsController(
 
         if (participantFromCache == null)
         {
-            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+            conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             participantFromCache = conference.Participants
                 .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
         }

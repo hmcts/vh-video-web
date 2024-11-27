@@ -176,7 +176,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             
             var controller  = SetupControllerWithClaims(user);
             
-            var requiredConferenceCache = new Conference
+            var requriedConferenceCache = new Conference
             {
                 Id = TestConference.Id,
                 Participants = TestConference.Participants,
@@ -186,7 +186,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requiredConferenceCache);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requriedConferenceCache);
             
             var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();
@@ -213,7 +213,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
+            _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
             
             var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<UnauthorizedObjectResult>();
