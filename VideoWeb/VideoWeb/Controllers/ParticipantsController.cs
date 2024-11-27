@@ -220,7 +220,7 @@ public class ParticipantsController(
 
         if (participantFromCache == null)
         {
-            conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
             participantFromCache = conference.Participants
                 .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
         }
