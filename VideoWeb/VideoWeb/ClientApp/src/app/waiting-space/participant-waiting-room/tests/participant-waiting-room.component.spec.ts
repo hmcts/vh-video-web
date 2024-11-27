@@ -1,7 +1,7 @@
-import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ActiveToast } from 'ngx-toastr';
-import { of, Subject, Subscription } from 'rxjs';
+import {fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
+import {ActivatedRoute, convertToParamMap} from '@angular/router';
+import {ActiveToast} from 'ngx-toastr';
+import {of, Subject, Subscription} from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -10,14 +10,15 @@ import {
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    Supplier
 } from 'src/app/services/clients/api-client';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { HearingRole } from '../../models/hearing-role-model';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
+import {Hearing} from 'src/app/shared/models/hearing';
+import {pageUrls} from 'src/app/shared/page-url.constants';
+import {RoomClosingToastComponent} from 'src/app/shared/toast/room-closing/room-closing-toast.component';
+import {ConferenceTestData} from 'src/app/testing/mocks/data/conference-test-data';
+import {HearingRole} from '../../models/hearing-role-model';
+import {VideoCallPreferences} from '../../services/video-call-preferences.mode';
 import {
     clockService,
     consultationInvitiationService,
@@ -30,6 +31,7 @@ import {
     globalParticipant,
     hideComponentsService,
     initAllWRDependencies,
+    launchDarklyService,
     logger,
     mockConferenceStore,
     mockedHearingVenueFlagsService,
@@ -38,17 +40,17 @@ import {
     roomClosingToastrService,
     router,
     titleService,
-    launchDarklyService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import {ParticipantWaitingRoomComponent} from '../participant-waiting-room.component';
+import {translateServiceSpy} from 'src/app/testing/mocks/mock-translation.service';
+import {UnloadDetectorService} from 'src/app/services/unload-detector.service';
+import {getSpiedPropertyGetter} from 'src/app/shared/jasmine-helpers/property-helpers';
+import {createParticipantRemoteMuteStoreServiceSpy} from '../../services/mock-participant-remote-mute-store.service';
+import {UserMediaService} from 'src/app/services/user-media.service';
+import {FEATURE_FLAGS} from 'src/app/services/launch-darkly.service';
+
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -86,7 +88,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
@@ -142,6 +143,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
+        conference.supplier = Supplier.Kinly
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;

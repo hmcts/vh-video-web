@@ -13,7 +13,7 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    SharedParticipantRoom
+    SharedParticipantRoom, Supplier
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -107,6 +107,7 @@ describe('WaitingRoomComponent message and clock', () => {
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
+        conference.supplier = Supplier.Kinly;
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;
@@ -713,10 +714,10 @@ describe('WaitingRoomComponent message and clock', () => {
             });
         });
 
-        describe('when the vodafone toggle is enabled', () => {
+        describe('when the supplier is vodafone', () => {
             beforeEach(() => {
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
-                component.vodafoneEnabled = true;
+                component.conference.supplier = Supplier.Vodafone;
             });
 
             it('should use standard conferene room when when paticipant is a joh', async () => {
