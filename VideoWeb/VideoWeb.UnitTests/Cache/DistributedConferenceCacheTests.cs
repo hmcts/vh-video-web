@@ -8,6 +8,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.UnitTests.Cache
 {
@@ -15,12 +16,14 @@ namespace VideoWeb.UnitTests.Cache
     {
         private Mock<IDistributedCache> _distributedCacheMock;
         private Mock<ILogger<DistributedConferenceCache>> _loggerMock;
+        private CacheSettings _cacheSettings;
 
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
             _loggerMock = new Mock<ILogger<DistributedConferenceCache>>();
+            _cacheSettings = new CacheSettings { CacheDuration = 1 };
         }
         
         [Test]
@@ -35,7 +38,7 @@ namespace VideoWeb.UnitTests.Cache
                 .Setup(x => x.GetAsync(conference.Id.ToString(), CancellationToken.None))
                 .ReturnsAsync(rawData);
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object, _cacheSettings);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, DummyInput);
             result.Should().BeEquivalentTo(conference);
@@ -57,7 +60,7 @@ namespace VideoWeb.UnitTests.Cache
             _distributedCacheMock
                 .Setup(x => x.SetAsync(conference.Id.ToString(), rawData, It.IsAny<DistributedCacheEntryOptions>(), CancellationToken.None));
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object, _cacheSettings);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, async () => await Task.FromResult((conferenceResponse, hearingDetails)));
             result.Should().BeEquivalentTo(conference);
@@ -76,7 +79,7 @@ namespace VideoWeb.UnitTests.Cache
                 .Setup(x => x.GetAsync(conference.Id.ToString(), CancellationToken.None))
                 .ReturnsAsync(rawData);
             
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object, _cacheSettings);
 
             // Act
             await cache.RemoveConferenceAsync(conference);

@@ -48,7 +48,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.6.1" />
-    <PackageReference Include="VideoApi.Client" Version="3.0.3" />
+    <PackageReference Include="VideoApi.Client" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="8.0.7" />
@@ -77,6 +77,9 @@
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
     <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Services\IParticipantService.cs" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
