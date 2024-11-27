@@ -18,7 +18,8 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    SharedParticipantRoom, Supplier,
+    SharedParticipantRoom,
+    Supplier,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';

@@ -13,7 +13,8 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    SharedParticipantRoom, Supplier
+    SharedParticipantRoom,
+    Supplier
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
