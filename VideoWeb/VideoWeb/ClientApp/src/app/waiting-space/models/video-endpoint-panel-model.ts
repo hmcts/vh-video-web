@@ -34,7 +34,7 @@ export class VideoEndpointPanelModel extends IndividualPanelModel {
     }
 
     isAvailable(): boolean {
-        return this.status === EndpointStatus.Connected;
+        return this.status === EndpointStatus.Connected || this.status === EndpointStatus.InConsultation;
     }
 
     isInConsultation(): boolean {

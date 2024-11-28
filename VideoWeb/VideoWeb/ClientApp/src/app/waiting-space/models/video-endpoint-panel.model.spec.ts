@@ -28,6 +28,12 @@ describe('VideoEndpointPanelModel', () => {
         expect(model.isAvailable()).toBeFalsy();
     });
 
+    it('should return isAvailable: true when endpoint is in consultation', () => {
+        endpoint.status = EndpointStatus.InConsultation;
+        model = new VideoEndpointPanelModel(endpoint);
+        expect(model.isAvailable()).toBeTruthy();
+    });
+
     it('should return isAvailable: true when endpoint is connected', () => {
         endpoint.status = EndpointStatus.Connected;
         model = new VideoEndpointPanelModel(endpoint);
