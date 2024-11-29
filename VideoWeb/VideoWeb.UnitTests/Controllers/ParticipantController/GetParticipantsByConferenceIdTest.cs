@@ -37,7 +37,7 @@ public class GetParticipantsByConferenceIdTest
         var response = CreateValidParticipantConferenceDto();
         
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
         
         var result = await _sut.GetParticipantsByConferenceIdAsync(conferenceId, CancellationToken.None);
