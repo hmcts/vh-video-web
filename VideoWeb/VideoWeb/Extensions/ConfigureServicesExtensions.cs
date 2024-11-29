@@ -30,7 +30,6 @@ using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using StackExchange.Redis;
 using VideoApi.Client;
-using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.Tokens;
 using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
@@ -38,6 +37,7 @@ using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Services;
+using VideoWeb.Services.BackgroundService;
 
 namespace VideoWeb.Extensions
 {
@@ -121,6 +121,9 @@ namespace VideoWeb.Extensions
             services.AddScoped<ISupplierPlatformServiceFactory, SupplierPlatformServiceFactory>();
             services.AddScoped<IConferenceService, ConferenceService>();
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
+            services.AddScoped<IConferenceLoaderService, ConferenceLoaderService>();
+            services.AddSingleton<ICacheLock, CacheLock>();
+            
             services.AddTransient<VhApiLoggingDelegatingHandler>();
 
             var container = services.BuildServiceProvider();
@@ -188,6 +191,7 @@ namespace VideoWeb.Extensions
                     Ssl = true,
                 };
             });
+            services.AddHostedService<ConferenceBackgroundService>();
             return services;
         }
 

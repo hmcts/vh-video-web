@@ -22,8 +22,8 @@ namespace VideoWeb.UnitTests.Services;
 public class ConferenceManagementServiceTests
 {
     private ConferenceManagementService _sut;
-    public Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
-    public Mock<IEventHubClient> EventHubClientMock { get; set; }
+    private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
+    private Mock<IEventHubClient> EventHubClientMock { get; set; }
     private Conference _conference;
     private AutoMock _mocker;
 

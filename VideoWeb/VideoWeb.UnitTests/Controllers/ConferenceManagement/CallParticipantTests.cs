@@ -174,11 +174,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
             
-            
-
             var controller  = SetupControllerWithClaims(user);
             
-            var requriedConferenceCache = new Conference
+            var requiredConferenceCache = new Conference
             {
                 Id = TestConference.Id,
                 Participants = TestConference.Participants,
@@ -188,7 +186,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Remove witness from the cache
             TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
             
-            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requriedConferenceCache);
+            _mocker.Mock<IConferenceService>().Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requiredConferenceCache);
             
             var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id, CancellationToken.None);
             result.Should().BeOfType<AcceptedResult>();

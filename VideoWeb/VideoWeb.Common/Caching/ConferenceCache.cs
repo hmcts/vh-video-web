@@ -20,7 +20,7 @@ namespace VideoWeb.Common.Caching
         {
             await memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
-                entry.SlidingExpiration = TimeSpan.FromHours(4);
+                entry.SlidingExpiration = TimeSpan.FromHours(6);
                 return Task.FromResult(conference);
             });
         }

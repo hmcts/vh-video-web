@@ -452,13 +452,10 @@ public class EventHub(
 
     private async Task<IEnumerable<Guid>> GetConferenceIds(bool isAdmin)
     {
-        if (isAdmin)
-        {
-            var conferences = await videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null);
-            return conferences.Select(x => x.Id);
-        }
-
-        return Array.Empty<Guid>();
+        if (!isAdmin) return Array.Empty<Guid>();
+        var conferences = await videoApiClient.GetConferencesTodayAsync(Array.Empty<string>());
+        return conferences.Select(x => x.Id);
+        
     }
 
     private bool IsSenderAdmin()
