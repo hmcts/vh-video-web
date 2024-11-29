@@ -53,7 +53,7 @@ public class GetConferenceByIdTests
         var conference = CreateValidConferenceResponse();
         conference.Participants[0].Role = Role.Individual;
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         var result = await _controller.GetConferenceByIdAsync(conference.Id, It.IsAny<CancellationToken>());
         var typedResult = (OkObjectResult)result.Result;
@@ -77,7 +77,7 @@ public class GetConferenceByIdTests
     {
         var conference = CreateValidConferenceResponse(null);
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
         var result = await _controller.GetConferenceByIdAsync(conference.Id, It.IsAny<CancellationToken>());
@@ -92,7 +92,7 @@ public class GetConferenceByIdTests
         conference.CurrentStatus = ConferenceStatus.Closed;
         conference.IsWaitingRoomOpen = false;
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(conference);
         
         var result = await _controller.GetConferenceByIdAsync(conference.Id, CancellationToken.None);
@@ -122,7 +122,7 @@ public class GetConferenceByIdTests
             (int) HttpStatusCode.Unauthorized,
             "Invalid Client ID", null, default, null);
         _mocker.Mock<IConferenceService>()
-            .Setup(x => x.ForceGetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(apiException);
         
         var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid(), CancellationToken.None);
