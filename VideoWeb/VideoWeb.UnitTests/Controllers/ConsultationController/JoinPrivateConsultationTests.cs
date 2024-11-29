@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
+using VideoApi.Contract.Consts;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
@@ -57,7 +58,9 @@ public class JoinPrivateConsultationTests
         conference.Participants.Add(new Participant()
         {
             Id = expectedParticipantId,
-            Username = ClaimsPrincipalBuilder.Username
+            Username = ClaimsPrincipalBuilder.Username,
+            Role = Role.Representative,
+            HearingRole = HearingRoleName.Representative
         });
 
 
