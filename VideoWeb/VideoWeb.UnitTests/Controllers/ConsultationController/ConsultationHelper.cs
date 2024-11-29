@@ -39,6 +39,10 @@ public static class ConsultationHelper
                     .With(x => x.Id = Guid.NewGuid())
                     .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                 
+                Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkObserver)
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
+                
                 Builder<Participant>.CreateNew()
                     .With(x => x.Role = Role.StaffMember).With(x => x.Id = Guid.NewGuid())
                     .With(x => x.Username = "staffMember@hmcts.net")

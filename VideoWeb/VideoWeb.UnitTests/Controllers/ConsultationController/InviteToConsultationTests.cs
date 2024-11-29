@@ -153,6 +153,39 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 x => x.NotifyConsultationRequestAsync(_testConference, roomLabel, Guid.Empty, individual.Id), Times.Never);
         }
 
+        [Test]
+        public async Task should_return_badrequest_if_invitee_is_an_observer()
+        {
+            // arrange
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
+                .WithUsername("rep1@hmcts.net").Build();
+            _sut = SetupControllerWithClaims(cp);
+            
+            var roomLabel = "RoomLabel1";
+            var observer = _testConference.Participants.Find(x => x.Role == Role.QuickLinkObserver);
+            var rep = _testConference.Participants.Find(x => x.Role == Role.Representative);
+            
+            rep.CurrentRoom = new ConsultationRoom {Label = roomLabel};
+            rep.Username = "rep1@hmcts.net";
+
+            var request = new InviteToConsultationRequest
+            {
+                ConferenceId = _testConference.Id,
+                RoomLabel = roomLabel,
+                ParticipantId = observer.Id
+            };
+            
+            // act
+            var act = async () => await _sut.InviteToConsultationAsync(request, CancellationToken.None);
+            
+            // assert
+            await act.Should().ThrowAsync<BadRequestException>()
+                .WithMessage($"The participant {observer.Id} is an observer and cannot join a consultation room");
+            
+            _mocker.Mock<IConsultationNotifier>().Verify(
+                x => x.NotifyConsultationRequestAsync(_testConference, roomLabel, Guid.Empty, observer.Id), Times.Never);
+        }
+
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
