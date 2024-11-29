@@ -464,7 +464,7 @@ public class ConferenceManagementController(
         
         if (witnessRoom != null) return witnessRoom;
         
-        conference = await conferenceService.ForceGetConference(conference.Id, cancellationToken);
+        conference = await conferenceService.GetConference(conference.Id, cancellationToken);
         
         witnessRoom = GetRoomForParticipant(conference, participantId);
         

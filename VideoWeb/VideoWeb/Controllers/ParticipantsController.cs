@@ -176,7 +176,7 @@ public class ParticipantsController(
     public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId,
         CancellationToken cancellationToken)
     {
-        var conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
         return Ok(participants);
     }
@@ -214,22 +214,18 @@ public class ParticipantsController(
         if (!profile.Roles.Exists(role => participantsRoles.Contains(role))) return Ok(response);
 
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        var participantFromCache = conference.Participants
+        var participant = conference.Participants
             .SingleOrDefault(
                 x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
 
-        if (participantFromCache == null)
-        {
-            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
-            participantFromCache = conference.Participants
-                .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
-        }
-
+        if (participant == null)
+            return NotFound($"Current participant not found for conference {conferenceId}");
+        
         response = new LoggedParticipantResponse
         {
-            ParticipantId = participantFromCache.Id,
-            DisplayName = participantFromCache.DisplayName,
-            Role = participantFromCache.Role
+            ParticipantId = participant.Id,
+            DisplayName = participant.DisplayName,
+            Role = participant.Role
         };
 
         return Ok(response);

@@ -278,7 +278,7 @@ public class ConferencesController(
         Conference conference;
         try
         {
-            conference = await conferenceService.ForceGetConference(conferenceId, cancellationToken);
+            conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             if (conference == null)
             {
                 logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
