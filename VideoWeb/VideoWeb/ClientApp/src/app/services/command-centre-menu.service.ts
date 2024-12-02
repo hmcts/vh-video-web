@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { CallbackFunction } from '../shared/callback-function';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CommandCentreMenuService {
-    private conferenceImClicked: Subject<any> = new Subject();
+    private conferenceImClicked: Subject<void> = new Subject();
 
-    onConferenceImClicked(action: CallbackFunction<any>): Subscription {
-        return this.conferenceImClicked.subscribe(action);
+    get conferenceImClicked$(): Observable<void> {
+        return this.conferenceImClicked.asObservable();
     }
 
     emitConferenceImClicked() {

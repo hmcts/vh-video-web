@@ -8,7 +8,7 @@ describe('CommandCentreMenuService', () => {
     });
 
     it('should emit conference im clicked event', done => {
-        service.onConferenceImClicked(() => {
+        service.conferenceImClicked$.subscribe(() => {
             expect(true).toBe(true);
             done();
         });
@@ -16,10 +16,10 @@ describe('CommandCentreMenuService', () => {
         service.emitConferenceImClicked();
     });
 
-    it('should subscribe to conference im clicked event', () => {
+    it('should subscribe to conference IM clicked event', () => {
         const callback = jasmine.createSpy('callback');
 
-        const subscription = service.onConferenceImClicked(callback);
+        const subscription = service.conferenceImClicked$.subscribe(callback);
         service.emitConferenceImClicked();
 
         expect(callback).toHaveBeenCalled();

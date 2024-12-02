@@ -1,10 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { TaskResponse, TaskStatus } from 'src/app/services/clients/api-client';
 import { TaskService } from 'src/app/services/task.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoQueryService } from '../services/vho-query-service.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-pending-tasks',
@@ -14,8 +15,9 @@ import { VhoQueryService } from '../services/vho-query-service.service';
 export class PendingTasksComponent implements OnInit, OnDestroy {
     @Input() conferenceId: string;
 
-    taskSubscription$: Subscription;
     tasks: TaskResponse[];
+
+    private destroyed$ = new Subject();
 
     constructor(
         private queryService: VhoQueryService,
@@ -43,13 +45,13 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.taskSubscription$) {
-            this.taskSubscription$.unsubscribe();
-        }
+        this.destroyed$.next();
     }
 
     setupSubscribers() {
-        this.taskSubscription$ = this.taskService.onTaskCompleted(completedTask => this.handleTaskCompleted(completedTask));
+        this.taskService.taskCompleted$
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(completedTask => this.handleTaskCompleted(completedTask));
     }
 
     handleTaskCompleted(completedTask: TaskCompleted) {

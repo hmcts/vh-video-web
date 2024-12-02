@@ -66,7 +66,8 @@ describe('CommandCentreComponent - Core', () => {
             'returnHomeIfUnauthorised'
         ]);
 
-        pageServiceSpy = jasmine.createSpyObj<PageService>('PageService', ['emitPageRefreshed', 'onPageRefreshed']);
+        pageServiceSpy = jasmine.createSpyObj<PageService>('PageService', ['emitPageRefreshed']);
+        Object.defineProperty(pageServiceSpy, 'pageRefreshed$', { value: of() });
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [

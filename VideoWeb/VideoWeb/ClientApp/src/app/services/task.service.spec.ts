@@ -13,7 +13,7 @@ describe('TaskService', () => {
     it('should emit task completed event', done => {
         const taskCompleted: TaskCompleted = new TaskCompleted('conferenceId', 1);
 
-        service.onTaskCompleted((event: TaskCompleted) => {
+        service.taskCompleted$.subscribe((event: TaskCompleted) => {
             expect(event).toEqual(taskCompleted);
             done();
         });
@@ -25,7 +25,7 @@ describe('TaskService', () => {
         const taskCompleted: TaskCompleted = new TaskCompleted('conferenceId', 1);
         const callback = jasmine.createSpy('callback');
 
-        const subscription = service.onTaskCompleted(callback);
+        const subscription = service.taskCompleted$.subscribe(callback);
         service.emitTaskCompleted(taskCompleted);
 
         expect(callback).toHaveBeenCalledWith(taskCompleted);

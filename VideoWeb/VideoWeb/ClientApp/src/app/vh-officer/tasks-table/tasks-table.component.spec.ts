@@ -11,6 +11,7 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table.component';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { of } from 'rxjs';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
@@ -22,7 +23,8 @@ describe('TasksTableComponent', () => {
     let logger: MockLogger;
 
     beforeAll(() => {
-        taskServiceSpy = jasmine.createSpyObj<TaskService>('TaskService', ['emitTaskCompleted', 'onTaskCompleted']);
+        taskServiceSpy = jasmine.createSpyObj<TaskService>('TaskService', ['emitTaskCompleted']);
+        Object.defineProperty(taskServiceSpy, 'taskCompleted$', { value: of() });
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getTasksForConference', 'completeTask']);
         vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
         vhoQueryService.completeTask.and.returnValue(Promise.resolve(completedTask));

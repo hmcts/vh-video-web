@@ -12,6 +12,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
+import { of } from 'rxjs';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -28,9 +29,9 @@ describe('UnreadMessagesComponent', () => {
 
     beforeAll(() => {
         commandCentreMenuServiceSpy = jasmine.createSpyObj<CommandCentreMenuService>('CommandCentreMenuService', [
-            'emitConferenceImClicked',
-            'onConferenceImClicked'
+            'emitConferenceImClicked'
         ]);
+        Object.defineProperty(commandCentreMenuServiceSpy, 'conferenceImClicked$', { value: of() });
 
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadMessageCountForConference']);
 
