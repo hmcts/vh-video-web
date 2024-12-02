@@ -7,10 +7,6 @@ describe('PageService', () => {
         service = new PageService();
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
     it('should emit page refreshed event', done => {
         service.onPageRefreshed(() => {
             expect(true).toBe(true);

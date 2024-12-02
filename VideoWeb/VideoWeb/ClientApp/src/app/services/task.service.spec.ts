@@ -10,10 +10,6 @@ describe('TaskService', () => {
         service = TestBed.inject(TaskService);
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
     it('should emit task completed event', done => {
         const taskCompleted: TaskCompleted = new TaskCompleted('conferenceId', 1);
 

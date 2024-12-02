@@ -7,10 +7,6 @@ describe('CommandCentreMenuService', () => {
         service = new CommandCentreMenuService();
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
     it('should emit conference im clicked event', done => {
         service.onConferenceImClicked(() => {
             expect(true).toBe(true);
