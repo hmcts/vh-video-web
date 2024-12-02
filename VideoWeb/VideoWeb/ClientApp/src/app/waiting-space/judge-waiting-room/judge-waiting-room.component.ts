@@ -385,6 +385,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         // Recording is not paused
         // and the audio streaming agent cannot be validated, then show the alert
         if (
+            this.conference.audio_recording_required &&
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&

@@ -881,6 +881,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             beforeEach(() => {
                 component.showVideo = true;
                 component.audioErrorRetryToast = null;
+                component.conference.audio_recording_required = true;
                 notificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
                 notificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
                 notificationToastrService.showAudioRecordingRestartSuccess.calls.reset();
@@ -946,6 +947,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
                 component.continueWithNoRecording = false;
                 component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
+                component.conference.status = ConferenceStatus.InSession;
+
+                component.verifyAudioRecordingStream();
+
+                expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
+                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
+            });
+
+            it('when audio recording is not required on the hearing, do nothing', () => {
+                audioRecordingServiceSpy.wowzaAgent = null;
+                component.conference.audio_recording_required = false;
                 component.conference.status = ConferenceStatus.InSession;
 
                 component.verifyAudioRecordingStream();
