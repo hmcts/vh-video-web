@@ -1276,6 +1276,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     checkIfHearingIsClosed(): void {
         if (this.hearing.isPastClosedTime()) {
             this.clockSubscription$.unsubscribe();
+            this.logger.info(`${this.loggerPrefix} Hearing is closed, returning to home page`);
             this.router.navigate([pageUrls.Home]);
         }
     }
@@ -1399,6 +1400,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         const currentParticipantInConference = participantsUpdatedMessage.participants.find(p => p.id === this.participant.id);
         if (!currentParticipantInConference) {
+            this.logger.info(`${this.loggerPrefix} Participant not found in conference, returning to home page`);
             return this.router.navigate([pageUrls.Home]);
         }
 
