@@ -2,7 +2,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { MenuOption } from '../models/menus-options';
 import { CommandCentreMenuComponent } from './command-centre-menu.component';
-import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CommandCentreMenuService } from 'src/app/services/command-centre-menu.service';
 import { ProfileService } from '../../services/api/profile.service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ describe('CommandCentreMenuComponent', () => {
     let profileService: jasmine.SpyObj<ProfileService>;
     let router: jasmine.SpyObj<Router>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const eventbus = new EventBusService();
+    const commandCentreMenuService = new CommandCentreMenuService();
     const logger: Logger = new MockLogger();
 
     const mockProfile: UserProfileResponse = new UserProfileResponse({
@@ -33,7 +33,7 @@ describe('CommandCentreMenuComponent', () => {
     });
 
     beforeEach(() => {
-        component = new CommandCentreMenuComponent(logger, eventbus, router, videoWebService, profileService);
+        component = new CommandCentreMenuComponent(logger, commandCentreMenuService, router, videoWebService, profileService);
     });
 
     afterEach(() => {
@@ -86,7 +86,7 @@ describe('CommandCentreMenuComponent', () => {
         spyOn(component.selectedMenu, 'emit');
         const menu = MenuOption.Message;
 
-        eventbus.emit(new EmitEvent(VHEventType.ConferenceImClicked, null));
+        commandCentreMenuService.emitConferenceImClicked();
 
         expect(component.selectedMenu.emit).toHaveBeenCalledWith(menu);
         expect(component.currentMenu).toBe(menu);

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { TaskService } from 'src/app/services/task.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoQueryService } from '../services/vho-query-service.service';
@@ -26,7 +26,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     constructor(
         private vhoQueryService: VhoQueryService,
         private logger: Logger,
-        private eventbus: EventBusService
+        private taskService: TaskService
     ) {}
 
     ngOnInit() {
@@ -75,7 +75,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
             const updatedTask = await this.vhoQueryService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
             const payload = new TaskCompleted(this.conference.id, task.id);
-            this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
+            this.taskService.emitTaskCompleted(payload);
         } catch (error) {
             this.logger.error(`[TasksTable] - Failed to complete task ${task.id}`, error);
         }
@@ -96,7 +96,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.PageRefreshed, () => this.handlePageRefresh());
+        this.taskSubscription$ = this.taskService.onTaskCompleted(() => this.handlePageRefresh());
     }
 
     async handlePageRefresh() {

@@ -13,7 +13,7 @@ import {
     SupplierConfigurationResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventBusService } from 'src/app/services/event-bus.service';
+import { PageService } from 'src/app/services/page.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
@@ -49,7 +49,7 @@ describe('CommandCentreComponent - Events', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const eventsService = eventsServiceSpy;
     let router: jasmine.SpyObj<Router>;
-    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
+    let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     const logger: Logger = new MockLogger();
@@ -83,7 +83,7 @@ describe('CommandCentreComponent - Events', () => {
             'returnHomeIfUnauthorised'
         ]);
 
-        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        pageServiceSpy = jasmine.createSpyObj<PageService>('PageService', ['emitPageRefreshed', 'onPageRefreshed']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
         const config = new ClientSettingsResponse({
@@ -111,7 +111,7 @@ describe('CommandCentreComponent - Events', () => {
             logger,
             router,
             screenHelper,
-            eventBusServiceSpy,
+            pageServiceSpy,
             configService,
             notificationToastrServiceSpy
         );

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MenuOption } from '../models/menus-options';
-import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { CommandCentreMenuService } from 'src/app/services/command-centre-menu.service';
 import { Subscription } from 'rxjs';
 import { pageUrls } from '../../shared/page-url.constants';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
 
     constructor(
         private logger: Logger,
-        private eventbus: EventBusService,
+        private commandCentreMenuService: CommandCentreMenuService,
         private router: Router,
         private videoWebService: VideoWebService,
         private profileService: ProfileService
@@ -60,7 +60,7 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.subscriptions$ = this.eventbus.on(VHEventType.ConferenceImClicked, () => {
+        this.subscriptions$ = this.commandCentreMenuService.onConferenceImClicked(() => {
             this.displayMessages();
         });
     }
