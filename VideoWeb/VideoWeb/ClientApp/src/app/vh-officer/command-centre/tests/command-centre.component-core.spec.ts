@@ -157,6 +157,13 @@ describe('CommandCentreComponent - Core', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     }));
 
+    it('should emit page refreshed event when retrieving hearings and conference is selected', () => {
+        const currentConference = conferences[0];
+        component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
+        component.retrieveHearingsForVhOfficer(true);
+        expect(pageServiceSpy.emitPageRefreshed).toHaveBeenCalled();
+    });
+
     it('should clear selected conference', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
