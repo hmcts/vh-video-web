@@ -59,7 +59,8 @@ describe('Conference Reducer', () => {
                     pexipInfo: undefined,
                     role: Role.Representative,
                     linkedParticipants: [],
-                    localMediaStatus: undefined
+                    localMediaStatus: undefined,
+                    transferDirection: undefined
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
@@ -74,7 +75,8 @@ describe('Conference Reducer', () => {
                     pexipInfo: undefined,
                     role: Role.Judge,
                     linkedParticipants: [],
-                    localMediaStatus: undefined
+                    localMediaStatus: undefined,
+                    transferDirection: undefined
                 },
                 {
                     id: '729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
@@ -91,7 +93,8 @@ describe('Conference Reducer', () => {
                     pexipInfo: undefined,
                     role: Role.Representative,
                     linkedParticipants: [],
-                    localMediaStatus: undefined
+                    localMediaStatus: undefined,
+                    transferDirection: undefined
                 },
                 {
                     id: 'Xf497ffa-802c-4dfb-a3f2-208de0c12345',
@@ -108,7 +111,8 @@ describe('Conference Reducer', () => {
                     pexipInfo: undefined,
                     role: undefined,
                     linkedParticipants: [],
-                    localMediaStatus: undefined
+                    localMediaStatus: undefined,
+                    transferDirection: undefined
                 }
             ],
             endpoints: [
@@ -151,7 +155,6 @@ describe('Conference Reducer', () => {
     describe('loadConferenceSuccess action', () => {
         it('should set the current conference', () => {
             const result = conferenceReducer(initialState, ConferenceActions.loadConferenceSuccess({ conference: conferenceTestData }));
-
             expect(result.currentConference).toEqual(conferenceTestData);
         });
 

@@ -41,12 +41,12 @@ export const conferenceReducer = createReducer(
                 ...p,
                 pexipInfo: existingParticipant?.pexipInfo,
                 localMediaStatus: existingParticipant?.localMediaStatus,
-                transferDirection: null
+                transferDirection: undefined
             };
         });
         const updatedEndpoints = conference.endpoints.map(e => {
             const existingEndpoint = state.currentConference?.endpoints.find(ce => ce.id === e.id);
-            return { ...e, pexipInfo: existingEndpoint?.pexipInfo, transferDirection: null } as VHEndpoint;
+            return { ...e, pexipInfo: existingEndpoint?.pexipInfo } as VHEndpoint;
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
@@ -85,7 +85,7 @@ export const conferenceReducer = createReducer(
                     status: status,
                     room: status === ParticipantStatus.Disconnected ? null : participant.room,
                     pexipInfo: status === ParticipantStatus.Disconnected ? null : participant.pexipInfo,
-                    transferDirection: null
+                    transferDirection: undefined
                 };
                 return updatedP;
             } else {
