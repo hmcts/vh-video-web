@@ -538,6 +538,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
             });
+
+            it('Should close alert if hearing is disconnected and no longer showing the video', () => {
+                component.audioErrorRetryToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+                component.videoClosedExt();
+                expect(component.audioErrorRetryToast).toBeNull();
+            });
         });
     });
 
@@ -893,7 +899,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
                 component.conference.status = ConferenceStatus.InSession;
 
-                component.verifyAudioRecordingStream();
+                 component.verifyAudioRecordingStream();
 
                 component.audioRestartCallback(true);
 

@@ -133,6 +133,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return !this.hearing.isClosed() && !this.hearing.isInSession();
     }
 
+    videoClosedExt() {
+        this.audioErrorRetryToast = null;
+    }
+
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
@@ -379,7 +383,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     verifyAudioRecordingStream() {
-        // has not been set to continue without recording,
+        /// If audio recording is required,
+        // has not been confirmed by user, to continue without recording,
         // video is open,
         // the alert isn't open already,
         // Recording is not paused
