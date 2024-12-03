@@ -91,6 +91,21 @@ public class StartConsultationTest
         _mocker.Mock<IVideoApiClient>()
             .Verify(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Test]
+    public async Task should_return_bad_request_if_participant_list_contains_an_observer()
+    {
+        // Arrange
+        var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
+        request.InviteParticipants = [_testConference.Participants.First(x => x.Role == Role.QuickLinkObserver).Id];
+        
+        // Act
+        var result = await _controller.StartConsultationAsync(request, CancellationToken.None);
+        
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+            .Be(ConsultationsController.ConsultationWithObserversNotAllowedMessage);
+    }
     
     [Test]
     public async Task Should_return_accepted_when_request_is_sent_participant_room_type()

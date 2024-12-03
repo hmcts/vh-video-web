@@ -41,6 +41,8 @@ public class ConsultationsController(
     
     public const string ConsultationHasScreenedParticipantAndEndpointErrorMessage =
         "Cannot start consultation with participants or endpoints that are screened from each other";
+
+    public const string ConsultationWithObserversNotAllowedMessage = "Cannot start consultation with observers";
     
     /// <summary>
     /// Leave the Consultation
@@ -201,6 +203,11 @@ public class ConsultationsController(
                     request.InviteEndpoints.ToList()))
             {
                 return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
+            }
+            
+            if (conference.Participants.Exists(x => request.InviteParticipants.Contains(x.Id) && x.IsObserver()))
+            {
+                return BadRequest(ConsultationWithObserversNotAllowedMessage);
             }
             
             var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));

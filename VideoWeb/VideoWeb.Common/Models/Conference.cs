@@ -214,8 +214,11 @@ namespace VideoWeb.Common.Models
         {
             var participant = Participants.Find(x => x.Id == participantId);
             if (participant == null)
-                throw new ArgumentException($"The participant {participantId} does not exist", nameof(participantId));
-
+                throw new BadRequestException($"The participant {participantId} does not exist");
+            
+            if(participant.IsObserver())
+                throw new BadRequestException($"The participant {participantId} is an observer and cannot join a consultation room");
+            
             var ids = GetParticipantsAndEndpointsInRoom(roomLabel);
             ids.participantIds.Add(participantId);
 
