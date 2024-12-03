@@ -5,6 +5,7 @@ import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-
 import { ParticipantModel } from '../models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 export class ParticipantPanelModelMapper {
     mapFromVHParticipants(participants: VHParticipant[]): PanelModel[] {
@@ -30,6 +31,7 @@ export class ParticipantPanelModelMapper {
                     p.localMediaStatus?.isCameraOff
                 );
             }
+            panelModel.updateTransferringInStatus(p.transferDirection === TransferDirection.In);
             panelModels.push(panelModel);
         });
         return panelModels;

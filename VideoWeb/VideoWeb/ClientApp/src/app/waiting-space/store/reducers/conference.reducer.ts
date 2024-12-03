@@ -37,11 +37,16 @@ export const conferenceReducer = createReducer(
         // retain the pexip info and media device status for the participants (this does not come from the API)
         const updatedParticipants = conference.participants.map(p => {
             const existingParticipant = state.currentConference?.participants.find(cp => cp.id === p.id);
-            return { ...p, pexipInfo: existingParticipant?.pexipInfo, localMediaStatus: existingParticipant?.localMediaStatus };
+            return {
+                ...p,
+                pexipInfo: existingParticipant?.pexipInfo,
+                localMediaStatus: existingParticipant?.localMediaStatus,
+                transferDirection: undefined
+            };
         });
         const updatedEndpoints = conference.endpoints.map(e => {
             const existingEndpoint = state.currentConference?.endpoints.find(ce => ce.id === e.id);
-            return { ...e, pexipInfo: existingEndpoint?.pexipInfo };
+            return { ...e, pexipInfo: existingEndpoint?.pexipInfo } as VHEndpoint;
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
@@ -79,7 +84,8 @@ export const conferenceReducer = createReducer(
                     ...participant,
                     status: status,
                     room: status === ParticipantStatus.Disconnected ? null : participant.room,
-                    pexipInfo: status === ParticipantStatus.Disconnected ? null : participant.pexipInfo
+                    pexipInfo: status === ParticipantStatus.Disconnected ? null : participant.pexipInfo,
+                    transferDirection: undefined
                 };
                 return updatedP;
             } else {
