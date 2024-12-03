@@ -6,7 +6,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
-import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CommandCentreMenuService } from 'src/app/services/command-centre-menu.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
@@ -26,7 +26,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         private videoWebService: VideoWebService,
         protected eventsService: EventsService,
         protected logger: Logger,
-        private eventbus: EventBusService,
+        private commandCentreMenuService: CommandCentreMenuService,
         private mapper: UnreadAdminMessageModelMapper
     ) {
         super(eventsService, logger);
@@ -103,7 +103,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     }
 
     openImChat() {
-        this.eventbus.emit(new EmitEvent(VHEventType.ConferenceImClicked, null));
+        this.commandCentreMenuService.emitConferenceImClicked();
     }
 
     ngOnDestroy(): void {

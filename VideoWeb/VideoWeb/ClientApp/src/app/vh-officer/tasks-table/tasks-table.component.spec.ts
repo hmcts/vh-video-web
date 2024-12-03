@@ -2,7 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { TaskService } from 'src/app/services/task.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
@@ -11,18 +11,20 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table.component';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { of } from 'rxjs';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
-    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
+    let taskServiceSpy: jasmine.SpyObj<TaskService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
     const completedTask = new TasksTestData().getCompletedTask();
     let logger: MockLogger;
 
     beforeAll(() => {
-        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        taskServiceSpy = jasmine.createSpyObj<TaskService>('TaskService', ['emitTaskCompleted']);
+        Object.defineProperty(taskServiceSpy, 'taskCompleted$', { value: of() });
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getTasksForConference', 'completeTask']);
         vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
         vhoQueryService.completeTask.and.returnValue(Promise.resolve(completedTask));
@@ -31,14 +33,14 @@ describe('TasksTableComponent', () => {
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(vhoQueryService, logger, eventBusServiceSpy);
+        component = new TasksTableComponent(vhoQueryService, logger, taskServiceSpy);
         const conferenceClone = Object.assign(conference);
         component.conference = conferenceClone;
         component.hearing = new Hearing(conferenceClone);
         // 1 To-Do & 2 Done
         component.tasks = Object.assign(allTasks);
 
-        eventBusServiceSpy.emit.calls.reset();
+        taskServiceSpy.emitTaskCompleted.calls.reset();
     });
 
     afterEach(() => {
@@ -130,8 +132,7 @@ describe('TasksTableComponent', () => {
         await component.completeTask(task);
 
         const payload = new TaskCompleted(component.conference.id, task.id);
-        const expected = new EmitEvent(VHEventType.TaskCompleted, payload);
-        expect(eventBusServiceSpy.emit).toHaveBeenCalledWith(expected);
+        expect(taskServiceSpy.emitTaskCompleted).toHaveBeenCalledWith(payload);
     });
 
     it('should throw error when task cannot complete', async () => {
@@ -142,7 +143,7 @@ describe('TasksTableComponent', () => {
 
         await component.completeTask(task);
 
-        expect(eventBusServiceSpy.emit).toHaveBeenCalledTimes(0);
+        expect(taskServiceSpy.emitTaskCompleted).toHaveBeenCalledTimes(0);
     });
 
     it('should return username without domain', () => {
@@ -159,17 +160,17 @@ describe('TasksTableComponent', () => {
 
     it('should handle page refresh on notification', () => {
         component.ngOnInit();
-        eventBusServiceSpy.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, null));
+        taskServiceSpy.emitTaskCompleted(null);
         expect(component.tasks).not.toBeNull();
         component.ngOnDestroy();
     });
 
     it('should emit task completed', () => {
-        const eventbus = new EventBusService();
-        component = new TasksTableComponent(vhoQueryService, logger, eventbus);
+        const taskService = new TaskService();
+        component = new TasksTableComponent(vhoQueryService, logger, taskService);
         component.conference = conference;
         component.setupSubscribers();
-        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.PageRefreshed, null));
+        taskService.emitTaskCompleted(null);
         expect(vhoQueryService.getTasksForConference).toHaveBeenCalledWith(conference.id);
     });
 

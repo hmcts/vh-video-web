@@ -2,7 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse, UnreadInstantMessageConferenceCountResponse } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { CommandCentreMenuService } from 'src/app/services/command-centre-menu.service';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { adminAnsweredChatSubjectMock, eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
@@ -12,12 +12,13 @@ import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
+import { of } from 'rxjs';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
-    let eventbus: jasmine.SpyObj<EventBusService>;
+    let commandCentreMenuServiceSpy: jasmine.SpyObj<CommandCentreMenuService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     let logger: MockLogger;
     const unreadMessagesCount = 5;
@@ -27,7 +28,10 @@ describe('UnreadMessagesComponent', () => {
     let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
     beforeAll(() => {
-        eventbus = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        commandCentreMenuServiceSpy = jasmine.createSpyObj<CommandCentreMenuService>('CommandCentreMenuService', [
+            'emitConferenceImClicked'
+        ]);
+        Object.defineProperty(commandCentreMenuServiceSpy, 'conferenceImClicked$', { value: of() });
 
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadMessageCountForConference']);
 
@@ -57,7 +61,13 @@ describe('UnreadMessagesComponent', () => {
 
         unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(unreadMessages);
 
-        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus, unreadAdminMessageModelSpy);
+        component = new UnreadMessagesComponent(
+            videoWebServiceSpy,
+            eventsService,
+            logger,
+            commandCentreMenuServiceSpy,
+            unreadAdminMessageModelSpy
+        );
 
         component.hearing = new Hearing(conference);
 
@@ -220,8 +230,7 @@ describe('UnreadMessagesComponent', () => {
     });
 
     it('should emit open im chat event', () => {
-        const expected = new EmitEvent(VHEventType.ConferenceImClicked, null);
         component.openImChat();
-        expect(eventbus.emit).toHaveBeenCalledWith(expected);
+        expect(commandCentreMenuServiceSpy.emitConferenceImClicked).toHaveBeenCalled();
     });
 });

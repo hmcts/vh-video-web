@@ -1,14 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MenuOption } from '../models/menus-options';
-import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
-import { Subscription } from 'rxjs';
+import { CommandCentreMenuService } from 'src/app/services/command-centre-menu.service';
+import { Subject } from 'rxjs';
 import { pageUrls } from '../../shared/page-url.constants';
 import { Router } from '@angular/router';
 import { Role, UserProfileResponse } from '../../services/clients/api-client';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ProfileService } from '../../services/api/profile.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-command-centre-menu',
@@ -21,13 +22,13 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
 
     featureFlags = FEATURE_FLAGS;
 
-    subscriptions$ = new Subscription();
     currentMenu: MenuOption;
     private loggedInUser: UserProfileResponse;
+    private destroyed$ = new Subject();
 
     constructor(
         private logger: Logger,
-        private eventbus: EventBusService,
+        private commandCentreMenuService: CommandCentreMenuService,
         private router: Router,
         private videoWebService: VideoWebService,
         private profileService: ProfileService
@@ -44,7 +45,7 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscriptions$.unsubscribe();
+        this.destroyed$.next();
     }
 
     displayHearing(): void {
@@ -60,7 +61,7 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.subscriptions$ = this.eventbus.on(VHEventType.ConferenceImClicked, () => {
+        this.commandCentreMenuService.conferenceImClicked$.pipe(takeUntil(this.destroyed$)).subscribe(() => {
             this.displayMessages();
         });
     }

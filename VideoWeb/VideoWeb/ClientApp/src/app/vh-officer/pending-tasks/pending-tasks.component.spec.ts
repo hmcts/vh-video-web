@@ -2,7 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { TaskResponse } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { TaskService } from 'src/app/services/task.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -12,7 +12,7 @@ import { PendingTasksComponent } from './pending-tasks.component';
 describe('PendingTasksComponent', () => {
     let component: PendingTasksComponent;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
-    const eventbus = new EventBusService();
+    const taskService = new TaskService();
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     // 1 To-Do & 2 Done
     let allTasks: TaskResponse[];
@@ -27,7 +27,7 @@ describe('PendingTasksComponent', () => {
 
     beforeEach(() => {
         allTasks = new TasksTestData().getTestData();
-        component = new PendingTasksComponent(vhoQueryService, eventbus, logger);
+        component = new PendingTasksComponent(vhoQueryService, taskService, logger);
         component.conferenceId = conference.id;
         component.tasks = Object.assign(allTasks);
     });
@@ -61,7 +61,7 @@ describe('PendingTasksComponent', () => {
         const taskCompleted = new TaskCompleted(conference.id, allTasks[0].id);
         component.setupSubscribers();
 
-        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, taskCompleted));
+        taskService.emitTaskCompleted(taskCompleted);
 
         expect(component.pendingTasks).toBe(0);
     });
@@ -70,7 +70,7 @@ describe('PendingTasksComponent', () => {
         const taskCompleted = new TaskCompleted(Guid.create().toString(), 9999);
         component.setupSubscribers();
 
-        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, taskCompleted));
+        taskService.emitTaskCompleted(taskCompleted);
 
         expect(component.pendingTasks).toBe(1);
     });

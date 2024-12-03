@@ -17,7 +17,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { MenuOption } from '../models/menus-options';
 import { VhoStorageKeys } from '../services/models/session-keys';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { PageService } from 'src/app/services/page.service';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -67,7 +67,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private router: Router,
         private screenHelper: ScreenHelper,
-        private eventbus: EventBusService,
+        private pageService: PageService,
         private configService: ConfigService,
         protected notificationToastrService: NotificationToastrService
     ) {
@@ -279,7 +279,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 });
 
                 if (this.selectedHearing) {
-                    this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
+                    this.pageService.emitPageRefreshed();
                 }
 
                 this.loadingData = false;

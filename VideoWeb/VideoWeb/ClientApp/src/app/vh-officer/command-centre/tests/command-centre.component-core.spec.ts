@@ -4,7 +4,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventBusService } from 'src/app/services/event-bus.service';
+import { PageService } from 'src/app/services/page.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -33,7 +33,7 @@ describe('CommandCentreComponent - Core', () => {
     const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
-    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
+    let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
@@ -66,7 +66,8 @@ describe('CommandCentreComponent - Core', () => {
             'returnHomeIfUnauthorised'
         ]);
 
-        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        pageServiceSpy = jasmine.createSpyObj<PageService>('PageService', ['emitPageRefreshed']);
+        Object.defineProperty(pageServiceSpy, 'pageRefreshed$', { value: of() });
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [
@@ -105,7 +106,7 @@ describe('CommandCentreComponent - Core', () => {
             logger,
             router,
             screenHelper,
-            eventBusServiceSpy,
+            pageServiceSpy,
             configService,
             notificationToastrServiceSpy
         );
@@ -156,6 +157,13 @@ describe('CommandCentreComponent - Core', () => {
         component.retrieveHearingsForVhOfficer(true);
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     }));
+
+    it('should emit page refreshed event when retrieving hearings and conference is selected', () => {
+        const currentConference = conferences[0];
+        component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
+        component.retrieveHearingsForVhOfficer(true);
+        expect(pageServiceSpy.emitPageRefreshed).toHaveBeenCalled();
+    });
 
     it('should clear selected conference', () => {
         const currentConference = conferences[0];

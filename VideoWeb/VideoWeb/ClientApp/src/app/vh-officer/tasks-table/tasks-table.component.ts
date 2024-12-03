@@ -1,13 +1,14 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { TaskService } from 'src/app/services/task.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoQueryService } from '../services/vho-query-service.service';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-tasks-table',
@@ -20,13 +21,14 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     loading: boolean;
     tasks: TaskResponse[];
     conference: ConferenceResponse;
-    taskSubscription$: Subscription;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
+
+    private destroyed$ = new Subject();
 
     constructor(
         private vhoQueryService: VhoQueryService,
         private logger: Logger,
-        private eventbus: EventBusService
+        private taskService: TaskService
     ) {}
 
     ngOnInit() {
@@ -75,7 +77,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
             const updatedTask = await this.vhoQueryService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
             const payload = new TaskCompleted(this.conference.id, task.id);
-            this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
+            this.taskService.emitTaskCompleted(payload);
         } catch (error) {
             this.logger.error(`[TasksTable] - Failed to complete task ${task.id}`, error);
         }
@@ -96,7 +98,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.PageRefreshed, () => this.handlePageRefresh());
+        this.taskService.taskCompleted$.pipe(takeUntil(this.destroyed$)).subscribe(() => this.handlePageRefresh());
     }
 
     async handlePageRefresh() {
@@ -104,8 +106,6 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.taskSubscription$) {
-            this.taskSubscription$.unsubscribe();
-        }
+        this.destroyed$.next();
     }
 }
