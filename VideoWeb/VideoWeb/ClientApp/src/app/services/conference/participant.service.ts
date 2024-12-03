@@ -426,7 +426,7 @@ export class ParticipantService {
                 participants.forEach(upToDateParticipant => {
                     const participant = this.participants.find(p => p.id === upToDateParticipant.id);
 
-                    if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant.virtualMeetingRoomSummary?.id) {
+                    if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant?.virtualMeetingRoomSummary?.id) {
                         participant.virtualMeetingRoomSummary = upToDateParticipant.virtualMeetingRoomSummary;
                     }
                 });

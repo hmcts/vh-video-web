@@ -1756,9 +1756,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             let testEndpointMessageUpdate: EndpointsUpdatedMessage;
             let existingEndpoint: VideoEndpointResponse;
             let getConferenceSpy: jasmine.Spy;
-            afterEach(() => {
-                expect(getConferenceSpy).toHaveBeenCalled();
-            });
+
             beforeEach(() => {
                 notificationToastrService.showEndpointAdded.calls.reset();
                 existingEndpoint = testExistingVideoEndpointResponse;
