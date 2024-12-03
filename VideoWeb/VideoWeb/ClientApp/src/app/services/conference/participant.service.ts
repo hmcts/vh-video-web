@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
