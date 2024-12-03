@@ -436,6 +436,3 @@ export class ParticipantService {
         }
     }
 }
-function of(arg0: undefined[]): Observable<ParticipantModel[]> {
-    throw new Error('Function not implemented.');
-}
