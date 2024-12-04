@@ -726,7 +726,6 @@ describe('VideoCallService', () => {
         let mergedAudioTrack: jasmine.SpyObj<MediaStreamTrack>;
 
         beforeEach(() => {
-            console.log('mockCamAndMicStream', mockCamAndMicStream);
             micStream = jasmine.createSpyObj<MediaStream>('MediaStream', [
                 'addTrack',
                 'removeTrack',
