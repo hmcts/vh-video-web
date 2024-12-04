@@ -7680,7 +7680,8 @@ export enum EndpointState {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
     Disconnected = 'Disconnected',
-    InConsultation = 'InConsultation'
+    InConsultation = 'InConsultation',
+    InHearing = 'InHearing'
 }
 
 export enum EventType {
@@ -8556,7 +8557,8 @@ export enum EndpointStatus {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
     Disconnected = 'Disconnected',
-    InConsultation = 'InConsultation'
+    InConsultation = 'InConsultation',
+    InHearing = 'InHearing'
 }
 
 export enum LinkType {

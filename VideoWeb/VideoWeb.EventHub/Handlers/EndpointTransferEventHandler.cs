@@ -41,8 +41,9 @@ namespace VideoWeb.EventHub.Handlers
             switch (transferTo)
             {
                 case VHRoom.WaitingRoom:
-                case VHRoom.HearingRoom:
                     return (EndpointState.Connected, EndpointStatus.Connected);
+                case VHRoom.HearingRoom:
+                    return (EndpointState.InHearing, EndpointStatus.InHearing);
                 case VHRoom.ConsultationRoom:
                     return (EndpointState.InConsultation, EndpointStatus.InConsultation);
                 default:
