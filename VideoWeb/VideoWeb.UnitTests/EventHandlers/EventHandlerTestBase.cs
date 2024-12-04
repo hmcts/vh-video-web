@@ -43,6 +43,7 @@ public abstract class EventHandlerTestBase
         MemoryCache.Set(TestConference.Id, TestConference);
         
         ConferenceServiceMock.Setup(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
+        ConferenceServiceMock.Setup(x => x.ForceGetConference(TestConference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(TestConference);
         
         _eventComponentHelper.RegisterUsersForHubContext(TestConference.Participants);
     }
