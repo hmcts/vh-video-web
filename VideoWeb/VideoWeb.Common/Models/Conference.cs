@@ -280,6 +280,11 @@ namespace VideoWeb.Common.Models
             CurrentStatus = newState;
         }
 
+        public void UpdateClosedDateTime(DateTime? newClosedDateTime)
+        {
+            ClosedDateTime = newClosedDateTime;
+        }
+
         public void AddTelephoneParticipant(Guid id, string phoneNumber)
         {
             if (TelephoneParticipants.Exists(x => x.Id == id)) return;
