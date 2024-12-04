@@ -179,7 +179,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     describe('conference store - get phone number', () => {
         it('should set welsh flag to true when conference is welsh', fakeAsync(() => {
-            flushMicrotasks();
             const conference = new ConferenceResponse(Object.assign({}, globalConference));
             conference.hearing_venue_is_scottish = false;
             const vhConference = mapConferenceToVHConference(conference);
@@ -189,6 +188,24 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             expect(result$).toBeObservable(cold('a', { a: vhContactDetails.englandAndWales.phoneNumber }));
         }));
+
+        describe('when conference is scottish', () => {
+            beforeEach(() => {
+                const conference = new ConferenceResponse(Object.assign({}, globalConference));
+                conference.hearing_venue_is_scottish = true;
+                const vhConference = mapConferenceToVHConference(conference);
+                mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+                fixture = TestBed.createComponent(WRTestComponent);
+                component = fixture.componentInstance;
+            });
+
+            it('should set welsh flag to false when conference is scottish', fakeAsync(() => {
+                const result$ = component.phoneNumber$;
+
+                expect(result$).toBeObservable(cold('a', { a: vhContactDetails.scotland.phoneNumber }));
+            }));
+        });
     });
 
     describe('event hub status changes', () => {
