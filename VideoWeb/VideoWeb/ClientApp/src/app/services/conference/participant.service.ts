@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, of, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
+import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { ParticipantRemoteMuteStoreService } from 'src/app/waiting-space/services/participant-remote-mute-store.service';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
-import { ConferenceResponse, ParticipantStatus } from '../clients/api-client';
+import { ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
@@ -209,22 +209,6 @@ export class ParticipantService {
         });
     }
 
-    private loadParticipants(): Observable<ParticipantModel[]> {
-        this.logger.debug(`${this.loggerPrefix} loading participants and VMRs`);
-
-        const conferenceId = this.conferenceService.currentConferenceId;
-        if (!conferenceId) {
-            return of([]);
-        }
-        return zip(
-            this.conferenceService.getParticipantsForConference(conferenceId),
-            this.conferenceService.getEndpointsForConference(conferenceId)
-        ).pipe(
-            take(1),
-            map(participantLists => participantLists[0].concat(participantLists[1]))
-        );
-    }
-
     private populateVirtualMeetingRooms() {
         this.logger.debug(`${this.loggerPrefix} populating VMRs`, {
             currentValue: this.virtualMeetingRooms ?? null
@@ -277,10 +261,7 @@ export class ParticipantService {
         this.conferenceSubscriptions.push(
             this.eventsService
                 .getParticipantStatusMessage()
-                .pipe(
-                    filter(x => x.conferenceId === conference.id),
-                    tap(participantStatusMessage => this.checkForNewVmrsOnParticipantAvailable(participantStatusMessage))
-                )
+                .pipe(filter(x => x.conferenceId === conference.id))
                 .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
         );
 
@@ -417,22 +398,6 @@ export class ParticipantService {
                 participant.isHandRaised = update.handRaised;
                 this.participantHandRaisedStatusChangedSubject.next(participant);
             }
-        }
-    }
-
-    private checkForNewVmrsOnParticipantAvailable(participantStatusMessage: ParticipantStatusMessage) {
-        if (participantStatusMessage.status === ParticipantStatus.Available) {
-            this.loadParticipants().subscribe(participants => {
-                participants.forEach(upToDateParticipant => {
-                    const participant = this.participants.find(p => p.id === upToDateParticipant.id);
-
-                    if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant?.virtualMeetingRoomSummary?.id) {
-                        participant.virtualMeetingRoomSummary = upToDateParticipant.virtualMeetingRoomSummary;
-                    }
-                });
-
-                this.populateVirtualMeetingRooms();
-            });
         }
     }
 }
