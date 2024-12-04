@@ -29,7 +29,7 @@ import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 
-fdescribe('ParticipantService', () => {
+describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
         participants.map(x => ParticipantModel.fromParticipantForUserResponse(x));
 
