@@ -177,37 +177,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         }
     });
 
-    describe('conference store - get phone number', () => {
-        it('should set welsh flag to true when conference is welsh', fakeAsync(() => {
-            const conference = new ConferenceResponse(Object.assign({}, globalConference));
-            conference.hearing_venue_is_scottish = false;
-            const vhConference = mapConferenceToVHConference(conference);
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
-
-            const result$ = component.phoneNumber$;
-
-            expect(result$).toBeObservable(cold('a', { a: vhContactDetails.englandAndWales.phoneNumber }));
-        }));
-
-        describe('when conference is scottish', () => {
-            beforeEach(() => {
-                const conference = new ConferenceResponse(Object.assign({}, globalConference));
-                conference.hearing_venue_is_scottish = true;
-                const vhConference = mapConferenceToVHConference(conference);
-                mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
-
-                fixture = TestBed.createComponent(WRTestComponent);
-                component = fixture.componentInstance;
-            });
-
-            it('should set welsh flag to false when conference is scottish', fakeAsync(() => {
-                const result$ = component.phoneNumber$;
-
-                expect(result$).toBeObservable(cold('a', { a: vhContactDetails.scotland.phoneNumber }));
-            }));
-        });
-    });
-
     describe('event hub status changes', () => {
         beforeEach(fakeAsync(() => {
             spyOn(component, 'callAndUpdateShowVideo');
@@ -2053,6 +2022,45 @@ describe('WaitingRoomComponent EventHub Call', () => {
             expect(component.conference.id).toBe(updatedConference.id);
             expect(component.conference.scheduled_date_time).toBe(updatedConference.scheduled_date_time);
             expect(component.conference.audio_recording_required).toBe(updatedConference.audio_recording_required);
+        });
+    });
+
+    describe('conference store - get phone number', () => {
+        it('should set welsh flag to true when conference is welsh', fakeAsync(() => {
+            const conference = new ConferenceResponse(Object.assign({}, globalConference));
+            conference.hearing_venue_is_scottish = false;
+            const vhConference = mapConferenceToVHConference(conference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+            const result$ = component.phoneNumber$;
+
+            expect(result$).toBeObservable(cold('a', { a: vhContactDetails.englandAndWales.phoneNumber }));
+        }));
+
+        describe('when conference is scottish', () => {
+            beforeEach(() => {
+                const conference = new ConferenceResponse(Object.assign({}, globalConference));
+                conference.hearing_venue_is_scottish = true;
+                const vhConference = mapConferenceToVHConference(conference);
+                mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+                fixture = TestBed.createComponent(WRTestComponent);
+                component = fixture.componentInstance;
+            });
+
+            afterEach(() => {
+                component.eventHubSubscription$.unsubscribe();
+                if (component.callbackTimeout) {
+                    clearTimeout(component.callbackTimeout);
+                }
+                mockConferenceStore.resetSelectors();
+            });
+
+            it('should set welsh flag to false when conference is scottish', fakeAsync(() => {
+                const result$ = component.phoneNumber$;
+
+                expect(result$).toBeObservable(cold('a', { a: vhContactDetails.scotland.phoneNumber }));
+            }));
         });
     });
 });
