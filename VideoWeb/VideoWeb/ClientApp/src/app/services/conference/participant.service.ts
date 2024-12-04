@@ -186,8 +186,6 @@ export class ParticipantService {
                     this._nonEndpointParticipants = [...participantsArrays[0]];
                     this._endpointParticipants = [...participantsArrays[1]];
 
-                    this.populateVirtualMeetingRooms();
-
                     this.restoreCachedVideoControlState();
 
                     this.participantsLoadedSubject.next(this.participants);
@@ -202,49 +200,6 @@ export class ParticipantService {
     private restoreCachedVideoControlState() {
         this.participants.forEach(participant => {
             participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participant.id);
-        });
-
-        this.virtualMeetingRooms.forEach(vmr => {
-            vmr.participants.forEach(participant => (participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(vmr.id)));
-        });
-    }
-
-    private populateVirtualMeetingRooms() {
-        this.logger.debug(`${this.loggerPrefix} populating VMRs`, {
-            currentValue: this.virtualMeetingRooms ?? null
-        });
-
-        for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
-            this.participantRemoteMuteStoreService.assignPexipId(participant.id, participant.pexipId);
-            const existingVmr = this.virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
-            if (existingVmr) {
-                if (existingVmr.participants.find(x => x.id === participant.id)) {
-                    this.logger.warn(`${this.loggerPrefix} Participant is already registered in VMR`, {
-                        areSameInstance: participant === existingVmr.participants.find(x => x.id === participant.id)
-                    });
-                    continue;
-                }
-
-                existingVmr.participants.push(participant);
-            } else {
-                const vmr = new VirtualMeetingRoomModel(
-                    participant.virtualMeetingRoomSummary.id,
-                    participant.virtualMeetingRoomSummary.label,
-                    participant.virtualMeetingRoomSummary.locked,
-                    [participant]
-                );
-
-                this.virtualMeetingRooms.push(vmr);
-            }
-        }
-
-        this.logger.debug(`${this.loggerPrefix} populated VMRs`, {
-            newValue:
-                this.virtualMeetingRooms.map(x => ({
-                    id: x.id,
-                    displayName: x.displayName,
-                    locked: x.locked
-                })) ?? null
         });
     }
 
