@@ -116,6 +116,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
     }
 
+    trackByParticipant(index: number, participant: PanelModel): string {
+        return participant.id;
+    }
+
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
         this.toggleMuteParticipant(e.participant);
     }

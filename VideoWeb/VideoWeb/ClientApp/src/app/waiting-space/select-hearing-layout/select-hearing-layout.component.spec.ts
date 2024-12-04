@@ -182,5 +182,33 @@ describe('SelectHearingLayoutComponent', () => {
                 behavior: 'smooth'
             });
         });
+
+        it('should not scroll the selected layout into view if component is not present', () => {
+            // Arrange
+            const selectedLayout = HearingLayout.NineEqual;
+            const layoutElementId = `layout-radio-button-${selectedLayout}`;
+            spyOnProperty(component, 'currentLayout$', 'get').and.returnValue(of(selectedLayout));
+            const container = document.getElementById('select-hearing-container-content-1');
+            spyOn(container, 'scrollBy');
+
+            document.getElementById = jasmine.createSpy('getElementById').and.callFake((id: string) => {
+                if (id === layoutElementId) {
+                    return null;
+                }
+                if (id === 'accordion-choose-layout-heading') {
+                    return headingButton;
+                }
+                return container;
+            });
+
+            // Act
+            component.ngOnInit();
+            component.ngAfterViewInit();
+
+            // Assert
+
+            // @ts-ignore
+            expect(container.scrollBy).not.toHaveBeenCalledWith();
+        });
     });
 });

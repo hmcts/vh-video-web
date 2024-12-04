@@ -174,6 +174,18 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(flag => {
                 this.instantMessagingEnabled = flag;
             });
+        this.store
+            .select(ConferenceSelectors.getActiveConference)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(conf => {
+                this.countdownComplete = conf.countdownComplete;
+                this.vhConference = conf;
+                // this does not need to be an observable and we can move away from the flag service
+                this.phoneNumber$ = this.vhConference.isVenueScottish
+                    ? of(this.contactDetails.scotland.phoneNumber)
+                    : of(this.contactDetails.englandAndWales.phoneNumber);
+                this.hearingVenueFlagsService.setHearingVenueIsScottish(this.vhConference.isVenueScottish);
+            });
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
@@ -264,31 +276,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     async getConference(): Promise<void> {
-        this.store
-            .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(conf => {
-                this.vhConference = conf;
-                // this does not need to be an observable and we can move away from the flag service
-                this.phoneNumber$ = this.vhConference.isVenueScottish
-                    ? of(this.contactDetails.scotland.phoneNumber)
-                    : of(this.contactDetails.englandAndWales.phoneNumber);
-                this.participantEndpoints = conf.endpoints
-                    .filter(x => x.defenceAdvocate.toLowerCase() === this.participant.user_name.toLowerCase())
-                    .map(x => {
-                        return new AllowedEndpointResponse({
-                            id: x.id,
-                            defence_advocate_username: x.defenceAdvocate,
-                            display_name: x.displayName
-                        });
-                    });
-            });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
             this.setConference(data);
-            // this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
-            //     this.participantEndpoints = endpoints;
-            // });
 
             this.participant = this.getLoggedParticipant();
             this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
@@ -581,7 +571,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
-                await this.getConference();
+                await this.getConference.bind(this);
                 this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
             })
         );
@@ -1409,7 +1399,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         const currentParticipantInConference = participantsUpdatedMessage.participants.find(p => p.id === this.participant.id);
         if (!currentParticipantInConference) {
-            this.logger.info(`${this.loggerPrefix} Participant not found in conference, returning to home page`);
+            this.logger.info(`${this.loggerPrefix} Participant not found in conference, returning to home page`, {
+                conference: this.conferenceId,
+                participant: this.participant.id,
+                payloadConferenceId: participantsUpdatedMessage.conferenceId,
+                payloadParticipants: participantsUpdatedMessage.participants
+            });
             return this.router.navigate([pageUrls.Home]);
         }
 

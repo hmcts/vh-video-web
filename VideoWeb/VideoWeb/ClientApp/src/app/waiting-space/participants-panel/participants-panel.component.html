@@ -90,7 +90,7 @@
         <app-participants-panel-item
             [item]="participant"
             [vodafoneEnabled]="vodafoneEnabled"
-            *ngFor="let participant of participantsInHearing"
+            *ngFor="let participant of participantsInHearing; trackBy: trackByParticipant"
             (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
             (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
             (participantHandLowered)="lowerParticipantHandEventHandler($event)"
@@ -112,7 +112,7 @@
         <app-participants-panel-item
             [item]="participant"
             [vodafoneEnabled]="vodafoneEnabled"
-            *ngFor="let participant of participantsInWaitingRoom"
+            *ngFor="let participant of participantsInWaitingRoom; trackBy: trackByParticipant"
             (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
             (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
             (participantHandLowered)="lowerParticipantHandEventHandler($event)"
@@ -129,7 +129,7 @@
         <app-participants-panel-item
             [item]="participant"
             [vodafoneEnabled]="vodafoneEnabled"
-            *ngFor="let participant of participantsNotConnected"
+            *ngFor="let participant of participantsNotConnected; trackBy: trackByParticipant"
             (participantMuteToggled)="toggleMuteParticipantEventHandler($event)"
             (participantSpotlightToggled)="toggleSpotlightParticipantEventHandler($event)"
             (participantHandLowered)="lowerParticipantHandEventHandler($event)"
