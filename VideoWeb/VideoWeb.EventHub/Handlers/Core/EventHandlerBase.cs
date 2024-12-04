@@ -77,15 +77,9 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
+            SourceConference.UpdateConferenceStatus(hearingEventStatus);
             if (hearingEventStatus == ConferenceStatus.Closed)
-            {
-                // Fetch the conference to also get the updated closed date time from video api
-                SourceConference = await conferenceService.ForceGetConference(SourceConference.Id);
-            }
-            else
-            {
-                SourceConference.UpdateConferenceStatus(hearingEventStatus);
-            }
+                SourceConference.UpdateClosedDateTime(DateTime.UtcNow);
             await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {

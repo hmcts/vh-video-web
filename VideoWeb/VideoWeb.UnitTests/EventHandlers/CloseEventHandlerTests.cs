@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -27,13 +28,14 @@ namespace VideoWeb.UnitTests.EventHandlers
                 ConferenceId = conference.Id,
                 TimeStampUtc = DateTime.UtcNow
             };
+            var currentDateTime = DateTime.UtcNow;
 
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Closed),
                 Times.Exactly(participantCount));
-            ConferenceServiceMock.Verify(x => x.ForceGetConference(conference.Id, default), Times.Once);
+            TestConference.ClosedDateTime.Should().BeOnOrAfter(currentDateTime);
         }
     }
 }
