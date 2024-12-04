@@ -2,6 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>371E895D-1CDC-4872-BCCC-7199DD3AA519</ProjectGuid>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />

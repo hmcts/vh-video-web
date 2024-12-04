@@ -2,6 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}</ProjectGuid>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BookingsApi.Client" Version="3.1.8" />
