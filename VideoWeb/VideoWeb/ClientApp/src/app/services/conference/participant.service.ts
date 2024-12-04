@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { ParticipantRemoteMuteStoreService } from 'src/app/waiting-space/services/participant-remote-mute-store.service';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
-import { ConferenceResponse } from '../clients/api-client';
+import { ConferenceResponse, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
@@ -186,6 +186,8 @@ export class ParticipantService {
                     this._nonEndpointParticipants = [...participantsArrays[0]];
                     this._endpointParticipants = [...participantsArrays[1]];
 
+                    this.populateVirtualMeetingRooms();
+
                     this.restoreCachedVideoControlState();
 
                     this.participantsLoadedSubject.next(this.participants);
@@ -200,6 +202,65 @@ export class ParticipantService {
     private restoreCachedVideoControlState() {
         this.participants.forEach(participant => {
             participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participant.id);
+        });
+
+        this.virtualMeetingRooms.forEach(vmr => {
+            vmr.participants.forEach(participant => (participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(vmr.id)));
+        });
+    }
+
+    private loadParticipants(): Observable<ParticipantModel[]> {
+        this.logger.debug(`${this.loggerPrefix} loading participants and VMRs`);
+
+        const conferenceId = this.conferenceService.currentConferenceId;
+        if (!conferenceId) {
+            return;
+        }
+        return zip(
+            this.conferenceService.getParticipantsForConference(conferenceId),
+            this.conferenceService.getEndpointsForConference(conferenceId)
+        ).pipe(
+            take(1),
+            map(participantLists => participantLists[0].concat(participantLists[1]))
+        );
+    }
+
+    private populateVirtualMeetingRooms() {
+        this.logger.debug(`${this.loggerPrefix} populating VMRs`, {
+            currentValue: this.virtualMeetingRooms ?? null
+        });
+
+        for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
+            this.participantRemoteMuteStoreService.assignPexipId(participant.id, participant.pexipId);
+            const existingVmr = this.virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
+            if (existingVmr) {
+                if (existingVmr.participants.find(x => x.id === participant.id)) {
+                    this.logger.warn(`${this.loggerPrefix} Participant is already registered in VMR`, {
+                        areSameInstance: participant === existingVmr.participants.find(x => x.id === participant.id)
+                    });
+                    continue;
+                }
+
+                existingVmr.participants.push(participant);
+            } else {
+                const vmr = new VirtualMeetingRoomModel(
+                    participant.virtualMeetingRoomSummary.id,
+                    participant.virtualMeetingRoomSummary.label,
+                    participant.virtualMeetingRoomSummary.locked,
+                    [participant]
+                );
+
+                this.virtualMeetingRooms.push(vmr);
+            }
+        }
+
+        this.logger.debug(`${this.loggerPrefix} populated VMRs`, {
+            newValue:
+                this.virtualMeetingRooms.map(x => ({
+                    id: x.id,
+                    displayName: x.displayName,
+                    locked: x.locked
+                })) ?? null
         });
     }
 
@@ -216,7 +277,10 @@ export class ParticipantService {
         this.conferenceSubscriptions.push(
             this.eventsService
                 .getParticipantStatusMessage()
-                .pipe(filter(x => x.conferenceId === conference.id))
+                .pipe(
+                    filter(x => x.conferenceId === conference.id),
+                    tap(participantStatusMessage => this.checkForNewVmrsOnParticipantAvailable(participantStatusMessage))
+                )
                 .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
         );
 
@@ -353,6 +417,22 @@ export class ParticipantService {
                 participant.isHandRaised = update.handRaised;
                 this.participantHandRaisedStatusChangedSubject.next(participant);
             }
+        }
+    }
+
+    private checkForNewVmrsOnParticipantAvailable(participantStatusMessage: ParticipantStatusMessage) {
+        if (participantStatusMessage.status === ParticipantStatus.Available) {
+            this.loadParticipants().subscribe(participants => {
+                participants.forEach(upToDateParticipant => {
+                    const participant = this.participants.find(p => p.id === upToDateParticipant.id);
+
+                    if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant.virtualMeetingRoomSummary?.id) {
+                        participant.virtualMeetingRoomSummary = upToDateParticipant.virtualMeetingRoomSummary;
+                    }
+                });
+
+                this.populateVirtualMeetingRooms();
+            });
         }
     }
 }

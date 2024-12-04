@@ -279,6 +279,29 @@ describe('ParticipantService', () => {
             expect(sut.participants.find(p => p.id === participantOneId).isSpotlighted).toBeTrue();
         }));
 
+        it('restore the cached video state for a vmr', fakeAsync(() => {
+            // Arrange
+            const participantResponses = [vmrParticipantOne, vmrParticipantTwo, participantTwo];
+            const endpointResponses = [endpointOne, endpointTwo];
+
+            const conference = new ConferenceResponse();
+            conference.id = 'conference-id';
+
+            videoControlCacheServiceSpy.getSpotlightStatus.withArgs(vmrId).and.returnValue(true);
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(false);
+
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(endpointResponses));
+            flush();
+
+            // Assert
+            expect(sut.participants.find(p => p.id === vmrParticipantOneId).isSpotlighted).toBeTrue();
+            expect(sut.participants.find(p => p.id === vmrParticipantTwoId).isSpotlighted).toBeTrue();
+        }));
+
         it('should subscribe to onParticipantUpdated', fakeAsync(() => {
             // Act
             const participantResponses = [participantOne, participantTwo];
@@ -363,6 +386,56 @@ describe('ParticipantService', () => {
             expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
             expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
             expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
+        }));
+
+        it('should populate the virtual meeting rooms when get participants and get endpoints resolve', fakeAsync(() => {
+            // Arrange
+            const conferenceIdOne = 'conference-id-one';
+            const conference = new ConferenceResponse();
+            conference.id = conferenceIdOne;
+
+            const nonVmrParticipants = [participantOne, participantTwo];
+            const nonVmrEndpoints = [endpointOne, endpointTwo];
+            const vmrParticipants = [vmrParticipantOne, vmrParticipantTwo];
+            const expectedParticipants = nonVmrParticipants
+                .concat(vmrParticipants)
+                .map(x => ParticipantModel.fromParticipantForUserResponse(x))
+                .concat(nonVmrEndpoints.map(x => ParticipantModel.fromVideoEndpointResponse(x)));
+
+            const expectedVmrs = [
+                new VirtualMeetingRoomModel(
+                    vmrId,
+                    vmrLabel,
+                    vmrLocked,
+                    vmrParticipants.map(x => ParticipantModel.fromParticipantForUserResponse(x))
+                )
+            ];
+
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+
+            expect(sut.participants.length).toEqual(0);
+            expect(sut.virtualMeetingRooms.length).toEqual(0);
+
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse([...nonVmrParticipants, ...vmrParticipants]));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(nonVmrEndpoints));
+            flush();
+
+            expect(sut.participants.length).toEqual(expectedParticipants.length);
+            // We can't do a deep comparison due to the link Participant <-> VMR
+            expectedParticipants.forEach(x => expect(sut.participants.find(y => y.id === x.id)).toBeTruthy());
+
+            expect(sut.virtualMeetingRooms.length).toEqual(expectedVmrs.length);
+            // We can't do a deep comparison due to the link Participant <-> VMR
+            // Check if all the vmrs are there
+            expectedVmrs.forEach(x => expect(sut.virtualMeetingRooms.find(y => y.id === x.id)).toBeTruthy());
+
+            // Check the participants where linked
+            sut.virtualMeetingRooms.forEach(x => {
+                const expectedX = expectedVmrs.find(y => y.id === x.id);
+                expectedX.participants.forEach(p => expect(x.participants.find(z => z.id === p.id)).toBeTruthy());
+            });
         }));
     });
 
