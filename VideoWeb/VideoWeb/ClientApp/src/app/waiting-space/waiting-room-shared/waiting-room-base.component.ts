@@ -273,13 +273,22 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.phoneNumber$ = this.vhConference.isVenueScottish
                     ? of(this.contactDetails.scotland.phoneNumber)
                     : of(this.contactDetails.englandAndWales.phoneNumber);
+                this.participantEndpoints = conf.endpoints
+                    .filter(x => x.defenceAdvocate.toLowerCase() === this.participant.user_name.toLowerCase())
+                    .map(x => {
+                        return new AllowedEndpointResponse({
+                            id: x.id,
+                            defence_advocate_username: x.defenceAdvocate,
+                            display_name: x.displayName
+                        });
+                    });
             });
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
             this.setConference(data);
-            this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
-                this.participantEndpoints = endpoints;
-            });
+            // this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+            //     this.participantEndpoints = endpoints;
+            // });
 
             this.participant = this.getLoggedParticipant();
             this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
