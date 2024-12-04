@@ -1309,7 +1309,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.streamInMain = !this.streamInMain;
     }
 
-    videoClosedExt(){
+    videoClosedExt() {
         this.logger.debug(`${this.loggerPrefix} - video closed`);
     }
 
@@ -1341,7 +1341,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     private setShowVideo(showVideo: boolean) {
         this.showVideo = showVideo;
         this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
-        if (showVideo == false){
+        if (showVideo === false) {
             this.videoClosedExt();
         }
     }

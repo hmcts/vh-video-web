@@ -899,7 +899,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 audioRecordingServiceSpy.wowzaAgent.isAudioOnlyCall = false;
                 component.conference.status = ConferenceStatus.InSession;
 
-                 component.verifyAudioRecordingStream();
+                component.verifyAudioRecordingStream();
 
                 component.audioRestartCallback(true);
 
