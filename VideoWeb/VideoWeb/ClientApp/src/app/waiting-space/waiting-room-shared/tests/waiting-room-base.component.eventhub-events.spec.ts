@@ -94,6 +94,9 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
+import { cold } from 'jasmine-marbles';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -172,6 +175,20 @@ describe('WaitingRoomComponent EventHub Call', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
+    });
+
+    describe('conference store - get phone number', () => {
+        it('should set welsh flag to true when conference is welsh', fakeAsync(() => {
+            flushMicrotasks();
+            const conference = new ConferenceResponse(Object.assign({}, globalConference));
+            conference.hearing_venue_is_scottish = false;
+            const vhConference = mapConferenceToVHConference(conference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+            const result$ = component.phoneNumber$;
+
+            expect(result$).toBeObservable(cold('a', { a: vhContactDetails.englandAndWales.phoneNumber }));
+        }));
     });
 
     describe('event hub status changes', () => {
