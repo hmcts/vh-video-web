@@ -851,7 +851,7 @@ export class ConferenceTestData {
         });
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
-            status: EndpointStatus.Connected,
+            status: EndpointStatus.InHearing,
             id: '123232355',
             defence_advocate_username: 'john.doe@hearings.net',
             pexip_display_name: 'PSTN;DispName2;123232355',

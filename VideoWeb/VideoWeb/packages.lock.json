@@ -24,11 +24,11 @@
       },
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[3.1.2-pr-0919-0010, )",
-        "resolved": "3.1.2-pr-0919-0010",
-        "contentHash": "uTjHes/RCMLANtbDLm2sfQTdqSA/90fwUGb2KthKSsZWpjoYdZtJYDjLtTNFqeH7qAKQTV0herli/gAyAAP0hg==",
+        "requested": "[3.1.9-pr-0919-0022, )",
+        "resolved": "3.1.9-pr-0919-0022",
+        "contentHash": "S+5SdOBruzeRAIZRylp8DfxEUDS0YPdpRhpqY7DNgwkvgVsHtQxzqIKnzxw1f/Q8Z6r/DWcBBlozDpJmaE9/fg==",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "3.1.2-pr-0919-0010",
+          "BookingsApi.Common.DotNet6": "3.1.9-pr-0919-0022",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "System.Text.Json": "8.0.5"
         }
@@ -122,12 +122,12 @@
       },
       "Microsoft.Azure.SignalR": {
         "type": "Direct",
-        "requested": "[1.26.0, )",
-        "resolved": "1.26.0",
-        "contentHash": "ql3qWjcfkf4TRYv6SGZW3zZpBLZ27R5yyiUkdh+BbW5MFrGzGk00zOvlOBLlsSquuFwEQya0Hfb0WYlLKsmrsA==",
+        "requested": "[1.29.0, )",
+        "resolved": "1.29.0",
+        "contentHash": "Nv2Z6e5pU4vRGjoZc/HAFvR+b5QxfToVIrpfH7ccUX237a1dGJ3Z9z1xrjkvD4KDeaF4A6us+cgAhb9e8KVa1Q==",
         "dependencies": {
           "Azure.Identity": "1.11.4",
-          "Microsoft.Azure.SignalR.Protocols": "1.26.0",
+          "Microsoft.Azure.SignalR.Protocols": "1.29.0",
           "Microsoft.Extensions.Http": "2.1.0",
           "Newtonsoft.Json": "13.0.3"
         }
@@ -229,9 +229,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[3.1.4, )",
-        "resolved": "3.1.4",
-        "contentHash": "CJxSasYEP/2UqCWwb7Oq7WEDTk6yNlr7R2MoGm/hn0c7i5XhapaVsMEpaLBCCeyTY/lr/0X2rI1l5JZn1ezWMQ==",
+        "requested": "[3.1.7, )",
+        "resolved": "3.1.7",
+        "contentHash": "l7/NvSybO0/k+rAg1jY78hjZrQ1v2P/qdmh75gJeK+tax3Ukwc0G6+QvKbvlbetzU1TjKf2GFrublKZ5h1OdMg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "System.Text.Json": "8.0.4"
@@ -268,8 +268,8 @@
       },
       "BookingsApi.Common.DotNet6": {
         "type": "Transitive",
-        "resolved": "3.1.2-pr-0919-0010",
-        "contentHash": "JBKWH0dvKUOBh9AnUV0C6ExjeV0Wem3bfmk7Gkxrqnc+Iz5cUvz6zyMMnGVX1mFlsEgrxVeJXj/DoTV0YCyN0Q==",
+        "resolved": "3.1.9-pr-0919-0022",
+        "contentHash": "azq7VDHgp7Wdo/Y68CsJI6y0E6gROj8v+3XR/3PvK4DH/sB2g84Esf0PeY9cvpLUvB89fEFpB5mRprVFKpGpzA==",
         "dependencies": {
           "System.Text.Json": "8.0.5"
         }
@@ -558,21 +558,6 @@
           "System.Text.Encodings.Web": "4.5.0"
         }
       },
-      "Microsoft.AspNetCore.Http.Connections": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "ZcwAM9rE5yjGC+vtiNAK0INybpKIqnvB+/rntZn2/CPtyiBAtovVrEp4UZOoC31zH5t0P78ix9gLNJzII/ODsA==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authorization.Policy": "2.2.0",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "2.2.0",
-          "Microsoft.AspNetCore.Http": "2.2.0",
-          "Microsoft.AspNetCore.Http.Connections.Common": "1.1.0",
-          "Microsoft.AspNetCore.Routing": "2.2.0",
-          "Microsoft.AspNetCore.WebSockets": "2.2.0",
-          "Newtonsoft.Json": "11.0.2",
-          "System.Security.Principal.Windows": "4.5.0"
-        }
-      },
       "Microsoft.AspNetCore.Http.Extensions": {
         "type": "Transitive",
         "resolved": "2.2.0",
@@ -670,15 +655,6 @@
           "Microsoft.AspNetCore.Http.Abstractions": "2.2.0"
         }
       },
-      "Microsoft.AspNetCore.SignalR": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "V5X5XkeAHaFyyBOGPrddVeqTNo6zRPJNS5PRhlzEyBXiNG9AtqUbMyWFdZahQyMiIWJau550z59A4kdC9g5I9A==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections": "1.1.0",
-          "Microsoft.AspNetCore.SignalR.Core": "1.1.0"
-        }
-      },
       "Microsoft.AspNetCore.SignalR.Common": {
         "type": "Transitive",
         "resolved": "8.0.7",
@@ -686,40 +662,6 @@
         "dependencies": {
           "Microsoft.AspNetCore.Connections.Abstractions": "8.0.7",
           "Microsoft.Extensions.Options": "8.0.2"
-        }
-      },
-      "Microsoft.AspNetCore.SignalR.Core": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "mk69z50oFk2e89d3F/AfKeAvP3kvGG7MHG4ErydZiUd3ncSRq0kl0czq/COn/QVKYua9yGr2LIDwuR1C6/pu8Q==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authorization": "2.2.0",
-          "Microsoft.AspNetCore.SignalR.Common": "1.1.0",
-          "Microsoft.AspNetCore.SignalR.Protocols.Json": "1.1.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.2.0",
-          "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
-          "System.Reflection.Emit": "4.3.0",
-          "System.Threading.Channels": "4.5.0"
-        }
-      },
-      "Microsoft.AspNetCore.SignalR.Protocols.Json": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "BOsjatDJnvnnXCMajOlC0ISmiFnJi/EyJzMo0i//5fZJVCLrQ4fyV/HzrhhAhSJuwJOQDdDozKQ9MB9jHq84pg==",
-        "dependencies": {
-          "Microsoft.AspNetCore.SignalR.Common": "1.1.0",
-          "Newtonsoft.Json": "11.0.2"
-        }
-      },
-      "Microsoft.AspNetCore.WebSockets": {
-        "type": "Transitive",
-        "resolved": "2.2.0",
-        "contentHash": "ZpOcg2V0rCwU9ErfDb9y3Hcjoe7rU42XlmUS0mO4pVZQSgJVqR+DfyZtYd5LDa11F7bFNS2eezI9cBM3CmfGhw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Http.Extensions": "2.2.0",
-          "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
-          "Microsoft.Extensions.Options": "2.2.0",
-          "System.Net.WebSockets.WebSocketProtocol": "4.5.1"
         }
       },
       "Microsoft.AspNetCore.WebUtilities": {
@@ -733,24 +675,12 @@
       },
       "Microsoft.Azure.SignalR.Protocols": {
         "type": "Transitive",
-        "resolved": "1.26.0",
-        "contentHash": "S8qB5PGrG5cFXuoIy0NNPxns41MEprpOi9qWja9FFJbVSlFiVlgNZToaL+/YAm7H+C/pxNRjhtxKu68xA4HC5Q==",
+        "resolved": "1.29.0",
+        "contentHash": "54j531KO1GffnsbHSZCebtd96QoXnc67r0oUXoO7lsxfhvRAVsiMw77wSehQFOo1JF1yF98dvRoVc+kMDilbPw==",
         "dependencies": {
-          "Azure.Identity": "1.11.4",
-          "Microsoft.AspNetCore.Connections.Abstractions": "2.1.2",
-          "Microsoft.AspNetCore.Http": "2.1.22",
-          "Microsoft.AspNetCore.Http.Connections": "1.0.15",
-          "Microsoft.AspNetCore.Http.Connections.Common": "1.0.4",
-          "Microsoft.AspNetCore.WebSockets": "2.1.7",
-          "Microsoft.Extensions.DependencyInjection": "2.1.0",
-          "Microsoft.Extensions.Http": "2.1.0",
-          "Microsoft.Extensions.Logging.Abstractions": "2.1.1",
           "Microsoft.Extensions.Primitives": "2.1.1",
-          "Newtonsoft.Json": "13.0.3",
           "System.Buffers": "4.5.1",
-          "System.IO.Pipelines": "4.6.0",
           "System.Memory": "4.5.4",
-          "System.Net.WebSockets.WebSocketProtocol": "4.5.3",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
@@ -1531,11 +1461,6 @@
           "System.Runtime.Handles": "4.3.0"
         }
       },
-      "System.Net.WebSockets.WebSocketProtocol": {
-        "type": "Transitive",
-        "resolved": "4.5.3",
-        "contentHash": "O8RIMEVeOFzT8fscu6MDc4y+0LfnlXdqGovb0rJHBNVKhwn6BsNJmTY1oYUZPPsMfcc5OP20WpX4vj/aK8n98g=="
-      },
       "System.Numerics.Vectors": {
         "type": "Transitive",
         "resolved": "4.5.0",
@@ -1549,28 +1474,6 @@
           "Microsoft.NETCore.Platforms": "1.1.0",
           "Microsoft.NETCore.Targets": "1.1.0",
           "System.IO": "4.3.0",
-          "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
-        }
-      },
-      "System.Reflection.Emit": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "228FG0jLcIwTVJyz8CLFKueVqQK36ANazUManGaJHkO0icjiIypKW7YLWLIWahyIkdh5M7mV2dJepllLyA1SKg==",
-        "dependencies": {
-          "System.IO": "4.3.0",
-          "System.Reflection": "4.3.0",
-          "System.Reflection.Emit.ILGeneration": "4.3.0",
-          "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
-        }
-      },
-      "System.Reflection.Emit.ILGeneration": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "59tBslAk9733NXLrUJrwNZEzbMAcu8k344OYo+wfSVygcgZ9lgBdGIzH/nrg3LYhXceynyvTc8t5/GD4Ri0/ng==",
-        "dependencies": {
-          "System.Reflection": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
           "System.Runtime": "4.3.0"
         }
@@ -1857,11 +1760,6 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
-      "System.Threading.Channels": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "MEH06N0rIGmRT4LOKQ2BmUO0IxfvmIY/PaouSq+DFQku72OL8cxfw8W99uGpTCFf2vx2QHLRSh374iSM3asdTA=="
-      },
       "System.Threading.Tasks": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -1893,24 +1791,23 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.1.2-pr-0919-0010, )",
+          "BookingsApi.Client": "[3.1.9-pr-0919-0022, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.ApplicationInsights": "[2.22.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
-          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Options": "[8.0.2, )",
           "Microsoft.Identity.Client": "[4.61.3, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[3.1.4, )"
+          "VideoApi.Client": "[3.1.7, )"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[3.1.2-pr-0919-0010, )",
-          "VideoApi.Client": "[3.1.4, )",
+          "BookingsApi.Client": "[3.1.9-pr-0919-0022, )",
+          "VideoApi.Client": "[3.1.7, )",
           "VideoWeb.Common": "[1.0.0, )"
         }
       },
@@ -1918,7 +1815,6 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.ApplicationInsights.AspNetCore": "[2.22.0, )",
-          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "System.Text.Json": "[8.0.5, )",
           "VideoWeb.Common": "[1.0.0, )",

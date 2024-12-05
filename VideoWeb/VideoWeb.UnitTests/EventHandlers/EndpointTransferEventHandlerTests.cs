@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
     {
         private EndpointTransferEventHandler _eventHandler;
 
-        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, EndpointState.Connected, EndpointStatus.Connected)]
+        [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, EndpointState.InHearing, EndpointStatus.InHearing)]
         [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, EndpointState.Connected, EndpointStatus.Connected)]
         public async Task Should_send_endpoint_status_messages_to_clients(RoomType from, RoomType to,
             EndpointState endpointState, EndpointStatus expectedEndpointStatus)
