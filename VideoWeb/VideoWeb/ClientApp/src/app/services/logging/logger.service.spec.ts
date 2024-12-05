@@ -6,7 +6,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, Navig
 import { of, Subject } from 'rxjs';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
 
-fdescribe('LoggerService', () => {
+describe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
     let service: LoggerService;
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
