@@ -63,7 +63,7 @@
     "core-js": "^3.8.2",
     "govuk-frontend": "^5.5.0",
     "guid-typescript": "^1.0.9",
-    "launchdarkly-js-client-sdk": "^3.4.0",
+    "launchdarkly-js-client-sdk": "^3.5.0",
     "libphonenumber-js": "^1.11.9",
     "moment": "^2.29.1",
     "ng2-charts": "^5.0.4",

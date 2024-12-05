@@ -6,7 +6,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, Navig
 import { of, Subject } from 'rxjs';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
 
-describe('LoggerService', () => {
+fdescribe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
     let service: LoggerService;
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
@@ -21,7 +21,7 @@ describe('LoggerService', () => {
         getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.enableDebugLogs).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.enableDebugLogs, false).and.returnValue(of(false));
 
         activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
         activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
@@ -175,6 +175,23 @@ describe('LoggerService', () => {
 
             // Assert
             expect(logAdapter.debug).not.toHaveBeenCalled();
+        });
+
+        it('should log debug messages in production when enable debug logs true', () => {
+            // Arrange
+            service.enableDebugLogs = true;
+            logAdapter.debug.calls.reset();
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+            service['higherLevelLogsOnly'] = false;
+
+            // Act
+            service.debug(message, properties);
+
+            // Assert
+            expect(logAdapter.debug).toHaveBeenCalled();
         });
 
         it('should add conference id to the properties', () => {

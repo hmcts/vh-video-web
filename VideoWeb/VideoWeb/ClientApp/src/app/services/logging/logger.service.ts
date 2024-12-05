@@ -24,7 +24,7 @@ export class LoggerService implements Logger {
         activatedRoute: ActivatedRoute,
         ldService: LaunchDarklyService
     ) {
-        ldService.getFlag<boolean>(FEATURE_FLAGS.enableDebugLogs).subscribe(enableDebugLogs => {
+        ldService.getFlag<boolean>(FEATURE_FLAGS.enableDebugLogs, false).subscribe(enableDebugLogs => {
             this.enableDebugLogs = enableDebugLogs;
         });
         router.events
@@ -58,7 +58,7 @@ export class LoggerService implements Logger {
     }
 
     debug(message: string, properties?: any): void {
-        if (this.higherLevelLogsOnly || !this.enableDebugLogs) {
+        if (this.higherLevelLogsOnly && !this.enableDebugLogs) {
             return;
         }
         properties = this.addConferenceIdToProperties(properties);
