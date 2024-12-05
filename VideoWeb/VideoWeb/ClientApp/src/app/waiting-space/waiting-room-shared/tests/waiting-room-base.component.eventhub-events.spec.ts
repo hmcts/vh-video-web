@@ -166,7 +166,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.connected = true; // assume connected to pexip
         await component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
-        videoWebService.getAllowedEndpointsForConference.calls.reset();
         videoCallService.stopScreenShare.calls.reset();
     });
 
@@ -379,7 +378,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.loggedInUser = logged;
 
         videoWebService.getConferenceById.and.resolveTo(newConference);
-        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
 
         eventHubDisconnectSubject.next(1);
         eventHubDisconnectSubject.next(2);
@@ -391,7 +389,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         flushMicrotasks();
         expect(component.disconnect).toHaveBeenCalledTimes(6);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
-        expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(6);
         expect(component.participant.status).toBe(newParticipantStatus);
         expect(component.conference.status).toBe(newConferenceStatus);
         expect(component.conference).toEqual(newConference);

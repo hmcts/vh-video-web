@@ -28,7 +28,11 @@ import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
-import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
+import {
+    mapConferenceToVHConference,
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
@@ -93,7 +97,8 @@ export function initAllWRDependencies() {
     });
 
     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
-
+    mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, globalConference.endpoints.map(mapEndpointToVHEndpoint));
+    mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
         'HearingVenueFlagsService',
         ['setHearingVenueIsScottish'],
@@ -105,8 +110,7 @@ export function initAllWRDependencies() {
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
         'getObfuscatedName',
-        'getCurrentParticipant',
-        'getAllowedEndpointsForConference'
+        'getCurrentParticipant'
     ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');

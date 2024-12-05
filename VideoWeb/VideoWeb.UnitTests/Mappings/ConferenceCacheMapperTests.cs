@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
@@ -13,7 +12,7 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using EndpointResponse = VideoApi.Contract.Responses.EndpointResponse;
-using InterpreterType = BookingsApi.Contract.V1.Enums.InterpreterType;
+using InterpreterType = BookingsApi.Contract.V2.Enums.InterpreterType;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using RoomType = VideoApi.Contract.Enums.RoomType;

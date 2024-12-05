@@ -21,7 +21,6 @@ import {
     ParticipantForUserResponse,
     VideoEndpointResponse,
     LoggedParticipantResponse,
-    AllowedEndpointResponse,
     HearingVenueResponse,
     JusticeUserResponse
 } from '../clients/api-client';
@@ -182,10 +181,6 @@ export class VideoWebService implements IVideoWebApiService {
 
     getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]> {
         return this.apiClient.getVideoEndpointsForConference(conferenceId).toPromise();
-    }
-
-    getAllowedEndpointsForConference(conferenceId: string): Promise<AllowedEndpointResponse[]> {
-        return this.apiClient.allowedVideoCallEndpoints(conferenceId).toPromise();
     }
 
     getCurrentParticipant(conferenceId: string): Promise<LoggedParticipantResponse> {

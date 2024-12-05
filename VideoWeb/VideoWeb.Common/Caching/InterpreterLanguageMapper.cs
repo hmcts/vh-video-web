@@ -1,4 +1,4 @@
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using VideoWeb.Common.Models;
 namespace VideoWeb.Common.Caching
 {

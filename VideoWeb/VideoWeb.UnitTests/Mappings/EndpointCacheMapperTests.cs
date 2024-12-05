@@ -1,5 +1,4 @@
-using BookingsApi.Contract.V1.Enums;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;

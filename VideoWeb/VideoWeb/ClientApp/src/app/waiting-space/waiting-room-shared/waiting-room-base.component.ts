@@ -1,7 +1,7 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription, of } from 'rxjs';
+import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -65,7 +65,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { VHConference } from '../store/models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
@@ -194,6 +194,22 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.errorCount = 0;
         this.connectionFailedCount = 0;
 
+        const loggedInParticipant$ = this.store.select(ConferenceSelectors.getLoggedInParticipant);
+        const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
+
+        combineLatest([loggedInParticipant$, endpoints$])
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(([participant, endpoints]) => {
+                this.participantEndpoints = this.filterEndpoints(endpoints, participant).map(
+                    x =>
+                        new AllowedEndpointResponse({
+                            id: x.id,
+                            defence_advocate_username: x.defenceAdvocate,
+                            display_name: x.displayName
+                        })
+                );
+            });
+
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
             map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
         );
@@ -240,6 +256,17 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.checkCaseNameOverflow();
     }
 
+    filterEndpoints(endpoints: VHEndpoint[], participant: VHParticipant): VHEndpoint[] {
+        const hostRoles = [Role.Judge, Role.StaffMember];
+        let filtered: VHEndpoint[] = [];
+        if (hostRoles.includes(participant.role)) {
+            filtered = endpoints;
+        } else {
+            filtered = endpoints.filter(endpoint => endpoint.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase());
+        }
+        return filtered;
+    }
+
     checkCaseNameOverflow() {
         if (this.roomTitleLabel) {
             this.hasCaseNameOverflowed = this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
@@ -279,9 +306,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
             this.setConference(data);
-            this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
-                this.participantEndpoints = endpoints;
-            });
 
             this.participant = this.getLoggedParticipant();
             this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
