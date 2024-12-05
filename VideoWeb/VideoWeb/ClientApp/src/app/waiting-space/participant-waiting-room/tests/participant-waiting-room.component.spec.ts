@@ -10,7 +10,8 @@ import {
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    Supplier
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -30,6 +31,7 @@ import {
     globalParticipant,
     hideComponentsService,
     initAllWRDependencies,
+    launchDarklyService,
     logger,
     mockConferenceStore,
     mockedHearingVenueFlagsService,
@@ -38,7 +40,6 @@ import {
     roomClosingToastrService,
     router,
     titleService,
-    launchDarklyService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -49,6 +50,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -86,7 +88,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
@@ -142,6 +143,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
+        conference.supplier = Supplier.Kinly;
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;
