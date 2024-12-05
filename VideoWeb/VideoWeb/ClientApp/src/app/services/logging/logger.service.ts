@@ -4,6 +4,7 @@ import { filter, map } from 'rxjs/operators';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
 import { environment } from 'src/environments/environment';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
 
 export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 
@@ -14,11 +15,16 @@ export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
     currentConferenceId: string | null = null;
     private higherLevelLogsOnly = false;
+    enableDebugLogs: boolean;
     constructor(
         @Inject(LOG_ADAPTER) private adapters: LogAdapter[],
         router: Router,
-        activatedRoute: ActivatedRoute
+        activatedRoute: ActivatedRoute,
+        ldService: LaunchDarklyService
     ) {
+        ldService.getFlag<boolean>(FEATURE_FLAGS.enableDebugLogs).subscribe(enableDebugLogs => {
+            this.enableDebugLogs = enableDebugLogs;
+        });
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),
@@ -50,7 +56,7 @@ export class LoggerService implements Logger {
     }
 
     debug(message: string, properties?: any): void {
-        if (this.higherLevelLogsOnly) {
+        if (this.higherLevelLogsOnly || !this.enableDebugLogs) {
             return;
         }
         properties = this.addConferenceIdToProperties(properties);
