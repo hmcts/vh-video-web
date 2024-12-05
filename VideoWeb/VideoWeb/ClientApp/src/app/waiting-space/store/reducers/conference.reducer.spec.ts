@@ -482,6 +482,19 @@ describe('Conference Reducer', () => {
 
             expect(updatedResult.currentConference.participants[0].transferDirection).toBe(TransferDirection.In);
         });
+
+        it('should update the transfer status of an endpoint', () => {
+            const updatedResult = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.updateParticipantHearingTransferStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.endpoints[0].id,
+                    transferDirection: TransferDirection.In
+                })
+            );
+
+            expect(updatedResult.currentConference.endpoints[0].transferDirection).toBe(TransferDirection.In);
+        });
     });
 
     describe('updateParticipantMediaStatus', () => {
