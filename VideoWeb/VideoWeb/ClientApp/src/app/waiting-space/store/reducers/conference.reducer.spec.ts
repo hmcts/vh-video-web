@@ -122,7 +122,8 @@ describe('Conference Reducer', () => {
                     status: EndpointStatus.InConsultation,
                     defenceAdvocate: 'john.doe@test.com',
                     room: originalRoom,
-                    pexipInfo: undefined
+                    pexipInfo: undefined,
+                    transferDirection: undefined
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
@@ -130,7 +131,8 @@ describe('Conference Reducer', () => {
                     status: EndpointStatus.NotYetJoined,
                     defenceAdvocate: null,
                     room: null,
-                    pexipInfo: undefined
+                    pexipInfo: undefined,
+                    transferDirection: undefined
                 }
             ],
             supplier: Supplier.Vodafone
