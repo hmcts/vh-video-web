@@ -202,13 +202,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(([participant, endpoints]) => {
                 this.participantEndpoints = endpoints
                     .filter(x => x.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase())
-                    .map(x => {
-                        return new AllowedEndpointResponse({
-                            id: x.id,
-                            defence_advocate_username: x.defenceAdvocate,
-                            display_name: x.displayName
-                        });
-                    });
+                    .map(
+                        x =>
+                            new AllowedEndpointResponse({
+                                id: x.id,
+                                defence_advocate_username: x.defenceAdvocate,
+                                display_name: x.displayName
+                            })
+                    );
             });
 
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
