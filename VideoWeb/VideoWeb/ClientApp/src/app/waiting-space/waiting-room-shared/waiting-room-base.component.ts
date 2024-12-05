@@ -1,7 +1,7 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription, of } from 'rxjs';
+import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -193,6 +193,23 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.isPrivateConsultation = false;
         this.errorCount = 0;
         this.connectionFailedCount = 0;
+
+        const loggedInParticipant$ = this.store.select(ConferenceSelectors.getLoggedInParticipant);
+        const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
+
+        combineLatest([loggedInParticipant$, endpoints$])
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(([participant, endpoints]) => {
+                this.participantEndpoints = endpoints
+                    .filter(x => x.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase())
+                    .map(x => {
+                        return new AllowedEndpointResponse({
+                            id: x.id,
+                            defence_advocate_username: x.defenceAdvocate,
+                            display_name: x.displayName
+                        });
+                    });
+            });
 
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
             map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))

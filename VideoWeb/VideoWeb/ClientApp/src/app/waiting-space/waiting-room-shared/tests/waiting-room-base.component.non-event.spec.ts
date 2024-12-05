@@ -284,7 +284,6 @@ describe('WaitingRoomComponent message and clock', () => {
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
-        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: globalConference.participants[0].id,
             display_name: globalConference.participants[0].display_name,
@@ -295,7 +294,6 @@ describe('WaitingRoomComponent message and clock', () => {
         await component.getConference();
 
         // Assert
-        expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(1);
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();
         expect(component.participant).toBeDefined();
@@ -309,7 +307,6 @@ describe('WaitingRoomComponent message and clock', () => {
         component.connected = false;
         globalConference.hearing_venue_is_scottish = true;
         videoWebService.getConferenceById.and.resolveTo(globalConference);
-        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
 
         // Act
         await component.getConference();
@@ -326,7 +323,6 @@ describe('WaitingRoomComponent message and clock', () => {
         component.connected = false;
         globalConference.hearing_venue_is_scottish = false;
         videoWebService.getConferenceById.and.resolveTo(globalConference);
-        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
 
         // Act
         await component.getConference();
