@@ -14,8 +14,10 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
     currentConferenceId: string | null = null;
-    private higherLevelLogsOnly = false;
     enableDebugLogs: boolean;
+
+    private higherLevelLogsOnly = false;
+
     constructor(
         @Inject(LOG_ADAPTER) private adapters: LogAdapter[],
         router: Router,
