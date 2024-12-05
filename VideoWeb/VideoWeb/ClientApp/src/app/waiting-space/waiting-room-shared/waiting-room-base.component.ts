@@ -1309,6 +1309,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.streamInMain = !this.streamInMain;
     }
 
+    videoClosedExt() {
+        this.logger.debug(`${this.loggerPrefix} - video closed`);
+    }
+
     async callAndUpdateShowVideo(): Promise<void> {
         await this.call();
         this.getConference().then(() => this.updateShowVideo());
@@ -1337,6 +1341,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     private setShowVideo(showVideo: boolean) {
         this.showVideo = showVideo;
         this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
+        if (showVideo === false) {
+            this.videoClosedExt();
+        }
     }
 
     private handleLinkedParticipantConsultationResponse(
