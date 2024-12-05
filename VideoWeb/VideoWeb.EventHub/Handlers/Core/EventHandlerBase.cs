@@ -78,6 +78,8 @@ namespace VideoWeb.EventHub.Handlers.Core
         protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
             SourceConference.UpdateConferenceStatus(hearingEventStatus);
+            if (hearingEventStatus == ConferenceStatus.Closed)
+                SourceConference.UpdateClosedDateTime(DateTime.UtcNow);
             await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {

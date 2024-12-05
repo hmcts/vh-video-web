@@ -26,7 +26,7 @@ export class VideoEndpointPanelModel extends IndividualPanelModel {
     }
 
     isInHearing(): boolean {
-        return this.status === EndpointStatus.Connected;
+        return this.status === EndpointStatus.InHearing;
     }
 
     isDisconnected(): boolean {
