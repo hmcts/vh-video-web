@@ -65,7 +65,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { VHConference } from '../store/models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
@@ -200,16 +200,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         combineLatest([loggedInParticipant$, endpoints$])
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(([participant, endpoints]) => {
-                this.participantEndpoints = endpoints
-                    .filter(x => x.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase())
-                    .map(
-                        x =>
-                            new AllowedEndpointResponse({
-                                id: x.id,
-                                defence_advocate_username: x.defenceAdvocate,
-                                display_name: x.displayName
-                            })
-                    );
+                this.participantEndpoints = this.filterEndpoints(endpoints, participant).map(
+                    x =>
+                        new AllowedEndpointResponse({
+                            id: x.id,
+                            defence_advocate_username: x.defenceAdvocate,
+                            display_name: x.displayName
+                        })
+                );
             });
 
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
@@ -256,6 +254,17 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     ngAfterContentChecked(): void {
         this.checkCaseNameOverflow();
+    }
+
+    filterEndpoints(endpoints: VHEndpoint[], participant: VHParticipant): VHEndpoint[] {
+        const hostRoles = [Role.Judge, Role.StaffMember];
+        let filtered: VHEndpoint[] = [];
+        if (hostRoles.includes(participant.role)) {
+            filtered = endpoints;
+        } else {
+            filtered = endpoints.filter(endpoint => endpoint.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase());
+        }
+        return filtered;
     }
 
     checkCaseNameOverflow() {
