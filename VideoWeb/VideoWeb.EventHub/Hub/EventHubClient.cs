@@ -178,11 +178,12 @@ public class EventHub(
             var conference = await conferenceService.GetConference(conferenceId);
 
             var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
-            if (transferringParticipant == null)
+            var transferringEndpoint = conference.Endpoints.SingleOrDefault(x => x.Id == participantId);
+            if (transferringParticipant == null && transferringEndpoint == null)
             {
-                logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
+                logger.LogDebug("Participant/Endpoint {ParticipantId} does not exist in {ConferenceId}", participantId,
                     conferenceId);
-                throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
+                throw new ParticipantNotFoundException(conferenceId, participantId);
             }
 
             await Clients.Group(VhOfficersGroupName)

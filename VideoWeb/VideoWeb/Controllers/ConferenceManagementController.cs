@@ -286,7 +286,7 @@ public class ConferenceManagementController(
     /// Admit a participant into an active video hearing
     /// </summary>
     /// <param name="conferenceId">conference id</param>
-    /// <param name="participantId">witness id</param>
+    /// <param name="participantId">participant or endpoint id</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns>Accepted status</returns>
     [HttpPost("{conferenceId}/participant/{participantId}/call")]
@@ -294,7 +294,8 @@ public class ConferenceManagementController(
     [ProducesResponseType((int)HttpStatusCode.Accepted)]
     public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
     {
-        var validatedRequest = await ValidateParticipantInConferenceAndIsCallable(conferenceId, participantId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var validatedRequest = await ValidateUserIsHostAndParticipantIsInConferenceIsCallable(conference, participantId, cancellationToken);
         if (validatedRequest != null)
         {
             return validatedRequest;
@@ -335,10 +336,10 @@ public class ConferenceManagementController(
     }
     
     /// <summary>
-    /// Call a witness into a video hearing
+    /// Call a participant into a video hearing
     /// </summary>
     /// <param name="conferenceId">conference id</param>
-    /// <param name="participantId">witness id</param>
+    /// <param name="participantId">participant or endpoint id</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns>Accepted status</returns>
     [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
@@ -346,18 +347,23 @@ public class ConferenceManagementController(
     [ProducesResponseType((int)HttpStatusCode.Accepted)]
     public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
     {
-        var validatedRequest = await ValidateParticipantInConferenceAndIsCallable(conferenceId, participantId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var validatedRequest = await ValidateUserIsHostAndParticipantIsInConferenceIsCallable(conference, participantId, cancellationToken);
         if (validatedRequest != null)
         {
             return validatedRequest;
         }
         
         await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
-        // reset hand raise on dismiss
-        await conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
-            false, cancellationToken);
+        if(conference.GetParticipant(participantId) != null)
+        {
+            // reset hand raise on dismiss if participant
+            await conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+                false, cancellationToken);
         
-        await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
+            await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
+        }
+        
         return Accepted();
     }
     
@@ -365,7 +371,7 @@ public class ConferenceManagementController(
     /// Leave host from hearing
     /// </summary>
     /// <param name="conferenceId">conference id</param>
-    /// <param name="participantId">witness id</param>
+    /// <param name="participantId">participant id</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns>Accepted status</returns>
     [HttpPost("{conferenceId}/participant/{participantId}/leave")]
@@ -393,43 +399,49 @@ public class ConferenceManagementController(
         return Accepted();
     }
     
-    private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceId, CancellationToken cancellationToken)
+    private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceid, CancellationToken cancellationToken)
     {
-        if (await IsConferenceHost(conferenceId, cancellationToken))
+        var conference = await conferenceService.GetConference(conferenceid, cancellationToken);
+        return await ValidateUserIsHostAndInConference(conference);
+    }
+    
+    private Task<IActionResult> ValidateUserIsHostAndInConference(Conference conference)
+    {
+        var isUserHostForConference = conference.Participants.Exists(x =>
+            x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
+        if (isUserHostForConference)
         {
-            return null;
+            return Task.FromResult<IActionResult>(null);
         }
         
         logger.LogWarning("{JudgeRole} or {StaffMember} may control hearings", AppRoles.JudgeRole, AppRoles.StaffMember);
-        return Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}.");
+        return Task.FromResult<IActionResult>(Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}."));
     }
     
-    private async Task<IActionResult> ValidateParticipantInConferenceAndIsCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+    private async Task<IActionResult> ValidateUserIsHostAndParticipantIsInConferenceIsCallable(Conference conference, Guid participantId, CancellationToken cancellationToken)
     {
         // ensure the invoker is a host of the given conference id
-        var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
+        var judgeValidation = await ValidateUserIsHostAndInConference(conference);
         if (judgeValidation != null) return judgeValidation;
-        
-        // ensure the participant exists in said conference and is callable
-        if (await ValidateParticipantIsInConferenceAndCallable(conferenceId, participantId, cancellationToken))
+
+        var endpoint = conference.Endpoints.Find(x => x.Id == participantId);
+        if(endpoint != null)
         {
             return null;
         }
         
-        logger.LogWarning("Participant {ParticipantId} is not a callable participant in {ConferenceId}", participantId, conferenceId);
-        return Unauthorized("Participant is not callable");
-    }
-    
-    private async Task<bool> IsConferenceHost(Guid conferenceId, CancellationToken cancellationToken)
-    {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
-    }
-    
-    private async Task<bool> ValidateParticipantIsInConferenceAndCallable(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
-    {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        // ensure the participant exists in said conference and is callable
+        if (await ValidateParticipantIsInConferenceAndCallable(conference, participantId, cancellationToken))
+        {
+            return null;
+        }
         
+        logger.LogWarning("Participant/Endpoint {ParticipantId} is not a callable participant in {ConferenceId}", participantId, conference.Id);
+        return Unauthorized("Participant/Endpoint is not callable");
+    }
+    
+    private async Task<bool> ValidateParticipantIsInConferenceAndCallable(Conference conference, Guid participantId, CancellationToken cancellationToken)
+    {
         var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
         
         if (participant == null)

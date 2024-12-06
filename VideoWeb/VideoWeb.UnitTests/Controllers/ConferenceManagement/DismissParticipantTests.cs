@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id, CancellationToken.None);
                 var typedResult = (UnauthorizedObjectResult)result;
                 typedResult.Should().NotBeNull();
-                typedResult.Value.Should().Be("Participant is not callable");
+                typedResult.Value.Should().Be("Participant/Endpoint is not callable");
 
                 _mocker.Mock<IVideoApiClient>().Verify(
                     x => x.TransferParticipantAsync(TestConference.Id,
@@ -67,7 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var result = await Controller.DismissParticipantAsync(TestConference.Id, Guid.NewGuid(), CancellationToken.None);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not callable");
+            typedResult.Value.Should().Be("Participant/Endpoint is not callable");
 
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,

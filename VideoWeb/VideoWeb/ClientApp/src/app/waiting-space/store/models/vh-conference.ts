@@ -63,6 +63,7 @@ export interface VHEndpoint {
     interpreterLanguage?: VHInterpreterLanguage;
     externalReferenceId?: string;
     protectedFrom?: string[];
+    transferDirection?: TransferDirection;
 }
 
 export interface VHPexipParticipant {

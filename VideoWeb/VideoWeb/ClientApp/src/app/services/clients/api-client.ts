@@ -739,7 +739,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Admit a participant into an active video hearing
      * @param conferenceId conference id
-     * @param participantId witness id
+     * @param participantId participant or endpoint id
      * @return Accepted
      */
     callParticipant(conferenceId: string, participantId: string): Observable<void> {
@@ -919,9 +919,9 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Call a witness into a video hearing
+     * Call a participant into a video hearing
      * @param conferenceId conference id
-     * @param participantId witness id
+     * @param participantId participant or endpoint id
      * @return Accepted
      */
     dismissParticipant(conferenceId: string, participantId: string): Observable<void> {
@@ -1012,7 +1012,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * Leave host from hearing
      * @param conferenceId conference id
-     * @param participantId witness id
+     * @param participantId participant id
      * @return Accepted
      */
     leaveHearing(conferenceId: string, participantId: string): Observable<void> {
