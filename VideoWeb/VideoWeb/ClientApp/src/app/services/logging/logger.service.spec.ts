@@ -3,7 +3,8 @@ import { LoggerService } from './logger.service';
 import { LogAdapter } from './log-adapter';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
 
 describe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
@@ -12,11 +13,15 @@ describe('LoggerService', () => {
     let activatedRouteFirstChildSpy: jasmine.SpyObj<ActivatedRoute>;
     let routerSpy: jasmine.SpyObj<Router>;
     let eventsSubject: Subject<Event>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     beforeEach(() => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], ['events']);
         eventsSubject = new Subject<Event>();
         getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
+
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.enableDebugLogs, false).and.returnValue(of(false));
 
         activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
         activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
@@ -25,7 +30,7 @@ describe('LoggerService', () => {
 
         logAdapter = jasmine.createSpyObj<LogAdapter>(['debug', 'trackException', 'trackEvent', 'info']);
 
-        service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy);
+        service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy, launchDarklyServiceSpy);
     });
 
     it('should be created', () => {
@@ -170,6 +175,23 @@ describe('LoggerService', () => {
 
             // Assert
             expect(logAdapter.debug).not.toHaveBeenCalled();
+        });
+
+        it('should log debug messages in production when enable debug logs true', () => {
+            // Arrange
+            service.enableDebugLogs = true;
+            logAdapter.debug.calls.reset();
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+            service['higherLevelLogsOnly'] = false;
+
+            // Act
+            service.debug(message, properties);
+
+            // Assert
+            expect(logAdapter.debug).toHaveBeenCalled();
         });
 
         it('should add conference id to the properties', () => {

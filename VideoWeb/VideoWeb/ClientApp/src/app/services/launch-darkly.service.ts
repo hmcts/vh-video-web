@@ -11,7 +11,8 @@ export const FEATURE_FLAGS = {
     activeSessionFilter: 'active-sessions-filter',
     interpreterEnhancements: 'interpreter-enhancements',
     dialOutParticipant: 'dial-out-participant',
-    instantMessaging: 'instant-messaging'
+    instantMessaging: 'instant-messaging',
+    enableDebugLogs: 'enable-debug-logs'
 };
 
 @Injectable({
