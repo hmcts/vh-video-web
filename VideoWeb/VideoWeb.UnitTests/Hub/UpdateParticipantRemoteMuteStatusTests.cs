@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Hub
 
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conference);
-            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
+            await HubVih11189.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             EventHubClientMock.Verify(
                 x => x.Group(participant.Username.ToLowerInvariant())
@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.Hub
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
             
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
-            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
+            await HubVih11189.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
 
             foreach (var joh in allJohs)
             {
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Hub
 
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conference);
-            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
+            await HubVih11189.UpdateParticipantRemoteMuteStatus(conferenceId, participantId, isRemoteMuted);
             
             EventHubClientMock.Verify(
                 x => x.Group(It.IsAny<string>())

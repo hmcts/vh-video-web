@@ -8,7 +8,7 @@ using VideoWeb.EventHub.Enums;
 namespace VideoWeb.EventHub.Handlers
 {
     public class NewConferenceAddedEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)
@@ -28,10 +28,10 @@ namespace VideoWeb.EventHub.Handlers
                     .NewConferenceAddedMessage(SourceConference.Id);
             }
             
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
                 .NewConferenceAddedMessage(conferenceId);
             
-            await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+            await HubContext.Clients.Group(Hub.EventHubVIH11189.StaffMembersGroupName)
                 .NewConferenceAddedMessage(conferenceId);
         }
     }

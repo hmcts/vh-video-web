@@ -14,11 +14,11 @@ using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.EventHub.Hub;
 
-public class EventHub(
+public class EventHubVIH11189(
     IUserProfileService userProfileService,
     IAppRoleService appRoleService,
     IVideoApiClient videoApiClient,
-    ILogger<EventHub> logger,
+    ILogger<EventHubVIH11189> logger,
     IHeartbeatRequestMapper heartbeatRequestMapper,
     IConferenceVideoControlStatusService conferenceVideoControlStatusService,
     IConferenceManagementService conferenceManagementService,

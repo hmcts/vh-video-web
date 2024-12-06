@@ -10,7 +10,7 @@ using VHRoom = VideoWeb.Common.Models.RoomType;
 namespace VideoWeb.EventHub.Handlers
 {
     public class EndpointTransferEventHandler (
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)

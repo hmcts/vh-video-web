@@ -21,7 +21,7 @@ public class EventComponentHelper
 {
     public IMemoryCache Cache { get; set; }
     public Mock<IConferenceService> ConferenceServiceMock { get; set; }
-    public Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
+    public Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>> EventHubContextMock { get; set; }
     public Mock<IEventHubClient> EventHubClientMock { get; set; }
     public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
     public Mock<IVideoApiClient> VideoApiClientMock { get; set; }
@@ -30,7 +30,7 @@ public class EventComponentHelper
     public List<IEventHandler> GetHandlers()
     {
         var cache = new MemoryCache(new MemoryCacheOptions());
-        var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+        var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>();
         var logger = new Mock<ILogger<EventHandlerBase>>();
         var videoApiClient = new Mock<IVideoApiClient>();
         var consultationNotifier = new Mock<IConsultationNotifier>();
@@ -40,7 +40,7 @@ public class EventComponentHelper
     }
 
     private List<IEventHandler> GetHandlers(
-        Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
+        Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>> eventHubContextMock,
         IMemoryCache memoryCache,
         Mock<ILogger<EventHandlerBase>> logger,
         Mock<IVideoApiClient> videoApiClientMock,
@@ -86,10 +86,10 @@ public class EventComponentHelper
                 .Returns(EventHubClientMock.Object);
         }
 
-        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName))
             .Returns(EventHubClientMock.Object);
 
-        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.StaffMembersGroupName))
+        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHubVIH11189.StaffMembersGroupName))
             .Returns(EventHubClientMock.Object);
     }
 

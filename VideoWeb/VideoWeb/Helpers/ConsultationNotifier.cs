@@ -10,7 +10,7 @@ using VideoWeb.EventHub.Services;
 namespace VideoWeb.Helpers;
 
 public class ConsultationNotifier(
-    IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
+    IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient> hubContext,
     IConsultationInvitationTracker consultationInvitationTracker)
     : IConsultationNotifier
 {

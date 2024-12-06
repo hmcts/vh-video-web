@@ -54,11 +54,11 @@ namespace VideoWeb.UnitTests.Hub
             var fromJudgeId = JudgeParticipantId;
             var fromDisplayName = Conference.Participants.Find(x => x.Id == fromJudgeId).DisplayName;
             var fromUsername = JudgeUsername;
-            var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
+            var toUsername = EventHub.Hub.EventHubVIH11189.DefaultAdminName;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await HubVih11189.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
             AssertMessageSentToHub(fromJudgeId.ToString(), fromDisplayName, toUsername, message, messageUuid, JudgeGroupChannel);
             AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
@@ -79,11 +79,11 @@ namespace VideoWeb.UnitTests.Hub
             var fromIndividualId = IndividualParticipantId;
             var fromUsername = IndividualUsername;
             var fromDisplayName = Conference.Participants.Find(x => x.Id == fromIndividualId).DisplayName;
-            var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
+            var toUsername = EventHub.Hub.EventHubVIH11189.DefaultAdminName;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await HubVih11189.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
             AssertMessageSentToHub(fromIndividualId.ToString(), fromDisplayName, toUsername, message, messageUuid, IndividualGroupChannel);
             AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Hub
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toJudgeId.ToString(), messageUuid);
+            await HubVih11189.SendMessage(Conference.Id, message, toJudgeId.ToString(), messageUuid);
 
             AssertMessageSentToHub(fromUsername, fromDisplayName, toJudgeId.ToString(), message, messageUuid, JudgeGroupChannel);
             AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
@@ -127,11 +127,11 @@ namespace VideoWeb.UnitTests.Hub
             var fromParticipantId = Guid.NewGuid().ToString();
             var fromUsername = "does@notexist.com";
             var fromDisplayName = "does not exist";
-            var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
+            var toUsername = EventHub.Hub.EventHubVIH11189.DefaultAdminName;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await HubVih11189.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
             AssertMessageNotSentToHub(fromParticipantId, fromDisplayName, toUsername, message, messageUuid, JudgeGroupChannel);
             AssertMessageNotSentToApi(fromUsername, toUsername, message);
@@ -157,7 +157,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetUserAsync("", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UserProfile { IsAdmin = false });
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await HubVih11189.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
             AssertMessageNotSentToHub(fromUsername, fromDisplayName,toParticipantId, message, messageUuid, JudgeGroupChannel);
             AssertMessageNotSentToApi(fromUsername, toUsername, message);
@@ -258,7 +258,7 @@ namespace VideoWeb.UnitTests.Hub
             JudgeParticipantId = judge.Id;
             RepresentativeParticipantId = representative.Id;
 
-            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName))
                 .Returns(AdminGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(Conference.Id.ToString())).Returns(ConferenceGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(judge.Username.ToLowerInvariant())).Returns(JudgeGroupChannel.Object);

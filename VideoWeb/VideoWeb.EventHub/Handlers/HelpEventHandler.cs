@@ -5,7 +5,7 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 namespace VideoWeb.EventHub.Handlers
 {
     public class HelpEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)
@@ -15,7 +15,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            return HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
                 .HelpMessage(SourceConference.Id, SourceParticipant?.DisplayName);
         }
     }

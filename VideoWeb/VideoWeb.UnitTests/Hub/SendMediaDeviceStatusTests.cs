@@ -29,7 +29,7 @@ namespace VideoWeb.UnitTests.Hub
             
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
-            await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
+            await HubVih11189.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
             
             VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
             ConferenceVideoControlStatusService.Verify(
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Hub
                 IsLocalVideoMuted = true
             };
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
-            await Hub.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
+            await HubVih11189.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
 
             VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());
         }
@@ -77,7 +77,7 @@ namespace VideoWeb.UnitTests.Hub
 
 
             EventHubClientMock.Verify(
-                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
+                x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName)
                     .ParticipantMediaStatusMessage(participantId, conference.Id, message), times);
         }
     }

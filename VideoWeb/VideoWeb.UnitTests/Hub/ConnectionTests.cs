@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferences = SetupConferences(numOfConferences);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -29,11 +29,11 @@ namespace VideoWeb.UnitTests.Hub
             var numOfConferences = 10;
             SetupConferences(numOfConferences);
 
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,
-                    EventHub.Hub.EventHub.VhOfficersGroupName, CancellationToken.None),
+                    EventHub.Hub.EventHubVIH11189.VhOfficersGroupName, CancellationToken.None),
                 Times.Once);
         }
         
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferences = SetupConferences(numOfConferences, userRole: AppRoles.StaffMember);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -57,11 +57,11 @@ namespace VideoWeb.UnitTests.Hub
             var numOfConferences = 10;
             SetupConferences(numOfConferences, userRole: AppRoles.StaffMember);
 
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,
-                    EventHub.Hub.EventHub.StaffMembersGroupName, CancellationToken.None),
+                    EventHub.Hub.EventHubVIH11189.StaffMembersGroupName, CancellationToken.None),
                 Times.Once);
         }
         
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             var conferenceIds = SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
             
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
 
-            await Hub.OnConnectedAsync();
+            await HubVih11189.OnConnectedAsync();
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,

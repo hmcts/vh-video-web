@@ -12,7 +12,7 @@ using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers;
 
-public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient> hubContext)
     : IEndpointsUpdatedEventNotifier
 {
     public async Task PushEndpointsUpdatedEvent(Conference conference, UpdateConferenceEndpointsRequest endpointsToNotify)
@@ -35,7 +35,7 @@ public class EndpointsUpdatedEventNotifier(IHubContext<EventHub.Hub.EventHub, IE
         foreach (var participant in conference.Participants.Where(participant => participant.Role != Role.StaffMember))
             await hubContext.Clients.Group(participant.Username.ToLowerInvariant()).EndpointsUpdated(conference.Id, endpoints);
         
-        await hubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+        await hubContext.Clients.Group(Hub.EventHubVIH11189.StaffMembersGroupName)
             .EndpointsUpdated(conference.Id, endpoints);
     }
     

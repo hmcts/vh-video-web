@@ -18,7 +18,7 @@ public class PushAudioRestartActionTests: EventHubBaseTests
         SetupEventHubClientsForAllParticipantsInConference(conference, false);
         ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
 
-        await Hub.SendAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
+        await HubVih11189.SendAudioRestartAction(conferenceId, hostThatActionedEvent.Id);
 
         foreach (var participant in hosts)
             EventHubClientMock.Verify(x => x.Group(participant.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId), Times.Once);

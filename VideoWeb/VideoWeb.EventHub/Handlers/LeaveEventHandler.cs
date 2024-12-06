@@ -8,7 +8,7 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 namespace VideoWeb.EventHub.Handlers
 {
     public class LeaveEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)

@@ -6,7 +6,7 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 namespace VideoWeb.EventHub.Handlers
 {
     public class PauseEventHandler(
-        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)

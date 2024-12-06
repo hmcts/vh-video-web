@@ -9,7 +9,7 @@ using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers
 {
-    public class HearingDetailsUpdatedEventNotifier(IHubContext<Hub.EventHub, IEventHubClient> hubContext) 
+    public class HearingDetailsUpdatedEventNotifier(IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext) 
         : IHearingDetailsUpdatedEventNotifier
     {
         public async Task PushHearingDetailsUpdatedEvent(Conference conference)
@@ -22,10 +22,10 @@ namespace VideoWeb.Helpers
                     .HearingDetailsUpdatedMessage(conferenceResponse);
             }
                 
-            await hubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            await hubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
                 .HearingDetailsUpdatedMessage(conferenceResponse);
                 
-            await hubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
+            await hubContext.Clients.Group(Hub.EventHubVIH11189.StaffMembersGroupName)
                 .HearingDetailsUpdatedMessage(conferenceResponse);
         }
     }

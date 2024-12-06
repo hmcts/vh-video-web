@@ -28,7 +28,7 @@ public class EndpointsUpdatedEventNotifierTests
         _conference = new ConferenceCacheModelBuilder().Build();
         _eventHelper = new EventComponentHelper
         {
-            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>(),
             EventHubClientMock = new Mock<IEventHubClient>()
         };
         // this will register all participants as connected to the hub

@@ -20,7 +20,7 @@ public abstract class EventHandlerTestBase
 {
     protected List<IEventHandler> EventHandlersList { get; private set; }
     protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
-    protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
+    protected Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>> EventHubContextMock { get; private set; }
     protected IMemoryCache MemoryCache { get; set; }
     protected Mock<IConferenceService> ConferenceServiceMock { get; private set; }
     protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
