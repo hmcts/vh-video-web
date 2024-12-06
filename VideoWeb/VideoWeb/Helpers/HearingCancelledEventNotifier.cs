@@ -8,7 +8,7 @@ using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers
 {
-    public class HearingCancelledEventNotifier(IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext) 
+    public class HearingCancelledEventNotifier(IHubContext<Hub.EventHub, IEventHubClient> hubContext) 
         : IHearingCancelledEventNotifier
     {
         public async Task PushHearingCancelledEvent(Conference conference)
@@ -19,10 +19,10 @@ namespace VideoWeb.Helpers
                     .HearingCancelledMessage(conference.Id);
             }
                 
-            await hubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await hubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .HearingCancelledMessage(conference.Id);
                 
-            await hubContext.Clients.Group(Hub.EventHubVIH11189.StaffMembersGroupName)
+            await hubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
                 .HearingCancelledMessage(conference.Id);
         }
     }

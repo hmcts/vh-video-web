@@ -24,11 +24,11 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IUserProfileService> UserProfileServiceMock;
         protected Mock<IAppRoleService> AppRoleServiceMock;
         protected Mock<IVideoApiClient> VideoApiClientMock;
-        protected Mock<ILogger<EventHub.Hub.EventHubVIH11189>> LoggerMock;
+        protected Mock<ILogger<EventHub.Hub.EventHub>> LoggerMock;
         protected Mock<HubCallerContext> HubCallerContextMock;
         protected Mock<IGroupManager> GroupManagerMock;
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
-        protected EventHub.Hub.EventHubVIH11189 HubVih11189;
+        protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceService> ConferenceServiceMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock = new Mock<IUserProfileService>();
             AppRoleServiceMock = new Mock<IAppRoleService>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
-            LoggerMock = new Mock<ILogger<EventHub.Hub.EventHubVIH11189>>();
+            LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
                 .Returns("o**** f*****");
 
-            HubVih11189 = new EventHub.Hub.EventHubVIH11189(UserProfileServiceMock.Object, 
+            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, 
                 AppRoleServiceMock.Object, 
                 VideoApiClientMock.Object,
                 LoggerMock.Object,
@@ -155,7 +155,7 @@ namespace VideoWeb.UnitTests.Hub
             if (includeAdmin)
             {
                 var mockAdminClient = new Mock<IEventHubClient>();
-                EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName))
+                EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                     .Returns(mockAdminClient.Object);
             }
 

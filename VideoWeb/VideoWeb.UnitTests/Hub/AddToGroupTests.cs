@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             var newConferenceId = Guid.NewGuid().ToString();
-            await HubVih11189.AddToGroup(newConferenceId);
+            await Hub.AddToGroup(newConferenceId);
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, newConferenceId,
@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Hub
             Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.CitizenRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            await HubVih11189.AddToGroup(Guid.NewGuid().ToString());
+            await Hub.AddToGroup(Guid.NewGuid().ToString());
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsAny<string>(),

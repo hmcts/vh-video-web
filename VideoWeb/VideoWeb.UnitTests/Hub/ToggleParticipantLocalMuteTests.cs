@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Hub
             SetupEventHubClientsForAllParticipantsInConference(conference, false);
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conference);
-            await HubVih11189.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
+            await Hub.ToggleParticipantLocalMute(conferenceId, participant.Id, isLocalMuted);
 
             EventHubClientMock.Verify(
                 x => x.Group(participant.Username.ToLowerInvariant())
@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Hub
             var localMute = true;
             
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
-            await HubVih11189.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
+            await Hub.ToggleParticipantLocalMute(conferenceId, participantId, localMute);
 
             EventHubClientMock.Verify(
                 x => x.Group(It.IsAny<string>())

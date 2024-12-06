@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Hub
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(conference);
             
-            await HubVih11189.ToggleAllParticipantLocalMute(conferenceId, isLocalMuted);
+            await Hub.ToggleAllParticipantLocalMute(conferenceId, isLocalMuted);
 
             foreach (var participant in nonHostParticipants)
             {

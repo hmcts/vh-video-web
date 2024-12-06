@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Services;
 public class ConferenceManagementServiceTests
 {
     private ConferenceManagementService _sut;
-    private Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>> EventHubContextMock { get; set; }
+    private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; set; }
     private Mock<IEventHubClient> EventHubClientMock { get; set; }
     private Conference _conference;
     private AutoMock _mocker;
@@ -33,7 +33,7 @@ public class ConferenceManagementServiceTests
         _conference = new ConferenceCacheModelBuilder().WithJudicialOfficeHolders().WithLinkedParticipantsInRoom()
             .Build();
 
-        EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>();
+        EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
         EventHubClientMock = new Mock<IEventHubClient>();
         
         
@@ -160,7 +160,7 @@ public class ConferenceManagementServiceTests
                 .Returns(new Mock<IEventHubClient>().Object);
         }
 
-        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName))
+        EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
             .Returns(new Mock<IEventHubClient>().Object);
 
         EventHubContextMock.Setup(x => x.Clients.Group(conferenceId.ToString()))

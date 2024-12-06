@@ -30,7 +30,7 @@ public class ConsultationNotifierTests
         
         _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
             .Returns(_mocker.Mock<IEventHubClient>().Object);
-        _mocker.Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>().Setup(x => x.Clients)
+        _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
             .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
         
         _sut = _mocker.Create<ConsultationNotifier>();

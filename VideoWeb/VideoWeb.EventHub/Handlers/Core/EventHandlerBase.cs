@@ -11,7 +11,7 @@ using Task = System.Threading.Tasks.Task;
 namespace VideoWeb.EventHub.Handlers.Core
 {
     public abstract class EventHandlerBase(
-        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : IEventHandler
@@ -20,7 +20,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         public Participant SourceParticipant { get; set; }
         protected Conference SourceConference { get; set; }
         protected Endpoint SourceEndpoint { get; set; }
-        protected readonly IHubContext<Hub.EventHubVIH11189, IEventHubClient> HubContext = hubContext;
+        protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext = hubContext;
         protected readonly ILogger<EventHandlerBase> Logger = logger;
 
         public virtual async Task HandleAsync(CallbackEvent callbackEvent)
@@ -62,7 +62,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     SourceParticipant.Role, participantState);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
                     participantState, reason);
             Logger.LogTrace(
@@ -89,7 +89,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     SourceConference.Id, participant.Id, participant.Role, hearingEventStatus);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
         }
 
@@ -103,7 +103,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                     .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
             Logger.LogTrace("Endpoint Status: Endpoint Id: {SourceEndpointId} | Endpoint State: {EndpointState}",
                 SourceEndpoint.Id, endpointState);
@@ -120,9 +120,9 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await UpdateConsultationRoom(roomTransfer);
 
-            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
-            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHubVIH11189.VhOfficersGroupName);
+            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
         private async Task UpdateConsultationRoom(RoomTransfer roomTransfer)

@@ -9,7 +9,7 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 namespace VideoWeb.EventHub.Handlers;
 
 public class ParticipantsUpdatedEventHandler(
-    IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IConferenceService conferenceService,
     ILogger<EventHandlerBase> logger)
     : EventHandlerBase(hubContext, conferenceService, logger)
@@ -33,10 +33,10 @@ public class ParticipantsUpdatedEventHandler(
                 participant.Role);
         }
         
-        await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+        await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
             .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
         
-        await HubContext.Clients.Group(Hub.EventHubVIH11189.StaffMembersGroupName)
+        await HubContext.Clients.Group(Hub.EventHub.StaffMembersGroupName)
             .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
     }
 }

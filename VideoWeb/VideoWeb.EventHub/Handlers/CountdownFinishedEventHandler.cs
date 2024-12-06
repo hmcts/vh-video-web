@@ -5,7 +5,7 @@ using EventType = VideoWeb.EventHub.Enums.EventType;
 namespace VideoWeb.EventHub.Handlers
 {
     public class CountdownFinishedEventHandler(
-        IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+        IHubContext<Hub.EventHub, IEventHubClient> hubContext,
         IConferenceService conferenceService,
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)
@@ -22,7 +22,7 @@ namespace VideoWeb.EventHub.Handlers
                 Logger.LogTrace("Conference Countdown finished: Conference Id: {SourceConferenceId}", SourceConference.Id);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubVIH11189.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .CountdownFinished(SourceConference.Id);
         }
     }

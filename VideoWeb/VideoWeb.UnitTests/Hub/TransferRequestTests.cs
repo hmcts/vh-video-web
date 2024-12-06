@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Hub
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
-            await HubVih11189.SendTransferRequest(conferenceId, participantId, transferDirection);
+            await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
 
             foreach (var p in conference.Participants)
             {
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Hub
             }
             
             EventHubClientMock.Verify(
-                x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName)
+                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
                     .HearingTransfer(conferenceId, participantId, transferDirection), Times.Once);
         }
 
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
                 .ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
-            await HubVih11189.SendTransferRequest(conferenceId, participantId, transferDirection);
+            await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
             
             foreach (var p in conference.Participants)
             {
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Hub
             }
             
             EventHubClientMock.Verify(
-                x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName)
+                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
                     .HearingTransfer(conferenceId, participantId, transferDirection), Times.Never);
         }
         
@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests.Hub
             ConferenceServiceMock.Setup(c => c.GetConference(conference.Id, It.IsAny<CancellationToken>())).ReturnsAsync(conference);
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
             
-            await HubVih11189.SendTransferRequest(conferenceId, participantId, transferDirection);
+            await Hub.SendTransferRequest(conferenceId, participantId, transferDirection);
             
             foreach (var p in conference.Participants)
             {
@@ -89,7 +89,7 @@ namespace VideoWeb.UnitTests.Hub
             }
             
             EventHubClientMock.Verify(
-                x => x.Group(EventHub.Hub.EventHubVIH11189.VhOfficersGroupName)
+                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
                     .HearingTransfer(conferenceId, participantId, transferDirection), Times.Never);
         }
     }

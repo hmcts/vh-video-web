@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Hub
                 .ThrowsAsync(new ParticipantNotFoundException(conferenceId, participantId));
 
             // act / assert
-            Func<Task> action = async () => await HubVih11189.UpdateParticipantHandStatus(conferenceId, participantId, false);
+            Func<Task> action = async () => await Hub.UpdateParticipantHandStatus(conferenceId, participantId, false);
             action.Should().NotThrowAsync<ParticipantNotFoundException>();
         }
         
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             const bool handRaised = true;
             
-            await HubVih11189.UpdateParticipantHandStatus(conferenceId, participantId, handRaised);
+            await Hub.UpdateParticipantHandStatus(conferenceId, participantId, handRaised);
 
             ConferenceManagementServiceMock.Verify(
                 x => x.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised,

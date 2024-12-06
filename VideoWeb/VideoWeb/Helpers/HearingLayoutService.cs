@@ -17,7 +17,7 @@ public class HearingLayoutService(
     ILogger<HearingLayoutService> logger,
     IConferenceService conferenceService,
     IHearingLayoutCache hearingLayoutCache,
-    IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient> hubContext)
+    IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
     : IHearingLayoutService
 {
     private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout, CancellationToken cancellationToken = default)

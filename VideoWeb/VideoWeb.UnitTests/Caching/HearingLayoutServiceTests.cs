@@ -36,7 +36,7 @@ internal class HearingLayoutServiceTests : CacheTestBase
             .Setup(x => x.Group(It.IsAny<string>()))
             .Returns(_mocker.Mock<IEventHubClient>().Object);
         
-        _mocker.Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>()
+        _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>()
             .Setup(x => x.Clients)
             .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
     }
@@ -149,7 +149,7 @@ internal class HearingLayoutServiceTests : CacheTestBase
         _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).ReturnsAsync(defaultLayout);
         
         
-        _mocker.Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>().Setup(x => x.Clients)
+        _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
             .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
         
         _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))
@@ -186,7 +186,7 @@ internal class HearingLayoutServiceTests : CacheTestBase
         _mocker.Mock<IConferenceService>().Setup(x => x.GetConference(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>() )).ReturnsAsync(conference);
         _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(c => c == conferenceId),It.IsAny<CancellationToken>())).Returns(Task.FromResult<HearingLayout?>(null));
         
-        _mocker.Mock<IHubContext<EventHub.Hub.EventHubVIH11189, IEventHubClient>>().Setup(x => x.Clients)
+        _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
             .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
         
         _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))

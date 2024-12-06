@@ -8,7 +8,7 @@ using VideoWeb.EventHub.Exceptions;
 namespace VideoWeb.EventHub.Handlers;
 
 public class TelephoneJoinedEventHandler(
-    IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IConferenceService conferenceService,
     ILogger<EventHandlerBase> logger)
     : EventHandlerBase(hubContext, conferenceService, logger)
@@ -25,7 +25,7 @@ public class TelephoneJoinedEventHandler(
 }
 
 public class TelephoneTransferEventHandler(
-    IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IConferenceService conferenceService,
     ILogger<EventHandlerBase> logger)
     : EventHandlerBase(hubContext, conferenceService, logger)
@@ -56,7 +56,7 @@ public class TelephoneTransferEventHandler(
 }
 
 public class TelephoneDisconnectedEventHandler(
-    IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IConferenceService conferenceService,
     ILogger<EventHandlerBase> logger)
     : EventHandlerBase(hubContext, conferenceService, logger)

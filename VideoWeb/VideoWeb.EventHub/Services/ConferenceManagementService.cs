@@ -35,7 +35,7 @@ public interface IConferenceManagementService
 
 public class ConferenceManagementService(
     IConferenceService conferenceService,
-    IHubContext<Hub.EventHubVIH11189, IEventHubClient> hubContext,
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IVideoApiClient videoApiClient,
     ILogger<ConferenceManagementService> logger)
     : IConferenceManagementService
