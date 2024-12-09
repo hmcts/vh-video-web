@@ -178,14 +178,14 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     describe('event hub status changes', () => {
         beforeEach(fakeAsync(() => {
-            spyOn(component, 'callAndUpdateShowVideo');
+            spyOn(component, 'loadConferenceAndUpdateVideo');
             spyOn(component, 'setupPexipEventSubscriptionAndClient');
             component.connectToPexip();
             flush();
         }));
 
         afterEach(() => {
-            expect(component.callAndUpdateShowVideo).toHaveBeenCalledTimes(1);
+            expect(component.loadConferenceAndUpdateVideo).toHaveBeenCalledTimes(1);
         });
 
         it('should call and update video when event hub is ready', fakeAsync(() => {
@@ -197,13 +197,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
         });
     });
 
-    it('callAndUpdateShowVideo', done => {
-        spyOn(component, 'call').and.returnValue(Promise.resolve());
+    it('loadConferenceAndUpdateVideo', done => {
         spyOn(component, 'getConference').and.returnValue(Promise.resolve());
         spyOn(component, 'updateShowVideo');
 
-        component.callAndUpdateShowVideo().then(res => {
-            expect(component.call).toHaveBeenCalledTimes(1);
+        component.loadConferenceAndUpdateVideo().then(res => {
             expect(component.getConference).toHaveBeenCalledTimes(1);
             expect(component.updateShowVideo).toHaveBeenCalledTimes(1);
             done();
@@ -1672,7 +1670,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             it('should re-join when participant is now linked', () => {
                 const conference = new ConferenceResponse(Object.assign({}, globalConference));
                 const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
-                spyOn(component, 'callAndUpdateShowVideo');
+                spyOn(component, 'loadConferenceAndUpdateVideo');
                 component.hearing = new Hearing(conference);
                 component.conference = conference;
                 component.participant = participant;
@@ -1698,7 +1696,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 ]);
                 getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
-                expect(component.callAndUpdateShowVideo).toHaveBeenCalled();
+                expect(component.loadConferenceAndUpdateVideo).toHaveBeenCalled();
             });
         });
     });

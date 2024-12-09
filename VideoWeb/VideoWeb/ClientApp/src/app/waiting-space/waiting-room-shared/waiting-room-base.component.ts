@@ -568,7 +568,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.callAndUpdateShowVideo();
+                await this.loadConferenceAndUpdateVideo();
             })
         );
 
@@ -735,14 +735,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         };
         try {
             await this.setupPexipEventSubscriptionAndClient();
-
+            this.call();
             this.eventHubSubscription$.add(
                 this.eventService.onEventsHubReady().subscribe(async () => {
                     this.logger.debug(`${this.loggerPrefix} EventHub ready`, {
                         conference: this.conferenceId,
                         participant: this.participant.id
                     });
-                    await this.callAndUpdateShowVideo();
+                    await this.loadConferenceAndUpdateVideo();
                 })
             );
         } catch (error) {
@@ -843,6 +843,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} calling pexip`, logPayload);
+        this.logger.warn(`${this.loggerPrefix} calling pexip`, logPayload);
         let pexipNode = this.hearing.getConference().pexip_node_uri;
         let conferenceAlias = this.hearing.getConference().participant_uri;
         let displayName = this.participant.tiled_display_name;
@@ -994,7 +995,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(async () => {
-                await this.callAndUpdateShowVideo();
+                await this.loadConferenceAndUpdateVideo();
+                this.call();
             }, this.CALL_TIMEOUT);
         }
     }
@@ -1337,8 +1339,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug(`${this.loggerPrefix} - video closed`);
     }
 
-    async callAndUpdateShowVideo(): Promise<void> {
-        await this.call();
+    async loadConferenceAndUpdateVideo(): Promise<void> {
         this.getConference().then(() => this.updateShowVideo());
     }
 
@@ -1474,7 +1475,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         // if the participant now has a link or no longer has a link, call with new join details
         if (preUpdateLinkCount !== postUpdateLinkCount) {
             this.logger.debug('[WR] - Participant has new link (or removed link), calling with new join details');
-            await this.callAndUpdateShowVideo();
+            await this.loadConferenceAndUpdateVideo();
         }
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {

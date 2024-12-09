@@ -24,6 +24,7 @@ import { VideoCallService } from './video-call.service';
 import { MockStore, createMockStore } from '@ngrx/store/testing';
 import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
@@ -58,10 +59,13 @@ describe('VideoCallService', () => {
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
     let mockStore: MockStore<ConferenceState>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     beforeEach(fakeAsync(() => {
         const initialState = initialConferenceState;
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>('VideoCallEventsService', ['handleParticipantUpdated']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.uniqueCallTags, true).and.returnValue(of(true));
         mockStore = createMockStore({ initialState });
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -134,7 +138,8 @@ describe('VideoCallService', () => {
             heartbeatServiceSpy,
             videoCallEventsServiceSpy,
             streamMixerServiceSpy,
-            mockStore
+            mockStore,
+            launchDarklyServiceSpy
         );
         getSpiedPropertyGetter(mockCamAndMicStream, 'active').and.returnValue(true);
         currentStreamSubject.next(mockCamAndMicStream);
