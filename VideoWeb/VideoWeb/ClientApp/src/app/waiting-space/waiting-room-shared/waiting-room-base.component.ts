@@ -19,6 +19,7 @@ import {
     Role,
     RoomSummaryResponse,
     SharedParticipantRoom,
+    Supplier,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
@@ -74,7 +75,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
-    vodafoneEnabled = false;
     instantMessagingEnabled = false;
 
     maxBandwidth = null;
@@ -162,12 +162,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
-        this.launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(flag => {
-                this.vodafoneEnabled = flag;
-            });
         this.launchDarklyService
             .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)
             .pipe(takeUntil(this.onDestroy$))
@@ -847,7 +841,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         let pexipNode = this.hearing.getConference().pexip_node_uri;
         let conferenceAlias = this.hearing.getConference().participant_uri;
         let displayName = this.participant.tiled_display_name;
-        if (this.needsInterpreterRoom() && !this.vodafoneEnabled) {
+        if (this.needsInterpreterRoom() && this.conference.supplier === Supplier.Kinly) {
             this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
             const interpreterRoom = await this.retrieveInterpreterRoom();
             this.linkedParticipantRoom = interpreterRoom;
@@ -856,7 +850,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             displayName = interpreterRoom.tile_display_name;
         }
 
-        if (this.needsJudicialRoom() && !this.vodafoneEnabled) {
+        if (this.needsJudicialRoom() && this.conference.supplier === Supplier.Kinly) {
             this.logger.debug(`${this.loggerPrefix} calling judicial room`, logPayload);
             const judicialRoom = await this.retrieveJudicialRoom();
             this.linkedParticipantRoom = judicialRoom;
@@ -1238,7 +1232,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.vodafoneEnabled
+        return this.conference.supplier === Supplier.Vodafone
             ? this.participant.status === ParticipantStatus.InHearing
             : !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
     }
