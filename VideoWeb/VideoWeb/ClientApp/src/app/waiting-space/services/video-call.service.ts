@@ -40,6 +40,7 @@ import {
     mapPexipParticipantToVHPexipParticipant
 } from '../store/models/api-contract-to-state-model-mappers';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Injectable()
 export class VideoCallService {
@@ -80,6 +81,7 @@ export class VideoCallService {
 
     private _displayStream: MediaStream;
     private supplier: Supplier;
+    private uniqueCallTagsPerCall: boolean;
 
     constructor(
         private logger: Logger,
@@ -90,7 +92,8 @@ export class VideoCallService {
         private heartbeatService: HeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
         private streamMixerService: StreamMixerService,
-        private store: Store<ConferenceState>
+        private store: Store<ConferenceState>,
+        private ldService: LaunchDarklyService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -181,6 +184,10 @@ export class VideoCallService {
             this.renegotiateCall();
             self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
+
+        this.ldService.getFlag<boolean>(FEATURE_FLAGS.uniqueCallTags, true).subscribe(uniqueCallTags => {
+            this.uniqueCallTagsPerCall = uniqueCallTags;
+        });
     }
 
     initTurnServer() {
@@ -200,6 +207,12 @@ export class VideoCallService {
     }
 
     async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
+        if (this.uniqueCallTagsPerCall) {
+            this.logger.debug(
+                `${this.loggerPrefix} unique call tags per call is enabled, generating new call tag (ignore the one from setup)`
+            );
+            this.initCallTag();
+        }
         this.deviceAvailability = await this.userMediaService.checkCameraAndMicrophonePresence();
         const hasCameraDevices = this.deviceAvailability.hasACamera;
         const hasMicrophoneDevices = this.deviceAvailability.hasAMicrophone;
@@ -586,6 +599,13 @@ export class VideoCallService {
     ) {
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
+        });
+        this.logger.warn(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode,
+            conferenceAlias: conferenceAlias,
+            participantDisplayName: participantDisplayName,
+            maxBandwidth: maxBandwidth,
+            callType: callType
         });
         this.stopPresentation();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);

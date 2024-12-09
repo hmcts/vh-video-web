@@ -12,7 +12,8 @@ export const FEATURE_FLAGS = {
     interpreterEnhancements: 'interpreter-enhancements',
     dialOutParticipant: 'dial-out-participant',
     instantMessaging: 'instant-messaging',
-    enableDebugLogs: 'enable-debug-logs'
+    enableDebugLogs: 'enable-debug-logs',
+    uniqueCallTags: 'unique-call-tag'
 };
 
 @Injectable({
