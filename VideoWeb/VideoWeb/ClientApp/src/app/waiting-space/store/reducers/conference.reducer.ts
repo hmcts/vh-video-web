@@ -46,7 +46,7 @@ export const conferenceReducer = createReducer(
         });
         const updatedEndpoints = conference.endpoints.map(e => {
             const existingEndpoint = state.currentConference?.endpoints.find(ce => ce.id === e.id);
-            return { ...e, pexipInfo: existingEndpoint?.pexipInfo } as VHEndpoint;
+            return { ...e, pexipInfo: existingEndpoint?.pexipInfo, transferDirection: undefined } as VHEndpoint;
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
@@ -108,7 +108,8 @@ export const conferenceReducer = createReducer(
                     ...endpoint,
                     status: status,
                     room: status === EndpointStatus.Disconnected ? null : endpoint.room,
-                    pexipInfo: status === EndpointStatus.Disconnected ? null : endpoint.pexipInfo
+                    pexipInfo: status === EndpointStatus.Disconnected ? null : endpoint.pexipInfo,
+                    transferDirection: undefined
                 };
                 return updatedEndpoint;
             } else {
@@ -128,7 +129,8 @@ export const conferenceReducer = createReducer(
         const participants = conference.participants.map(p =>
             p.id === participantId ? { ...p, transferDirection: transferDirection } : p
         );
-        const updatedConference: VHConference = { ...conference, participants: participants };
+        const endpoints = conference.endpoints.map(e => (e.id === participantId ? { ...e, transferDirection: transferDirection } : e));
+        const updatedConference: VHConference = { ...conference, participants: participants, endpoints: endpoints };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.updateParticipantMediaStatus, (state, { participantId, conferenceId, mediaStatus }) => {

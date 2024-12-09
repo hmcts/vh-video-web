@@ -445,6 +445,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 participantId = participant.witnessParticipant.id;
             }
             await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participantId);
+            await this.sendTransferDirection(participant, TransferDirection.Out);
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to raise request to dismiss witness out of hearing`, error, {
                 witness: participant.id,
@@ -527,7 +528,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
 
         this.nonEndpointParticipants = this.mapper.mapFromVHParticipants(participants);
-        this.endpointParticipants = endpoints.map(x => new VideoEndpointPanelModel(x));
+        this.endpointParticipants = endpoints.map(x => {
+            const ep = new VideoEndpointPanelModel(x);
+            ep.updateTransferringInStatus(x.transferDirection === TransferDirection.In);
+            return ep;
+        });
         this.updateParticipants();
     }
 
