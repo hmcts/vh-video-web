@@ -9,5 +9,7 @@
     <PropertyGroup>
         <LangVersion>latestmajor</LangVersion>
         <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+        <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 </Project>
