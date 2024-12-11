@@ -369,7 +369,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+        return this.participant.status === ParticipantStatus.InHearing;
     }
 
     resetVideoFlags() {
@@ -429,10 +429,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     leaveHearing() {
         this.hostWantsToJoinHearing = false;
-    }
-
-    shouldUnmuteForHearing(): boolean {
-        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
 
     setTrapFocus() {
