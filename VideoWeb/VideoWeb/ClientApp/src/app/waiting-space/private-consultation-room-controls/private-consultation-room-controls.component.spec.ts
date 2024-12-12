@@ -1,6 +1,5 @@
 import { Guid } from 'guid-typescript';
 import {
-    ClientSettingsResponse,
     ConferenceResponse,
     ConferenceStatus,
     HearingLayout,
@@ -39,7 +38,6 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';

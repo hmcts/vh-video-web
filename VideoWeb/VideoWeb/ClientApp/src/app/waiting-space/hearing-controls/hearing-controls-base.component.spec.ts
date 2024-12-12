@@ -2,7 +2,6 @@ import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import {
-    ClientSettingsResponse,
     ConferenceResponse,
     ParticipantForUserResponse,
     ParticipantResponse,
@@ -43,7 +42,6 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';

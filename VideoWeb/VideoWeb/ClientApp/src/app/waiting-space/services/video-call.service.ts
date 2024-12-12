@@ -487,6 +487,7 @@ export class VideoCallService {
                 t.stop();
             }
         });
+        this.userMediaStreamService.createAndPublishStream();
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
