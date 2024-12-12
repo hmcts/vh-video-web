@@ -32,7 +32,7 @@ export class SecurityConfigSetupService {
             first(),
             map(clientSettings => {
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
-                this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
+                this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.ejud_idp_settings);
                 this.config[IdpProviders.dom1] = this.initOidcConfig(clientSettings.dom1_idp_settings);
                 return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad], this.config[IdpProviders.dom1]];
             })

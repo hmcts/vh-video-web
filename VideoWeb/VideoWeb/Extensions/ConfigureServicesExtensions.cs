@@ -4,15 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
 using VideoWeb.Common;
@@ -34,6 +32,7 @@ using VideoWeb.Common.Security.Tokens;
 using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Extensions.SerialisationConfig;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Services;
@@ -79,8 +78,6 @@ namespace VideoWeb.Extensions
                 });
                 c.OperationFilter<AuthResponsesOperationFilter>();
             });
-            serviceCollection.AddSwaggerGenNewtonsoftSupport();
-
             return serviceCollection;
         }
 
@@ -150,11 +147,6 @@ namespace VideoWeb.Extensions
             services.AddScoped<IHearingDetailsUpdatedEventNotifier, HearingDetailsUpdatedEventNotifier>();
             RegisterEventHandlers(services);
 
-            var contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new SnakeCaseNamingStrategy()
-            };
-
             var connectionStrings = container.GetService<ConnectionStrings>();
             services.AddSignalR()
                 .AddAzureSignalR(options =>
@@ -162,13 +154,13 @@ namespace VideoWeb.Extensions
                     options.ConnectionString = connectionStrings.SignalR;
                     options.ClaimsProvider = context => context.User.Claims;
                 })
-                .AddNewtonsoftJsonProtocol(options =>
+                .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerSettings.Formatting = Formatting.None;
-                    options.PayloadSerializerSettings.ContractResolver = contractResolver;
-                    options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                    options.PayloadSerializerSettings.Converters.Add(
-                        new StringEnumConverter());
+                    options.PayloadSerializerOptions.WriteIndented = false; 
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy(); 
+                    options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.PayloadSerializerOptions.Converters.Add(new DateTimeUTCConverter()); 
+                    options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
                 })
                 .AddHubOptions<EventHub.Hub.EventHub>(options => 
                 { 
@@ -210,7 +202,7 @@ namespace VideoWeb.Extensions
         private static IEnumerable<Type> GetAllTypesOf<T>()
         {
             var platform = Environment.OSVersion.Platform.ToString();
-            var runtimeAssemblyNames = DependencyContext.Default.GetRuntimeAssemblyNames(platform);
+            var runtimeAssemblyNames = DependencyContext.Default!.GetRuntimeAssemblyNames(platform);
 
             return runtimeAssemblyNames
                 .Select(Assembly.Load)
@@ -218,45 +210,38 @@ namespace VideoWeb.Extensions
                 .Where(t => typeof(T).IsAssignableFrom(t));
         }
 
-        public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
+        public static void AddJsonOptions(this IServiceCollection serviceCollection)
         {
-            var contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new SnakeCaseNamingStrategy()
-            };
-
             serviceCollection.AddMvc()
-                .AddNewtonsoftJson(options =>
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ContractResolver = contractResolver;
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy();
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeUTCConverter());
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
-
-            return serviceCollection;
         }
 
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        private static AsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
-        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        private static AsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
         }
 
-        private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
+        private static BookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
             HearingServicesConfiguration servicesConfiguration)
         {
             return BookingsApiClient.GetClient(servicesConfiguration.BookingsApiUrl, httpClient);
         }
 
-        private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
+        private static VideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
             return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);

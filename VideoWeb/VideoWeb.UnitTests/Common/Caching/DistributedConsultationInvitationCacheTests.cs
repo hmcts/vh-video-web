@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -26,7 +26,7 @@ public class DistributedConsultationInvitationCacheTests
     
     private async Task WriteToCache<T>(Guid key, T obj) where T : class
     {
-        var serialisedObj = JsonConvert.SerializeObject(obj, CachingHelper.SerializerSettings);
+        var serialisedObj = JsonSerializer.Serialize(obj, CachingHelper.JsonSerializerOptions);
         var data = Encoding.UTF8.GetBytes(serialisedObj);
         await _distributedCache.SetAsync(key.ToString(), data,
             new DistributedCacheEntryOptions
@@ -38,8 +38,8 @@ public class DistributedConsultationInvitationCacheTests
     private async Task<T> ReadFromCache<T>(Guid key) where T : class
     {
         var data = await _distributedCache.GetAsync(key.ToString());
-        return data == null ? null : JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(data),
-            CachingHelper.SerializerSettings);
+        return data == null ? null : JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(data),
+            CachingHelper.JsonSerializerOptions);
     }
     
     [SetUp]
