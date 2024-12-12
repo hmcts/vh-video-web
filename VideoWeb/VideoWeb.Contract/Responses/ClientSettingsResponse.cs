@@ -50,11 +50,6 @@ namespace VideoWeb.Contract.Responses
         /// Enable iOS tablet support
         /// </summary>
         public bool EnableIOSTabletSupport { get; set; }
-        
-        /// <summary>
-        /// Enable dynamic evidence sharing button
-        /// </summary>
-        public bool EnableDynamicEvidenceSharing { get; set; }
 
         /// <summary>
         /// Blur radius in pixels

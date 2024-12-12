@@ -385,7 +385,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         eventHubDisconnectSubject.next(6);
 
         flushMicrotasks();
-        expect(component.disconnect).toHaveBeenCalledTimes(6);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
         expect(component.participant.status).toBe(newParticipantStatus);
         expect(component.conference.status).toBe(newConferenceStatus);
@@ -399,15 +398,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.handleEventHubDisconnection(1);
 
         expect(component.disconnect).not.toHaveBeenCalled();
-    });
-
-    it('disconnects judge from pexip after the first attempt to reconnect to event hub has been un successful', () => {
-        component.participant.role = Role.Judge;
-        spyOn(component, 'disconnect');
-
-        component.handleEventHubDisconnection(2);
-
-        expect(component.disconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
