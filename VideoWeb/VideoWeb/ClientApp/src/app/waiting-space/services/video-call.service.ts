@@ -601,13 +601,6 @@ export class VideoCallService {
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
-        this.logger.warn(`${this.loggerPrefix} make pexip call`, {
-            pexipNode: pexipNode,
-            conferenceAlias: conferenceAlias,
-            participantDisplayName: participantDisplayName,
-            maxBandwidth: maxBandwidth,
-            callType: callType
-        });
         this.stopPresentation();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
