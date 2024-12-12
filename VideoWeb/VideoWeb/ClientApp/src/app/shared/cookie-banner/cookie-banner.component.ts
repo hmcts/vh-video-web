@@ -7,7 +7,7 @@ import { cookies } from '../cookies.constants';
     styleUrls: ['./cookie-banner.component.css']
 })
 export class CookieBannerComponent {
-    isBannerVisible: boolean = true;
+    isBannerVisible = true;
 
     constructor() {
         // Check if the user has already made a decision
