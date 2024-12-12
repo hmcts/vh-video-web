@@ -70,7 +70,6 @@
                         <video
                             appForcePlayVideo
                             id="incomingFeedJudgePrivate"
-                            [muted]="shouldMuteHearing()"
                             [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
                             height="auto"
                             class="incomingFeedPrivate"
