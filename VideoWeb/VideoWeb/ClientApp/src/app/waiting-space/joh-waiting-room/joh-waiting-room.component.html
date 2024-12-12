@@ -59,7 +59,6 @@
   <div class="video-wrapper">
     <video
       appForcePlayVideo
-      [muted]="shouldMuteHearing()"
       id="incomingFeedPrivate"
       [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
       height="auto"
