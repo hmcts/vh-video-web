@@ -42,7 +42,6 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -52,7 +51,6 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     continueWithNoRecording = false;
     expanedPanel = true;
-    hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
     displayJoinHearingPopup: boolean;
 
@@ -326,7 +324,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
-                this.hostWantsToJoinHearing = true;
                 await this.videoCallService.startHearing(this.hearing.id, layout);
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
@@ -365,17 +362,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async joinHearingInSession() {
-        this.hostWantsToJoinHearing = true;
         await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
-    }
-
-    resetVideoFlags() {
-        super.resetVideoFlags();
-        this.hostWantsToJoinHearing = false;
+        return this.participant.status === ParticipantStatus.InHearing;
     }
 
     audioRestartCallback(continueWithNoRecording: boolean) {
@@ -426,14 +417,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             await this.leaveJudicialConsultation();
         }
-    }
-
-    leaveHearing() {
-        this.hostWantsToJoinHearing = false;
-    }
-
-    shouldUnmuteForHearing(): boolean {
-        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
 
     setTrapFocus() {
@@ -568,11 +551,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.verifyAudioRecordingStream();
                 }
             });
-    }
-
-    handleHearingTransferChange(message: HearingTransfer) {
-        super.handleHearingTransferChange(message);
-        this.hostWantsToJoinHearing = message.participantId === this.participant.id && message.transferDirection === TransferDirection.In;
     }
 
     private onShouldReload(): void {
