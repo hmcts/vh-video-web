@@ -42,6 +42,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -369,7 +370,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.participant.status === ParticipantStatus.InHearing;
+        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
     }
 
     resetVideoFlags() {
@@ -429,6 +430,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     leaveHearing() {
         this.hostWantsToJoinHearing = false;
+    }
+
+    shouldUnmuteForHearing(): boolean {
+        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
 
     setTrapFocus() {
@@ -563,6 +568,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.verifyAudioRecordingStream();
                 }
             });
+    }
+
+    handleHearingTransferChange(message: HearingTransfer) {
+        super.handleHearingTransferChange(message);
+        this.hostWantsToJoinHearing = message.participantId === this.participant.id && message.transferDirection === TransferDirection.In;
     }
 
     private onShouldReload(): void {
