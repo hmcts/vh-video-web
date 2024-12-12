@@ -2,7 +2,6 @@ import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import {
-    ClientSettingsResponse,
     ConferenceResponse,
     ParticipantForUserResponse,
     ParticipantResponse,
@@ -43,7 +42,6 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -107,8 +105,6 @@ describe('HearingControlsBaseComponent', () => {
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-    let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let clientSettingsResponse: ClientSettingsResponse;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
@@ -118,10 +114,6 @@ describe('HearingControlsBaseComponent', () => {
         mockStore = createMockStore({ initialState });
 
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
-
-        clientSettingsResponse = new ClientSettingsResponse({
-            enable_dynamic_evidence_sharing: false
-        });
         translateService.instant.calls.reset();
         focusService.storeFocus.calls.reset();
 
@@ -159,9 +151,6 @@ describe('HearingControlsBaseComponent', () => {
         onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
 
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
-        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
-
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['showError']);
@@ -176,7 +165,6 @@ describe('HearingControlsBaseComponent', () => {
             videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusService,

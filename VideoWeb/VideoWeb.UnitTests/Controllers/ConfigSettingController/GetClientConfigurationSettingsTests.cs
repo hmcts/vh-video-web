@@ -162,7 +162,6 @@ public class GetClientConfigurationSettingsTests
         {
             VideoApiUrl = "https://vh-video-api/",
             EnableVideoFilters = true,
-            EnableDynamicEvidenceSharing = true,
             BlurRadius = 20
         };
 

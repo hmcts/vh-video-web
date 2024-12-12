@@ -428,7 +428,7 @@
           <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
             <button
               id="shareDropdown-startEvidenceSharing"
-              *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
+              *ngIf="canShowDynamicEvidenceShareButton"
               (click)="startScreenShareWithMicrophone()"
               disableChildTooltip
               appTooltip
@@ -451,6 +451,7 @@
             </button>
             <div
               id="shareDropdown-unsupportedEvidenceSharing"
+              *ngIf="!canShowDynamicEvidenceShareButton"
               appTooltip
               colour="red"
               [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate"

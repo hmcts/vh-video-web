@@ -1,6 +1,5 @@
 import { Guid } from 'guid-typescript';
 import {
-    ClientSettingsResponse,
     ConferenceResponse,
     ConferenceStatus,
     HearingLayout,
@@ -39,7 +38,6 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
@@ -90,8 +88,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-    let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let clientSettingsResponse: ClientSettingsResponse;
+
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
@@ -103,9 +100,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
 
-        clientSettingsResponse = new ClientSettingsResponse({
-            enable_dynamic_evidence_sharing: false
-        });
         translateService.instant.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
@@ -113,8 +107,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             [],
             ['loggedInParticipant$', 'participants']
         );
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
-        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
             'setSpotlightStatusById',
@@ -155,7 +147,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy,
             videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
@@ -238,64 +229,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             // Assert
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
-    });
-
-    it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
-        configServiceSpy.getClientSettings.and.returnValue(
-            of(
-                new ClientSettingsResponse({
-                    enable_dynamic_evidence_sharing: false
-                })
-            )
-        );
-        const _component = new PrivateConsultationRoomControlsComponent(
-            videoCallService,
-            eventsService,
-            deviceTypeService,
-            logger,
-            participantServiceSpy,
-            translateService,
-            videoControlServiceSpy,
-            userMediaServiceSpy,
-            conferenceServiceSpy,
-            configServiceSpy,
-            videoControlCacheSpy,
-            launchDarklyServiceSpy,
-            focusServiceSpy,
-            mockStore,
-            audioRecordingServiceSpy,
-            notificationToastrServiceSpy
-        );
-        expect(_component.enableDynamicEvidenceSharing).toBe(false);
-    });
-
-    it('enableDynamicEvidenceSharing returns true when dynamic evidence sharing is enabled', () => {
-        configServiceSpy.getClientSettings.and.returnValue(
-            of(
-                new ClientSettingsResponse({
-                    enable_dynamic_evidence_sharing: true
-                })
-            )
-        );
-        const _component = new PrivateConsultationRoomControlsComponent(
-            videoCallService,
-            eventsService,
-            deviceTypeService,
-            logger,
-            participantServiceSpy,
-            translateService,
-            videoControlServiceSpy,
-            userMediaServiceSpy,
-            conferenceServiceSpy,
-            configServiceSpy,
-            videoControlCacheSpy,
-            launchDarklyServiceSpy,
-            focusServiceSpy,
-            mockStore,
-            audioRecordingServiceSpy,
-            notificationToastrServiceSpy
-        );
-        expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
 
     it('should open self-view by default for judge', () => {
