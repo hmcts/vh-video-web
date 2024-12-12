@@ -1560,6 +1560,14 @@
         "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
         "expires": "Pan fyddwch yn cau eich porwr"
       }
+    },
+    "cookie-banner" : {
+      "title": "Cookies on Video Hearings",
+      "intro": "We use some essential cookies to make this service work.",
+      "intro2": "We’d like to set additional cookies so we can remember your settings, understand how people use the service and make improvements.",
+      "accept": "Accept additional cookies",
+      "reject": "Reject additional cookies",
+      "cookie-page": "View cookies"
     }
   },
   "audio-mix-selection": {

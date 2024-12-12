@@ -23,6 +23,7 @@ import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
+import { cookies } from './shared/cookies.constants';
 
 @Component({
     selector: 'app-root',
@@ -111,10 +112,10 @@ export class AppComponent implements OnInit, OnDestroy {
                             service. This method is used to identify the user in Dynatrace
                             monitoring by passing the user's preferred username in lowercase as a
                             parameter.*/
-                            // TODO: uncomment the below line to add this identification
-                            // To be implemented behind the cookie banner VIH-5622
-
-                            // this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
+                            const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
+                            if (cookieConsent === 'accepted') {
+                                this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
+                            }
                         }
 
                         if (this.currentIdp !== 'quickLink') {
