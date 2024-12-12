@@ -55,7 +55,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -1858,7 +1858,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2151,7 +2151,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2261,7 +2261,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2371,7 +2371,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2481,7 +2481,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2590,7 +2590,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2698,7 +2698,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2807,7 +2807,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -3816,7 +3816,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4016,7 +4016,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4119,7 +4119,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4542,7 +4542,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4652,7 +4652,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4764,7 +4764,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4992,7 +4992,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -5512,7 +5512,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Removes a participant from a conference  
+     * Removes a participant from a conference
     errors.
      * @return No Content
      */
@@ -6018,7 +6018,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json',
+                'Content-Type': 'application/json',
                 Accept: 'application/json'
             })
         };
@@ -7202,7 +7202,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -7596,12 +7596,12 @@ export interface IProblemDetails {
 }
 
 export class ValidationProblemDetails implements IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 
@@ -7618,6 +7618,11 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
             for (var property in _data) {
                 if (_data.hasOwnProperty(property)) this[property] = _data[property];
             }
+            this.type = _data['type'];
+            this.title = _data['title'];
+            this.status = _data['status'];
+            this.detail = _data['detail'];
+            this.instance = _data['instance'];
             if (_data['errors']) {
                 this.errors = {} as any;
                 for (let key in _data['errors']) {
@@ -7625,11 +7630,6 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
                         (<any>this.errors)![key] = _data['errors'][key] !== undefined ? _data['errors'][key] : [];
                 }
             }
-            this.type = _data['type'];
-            this.title = _data['title'];
-            this.status = _data['status'];
-            this.detail = _data['detail'];
-            this.instance = _data['instance'];
         }
     }
 
@@ -7645,28 +7645,28 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
         for (var property in this) {
             if (this.hasOwnProperty(property)) data[property] = this[property];
         }
+        data['type'] = this.type;
+        data['title'] = this.title;
+        data['status'] = this.status;
+        data['detail'] = this.detail;
+        data['instance'] = this.instance;
         if (this.errors) {
             data['errors'] = {};
             for (let key in this.errors) {
                 if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key];
             }
         }
-        data['type'] = this.type;
-        data['title'] = this.title;
-        data['status'] = this.status;
-        data['detail'] = this.detail;
-        data['instance'] = this.instance;
         return data;
     }
 }
 
 export interface IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 }
@@ -9531,7 +9531,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    e_jud_idp_settings?: IdpSettingsResponse;
+    ejud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */
@@ -9565,9 +9565,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         if (_data) {
             this.app_insights_connection_string = _data['app_insights_connection_string'];
             this.event_hub_path = _data['event_hub_path'];
-            this.e_jud_idp_settings = _data['e_jud_idp_settings']
-                ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
-                : <any>undefined;
+            this.ejud_idp_settings = _data['ejud_idp_settings'] ? IdpSettingsResponse.fromJS(_data['ejud_idp_settings']) : <any>undefined;
             this.dom1_idp_settings = _data['dom1_idp_settings'] ? IdpSettingsResponse.fromJS(_data['dom1_idp_settings']) : <any>undefined;
             this.vh_idp_settings = _data['vh_idp_settings'] ? IdpSettingsResponse.fromJS(_data['vh_idp_settings']) : <any>undefined;
             this.enable_video_filters = _data['enable_video_filters'];
@@ -9597,7 +9595,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data = typeof data === 'object' ? data : {};
         data['app_insights_connection_string'] = this.app_insights_connection_string;
         data['event_hub_path'] = this.event_hub_path;
-        data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
+        data['ejud_idp_settings'] = this.ejud_idp_settings ? this.ejud_idp_settings.toJSON() : <any>undefined;
         data['dom1_idp_settings'] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
         data['enable_video_filters'] = this.enable_video_filters;
@@ -9622,7 +9620,7 @@ export interface IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    e_jud_idp_settings?: IdpSettingsResponse;
+    ejud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */

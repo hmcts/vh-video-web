@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -22,15 +22,15 @@ namespace VideoWeb.Common.Caching
             _logger = logger;
         }
 
-        public virtual async Task WriteToCache(TKey key, TEntry toWrite,  CancellationToken cancellationToken = default)
+        public virtual async Task WriteToCache(TKey key, TEntry toWrite, CancellationToken cancellationToken = default)
         {
-            if(Equals(key, default(TKey)))
+            if (Equals(key, default(TKey)))
                 throw new ArgumentNullException(nameof(key));
             if (CacheEntryOptions == null)
                 throw new InvalidOperationException($"Cannot write to cache without setting the {nameof(CacheEntryOptions)}");
 
-            var serialisedLayout = JsonConvert.SerializeObject(toWrite, CachingHelper.SerializerSettings);
-            var data = Encoding.UTF8.GetBytes(serialisedLayout);
+            var serializedLayout = JsonSerializer.Serialize(toWrite, CachingHelper.JsonSerializerOptions);
+            var data = Encoding.UTF8.GetBytes(serializedLayout);
 
             try
             {
@@ -57,16 +57,11 @@ namespace VideoWeb.Common.Caching
             try
             {
                 var data = await _distributedCache.GetAsync(GetKey(key), cancellationToken);
-                if(data == null) return default;
-                
+                if (data == null) return default;
+
                 var dataAsString = Encoding.UTF8.GetString(data);
-                var deserialisedObject =
-                    JsonConvert.DeserializeObject<TResult>(dataAsString,
-                        new JsonSerializerSettings
-                        {
-                            TypeNameHandling = TypeNameHandling.None, Formatting = Formatting.None
-                        });
-                return deserialisedObject;
+                var deserializedObject = JsonSerializer.Deserialize<TResult>(dataAsString, CachingHelper.JsonSerializerOptions);
+                return deserializedObject;
             }
             catch (Exception ex)
             {
@@ -85,7 +80,6 @@ namespace VideoWeb.Common.Caching
             {
                 _logger.LogError(ex, "Error removing from cache for key {Key}", GetKey(key));
             }
-            
         }
 
         protected abstract string GetKey(TKey key);
