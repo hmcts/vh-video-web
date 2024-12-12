@@ -56,7 +56,6 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PexipDisplayNameModel } from '../../services/conference/models/pexip-display-name.model';
-import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
