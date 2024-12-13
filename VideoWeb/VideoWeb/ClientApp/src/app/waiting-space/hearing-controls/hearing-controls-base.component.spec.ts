@@ -888,14 +888,11 @@ describe('HearingControlsBaseComponent', () => {
             expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
         });
 
-        it('should dismiss participant if confirmed leaving and another host is present', done => {
+        it('should dismiss participant if confirmed leaving and another host is present', () => {
             component.displayLeaveHearingPopup = true;
             const participantsModel = [];
             spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
             videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
-            component.leaveHearing.subscribe(event => {
-                done();
-            });
 
             component.leave(true, participantsModel);
 

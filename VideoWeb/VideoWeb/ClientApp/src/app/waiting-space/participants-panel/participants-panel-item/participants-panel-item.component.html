@@ -55,6 +55,7 @@
       <div *ngIf="participant.isInHearing()">
         <ng-container *ngIf="!isHost">
           <img
+            [id]="idPrefix + '-' + participant.id + '-icon-micRemoteMuted'"
             *ngIf="participant.isMicRemoteMuted()"
             appTooltip
             [text]="
@@ -66,16 +67,16 @@
             [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
             class="panel-icon"
             [attr.alt]="
-              (participant.isMicRemoteMuted()
+              participant.isMicRemoteMuted()
                 ? ('participants-panel.microphone-muted-icon' | translate)
-                : 'participants-panel.microphone-on-icon'
-              ) | translate
+                : ('participants-panel.microphone-on-icon' | translate)
             "
             (click)="toggleParticipantMute(); $event.stopPropagation()"
             tabindex="0"
             (keydown.enter)="toggleParticipantMute(); $event.stopPropagation()"
           />
           <fa-icon
+            [id]="idPrefix + '-' + participant.id + '-icon-micLocal'"
             *ngIf="!participant.isMicRemoteMuted()"
             appTooltip
             [text]="

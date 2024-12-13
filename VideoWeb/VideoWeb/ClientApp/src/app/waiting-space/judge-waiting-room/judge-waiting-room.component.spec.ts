@@ -56,7 +56,6 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PexipDisplayNameModel } from '../../services/conference/models/pexip-display-name.model';
-import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
@@ -482,7 +481,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         flush();
 
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
-        expect(component.hostWantsToJoinHearing).toBeTrue();
     }));
 
     it('should handle api error when start hearing fails', async () => {
@@ -498,7 +496,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         await component.joinHearingInSession();
 
         expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
-        expect(component.shouldCurrentUserJoinHearing()).toBeTrue();
     });
 
     describe('Audio recording and alert notifications', () => {
@@ -617,7 +614,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         // Assert
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
         expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
-        expect(component.hostWantsToJoinHearing).toBeTrue();
     }));
 
     it('should not enable IM when hearing has not been initalised', () => {
@@ -660,15 +656,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.conferenceStartedBy).toBe(null);
     }));
 
-    it('should set shouldUpdateHostShowVideo to false when participant not connecting to pexip', async () => {
-        component.hostWantsToJoinHearing = true;
-        component.connected = false;
-
-        component.updateShowVideo();
-
-        expect(component.hostWantsToJoinHearing).toBeFalse();
-    });
-
     it('should not pull the STAFFMEMBER in to the hearing when STAFFMEMBER is in Waiting Room and hearing started by the JUDGE', () => {
         component.ngOnInit();
         component.connected = true;
@@ -689,7 +676,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.StaffMember).id;
         component.participant = component.conference.participants.find(p => p.role === Role.StaffMember);
         component.participant.status = ParticipantStatus.InHearing;
-        component.hostWantsToJoinHearing = true;
         component.updateShowVideo();
 
         expect(component.hearing.isInSession()).toBeTrue();
@@ -709,7 +695,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.StaffMember).id;
         component.participant = component.conference.participants.find(p => p.role === Role.StaffMember);
         component.participant.status = ParticipantStatus.InConsultation;
-        component.hostWantsToJoinHearing = false;
         component.updateShowVideo();
 
         expect(component.hearing.isInSession()).toBeFalse();
@@ -994,38 +979,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    describe('shouldUnmuteForHearing', () => {
-        let superShouldUnmuteForHearing: jasmine.SpyObj<any>;
-
-        beforeEach(() => {
-            superShouldUnmuteForHearing = spyOn(WaitingRoomBaseDirective.prototype, 'shouldUnmuteForHearing');
-        });
-
-        it('should return false when super.shouldUnmuteForHearing is false hostWantsToJoinHearing is false', () => {
-            superShouldUnmuteForHearing.and.returnValue(false);
-            component.hostWantsToJoinHearing = false;
-            expect(component.shouldUnmuteForHearing()).toBe(false);
-        });
-
-        it('should return false when super.shouldUnmuteForHearing is false hostWantsToJoinHearing is true', () => {
-            superShouldUnmuteForHearing.and.returnValue(false);
-            component.hostWantsToJoinHearing = true;
-            expect(component.shouldUnmuteForHearing()).toBe(false);
-        });
-
-        it('should return false when super.shouldUnmuteForHearing is true hostWantsToJoinHearing is false', () => {
-            superShouldUnmuteForHearing.and.returnValue(true);
-            component.hostWantsToJoinHearing = false;
-            expect(component.shouldUnmuteForHearing()).toBe(false);
-        });
-
-        it('should return true when super.shouldUnmuteForHearing is true hostWantsToJoinHearing is true', () => {
-            superShouldUnmuteForHearing.and.returnValue(true);
-            component.hostWantsToJoinHearing = true;
-            expect(component.shouldUnmuteForHearing()).toBe(true);
-        });
-    });
-
     describe('updateSpotlightStateOnParticipantDisconnectDuringConference', () => {
         it('should do nothing if the conference is not in session', () => {
             // Arrange
@@ -1127,11 +1080,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participant.id, false);
-        });
-
-        it('should return hostWantsToJoinHearing false when leave hearing button has been clicked', () => {
-            component.leaveHearing();
-            expect(component.hostWantsToJoinHearing).toBeFalse();
         });
     });
 
