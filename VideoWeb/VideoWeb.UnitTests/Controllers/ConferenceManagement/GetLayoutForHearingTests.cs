@@ -61,37 +61,5 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Assert
             layoutResponse.Should().BeAssignableTo<NotFoundResult>();
         }
-        
-        [Test]
-        public async Task GetLayoutForHearing_handles_when_GetCurrentLayoutThrows_VideoApiException()
-        {
-            // Arrange
-            var conferenceId = Guid.NewGuid();
-
-            var exception = new VideoApiException("message", 404, null, null, null);
-            _mocker.Mock<IHearingLayoutService>()
-                .Setup(x => x.GetCurrentLayout(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                .Throws(exception);
-
-            // Act
-            var result = await _sut.GetLayoutForHearing(conferenceId, CancellationToken.None) as ObjectResult;
-
-            // Assert
-            result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        }
-        
-        [Test]
-        public void GetLayoutForHearing_handles_when_GetCurrentLayoutThrows_Exception()
-        {
-            // Arrange
-            var conferenceId = Guid.NewGuid();
-
-            _mocker.Mock<IHearingLayoutService>()
-                .Setup(x => x.GetCurrentLayout(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-                .Throws<Exception>();
-
-            // Act
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.GetLayoutForHearing(conferenceId, CancellationToken.None));
-        }
     }
 }

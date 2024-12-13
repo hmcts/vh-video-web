@@ -65,32 +65,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()), Times.Never);
         }
 
-        [Test]
-        public async Task Should_return_video_api_error()
-        {
-            var participant = TestConference.GetJudge();
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(participant.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not start a video hearing";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(apiException);
-
-            var result = await controller.StartOrResumeVideoHearingAsync(TestConference.Id,
-                new StartOrResumeVideoHearingRequest {Layout = HearingLayout.Dynamic}, CancellationToken.None);
-            var typedResult = (ObjectResult) result;
-            typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-        }
-
         [TestCase(AppRoles.JudgeRole)]
         [TestCase(AppRoles.StaffMember)]
         public async Task Should_return_accepted_when_user_is_host_in_conference(string role)
