@@ -9542,8 +9542,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     enable_ios_mobile_support?: boolean;
     /** Enable iOS tablet support */
     enable_ios_tablet_support?: boolean;
-    /** Enable dynamic evidence sharing button */
-    enable_dynamic_evidence_sharing?: boolean;
     /** Blur radius in pixels */
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
@@ -9574,7 +9572,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_android_support = _data['enable_android_support'];
             this.enable_ios_mobile_support = _data['enable_ios_mobile_support'];
             this.enable_ios_tablet_support = _data['enable_ios_tablet_support'];
-            this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
             this.launch_darkly_client_id = _data['launch_darkly_client_id'];
             if (Array.isArray(_data['supplier_configurations'])) {
@@ -9604,7 +9601,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_android_support'] = this.enable_android_support;
         data['enable_ios_mobile_support'] = this.enable_ios_mobile_support;
         data['enable_ios_tablet_support'] = this.enable_ios_tablet_support;
-        data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         data['launch_darkly_client_id'] = this.launch_darkly_client_id;
         if (Array.isArray(this.supplier_configurations)) {
@@ -9633,8 +9629,6 @@ export interface IClientSettingsResponse {
     enable_ios_mobile_support?: boolean;
     /** Enable iOS tablet support */
     enable_ios_tablet_support?: boolean;
-    /** Enable dynamic evidence sharing button */
-    enable_dynamic_evidence_sharing?: boolean;
     /** Blur radius in pixels */
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */

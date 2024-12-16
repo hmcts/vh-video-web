@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
@@ -46,7 +45,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     featureFlags = FEATURE_FLAGS;
 
     showContextMenu = false;
-    enableDynamicEvidenceSharing = false;
     isWowzaKillButtonEnabled = false;
     vodafoneEnabled = false;
     pauseIcon = faCirclePause;
@@ -67,7 +65,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
-        configService: ConfigService,
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
@@ -93,10 +90,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             this.conferenceStatus = status;
         });
 
-        configService
-            .getClientSettings()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
         ldService
             .getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false)
             .pipe(takeUntil(this.destroyedSubject))

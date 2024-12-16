@@ -33,7 +33,6 @@ public static class ClientSettingsResponseMapper{
             EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
             EnableIOSMobileSupport = servicesConfiguration.EnableIOSMobileSupport,
             EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
-            EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
             BlurRadius = servicesConfiguration.BlurRadius,
             LaunchDarklyClientId = servicesConfiguration.LaunchDarklyClientId,
             DynatraceRumLink = dynatraceConfiguration.DynatraceRumLink

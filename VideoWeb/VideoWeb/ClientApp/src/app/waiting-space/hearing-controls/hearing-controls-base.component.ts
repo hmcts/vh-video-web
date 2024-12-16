@@ -42,7 +42,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
     @Output() public changeLanguageSelected = new EventEmitter();
-    @Output() public leaveHearing = new EventEmitter();
 
     audioOnly = false;
 
@@ -459,9 +458,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
 
             if (isAnotherHostInHearing) {
-                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
-                    this.leaveHearing.emit();
-                });
+                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id);
             } else {
                 this.videoCallService.suspendHearing(this.conferenceId);
             }
