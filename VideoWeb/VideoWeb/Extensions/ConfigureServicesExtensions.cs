@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.SignalR;
@@ -157,9 +158,8 @@ namespace VideoWeb.Extensions
                 .AddJsonProtocol(options =>
                 {
                     options.PayloadSerializerOptions.WriteIndented = false; 
-                    options.PayloadSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy(); 
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                     options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                    options.PayloadSerializerOptions.Converters.Add(new DateTimeUTCConverter()); 
                     options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
                 })
                 .AddHubOptions<EventHub.Hub.EventHub>(options => 
@@ -183,7 +183,7 @@ namespace VideoWeb.Extensions
                     Ssl = true,
                 };
             });
-            services.AddHostedService<ConferenceBackgroundService>();
+            //services.AddHostedService<ConferenceBackgroundService>();
             return services;
         }
 
@@ -215,33 +215,32 @@ namespace VideoWeb.Extensions
             serviceCollection.AddMvc()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseJsonNamingPolicy();
-                    options.JsonSerializerOptions.Converters.Add(new DateTimeUTCConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
         }
 
-        private static AsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
-        private static AsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
         }
 
-        private static BookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
+        private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
             HearingServicesConfiguration servicesConfiguration)
         {
             return BookingsApiClient.GetClient(servicesConfiguration.BookingsApiUrl, httpClient);
         }
 
-        private static VideoApiClient BuildVideoApiClient(HttpClient httpClient,
+        private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
             return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);

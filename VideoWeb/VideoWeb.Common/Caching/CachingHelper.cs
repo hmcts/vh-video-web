@@ -8,9 +8,10 @@ namespace VideoWeb.Common.Caching
         public static JsonSerializerOptions JsonSerializerOptions => new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = false,                       
-            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)}
+            WriteIndented = false,             
+            UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)},
+            PropertyNameCaseInsensitive = true
         };
     }
 }

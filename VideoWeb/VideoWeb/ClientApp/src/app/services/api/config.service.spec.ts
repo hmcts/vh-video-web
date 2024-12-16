@@ -28,7 +28,7 @@ describe('ConfigService', () => {
             redirect_uri: '/home',
             post_logout_redirect_uri: '/logout'
         });
-        clientSettings.ejud_idp_settings = ejudSettings;
+        clientSettings.e_jud_idp_settings = ejudSettings;
         clientSettings.vh_idp_settings = vhAdSettings;
         httpBackendSpy.handle.and.returnValue(of(new HttpResponse({ body: clientSettings })));
         configService = new ConfigService(httpBackendSpy);

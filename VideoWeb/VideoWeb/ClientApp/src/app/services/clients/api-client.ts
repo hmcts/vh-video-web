@@ -5512,7 +5512,7 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Removes a participant from a conference
+     * Removes a participant from a conference  
     errors.
      * @return No Content
      */
@@ -9531,7 +9531,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    ejud_idp_settings?: IdpSettingsResponse;
+    e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */
@@ -9563,7 +9563,9 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         if (_data) {
             this.app_insights_connection_string = _data['app_insights_connection_string'];
             this.event_hub_path = _data['event_hub_path'];
-            this.ejud_idp_settings = _data['ejud_idp_settings'] ? IdpSettingsResponse.fromJS(_data['ejud_idp_settings']) : <any>undefined;
+            this.e_jud_idp_settings = _data['e_jud_idp_settings']
+                ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
+                : <any>undefined;
             this.dom1_idp_settings = _data['dom1_idp_settings'] ? IdpSettingsResponse.fromJS(_data['dom1_idp_settings']) : <any>undefined;
             this.vh_idp_settings = _data['vh_idp_settings'] ? IdpSettingsResponse.fromJS(_data['vh_idp_settings']) : <any>undefined;
             this.enable_video_filters = _data['enable_video_filters'];
@@ -9592,7 +9594,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data = typeof data === 'object' ? data : {};
         data['app_insights_connection_string'] = this.app_insights_connection_string;
         data['event_hub_path'] = this.event_hub_path;
-        data['ejud_idp_settings'] = this.ejud_idp_settings ? this.ejud_idp_settings.toJSON() : <any>undefined;
+        data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
         data['dom1_idp_settings'] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
         data['enable_video_filters'] = this.enable_video_filters;
@@ -9616,7 +9618,7 @@ export interface IClientSettingsResponse {
     app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
-    ejud_idp_settings?: IdpSettingsResponse;
+    e_jud_idp_settings?: IdpSettingsResponse;
     dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */

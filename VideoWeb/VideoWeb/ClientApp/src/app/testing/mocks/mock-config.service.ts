@@ -24,7 +24,7 @@ export class MockConfigService {
     });
 
     clientSettings = new ClientSettingsResponse({
-        ejud_idp_settings: this.ejudSettings,
+        e_jud_idp_settings: this.ejudSettings,
         vh_idp_settings: this.vhAdSettings,
         dom1_idp_settings: this.dom1Settings,
         event_hub_path: 'evenhub',
