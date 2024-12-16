@@ -33,7 +33,6 @@ using VideoWeb.Common.Security.Tokens;
 using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Extensions.SerialisationConfig;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Services;
@@ -183,7 +182,7 @@ namespace VideoWeb.Extensions
                     Ssl = true,
                 };
             });
-            //services.AddHostedService<ConferenceBackgroundService>();
+            services.AddHostedService<ConferenceBackgroundService>();
             return services;
         }
 
