@@ -214,9 +214,7 @@ public class ParticipantsController(
         if (!profile.Roles.Exists(role => participantsRoles.Contains(role))) return Ok(response);
 
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        var participant = conference.Participants
-            .SingleOrDefault(
-                x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+        var participant = conference.GetParticipant(profile.Username);
 
         if (participant == null)
             return NotFound($"Current participant not found for conference {conferenceId}");
