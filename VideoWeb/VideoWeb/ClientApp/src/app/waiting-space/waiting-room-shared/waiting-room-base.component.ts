@@ -591,7 +591,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                await this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+                await this.handleParticipantsUpdatedMessage.bind(this, participantsUpdatedMessage);
             })
         );
 
