@@ -12,6 +12,8 @@ import { mapConferenceToVHConference } from '../models/api-contract-to-state-mod
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
 import { hot } from 'jasmine-marbles';
 import { VHConference, VHEndpoint, VHParticipant } from '../models/vh-conference';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('NotificationEffects', () => {
     const testData = new ConferenceTestData();
@@ -22,6 +24,7 @@ describe('NotificationEffects', () => {
     let effects: NotificationEffects;
     let mockConferenceStore: MockStore<ConferenceState>;
     let toastNotificationService: jasmine.SpyObj<NotificationToastrService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     beforeEach(() => {
         toastNotificationService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
@@ -34,6 +37,8 @@ describe('NotificationEffects', () => {
             'showHearingLayoutchanged'
         ]);
 
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+
         vhConference = mapConferenceToVHConference(conference);
         mockConferenceStore = createMockStore({
             initialState: { currentConference: vhConference, availableRooms: [] }
@@ -44,7 +49,8 @@ describe('NotificationEffects', () => {
                 NotificationEffects,
                 provideMockStore(),
                 provideMockActions(() => actions$),
-                { provide: NotificationToastrService, useValue: toastNotificationService }
+                { provide: NotificationToastrService, useValue: toastNotificationService },
+                { provide: NotificationSoundsService, useValue: notificationSoundsService }
             ]
         });
 
@@ -62,7 +68,6 @@ describe('NotificationEffects', () => {
         });
         it('should show participant left hearing room notification for host participants when active conference matches conference id', () => {
             // arrange
-            const vhConference = mapConferenceToVHConference(conference);
             const vhParticipant = vhConference.participants.find(x => x.role === Role.Individual);
             const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Judge);
 
@@ -84,7 +89,6 @@ describe('NotificationEffects', () => {
 
         it('should not show participant left hearing room notification for non-host participants', () => {
             // arrange
-            const vhConference = mapConferenceToVHConference(conference);
             const vhParticipant = vhConference.participants.find(x => x.role === Role.Individual);
             const loggedInParticipant = vhConference.participants.find(x => x.role !== Role.Judge);
 
@@ -106,7 +110,6 @@ describe('NotificationEffects', () => {
 
         it('should not show participant left hearing room notification when active conference does not match conference id', () => {
             // arrange
-            const vhConference = mapConferenceToVHConference(conference);
             const vhParticipant = vhConference.participants.find(x => x.role === Role.Individual);
             const loggedInParticipant = vhConference.participants.find(x => x.role !== Role.Judge);
 
@@ -409,46 +412,66 @@ describe('NotificationEffects', () => {
                 expect(toastNotificationService.showHearingLayoutchanged).toHaveBeenCalledTimes(0);
             });
         });
-        //     const conferenceId = '1234567';
-        //     const action = ConferenceActions.hearingLayoutChanged({
-        //         conferenceId,
-        //         changedById: '123',
-        //         newHearingLayout: HearingLayout.Dynamic,
-        //         oldHearingLayout: HearingLayout.OnePlus7
-        //     });
-        //     const loggedInParticipant = { status: ParticipantStatus.InHearing, role: Role.Judge } as VHParticipant;
-        //     const activeConference = { id: '123' } as VHConference;
+    });
 
-        //     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
-        //     mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+    describe('participantTransferringIn$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
 
-        //     actions$ = hot('-a-', { a: action });
+        it('should call showParticipantTransferringIn when participant is transferring in', () => {
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Individual);
+            const action = ConferenceActions.updateParticipantHearingTransferStatus({
+                conferenceId: vhConference.id,
+                transferDirection: TransferDirection.In,
+                participantId: loggedInParticipant.id
+            });
 
-        //     effects.hearingLayoutChanged$.subscribe(() => {
-        //         expect(toastNotificationService.showHearingLayoutchanged).toHaveBeenCalledTimes(0);
-        //     });
-        // });
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
-        // it('should not call showHearingLayoutchanged when changedById matches loggedInParticipant', () => {
-        //     const conferenceId = '1234567';
-        //     const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Judge);
-        //     const action = ConferenceActions.hearingLayoutChanged({
-        //         conferenceId,
-        //         changedById: loggedInParticipant.id,
-        //         newHearingLayout: HearingLayout.Dynamic,
-        //         oldHearingLayout: HearingLayout.OnePlus7
-        //     });
-        //     const activeConference = { id: conferenceId } as VHConference;
+            actions$ = hot('-a-', { a: action });
 
-        //     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
-        //     mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+            effects.participantTransferringIn$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+            });
+        });
 
-        //     actions$ = hot('-a-', { a: action });
+        it('should not call showParticipantTransferringIn when participant is transferring out', () => {
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Individual);
+            const action = ConferenceActions.updateParticipantHearingTransferStatus({
+                conferenceId: vhConference.id,
+                transferDirection: TransferDirection.Out,
+                participantId: loggedInParticipant.id
+            });
 
-        //     effects.hearingLayoutChanged$.subscribe(() => {
-        //         expect(toastNotificationService.showHearingLayoutchanged).toHaveBeenCalledTimes(0);
-        //     });
-        // });
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.participantTransferringIn$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        it('should not call showParticipantTransferringIn when participant is not the logged in participant', () => {
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Individual);
+            const action = ConferenceActions.updateParticipantHearingTransferStatus({
+                conferenceId: vhConference.id,
+                transferDirection: TransferDirection.In,
+                participantId: '1234567'
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.participantTransferringIn$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
+            });
+        });
     });
 
     describe('isVideoOn', () => {

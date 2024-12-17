@@ -1055,9 +1055,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (isMe) {
             this.isTransferringIn = false;
             this.isTransferringIn = message.transferDirection === TransferDirection.In;
-            if (this.isTransferringIn) {
-                this.notificationSoundsService.playHearingAlertSound();
-            }
             this.logger.debug(`${this.loggerPrefix} updating transfer status`, {
                 conference: message.conferenceId,
                 transferDirection: message.transferDirection,

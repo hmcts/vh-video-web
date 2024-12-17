@@ -9,6 +9,8 @@ import { ConferenceState } from '../reducers/conference.reducer';
 
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 @Injectable()
 export class NotificationEffects {
@@ -170,10 +172,29 @@ export class NotificationEffects {
         { dispatch: false }
     );
 
+    participantTransferringIn$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateParticipantHearingTransferStatus),
+                concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+                tap(([action, participant]) => {
+                    if (participant?.id !== action.participantId) {
+                        return;
+                    }
+
+                    if (action.transferDirection === TransferDirection.In) {
+                        this.notificationSoundsService.playHearingAlertSound();
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
-        private toastNotificationService: NotificationToastrService
+        private toastNotificationService: NotificationToastrService,
+        private notificationSoundsService: NotificationSoundsService
     ) {}
 
     isVideoOn(status: ParticipantStatus): boolean {

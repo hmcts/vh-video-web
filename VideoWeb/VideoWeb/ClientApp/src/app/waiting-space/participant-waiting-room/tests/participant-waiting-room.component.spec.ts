@@ -1,7 +1,7 @@
 import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActiveToast } from 'ngx-toastr';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,

@@ -12,9 +12,7 @@ import {
     RoomSummaryResponse,
     HearingLayout,
     Role,
-    VideoEndpointResponse,
-    LinkedParticipantResponse,
-    LinkType
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -36,10 +34,6 @@ import {
     onEventsHubReadySubjectMock,
     getParticipantsUpdatedSubjectMock,
     getEndpointsUpdatedMessageSubjectMock,
-    hearingLayoutChangedSubjectMock,
-    getEndpointLinkedUpdatedMock,
-    getEndpointUnlinkedUpdatedMock,
-    getEndpointDisconnectUpdatedMock,
     getHearingDetailsUpdatedMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
@@ -89,7 +83,6 @@ import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
-import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
 import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
