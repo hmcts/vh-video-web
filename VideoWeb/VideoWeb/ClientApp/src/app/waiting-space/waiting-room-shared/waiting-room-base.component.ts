@@ -591,7 +591,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                await this.handleParticipantsUpdatedMessage.bind(this, participantsUpdatedMessage);
+                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
 
@@ -839,7 +839,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} calling pexip`, logPayload);
-        this.logger.warn(`${this.loggerPrefix} calling pexip`, logPayload);
         let pexipNode = this.hearing.getConference().pexip_node_uri;
         let conferenceAlias = this.hearing.getConference().participant_uri;
         let displayName = this.participant.tiled_display_name;
@@ -1421,7 +1420,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    private async handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
         this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
 
         if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
@@ -1471,7 +1470,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         // if the participant now has a link or no longer has a link, call with new join details
         if (preUpdateLinkCount !== postUpdateLinkCount) {
             this.logger.debug('[WR] - Participant has new link (or removed link), calling with new join details');
-            await this.loadConferenceAndUpdateVideo();
+            this.loadConferenceAndUpdateVideo();
         }
     }
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
