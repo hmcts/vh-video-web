@@ -49,6 +49,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -576,6 +577,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const representative = new ParticipantResponse();
         representative.hearing_role = HearingRole.REPRESENTATIVE;
         component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh, staff];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should return non observer and witness participants from getPrivateConsultationParticipants', () => {
@@ -586,6 +588,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const representative = new ParticipantResponse();
         representative.hearing_role = HearingRole.REPRESENTATIVE;
         component.conference.participants = [witness, witness, observer, observer, representative, representative, representative];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should not return current participant from private consultation participants', () => {
@@ -595,6 +598,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         otherParticipant.id = 'other-guid';
         component.participant = thisParticipant;
         component.conference.participants = [thisParticipant, otherParticipant];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
@@ -612,6 +616,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
+            component.vhConference = mapConferenceToVHConference(component.conference);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
 
@@ -628,6 +633,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
+            component.vhConference = mapConferenceToVHConference(component.conference);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
     });
