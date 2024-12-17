@@ -1,12 +1,5 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    EndpointStatus,
-    LinkType,
-    LoggedParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, EndpointStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -19,7 +12,7 @@ describe('StartPrivateConsultationComponent', () => {
     let conference: ConferenceResponse;
     let vhConference: VHConference;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let loggedInUser: LoggedParticipantResponse;
+    let loggedInUser: VHParticipant;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
@@ -33,13 +26,9 @@ describe('StartPrivateConsultationComponent', () => {
             p.status = ParticipantStatus.Available;
         });
         vhConference = mapConferenceToVHConference(conference);
-        const judge = conference.participants.find(x => x.role === Role.Judge);
+        const judge = vhConference.participants.find(x => x.role === Role.Judge);
 
-        loggedInUser = new LoggedParticipantResponse({
-            participant_id: judge.id,
-            display_name: judge.display_name,
-            role: Role.Judge
-        });
+        loggedInUser = { ...judge };
 
         component = new StartPrivateConsultationComponent(translateService);
         component.loggedInUser = loggedInUser;

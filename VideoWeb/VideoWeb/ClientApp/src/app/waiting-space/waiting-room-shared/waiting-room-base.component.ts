@@ -1422,7 +1422,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
         this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
-
         if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
             return;
         }

@@ -13,6 +13,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { globalConference, globalEndpoint, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 
 import { JoinPrivateConsultationComponent } from './join-private-consultation.component';
+import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('JoinPrivateConsultationComponent', () => {
     let component: JoinPrivateConsultationComponent;
@@ -64,8 +65,8 @@ describe('JoinPrivateConsultationComponent', () => {
         globalConference.endpoints[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         globalConference.endpoints[1].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
 
-        component.participants = globalConference.participants;
-        component.endpoints = globalConference.endpoints;
+        component.participants = globalConference.participants.map(mapParticipantToVHParticipant);
+        component.endpoints = globalConference.endpoints.map(mapEndpointToVHEndpoint);
         expect(component.getRoomDetails()).toHaveSize(1);
     });
 
@@ -82,8 +83,8 @@ describe('JoinPrivateConsultationComponent', () => {
         globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         globalConference.endpoints[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
 
-        component.participants = globalConference.participants;
-        component.endpoints = globalConference.endpoints;
+        component.participants = globalConference.participants.map(mapParticipantToVHParticipant);
+        component.endpoints = globalConference.endpoints.map(mapEndpointToVHEndpoint);
         expect(component.getRoomDetails()).toHaveSize(1);
     });
 
@@ -111,8 +112,8 @@ describe('JoinPrivateConsultationComponent', () => {
     it('should disable continue for locked selected room', () => {
         const label = 'ParticipantConsultationRoom1';
         component.selectedRoomLabel = label;
-        const participant = globalParticipant;
-        participant.current_room = new RoomSummaryResponse({ label: label, locked: true });
+        const participant = mapParticipantToVHParticipant(globalParticipant);
+        participant.room = { label: label, locked: true };
         component.participants = [participant];
         component.getRoomDetails();
         expect(component.continueDisabled()).toBeTruthy();
@@ -121,8 +122,8 @@ describe('JoinPrivateConsultationComponent', () => {
     it('should enable continue for unlocked selected room', () => {
         const label = 'unlocked room';
         component.selectedRoomLabel = label;
-        const participant = globalParticipant;
-        participant.current_room = new RoomSummaryResponse({ label: label, locked: false });
+        const participant = mapParticipantToVHParticipant(globalParticipant);
+        participant.room = { label: label, locked: false };
         component.participants = [participant];
         component.getRoomDetails();
         expect(component.continueDisabled()).toBeFalsy();
@@ -130,8 +131,8 @@ describe('JoinPrivateConsultationComponent', () => {
 
     it('should not display JOH rooms', () => {
         const label = 'JudgeJOH';
-        const participant = globalParticipant;
-        participant.current_room = new RoomSummaryResponse({ label: label, locked: false });
+        const participant = mapParticipantToVHParticipant(globalParticipant);
+        participant.room = { label: label, locked: false };
         component.participants = [participant];
         component.getRoomDetails();
         expect(component.roomDetails.length).toEqual(0);

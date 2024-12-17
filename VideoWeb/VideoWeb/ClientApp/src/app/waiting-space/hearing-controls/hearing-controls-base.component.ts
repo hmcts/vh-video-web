@@ -1,8 +1,8 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -15,7 +15,7 @@ import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { HearingRole } from '../models/hearing-role-model';
-import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
+import { ConnectedScreenshare, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -26,10 +26,10 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+import { VHParticipant } from '../store/models/vh-conference';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
-    @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
     @Input() public outgoingStream: MediaStream | URL;
     @Input() public conferenceId: string;
@@ -54,7 +54,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
     displayLeaveHearingPopup: boolean;
-    participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
     displayChangeLayoutPopup = false;
@@ -68,6 +67,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     protected readonly loggerPrefix = '[HearingControlsBase] -';
     protected destroyedSubject = new Subject<void>();
+
+    private _participant: VHParticipant;
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -89,8 +90,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.showEvidenceContextMenu = false;
     }
 
+    get participant(): VHParticipant {
+        return this._participant;
+    }
+
     get canShowScreenShareButton(): boolean {
-        const isAnObserver = this.participant?.hearing_role === HearingRole.OBSERVER || this.participant?.role === Role.QuickLinkObserver;
+        const isAnObserver = this.participant?.hearingRole === HearingRole.OBSERVER || this.participant?.role === Role.QuickLinkObserver;
         return this.deviceTypeService.isDesktop() && !isAnObserver && !this.sharingDynamicEvidence;
     }
 
@@ -117,11 +122,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get isJOHRoom(): boolean {
-        return this.participant?.current_room?.label.startsWith('JudgeJOH');
+        return this.participant?.room?.label.startsWith('JudgeJOH');
     }
 
     get isInterpreter(): boolean {
-        return this.participant.hearing_role === HearingRole.INTERPRETER;
+        return this.participant.hearingRole === HearingRole.INTERPRETER;
     }
 
     get logPayload() {
@@ -143,11 +148,26 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get roomLocked(): boolean {
-        return this.participant?.current_room?.locked ?? false;
+        return this.participant?.room?.locked ?? false;
     }
 
     get startWithAudioMuted(): boolean {
         return this.userMediaService.getConferenceSetting(this.conferenceId)?.startWithAudioMuted && !this.isPrivateConsultation;
+    }
+
+    @Input()
+    set participant(value: VHParticipant) {
+        this._participant = value;
+        if (!value) {
+            return;
+        }
+        this.remoteMuted = value.pexipInfo?.isRemoteMuted;
+        this.handRaised = value.pexipInfo?.handRaised;
+
+        if (this.remoteMuted && !this.audioMuted) {
+            this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
+            this.toggleMute();
+        }
     }
 
     ngOnInit(): void {
@@ -232,20 +252,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
 
-        this.participantSpotlightUpdateSubscription?.unsubscribe();
-        this.participantSpotlightUpdateSubscription = null;
-
         if (this.sharingDynamicEvidence) {
             this.videoCallService.stopScreenWithMicrophone();
         }
     }
 
     setupVideoCallSubscribers() {
-        this.videoCallService
-            .onParticipantUpdated()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant));
-
         this.videoCallService
             .onScreenshareConnected()
             .pipe(takeUntil(this.destroyedSubject))
@@ -275,25 +287,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     handleScreenShareStopped(disconnectedScreenShare: StoppedScreenshare): void {
         this.logger.info(`${this.loggerPrefix} Screenshare stopped. Reason ${disconnectedScreenShare.reason}`, this.logPayload);
         this.screenShareStream = null;
-    }
-
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        if (!updatedParticipant.pexipDisplayName) {
-            return false;
-        }
-        if (!updatedParticipant.pexipDisplayName.includes(this.participant.id)) {
-            return false;
-        }
-        this.remoteMuted = updatedParticipant.isRemoteMuted;
-        // hands being raised/lowered for LinkedParticipants are managed by SignalR
-        if (!this.participant.linked_participants.length) {
-            this.handRaised = updatedParticipant.handRaised;
-        }
-        if (this.remoteMuted && !this.audioMuted) {
-            this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
-            this.toggleMute();
-        }
-        return true;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage) {
@@ -560,7 +553,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     private newParticipantEnteredHandshake(newParticipantEntered) {
         this.logger.debug(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
-        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
+        if (this.participant.hearingRole !== HearingRole.JUDGE && this.participant.hearingRole !== HearingRole.STAFF_MEMBER) {
             setTimeout(() => {
                 this.logger.debug(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
                 this.publishMediaDeviceStatus();

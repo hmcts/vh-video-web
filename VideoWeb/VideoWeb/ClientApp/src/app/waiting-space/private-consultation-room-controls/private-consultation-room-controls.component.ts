@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
-import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
@@ -20,6 +20,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { faCirclePause, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { VHConference } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-private-consultation-room-controls',
@@ -40,7 +41,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
-    @Input() public conference: ConferenceResponse;
+    @Input() public conference: VHConference;
 
     featureFlags = FEATURE_FLAGS;
 
