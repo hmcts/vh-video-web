@@ -111,8 +111,6 @@ export class AppComponent implements OnInit, OnDestroy {
         // Check if the user has already made a decision
         const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
         this.isBannerVisible = !cookieConsent;
-        console.log('cookieConsent', cookieConsent);
-        console.log('isBannerVisible', this.isBannerVisible);
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
