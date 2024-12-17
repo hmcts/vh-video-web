@@ -1562,12 +1562,12 @@
       }
     },
     "cookie-banner" : {
-      "title": "Cookies on Video Hearings",
-      "intro": "We use some essential cookies to make this service work.",
-      "intro2": "We’d like to set additional cookies so we can remember your settings, understand how people use the service and make improvements.",
-      "accept": "Accept additional cookies",
-      "reject": "Reject additional cookies",
-      "cookie-page": "View cookies"
+      "title": "Cwcis ar gyfer y Gwasanaeth Gwrandawiadau Fideo",
+      "intro": "Rydym yn defnyddio cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
+      "intro2": "Hoffem osod cwcis ychwanegol ar eich dyfais fel y gallwn gofio eich gosodiadau, deall sut mae pobl yn defnyddio'r gwasanaeth a gwneud gwelliannau.",
+      "accept": "Derbyn cwcis ychwanegol",
+      "reject": "Gwrthod cwcis ychwanegol",
+      "cookie-page": "Gweld cwcis"
     }
   },
   "audio-mix-selection": {
