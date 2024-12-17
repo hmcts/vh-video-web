@@ -52,6 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();
 
+    isBannerVisible = true;
+
     constructor(
         private router: Router,
         private deviceTypeService: DeviceTypeService,
@@ -89,7 +91,20 @@ export class AppComponent implements OnInit, OnDestroy {
         return window.location.pathname.includes(pageUrls.EJudSignIn) || window.location.pathname.includes(pageUrls.VHSignIn);
     }
 
+    getUserName(): any {
+        return this.username;
+    }
+
+    setVisibility(value: boolean) {
+        this.isBannerVisible = value;
+    }
+
     ngOnInit() {
+        // Check if the user has already made a decision
+        const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
+        this.isBannerVisible = !cookieConsent;
+        console.log('cookieConsent', cookieConsent);
+        console.log('isBannerVisible', this.isBannerVisible);
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
@@ -112,8 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
                             service. This method is used to identify the user in Dynatrace
                             monitoring by passing the user's preferred username in lowercase as a
                             parameter.*/
-                            const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
-                            if (cookieConsent === 'accepted') {
+                            if (cookieConsent && cookieConsent === cookies.cookieAccptedValue) {
                                 this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
                             }
                         }

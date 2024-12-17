@@ -34,8 +34,28 @@ export class DynatraceService {
      * to uniquely identify a user within the Dynatrace monitoring system.
      */
     addUserIdentifyScript(userIdentify) {
+        if (this.isUserIdentifyScriptAlreadyLoaded()) {
+            return;
+        }
         const script = this.renderer.createElement('script');
         script.text = 'dtrum.identifyUser("' + userIdentify + '")';
         this.document.head.appendChild(script);
+    }
+
+    private isUserIdentifyScriptAlreadyLoaded(): boolean {
+        // Select all <script> tags in the document
+        const scripts = document.querySelectorAll('script');
+
+        // Iterate through the script elements to search for 'dtrum.identifyUser'
+        let scriptFound = false;
+
+        scripts.forEach(script => {
+            // Check the text content of the script for 'dtrum.identifyUser'
+            if (script.textContent.includes('dtrum.identifyUser')) {
+                scriptFound = true;
+            }
+        });
+
+        return scriptFound;
     }
 }

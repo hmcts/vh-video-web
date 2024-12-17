@@ -5,6 +5,9 @@
       'app.skip-to-main-content' | translate
     }}</a>
   </nav>
+  <div *ngIf="isBannerVisible">
+    <app-cookie-banner (isBannerVisibleChange)="setVisibility($event)"></app-cookie-banner>
+  </div>
   <header class="govuk-header" data-module="govuk-header">
     <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn" [username]="username"></app-header>
   </header>
@@ -15,7 +18,6 @@
       [ngClass]="(backLinkDetails$ | async)?.className"
     >
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
-      <app-cookie-banner></app-cookie-banner>
       <app-back-navigation
         *ngIf="backLinkDetails$ | async as backLinkDetails"
         [linkText]="backLinkDetails.text"

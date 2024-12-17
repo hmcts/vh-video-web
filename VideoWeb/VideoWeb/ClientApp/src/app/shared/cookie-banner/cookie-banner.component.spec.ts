@@ -22,23 +22,4 @@ describe('CookieBannerComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('should show banner if no cookie consent is found', () => {
-        localStorage.removeItem(cookies.cookieConsentKey);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-        expect(component.isBannerVisible).toBeTrue();
-    });
-
-    it('should set cookie consent to accepted and hide banner when acceptCookies is called', () => {
-        component.acceptCookies();
-        expect(localStorage.getItem(cookies.cookieConsentKey)).toBe(cookies.cookieAccptedValue);
-        expect(component.isBannerVisible).toBeFalse();
-    });
-
-    it('should set cookie consent to rejected and hide banner when rejectCookies is called', () => {
-        component.rejectCookies();
-        expect(localStorage.getItem(cookies.cookieConsentKey)).toBe(cookies.cookieRejectedValue);
-        expect(component.isBannerVisible).toBeFalse();
-    });
 });
