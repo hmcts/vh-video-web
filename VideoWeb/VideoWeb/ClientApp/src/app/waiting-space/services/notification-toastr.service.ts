@@ -412,30 +412,30 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    showEndpointLinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+    showEndpointLinked(endpointDisplayName: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-linked.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-linked.message', {
-            jvsEndpointName: endpoint
+            jvsEndpointName: endpointDisplayName
         });
         const buttonId = 'notification-toastr-endpoint-linked-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-linked.dismiss');
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    showEndpointUnlinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+    showEndpointUnlinked(endpointDisplayName: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-unlinked.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-unlinked.message', {
-            jvsEndpointName: endpoint
+            jvsEndpointName: endpointDisplayName
         });
         const buttonId = 'notification-toastr-endpoint-unlinked-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-unlinked.dismiss');
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    showEndpointConsultationClosed(endpoint: string, inHearing: boolean = false): VhToastComponent {
+    showEndpointConsultationClosed(endpointDisplayName: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-consultation-closed.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-consultation-closed.message', {
-            jvsEndpointName: endpoint
+            jvsEndpointName: endpointDisplayName
         });
         const buttonId = 'notification-toastr-endpoint-consultation-closed-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-consultation-closed.dismiss');
