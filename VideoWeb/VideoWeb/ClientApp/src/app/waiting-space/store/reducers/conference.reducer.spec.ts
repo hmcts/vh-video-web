@@ -243,6 +243,16 @@ describe('Conference Reducer', () => {
         });
     });
 
+    describe('leaveConference action', () => {
+        it('should reset the conference state', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.leaveConference({ conferenceId: conferenceTestData.id })
+            );
+            expect(result).toEqual(initialState);
+        });
+    });
+
     describe('upsertPexipConference', () => {
         it('should set the pexip conference', () => {
             const pexipConference = {

@@ -52,6 +52,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { CallError } from '../../models/video-call-models';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -502,6 +503,16 @@ describe('WaitingRoomComponent message and clock', () => {
             deviceTypeService.isSupportedBrowser.and.returnValue(testcase.isSupportedBrowser);
             deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
             expect(component.isSupportedBrowserForNetworkHealth).toBe(testcase.expected);
+        });
+    });
+
+    describe('handleHearingDetailsUpdated', () => {
+        it('should update the hearing details when the hearing is updated', () => {
+            const conferenceNew = new ConferenceTestData().getConferenceDetailNow();
+            conferenceNew.scheduled_date_time = new Date(new Date().setHours(new Date().getHours() + 1));
+            const message = new HearingDetailsUpdatedMessage(conferenceNew);
+            component.handleHearingDetailsUpdated(message);
+            expect(component.conference.scheduled_date_time).toBe(conferenceNew.scheduled_date_time);
         });
     });
 

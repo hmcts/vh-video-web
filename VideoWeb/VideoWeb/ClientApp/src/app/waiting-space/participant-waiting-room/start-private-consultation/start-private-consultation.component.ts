@@ -146,7 +146,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 const participant: ParticipantListItem = p;
                 if (p.linkedParticipants && interpreterLink) {
                     const pat = this.getParticipantFromLinkedParticipant(interpreterLink.linkedId);
-                    participant.interpreter = pat ? pat : null;
+                    participant.interpreter = pat ?? null;
                 }
                 return participant;
             });
