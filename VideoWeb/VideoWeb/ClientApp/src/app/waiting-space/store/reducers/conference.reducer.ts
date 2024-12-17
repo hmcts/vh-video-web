@@ -53,6 +53,7 @@ export const conferenceReducer = createReducer(
         const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
         return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete };
     }),
+    on(ConferenceActions.leaveConference, _ => ({ ...initialState })),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {

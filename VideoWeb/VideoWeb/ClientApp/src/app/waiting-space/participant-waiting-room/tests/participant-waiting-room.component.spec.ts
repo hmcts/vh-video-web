@@ -372,7 +372,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
     });
 
-    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+    it('should clear go to hearing list when conference is past closed time', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
@@ -380,11 +380,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         conf.status = status;
         conf.closed_date_time = closedDateTime;
         component.hearing = new Hearing(conf);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
 
         component.checkIfHearingIsClosed();
 
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
@@ -715,7 +713,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.ngOnInit();
             flushMicrotasks();
             tick(100);
-            expect(component.clockSubscription$).toBeDefined();
             expect(component.eventHubSubscription$).toBeDefined();
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();

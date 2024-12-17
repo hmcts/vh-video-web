@@ -449,7 +449,6 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should clean up timeouts and subscriptions', () => {
         component.eventHubSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.videoCallSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component.callbackTimeout = timer;
         spyOn(global, 'clearTimeout');
@@ -458,7 +457,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(component.eventHubSubscription$.unsubscribe).toHaveBeenCalled();
         expect(component.videoCallSubscription$.unsubscribe).toHaveBeenCalled();
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(clearTimeout).toHaveBeenCalled();
     });
 
@@ -566,7 +564,7 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.hearingStartingAnnounced).toBeTruthy();
     });
 
-    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+    it('should go to hearing list when conference is past closed time', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
@@ -574,11 +572,9 @@ describe('WaitingRoomComponent message and clock', () => {
         conf.status = status;
         conf.closed_date_time = closedDateTime;
         component.hearing = new Hearing(conf);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
 
         component.checkIfHearingIsClosed();
 
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
     it('should return string with case name and number', () => {

@@ -11,7 +11,7 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { VideoCallService } from './video-call.service';
-import { VHParticipant } from '../store/models/vh-conference';
+import { VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 
 @Injectable()
 export class NotificationToastrService {
@@ -392,9 +392,9 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showEndpointAdded(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
+    showEndpointAdded(endpoint: VHEndpoint, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-added.title', {
-            name: endpoint.display_name
+            name: endpoint.displayName
         });
         const toastBody = this.translateService.instant('notification-toastr.endpoint-added.message');
         const buttonId = 'notification-toastr-endpoint-added-dismiss';
@@ -402,9 +402,9 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    showEndpointUpdated(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
+    showEndpointUpdated(endpoint: VHEndpoint, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-updated.title', {
-            name: endpoint.display_name
+            name: endpoint.displayName
         });
         const toastBody = this.translateService.instant('notification-toastr.endpoint-updated.message');
         const buttonId = 'notification-toastr-endpoint-updated-dismiss';
@@ -442,12 +442,12 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+    showHearingLayoutchanged(participant: VHParticipant, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.hearing-layout-changed.title',
             {
-                name: participant.name ?? participant.display_name
+                name: participant.name ?? participant.displayName
             }
         )}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;

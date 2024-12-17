@@ -27,7 +27,7 @@ import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
@@ -993,15 +993,17 @@ describe('NotificationToastrService', () => {
     describe('endpoint notifications', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const testAddEndpoint = new VideoEndpointResponse();
-        testAddEndpoint.display_name = 'TestAddEndpointDisplayName';
-        testAddEndpoint.defence_advocate_username = 'TestAddAdvocateUserName@gmail.com';
-        testAddEndpoint.status = EndpointStatus.NotYetJoined;
+        const testAddEndpointResponse = new VideoEndpointResponse();
+        testAddEndpointResponse.display_name = 'TestAddEndpointDisplayName';
+        testAddEndpointResponse.defence_advocate_username = 'TestAddAdvocateUserName@gmail.com';
+        testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
+        const testAddEndpoint = mapEndpointToVHEndpoint(testAddEndpointResponse);
 
-        const testUpdateEndpoint = new VideoEndpointResponse();
-        testAddEndpoint.display_name = 'TestUpdateEndpointDisplayName';
-        testAddEndpoint.defence_advocate_username = 'TestUpdateAdvocateUserName@gmail.com';
-        testAddEndpoint.status = EndpointStatus.NotYetJoined;
+        const testUpdateEndpointReponse = new VideoEndpointResponse();
+        testUpdateEndpointReponse.display_name = 'TestUpdateEndpointDisplayName';
+        testUpdateEndpointReponse.defence_advocate_username = 'TestUpdateAdvocateUserName@gmail.com';
+        testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
+        const testUpdateEndpoint = mapEndpointToVHEndpoint(testUpdateEndpointReponse);
 
         const translatedMessageAddedEndpoint = 'TranslatedMessageAddedEndpoint';
         const translatedMessageUpdatedEndpoint = 'TranslatedMessageUpdatedEndpoint';
@@ -1033,13 +1035,13 @@ describe('NotificationToastrService', () => {
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.endpoint-added.title', {
-                    name: testAddEndpoint.display_name
+                    name: testAddEndpoint.displayName
                 })
                 .and.returnValue(translatedNameMessage);
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.endpoint-updated.title', {
-                    name: testUpdateEndpoint.display_name
+                    name: testUpdateEndpoint.displayName
                 })
                 .and.returnValue(translatedNameMessage);
         });
@@ -1470,9 +1472,9 @@ describe('NotificationToastrService', () => {
     describe('showHearingLayoutChanged', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const testParticipant = new ParticipantResponse();
-        testParticipant.display_name = 'TestParticipantDisplayName';
-
+        const testParticipantResponse = new ParticipantResponse();
+        testParticipantResponse.display_name = 'TestParticipantDisplayName';
+        const testParticipant = mapParticipantToVHParticipant(testParticipantResponse);
         const translatedNameMessage = 'TranslatedNameMessage';
 
         const translatedMessage = 'TranslatedMessage';

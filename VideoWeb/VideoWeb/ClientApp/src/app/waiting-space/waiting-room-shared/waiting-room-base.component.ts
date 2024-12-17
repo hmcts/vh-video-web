@@ -29,7 +29,6 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
@@ -68,6 +67,7 @@ import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conf
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { ConferenceActions } from '../store/actions/conference.actions';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -588,40 +588,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
                 await this.getConference.bind(this);
                 this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
-            })
-        );
-
-        this.logger.debug('[WR] - Subscribing to endpoints linked complete message');
-        this.eventHubSubscription$.add(
-            this.eventService.getEndpointLinkedUpdated().subscribe(endpointMessage => {
-                if (endpointMessage.conferenceId === this.conferenceId) {
-                    this.notificationToastrService.showEndpointLinked(endpointMessage.endpoint, this.isParticipantInConference);
-                }
-            })
-        );
-
-        this.logger.debug('[WR] - Subscribing to endpoints unlinked complete message');
-        this.eventHubSubscription$.add(
-            this.eventService.getEndpointUnlinkedUpdated().subscribe(endpointMessage => {
-                if (endpointMessage.conferenceId === this.conferenceId) {
-                    this.notificationToastrService.showEndpointUnlinked(endpointMessage.endpoint, this.isParticipantInConference);
-                }
-            })
-        );
-
-        this.logger.debug('[WR] - Subscribing to endpoints consultation closed complete message');
-        this.eventHubSubscription$.add(
-            this.eventService.getEndpointDisconnectUpdated().subscribe(endpointMessage => {
-                if (endpointMessage.conferenceId === this.conferenceId) {
-                    this.notificationToastrService.showEndpointConsultationClosed(endpointMessage.endpoint, this.isParticipantInConference);
-                }
-            })
-        );
-
-        this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
-        this.eventHubSubscription$.add(
-            this.eventService.getHearingLayoutChanged().subscribe(hearingLayout => {
-                this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
 
@@ -1267,6 +1233,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.onDestroy$.complete();
 
         this.roomClosingToastrService.clearToasts();
+
+        this.store.dispatch(ConferenceActions.leaveConference({ conferenceId: this.vhConference.id }));
     }
 
     subscribeToClock(): void {
@@ -1456,34 +1424,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             return;
         }
 
-        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
-            this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
-            this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
-        });
-
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
             this.hearing.updateEndpoint(endpoint);
         });
 
         this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
-    }
-
-    private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
-        this.logger.debug('[WR] - Hearing layout changed message recieved', hearingLayoutMessage);
-        if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
-            return;
-        }
-
-        if (!this.isHost()) {
-            return;
-        }
-        const participant = this.findParticipant(hearingLayoutMessage.changedById);
-        if (participant.id === this.getLoggedParticipant().id) {
-            return;
-        }
-
-        this.logger.debug('[WR] - Hearing Layout Changed showing notification', participant);
-        this.notificationToastrService.showHearingLayoutchanged(participant, this.isParticipantInConference);
     }
 
     private setConference(conferenceResponse: ConferenceResponse) {

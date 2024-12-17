@@ -154,39 +154,39 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should filter and sort participants', () => {
-        const participantResponses: any[] = [
+        const participantResponses: VHParticipant[] = [
             {
                 id: '1',
-                hearing_role: HearingRole.INTERPRETER,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.INTERPRETER,
+                linkedParticipants: []
+            } as VHParticipant,
             {
-                hearing_role: HearingRole.MACKENZIE_FRIEND,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.MACKENZIE_FRIEND,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '2',
-                linked_participants: [{ linked_id: '1', link_type: LinkType.Interpreter }]
-            },
+                linkedParticipants: [{ linkedId: '1', linkedType: LinkType.Interpreter }]
+            } as VHParticipant,
             {
                 id: '3',
-                linked_participants: []
-            },
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '4',
-                Role: Role.QuickLinkObserver,
-                linked_participants: []
-            },
+                hearingRole: Role.QuickLinkObserver,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '5',
-                hearing_role: HearingRole.VICTIM,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.VICTIM,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '6',
-                hearing_role: HearingRole.POLICE,
-                linked_participants: []
-            }
+                hearingRole: HearingRole.POLICE,
+                linkedParticipants: []
+            } as VHParticipant
         ];
 
         const changes: any = { participants: { currentValue: participantResponses } };
