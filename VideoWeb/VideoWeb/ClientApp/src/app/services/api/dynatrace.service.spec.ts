@@ -29,7 +29,7 @@ describe('DynatraceService', () => {
 
     it('should inject the dynatrace user identification script', () => {
         service.addDynatraceScript('dynatraceRumLink.js');
-        service.addUserIdentifyScript('user@mail.com');
+        service.addUserIdentifier('user@mail.com');
         expect(renderer.createElement).toHaveBeenCalledWith('script');
     });
 });

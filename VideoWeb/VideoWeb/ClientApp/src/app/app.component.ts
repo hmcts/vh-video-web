@@ -95,15 +95,15 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.username;
     }
 
-    setVisibility(value: boolean) {
+    onCookieAnswered() {
         this.setDynatraceUserIdentify();
-        this.isBannerVisible = value;
+        this.isBannerVisible = false;
     }
 
     setDynatraceUserIdentify() {
         const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
         if (cookieConsent && cookieConsent === cookies.cookieAccptedValue) {
-            this.dynatraceService.addUserIdentifyScript(this.username);
+            this.dynatraceService.addUserIdentifier(this.username);
         }
     }
 

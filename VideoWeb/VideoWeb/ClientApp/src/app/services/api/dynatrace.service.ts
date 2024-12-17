@@ -33,7 +33,7 @@ export class DynatraceService {
      * the `dtrum.identifyUser` function in the `addUserIdentifyScript` method. This identifier is used
      * to uniquely identify a user within the Dynatrace monitoring system.
      */
-    addUserIdentifyScript(userIdentify) {
+    addUserIdentifier(userIdentify) {
         if (this.isUserIdentifyScriptAlreadyLoaded()) {
             return;
         }
