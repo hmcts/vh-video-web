@@ -96,7 +96,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     setVisibility(value: boolean) {
+        this.setDynatraceUserIdentify();
         this.isBannerVisible = value;
+    }
+
+    setDynatraceUserIdentify() {
+        const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
+        if (cookieConsent && cookieConsent === cookies.cookieAccptedValue) {
+            this.dynatraceService.addUserIdentifyScript(this.username);
+        }
     }
 
     ngOnInit() {
@@ -117,7 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.dynatraceService.addDynatraceScript(clientSettings.dynatrace_rum_link);
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
-
+                        this.username = userData?.preferred_username?.toLowerCase();
                         if (isAuthenticated) {
                             this.eventhubService.configureConnection();
 
@@ -127,9 +135,7 @@ export class AppComponent implements OnInit, OnDestroy {
                             service. This method is used to identify the user in Dynatrace
                             monitoring by passing the user's preferred username in lowercase as a
                             parameter.*/
-                            if (cookieConsent && cookieConsent === cookies.cookieAccptedValue) {
-                                this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
-                            }
+                            this.setDynatraceUserIdentify();
                         }
 
                         if (this.currentIdp !== 'quickLink') {
@@ -137,7 +143,6 @@ export class AppComponent implements OnInit, OnDestroy {
                                 .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.CheckingAuthFinished))
                                 .subscribe(() => {
-                                    this.username = userData?.preferred_username?.toLowerCase();
                                     this.logger.addUserIdToLogger(this.username);
                                 });
 

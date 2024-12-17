@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { cookies } from '../cookies.constants';
-//import { DynatraceService } from 'src/app/services/api/dynatrace.service';
 
 @Component({
     selector: 'app-cookie-banner',
@@ -8,10 +7,9 @@ import { cookies } from '../cookies.constants';
     styleUrls: ['./cookie-banner.component.css']
 })
 export class CookieBannerComponent {
-    @Input() userName: string;
     @Output() isBannerVisibleChange = new EventEmitter<boolean>();
 
-    constructor() { //private readonly dynatraceService: DynatraceService
+    constructor() {
         // Check if the user has already made a decision
         const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
         this.isBannerVisibleChange.emit(!cookieConsent);
@@ -19,7 +17,6 @@ export class CookieBannerComponent {
 
     acceptCookies() {
         localStorage.setItem(cookies.cookieConsentKey, cookies.cookieAccptedValue);
-        //this.dynatraceService.addUserIdentifyScript(this.userName);
         this.isBannerVisibleChange.emit(false);
     }
 
