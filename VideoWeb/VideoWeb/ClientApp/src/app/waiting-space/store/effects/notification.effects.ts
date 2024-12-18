@@ -23,9 +23,10 @@ export class NotificationEffects {
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
-                filter(([action, activeConference, loggedInParticipant]) => {
-                    return action.conferenceId === activeConference.id && loggedInParticipant.role === Role.JudicialOfficeHolder;
-                }),
+                filter(
+                    ([action, activeConference, loggedInParticipant]) =>
+                        action.conferenceId === activeConference.id && loggedInParticipant.role === Role.JudicialOfficeHolder
+                ),
                 tap(([action]) => {
                     if (action.status === ConferenceStatus.InSession) {
                         this.notificationSoundsService.playHearingAlertSound();
@@ -45,13 +46,12 @@ export class NotificationEffects {
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
-                filter(([action, activeConference, loggedInParticipant]) => {
-                    return (
+                filter(
+                    ([action, activeConference, loggedInParticipant]) =>
                         action.conferenceId === activeConference.id &&
                         loggedInParticipant.hearingRole !== HearingRole.WITNESS &&
                         (loggedInParticipant.role === Role.Individual || loggedInParticipant.role === Role.Representative)
-                    );
-                }),
+                ),
                 tap(([action, activeConference, loggedInParticipant]) => {
                     let hasWitnessLink = false;
                     if (loggedInParticipant.linkedParticipants.length > 0) {
