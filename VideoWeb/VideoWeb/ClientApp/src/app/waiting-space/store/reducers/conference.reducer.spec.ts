@@ -243,6 +243,16 @@ describe('Conference Reducer', () => {
         });
     });
 
+    describe('leaveConference action', () => {
+        it('should reset the conference state', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.leaveConference({ conferenceId: conferenceTestData.id })
+            );
+            expect(result).toEqual(initialState);
+        });
+    });
+
     describe('upsertPexipConference', () => {
         it('should set the pexip conference', () => {
             const pexipConference = {
@@ -781,6 +791,8 @@ describe('Conference Reducer', () => {
 
     describe('upsertPexipParticipant action', () => {
         it('should add pexip info to the participant', () => {
+            existingInitialState = { ...existingInitialState, loggedInParticipant: conferenceTestData.participants[0] };
+
             const pexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -802,6 +814,7 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
+            expect(result.loggedInParticipant.pexipInfo).toEqual(pexipParticipant);
         });
 
         it('should update-wowza participant', () => {

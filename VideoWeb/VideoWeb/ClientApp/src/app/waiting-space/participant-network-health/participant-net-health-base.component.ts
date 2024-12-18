@@ -1,16 +1,19 @@
 import { Input, OnDestroy, OnInit, Directive } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { Subject } from 'rxjs';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
+import { VHParticipant } from '../store/models/vh-conference';
+import { takeUntil } from 'rxjs/operators';
 
 @Directive()
 export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, OnDestroy {
-    @Input() participant: ParticipantResponse;
+    @Input() participant: VHParticipant;
     @Input() showDetail = true;
 
-    eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
+
+    protected destroyed$ = new Subject();
 
     constructor(protected eventsService: EventsService) {}
 
@@ -35,11 +38,15 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
     }
 
     ngOnInit() {
-        this.eventSubscriptions$.add(this.eventsService.getHeartbeat().subscribe(heartbeat => this.handleHeartbeat(heartbeat)));
+        this.eventsService
+            .getHeartbeat()
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(heartbeat => this.handleHeartbeat(heartbeat));
     }
 
     ngOnDestroy(): void {
-        this.eventSubscriptions$.unsubscribe();
+        this.destroyed$.next();
+        this.destroyed$.complete();
     }
 
     handleHeartbeat(heartbeat: ParticipantHeartbeat): void {

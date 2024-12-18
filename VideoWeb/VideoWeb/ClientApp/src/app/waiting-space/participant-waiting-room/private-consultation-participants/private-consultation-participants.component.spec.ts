@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    AllowedEndpointResponse,
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
@@ -420,7 +419,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
         expect(component.canCallEndpoint(endpoint)).toBeTrue();
     });
@@ -438,7 +437,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
@@ -456,7 +455,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         conference.endpoints[1].room.label = 'not-test-room';
 
         // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
@@ -474,7 +473,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         conference.endpoints[1].room.label = 'test-room';
 
         // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
@@ -493,7 +492,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         conference.status = ConferenceStatus.InSession;
 
         // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });

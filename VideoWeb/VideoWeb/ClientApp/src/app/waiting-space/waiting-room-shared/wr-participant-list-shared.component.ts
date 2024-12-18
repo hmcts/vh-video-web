@@ -3,14 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    AllowedEndpointResponse,
-    EndpointStatus,
-    LinkType,
-    LoggedParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { EndpointStatus, LinkType, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -22,7 +15,7 @@ import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conf
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
-    @Input() participantEndpoints: AllowedEndpointResponse[];
+    @Input() participantEndpoints: VHEndpoint[];
 
     nonJudgeParticipants: VHParticipant[] = [];
     judge: VHParticipant;

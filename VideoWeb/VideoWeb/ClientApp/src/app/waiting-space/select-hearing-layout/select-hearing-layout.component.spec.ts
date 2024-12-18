@@ -7,6 +7,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('SelectHearingLayoutComponent', () => {
     let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
@@ -25,7 +26,7 @@ describe('SelectHearingLayoutComponent', () => {
             ['currentLayout$', 'recommendedLayout$']
         );
         component = new SelectHearingLayoutComponent(hearingLayoutServiceSpy, translateService);
-        component.conference = conference;
+        component.conference = mapConferenceToVHConference(conference);
         textButton.innerHTML = 'Open all';
         document.getElementById = jasmine.createSpy('accordion-choose-layout-heading').and.returnValue(headingButton);
         document.getElementsByClassName = jasmine.createSpy('govuk-accordion__open-all').and.returnValue({

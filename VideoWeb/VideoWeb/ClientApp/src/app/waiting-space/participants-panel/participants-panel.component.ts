@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -58,7 +57,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private mapper: ParticipantPanelModelMapper = new ParticipantPanelModelMapper();
     constructor(
         private videoCallService: VideoCallService,
-        private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
         private translateService: TranslateService,
@@ -288,7 +286,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.participants
             .filter(x => x.isInHearing() && x.isMicRemoteMuted())
             .forEach(p => {
-                this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, false);
+                this.videoCallService.muteParticipant(p.pexipId, false, this.conferenceId, p.id);
             });
     }
 
@@ -316,7 +314,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.videoControlService.setSpotlightStatusById(panelModel.id, panelModel.pexipId, !panelModel.hasSpotlight());
+        this.videoCallService.spotlightParticipant(panelModel.pexipId, !panelModel.hasSpotlight(), this.conferenceId, panelModel.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
@@ -333,7 +331,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             new: newMuteStatus
         });
 
-        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, newMuteStatus);
+        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
 
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually

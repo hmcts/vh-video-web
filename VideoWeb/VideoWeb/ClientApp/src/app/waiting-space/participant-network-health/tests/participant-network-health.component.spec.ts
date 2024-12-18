@@ -5,10 +5,11 @@ import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mo
 import { ParticipantNetworkHealthComponent } from '../participant-network-health.component';
 import { Guid } from 'guid-typescript';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('ParticipantNetworkHealthComponent', () => {
     let component: ParticipantNetworkHealthComponent;
-    const globalConference = new ConferenceTestData().getConferenceDetailNow();
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
     const globalParticipant = globalConference.participants[0];
     const eventsService = eventsServiceSpy;
     const heartbeatSubject = heartbeatSubjectMock;

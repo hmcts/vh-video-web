@@ -38,27 +38,4 @@ public class EndpointsController(
             return StatusCode(e.StatusCode, e.Response);
         }
     }
-    
-    [HttpGet("{conferenceId}/allowed-video-call-endpoints")]
-    [SwaggerOperation(OperationId = "AllowedVideoCallEndpoints")]
-    [ProducesResponseType(typeof(IList<AllowedEndpointResponse>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId, CancellationToken cancellationToken)
-    {
-        var username = User.Identity?.Name?.Trim() ??
-                           throw new UnauthorizedAccessException("No username found in claims");
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        var isHostOrJoh = conference.Participants.Exists(x =>
-            (x.IsHost() || x.IsJudicialOfficeHolder()) && x.Username.Equals(User.Identity.Name?.Trim(),
-                StringComparison.InvariantCultureIgnoreCase));
-        var usersEndpoints = conference.Endpoints;
-        if (!isHostOrJoh)
-            usersEndpoints = usersEndpoints.Where(ep =>
-                ep.DefenceAdvocateUsername != null &&
-                ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            
-        var response = usersEndpoints.Select(AllowedEndpointResponseMapper.Map).ToList();
-        return Ok(response);
-    }
-    
 }
