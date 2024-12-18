@@ -6,7 +6,7 @@ import { ConferenceActions } from '../actions/conference.actions';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { HearingLayout, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, HearingLayout, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -14,10 +14,13 @@ import { hot } from 'jasmine-marbles';
 import { VHConference, VHEndpoint, VHParticipant } from '../models/vh-conference';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('NotificationEffects', () => {
     const testData = new ConferenceTestData();
     const conference = testData.getConferenceDetailNow();
+    conference.participants.push(testData.getFullListOfPanelMembers()[0]);
+
     let vhConference: VHConference;
 
     let actions$: Observable<any>;
@@ -37,7 +40,10 @@ describe('NotificationEffects', () => {
             'showHearingLayoutchanged'
         ]);
 
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
+            'playHearingAlertSound',
+            'stopHearingAlertSound'
+        ]);
 
         vhConference = mapConferenceToVHConference(conference);
         mockConferenceStore = createMockStore({
@@ -470,6 +476,197 @@ describe('NotificationEffects', () => {
 
             effects.participantTransferringIn$.subscribe(() => {
                 expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
+            });
+        });
+    });
+
+    describe('hearingStartingJudicialOfficeHolder$', () => {
+        beforeEach(() => {
+            notificationSoundsService.playHearingAlertSound.calls.reset();
+            notificationSoundsService.stopHearingAlertSound.calls.reset();
+        });
+        it('should play hearing alert sound when participant is judicial office holder', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).not.toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert sound when hearing is not in session', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Paused
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('hearingStartingNonJudicialOfficeHolder$', () => {
+        it('should play hearing alert sound for an individual participant and hearing in session', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Individual);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).not.toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert sound for an individual participant and hearing not in session', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Individual);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Paused
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+            });
+        });
+
+        it('should play hearing alert sound for a rep participant and hearing in session', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Representative);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).not.toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert sound for a rep participant and hearing not in session', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Representative);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Paused
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert sound for a participant linked to a witness', () => {
+            let participant = vhConference.participants.find(x => x.role === Role.Representative);
+            let secondParticipant = vhConference.participants.find(x => x.role === Role.Individual);
+            secondParticipant.hearingRole = HearingRole.WITNESS;
+
+            participant = {
+                ...participant,
+                linkedParticipants: [{ linkedId: secondParticipant.id, linkedType: LinkType.Interpreter }]
+            } as VHParticipant;
+
+            secondParticipant = {
+                ...secondParticipant,
+                linkedParticipants: [{ linkedId: participant.id, linkedType: LinkType.Interpreter }]
+            } as VHParticipant;
+
+            vhConference.participants = [participant, secondParticipant];
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert for a quick link participant', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Individual);
+            participant.hearingRole = HearingRole.QUICK_LINK_PARTICIPANT;
+
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+            });
+        });
+
+        it('should not play hearing alert for a quick link observer', () => {
+            const participant = vhConference.participants.find(x => x.role === Role.Individual);
+            participant.hearingRole = HearingRole.QUICK_LINK_OBSERVER;
+
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.hearingStartingNonJudicialOfficeHolder$.subscribe(() => {
+                expect(notificationSoundsService.playHearingAlertSound).not.toHaveBeenCalled();
+                expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
             });
         });
     });

@@ -12,7 +12,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -243,18 +242,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     getRoomName(): string {
         return this.consultationService.consultationNameToString(this.participant?.current_room?.label, false);
-    }
-
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        super.handleConferenceStatusChange(message);
-        if (!this.validateIsForConference(message.conferenceId)) {
-            return;
-        }
-        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkUser) {
-            this.notificationSoundsService.playHearingAlertSound();
-        } else {
-            this.notificationSoundsService.stopHearingAlertSound();
-        }
     }
 
     openStartConsultationModal() {

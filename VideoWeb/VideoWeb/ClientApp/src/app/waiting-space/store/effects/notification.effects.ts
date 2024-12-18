@@ -1,19 +1,80 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../reducers/conference.reducer';
 
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { HearingRole } from '../../models/hearing-role-model';
 
 @Injectable()
 export class NotificationEffects {
+    hearingStartingJudicialOfficeHolder$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateActiveConferenceStatus),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                filter(([action, activeConference, loggedInParticipant]) => {
+                    return action.conferenceId === activeConference.id && loggedInParticipant.role === Role.JudicialOfficeHolder;
+                }),
+                tap(([action]) => {
+                    if (action.status === ConferenceStatus.InSession) {
+                        this.notificationSoundsService.playHearingAlertSound();
+                    } else {
+                        this.notificationSoundsService.stopHearingAlertSound();
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    hearingStartingNonJudicialOfficeHolder$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateActiveConferenceStatus),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                filter(([action, activeConference, loggedInParticipant]) => {
+                    return (
+                        action.conferenceId === activeConference.id &&
+                        loggedInParticipant.hearingRole !== HearingRole.WITNESS &&
+                        (loggedInParticipant.role === Role.Individual || loggedInParticipant.role === Role.Representative)
+                    );
+                }),
+                tap(([action, activeConference, loggedInParticipant]) => {
+                    let hasWitnessLink = false;
+                    if (loggedInParticipant.linkedParticipants.length > 0) {
+                        const linkedParticipants = activeConference.participants.filter(p =>
+                            loggedInParticipant.linkedParticipants.map(lp => lp.linkedId).includes(p.id)
+                        );
+                        hasWitnessLink = linkedParticipants.some(p => p.hearingRole === HearingRole.WITNESS);
+                    }
+
+                    const isQuickLinkUser =
+                        loggedInParticipant.hearingRole === HearingRole.QUICK_LINK_PARTICIPANT ||
+                        loggedInParticipant.hearingRole === HearingRole.QUICK_LINK_OBSERVER;
+
+                    if (action.status === ConferenceStatus.InSession && !hasWitnessLink && !isQuickLinkUser) {
+                        this.notificationSoundsService.playHearingAlertSound();
+                    } else {
+                        this.notificationSoundsService.stopHearingAlertSound();
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     participantLeaveHearingRoomSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
