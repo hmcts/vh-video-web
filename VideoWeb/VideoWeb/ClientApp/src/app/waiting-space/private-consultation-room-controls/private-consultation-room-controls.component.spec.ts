@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceStatus, HearingLayout, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, HearingLayout, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -21,9 +21,7 @@ import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-bas
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject, of, Subject } from 'rxjs';
-import { HearingRole } from '../models/hearing-role-model';
-import { ParticipantModel } from 'src/app/shared/models/participant';
+import { of, Subject } from 'rxjs';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';

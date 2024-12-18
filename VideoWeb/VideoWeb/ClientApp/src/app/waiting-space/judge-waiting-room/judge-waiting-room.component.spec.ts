@@ -45,8 +45,6 @@ import { Guid } from 'guid-typescript';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Observable, of, Subject } from 'rxjs';
-import { ParticipantModel } from 'src/app/shared/models/participant';
-import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { HearingRole } from '../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
