@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CookieBannerComponent } from './cookie-banner.component';
-import { cookies } from '../cookies.constants';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 describe('CookieBannerComponent', () => {

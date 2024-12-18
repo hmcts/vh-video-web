@@ -49,10 +49,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     hideNonVideoComponents$ = new Observable<boolean>();
 
+    isBannerVisible = true;
+
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();
-
-    isBannerVisible = true;
 
     constructor(
         private router: Router,
