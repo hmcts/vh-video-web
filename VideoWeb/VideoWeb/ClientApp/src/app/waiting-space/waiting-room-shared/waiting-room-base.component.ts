@@ -87,6 +87,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     participant: ParticipantResponse;
     conference: ConferenceResponse; // Will be removed when migrationg to ngrx store is complete
     vhConference: VHConference;
+    vhParticipant: VHParticipant;
     participantEndpoints: VHEndpoint[] = [];
     conferenceRooms: Room[] = [];
 
@@ -199,6 +200,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         combineLatest([loggedInParticipant$, endpoints$])
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(([participant, endpoints]) => {
+                this.vhParticipant = participant;
                 this.participantEndpoints = this.filterEndpoints(endpoints, participant);
             });
     }

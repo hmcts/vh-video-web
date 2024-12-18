@@ -3,21 +3,18 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { browsers } from 'src/app/shared/browser.constants';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
-import { VideoControlService } from '../../services/conference/video-control.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
@@ -65,6 +62,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     sharingDynamicEvidence: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
+    protected participants: VHParticipant[];
     protected readonly loggerPrefix = '[HearingControlsBase] -';
     protected destroyedSubject = new Subject<void>();
 
@@ -75,9 +73,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
-        protected participantService: ParticipantService,
         protected translateService: TranslateService,
-        protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
         protected focusService: FocusService,
         protected conferenceStore: Store<ConferenceState>
@@ -195,6 +191,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             )
             .subscribe(loggedInParticipant => {
                 this.isSpotlighted = loggedInParticipant.pexipInfo?.isSpotlighted;
+            });
+
+        this.conferenceStore
+            .select(ConferenceSelectors.getParticipants)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(participants => {
+                this.participants = participants;
             });
 
         this.initialiseMuteStatus();
@@ -419,7 +422,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;
-        this.videoControlService.setHandRaiseStatusById(this.participant.id, this.handRaised);
         this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
     }
 
@@ -445,7 +447,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    leave(confirmation: boolean, participants: ParticipantModel[]) {
+    leave(confirmation: boolean, participants: VHParticipant[]) {
         this.displayLeaveHearingPopup = false;
         if (confirmation) {
             const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
@@ -537,7 +539,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.changeDeviceToggle.emit();
     }
 
-    isAnotherHostInHearing(participants: ParticipantModel[]): boolean {
+    isAnotherHostInHearing(participants: VHParticipant[]): boolean {
         const hosts = participants.filter(x => x.id !== this.participant.id && (x.role === Role.Judge || x.role === Role.StaffMember));
 
         if (hosts.length === 0) {

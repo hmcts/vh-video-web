@@ -791,6 +791,8 @@ describe('Conference Reducer', () => {
 
     describe('upsertPexipParticipant action', () => {
         it('should add pexip info to the participant', () => {
+            existingInitialState = { ...existingInitialState, loggedInParticipant: conferenceTestData.participants[0] };
+
             const pexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -812,6 +814,7 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
+            expect(result.loggedInParticipant.pexipInfo).toEqual(pexipParticipant);
         });
 
         it('should update-wowza participant', () => {

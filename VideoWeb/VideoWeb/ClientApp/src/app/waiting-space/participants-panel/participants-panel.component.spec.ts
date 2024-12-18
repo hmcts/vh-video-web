@@ -4,7 +4,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
 import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
 import { of } from 'rxjs';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -71,7 +70,6 @@ describe('ParticipantsPanelComponent', () => {
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
-    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
 
     let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
@@ -115,12 +113,6 @@ describe('ParticipantsPanelComponent', () => {
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone).and.returnValue(of(false));
 
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setHandRaiseStatusById',
-            'setSpotlightStatusById',
-            'setRemoteMuteStatusById'
-        ]);
-
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
@@ -141,10 +133,6 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: VideoCallService,
                     useValue: videocallService
-                },
-                {
-                    provide: VideoControlService,
-                    useValue: videoControlServiceSpy
                 },
                 {
                     provide: EventsService,
@@ -391,28 +379,6 @@ describe('ParticipantsPanelComponent', () => {
             expect(videocallService.lowerHandById).toHaveBeenCalledTimes(0);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
         });
-
-        it('should remove from spotlight when in spotlight for a participant when dismissed from a hearing', async () => {
-            videocallService.dismissParticipantFromHearing.calls.reset();
-            const pat = component.participants.find(p => p.isWitness);
-            const hasSpotlight = true;
-            pat.updateParticipant(pat.isMicRemoteMuted(), pat.hasHandRaised(), hasSpotlight, pat.id, pat.isLocalMicMuted());
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
-            await component.dismissParticipantFromHearing(pat);
-            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, !hasSpotlight);
-            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
-        });
-
-        it('should not remove from spotlight when not in spotlight for a participant when dismissed from a hearing', async () => {
-            videocallService.dismissParticipantFromHearing.calls.reset();
-            const pat = component.participants.find(p => p.isWitness);
-            const hasSpotlight = false;
-            pat.updateParticipant(pat.isMicRemoteMuted(), pat.hasHandRaised(), hasSpotlight, pat.id, pat.isLocalMicMuted());
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
-            await component.dismissParticipantFromHearing(pat);
-            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalledTimes(0);
-            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
-        });
     });
 
     it('should unlock all participants', () => {
@@ -425,10 +391,11 @@ describe('ParticipantsPanelComponent', () => {
         component.unlockAll();
         // assert
         expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false, component.conferenceId);
-        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledOnceWith(
-            manuallyLockedPat.id,
+        expect(videocallService.muteParticipant).toHaveBeenCalledOnceWith(
             manuallyLockedPat.pexipId,
-            false
+            false,
+            conferenceId,
+            manuallyLockedPat.id
         );
     });
 
@@ -442,7 +409,7 @@ describe('ParticipantsPanelComponent', () => {
         const pat = component.participants[0];
         pat.updateParticipant(false, false, false);
         component.toggleMuteParticipant(pat);
-        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, true);
+        expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true, conferenceId, pat.id);
     });
 
     describe('handleParticipantMediaStatusChange', () => {
@@ -461,6 +428,10 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     describe('toggleSpotlightParticipant', () => {
+        beforeEach(() => {
+            videoCallServiceSpy.spotlightParticipant.calls.reset();
+        });
+
         it('should call video control service set spotlight status', () => {
             // Arrange
             const panelModel = component.participants[1];
@@ -470,7 +441,7 @@ describe('ParticipantsPanelComponent', () => {
             component.toggleSpotlightParticipant(panelModel);
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalled();
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalled();
         });
 
         it('should NOT call video control service set spotlight status if the participant cannot be found', () => {
@@ -485,7 +456,7 @@ describe('ParticipantsPanelComponent', () => {
             component.toggleSpotlightParticipant(participant);
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatusById).not.toHaveBeenCalled();
+            expect(videoCallServiceSpy.spotlightParticipant).not.toHaveBeenCalled();
         });
     });
 
@@ -527,7 +498,7 @@ describe('ParticipantsPanelComponent', () => {
         const pat = component.participants[0];
         pat.updateParticipant(false, false, false);
         component.toggleMuteParticipant(pat);
-        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, true);
+        expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true, conferenceId, pat.id);
     });
 
     it('should unmute conference when last participant is unmuted after a conference mute', () => {

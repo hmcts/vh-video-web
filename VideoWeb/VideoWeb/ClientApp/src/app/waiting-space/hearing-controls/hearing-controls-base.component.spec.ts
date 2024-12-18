@@ -1,15 +1,13 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { browsers } from 'src/app/shared/browser.constants';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -36,8 +34,6 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
@@ -93,15 +89,11 @@ describe('HearingControlsBaseComponent', () => {
 
     let conference: VHConference;
 
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
-
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     beforeEach(() => {
@@ -120,26 +112,6 @@ describe('HearingControlsBaseComponent', () => {
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, globalParticipant);
         translateService.instant.calls.reset();
         focusService.storeFocus.calls.reset();
-
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
-        );
-
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setSpotlightStatus',
-            'setSpotlightStatusById',
-            'setRemoteMuteStatusById',
-            'setHandRaiseStatusById'
-        ]);
-
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
-
-        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
-            ParticipantModel.fromParticipantForUserResponse(participantOne)
-        );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
@@ -164,12 +136,9 @@ describe('HearingControlsBaseComponent', () => {
             eventsService,
             deviceTypeService,
             logger,
-            participantServiceSpy,
             translateService,
-            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusService,
             mockStore,
@@ -938,20 +907,13 @@ describe('HearingControlsBaseComponent', () => {
         beforeEach(() => {});
 
         it('returns false if there is no host', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Individual,
-                    HearingRole.LITIGANT_IN_PERSON,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                {
+                    id: '1234',
+                    role: Role.Individual,
+                    hearingRole: HearingRole.LITIGANT_IN_PERSON,
+                    status: ParticipantStatus.Available
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -960,20 +922,8 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns false if there is no other host, judge status not in hearing', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    HearingRole.JUDGE,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.Available } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -982,33 +932,14 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns true if another host is in hearing, staff', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                ),
-                new ParticipantModel(
-                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    Role.StaffMember,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.Available } as VHParticipant,
+                {
+                    id: '2344',
+                    role: Role.StaffMember,
+                    hearingRole: HearingRole.STAFF_MEMBER,
+                    status: ParticipantStatus.InHearing
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -1017,33 +948,14 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns true if another host is in hearing, judge', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    HearingRole.JUDGE,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                ),
-                new ParticipantModel(
-                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    Role.StaffMember,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.InHearing } as VHParticipant,
+                {
+                    id: '2344',
+                    role: Role.StaffMember,
+                    hearingRole: HearingRole.STAFF_MEMBER,
+                    status: ParticipantStatus.Available
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);

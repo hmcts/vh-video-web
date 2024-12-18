@@ -20,7 +20,6 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { HearingRole } from '../models/hearing-role-model';
@@ -30,8 +29,6 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
@@ -42,21 +39,6 @@ import { mapConferenceToVHConference } from '../store/models/api-contract-to-sta
 import { VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
-    const participantOneId = Guid.create().toString();
-    const participantOne = new ParticipantForUserResponse({
-        id: participantOneId,
-        status: ParticipantStatus.NotSignedIn,
-        display_name: 'Interpreter',
-        role: Role.Individual,
-        representee: null,
-        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
-        hearing_role: HearingRole.INTERPRETER,
-        first_name: 'Interpreter',
-        last_name: 'Doe',
-        interpreter_room: null,
-        linked_participants: []
-    });
-
     let component: PrivateConsultationRoomControlsComponent;
     let mockStore: MockStore<ConferenceState>;
     const gloalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
@@ -75,16 +57,11 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['storeFocus', 'restoreFocus']);
     const translateService = translateServiceSpy;
 
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
-
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-
-    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
@@ -105,22 +82,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         translateService.instant.calls.reset();
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['loggedInParticipant$', 'participants']
-        );
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setSpotlightStatus',
-            'setSpotlightStatusById',
-            'setRemoteMuteStatusById',
-            'setHandRaiseStatusById'
-        ]);
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
-            'setSpotlightStatus',
-            'clearHandRaiseStatusForAll',
-            'setHandRaiseStatus'
-        ]);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['getConferenceSetting', 'checkCameraAndMicrophonePresence'],
@@ -131,11 +92,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
         userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
-        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
-            ParticipantModel.fromParticipantForUserResponse(participantOne)
-        );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
-
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
         onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
@@ -145,12 +101,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             eventsService,
             deviceTypeService,
             logger,
-            participantServiceSpy,
             translateService,
-            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
             mockStore,
@@ -690,26 +643,11 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             });
             it('should call super leave method with participants', () => {
                 const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
-                getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
-                    new ParticipantModel(
-                        '7879c48a-f513-4d3b-bb1b-151831427507',
-                        'Participant Name',
-                        'DisplayName',
-                        'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                        Role.Judge,
-                        HearingRole.JUDGE,
-                        false,
-                        null,
-                        null,
-                        ParticipantStatus.Available,
-                        null
-                    )
-                ]);
 
                 component.leave(true);
 
                 expect(spy).toHaveBeenCalledTimes(1);
-                expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+                expect(spy).toHaveBeenCalledWith(true, component['participants']);
             });
         });
 

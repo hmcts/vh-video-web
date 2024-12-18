@@ -4,15 +4,12 @@ import { takeUntil } from 'rxjs/operators';
 import { ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { VideoCallService } from '../services/video-call.service';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
@@ -61,30 +58,16 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
-        protected participantService: ParticipantService,
         protected translateService: TranslateService,
-        protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
-        protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
         protected conferenceStore: Store<ConferenceState>,
         protected audioRecordingService: AudioRecordingService,
         protected notificationToastrService: NotificationToastrService
     ) {
-        super(
-            videoCallService,
-            eventService,
-            deviceTypeService,
-            logger,
-            participantService,
-            translateService,
-            videoControlService,
-            userMediaService,
-            focusService,
-            conferenceStore
-        );
+        super(videoCallService, eventService, deviceTypeService, logger, translateService, userMediaService, focusService, conferenceStore);
         this.canToggleParticipantsPanel = true;
 
         conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {
@@ -151,7 +134,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     leave(confirmation: boolean) {
         if (this.isHost) {
-            super.leave(confirmation, this.participantService.participants);
+            super.leave(confirmation, this.participants);
         } else {
             super.nonHostLeave(confirmation);
         }
