@@ -48,7 +48,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
-import { VHConference, VHParticipant, VHPexipParticipant } from '../store/models/vh-conference';
+import { VHConference, VHParticipant, VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -1077,6 +1077,45 @@ describe('HearingControlsBaseComponent', () => {
         it('should return false when participant is undefined', () => {
             component.participant = undefined;
             expect(component.isObserver).toBeFalse();
+        });
+    });
+
+    describe('isInterpreter', () => {
+        it('should return true when participant hearing role is Interpreter', () => {
+            component.participant = { hearingRole: HearingRole.INTERPRETER } as VHParticipant;
+            expect(component.isInterpreter).toBeTrue();
+        });
+
+        it('should return false when participant hearing role is not Interpreter', () => {
+            component.participant = { hearingRole: HearingRole.JUDGE } as VHParticipant;
+            expect(component.isInterpreter).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.isInterpreter).toBeFalse();
+        });
+    });
+
+    describe('roomLocked', () => {
+        it('should return true when room is locked', () => {
+            component.participant.room = { locked: true } as VHRoom;
+            expect(component.roomLocked).toBeTrue();
+        });
+
+        it('should return false when room is not locked', () => {
+            component.participant.room = { locked: false } as VHRoom;
+            expect(component.roomLocked).toBeFalse();
+        });
+
+        it('should return false when room is undefined', () => {
+            component.participant.room = undefined;
+            expect(component.roomLocked).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.roomLocked).toBeFalse();
         });
     });
 

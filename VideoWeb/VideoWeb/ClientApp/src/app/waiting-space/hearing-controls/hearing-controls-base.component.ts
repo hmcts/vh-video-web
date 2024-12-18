@@ -122,7 +122,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get isInterpreter(): boolean {
-        return this.participant.hearingRole === HearingRole.INTERPRETER;
+        return this.participant?.hearingRole === HearingRole.INTERPRETER;
     }
 
     get logPayload() {
