@@ -514,6 +514,15 @@ describe('WaitingRoomComponent message and clock', () => {
             component.handleHearingDetailsUpdated(message);
             expect(component.conference.scheduled_date_time).toBe(conferenceNew.scheduled_date_time);
         });
+
+        it('should ignore the message when the conference id does not match', () => {
+            const conferenceNew = new ConferenceTestData().getConferenceDetailNow();
+            conferenceNew.scheduled_date_time = new Date(new Date().setHours(new Date().getHours() + 1));
+            const message = new HearingDetailsUpdatedMessage(conferenceNew);
+            message.conference.id = Guid.create().toString();
+            component.handleHearingDetailsUpdated(message);
+            expect(component.conference.scheduled_date_time).not.toBe(conferenceNew.scheduled_date_time);
+        });
     });
 
     it('should return the total number of judge and JOHs in consultation', () => {
