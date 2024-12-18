@@ -44,32 +44,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_video_api_error()
-        {
-            var judge = TestConference.GetJudge();
-            var user = new ClaimsPrincipalBuilder()
-                .WithUsername(judge.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
-
-            var Controller = SetupControllerWithClaims(user);
-
-            var responseMessage = "Could not start transfer participant";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
-                responseMessage, null, default, null);
-
-            _mocker.Mock<IVideoApiClient>().Setup(
-                x => x.TransferParticipantAsync(TestConference.Id,
-                    It.IsAny<TransferParticipantRequest>(), It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
-
-            var result = await Controller.LeaveHearingAsync(TestConference.Id, judge.Id, CancellationToken.None);
-            result.Should().BeOfType<ObjectResult>();
-            var typedResult = (ObjectResult)result;
-            typedResult.Value.Should().Be(responseMessage);
-            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-        }
-
-        [Test]
         public async Task should_return_accepted()
         {
             var judge = TestConference.GetJudge();

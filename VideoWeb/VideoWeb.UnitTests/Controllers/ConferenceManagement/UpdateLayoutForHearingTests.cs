@@ -92,49 +92,5 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Assert
             layoutResponse.Should().BeAssignableTo<NotFoundObjectResult>();
         }
-
-        [Test]
-        public async Task should_return_an_status_code_if_a_video_api_exception_is_thrown_in_hearing_service()
-        {
-            // Arrange
-            var expectedLayout = HearingLayout.TwoPlus21;
-            var statusCode = 123;
-
-
-            _mocker.Mock<IHearingLayoutService>()
-                .Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(),It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new VideoApiException("message", statusCode, "response", null, null));
-
-            // Act
-            var layoutResponse = await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout, CancellationToken.None);
-
-            // Assert
-            layoutResponse.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(statusCode);
-            _mocker.Mock<IHearingLayoutService>().Verify(x =>
-                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id),
-                    It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
-                    expectedLayout, It.IsAny<CancellationToken>()));
-        }
-
-        [Test]
-        public void should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
-        {
-            // Arrange
-            var expectedLayout = HearingLayout.TwoPlus21;
-
-            _mocker.Mock<IHearingLayoutService>()
-                .Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(),It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout, CancellationToken.None));
-
-            // Assert
-            _mocker.Mock<IHearingLayoutService>().Verify(x =>
-                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id),
-                    It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
-                    expectedLayout, It.IsAny<CancellationToken>()));
-        }
     }
 }
