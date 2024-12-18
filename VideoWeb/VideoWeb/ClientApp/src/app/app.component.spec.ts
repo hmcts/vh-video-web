@@ -185,6 +185,7 @@ describe('AppComponent', () => {
         profileServiceSpy.getUserProfile.calls.reset();
         publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
         localStorage.clear();
+        dynatraceServiceSpy.addUserIdentifier.calls.reset();
     }));
 
     it('should call addUserIdentifier when cookie consent is accepted', () => {
