@@ -32,6 +32,7 @@ describe('StartPrivateConsultationComponent', () => {
 
         component = new StartPrivateConsultationComponent(translateService);
         component.loggedInUser = loggedInUser;
+        component.allowedEndpoints = [vhConference.endpoints[0]];
     });
 
     it('should create', () => {
@@ -293,6 +294,15 @@ describe('StartPrivateConsultationComponent', () => {
                 endpoint.status = status;
                 expect(component.endpointIsInConsultationRoom(endpoint)).toBe(expectedValue);
             });
+        });
+    });
+
+    describe('allowedFilter', () => {
+        it('should return allowed endpoints', () => {
+            const endpoints = vhConference.endpoints;
+            const allowedEndpoints = [endpoints[0]];
+            const result = component.allowedFilter(endpoints);
+            expect(result).toEqual(allowedEndpoints);
         });
     });
 });
