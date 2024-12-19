@@ -38,7 +38,7 @@ export class DynatraceService {
             return;
         }
         const script = this.renderer.createElement('script');
-        script.text = 'dtrum.identifyUser("' + userIdentify + '")';
+        //script.text = 'dtrum.identifyUser("' + userIdentify + '")';
         this.document.head.appendChild(script);
     }
 
