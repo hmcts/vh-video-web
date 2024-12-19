@@ -15,7 +15,18 @@ describe('DynatraceService', () => {
             providers: [DynatraceService, { provide: RendererFactory2, useValue: rendererFactory }]
         });
         service = TestBed.inject(DynatraceService);
+
+        // Mock the dtrum object
+        (window as any).dtrum = {
+            identifyUser: jasmine.createSpy('identifyUser')
+        };
+
         renderer.createElement.calls.reset();
+    });
+
+    afterEach(() => {
+        // Clean up the mock after each test
+        delete (window as any).dtrum;
     });
 
     it('should be created', () => {
