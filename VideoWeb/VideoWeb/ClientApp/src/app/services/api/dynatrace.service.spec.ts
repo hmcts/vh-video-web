@@ -15,7 +15,18 @@ describe('DynatraceService', () => {
             providers: [DynatraceService, { provide: RendererFactory2, useValue: rendererFactory }]
         });
         service = TestBed.inject(DynatraceService);
+
+        // Mock the dtrum object
+        (window as any).dtrum = {
+            identifyUser: jasmine.createSpy('identifyUser')
+        };
+
         renderer.createElement.calls.reset();
+    });
+
+    afterEach(() => {
+        // Clean up the mock after each test
+        delete (window as any).dtrum;
     });
 
     it('should be created', () => {
@@ -27,9 +38,23 @@ describe('DynatraceService', () => {
         expect(renderer.createElement).toHaveBeenCalledWith('script');
     });
 
-    it('should inject the dynatrace user identification script', () => {
-        service.addDynatraceScript('dynatraceRumLink.js');
-        service.addUserIdentifyScript('user@mail.com');
+    it('should inject the dynatrace user identification script if not already loaded', () => {
+        spyOn(service as any, 'isUserIdentifyScriptAlreadyLoaded').and.returnValue(false);
+        const appendChildSpy = spyOn(document.head, 'appendChild').and.callThrough();
+
+        service.addUserIdentifier('user@mail.com');
+
         expect(renderer.createElement).toHaveBeenCalledWith('script');
+        expect(appendChildSpy).toHaveBeenCalled();
+    });
+
+    it('should not inject the dynatrace user identification script if already loaded', () => {
+        spyOn(service as any, 'isUserIdentifyScriptAlreadyLoaded').and.returnValue(true);
+        const appendChildSpy = spyOn(document.head, 'appendChild').and.callThrough();
+
+        service.addUserIdentifier('user@mail.com');
+
+        expect(renderer.createElement).not.toHaveBeenCalled();
+        expect(appendChildSpy).not.toHaveBeenCalled();
     });
 });
