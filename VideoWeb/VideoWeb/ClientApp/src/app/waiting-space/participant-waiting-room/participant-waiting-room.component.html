@@ -69,6 +69,7 @@
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"
+      [muted]="!showVideo"
       [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
       poster="/assets/images/empty_crest.jpg"
     >
