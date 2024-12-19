@@ -40,7 +40,11 @@ import { ConferenceState } from '../waiting-space/store/reducers/conference.redu
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
-import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
+import {
+    mapConferenceToVHConference,
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../waiting-space/store/models/api-contract-to-state-model-mappers';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 import { NewConferenceAddedMessage } from './models/new-conference-added-message';
 import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
@@ -110,6 +114,7 @@ export class EventsService {
         HearingDetailsUpdatedMessage: (conference: ConferenceResponse) => {
             const message = new HearingDetailsUpdatedMessage(conference);
             this.logger.debug('[EventsService] - HearingDetailsUpdatedMessage received', message);
+            this.store.dispatch(ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(conference) }));
             this.hearingDetailsUpdatedSubject.next(message);
         },
 

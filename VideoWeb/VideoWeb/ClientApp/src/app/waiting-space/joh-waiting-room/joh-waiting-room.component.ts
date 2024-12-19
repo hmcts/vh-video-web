@@ -12,7 +12,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
@@ -125,18 +124,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             return 'hearing-delayed';
         }
         return 'hearing-on-time';
-    }
-
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        super.handleConferenceStatusChange(message);
-        if (!this.validateIsForConference(message.conferenceId)) {
-            return;
-        }
-        if (message.status === ConferenceStatus.InSession) {
-            this.notificationSoundsService.playHearingAlertSound();
-        } else {
-            this.notificationSoundsService.stopHearingAlertSound();
-        }
     }
 
     ngOnDestroy(): void {

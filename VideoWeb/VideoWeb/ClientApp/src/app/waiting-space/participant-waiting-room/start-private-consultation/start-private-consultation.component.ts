@@ -1,18 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {
-    AllowedEndpointResponse,
-    EndpointStatus,
-    LinkType,
-    LoggedParticipantResponse,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { EndpointStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantListItem } from '../participant-list-item';
-import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
 import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 @Component({
     selector: 'app-start-private-consultation',
@@ -20,10 +10,10 @@ import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
     styleUrls: ['./start-private-consultation.component.scss']
 })
 export class StartPrivateConsultationComponent implements OnChanges {
-    @Input() loggedInUser: LoggedParticipantResponse;
-    @Input() participants: ParticipantResponse[] = [];
-    @Input() allowedEndpoints: AllowedEndpointResponse[];
-    @Input() endpoints: VideoEndpointResponse[];
+    @Input() loggedInUser: VHParticipant;
+    @Input() participants: VHParticipant[] = [];
+    @Input() allowedEndpoints: VHEndpoint[];
+    @Input() endpoints: VHEndpoint[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
 
@@ -93,8 +83,8 @@ export class StartPrivateConsultationComponent implements OnChanges {
         this.cancel.emit();
     }
 
-    allowedFilter(endpoints: VideoEndpointResponse[]): VHEndpoint[] {
-        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id === endpoint.id)).map(e => mapEndpointToVHEndpoint(e));
+    allowedFilter(endpoints: VHEndpoint[]): VHEndpoint[] {
+        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id === endpoint.id));
     }
 
     getEndpointDisabled(endpoint: VHEndpoint): boolean {
@@ -141,22 +131,22 @@ export class StartPrivateConsultationComponent implements OnChanges {
         return item.status;
     }
 
-    private mapParticipants(participantResponses: ParticipantResponse[]): ParticipantListItem[] {
+    private mapParticipants(participantResponses: VHParticipant[]): ParticipantListItem[] {
         return participantResponses
             .filter(
                 p =>
-                    p.hearing_role !== HearingRole.INTERPRETER &&
-                    p.hearing_role !== HearingRole.MACKENZIE_FRIEND &&
+                    p.hearingRole !== HearingRole.INTERPRETER &&
+                    p.hearingRole !== HearingRole.MACKENZIE_FRIEND &&
                     p.role !== Role.QuickLinkObserver &&
-                    p.hearing_role !== HearingRole.VICTIM &&
-                    p.hearing_role !== HearingRole.POLICE
+                    p.hearingRole !== HearingRole.VICTIM &&
+                    p.hearingRole !== HearingRole.POLICE
             )
             .map(p => {
-                const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = mapParticipantToVHParticipant(p);
-                if (p.linked_participants && interpreterLink) {
-                    const pat = this.getParticipantFromLinkedParticipant(interpreterLink.linked_id);
-                    participant.interpreter = pat ? mapParticipantToVHParticipant(pat) : null;
+                const interpreterLink = p.linkedParticipants.find(x => x.linkedType === LinkType.Interpreter);
+                const participant: ParticipantListItem = p;
+                if (p.linkedParticipants && interpreterLink) {
+                    const pat = this.getParticipantFromLinkedParticipant(interpreterLink.linkedId);
+                    participant.interpreter = pat ?? null;
                 }
                 return participant;
             });

@@ -141,6 +141,7 @@
     <div>
       <div
         *ngIf="!isJudge && participant.hasHandRaised()"
+        [id]="idPrefix + '-' + participant.id + '-icon-lowerHand'"
         class="icon-button"
         appTooltip
         [text]="'participants-panel.lower-hand' | translate"
