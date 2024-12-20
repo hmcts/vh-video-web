@@ -1,7 +1,8 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
 import { APP_ID, APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,6 +29,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { SupplierClientService } from './services/api/supplier-client.service';
+import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -46,7 +48,7 @@ export function getLocale() {
 }
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, NavigatorComponent],
+    declarations: [AppComponent, HomeComponent, NavigatorComponent, CookieBannerComponent],
     imports: [
         BrowserModule,
         FormsModule,
