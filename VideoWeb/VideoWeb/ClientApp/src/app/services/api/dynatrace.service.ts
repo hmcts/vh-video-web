@@ -42,15 +42,13 @@ export class DynatraceService {
         this.document.head.appendChild(script);
     }
 
-    private isUserIdentifyScriptAlreadyLoaded(): boolean {
+    isUserIdentifyScriptAlreadyLoaded(): boolean {
         // Select all <script> tags in the document
-        const scripts = document.querySelectorAll('script');
+        const scripts = this.document.querySelectorAll('script');
 
         // Iterate through the script elements to search for 'dtrum.identifyUser'
         let scriptFound = false;
-
         scripts.forEach(script => {
-            // Check the text content of the script for 'dtrum.identifyUser'
             if (script.textContent.includes('dtrum.identifyUser')) {
                 scriptFound = true;
             }

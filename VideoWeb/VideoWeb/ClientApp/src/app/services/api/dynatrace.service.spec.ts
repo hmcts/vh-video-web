@@ -1,19 +1,36 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DynatraceService } from './dynatrace.service';
-import { RendererFactory2 } from '@angular/core';
+import { RendererFactory2, Renderer2 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 describe('DynatraceService', () => {
     let service: DynatraceService;
-    const renderer = jasmine.createSpyObj('Renderer2', ['createElement']);
-    const rendererFactory = jasmine.createSpyObj('RendererFactory2', ['createRenderer']);
+    let renderer: jasmine.SpyObj<Renderer2>;
+    let rendererFactory: jasmine.SpyObj<RendererFactory2>;
+    let documentMock: any;
 
     beforeEach(() => {
+        renderer = jasmine.createSpyObj('Renderer2', ['createElement']);
+        rendererFactory = jasmine.createSpyObj('RendererFactory2', ['createRenderer']);
+        documentMock = {
+            head: {
+                appendChild: jasmine.createSpy('appendChild')
+            },
+            querySelectorAll: jasmine.createSpy('querySelectorAll')
+        };
+
         renderer.createElement.and.returnValue(document.createElement('script'));
         rendererFactory.createRenderer.and.returnValue(renderer);
+
         TestBed.configureTestingModule({
-            providers: [DynatraceService, { provide: RendererFactory2, useValue: rendererFactory }]
+            providers: [
+                DynatraceService,
+                { provide: RendererFactory2, useValue: rendererFactory },
+                { provide: DOCUMENT, useValue: documentMock }
+            ]
         });
+
         service = TestBed.inject(DynatraceService);
 
         // Mock the dtrum object
@@ -22,6 +39,7 @@ describe('DynatraceService', () => {
         };
 
         renderer.createElement.calls.reset();
+        documentMock.querySelectorAll.calls.reset();
     });
 
     afterEach(() => {
@@ -36,11 +54,12 @@ describe('DynatraceService', () => {
     it('should load the dynatrace rum link', () => {
         service.addDynatraceScript('dynatraceRumLink.js');
         expect(renderer.createElement).toHaveBeenCalledWith('script');
+        expect(documentMock.head.appendChild).toHaveBeenCalled();
     });
 
     it('should inject the dynatrace user identification script if not already loaded', () => {
         spyOn(service as any, 'isUserIdentifyScriptAlreadyLoaded').and.returnValue(false);
-        const appendChildSpy = spyOn(document.head, 'appendChild').and.callThrough();
+        const appendChildSpy = documentMock.head.appendChild.and.callThrough();
 
         service.addUserIdentifier('user@mail.com');
 
@@ -50,11 +69,27 @@ describe('DynatraceService', () => {
 
     it('should not inject the dynatrace user identification script if already loaded', () => {
         spyOn(service as any, 'isUserIdentifyScriptAlreadyLoaded').and.returnValue(true);
-        const appendChildSpy = spyOn(document.head, 'appendChild').and.callThrough();
+        const appendChildSpy = documentMock.head.appendChild.and.callThrough();
 
         service.addUserIdentifier('user@mail.com');
 
         expect(renderer.createElement).not.toHaveBeenCalled();
         expect(appendChildSpy).not.toHaveBeenCalled();
+    });
+
+    it('should correctly identify if user identification script is already loaded', () => {
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = 'dtrum.identifyUser("user@mail.com")';
+        documentMock.querySelectorAll.and.returnValue([scriptElement]);
+
+        const result = service.isUserIdentifyScriptAlreadyLoaded();
+        expect(documentMock.querySelectorAll).toHaveBeenCalledWith('script');
+        expect(result).toBeTrue();
+    });
+
+    it('should correctly identify if user identification script is not loaded', () => {
+        documentMock.querySelectorAll.and.returnValue([]);
+        const result = service.isUserIdentifyScriptAlreadyLoaded();
+        expect(result).toBeFalse();
     });
 });
