@@ -2,10 +2,11 @@ import { ParticipantAlertComponent } from './participant-alert.component';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('ParticipantAlertComponent', () => {
     let component: ParticipantAlertComponent;
-    const globalConference = new ConferenceTestData().getConferenceDetailNow();
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
     const globalParticipant = globalConference.participants[0];
     const eventsService = eventsServiceSpy;
     const heartbeatSubject = heartbeatSubjectMock;

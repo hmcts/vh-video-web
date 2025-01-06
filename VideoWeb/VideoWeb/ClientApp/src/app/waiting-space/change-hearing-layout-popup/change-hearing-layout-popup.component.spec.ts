@@ -1,3 +1,4 @@
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 
@@ -8,7 +9,7 @@ describe('ChangeHearingLayoutPopupComponent', () => {
     beforeEach(() => {
         component = new ChangeHearingLayoutPopupComponent(focusServiceSpy);
         const conference = new ConferenceTestData().getConferenceDetailNow();
-        component.conference = conference;
+        component.conference = mapConferenceToVHConference(conference);
     });
 
     it('should set modalDivId to change-hearing-layout-modal', () => {
