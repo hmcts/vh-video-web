@@ -239,7 +239,6 @@ describe('JohWaitingRoomComponent', () => {
             component.ngOnInit();
             flushMicrotasks();
             tick(100);
-            expect(component.clockSubscription$).toBeDefined();
             expect(component.eventHubSubscription$).toBeDefined();
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();

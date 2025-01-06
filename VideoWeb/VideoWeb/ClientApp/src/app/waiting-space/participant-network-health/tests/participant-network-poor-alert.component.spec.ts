@@ -4,10 +4,11 @@ import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mo
 import { ParticipantNetworkPoorAlertComponent } from '../participant-network-poor-alert.component';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('ParticipantNetworkPoorAlertComponent', () => {
     let component: ParticipantNetworkPoorAlertComponent;
-    const globalConference = new ConferenceTestData().getConferenceDetailNow();
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
     const globalParticipant = globalConference.participants[0];
     const eventsService = eventsServiceSpy;
     const heartbeatSubject = heartbeatSubjectMock;

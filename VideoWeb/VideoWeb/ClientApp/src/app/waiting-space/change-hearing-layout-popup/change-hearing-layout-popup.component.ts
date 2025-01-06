@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
-import { ConferenceResponse } from '../../services/clients/api-client';
 import { YesNoPopupBaseDirective } from 'src/app/shared/confirmation/yes-no-popup-base.component';
 import { FocusService } from 'src/app/services/focus.service';
+import { VHConference } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-change-hearing-layout-popup',
@@ -9,7 +9,7 @@ import { FocusService } from 'src/app/services/focus.service';
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']
 })
 export class ChangeHearingLayoutPopupComponent extends YesNoPopupBaseDirective implements AfterViewInit {
-    @Input() conference: ConferenceResponse;
+    @Input() conference: VHConference;
     @Input() onLayoutUpdate: Function;
 
     constructor(protected focusService: FocusService) {

@@ -1,12 +1,5 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    EndpointStatus,
-    LinkType,
-    LoggedParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, EndpointStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -19,7 +12,7 @@ describe('StartPrivateConsultationComponent', () => {
     let conference: ConferenceResponse;
     let vhConference: VHConference;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let loggedInUser: LoggedParticipantResponse;
+    let loggedInUser: VHParticipant;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
@@ -33,16 +26,13 @@ describe('StartPrivateConsultationComponent', () => {
             p.status = ParticipantStatus.Available;
         });
         vhConference = mapConferenceToVHConference(conference);
-        const judge = conference.participants.find(x => x.role === Role.Judge);
+        const judge = vhConference.participants.find(x => x.role === Role.Judge);
 
-        loggedInUser = new LoggedParticipantResponse({
-            participant_id: judge.id,
-            display_name: judge.display_name,
-            role: Role.Judge
-        });
+        loggedInUser = { ...judge };
 
         component = new StartPrivateConsultationComponent(translateService);
         component.loggedInUser = loggedInUser;
+        component.allowedEndpoints = [vhConference.endpoints[0]];
     });
 
     it('should create', () => {
@@ -165,39 +155,39 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should filter and sort participants', () => {
-        const participantResponses: any[] = [
+        const participantResponses: VHParticipant[] = [
             {
                 id: '1',
-                hearing_role: HearingRole.INTERPRETER,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.INTERPRETER,
+                linkedParticipants: []
+            } as VHParticipant,
             {
-                hearing_role: HearingRole.MACKENZIE_FRIEND,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.MACKENZIE_FRIEND,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '2',
-                linked_participants: [{ linked_id: '1', link_type: LinkType.Interpreter }]
-            },
+                linkedParticipants: [{ linkedId: '1', linkedType: LinkType.Interpreter }]
+            } as VHParticipant,
             {
                 id: '3',
-                linked_participants: []
-            },
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '4',
-                Role: Role.QuickLinkObserver,
-                linked_participants: []
-            },
+                hearingRole: Role.QuickLinkObserver,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '5',
-                hearing_role: HearingRole.VICTIM,
-                linked_participants: []
-            },
+                hearingRole: HearingRole.VICTIM,
+                linkedParticipants: []
+            } as VHParticipant,
             {
                 id: '6',
-                hearing_role: HearingRole.POLICE,
-                linked_participants: []
-            }
+                hearingRole: HearingRole.POLICE,
+                linkedParticipants: []
+            } as VHParticipant
         ];
 
         const changes: any = { participants: { currentValue: participantResponses } };
@@ -304,6 +294,15 @@ describe('StartPrivateConsultationComponent', () => {
                 endpoint.status = status;
                 expect(component.endpointIsInConsultationRoom(endpoint)).toBe(expectedValue);
             });
+        });
+    });
+
+    describe('allowedFilter', () => {
+        it('should return allowed endpoints', () => {
+            const endpoints = vhConference.endpoints;
+            const allowedEndpoints = [endpoints[0]];
+            const result = component.allowedFilter(endpoints);
+            expect(result).toEqual(allowedEndpoints);
         });
     });
 });
