@@ -187,6 +187,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return item.status;
     }
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
+        if (this.participantAndLoggedInUserAreScreenedFromEachOther(participant)) {
+            return true;
+        }
+
+        if (this.participantAndPresentParticipantsAreScreenedFromEachOther(participant)) {
+            return true;
+        }
+
         const userIsJudicial =
             this.loggedInUser.role === Role.Judge ||
             this.loggedInUser.role === Role.StaffMember ||
@@ -204,6 +212,39 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                     return false;
             }
         }
+
+        return false;
+    }
+
+    private participantAndPresentParticipantsAreScreenedFromEachOther(participant: ParticipantListItem) {
+        const participants = this.getConsultationParticipants();
+        const presentParticipants = participants.filter(
+            x => x.status === ParticipantStatus.InConsultation && x.room?.label === this.roomLabel
+        );
+
+        if (participant.protectedFrom?.some(id => presentParticipants.map(p => p.externalReferenceId).includes(id))) {
+            return true;
+        }
+
+        if (presentParticipants.some(x => x.protectedFrom?.includes(participant.externalReferenceId))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private participantAndLoggedInUserAreScreenedFromEachOther(participant: ParticipantListItem): boolean {
+        const participants = this.getConsultationParticipants();
+        const loggedInUserParticipant = participants.find(x => x.id === this.loggedInUser.participant_id);
+
+        if (loggedInUserParticipant.protectedFrom?.includes(participant.externalReferenceId)) {
+            return true;
+        }
+
+        if (participant.protectedFrom?.includes(loggedInUserParticipant.externalReferenceId)) {
+            return true;
+        }
+
         return false;
     }
 

@@ -9,7 +9,8 @@ import {
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
@@ -771,11 +772,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     describe('participantHasInviteRestrictions', () => {
-        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
+        fit('should return true if user is not judical, and participant is in not allowed to be invited', () => {
             // arrange
-            component.loggedInUser = {
-                role: Role.Individual
-            } as LoggedParticipantResponse;
+            component.loggedInUser.role = Role.Individual;
             const participant = {
                 hearingRole: HearingRole.WITNESS
             } as ParticipantListItem;
@@ -787,9 +786,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         it('should return false if user is not judical, and participant is allowed to be invited', () => {
             // arrange
-            component.loggedInUser = {
-                role: Role.Individual
-            } as LoggedParticipantResponse;
+            component.loggedInUser.role = Role.Individual;
             const participant = {
                 hearingRole: HearingRole.APPELLANT
             } as ParticipantListItem;
@@ -810,5 +807,134 @@ describe('PrivateConsultationParticipantsComponent', () => {
             // assert
             expect(result).toBeFalse();
         });
+
+        describe('participants with screening', () => {
+            let targetParticipant: ParticipantResponse;
+            let participantB: ParticipantResponse;
+            let loggedInUserParticipant: ParticipantResponse;
+
+            beforeEach(() => {
+                targetParticipant = new ParticipantResponse({
+                    id: 'targetParticipant',
+                    display_name: 'targetParticipant',
+                    role: Role.Individual,
+                    external_reference_id: 'targetParticipant'
+                });
+                participantB = new ParticipantResponse({
+                    id: 'participantB',
+                    display_name: 'participantB',
+                    role: Role.Individual,
+                    external_reference_id: 'participantB'
+                });
+                loggedInUserParticipant = new ParticipantResponse({
+                    id: 'loggedInUserParticipant',
+                    display_name: 'loggedInUserParticipant',
+                    role: Role.Individual,
+                    external_reference_id: 'loggedInUserParticipant'
+                });
+                component.loggedInUser.participant_id = loggedInUserParticipant.id;
+                component.loggedInUser.role = loggedInUserParticipant.role;
+            });
+
+            it('should return true if the target participant is screened from participant B, and participant B is present in the consultation', () => {
+                // arrange
+                targetParticipant.protect_from = [participantB.external_reference_id];
+                setParticipantToInConsultation(participantB);
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeTrue();
+            });
+
+            it('should return true if participant B is screened from the target participant, and participant B is present in the consultation', () => {
+                // arrange
+                participantB.protect_from = [targetParticipant.external_reference_id];
+                setParticipantToInConsultation(participantB);
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeTrue();
+            });
+
+            it('should return false if the target participant is screened from participant B, and participant B is not present in the consultation', () => {
+                // arrange
+                targetParticipant.protect_from = [participantB.external_reference_id];
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeFalse();
+            });
+
+            it('should return false if participant B is screened from the target participant, and participant B is not present in the consultation', () => {
+                // arrange
+                participantB.protect_from = [targetParticipant.external_reference_id];
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeFalse();
+            });
+
+            it('should return true if the logged in user is screened from the target participant', () => {
+                // arrange
+                loggedInUserParticipant.protect_from = [targetParticipant.external_reference_id];
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeTrue();
+            });
+
+            it('should return true if the target participant is screened from the logged in user', () => {
+                // arrange
+                targetParticipant.protect_from = [loggedInUserParticipant.external_reference_id];
+                loadParticipants();
+
+                // act
+                const userListItem = getParticipantListItemForParticipantResponse(targetParticipant);
+                const result = component.participantHasInviteRestrictions(userListItem);
+
+                // assert
+                expect(result).toBeTrue();
+            });
+
+            // TODO tests with participants that are filtered out of this.getConsultationParticipants() - judges, staff members, witnesses etc
+
+            function loadParticipants() {
+                const participants = [targetParticipant, participantB, loggedInUserParticipant];
+                conference.participants = participants.map(x => mapParticipantToVHParticipant(x));
+                component.initParticipants();
+            }
+        });
     });
+
+    function getParticipantListItemForParticipantResponse(participantResponse: ParticipantResponse) {
+        const participantListItems = component.getConsultationParticipants();
+        return participantListItems.find(x => x.id === participantResponse.id);
+    }
+
+    function setParticipantToInConsultation(participant: ParticipantResponse) {
+        participant.status = ParticipantStatus.InConsultation;
+        participant.current_room = new RoomSummaryResponse({
+            label: component.roomLabel
+        });
+    }
 });
