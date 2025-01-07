@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 
@@ -113,11 +112,9 @@ export class JoinPrivateConsultationComponent {
         this.selectedRoomLabel = roomLabel;
     }
 
-    getParticipantHearingRoleText(participant: ParticipantResponse) {
+    getParticipantHearingRoleText(participant: VHParticipant) {
         const translatedtext = this.translateService.instant('join-private-consultation.for');
-        const hearingRoleText = this.translateService.instant(
-            'hearing-role.' + participant.hearing_role.toLowerCase().split(' ').join('-')
-        );
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
         return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 

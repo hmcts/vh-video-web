@@ -190,12 +190,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should set answer on response message', () => {
         component.roomLabel = 'Room1';
+        const participantId1 = conference.participants.find(x => x.role === Role.Individual).id;
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantId1, ConsultationAnswer.Rejected)
         );
 
         // Assert
-        expect(component.participantCallStatuses['Participant1']).toBe('Rejected');
+        expect(component.participantCallStatuses[participantId1]).toBe('Rejected');
     });
 
     it('should not set answer if different room', () => {
@@ -226,31 +227,34 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should set answer on response message then reset after timeout', fakeAsync(() => {
         component.roomLabel = 'Room1';
+        const participantid = conference.participants.find(x => x.role === Role.Individual).id;
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantid, ConsultationAnswer.Rejected)
         );
         flushMicrotasks();
 
         // Assert
-        expect(component.participantCallStatuses['Participant1']).toBe('Rejected');
+        expect(component.participantCallStatuses[participantid]).toBe('Rejected');
         tick(10000);
-        expect(component.participantCallStatuses['Participant1']).toBeNull();
+        expect(component.participantCallStatuses[participantid]).toBeNull();
     }));
 
     it('should a 2nd call after answering should prevent timeout call', fakeAsync(() => {
         component.roomLabel = 'Room1';
+        const participantid1 = conference.participants.find(x => x.role === Role.Individual).id;
+        const participantid2 = conference.participants.find(x => x.role === Role.Representative).id;
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantid1, ConsultationAnswer.Rejected)
         );
         flushMicrotasks();
         tick(2000);
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', participantid2, participantid1)
         );
         tick(9000);
 
         // Assert
-        expect(component.participantCallStatuses['Participant1']).toBe('Calling');
+        expect(component.participantCallStatuses[participantid1]).toBe('Calling');
     }));
 
     it('should not set calling if different room', () => {
@@ -275,15 +279,17 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should reset participant call status on status message', () => {
         component.roomLabel = 'Room1';
+        const participantid1 = conference.participants.find(x => x.role === Role.Individual).id;
+        const participantid2 = conference.participants.find(x => x.role === Role.Representative).id;
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', participantid2, participantid1)
         );
         participantStatusSubjectMock.next(
-            new ParticipantStatusMessage('Participant1', 'Username', conference.id, ParticipantStatus.Disconnected)
+            new ParticipantStatusMessage(participantid1, 'Username', conference.id, ParticipantStatus.Disconnected)
         );
 
         // Assert
-        expect(component.participantCallStatuses['Participant1']).toBeNull();
+        expect(component.participantCallStatuses[participantid1]).toBeNull();
     });
 
     it('should get participant status', () => {

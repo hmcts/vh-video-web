@@ -1,42 +1,40 @@
-<div class="language-icon"
-    *ngIf="interpreter">
-    <fa-icon icon="language"></fa-icon>
+<div class="language-icon" *ngIf="interpreter">
+  <fa-icon icon="language"></fa-icon>
 </div>
-<div [ngClass]="{'participant-endpoint-row': interpreter == null ,
-     'individual-endpoint-row': interpreter != null  }">
-    <div class="header-left" [class]="getRowClasses(participant)">
-        <app-invite-participant
-            *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && isInterpreterAvailable() && canInvite"
-            [participantId]="participant.id"
-            [conferenceId]="conferenceId"
-            [roomLabel]="roomLabel">
-        </app-invite-participant>
-        <fa-icon *ngIf="isParticipantInCurrentRoom(participant)"
-            icon="check"
-            aria-hidden="true"></fa-icon>
-    </div>
-    <app-private-consultation-participant-display-name
-        [displayName]="participant?.displayName"
-        [isInCurrentRoom]="isParticipantInCurrentRoom(participant)"
-        [isAvailable]="isParticipantAvailable(participant)">
-    </app-private-consultation-participant-display-name>
-    <app-private-consultation-participant-status
-        [entity]="participant"
-        [status]="status"
-        [roomLabel]="roomLabel">
-    </app-private-consultation-participant-status>
+<div [ngClass]="{ 'participant-endpoint-row': interpreter == null, 'individual-endpoint-row': interpreter != null }">
+  <div class="header-left" [class]="getRowClasses(participant)">
+    <app-invite-participant
+      *ngIf="
+        !isParticipantInCurrentRoom(participant) &&
+        isParticipantAvailable(participant) &&
+        isInterpreterAvailable() &&
+        !isProtected() &&
+        canInvite
+      "
+      [participantId]="participant.id"
+      [conferenceId]="conferenceId"
+      [roomLabel]="roomLabel"
+    >
+    </app-invite-participant>
+    <fa-icon *ngIf="isParticipantInCurrentRoom(participant)" icon="check" aria-hidden="true"></fa-icon>
+  </div>
+  <app-private-consultation-participant-display-name
+    [displayName]="participant?.displayName"
+    [isInCurrentRoom]="isParticipantInCurrentRoom(participant)"
+    [isAvailable]="isParticipantAvailable(participant)"
+  >
+  </app-private-consultation-participant-display-name>
+  <app-private-consultation-participant-status [entity]="participant" [status]="status" [roomLabel]="roomLabel">
+  </app-private-consultation-participant-status>
 </div>
-<div *ngIf="interpreter"
-class="individual-endpoint-row">
-    <div class="header-left" [class]="getRowClasses(interpreter)"> </div>
-    <app-private-consultation-participant-display-name
-        [displayName]="interpreter?.displayName"
-        [isInCurrentRoom]="isParticipantInCurrentRoom(interpreter)"
-        [isAvailable]="isParticipantAvailable(interpreter)">
-    </app-private-consultation-participant-display-name>
-    <app-private-consultation-participant-status
-        [entity]="interpreter"
-        [status]="status"
-        [roomLabel]="roomLabel">
-    </app-private-consultation-participant-status>
+<div *ngIf="interpreter" class="individual-endpoint-row">
+  <div class="header-left" [class]="getRowClasses(interpreter)"></div>
+  <app-private-consultation-participant-display-name
+    [displayName]="interpreter?.displayName"
+    [isInCurrentRoom]="isParticipantInCurrentRoom(interpreter)"
+    [isAvailable]="isParticipantAvailable(interpreter)"
+  >
+  </app-private-consultation-participant-display-name>
+  <app-private-consultation-participant-status [entity]="interpreter" [status]="status" [roomLabel]="roomLabel">
+  </app-private-consultation-participant-status>
 </div>
