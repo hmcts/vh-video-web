@@ -74,7 +74,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 // Set 'Calling...'
                 // No need to timeout here the text because when the notification times out it will send another event.
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    // this.participantCallStatuses[message.requestedFor] = 'Calling';
                     this.setParticipantCallStatus(message.requestedFor, 'Calling', 'Protected');
                 }
             })
@@ -84,7 +83,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 // If the participant state changes reset the state.
-                // this.participantCallStatuses[message.participantId] = null;
                 this.setParticipantCallStatus(message.participantId, null, null);
             })
         );
