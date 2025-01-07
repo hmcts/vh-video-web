@@ -817,4 +817,28 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(result).toBeFalse();
         });
     });
+
+    describe('setParticipantCallStatus', () => {
+        it('should set the participant call status and that of participants protected by the participant', () => {
+            const participant = conference.participants.find(x => x.role === Role.Individual);
+            const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
+            participant.protectedFrom = [protectedParticipant.externalReferenceId];
+
+            component.setParticipantCallStatus(participant.id, 'Calling', 'Restricted');
+
+            expect(component.participantCallStatuses[participant.id]).toBe('Calling');
+            expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Restricted');
+        });
+
+        it('should set the participant call status and that of participants protected by the participant', () => {
+            const participant = conference.participants.find(x => x.role === Role.Individual);
+            const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
+            protectedParticipant.protectedFrom = [participant.externalReferenceId];
+
+            component.setParticipantCallStatus(participant.id, 'Calling', 'Protected');
+
+            expect(component.participantCallStatuses[participant.id]).toBe('Calling');
+            expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Protected');
+        });
+    });
 });
