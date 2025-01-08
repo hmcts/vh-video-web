@@ -12,6 +12,7 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
+import { ConsultationRules } from 'src/app/services/models/consultation-rules';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
@@ -30,6 +31,8 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
+
+    protected consultationRules: ConsultationRules;
 
     private _conference: VHConference;
 
@@ -73,6 +76,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     @Input() set conference(conference: VHConference) {
         this._conference = conference;
+        this.consultationRules = new ConsultationRules(conference);
         this.initParticipants();
     }
 

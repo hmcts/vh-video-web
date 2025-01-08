@@ -79,6 +79,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
+
         component = new PrivateConsultationParticipantsComponent(
             consultationService,
             eventsService,
@@ -834,6 +835,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 });
                 component.loggedInUser.participant_id = loggedInUserParticipant.id;
                 component.loggedInUser.role = loggedInUserParticipant.role;
+                component.roomLabel = 'ConsultationRoom1';
             });
 
             it('should return true if the target participant is screened from participant B, and participant B is present in the consultation', () => {

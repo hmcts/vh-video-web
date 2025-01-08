@@ -187,11 +187,17 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return item.status;
     }
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
-        if (this.participantAndLoggedInUserAreScreenedFromEachOther(participant)) {
+        const loggedInUserParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+        if (this.consultationRules.participantsAreScreenedFromEachOther(loggedInUserParticipant, participant)) {
             return true;
         }
 
-        if (this.participantAndPresentParticipantsAreScreenedFromEachOther(participant)) {
+        const participantsInRoom = this.consultationRules.getParticipantsInRoom(this.roomLabel);
+        if (
+            participantsInRoom.some(participantInRoom =>
+                this.consultationRules.participantsAreScreenedFromEachOther(participant, participantInRoom)
+            )
+        ) {
             return true;
         }
 
@@ -211,36 +217,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 default:
                     return false;
             }
-        }
-
-        return false;
-    }
-
-    private participantAndPresentParticipantsAreScreenedFromEachOther(participant: ParticipantListItem) {
-        const presentParticipants = this.conference.participants.filter(
-            x => x.status === ParticipantStatus.InConsultation && x.room?.label === this.roomLabel
-        );
-
-        if (participant.protectedFrom?.some(id => presentParticipants.map(p => p.externalReferenceId).includes(id))) {
-            return true;
-        }
-
-        if (presentParticipants?.some(x => x.protectedFrom?.includes(participant.externalReferenceId))) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private participantAndLoggedInUserAreScreenedFromEachOther(participant: ParticipantListItem): boolean {
-        const loggedInUserParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
-
-        if (loggedInUserParticipant.protectedFrom?.includes(participant.externalReferenceId)) {
-            return true;
-        }
-
-        if (participant.protectedFrom?.includes(loggedInUserParticipant.externalReferenceId)) {
-            return true;
         }
 
         return false;
