@@ -211,4 +211,22 @@ describe('ParticipantItemComponent', () => {
             expect(result).toBeFalse();
         });
     });
+
+    describe('isProtected', () => {
+        it('should return true when participant is protected', () => {
+            const participant = mapParticipantToVHParticipant(conference.participants[0]);
+            component.participant = participant;
+            component.participantCallStatuses[participant.id] = 'Protected';
+            const result = component.isProtected();
+            expect(result).toBeTrue();
+        });
+
+        it('should return false when participant is not protected', () => {
+            const participant = mapParticipantToVHParticipant(conference.participants[0]);
+            component.participant = participant;
+            component.participantCallStatuses[participant.id] = null;
+            const result = component.isProtected();
+            expect(result).toBeFalse();
+        });
+    });
 });
