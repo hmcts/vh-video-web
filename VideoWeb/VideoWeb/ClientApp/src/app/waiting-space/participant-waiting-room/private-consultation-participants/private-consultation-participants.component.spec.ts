@@ -772,7 +772,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     describe('participantHasInviteRestrictions', () => {
-        fit('should return true if user is not judical, and participant is in not allowed to be invited', () => {
+        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
             // arrange
             component.loggedInUser.role = Role.Individual;
             const participant = {
@@ -915,8 +915,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 // assert
                 expect(result).toBeTrue();
             });
-
-            // TODO tests with participants that are filtered out of this.getConsultationParticipants() - judges, staff members, witnesses etc
 
             function loadParticipants() {
                 const participants = [targetParticipant, participantB, loggedInUserParticipant];

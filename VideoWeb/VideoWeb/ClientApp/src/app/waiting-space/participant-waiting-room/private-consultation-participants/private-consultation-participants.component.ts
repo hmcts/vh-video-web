@@ -217,8 +217,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     private participantAndPresentParticipantsAreScreenedFromEachOther(participant: ParticipantListItem) {
-        const participants = this.getConsultationParticipants();
-        const presentParticipants = participants.filter(
+        const presentParticipants = this.conference.participants.filter(
             x => x.status === ParticipantStatus.InConsultation && x.room?.label === this.roomLabel
         );
 
@@ -226,7 +225,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             return true;
         }
 
-        if (presentParticipants.some(x => x.protectedFrom?.includes(participant.externalReferenceId))) {
+        if (presentParticipants?.some(x => x.protectedFrom?.includes(participant.externalReferenceId))) {
             return true;
         }
 
@@ -234,8 +233,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     private participantAndLoggedInUserAreScreenedFromEachOther(participant: ParticipantListItem): boolean {
-        const participants = this.getConsultationParticipants();
-        const loggedInUserParticipant = participants.find(x => x.id === this.loggedInUser.participant_id);
+        const loggedInUserParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
 
         if (loggedInUserParticipant.protectedFrom?.includes(participant.externalReferenceId)) {
             return true;
