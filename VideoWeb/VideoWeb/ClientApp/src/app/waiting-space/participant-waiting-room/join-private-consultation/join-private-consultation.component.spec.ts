@@ -1,13 +1,7 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-import {
-    ConferenceResponse,
-    LoggedParticipantResponse,
-    ParticipantStatus,
-    Role,
-    RoomSummaryResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { globalConference, globalEndpoint, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -21,7 +15,6 @@ describe('JoinPrivateConsultationComponent', () => {
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
-    let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
@@ -37,12 +30,6 @@ describe('JoinPrivateConsultationComponent', () => {
             p.status = ParticipantStatus.Available;
         });
         const judge = conference.participants.find(x => x.role === Role.Judge);
-
-        logged = new LoggedParticipantResponse({
-            participant_id: judge.id,
-            display_name: judge.display_name,
-            role: Role.Judge
-        });
 
         component = new JoinPrivateConsultationComponent(logger, translateService);
     });
@@ -91,7 +78,8 @@ describe('JoinPrivateConsultationComponent', () => {
     it('should return participant hearing role text', () => {
         const expectedText = 'hearing-role.litigant-in-person';
         translateService.instant.calls.reset();
-        expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual(expectedText);
+        const vhParticipant = mapParticipantToVHParticipant(globalParticipant);
+        expect(component.getParticipantHearingRoleText(vhParticipant)).toEqual(expectedText);
     });
 
     it('should return rooms available', () => {

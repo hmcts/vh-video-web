@@ -58,10 +58,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.participantCallStatuses[message.requestedFor] = message.answer;
+                    this.setParticipantCallStatus(message.requestedFor, message.answer, null);
                     setTimeout(() => {
                         if (this.participantCallStatuses[message.requestedFor] === message.answer) {
-                            this.participantCallStatuses[message.requestedFor] = null;
+                            this.setParticipantCallStatus(message.requestedFor, null, null);
                         }
                     }, 10000);
                 }
@@ -74,7 +74,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 // Set 'Calling...'
                 // No need to timeout here the text because when the notification times out it will send another event.
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.participantCallStatuses[message.requestedFor] = 'Calling';
+                    this.setParticipantCallStatus(message.requestedFor, 'Calling', 'Protected');
                 }
             })
         );
@@ -83,9 +83,26 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 // If the participant state changes reset the state.
-                this.participantCallStatuses[message.participantId] = null;
+                this.setParticipantCallStatus(message.participantId, null, null);
             })
         );
+    }
+
+    setParticipantCallStatus(participantId: string, status, protectedFromStatus): void {
+        // Update the call status for the given participant
+        this.participantCallStatuses[participantId] = status;
+
+        // Find the participant with the given ID
+        const participant = this.nonJudgeParticipants.find(p => p.id === participantId);
+        // for each non-judge participant, if the participant is on their protected from list, disable the call button
+        this.nonJudgeParticipants.forEach(p => {
+            if (p.protectedFrom.includes(participant?.externalReferenceId)) {
+                this.participantCallStatuses[p.id] = protectedFromStatus;
+            }
+            if (participant.protectedFrom.includes(p?.externalReferenceId)) {
+                this.participantCallStatuses[p.id] = protectedFromStatus;
+            }
+        });
     }
 
     canCallEndpoint(endpoint: VHEndpoint): boolean {
