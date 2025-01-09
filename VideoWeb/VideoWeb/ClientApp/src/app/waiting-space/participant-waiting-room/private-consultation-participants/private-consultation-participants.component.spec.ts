@@ -78,6 +78,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
+
         component = new PrivateConsultationParticipantsComponent(
             consultationService,
             eventsService,
@@ -777,40 +778,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     describe('participantHasInviteRestrictions', () => {
-        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
-            // arrange
-            component.loggedInUser = {
-                role: Role.Individual
-            } as LoggedParticipantResponse;
-            const participant = {
-                hearingRole: HearingRole.WITNESS
-            } as ParticipantListItem;
-            // act
-            const result = component.participantHasInviteRestrictions(participant);
-            // assert
-            expect(result).toBeTrue();
-        });
-
         it('should return false if user is not judical, and participant is allowed to be invited', () => {
             // arrange
-            component.loggedInUser = {
-                role: Role.Individual
-            } as LoggedParticipantResponse;
-            const participant = {
-                hearingRole: HearingRole.APPELLANT
-            } as ParticipantListItem;
-            // act
-            const result = component.participantHasInviteRestrictions(participant);
-            // assert
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if user is judical', () => {
-            // arrange
-            // default for this test suit is judge
-            const participant = {
-                hearingRole: HearingRole.STAFF_MEMBER
-            } as ParticipantListItem;
+            component.loggedInUser.role = Role.Individual;
+            const vhParticipant = component.conference.participants.find(x => x.role === Role.Individual);
+            vhParticipant.hearingRole = HearingRole.APPELLANT;
+            component.initParticipants();
+            const participant = component.getConsultationParticipants().find(x => x.id === vhParticipant.id);
             // act
             const result = component.participantHasInviteRestrictions(participant);
             // assert

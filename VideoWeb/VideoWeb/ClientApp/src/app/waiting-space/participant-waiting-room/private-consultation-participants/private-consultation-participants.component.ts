@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, LinkType, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -204,24 +204,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return item.status;
     }
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
-        const userIsJudicial =
-            this.loggedInUser.role === Role.Judge ||
-            this.loggedInUser.role === Role.StaffMember ||
-            this.loggedInUser.role === Role.JudicialOfficeHolder;
-        if (!userIsJudicial) {
-            switch (participant.hearingRole) {
-                case HearingRole.WINGER:
-                case HearingRole.WITNESS:
-                case HearingRole.OBSERVER:
-                case HearingRole.JUDGE:
-                case HearingRole.STAFF_MEMBER:
-                case HearingRole.PANEL_MEMBER:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        return false;
+        const vhParticipant = this.conference.participants.find(x => x.id === participant.id);
+        const vhLoggedInUser = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+
+        return this.consultationRules.participantHasInviteRestrictions(vhParticipant, this.roomLabel, vhLoggedInUser);
     }
 
     private mapResponseToListItem(vhParticipant: VHParticipant): ParticipantListItem {
