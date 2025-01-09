@@ -1,31 +1,37 @@
 <div class="govuk-!-margin-top-7">
-  <details class="govuk-details" data-module="govuk-details">
-    <a class="govuk-details__summary" (click)="toggle()" (keydown.enter)="toggle()" tabindex="0" [attr.aria-expanded]="expanded">
+  <details class="govuk-details">
+    <summary class="govuk-details__summary">
       <span class="govuk-details__summary-text" id="citizen-contact-details">
-        {{'contact-us-folding.contact-for-help' | translate}}
+        {{ 'contact-us-folding.contact-for-help' | translate }}
       </span>
-    </a>
-    <div class="govuk-details__text" *ngIf="expanded">
+    </summary>
+    <div class="govuk-details__text">
       <p class="govuk-body govuk-!-margin-bottom-0">
-        <strong>{{'contact-us-folding.england-and-wales' | translate}}</strong>
+        <strong>{{ 'contact-us-folding.england-and-wales' | translate }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.call-us' | translate}} <strong>{{ contactDetails.englandAndWales.phoneNumber }}</strong>
+        {{ 'contact-us-folding.call-us' | translate }} <strong>{{ contactDetails.englandAndWales.phoneNumber }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-4">
-        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contactDetails.englandAndWales.email">{{ contactDetails.englandAndWales.email }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
+        {{ 'contact-us-folding.email-us' | translate }}
+        <a [href]="'mailto:' + contactDetails.englandAndWales.email">{{ contactDetails.englandAndWales.email }}</a>
+        {{ 'contact-us-folding.quoting-case-number' | translate }}
       </p>
 
       <p class="govuk-body govuk-!-margin-bottom-0">
-        <strong>{{'contact-us-folding.scotland' | translate}}</strong>
+        <strong>{{ 'contact-us-folding.scotland' | translate }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.call-us' | translate}} <strong>{{ contactDetails.scotland.phoneNumber }}</strong>
+        {{ 'contact-us-folding.call-us' | translate }} <strong>{{ contactDetails.scotland.phoneNumber }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contactDetails.scotland.email">{{ contactDetails.scotland.email }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
+        {{ 'contact-us-folding.email-us' | translate }}
+        <a [href]="'mailto:' + contactDetails.scotland.email">{{ contactDetails.scotland.email }}</a>
+        {{ 'contact-us-folding.quoting-case-number' | translate }}
       </p>
-      <p class="govuk-body govuk-!-margin-top-3 govuk-!-font-size-14 govuk-!-font-weight-bold available-time">{{'contact-us-folding.available-time' | translate}}</p>
+      <p class="govuk-body govuk-!-margin-top-3 govuk-!-font-size-14 govuk-!-font-weight-bold available-time">
+        {{ 'contact-us-folding.available-time' | translate }}
+      </p>
     </div>
   </details>
 </div>
