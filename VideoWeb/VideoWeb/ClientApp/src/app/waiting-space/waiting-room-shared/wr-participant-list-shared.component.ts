@@ -3,14 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    AllowedEndpointResponse,
-    EndpointStatus,
-    LinkType,
-    LoggedParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { EndpointStatus, LinkType, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -19,10 +12,11 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
+import { ConsultationRules } from 'src/app/services/models/consultation-rules';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
-    @Input() participantEndpoints: AllowedEndpointResponse[];
+    @Input() participantEndpoints: VHEndpoint[];
 
     nonJudgeParticipants: VHParticipant[] = [];
     judge: VHParticipant;
@@ -37,6 +31,8 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
+
+    protected consultationRules: ConsultationRules;
 
     private _conference: VHConference;
 
@@ -80,6 +76,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
 
     @Input() set conference(conference: VHConference) {
         this._conference = conference;
+        this.consultationRules = new ConsultationRules(conference);
         this.initParticipants();
     }
 

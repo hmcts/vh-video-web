@@ -3097,111 +3097,6 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
-        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/allowed-video-call-endpoints';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processAllowedVideoCallEndpoints(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processAllowedVideoCallEndpoints(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<AllowedEndpointResponse[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<AllowedEndpointResponse[]>;
-                })
-            );
-    }
-
-    protected processAllowedVideoCallEndpoints(response: HttpResponseBase): Observable<AllowedEndpointResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(AllowedEndpointResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<AllowedEndpointResponse[]>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
     getHeartbeatConfigForParticipant(conferenceId: string, participantId: string): Observable<HeartbeatConfigurationResponse> {
         let url_ = this.baseUrl + '/heartbeat/conferences/{conferenceId}/GetHeartbeatConfigForParticipant/{participantId}';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
@@ -9409,49 +9304,6 @@ export interface IUpdateParticipantStatusEventRequest {
     event_type?: EventType;
 }
 
-export class AllowedEndpointResponse implements IAllowedEndpointResponse {
-    id?: string;
-    display_name?: string | undefined;
-    defence_advocate_username?: string | undefined;
-
-    constructor(data?: IAllowedEndpointResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data['id'];
-            this.display_name = _data['display_name'];
-            this.defence_advocate_username = _data['defence_advocate_username'];
-        }
-    }
-
-    static fromJS(data: any): AllowedEndpointResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AllowedEndpointResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['id'] = this.id;
-        data['display_name'] = this.display_name;
-        data['defence_advocate_username'] = this.defence_advocate_username;
-        return data;
-    }
-}
-
-export interface IAllowedEndpointResponse {
-    id?: string;
-    display_name?: string | undefined;
-    defence_advocate_username?: string | undefined;
-}
-
 export class ChatResponse implements IChatResponse {
     /** Message UUID */
     readonly id?: string;
@@ -9542,8 +9394,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     enable_ios_mobile_support?: boolean;
     /** Enable iOS tablet support */
     enable_ios_tablet_support?: boolean;
-    /** Enable dynamic evidence sharing button */
-    enable_dynamic_evidence_sharing?: boolean;
     /** Blur radius in pixels */
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */
@@ -9574,7 +9424,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_android_support = _data['enable_android_support'];
             this.enable_ios_mobile_support = _data['enable_ios_mobile_support'];
             this.enable_ios_tablet_support = _data['enable_ios_tablet_support'];
-            this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
             this.launch_darkly_client_id = _data['launch_darkly_client_id'];
             if (Array.isArray(_data['supplier_configurations'])) {
@@ -9604,7 +9453,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_android_support'] = this.enable_android_support;
         data['enable_ios_mobile_support'] = this.enable_ios_mobile_support;
         data['enable_ios_tablet_support'] = this.enable_ios_tablet_support;
-        data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         data['launch_darkly_client_id'] = this.launch_darkly_client_id;
         if (Array.isArray(this.supplier_configurations)) {
@@ -9633,8 +9481,6 @@ export interface IClientSettingsResponse {
     enable_ios_mobile_support?: boolean;
     /** Enable iOS tablet support */
     enable_ios_tablet_support?: boolean;
-    /** Enable dynamic evidence sharing button */
-    enable_dynamic_evidence_sharing?: boolean;
     /** Blur radius in pixels */
     blur_radius?: number;
     /** Launch Darkly Client for feature toggling */

@@ -84,11 +84,7 @@
 </div>
 
 <div class="vh-line govuk-!-margin-bottom-3"></div>
-<div
-  *ngIf="displayParticipantList"
-
-  [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate"
->
+<div *ngIf="displayParticipantList" [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate">
   <div *ngIf="wingers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -96,12 +92,12 @@
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ participant.id }}-winger"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + participant.id + '-' + (1 | random)"
+        *ngFor="let participant of wingers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ participant.id }}-winger" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-winger" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>
@@ -128,12 +124,12 @@
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ participant.id }}-panel-member"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + participant.id + '-' + (1 | random)"
+        *ngFor="let participant of panelMembers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>
@@ -163,12 +159,12 @@
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of staffMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ participant.id }}-staff-member"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + participant.id + '-' + (1 | random)"
+        *ngFor="let participant of staffMembers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.displayName }}
             <span *ngIf="canChangeStaffMemberName(participant.id)"
@@ -239,12 +235,12 @@
     </div>
 
     <div class="vh-border">
-      <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ participant.id }}-participant"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + participant.id + '-' + (1 | random)"
+        *ngFor="let participant of nonJudgeParticipants; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
             <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
               <fa-icon icon="language" size="2x"></fa-icon>
@@ -284,12 +280,12 @@
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let endpoint of endpoints; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ endpoint.id }}-endpoints"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + endpoint.id + '-' + (1 | random)"
+        *ngFor="let endpoint of endpoints; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ endpoint.id }}-endpoints" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ endpoint.id }}-name-endpoint" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ endpoint.displayName }}
           </dt>
@@ -321,12 +317,12 @@
     </div>
 
     <div class="vh-border">
-      <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl
-          id="p-row-{{ participant.id }}-observer"
-          class="govuk-grid-column-full govuk-!-margin-top-2 participant-details"
-
-        >
+      <div
+        [id]="'wr-participant-status-list-participant' + participant.id + '-' + (1 | random)"
+        *ngFor="let participant of observers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1"
+      >
+        <dl id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name ?? participant.displayName }}
           </dt>

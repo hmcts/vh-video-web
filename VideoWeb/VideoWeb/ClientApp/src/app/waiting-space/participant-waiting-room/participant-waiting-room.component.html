@@ -41,7 +41,7 @@
           #hearingControls
           [canToggleParticipantsPanel]="isPrivateConsultation"
           [conferenceId]="conference.id"
-          [participant]="participant"
+          [participant]="vhParticipant"
           [isPrivateConsultation]="isPrivateConsultation"
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
@@ -69,7 +69,7 @@
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"
-      [muted]="shouldMuteHearing()"
+      [muted]="!showVideo"
       [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
       poster="/assets/images/empty_crest.jpg"
     >

@@ -54,7 +54,6 @@ public class ConferenceManagementController(
             request.Layout, cancellationToken);
         logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
         return Accepted();
-
     }
 
     /// <summary>
@@ -72,31 +71,20 @@ public class ConferenceManagementController(
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId, CancellationToken cancellationToken)
     {
-        try
+        logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
+        var layout = await hearingLayoutService.GetCurrentLayout(conferenceId, cancellationToken);
+
+        if (!layout.HasValue)
         {
-            logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
-            var layout = await hearingLayoutService.GetCurrentLayout(conferenceId, cancellationToken);
-            
-            if (!layout.HasValue) {
-                logger.LogWarning("Layout didn't have a value returning NotFound. This was for {ConferenceId}", conferenceId);
-                return NotFound();
-            }
-            
-            logger.LogTrace("Got Layout ({Layout}) for {ConferenceId}", layout.Value, conferenceId);
-            return Ok(layout);
+            logger.LogWarning("Layout didn't have a value returning NotFound. This was for {ConferenceId}",
+                conferenceId);
+            return NotFound();
         }
-        catch (VideoApiException exception)
-        {
-            logger.LogError(exception, "Could not get layout for {ConferenceId} a video api exception was thrown", conferenceId);
-            return StatusCode(exception.StatusCode, exception.Response);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not get layout for {ConferenceId} an unknown exception was thrown", conferenceId);
-            throw new InvalidOperationException("There was an unexpected error when getting the layout", exception);
-        }
+
+        logger.LogTrace("Got Layout ({Layout}) for {ConferenceId}", layout.Value, conferenceId);
+        return Ok(layout);
     }
-    
+
     /// <summary>
     /// Update the active layout for a conference
     /// </summary>
@@ -111,37 +99,27 @@ public class ConferenceManagementController(
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout,
+        CancellationToken cancellationToken)
     {
-        try
+        logger.LogDebug("Attempting to update layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var participant = conference.GetParticipant(User.Identity!.Name);
+
+        if (participant == null)
         {
-            logger.LogDebug("Attempting to update layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
-            
-            var participant = await GetParticipant(conferenceId, User.Identity!.Name, cancellationToken);
-            
-            if (participant == null)
-            {
-                logger.LogWarning("Could not update layout to {Layout} for hearing as participant with the name {Username} was not found in conference {ConferenceId}", layout, User.Identity.Name, conferenceId);
-                return NotFound(nameof(participant));
-            }
-            
-            await hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout, cancellationToken);
-            
-            logger.LogInformation("Updated layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
-            return Ok();
+            logger.LogWarning(
+                "Could not update layout to {Layout} for hearing as participant with the name {Username} was not found in conference {ConferenceId}",
+                layout, User.Identity.Name, conferenceId);
+            return NotFound(nameof(participant));
         }
-        catch (VideoApiException exception)
-        {
-            logger.LogError(exception, "Could not update layout for {ConferenceId} a video api exception was thrown", conferenceId);
-            return StatusCode(exception.StatusCode, exception.Response);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not update layout for {ConferenceId} an unknown exception was thrown", conferenceId);
-            throw new InvalidOperationException("There was an unexpected error when updating the layout", exception);
-        }
+
+        await hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout, cancellationToken);
+
+        logger.LogInformation("Updated layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
+        return Ok();
     }
-    
+
     /// <summary>
     /// Get recommended layout for hearing
     /// </summary>
@@ -155,26 +133,14 @@ public class ConferenceManagementController(
     [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId,
+        CancellationToken cancellationToken)
     {
-        try
-        {
-            logger.LogDebug("Attempting get recommended layout  for conference {ConferenceId}", conferenceId);
-            var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-            return Ok(conference.GetRecommendedLayout());
-        }
-        catch (VideoApiException exception)
-        {
-            logger.LogError(exception, "Could not get recommended layout for {ConferenceId}. A video api exception was thrown", conferenceId);
-            return StatusCode(exception.StatusCode, exception.Response);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not get recommended layout for {ConferenceId}. an unknown exception was thrown", conferenceId);
-            throw new InvalidOperationException("There was an unexpected error when getting the recommended layout", exception);
-        }
+        logger.LogDebug("Attempting get recommended layout  for conference {ConferenceId}", conferenceId);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        return Ok(conference.GetRecommendedLayout());
     }
-    
+
     /// <summary>
     /// Pause a video hearing
     /// </summary>
@@ -191,20 +157,12 @@ public class ConferenceManagementController(
         {
             return validatedRequest;
         }
-        
-        try
-        {
-            await videoApiClient.PauseVideoHearingAsync(conferenceId, cancellationToken);
-            logger.LogDebug("Sent request to pause conference {Conference}", conferenceId);
-            return Accepted();
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "Unable to pause video hearing {Conference}", conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
+
+        await videoApiClient.PauseVideoHearingAsync(conferenceId, cancellationToken);
+        logger.LogDebug("Sent request to pause conference {Conference}", conferenceId);
+        return Accepted();
     }
-    
+
     /// <summary>
     /// Suspend a video hearing
     /// </summary>
@@ -221,20 +179,12 @@ public class ConferenceManagementController(
         {
             return validatedRequest;
         }
-        
-        try
-        {
-            await videoApiClient.SuspendHearingAsync(conferenceId, cancellationToken);
-            logger.LogDebug("Sent request to suspend conference {Conference}", conferenceId);
-            return Accepted();
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "Unable to suspend video hearing {Conference}", conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
+
+        await videoApiClient.SuspendHearingAsync(conferenceId, cancellationToken);
+        logger.LogDebug("Sent request to suspend conference {Conference}", conferenceId);
+        return Accepted();
     }
-    
+
     /// <summary>
     /// End a video hearing
     /// </summary>
@@ -251,20 +201,12 @@ public class ConferenceManagementController(
         {
             return validatedRequest;
         }
-        
-        try
-        {
-            await videoApiClient.EndVideoHearingAsync(conferenceId, cancellationToken);
-            logger.LogDebug("Sent request to end conference {Conference}", conferenceId);
-            return Accepted();
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "Unable to end video hearing {Conference}", conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
+
+        await videoApiClient.EndVideoHearingAsync(conferenceId, cancellationToken);
+        logger.LogDebug("Sent request to end conference {Conference}", conferenceId);
+        return Accepted();
     }
-    
+
     /// <summary>
     /// Admit a participant into an active video hearing
     /// </summary>
@@ -283,11 +225,10 @@ public class ConferenceManagementController(
         {
             return validatedRequest;
         }
-        
-        await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
+        await TransferParticipantAsync(conference, participantId, TransferType.Call, cancellationToken);
         return Accepted();
     }
-    
+
     /// <summary>
     /// Joins a video hearing currently in session
     /// </summary>
@@ -298,26 +239,21 @@ public class ConferenceManagementController(
     [HttpPost("{conferenceId}/participant/{participantId}/join-hearing")]
     [SwaggerOperation(OperationId = "JoinHearingInSession")]
     [ProducesResponseType((int)HttpStatusCode.Accepted)]
-    public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+    public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId,
+        CancellationToken cancellationToken)
     {
-        var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var validatedRequest = await ValidateUserIsHostAndInConference(conference);
         if (validatedRequest != null)
         {
             return validatedRequest;
         }
-        try
-        {
-            await TransferParticipantAsync(conferenceId, participantId, TransferType.Call, cancellationToken);
-            return Accepted();
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "{Participant} is unable to join into video hearing {Conference}",
-                participantId, conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
+
+        await TransferParticipantAsync(conference, participantId, TransferType.Call, cancellationToken);
+        return Accepted();
+
     }
-    
+
     /// <summary>
     /// Call a participant into a video hearing
     /// </summary>
@@ -337,19 +273,19 @@ public class ConferenceManagementController(
             return validatedRequest;
         }
         
-        await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
+        await TransferParticipantAsync(conference, participantId, TransferType.Dismiss, cancellationToken);
         if(conference.GetParticipant(participantId) != null)
         {
             // reset hand raise on dismiss if participant
             await conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
                 false, cancellationToken);
         
-            await AddDismissTaskAsync(conferenceId, participantId, cancellationToken);
+            await AddDismissTaskAsync(conference, participantId, cancellationToken);
         }
         
         return Accepted();
     }
-    
+
     /// <summary>
     /// Leave host from hearing
     /// </summary>
@@ -360,28 +296,21 @@ public class ConferenceManagementController(
     [HttpPost("{conferenceId}/participant/{participantId}/leave")]
     [SwaggerOperation(OperationId = "LeaveHearing")]
     [ProducesResponseType((int)HttpStatusCode.Accepted)]
-    public async Task<IActionResult> LeaveHearingAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+    public async Task<IActionResult> LeaveHearingAsync(Guid conferenceId, Guid participantId,
+        CancellationToken cancellationToken)
     {
-        var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId, cancellationToken);
+        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+        var validatedRequest = await ValidateUserIsHostAndInConference(conference);
         if (validatedRequest != null)
         {
             return validatedRequest;
         }
-        
-        try
-        {
-            await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss, cancellationToken);
-        }
-        catch (VideoApiException ex)
-        {
-            logger.LogError(ex, "Unable to dismiss participant {Participant} from video hearing {Conference}",
-                participantId, conferenceId);
-            return StatusCode(ex.StatusCode, ex.Response);
-        }
-        
+
+        await TransferParticipantAsync(conference, participantId, TransferType.Dismiss, cancellationToken);
+
         return Accepted();
     }
-    
+
     private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceid, CancellationToken cancellationToken)
     {
         var conference = await conferenceService.GetConference(conferenceid, cancellationToken);
@@ -469,18 +398,6 @@ public class ConferenceManagementController(
     private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) =>
         conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
     
-    private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
-    {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        return conference.Participants.SingleOrDefault(x => x.Id == participantId);
-    }
-    
-    private async Task<Participant> GetParticipant(Guid conferenceId, string username, CancellationToken cancellationToken)
-    {
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        return conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username.Trim(), StringComparison.InvariantCultureIgnoreCase));
-    }
-    
     private static string GetParticipantRoleString(Participant participant)
     {
         return participant.Role switch
@@ -490,25 +407,31 @@ public class ConferenceManagementController(
             _ => participant.HearingRole
         };
     }
-    
-    private Task TransferParticipantAsync(Guid conferenceId, Guid participantId, TransferType transferType, CancellationToken cancellationToken)
+
+    private Task TransferParticipantAsync(Conference conference, Guid participantId, TransferType transferType,
+        CancellationToken cancellationToken)
     {
-        return videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
+        var role = conference.GetNonScreenedParticipantsAndEndpoints().Contains(participantId)
+            ? ConferenceRole.Host
+            : ConferenceRole.Guest;
+        return videoApiClient.TransferParticipantAsync(conference.Id, new TransferParticipantRequest
         {
             ParticipantId = participantId,
-            TransferType = transferType
+            TransferType = transferType,
+            ConferenceRole = role
         }, cancellationToken);
     }
-    
-    private async Task AddDismissTaskAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
+
+    private async Task AddDismissTaskAsync(Conference conference, Guid participantId, CancellationToken cancellationToken)
     {
         logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
-            participantId, conferenceId);
+            participantId, conference.Id);
+
         
-        var participant = await GetParticipant(conferenceId, participantId, cancellationToken);
-        var dismisser = await GetParticipant(conferenceId, User.Identity!.Name, cancellationToken);
+        var participant = conference.GetParticipant(participantId);
+        var dismisser = conference.GetParticipant(User.Identity!.Name);
         
-        await videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
+        await videoApiClient.AddTaskAsync(conference.Id, new AddTaskRequest
         {
             ParticipantId = participantId,
             Body = $"{GetParticipantRoleString(participant)} dismissed by {GetParticipantRoleString(dismisser)}",

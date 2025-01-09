@@ -4196,7 +4196,7 @@ PexRTC.prototype.disconnect = function (reason, referral) {
         if (reason) {
             params['reason'] = reason;
         }
-        if (navigator.sendBeacon) {
+        if (navigator.sendBeacon && !referral) {
             var beaconUrl =
                 'https://' + self.node + '/api/client/v2/conferences/' + self.conference_uri + '/release_token?token=' + self.token;
             if (self.chrome_ver > 59 && self.chrome_ver < 81) {

@@ -12,9 +12,7 @@ import {
     RoomSummaryResponse,
     HearingLayout,
     Role,
-    VideoEndpointResponse,
-    LinkedParticipantResponse,
-    LinkType
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -36,10 +34,6 @@ import {
     onEventsHubReadySubjectMock,
     getParticipantsUpdatedSubjectMock,
     getEndpointsUpdatedMessageSubjectMock,
-    hearingLayoutChangedSubjectMock,
-    getEndpointLinkedUpdatedMock,
-    getEndpointUnlinkedUpdatedMock,
-    getEndpointDisconnectUpdatedMock,
     getHearingDetailsUpdatedMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
@@ -89,7 +83,6 @@ import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
-import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
 import { provideMockStore } from '@ngrx/store/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
@@ -385,7 +378,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         eventHubDisconnectSubject.next(6);
 
         flushMicrotasks();
-        expect(component.disconnect).toHaveBeenCalledTimes(6);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
         expect(component.participant.status).toBe(newParticipantStatus);
         expect(component.conference.status).toBe(newConferenceStatus);
@@ -399,15 +391,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.handleEventHubDisconnection(1);
 
         expect(component.disconnect).not.toHaveBeenCalled();
-    });
-
-    it('disconnects judge from pexip after the first attempt to reconnect to event hub has been un successful', () => {
-        component.participant.role = Role.Judge;
-        spyOn(component, 'disconnect');
-
-        component.handleEventHubDisconnection(2);
-
-        expect(component.disconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
@@ -1665,40 +1648,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(participants).toEqual(jasmine.arrayContaining(testParticipantMessage.participants));
             }
         });
-
-        describe('when participant is now linked', () => {
-            it('should re-join when participant is now linked', () => {
-                const conference = new ConferenceResponse(Object.assign({}, globalConference));
-                const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
-                spyOn(component, 'loadConferenceAndUpdateVideo');
-                component.hearing = new Hearing(conference);
-                component.conference = conference;
-                component.participant = participant;
-
-                const updatedParticipant = new ParticipantResponse(Object.assign({}, globalParticipant));
-
-                updatedParticipant.linked_participants = [
-                    new LinkedParticipantResponse({
-                        link_type: LinkType.Interpreter,
-                        linked_id: testParticipant.id.toString()
-                    })
-                ];
-                getLoggedParticipantSpy.and.returnValue(updatedParticipant);
-                testParticipant.linked_participants = [
-                    new LinkedParticipantResponse({
-                        link_type: LinkType.Interpreter,
-                        linked_id: updatedParticipant.id.toString()
-                    })
-                ];
-                const testParticipantMessage = new ParticipantsUpdatedMessage(globalConference.id, [
-                    testParticipant,
-                    component.participant
-                ]);
-                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
-
-                expect(component.loadConferenceAndUpdateVideo).toHaveBeenCalled();
-            });
-        });
     });
 
     describe('getEndpointsUpdated', () => {
@@ -1765,42 +1714,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 getConferenceSpy = spyOn(component, 'getConference');
             });
 
-            it('should show toast for in hearing', fakeAsync(() => {
-                // Arrange
-                component.participant.status = ParticipantStatus.InHearing;
-
-                // Acts
-                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
-
-                // Assert
-                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-            }));
-
-            it('should show toast for in consultation', fakeAsync(() => {
-                // Arrange
-                component.participant.status = ParticipantStatus.InConsultation;
-
-                // Act
-                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
-
-                // Assert
-                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-            }));
-
-            it('should show toast for not in hearing or consultation', fakeAsync(() => {
-                // Arrange
-                component.participant.status = ParticipantStatus.Available;
-
-                // Act
-                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
-
-                // Assert
-                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
-            }));
-
             it('should update existing endpoint', fakeAsync(() => {
                 // Arrange
                 component.participant.status = ParticipantStatus.Available;
@@ -1814,51 +1727,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(component.conference.endpoints.length).toEqual(1);
                 expect(updatedEndpoint.display_name).toBe(testUpdateVideoEndpointResponse.display_name);
             }));
-        });
-    });
-
-    describe('Endpoint/Rep link event updates ', () => {
-        const jvsEndpointName = 'JvsEndpointName';
-        const testConferenceId = 'TestConferenceId';
-        beforeEach(() => {
-            const testConference = new ConferenceResponse(Object.assign({}, globalConference));
-            const testHearing = new Hearing(testConference);
-            testConference.id = testConferenceId;
-            component.hearing = testHearing;
-        });
-
-        describe('when is not correct conference', () => {
-            const testEndpointUpdatedMessage = new EndpointRepMessage('DifferentConferenceId', jvsEndpointName);
-            it('endpoint linked handler should not make any changes', () => {
-                getEndpointLinkedUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointLinked).not.toHaveBeenCalled();
-            });
-            it('endpoint unlinked handler should not make any changes', () => {
-                getEndpointUnlinkedUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointUnlinked).not.toHaveBeenCalled();
-            });
-            it('endpoint consultation closed handler should not make any changes', () => {
-                getEndpointDisconnectUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointConsultationClosed).not.toHaveBeenCalled();
-            });
-        });
-
-        describe('when is correct conference', () => {
-            it('should show toast, when endpoint linked', () => {
-                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
-                getEndpointLinkedUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointLinked).toHaveBeenCalledWith(jvsEndpointName, true);
-            });
-            it('should show toast, when endpoint unlinked', () => {
-                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
-                getEndpointUnlinkedUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointUnlinked).toHaveBeenCalledWith(jvsEndpointName, true);
-            });
-            it('should show toast, when endpoint consultation closed', () => {
-                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
-                getEndpointDisconnectUpdatedMock.next(testEndpointUpdatedMessage);
-                expect(notificationToastrService.showEndpointConsultationClosed).toHaveBeenCalledWith(jvsEndpointName, true);
-            });
         });
     });
 
@@ -1898,93 +1766,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
             getLoggedParticipantSpy.and.returnValue({ id: 'p2Id' });
 
             findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
-        });
-
-        describe('when is not', () => {
-            it('a correct conference', () => {
-                // Arrange
-                testHearingLayoutMessage = new HearingLayoutChanged(
-                    differentConferenceId,
-                    testParticipant.id,
-                    HearingLayout.Dynamic,
-                    HearingLayout.OnePlus7
-                );
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(component.isHost).not.toHaveBeenCalled();
-                expect(findParticipantSpy).not.toHaveBeenCalled();
-                expect(getLoggedParticipantSpy).not.toHaveBeenCalled();
-                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
-            });
-
-            it('a Dual Host participant', () => {
-                // Arrange
-                isHostSpy.and.returnValue(false);
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(component.isHost).toHaveBeenCalledTimes(1);
-                expect(findParticipantSpy).not.toHaveBeenCalled();
-                expect(getLoggedParticipantSpy).not.toHaveBeenCalled();
-                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
-            });
-
-            it('same participant changing layout should not see alert', () => {
-                // Arrange
-                findParticipantSpy.and.returnValues({ id: 'p2Id' });
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(component.isHost).toHaveBeenCalledTimes(1);
-                expect(findParticipantSpy).toHaveBeenCalledTimes(1);
-                expect(getLoggedParticipantSpy).toHaveBeenCalledTimes(1);
-                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
-            });
-        });
-
-        describe('when is correct conference, dual host and eligible participant', () => {
-            it('should show toast for in hearing', () => {
-                // Arrange
-                component.participant.status = ParticipantStatus.InHearing;
-                findParticipantSpy.and.returnValues(testParticipantAlert);
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, true);
-            });
-
-            it('should show toast for in consultation', () => {
-                // Arrange
-                component.participant.status = ParticipantStatus.InConsultation;
-                findParticipantSpy.and.returnValues(testParticipantAlert);
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, true);
-            });
-
-            it('should show toast for not in hearing or consultation', () => {
-                // Arrange
-                component.participant.status = ParticipantStatus.Available;
-                findParticipantSpy.and.returnValues(testParticipantAlert);
-
-                // Act
-                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
-
-                // Assert
-                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, false);
-            });
         });
 
         describe('contact details object', () => {
@@ -2029,7 +1810,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             const result$ = component.phoneNumber$;
 
-            expect(result$).toBeObservable(cold('a', { a: vhContactDetails.englandAndWales.phoneNumber }));
+            expect(result$).toBeObservable(cold('(a|)', { a: vhContactDetails.englandAndWales.phoneNumber }));
         }));
 
         describe('when conference is scottish', () => {
@@ -2054,7 +1835,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             it('should set welsh flag to false when conference is scottish', fakeAsync(() => {
                 const result$ = component.phoneNumber$;
 
-                expect(result$).toBeObservable(cold('a', { a: vhContactDetails.scotland.phoneNumber }));
+                expect(result$).toBeObservable(cold('(a|)', { a: vhContactDetails.scotland.phoneNumber }));
             }));
         });
     });

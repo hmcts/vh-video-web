@@ -1,22 +1,13 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, of, Subject } from 'rxjs';
-import {
-    ClientSettingsResponse,
-    ConferenceResponse,
-    ParticipantForUserResponse,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { of, Subject } from 'rxjs';
+import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { browsers } from 'src/app/shared/browser.constants';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -43,9 +34,6 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
@@ -59,7 +47,8 @@ import { take } from 'rxjs/operators';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
-import { mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VHConference, VHParticipant, VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -79,7 +68,7 @@ describe('HearingControlsBaseComponent', () => {
 
     let component: HearingControlsBaseComponent;
     let mockStore: MockStore<ConferenceState>;
-    const globalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse);
     const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
@@ -98,52 +87,31 @@ describe('HearingControlsBaseComponent', () => {
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
     const focusService = jasmine.createSpyObj<FocusService>(['restoreFocus', 'storeFocus']);
 
-    let conference: ConferenceResponse;
-
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+    let conference: VHConference;
 
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-    let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let clientSettingsResponse: ClientSettingsResponse;
-    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     beforeEach(() => {
         const initialState = initialConferenceState;
+        globalParticipant.pexipInfo = {
+            isRemoteMuted: false,
+            isSpotlighted: false,
+            isVideoMuted: false,
+            handRaised: false,
+            pexipDisplayName: `${globalParticipant.id}_John Doe`,
+            uuid: '1922_John Doe',
+            callTag: 'john-cal-tag'
+        } as VHPexipParticipant;
         mockStore = createMockStore({ initialState });
 
-        mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
-
-        clientSettingsResponse = new ClientSettingsResponse({
-            enable_dynamic_evidence_sharing: false
-        });
+        mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, globalParticipant);
         translateService.instant.calls.reset();
         focusService.storeFocus.calls.reset();
-
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
-        );
-
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setSpotlightStatus',
-            'setSpotlightStatusById',
-            'setRemoteMuteStatusById',
-            'setHandRaiseStatusById'
-        ]);
-
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
-
-        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
-            ParticipantModel.fromParticipantForUserResponse(participantOne)
-        );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
@@ -159,9 +127,6 @@ describe('HearingControlsBaseComponent', () => {
         onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
 
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
-        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
-
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['showError']);
@@ -171,20 +136,16 @@ describe('HearingControlsBaseComponent', () => {
             eventsService,
             deviceTypeService,
             logger,
-            participantServiceSpy,
             translateService,
-            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy,
-            videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusService,
             mockStore,
             audioRecordingServiceSpy,
             notificationToastrServiceSpy
         );
-        conference = new ConferenceTestData().getConferenceNow();
+        conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
         component.participant = globalParticipant;
         component.conferenceId = globalConference.id;
         component.isPrivateConsultation = false;
@@ -422,7 +383,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.buzz_time = 0;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
@@ -432,16 +393,23 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should show remote muted when muted by host', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        onParticipantUpdatedSubject.next(payload);
+        globalParticipant.pexipInfo.isRemoteMuted = true;
+        component.participant = globalParticipant;
         expect(component.remoteMuted).toBeTruthy();
     });
 
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = globalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        otherParticipant.pexipInfo = {
+            isRemoteMuted: false,
+            isSpotlighted: false,
+            isVideoMuted: false,
+            handRaised: false,
+            pexipDisplayName: `${otherParticipant.id}_John Doe`,
+            uuid: '1922_John Doe',
+            callTag: 'john-cal-tag'
+        } as VHPexipParticipant;
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 0;
         pexipParticipant.spotlight = 0;
@@ -510,19 +478,15 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.buzz_time = 123;
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.handRaised).toBeTruthy();
+        globalParticipant.pexipInfo.handRaised = true;
+        component.participant = globalParticipant;
         const expectedText = 'hearing-controls.lower-my-hand';
-
         expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = globalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
@@ -535,48 +499,23 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should mute locally if remote muted and not muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        const participant = { ...globalParticipant, pexipInfo: { isRemoteMuted: true } as VHPexipParticipant };
         component.audioMuted = false;
-
-        component.handleParticipantUpdatedInVideoCall(payload);
+        component.participant = participant;
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
     it('should skip mute locally if remote muted and already muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        const participant = {
+            ...globalParticipant,
+            pexipInfo: { isRemoteMuted: true } as VHPexipParticipant,
+            localMediaStatus: { isMicrophoneMuted: true }
+        } as VHParticipant;
+
         component.audioMuted = true;
-        component.handleParticipantUpdatedInVideoCall(payload);
-        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
-    });
-
-    it('should return false and not toggle mute if pexip display name is undefined', () => {
-        videoCallService.toggleMute.calls.reset();
-        const payload: ParticipantUpdated = {
-            pexipDisplayName: undefined,
-            isRemoteMuted: false,
-            isSpotlighted: true,
-            isVideoMuted: false,
-            handRaised: false,
-            uuid: undefined,
-            callTag: undefined,
-            isAudioOnlyCall: false,
-            isVideoCall: false,
-            protocol: '',
-            receivingAudioMix: 'main',
-            role: 'GUEST',
-            sentAudioMixes: [{ mix_name: 'main', prominent: false }]
-        };
-        component.audioMuted = true;
-
-        const result = component.handleParticipantUpdatedInVideoCall(payload);
-
-        expect(result).toBeFalsy();
+        component.participant = participant;
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
     });
 
@@ -823,7 +762,7 @@ describe('HearingControlsBaseComponent', () => {
         allowedHearingRoles.forEach(hearingRole => {
             it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
                 deviceTypeService.isDesktop.and.returnValue(true);
-                component.participant.hearing_role = hearingRole;
+                component.participant.hearingRole = hearingRole;
                 component.ngOnInit();
                 expect(component.canShowScreenShareButton).toBeTruthy();
             });
@@ -833,7 +772,7 @@ describe('HearingControlsBaseComponent', () => {
         nonAllowedHearingRoles.forEach(hearingRole => {
             it(`returns "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
                 deviceTypeService.isDesktop.and.returnValue(true);
-                component.participant.hearing_role = hearingRole;
+                component.participant.hearingRole = hearingRole;
                 component.ngOnInit();
                 expect(component.canShowScreenShareButton).toBeFalsy();
             });
@@ -900,14 +839,11 @@ describe('HearingControlsBaseComponent', () => {
             expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
         });
 
-        it('should dismiss participant if confirmed leaving and another host is present', done => {
+        it('should dismiss participant if confirmed leaving and another host is present', () => {
             component.displayLeaveHearingPopup = true;
             const participantsModel = [];
             spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
             videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
-            component.leaveHearing.subscribe(event => {
-                done();
-            });
 
             component.leave(true, participantsModel);
 
@@ -971,20 +907,13 @@ describe('HearingControlsBaseComponent', () => {
         beforeEach(() => {});
 
         it('returns false if there is no host', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Individual,
-                    HearingRole.LITIGANT_IN_PERSON,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                {
+                    id: '1234',
+                    role: Role.Individual,
+                    hearingRole: HearingRole.LITIGANT_IN_PERSON,
+                    status: ParticipantStatus.Available
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -993,20 +922,8 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns false if there is no other host, judge status not in hearing', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    HearingRole.JUDGE,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.Available } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -1015,33 +932,14 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns true if another host is in hearing, staff', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                ),
-                new ParticipantModel(
-                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    Role.StaffMember,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.Available } as VHParticipant,
+                {
+                    id: '2344',
+                    role: Role.StaffMember,
+                    hearingRole: HearingRole.STAFF_MEMBER,
+                    status: ParticipantStatus.InHearing
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -1050,33 +948,14 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('returns true if another host is in hearing, judge', () => {
-            const participants = [
-                new ParticipantModel(
-                    '7879c48a-f513-4d3b-bb1b-151831427507',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                    Role.Judge,
-                    HearingRole.JUDGE,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.InHearing,
-                    null
-                ),
-                new ParticipantModel(
-                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    'Participant Name',
-                    'DisplayName',
-                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
-                    Role.StaffMember,
-                    null,
-                    false,
-                    null,
-                    null,
-                    ParticipantStatus.Available,
-                    null
-                )
+            const participants: VHParticipant[] = [
+                { id: '1234', role: Role.Judge, hearingRole: HearingRole.JUDGE, status: ParticipantStatus.InHearing } as VHParticipant,
+                {
+                    id: '2344',
+                    role: Role.StaffMember,
+                    hearingRole: HearingRole.STAFF_MEMBER,
+                    status: ParticipantStatus.Available
+                } as VHParticipant
             ];
 
             const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
@@ -1186,18 +1065,57 @@ describe('HearingControlsBaseComponent', () => {
 
     describe('isObserver', () => {
         it('should return true when participant role is QuickLinkObserver', () => {
-            component.participant = { role: Role.QuickLinkObserver } as ParticipantResponse;
+            component.participant = { role: Role.QuickLinkObserver } as VHParticipant;
             expect(component.isObserver).toBeTrue();
         });
 
         it('should return false when participant role is not QuickLinkObserver', () => {
-            component.participant = { role: Role.Judge } as ParticipantResponse;
+            component.participant = { role: Role.Judge } as VHParticipant;
             expect(component.isObserver).toBeFalse();
         });
 
         it('should return false when participant is undefined', () => {
             component.participant = undefined;
             expect(component.isObserver).toBeFalse();
+        });
+    });
+
+    describe('isInterpreter', () => {
+        it('should return true when participant hearing role is Interpreter', () => {
+            component.participant = { hearingRole: HearingRole.INTERPRETER } as VHParticipant;
+            expect(component.isInterpreter).toBeTrue();
+        });
+
+        it('should return false when participant hearing role is not Interpreter', () => {
+            component.participant = { hearingRole: HearingRole.JUDGE } as VHParticipant;
+            expect(component.isInterpreter).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.isInterpreter).toBeFalse();
+        });
+    });
+
+    describe('roomLocked', () => {
+        it('should return true when room is locked', () => {
+            component.participant.room = { locked: true } as VHRoom;
+            expect(component.roomLocked).toBeTrue();
+        });
+
+        it('should return false when room is not locked', () => {
+            component.participant.room = { locked: false } as VHRoom;
+            expect(component.roomLocked).toBeFalse();
+        });
+
+        it('should return false when room is undefined', () => {
+            component.participant.room = undefined;
+            expect(component.roomLocked).toBeFalse();
+        });
+
+        it('should return false when participant is undefined', () => {
+            component.participant = undefined;
+            expect(component.roomLocked).toBeFalse();
         });
     });
 

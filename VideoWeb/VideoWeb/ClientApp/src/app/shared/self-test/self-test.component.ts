@@ -224,10 +224,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
-        this.videoElement.nativeElement.srcObject = this.outgoingStream;
-        this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-            this.videoElement.nativeElement.play().catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
-        });
+        if (this.videoElement) {
+            this.videoElement.nativeElement.srcObject = this.outgoingStream;
+            this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
+                this.videoElement.nativeElement
+                    .play()
+                    .catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
+            });
+        }
         this.videoCallService.connect('0000', null);
     }
 

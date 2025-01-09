@@ -70,33 +70,5 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Assert
             layoutResponse.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().Be(expectedLayout);
         }
-
-        [Test]
-        public async Task should_return_an_status_code_if_a_video_api_exception_is_thrown_in_hearing_service()
-        {
-            // Arrange
-            var statusCode = 123;
-
-            _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new VideoApiException("message", statusCode, null, null, null));
-            // Act
-            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id, CancellationToken.None);
-
-            // Assert
-            layoutResponse.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(statusCode);
-        }
-
-        [Test]
-        public void should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
-        {
-            // Arrange
-            _mocker.Mock<IConferenceService>()
-                .Setup(x => x.GetConference(It.Is<Guid>(y => y == _conference.Id), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception());
-
-            // Act
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id, CancellationToken.None));
-        }
     }
 }

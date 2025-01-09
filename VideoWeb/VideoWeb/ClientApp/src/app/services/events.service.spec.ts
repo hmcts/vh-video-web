@@ -291,7 +291,9 @@ describe('EventsService', () => {
 
             it('should handle event', () => {
                 const conference = new ConferenceResponse({
-                    id: 'TestConferenceId'
+                    id: 'TestConferenceId',
+                    participants: [],
+                    endpoints: []
                 });
 
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);

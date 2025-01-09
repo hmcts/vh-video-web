@@ -42,4 +42,8 @@ export class ParticipantItemComponent {
 
         return this.isParticipantAvailable(this.interpreter);
     }
+
+    isProtected(): boolean {
+        return this.participantCallStatuses[this.participant.id] === 'Protected';
+    }
 }
