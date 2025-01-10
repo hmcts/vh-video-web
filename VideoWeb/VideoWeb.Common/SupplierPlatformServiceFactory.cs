@@ -30,7 +30,7 @@ namespace VideoWeb.Common
                 _ => throw new InvalidOperationException($"Unsupported supplier {supplier}")
             };
 
-        private SupplierConfiguration GetSupplierConfiguration(Supplier supplier) =>
+        private VodafoneConfiguration GetSupplierConfiguration(Supplier supplier) =>
             supplier switch
             {
                 Supplier.Vodafone => serviceProvider.GetRequiredService<IOptions<VodafoneConfiguration>>().Value,

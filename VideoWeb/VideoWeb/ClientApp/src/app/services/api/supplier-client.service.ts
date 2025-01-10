@@ -18,12 +18,10 @@ export class SupplierClientService {
 
     loadSupplierScript(supplier: Supplier) {
         let scriptSrc: string;
-        switch (supplier) {
-            case Supplier.Vodafone:
-                scriptSrc = this.vodafone;
-                break;
-            default:
-                throw new Error('Invalid supplier');
+        if (supplier === Supplier.Vodafone) {
+            scriptSrc = this.vodafone;
+        } else {
+            throw new Error('Invalid supplier');
         }
 
         this.removeExistingScripts(scriptSrc);
