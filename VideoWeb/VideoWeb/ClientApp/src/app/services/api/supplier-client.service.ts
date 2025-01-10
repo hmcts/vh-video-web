@@ -7,7 +7,6 @@ import { Supplier } from '../clients/api-client';
 })
 export class SupplierClientService {
     private readonly vodafone = 'scripts/vodafone/pexrtc.js';
-    private readonly kinly = 'scripts/kinly/pexrtc.js';
     private readonly renderer: Renderer2;
 
     constructor(
@@ -22,9 +21,6 @@ export class SupplierClientService {
         switch (supplier) {
             case Supplier.Vodafone:
                 scriptSrc = this.vodafone;
-                break;
-            case Supplier.Kinly:
-                scriptSrc = this.kinly;
                 break;
             default:
                 throw new Error('Invalid supplier');

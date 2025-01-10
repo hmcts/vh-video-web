@@ -10,7 +10,6 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
-    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantResponseVho,
@@ -74,7 +73,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
-    vodafoneEnabled = false;
     instantMessagingEnabled = false;
 
     maxBandwidth = null;
@@ -162,12 +160,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>
     ) {
-        this.launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(flag => {
-                this.vodafoneEnabled = flag;
-            });
         this.launchDarklyService
             .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)
             .pipe(takeUntil(this.onDestroy$))
@@ -792,42 +784,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} calling pexip`, logPayload);
-        let pexipNode = this.hearing.getConference().pexip_node_uri;
-        let conferenceAlias = this.hearing.getConference().participant_uri;
-        let displayName = this.participant.tiled_display_name;
-        if (this.needsInterpreterRoom() && !this.vodafoneEnabled) {
-            this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
-            const interpreterRoom = await this.retrieveInterpreterRoom();
-            this.linkedParticipantRoom = interpreterRoom;
-            pexipNode = interpreterRoom.pexip_node;
-            conferenceAlias = interpreterRoom.participant_join_uri;
-            displayName = interpreterRoom.tile_display_name;
-        }
-
-        if (this.needsJudicialRoom() && !this.vodafoneEnabled) {
-            this.logger.debug(`${this.loggerPrefix} calling judicial room`, logPayload);
-            const judicialRoom = await this.retrieveJudicialRoom();
-            this.linkedParticipantRoom = judicialRoom;
-            pexipNode = judicialRoom.pexip_node;
-            conferenceAlias = judicialRoom.participant_join_uri;
-            displayName = judicialRoom.tile_display_name;
-        }
+        const pexipNode = this.hearing.getConference().pexip_node_uri;
+        const conferenceAlias = this.hearing.getConference().participant_uri;
+        const displayName = this.participant.tiled_display_name;
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
 
         await this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.conferenceId);
-    }
-
-    needsInterpreterRoom(): boolean {
-        if (!this.participant.linked_participants.length) {
-            return false;
-        }
-
-        return this.participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
-    }
-
-    needsJudicialRoom(): boolean {
-        return this.participant.role === Role.JudicialOfficeHolder;
     }
 
     retrieveInterpreterRoom(): Promise<SharedParticipantRoom> {
@@ -1191,9 +1154,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.vodafoneEnabled
-            ? this.participant.status === ParticipantStatus.InHearing
-            : !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
+        return this.participant.status === ParticipantStatus.InHearing;
     }
 
     isHost(): boolean {

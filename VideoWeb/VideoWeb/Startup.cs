@@ -47,7 +47,7 @@ namespace VideoWeb
 
             services.AddCustomTypes();
 
-            services.RegisterAuthSchemes(Configuration, featureToggles.Vodafone());
+            services.RegisterAuthSchemes(Configuration);
             services.AddMvc(opt =>
                 {
                     opt.Filters.Add(typeof(LoggingMiddleware));
@@ -105,10 +105,6 @@ namespace VideoWeb
                 Configuration.Bind("CacheSettings", options);
             });
 
-            var kinlyTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
-            services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
-            services.AddSingleton(kinlyTokenSettings);
-            
             var vodafoneTokenSettings = Configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
             services.Configure<VodafoneConfiguration>(Configuration.GetSection("VodafoneConfiguration"));
             services.AddSingleton(vodafoneTokenSettings);

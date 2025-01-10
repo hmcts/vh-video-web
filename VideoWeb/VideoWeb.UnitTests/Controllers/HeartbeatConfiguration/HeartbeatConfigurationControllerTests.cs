@@ -24,7 +24,7 @@ public class HeartbeatConfigurationControllerTests
     private HeartbeatConfigurationController _sut;
     private int _expiresInMinutes = 2;
     private string _heartbeatUrlBase = "url";
-    private IOptions<KinlyConfiguration> _kinlyConfiguration;
+    private IOptions<VodafoneConfiguration> _vodafoneConfiguration;
     private Mock<IJwtTokenProvider> _tokenProviderMock;
     private Conference _conference;
 
@@ -33,7 +33,7 @@ public class HeartbeatConfigurationControllerTests
     {
         _mocker = AutoMock.GetLoose();
 
-        _kinlyConfiguration = Options.Create(new KinlyConfiguration()
+        _vodafoneConfiguration = Options.Create(new VodafoneConfiguration()
         {
             ExpiresInMinutes = _expiresInMinutes,
             HeartbeatUrlBase = _heartbeatUrlBase
@@ -42,20 +42,20 @@ public class HeartbeatConfigurationControllerTests
         _conference = new Conference
         {
             Id = Guid.NewGuid(),
-            Supplier = Supplier.Kinly
+            Supplier = Supplier.Vodafone
         };
 
-        var kinlyPlatformServiceMock = new Mock<ISupplierPlatformService>();
-        kinlyPlatformServiceMock
+        var vodafonePlatformServiceMock = new Mock<ISupplierPlatformService>();
+        vodafonePlatformServiceMock
             .Setup(x => x.GetSupplierConfiguration())
-            .Returns(_kinlyConfiguration.Value);
-        kinlyPlatformServiceMock
+            .Returns(_vodafoneConfiguration.Value);
+        vodafonePlatformServiceMock
             .Setup(x => x.GetTokenProvider())
             .Returns(_tokenProviderMock.Object);
 
         _mocker.Mock<ISupplierPlatformServiceFactory>()
-            .Setup(x => x.Create(Supplier.Kinly))
-            .Returns(kinlyPlatformServiceMock.Object);
+            .Setup(x => x.Create(Supplier.Vodafone))
+            .Returns(vodafonePlatformServiceMock.Object);
 
         _mocker.Mock<IConferenceService>()
             .Setup(x => x.GetConference(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))

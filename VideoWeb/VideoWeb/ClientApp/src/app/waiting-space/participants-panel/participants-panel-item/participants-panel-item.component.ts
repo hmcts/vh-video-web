@@ -21,8 +21,6 @@ import {
     styleUrl: './participants-panel-item.component.scss'
 })
 export class ParticipantsPanelItemComponent {
-    @Input() vodafoneEnabled = false;
-
     @Output() participantMuteToggled = new EventEmitter<ToggleMuteParticipantEvent>();
     @Output() participantLocalMuteToggled = new EventEmitter<ToggleLocalMuteParticipantEvent>();
     @Output() participantSpotlightToggled = new EventEmitter<ToggleSpotlightParticipantEvent>();
