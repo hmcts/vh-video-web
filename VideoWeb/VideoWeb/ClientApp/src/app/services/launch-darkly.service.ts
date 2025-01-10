@@ -7,7 +7,6 @@ import { first, map, switchMap } from 'rxjs/operators';
 export const FEATURE_FLAGS = {
     dom1SignIn: 'dom1',
     wowzaKillButton: 'wowza-listener-kill-switch',
-    vodafone: 'vodafone',
     activeSessionFilter: 'active-sessions-filter',
     interpreterEnhancements: 'interpreter-enhancements',
     dialOutParticipant: 'dial-out-participant',

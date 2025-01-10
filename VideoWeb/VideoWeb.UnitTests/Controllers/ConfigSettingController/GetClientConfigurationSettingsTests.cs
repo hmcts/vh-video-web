@@ -23,32 +23,21 @@ public class GetClientConfigurationSettingsTests
     public void Setup()
     {
         _mocker = AutoMock.GetLoose();
-        _mocker.Mock<IFeatureToggles>()
-            .Setup(x => x.Vodafone())
-            .Returns(true);
     }
     
     [Test]
-    public void Should_return_response_with_settings_with_vodafone_enabled()
+    public void Should_return_response_with_settings()
     {
         // Arrange
-        var kinlyConfiguration = new KinlyConfiguration
-        {
-            JoinByPhoneFromDate = "2021-02-09"
-        };
         var vodafoneConfiguration = new VodafoneConfiguration
         {
             JoinByPhoneFromDate = "2022-02-09"
         };
         var supplierConfigurations = new List<SupplierConfiguration>
         {
-            kinlyConfiguration,
             vodafoneConfiguration
         };
         var configSettingsController = SetUpController(supplierConfigurations);
-        _mocker.Mock<IFeatureToggles>()
-            .Setup(x => x.Vodafone())
-            .Returns(true);
         
         // Act
         var response = configSettingsController.GetClientConfigurationSettings();
@@ -56,31 +45,7 @@ public class GetClientConfigurationSettingsTests
         // Assert
         AssertResponse(response, supplierConfigurations);
     }
-    
-    [Test]
-    public void Should_return_response_with_settings_with_vodafone_disabled()
-    {
-        // Arrange
-        var kinlyConfiguration = new KinlyConfiguration
-        {
-            JoinByPhoneFromDate = "2021-02-09"
-        };
-        var supplierConfigurations = new List<SupplierConfiguration>
-        {
-            kinlyConfiguration
-        };
-        var configSettingsController = SetUpController(supplierConfigurations);
-        _mocker.Mock<IFeatureToggles>()
-            .Setup(x => x.Vodafone())
-            .Returns(false);
-        
-        // Act
-        var response = configSettingsController.GetClientConfigurationSettings();
-        
-        // Assert
-        AssertResponse(response, supplierConfigurations);
-    }
-    
+
     [Test]
     public void should_return_bad_request_when_config_is_missing()
     {

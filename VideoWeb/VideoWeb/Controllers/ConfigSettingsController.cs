@@ -50,10 +50,8 @@ public class ConfigSettingsController(
         {
             var suppliers = new List<Supplier>
             {
-                Supplier.Kinly
+                Supplier.Vodafone
             };
-            if (featureToggles.Vodafone())
-                suppliers.Add(Supplier.Vodafone);
             var supplierConfigurations = suppliers
                 .Select(supplierPlatformServiceFactory.Create)
                 .Select(platformService => platformService.GetSupplierConfiguration())
