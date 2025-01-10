@@ -19,7 +19,7 @@ export class HeartbeatService {
     heartbeat: HeartbeatClient;
     initialising = false;
 
-    private loggerPrefix = '[KinlyHeartbeatService] -';
+    private loggerPrefix = '[VodafoneHeartbeatService] -';
     private currentParticipant: VHParticipant;
     private currentConference: VHConference;
 

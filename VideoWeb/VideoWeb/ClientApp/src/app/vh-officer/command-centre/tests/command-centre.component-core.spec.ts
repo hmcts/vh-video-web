@@ -68,7 +68,6 @@ describe('CommandCentreComponent - Core', () => {
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [
-                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
                 new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
             ]
         });

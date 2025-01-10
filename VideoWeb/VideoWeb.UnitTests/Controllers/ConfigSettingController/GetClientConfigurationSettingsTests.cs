@@ -62,12 +62,7 @@ public class GetClientConfigurationSettingsTests
         {
             VideoApiUrl = "https://vh-video-api/"
         };
-        
-        var kinlyConfiguration = new KinlyConfiguration
-        {
-            JoinByPhoneFromDate = "2021-02-09"
-        };
-        
+
         var vodafoneConfiguration = new VodafoneConfiguration
         {
             JoinByPhoneFromDate = "2022-02-09"
@@ -75,7 +70,6 @@ public class GetClientConfigurationSettingsTests
 
         var supplierConfigurations = new List<SupplierConfiguration>
         {
-            kinlyConfiguration,
             vodafoneConfiguration
         };
 

@@ -20,7 +20,7 @@ export class TasksTestData {
             body: 'Disconnected',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
         const task3 = new TaskResponse({
             id: 3,
@@ -30,7 +30,7 @@ export class TasksTestData {
             body: 'Suspended',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
 
         const task4 = new TaskResponse({
@@ -41,7 +41,7 @@ export class TasksTestData {
             body: 'Failed self-test (Incomplete Test)',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
 
         const task5 = new TaskResponse({
@@ -52,7 +52,7 @@ export class TasksTestData {
             body: 'Failed self-test (Bad Score)',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
 
         const task6 = new TaskResponse({
@@ -63,7 +63,7 @@ export class TasksTestData {
             body: 'Disconnected',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
 
         testData.push(task1);
@@ -84,7 +84,7 @@ export class TasksTestData {
             body: 'Disconnected',
             created: new Date(),
             updated: new Date(),
-            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+            updated_by: 'admin.supplier@hearings.reform.hmcts.net'
         });
         return task;
     }

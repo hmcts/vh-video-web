@@ -8375,7 +8375,6 @@ export interface ITestCallScoreResponse {
 }
 
 export enum Supplier {
-    Kinly = 'Kinly',
     Vodafone = 'Vodafone'
 }
 
