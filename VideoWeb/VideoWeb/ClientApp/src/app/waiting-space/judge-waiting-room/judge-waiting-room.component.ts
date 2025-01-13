@@ -527,5 +527,5 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioRecordingService.reconnectToWowza(() => {
             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
         });
-    }
+    };
 }
