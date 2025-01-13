@@ -16,7 +16,6 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    SharedParticipantRoom,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
@@ -123,7 +122,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     callbackTimeout: NodeJS.Timer;
 
     loggedInUser: LoggedParticipantResponse;
-    linkedParticipantRoom: SharedParticipantRoom;
     contactDetails = vhContactDetails;
 
     countdownComplete: boolean;
@@ -791,31 +789,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
 
         await this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.conferenceId);
-    }
-
-    retrieveInterpreterRoom(): Promise<SharedParticipantRoom> {
-        const logPayload = {
-            conference: this.conferenceId,
-            participant: this.participant.id
-        };
-
-        if (this.isOrHasWitnessLink()) {
-            this.logger.debug(`${this.loggerPrefix} getting witness interpreter room for participant`, logPayload);
-            return this.videoCallService.retrieveWitnessInterpreterRoom(this.conference.id, this.participant.id);
-        } else {
-            this.logger.debug(`${this.loggerPrefix} getting standard interpreter room for participant`, logPayload);
-            return this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
-        }
-    }
-
-    retrieveJudicialRoom(): Promise<SharedParticipantRoom> {
-        const logPayload = {
-            conference: this.conferenceId,
-            participant: this.participant.id
-        };
-
-        this.logger.debug(`${this.loggerPrefix} getting judicial room for participant`, logPayload);
-        return this.videoCallService.retrieveJudicialRoom(this.conference.id, this.participant.id);
     }
 
     isQuickLinkParticipant(): boolean {
