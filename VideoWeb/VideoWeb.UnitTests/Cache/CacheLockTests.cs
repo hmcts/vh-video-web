@@ -1,11 +1,11 @@
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 
@@ -18,7 +18,7 @@ public class CacheLockTests
     private Mock<IDistributedCache> _distributedCacheMock;
     private Mock<ILogger<CacheLock>> _loggerMock;
     private const string LockKey = "cache_lock_key";
-    private readonly string _cacheLockValue = JsonConvert.SerializeObject("locked", CachingHelper.SerializerSettings);
+    private readonly string _cacheLockValue = JsonSerializer.Serialize("locked", CachingHelper.JsonSerializerOptions);
     
     [SetUp]
     public void Setup()
