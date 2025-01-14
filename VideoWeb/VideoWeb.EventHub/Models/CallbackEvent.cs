@@ -22,8 +22,6 @@ namespace VideoWeb.EventHub.Models
         public bool IsOtherParticipantsInConsultationRoom { get; set; }
         public List<ParticipantResponse> Participants { get; set; }
         public List<ParticipantResponse> ParticipantsToNotify { get; set; }
-
-        public List<HearingDetailRequest> AllocatedHearingsDetails { get; set; }
         
         public string CsoAllocatedUserName { get; set; }
         public string PhoneNumber { get; set; }
