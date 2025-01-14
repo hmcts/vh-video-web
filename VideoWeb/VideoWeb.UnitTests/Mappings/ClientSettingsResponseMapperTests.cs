@@ -27,11 +27,9 @@ namespace VideoWeb.UnitTests.Mappings
 
             var dynatraceConfiguration = Builder<DynatraceConfiguration>.CreateNew().Build();
             
-            var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
             var vodafoneConfiguration = Builder<VodafoneConfiguration>.CreateNew().Build();
             var supplierConfigs = new List<SupplierConfiguration>
             {
-                kinlyConfiguration,
                 vodafoneConfiguration
             };
 

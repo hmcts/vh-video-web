@@ -1356,8 +1356,8 @@ export class ConferenceTestData {
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
-            participant_uri: 'participant@kinly.com',
-            pexip_node_uri: 'node@kinly.com',
+            participant_uri: 'participant@supplier.com',
+            pexip_node_uri: 'node@supplier.com',
             hearing_venue_name: 'venue name',
             endpoints: endpoints,
             ingest_url: 'rtmp://vh-wowza-node/hearing_id'

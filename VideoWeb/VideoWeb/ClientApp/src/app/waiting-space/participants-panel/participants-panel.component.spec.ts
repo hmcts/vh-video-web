@@ -3,7 +3,6 @@ import { LowerCasePipe } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
 import { MockComponent, MockDirective, MockPipe } from 'ng-mocks';
-import { of } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -56,7 +55,7 @@ import {
     mapParticipantToVHParticipant
 } from '../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -111,7 +110,6 @@ describe('ParticipantsPanelComponent', () => {
         });
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone).and.returnValue(of(false));
 
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
@@ -274,27 +272,17 @@ describe('ParticipantsPanelComponent', () => {
             expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
         });
 
-        it('should not call a participant in when isCallableAndReadyToJoin is false', async () => {
+        it('should call a participant in', async () => {
             const p = participants[0];
             const pat = mapper.mapFromParticipantUserResponse(p);
-            spyOnProperty(pat, 'isCallableAndReadyToJoin').and.returnValue(false);
-            await component.callParticipantIntoHearing(pat);
-            expect(component.transferTimeout[p.id]).toBeUndefined();
-        });
-
-        it('should call a participant in when isCallableAndReadyToJoin is true', async () => {
-            const p = participants[0];
-            const pat = mapper.mapFromParticipantUserResponse(p);
-            spyOnProperty(pat, 'isCallableAndReadyToJoin').and.returnValue(true);
             await component.callParticipantIntoHearing(pat);
             expect(eventService.sendTransferRequest).toHaveBeenCalledWith(component.conferenceId, p.id, TransferDirection.In);
         });
 
-        it('should call all linked participants when isCallableAndReadyToJoin', fakeAsync(async () => {
+        it('should call all linked participants', fakeAsync(async () => {
             const pat = component.participants.find(
                 p => p instanceof LinkedParticipantPanelModel && p.isWitness
             ) as LinkedParticipantPanelModel;
-            spyOnProperty(pat, 'isCallableAndReadyToJoin').and.returnValue(true);
             await component.callParticipantIntoHearing(pat);
             expect(component.transferTimeout[pat.id]).toBeDefined();
             pat.participants.forEach(p => {
@@ -322,7 +310,10 @@ describe('ParticipantsPanelComponent', () => {
             const pat = component.participants.find(
                 p => p instanceof LinkedParticipantPanelModel && p.isWitness
             ) as LinkedParticipantPanelModel;
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            pat.participants.forEach(p => {
+                const panelModel = p as ParticipantPanelModel;
+                panelModel.status = ParticipantStatus.InHearing;
+            });
             await component.dismissParticipantFromHearing(pat);
             expect(videoCallServiceSpy.dismissParticipantFromHearing).toHaveBeenCalledWith(
                 component.conferenceId,
@@ -330,10 +321,11 @@ describe('ParticipantsPanelComponent', () => {
             );
         }));
 
-        it('should dismiss participant in when isCallableAndReadyToBeDismissed is true', async () => {
+        it('should dismiss participant', async () => {
             videocallService.dismissParticipantFromHearing.calls.reset();
             const pat = component.participants.find(p => p.isWitness);
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            const panelModel = pat as ParticipantPanelModel;
+            panelModel.status = ParticipantStatus.InHearing;
             await component.dismissParticipantFromHearing(pat);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
         });
@@ -362,7 +354,8 @@ describe('ParticipantsPanelComponent', () => {
             const pat = component.participants.find(p => p.isWitness);
             const hasHandRaised = true;
             pat.updateParticipant(pat.isMicRemoteMuted(), hasHandRaised, pat.hasSpotlight(), pat.id, pat.isLocalMicMuted());
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            const panelModel = pat as ParticipantPanelModel;
+            panelModel.status = ParticipantStatus.InHearing;
             await component.dismissParticipantFromHearing(pat);
             expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
@@ -374,7 +367,8 @@ describe('ParticipantsPanelComponent', () => {
             const pat = component.participants.find(p => p.isWitness);
             const hasHandRaised = false;
             pat.updateParticipant(pat.isMicRemoteMuted(), hasHandRaised, pat.hasSpotlight(), pat.id, pat.isLocalMicMuted());
-            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            const panelModel = pat as ParticipantPanelModel;
+            panelModel.status = ParticipantStatus.InHearing;
             await component.dismissParticipantFromHearing(pat);
             expect(videocallService.lowerHandById).toHaveBeenCalledTimes(0);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);

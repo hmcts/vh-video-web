@@ -6,7 +6,6 @@ import {
     ApiClient,
     ClientSettingsResponse,
     HearingLayout,
-    SharedParticipantRoom,
     StartOrResumeVideoHearingRequest,
     Supplier,
     SupplierConfigurationResponse
@@ -29,12 +28,6 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
     supplier_configurations: [
-        new SupplierConfigurationResponse({
-            supplier: Supplier.Kinly,
-            turn_server: 'turnserver',
-            turn_server_user: 'tester1',
-            turn_server_credential: 'credential'
-        }),
         new SupplierConfigurationResponse({
             supplier: Supplier.Vodafone,
             turn_server: 'turnserver',
@@ -76,7 +69,6 @@ describe('VideoCallService', () => {
             'endVideoHearing',
             'callParticipant',
             'dismissParticipant',
-            'getParticipantRoomForParticipant',
             'joinHearingInSession'
         ]);
 
@@ -403,34 +395,6 @@ describe('VideoCallService', () => {
 
         // Assert
         expect(pexipSpy.stopPresentation).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call api to get interpreter room', async () => {
-        const conferenceId = Guid.create().toString();
-        const participantId = Guid.create().toString();
-        apiClient.getParticipantRoomForParticipant.and.returnValue(of(new SharedParticipantRoom({ display_name: 'Interpreter1' })));
-
-        await service.retrieveInterpreterRoom(conferenceId, participantId);
-
-        expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Civilian');
-    });
-
-    it('should call api to get interpreter room with participant type witness', async () => {
-        const conferenceId = Guid.create().toString();
-        const participantId = Guid.create().toString();
-        apiClient.getParticipantRoomForParticipant.and.returnValue(of(new SharedParticipantRoom({ display_name: 'Interpreter1' })));
-        await service.retrieveWitnessInterpreterRoom(conferenceId, participantId);
-
-        expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Witness');
-    });
-
-    it('should call api to get judicial room with participant type judicial', async () => {
-        const conferenceId = Guid.create().toString();
-        const participantId = Guid.create().toString();
-        apiClient.getParticipantRoomForParticipant.and.returnValue(of(new SharedParticipantRoom({ display_name: 'PanelMember1' })));
-        await service.retrieveJudicialRoom(conferenceId, participantId);
-
-        expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
     });
 
     describe('PexipAPI onConnect', () => {

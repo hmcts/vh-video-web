@@ -30,7 +30,6 @@ using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using StackExchange.Redis;
 using VideoApi.Client;
 using VideoWeb.Common.Security.Tokens;
-using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
@@ -92,9 +91,8 @@ namespace VideoWeb.Extensions
             services.AddTransient<UserApiTokenHandler>();
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IVodafoneJwtTokenProvider, VodafoneJwtTokenProvider>();
-            services.AddScoped<IHashGenerator, HashGenerator>();
+            services.AddScoped<IHashGenerator, VodafoneHashGenerator>();
             services.AddScoped<IAppRoleService, AppRoleService>();
             services.AddScoped<IUserProfileService, UserProfileService>();
             services.AddScoped<IUserProfileCache, DistributedUserProfileCache>();

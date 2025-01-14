@@ -315,16 +315,6 @@ describe('JudgeContextMenuComponent', () => {
     });
 
     describe('canCallParticipantIntoHearing', () => {
-        it('should return false when participant cannot be called', () => {
-            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(false);
-            expect(component.canCallParticipantIntoHearing()).toBe(false);
-        });
-
-        it('should return true when participant can be called', () => {
-            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(true);
-            expect(component.canCallParticipantIntoHearing()).toBe(true);
-        });
-
         it('should canCallParticipantIntoHearing return true when the participant is a witness and not in hearing', () => {
             const p = participants[2];
             p.status = ParticipantStatus.Available;
@@ -370,30 +360,23 @@ describe('JudgeContextMenuComponent', () => {
             expect(component.canCallParticipantIntoHearing()).toBeTruthy();
         });
 
-        describe('with vodafone toggle on', () => {
-            beforeEach(() => {
-                component.vodafoneEnabled = true;
-            });
-
-            it('should return true for any participant when they are not in a hearing', () => {
-                component.vodafoneEnabled = true;
-                const p = participants[2];
-                p.status = ParticipantStatus.Available;
-                const model = mapper.mapFromParticipantUserResponse(p);
-                component.participant = model;
-                expect(component.canCallParticipantIntoHearing()).toBeTruthy();
-            });
+        it('should return true for any participant when they are not in a hearing', () => {
+            const p = participants[2];
+            p.status = ParticipantStatus.Available;
+            const model = mapper.mapFromParticipantUserResponse(p);
+            component.participant = model;
+            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
         });
     });
 
     describe('canDismissParticipantFromHearing', () => {
-        it('should return false when participant cannot be called', () => {
-            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(false);
+        it('should return false when participant is not in the hearing', () => {
+            testParticipipantPanelModel.status = ParticipantStatus.Disconnected;
             expect(component.canDismissParticipantFromHearing()).toBe(false);
         });
 
-        it('should return true when participant can be called', () => {
-            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+        it('should return true when participant is in the hearing', () => {
+            testParticipipantPanelModel.status = ParticipantStatus.InHearing;
             expect(component.canDismissParticipantFromHearing()).toBe(true);
         });
 
@@ -451,19 +434,12 @@ describe('JudgeContextMenuComponent', () => {
             expect(component.canDismissParticipantFromHearing()).toBeTruthy();
         });
 
-        describe('with vodafone toggle on', () => {
-            beforeEach(() => {
-                component.vodafoneEnabled = true;
-            });
-
-            it('should return true for any participant when they are in a hearing', () => {
-                component.vodafoneEnabled = true;
-                const p = participants[2];
-                p.status = ParticipantStatus.InHearing;
-                const model = mapper.mapFromParticipantUserResponse(p);
-                component.participant = model;
-                expect(component.canDismissParticipantFromHearing()).toBeTruthy();
-            });
+        it('should return true for any participant when they are in a hearing', () => {
+            const p = participants[2];
+            p.status = ParticipantStatus.InHearing;
+            const model = mapper.mapFromParticipantUserResponse(p);
+            component.participant = model;
+            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
         });
     });
 
