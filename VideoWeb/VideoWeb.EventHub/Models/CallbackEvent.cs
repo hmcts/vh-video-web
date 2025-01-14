@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using VideoApi.Contract.Enums;
-using VideoApi.Contract.Requests;
-using VideoWeb.Contract.Responses;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Models

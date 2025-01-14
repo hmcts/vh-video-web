@@ -44,7 +44,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     showContextMenu = false;
     isWowzaKillButtonEnabled = false;
-    vodafoneEnabled = false;
     pauseIcon = faCirclePause;
     playIcon = faPlayCircle;
     recordingPaused: boolean;
@@ -78,12 +77,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false)
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(value => (this.isWowzaKillButtonEnabled = value));
-        ldService
-            .getFlag<boolean>(FEATURE_FLAGS.vodafone, false)
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(value => {
-                this.vodafoneEnabled = value;
-            });
 
         this.audioRecordingService
             .getWowzaAgentConnectionState()
@@ -105,7 +98,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     get canShowLeaveButton(): boolean {
-        return this.vodafoneEnabled ? !this.isPrivateConsultation : this.isHost && !this.isPrivateConsultation;
+        return !this.isPrivateConsultation;
     }
 
     get canDisplayChangeLayoutPopup(): boolean {

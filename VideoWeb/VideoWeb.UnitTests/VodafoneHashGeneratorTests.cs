@@ -5,14 +5,14 @@ using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.UnitTests
 {
-    public class HashGeneratorTests
+    public class VodafoneHashGeneratorTests
     {
-        private KinlyConfiguration _kinlyConfiguration;
+        private VodafoneConfiguration _vodafoneConfiguration;
 
         [SetUp]
         public void SetUp()
         {
-            _kinlyConfiguration = new KinlyConfiguration
+            _vodafoneConfiguration = new VodafoneConfiguration
             {
                 SelfTestApiSecret = "W2gEmBn2H7b2FCMIQl6l9rggbJU1qR7luIeAf1uuaY+ik6TP5rN0NEsPVg0TGkroiel0SoCQT7w3cbk7hFrBtA=="
             };
@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests
         [Test]
         public void Should_encrypt()
         {
-            var hashGenerator = new HashGenerator(_kinlyConfiguration);
+            var hashGenerator = new VodafoneHashGenerator(_vodafoneConfiguration);
             var id = Guid.NewGuid().ToString();
             var computedHash = hashGenerator.GenerateSelfTestTokenHash(GetExpiryOn(), id);
             computedHash.Should().NotBeNullOrEmpty();
@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests
         [Test]
         public void Should_fail_authentication()
         {
-            var hashGenerator = new HashGenerator(_kinlyConfiguration);
+            var hashGenerator = new VodafoneHashGenerator(_vodafoneConfiguration);
             var id = Guid.NewGuid().ToString();
             var computedHash = hashGenerator.GenerateSelfTestTokenHash(GetExpiryOn(), id);
 

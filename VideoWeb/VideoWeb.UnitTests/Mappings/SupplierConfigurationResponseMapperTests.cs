@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Mappings
         public void Should_map()
         {
             // Arrange
-            var config = new KinlyConfiguration
+            var config = new VodafoneConfiguration
             {
                 JoinByPhoneFromDate = "2021-01-01",
                 TurnServer = "TurnServer",

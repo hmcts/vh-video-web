@@ -31,13 +31,6 @@ describe('SupplierClientService', () => {
         expect((renderer.appendChild as jasmine.Spy).calls.mostRecent().args[1].src).toContain('scripts/vodafone/pexrtc.js');
     });
 
-    it('should load the kinly client script', async () => {
-        service.loadSupplierScript(Supplier.Kinly);
-        expect(renderer.createElement).toHaveBeenCalledWith('script');
-        expect(renderer.appendChild).toHaveBeenCalledWith(document.body, jasmine.any(HTMLScriptElement));
-        expect((renderer.appendChild as jasmine.Spy).calls.mostRecent().args[1].src).toContain('scripts/kinly/pexrtc.js');
-    });
-
     it('should throw an error if an invalid supplier is passed', () => {
         expect(() => service.loadSupplierScript('InvalidSupplier' as unknown as Supplier)).toThrowError('Invalid supplier');
     });
@@ -57,7 +50,7 @@ describe('SupplierClientService', () => {
 
     it('should replace existing scripts for different suppliers', () => {
         const existingScript = document.createElement('script');
-        existingScript.src = 'scripts/vodafone/pexrtc.js';
+        existingScript.src = 'scripts/different-supplier/pexrtc.js';
 
         spyOn(document, 'querySelector').and.callFake((selector: string) => {
             if (selector === `script[src="${existingScript.src}"]`) {
@@ -67,10 +60,10 @@ describe('SupplierClientService', () => {
         });
         spyOn(document, 'querySelectorAll').and.returnValue([existingScript] as unknown as NodeListOf<HTMLScriptElement>);
 
-        service.loadSupplierScript(Supplier.Kinly);
+        service.loadSupplierScript(Supplier.Vodafone);
 
         expect(renderer.removeChild).toHaveBeenCalledWith(document.body, existingScript);
         expect(renderer.appendChild).toHaveBeenCalledWith(document.body, jasmine.any(HTMLScriptElement));
-        expect((renderer.appendChild as jasmine.Spy).calls.mostRecent().args[1].src).toContain('scripts/kinly/pexrtc.js');
+        expect((renderer.appendChild as jasmine.Spy).calls.mostRecent().args[1].src).toContain('scripts/vodafone/pexrtc.js');
     });
 });

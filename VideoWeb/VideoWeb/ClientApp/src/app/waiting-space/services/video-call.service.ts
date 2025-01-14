@@ -7,7 +7,6 @@ import {
     ApiClient,
     ClientSettingsResponse,
     HearingLayout,
-    SharedParticipantRoom,
     StartOrResumeVideoHearingRequest,
     Supplier
 } from 'src/app/services/clients/api-client';
@@ -519,33 +518,6 @@ export class VideoCallService {
     stopPresentation() {
         this.logger.info(`${this.loggerPrefix} stopPresentation`);
         this.pexipAPI.stopPresentation();
-    }
-
-    retrieveInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-
-        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Civilian').toPromise();
-    }
-
-    retrieveWitnessInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-
-        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Witness').toPromise();
-    }
-
-    retrieveJudicialRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-
-        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
     connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
