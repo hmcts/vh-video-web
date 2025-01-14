@@ -44,7 +44,7 @@ internal class AllocationHearingsEventNotifierTests
         };
         // this will register all participants as connected to the hub
         _eventHelper.RegisterUsersForHubContext(_conference.Participants);
-
+        _eventHelper.RegisterParticipantForHubContext(CsoUserName);
         _notifier = new AllocationHearingsEventNotifier(_eventHelper.EventHubContextMock.Object);
     }
     

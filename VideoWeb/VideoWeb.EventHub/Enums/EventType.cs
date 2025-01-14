@@ -22,7 +22,6 @@ namespace VideoWeb.EventHub.Enums
         EndpointJoined,
         EndpointDisconnected,
         EndpointTransfer,
-        ParticipantsUpdated,
         RecordingConnectionFailed = 23,
         TelephoneJoined = 24,
         TelephoneDisconnected = 25,

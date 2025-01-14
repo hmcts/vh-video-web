@@ -94,7 +94,12 @@ public class EventComponentHelper
 
     public void RegisterParticipantForHubContext(Participant participant)
     {
-        EventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
+        RegisterParticipantForHubContext(participant.Username);
+    }
+
+    public void RegisterParticipantForHubContext(string username)
+    {
+        EventHubContextMock.Setup(x => x.Clients.Group(username.ToLowerInvariant()))
             .Returns(EventHubClientMock.Object);
     }
 

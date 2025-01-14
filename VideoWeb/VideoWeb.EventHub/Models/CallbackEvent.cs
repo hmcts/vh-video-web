@@ -20,10 +20,6 @@ namespace VideoWeb.EventHub.Models
         public bool IsParticipantInVmr { get; set; }
         public ConferenceState ConferenceStatus { get; set; }
         public bool IsOtherParticipantsInConsultationRoom { get; set; }
-        public List<ParticipantResponse> Participants { get; set; }
-        public List<ParticipantResponse> ParticipantsToNotify { get; set; }
-        
-        public string CsoAllocatedUserName { get; set; }
         public string PhoneNumber { get; set; }
     }
 }
