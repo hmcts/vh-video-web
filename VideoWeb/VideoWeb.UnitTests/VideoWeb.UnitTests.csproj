@@ -15,7 +15,6 @@
     </PackageReference>
     <PackageReference Include="Faker.NETCore" Version="1.0.2" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.TestPlatform" Version="17.9.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
@@ -27,14 +26,5 @@
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Controllers\TestCallsController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Controllers\TestCallsController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Controllers\TestCallsController\**" />
   </ItemGroup>
 </Project>

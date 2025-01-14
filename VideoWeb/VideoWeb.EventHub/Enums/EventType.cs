@@ -23,11 +23,10 @@ namespace VideoWeb.EventHub.Enums
         EndpointDisconnected,
         EndpointTransfer,
         ParticipantsUpdated,
-        NewConferenceAdded,
         AllocationHearings,
-        RecordingConnectionFailed,
-        TelephoneJoined,
-        TelephoneDisconnected,
-        TelephoneTransfer
+        RecordingConnectionFailed = 23,
+        TelephoneJoined = 24,
+        TelephoneDisconnected = 25,
+        TelephoneTransfer = 26
     }
 }

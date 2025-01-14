@@ -5,41 +5,49 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Helpers
 {
     public class NewConferenceAddedEventNotifierTests
     {
         private NewConferenceAddedEventNotifier _notifier;
-        private AutoMock _mocker;
         private Conference _conference;
+        private EventComponentHelper _eventHelper;
 
         [SetUp]
         public void SetUp()
         {
-            _mocker = AutoMock.GetLoose();
-            _notifier = _mocker.Create<NewConferenceAddedEventNotifier>();
+            _conference = new ConferenceCacheModelBuilder().Build();
+            _eventHelper = new EventComponentHelper
+            {
+                EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+                EventHubClientMock = new Mock<IEventHubClient>()
+            };
+            // this will register all participants as connected to the hub
+            _eventHelper.RegisterUsersForHubContext(_conference.Participants);
 
-            _conference = new Conference();
-            _conference.Id = Guid.NewGuid();
+            _notifier = new NewConferenceAddedEventNotifier(_eventHelper.EventHubContextMock.Object);
         }
 
         [Test]
         public async Task Sends_New_Conference_Added_Event()
         {
-            var conferenceId = Guid.NewGuid();
-            _mocker.Mock<IEventHandlerFactory>()
-            .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.NewConferenceAdded)))
-            .Returns(_mocker.Mock<IEventHandler>().Object);
-
-            await _notifier.PushNewConferenceAddedEvent(conferenceId);
-
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.NewConferenceAdded && c.ConferenceId == conferenceId)), Times.Once);
+            // arrange / act
+            await _notifier.PushNewConferenceAddedEvent(_conference);
+            
+            // assert
+            const int staffMemberCount = 1;
+            const int vhoOfficerGroupCount = 1;
+            _eventHelper.EventHubClientMock.Verify(x => x.NewConferenceAddedMessage(_conference.Id),
+                Times.Exactly(_conference.Participants.Count + staffMemberCount + vhoOfficerGroupCount));
         }
     }
 }
