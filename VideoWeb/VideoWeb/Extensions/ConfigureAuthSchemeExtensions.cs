@@ -21,8 +21,7 @@ namespace VideoWeb.Extensions
 {
     public static class ConfigureAuthSchemeExtensions
     {
-        public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration,
-            bool vodafoneEnabled)
+        public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
@@ -90,16 +89,8 @@ namespace VideoWeb.Extensions
                 });
 
             byte[] callbackSecret;
-            if (vodafoneEnabled)
-            {
-                var vodaConfiguration = configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
-                callbackSecret = Convert.FromBase64String(vodaConfiguration.CallbackSecret);
-            }
-            else
-            {
-                var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
-                callbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-            }
+            var vodaConfiguration = configuration.GetSection("VodafoneConfiguration").Get<VodafoneConfiguration>();
+            callbackSecret = Convert.FromBase64String(vodaConfiguration.CallbackSecret);
 
             authenticationBuilder.AddJwtBearer(callback, options =>
             {

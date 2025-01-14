@@ -25,8 +25,7 @@ public class ConfigSettingsController(
     IOptions<Dom1AdConfiguration> dom1AdConfiguration,
     IOptions<DynatraceConfiguration> dynatraceConfiguration,
     ISupplierPlatformServiceFactory supplierPlatformServiceFactory,
-    ILogger<ConfigSettingsController> logger,
-    IFeatureToggles featureToggles)
+    ILogger<ConfigSettingsController> logger)
     : BaseNoCacheController
 {
     private readonly AzureAdConfiguration _azureAdConfiguration = azureAdConfiguration.Value;
@@ -50,10 +49,8 @@ public class ConfigSettingsController(
         {
             var suppliers = new List<Supplier>
             {
-                Supplier.Kinly
+                Supplier.Vodafone
             };
-            if (featureToggles.Vodafone())
-                suppliers.Add(Supplier.Vodafone);
             var supplierConfigurations = suppliers
                 .Select(supplierPlatformServiceFactory.Create)
                 .Select(platformService => platformService.GetSupplierConfiguration())

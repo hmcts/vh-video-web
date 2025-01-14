@@ -9,13 +9,13 @@ namespace VideoWeb.Common.Security.HashGen
         string GenerateSelfTestTokenHash(string expiresOnUtc, string data);
     }
 
-    public class HashGenerator : IHashGenerator
+    public class VodafoneHashGenerator : IHashGenerator
     {
-        private readonly KinlyConfiguration _kinlyConfiguration;
+        private readonly VodafoneConfiguration _vodafoneConfiguration;
 
-        public HashGenerator(KinlyConfiguration kinlyConfiguration)
+        public VodafoneHashGenerator(VodafoneConfiguration vodafoneConfiguration)
         {
-            _kinlyConfiguration = kinlyConfiguration;
+            _vodafoneConfiguration = vodafoneConfiguration;
         }
 
         public string GenerateSelfTestTokenHash(string expiresOnUtc, string data)
@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Security.HashGen
             var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.SelfTestApiSecret);
+            var keyBytes = asciiEncoding.GetBytes(_vodafoneConfiguration.SelfTestApiSecret);
             var messageBytes = asciiEncoding.GetBytes(stringToHash);
 
             using (var hmac = new HMACSHA256(keyBytes))

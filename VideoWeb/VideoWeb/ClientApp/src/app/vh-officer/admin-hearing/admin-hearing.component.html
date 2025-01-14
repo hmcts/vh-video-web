@@ -4,18 +4,8 @@
   </div>
   <div class="govuk-grid-row">
     <div id="participant-status-table"
-         [ngClass]="vhoVodafoneFeatureFlag ? ' govuk-!-padding-0' : 'govuk-grid-column-one-quarter govuk-!-padding-0'">
+         [ngClass]="' govuk-!-padding-0'">
         <app-participant-status [conferenceId]="hearing.id"></app-participant-status>
-    </div>
-    <div *ngIf="!vhoVodafoneFeatureFlag" id="vho-admin-view" class="govuk-grid-column-three-quarters govuk-!-padding-0">
-      <iframe
-        id="admin-frame"
-        [src]="adminIframeUrl"
-        allowfullscreen
-        webkitallowfullscreen
-        mozallowfullscreen
-        title="Admin overview of the hearings"
-      ></iframe>
     </div>
   </div>
   <div class="govuk-grid-row">
