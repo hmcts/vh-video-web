@@ -39,16 +39,6 @@ java:
         - azuread--clientsecret
         - customtoken--secret
         - customtoken--thirdpartysecret
-        #kinly configuration
-        - kinlyconfiguration--apisecret
-        - kinlyconfiguration--callbacksecret
-        - kinlyconfiguration--conferencephonenumber
-        - kinlyconfiguration--heartbeaturlbase
-        - kinlyconfiguration--joinbyphonefromdate
-        - kinlyconfiguration--selftestapisecret
-        - kinlyconfiguration--turnserver
-        - kinlyconfiguration--turnservercredential
-        - kinlyconfiguration--turnserveruser
         #vodafone configuration
         - vodafoneconfiguration--apisecret
         - vodafoneconfiguration--callbacksecret

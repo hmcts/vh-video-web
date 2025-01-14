@@ -128,7 +128,6 @@ describe('HearingControlsBaseComponent', () => {
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
 
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['showError']);
 
         component = new PrivateConsultationRoomControlsComponent(

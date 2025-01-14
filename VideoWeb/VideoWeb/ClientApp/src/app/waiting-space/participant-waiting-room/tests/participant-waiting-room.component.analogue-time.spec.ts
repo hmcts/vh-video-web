@@ -55,7 +55,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
         shouldUnloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();

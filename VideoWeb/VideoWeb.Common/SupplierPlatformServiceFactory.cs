@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using VideoWeb.Common.Enums;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.Security.Tokens.Base;
-using VideoWeb.Common.Security.Tokens.Kinly;
 using VideoWeb.Common.Security.Tokens.Vodafone;
 
 namespace VideoWeb.Common
@@ -27,15 +26,13 @@ namespace VideoWeb.Common
         private IJwtTokenProvider GetJwtTokenProvider(Supplier supplier) =>
             supplier switch
             {
-                Supplier.Kinly => serviceProvider.GetService<IKinlyJwtTokenProvider>(),
                 Supplier.Vodafone => serviceProvider.GetService<IVodafoneJwtTokenProvider>(),
                 _ => throw new InvalidOperationException($"Unsupported supplier {supplier}")
             };
 
-        private SupplierConfiguration GetSupplierConfiguration(Supplier supplier) =>
+        private VodafoneConfiguration GetSupplierConfiguration(Supplier supplier) =>
             supplier switch
             {
-                Supplier.Kinly => serviceProvider.GetRequiredService<IOptions<KinlyConfiguration>>().Value,
                 Supplier.Vodafone => serviceProvider.GetRequiredService<IOptions<VodafoneConfiguration>>().Value,
                 _ => throw new InvalidOperationException($"Unsupported supplier {supplier}")
             };

@@ -78,7 +78,7 @@ public class VideoEventsController(
             eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
             eventProperties.Add("conferenceId", request.ConferenceId);
             
-            telemetryClient.TrackEvent("KinlyCallbackHandled", eventProperties);
+            telemetryClient.TrackEvent("SupplierCallbackHandled", eventProperties);
             return NoContent();
         }
         catch (VideoApiException e)

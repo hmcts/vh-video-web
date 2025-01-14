@@ -35,6 +35,7 @@ describe('CommandCentreComponent - Core', () => {
     let router: jasmine.SpyObj<Router>;
     let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
+    let courtRoomAccounts: CourtRoomsAccounts[] = [];
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -45,20 +46,16 @@ describe('CommandCentreComponent - Core', () => {
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>(
-            'VhoQueryService',
-            [
-                'startQuery',
-                'stopQuery',
-                'getFilteredQueryResults',
-                'getConferencesForVHOfficer',
-                'getConferenceByIdVHO',
-                'getCsoFilterFromStorage',
-                'getAvailableCourtRoomFilters',
-                'getCsoFilterFromStorage'
-            ],
-            ['courtRoomFilterChanged$']
-        );
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
+            'startQuery',
+            'stopQuery',
+            'getFilteredQueryResults',
+            'getConferencesForVHOfficer',
+            'getConferenceByIdVHO',
+            'getCsoFilterFromStorage',
+            'getAvailableCourtRoomFilters',
+            'getCsoFilterFromStorage'
+        ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -71,7 +68,6 @@ describe('CommandCentreComponent - Core', () => {
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [
-                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
                 new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
             ]
         });
@@ -80,6 +76,7 @@ describe('CommandCentreComponent - Core', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+        vhoQueryService.courtRoomFilterChanged$.next(courtRoomAccounts);
     });
 
     afterAll(() => {
@@ -90,12 +87,9 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getFilteredQueryResults.and.returnValue(of(conferences));
 
-        const courtRoomAccounts: CourtRoomsAccounts[] = [];
-        courtRoomAccounts.push(new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true));
+        courtRoomAccounts = [new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true)];
         vhoQueryService.getAvailableCourtRoomFilters.and.returnValue(of(courtRoomAccounts));
-        spyOnProperty(vhoQueryService, 'courtRoomFilterChanged$').and.returnValue(
-            new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts)
-        );
+        vhoQueryService.courtRoomFilterChanged$ = new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts);
 
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 

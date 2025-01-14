@@ -14,13 +14,13 @@ namespace VideoWeb.Controllers
     public class TokenController : ControllerBase
     {
         private readonly IHashGenerator _hashGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
+        private readonly VodafoneConfiguration _supplierConfiguration;
 
         public TokenController(IHashGenerator hashGenerator,
-            KinlyConfiguration kinlyConfiguration)
+            VodafoneConfiguration supplierConfiguration)
         {
             _hashGenerator = hashGenerator;
-            _kinlyConfiguration = kinlyConfiguration;
+            _supplierConfiguration = supplierConfiguration;
         }
 
         [HttpGet("{participantId}/selftesttoken")]
@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
+            var expiresOn = DateTime.UtcNow.AddMinutes(_supplierConfiguration.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
             var token = _hashGenerator.GenerateSelfTestTokenHash(expiresOn, participantId.ToString());
             var tokenResponse = new TokenResponse { ExpiresOn = expiresOn, Token = token };
             return Ok(tokenResponse);
