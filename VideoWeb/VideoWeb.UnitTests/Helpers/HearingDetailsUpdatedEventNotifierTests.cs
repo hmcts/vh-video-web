@@ -10,6 +10,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
+using Bogus;
 
 namespace VideoWeb.UnitTests.Helpers
 {
@@ -18,6 +19,9 @@ namespace VideoWeb.UnitTests.Helpers
         private HearingDetailsUpdatedEventNotifier _notifier;
         private Conference _conference;
         private EventComponentHelper _eventHelper;
+
+        private static readonly Faker Faker = new();
+        
 
         [SetUp]
         public void SetUp()

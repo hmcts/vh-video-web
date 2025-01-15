@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Faker;
+using Bogus;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -13,12 +13,14 @@ namespace VideoWeb.UnitTests.Mappings;
 
 public class UnreadAdminMessageResponseMapperTests
 {
+    private static readonly Faker Faker = new();
+    
     [Test]
     public void Should_map_and_count_number_of_messages_since_vho_message()
     {
         var participants = Builder<Participant>.CreateListOfSize(4)
             .All()
-            .With(x => x.Username = Internet.Email())
+            .With(x => x.Username = Faker.Internet.Email())
             .TheFirst(1).With(x => x.Role = Role.Judge)
             .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         
@@ -57,7 +59,7 @@ public class UnreadAdminMessageResponseMapperTests
     {
         var participants = Builder<Participant>.CreateListOfSize(4)
             .All()
-            .With(x => x.Username = Internet.Email())
+            .With(x => x.Username = Faker.Internet.Email())
             .TheFirst(1).With(x => x.Role = Role.Judge)
             .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         
@@ -90,7 +92,7 @@ public class UnreadAdminMessageResponseMapperTests
     {
         var participants = Builder<Participant>.CreateListOfSize(4)
             .All()
-            .With(x => x.Username = Internet.Email())
+            .With(x => x.Username = Faker.Internet.Email())
             .TheFirst(1).With(x => x.Role = Role.Judge)
             .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         

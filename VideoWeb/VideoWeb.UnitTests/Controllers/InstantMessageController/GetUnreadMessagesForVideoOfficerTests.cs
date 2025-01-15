@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Faker;
+using Bogus;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +20,8 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController;
 
 public class GetUnreadMessagesForVideoOfficerTests : InstantMessageControllerTestBase
 {
+    private static readonly Faker Faker = new();
+
     [Test]
     public async Task Should_return_exception()
     {
@@ -79,7 +81,7 @@ public class GetUnreadMessagesForVideoOfficerTests : InstantMessageControllerTes
         var participants = Builder<Participant>.CreateListOfSize(4)
             .All()
             .With(x => x.Id = Guid.NewGuid())
-            .With(x => x.Username = Internet.Email())
+            .With(x => x.Username = Faker.Internet.Email())
             .TheFirst(1).With(x => x.Role = Role.Judge)
             .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         

@@ -11,15 +11,6 @@
           "Selenium.WebDriver": "3.10.0"
         }
       },
-      "Faker.NETCore": {
-        "type": "Direct",
-        "requested": "[1.0.2, )",
-        "resolved": "1.0.2",
-        "contentHash": "teRWZFwtBSuMRo2jxB4/DfCo3nprjMtjb7tjBfhrnz+BPhQMivW9cVo06kLr4GAJjrCOvCNQ2sJckRwGvMmK0Q==",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0"
-        }
-      },
       "FluentAssertions": {
         "type": "Direct",
         "requested": "[5.10.3, )",

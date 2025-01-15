@@ -13,20 +13,17 @@
           "System.ComponentModel.TypeConverter": "4.3.0"
         }
       },
+      "Bogus": {
+        "type": "Direct",
+        "requested": "[35.6.1, )",
+        "resolved": "35.6.1",
+        "contentHash": "QPJ8zLL0ScEunEoUNhMDigD4ykA/n7vXCZUQdGCFGHBfP2mNYjiCzR9Cj12eaFaDlwkhIC1HKQZihWl8OgbLsw=="
+      },
       "coverlet.msbuild": {
         "type": "Direct",
         "requested": "[6.0.2, )",
         "resolved": "6.0.2",
         "contentHash": "8b4jBNH7mcQy1otyQErjjIUuGD74XxKZ1wvDufbY7jhWwckl7wIa+icjwdPYeI0aYMS4Tp63LIZvyMFjWwOMDw=="
-      },
-      "Faker.NETCore": {
-        "type": "Direct",
-        "requested": "[1.0.2, )",
-        "resolved": "1.0.2",
-        "contentHash": "teRWZFwtBSuMRo2jxB4/DfCo3nprjMtjb7tjBfhrnz+BPhQMivW9cVo06kLr4GAJjrCOvCNQ2sJckRwGvMmK0Q==",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0"
-        }
       },
       "FluentAssertions": {
         "type": "Direct",
@@ -460,10 +457,10 @@
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.0.7",
-        "contentHash": "pC+gXphE1PQN7VDf+h6NDrQM78ral6vs77AMI1he9E9gCJU1R/djR1EMB6TzJeQwEhKZ4vg1CS3yYdNCbKJDiw==",
+        "resolved": "8.0.5",
+        "contentHash": "Pb/+6BpS9/DAToWJSlRaSja8rL342BYNO0R2mjvhtD/MDhuVvqQMTuVtHouZ1sokOj3kmBqc4KnKqNq7Dk3eyg==",
         "dependencies": {
-          "Microsoft.Extensions.Features": "8.0.7",
+          "Microsoft.Extensions.Features": "8.0.5",
           "System.IO.Pipelines": "8.0.0"
         }
       },
