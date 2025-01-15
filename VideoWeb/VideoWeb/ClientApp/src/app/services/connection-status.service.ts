@@ -70,7 +70,7 @@ export class ConnectionStatusService {
 
     private getFavicon(): Observable<boolean> {
         // NOTE: a status of "0" is received when app is offline
-        return this.http.head('/assets/images/favicons/favicon.ico?_=' + new Date().getTime(), { observe: 'response' }).pipe(
+        return this.http.head('/assets/images/favicon.ico?_=' + new Date().getTime(), { observe: 'response' }).pipe(
             map(response => response.status > 0),
             catchError((err: HttpErrorResponse) => of(err.status !== 0))
         );
