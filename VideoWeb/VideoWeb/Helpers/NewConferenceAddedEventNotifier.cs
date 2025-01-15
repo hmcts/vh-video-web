@@ -1,36 +1,28 @@
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
+using Microsoft.AspNetCore.SignalR;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
 
 namespace VideoWeb.Helpers
 {
-    public class NewConferenceAddedEventNotifier : INewConferenceAddedEventNotifier
+    public class NewConferenceAddedEventNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+        : INewConferenceAddedEventNotifier
     {
-        private readonly IEventHandlerFactory _eventHandlerFactory;
-
-        public NewConferenceAddedEventNotifier(IEventHandlerFactory eventHandlerFactory, ILogger<NewConferenceAddedEventNotifier> logger)
+        public async Task PushNewConferenceAddedEvent(Conference conference)
         {
-            _eventHandlerFactory = eventHandlerFactory;
-        }
-
-        public Task PushNewConferenceAddedEvent(Guid conferenceId)
-        {
-            var callbackEvent = new CallbackEvent
+            foreach (var participant in conference.Participants.Where(p => p.Role != Role.StaffMember))
             {
-                ConferenceId = conferenceId,
-                EventType = EventType.NewConferenceAdded,
-                TimeStampUtc = DateTime.Now
-            };
+                await hubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .NewConferenceAddedMessage(conference.Id);
+            }
 
-            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-            return handler.HandleAsync(callbackEvent);
+            await hubContext.Clients.Group(VideoWeb.EventHub.Hub.EventHub.VhOfficersGroupName)
+                .NewConferenceAddedMessage(conference.Id);
+
+            await hubContext.Clients.Group(VideoWeb.EventHub.Hub.EventHub.StaffMembersGroupName)
+                .NewConferenceAddedMessage(conference.Id);
         }
     }
 }

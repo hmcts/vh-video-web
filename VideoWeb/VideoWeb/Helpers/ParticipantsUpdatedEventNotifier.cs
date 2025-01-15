@@ -1,47 +1,37 @@
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
-using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Helpers
 {
-    public class ParticipantsUpdatedEventNotifier(
-        IEventHandlerFactory eventHandlerFactory,
-        ILogger<ParticipantsUpdatedEventNotifier> logger)
+    public class ParticipantsUpdatedEventNotifier(IHubContext<VideoWeb.EventHub.Hub.EventHub, IEventHubClient> hubContext,
+        ILogger<EventHandlerBase> logger)
         : IParticipantsUpdatedEventNotifier
     {
-        public Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
+        public async Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
         {
-            CallbackEvent callbackEvent = new CallbackEvent
+            var updatedParticipants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
+            
+            foreach (var participant in participantsToNotify.Where(p => p.Role != Role.StaffMember))
             {
-                ConferenceId = conference.Id,
-                EventType = EventType.ParticipantsUpdated,
-                TimeStampUtc = DateTime.UtcNow,
-                Participants = conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList(),
-                ParticipantsToNotify = participantsToNotify.Select(ParticipantDtoForResponseMapper.Map).ToList()
-            };
-
-            logger.LogTrace("Publishing event to UI: {Serialize}", JsonSerializer.Serialize(callbackEvent));
-            return PublishEventToUi(callbackEvent);
-        }
-
-        private Task PublishEventToUi(CallbackEvent callbackEvent)
-        {
-            if (callbackEvent == null)
-            {
-                return Task.CompletedTask;
+                await hubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantsUpdatedMessage(conference.Id, updatedParticipants);
+                logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
+                    participant.Role);
             }
-
-            var handler = eventHandlerFactory.Get(callbackEvent.EventType);
-            return handler.HandleAsync(callbackEvent);
+        
+            await hubContext.Clients.Group(VideoWeb.EventHub.Hub.EventHub.VhOfficersGroupName)
+                .ParticipantsUpdatedMessage(conference.Id, updatedParticipants);
+        
+            await hubContext.Clients.Group(VideoWeb.EventHub.Hub.EventHub.StaffMembersGroupName)
+                .ParticipantsUpdatedMessage(conference.Id, updatedParticipants);
         }
     }
 }

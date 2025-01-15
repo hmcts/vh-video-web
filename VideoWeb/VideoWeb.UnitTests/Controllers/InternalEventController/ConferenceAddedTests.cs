@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common;
 using VideoWeb.Controllers.InternalEventControllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.UnitTests.Builders;
@@ -32,19 +34,20 @@ public class ConferenceAddedTests
         
         _conferenceController = _mocker.Create<InternalEventConferenceController>();
         _conferenceController.ControllerContext = context;
-        
         _mocker.Mock<INewConferenceAddedEventNotifier>();
     }
     
     [Test]
     public async Task Sends_Event_For_New_Conference_Added()
     {
-        var conferenceId = Guid.NewGuid();
-        
-        var result = await _conferenceController.ConferenceAdded(conferenceId);
+        var conference = new ConferenceCacheModelBuilder().Build();
+        _mocker.Mock<IConferenceService>()
+            .Setup(x => x.GetConference(It.Is<Guid>(id => id == conference.Id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(conference);
+        var result = await _conferenceController.ConferenceAdded(conference.Id);
         
         result.Should().BeOfType<NoContentResult>();
         
-        _mocker.Mock<INewConferenceAddedEventNotifier>().Verify(x => x.PushNewConferenceAddedEvent(conferenceId), Times.Once);
+        _mocker.Mock<INewConferenceAddedEventNotifier>().Verify(x => x.PushNewConferenceAddedEvent(conference), Times.Once);
     }
 }
