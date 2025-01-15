@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { ConferenceState } from '../../waiting-space/store/reducers/conference.reducer';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { HearingRole } from '../../waiting-space/models/hearing-role-model';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-introduction',
@@ -48,7 +48,10 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
         const getActiveConference = this.conferenceStore.select(ConferenceSelectors.getActiveConference);
         this.existingTest$ = this.videoWebService.checkUserHasCompletedSelfTest();
         combineLatest([loggedInParticipant$, getActiveConference])
-            .pipe(takeUntil(this.destroy$))
+            .pipe(
+                filter(([loggedInParticipant, activeConference]) => !!loggedInParticipant && !!activeConference),
+                takeUntil(this.destroy$)
+            )
             .subscribe(([loggedInParticipant, activeConference]) => {
                 this.conferenceId = activeConference.id;
                 this.isRepresentative = loggedInParticipant.role === Role.Representative;

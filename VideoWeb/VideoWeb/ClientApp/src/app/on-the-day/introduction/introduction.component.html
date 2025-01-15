@@ -8,7 +8,7 @@
             [sctsAltText]="'introduction.scottish-crest' | translate"
             [hmctsAltText]="'introduction.hm-courts-and-tribunals-service-crest' | translate"
             [sctsImageSource]="'/assets/images/scottish-crest-circle.png'"
-            [hmctsImageSource]="'/assets/images/BluePanelIdent.png'"
+            [hmctsImageSource]="'/assets/images/govuk-crest-black-circle.svg'"
             class="govuk-header__logotype-crest govuk-!-margin-bottom-6"
             alt=""
           />
@@ -24,7 +24,7 @@
           </ul>
 
           <button
-            *ngIf="(existingTest$ | async) && isRepresentative || isObserver"
+            *ngIf="((existingTest$ | async) && isRepresentative) || isObserver"
             class="govuk-button govuk-button--secondary govuk-!-margin-top-4 govuk-!-margin-right-3"
             data-module="govuk-button"
             (click)="skipToCourtRulesPage()"
