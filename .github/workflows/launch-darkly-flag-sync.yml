@@ -1,5 +1,10 @@
 name: Find LaunchDarkly flag code references
-on: push
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
 # cancel in-flight workflow run if another push was triggered
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,9 +19,8 @@ jobs:
         with:
           fetch-depth: 11 # This value must be set if the lookback configuration option is not disabled for find-code-references. Read more: https://github.com/launchdarkly/ld-find-code-refs#searching-for-unused-flags-extinctions
       - name: LaunchDarkly Code References
-        uses: launchdarkly/find-code-references@v2
+        uses: launchdarkly/find-code-references@main
         with:
           accessToken: ${{ secrets.LD_SERVICE_TOKEN }}
           projKey: VH
-          debug: true
           prune: true
