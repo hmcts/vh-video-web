@@ -5,10 +5,10 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
+using Bogus;
 using BookingsApi.Client;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
-using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +33,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private AutoMock _mocker;
         private ConferencesController _controller;
+
+        private static readonly Faker Faker = new();
 
         [SetUp]
         public void Setup()
@@ -157,7 +159,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var participants = Builder<ParticipantResponse>.CreateListOfSize(4)
                 .All()
-                .With(x => x.Username = Internet.Email())
+                .With(x => x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                 .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
