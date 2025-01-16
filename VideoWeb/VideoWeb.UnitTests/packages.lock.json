@@ -21,17 +21,17 @@
       },
       "coverlet.msbuild": {
         "type": "Direct",
-        "requested": "[6.0.2, )",
-        "resolved": "6.0.2",
-        "contentHash": "8b4jBNH7mcQy1otyQErjjIUuGD74XxKZ1wvDufbY7jhWwckl7wIa+icjwdPYeI0aYMS4Tp63LIZvyMFjWwOMDw=="
+        "requested": "[6.0.3, )",
+        "resolved": "6.0.3",
+        "contentHash": "QptuqnNCaVlSJcO4lfAPv+9X1Ke+TW216HYD5gSkSb1mbK4K+di1MtsWa3zGCAjnTHDN2TvWVs/Wuw6+mQDhhA=="
       },
       "FluentAssertions": {
         "type": "Direct",
-        "requested": "[6.12.0, )",
-        "resolved": "6.12.0",
-        "contentHash": "ZXhHT2YwP9lajrwSKbLlFqsmCCvFJMoRSK9t7sImfnCyd0OB3MhgxdoMcVqxbq1iyxD6mD2fiackWmBb7ayiXQ==",
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "mTLbcU991EQ1SEmNbVBaGGGJy0YFzvGd1sYJGNZ07nlPKuyHSn1I22aeKzqQXgEiaKyRO6MSCto9eN9VxMwBdA==",
         "dependencies": {
-          "System.Configuration.ConfigurationManager": "4.4.0"
+          "System.Configuration.ConfigurationManager": "6.0.0"
         }
       },
       "Microsoft.NET.Test.Sdk": {
