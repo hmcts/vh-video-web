@@ -14,4 +14,4 @@ java:
         VHSERVICES__VIDEOAPIURL: https://vh-video-api-pr-711.dev.platform.hmcts.net/
         VHSERVICES__UserApiUrl: https://vh-user-api-pr-259.dev.platform.hmcts.net/
         VHSERVICES__NotificationApiUrl: https://vh-notification-api-pr-173.dev.platform.hmcts.net/
-        VHSERVICES__VideoWebUrl: https://vh-videi-web-pr-2354.dev.platform.hmcts.net/
+        VHSERVICES__VideoWebUrl: https://vh-video-web-pr-2354.dev.platform.hmcts.net/
