@@ -10,8 +10,3 @@ java:
         EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
         DOM1__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         DOM1__REDIRECTURI: https://${SERVICE_FQDN}/home
-        VHSERVICES__BOOKINGSAPIURL: https://vh-bookings-api-pr-938.dev.platform.hmcts.net/
-        VHSERVICES__VIDEOAPIURL: https://vh-video-api-pr-711.dev.platform.hmcts.net/
-        VHSERVICES__USERAPIURL: https://vh-user-api-pr-259.dev.platform.hmcts.net/
-        VHSERVICES__NOTIFICATIONAPIURL: https://vh-notification-api-pr-173.dev.platform.hmcts.net/
-        VHSERVICES__VIDEOWEBURL: https://vh-video-web-pr-2354.dev.platform.hmcts.net/
