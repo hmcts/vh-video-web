@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
@@ -17,6 +18,7 @@ namespace VideoWeb.UnitTests.Helpers
         private HearingCancelledEventNotifier _notifier;
         private Conference _conference;
         private EventComponentHelper _eventHelper;
+        private static readonly Faker Faker = new();
 
         [SetUp]
         public void SetUp()

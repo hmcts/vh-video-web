@@ -13,6 +13,7 @@ using VideoWeb.EventHub.Hub;
 using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
+using Bogus;
 
 namespace VideoWeb.UnitTests.EventHandlers;
 
@@ -27,6 +28,8 @@ public abstract class EventHandlerTestBase
     protected Conference TestConference { get; set; }
 
     private EventComponentHelper _eventComponentHelper;
+
+    private static readonly Faker Faker = new();
     
     [SetUp]
     public void Setup()

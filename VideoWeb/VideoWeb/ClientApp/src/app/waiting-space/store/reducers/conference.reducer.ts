@@ -45,6 +45,11 @@ const updateLoggedInParticipant = (state: ConferenceState, participants: VHParti
 export const conferenceReducer = createReducer(
     initialState,
     on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
+        if (state.currentConference && state.currentConference.id !== conference.id) {
+            // participants will get updates to other hearings they're booked to on the same day. We only want to update the current conference
+            // To replace the hearing, dispatch the leaveConference action first
+            return state;
+        }
         // retain the pexip info and media device status for the participants (this does not come from the API)
         const updatedParticipants = conference.participants.map(p => {
             const existingParticipant = state.currentConference?.participants.find(cp => cp.id === p.id);
