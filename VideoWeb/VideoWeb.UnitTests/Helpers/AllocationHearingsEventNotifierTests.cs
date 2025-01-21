@@ -1,5 +1,4 @@
 using System;
-using Autofac.Extras.Moq;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -7,10 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
