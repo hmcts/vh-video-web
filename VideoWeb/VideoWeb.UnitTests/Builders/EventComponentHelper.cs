@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using BookingsApi.Client;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
@@ -70,7 +68,6 @@ public class EventComponentHelper
             new EndpointJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
-            new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneJoinedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneDisconnectedEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
             new TelephoneTransferEventHandler(eventHubContextMock.Object, ConferenceServiceMock.Object, logger.Object),
@@ -95,7 +92,12 @@ public class EventComponentHelper
 
     public void RegisterParticipantForHubContext(Participant participant)
     {
-        EventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
+        RegisterParticipantForHubContext(participant.Username);
+    }
+
+    public void RegisterParticipantForHubContext(string username)
+    {
+        EventHubContextMock.Setup(x => x.Clients.Group(username.ToLowerInvariant()))
             .Returns(EventHubClientMock.Object);
     }
 

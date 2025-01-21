@@ -5,114 +5,68 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
+using VideoWeb.Mappings;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Helpers;
 
 class ParticipantsUpdatedEventNotifierTests
 {
     private ParticipantsUpdatedEventNotifier _notifier;
-    private AutoMock _mocker;
     private Conference _conference;
     private Participant _participant1;
     private Participant _participant2;
+    private EventComponentHelper _eventHelper;
     
     [SetUp]
     public void SetUp()
     {
-        _mocker = AutoMock.GetLoose();
-        _notifier = _mocker.Create<ParticipantsUpdatedEventNotifier>();
+        _eventHelper = new EventComponentHelper
+        {
+            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+            EventHubClientMock = new Mock<IEventHubClient>()
+        };
+
+        _conference = new ConferenceCacheModelBuilder().Build();
+        _participant1 = _conference.Participants.Find(x => x.Role == Role.Individual);
+        _participant2 = _conference.Participants.Find(x => x.Role == Role.Representative);
+
         
-        _conference = new Conference();
-        _conference.Id = Guid.NewGuid();
-        _conference.Participants = new List<Participant>();
-        
-        _participant1 = new Participant();
-        _participant1.Id = Guid.NewGuid();
-        
-        _participant2 = new Participant();
-        _participant2.Id = Guid.NewGuid();
-        
-        _conference.Participants.Add(_participant1);
-        _conference.Participants.Add(_participant2);
+        _eventHelper.RegisterUsersForHubContext(_conference.Participants);
+
+        _notifier = new ParticipantsUpdatedEventNotifier(_eventHelper.EventHubContextMock.Object,
+            new Mock<ILogger<EventHandlerBase>>().Object);
     }
     
     [Test]
     public async Task Should_send_event()
     {
         // Arrange
-        var response1 = new ParticipantResponse();
-        response1.Id = _participant1.Id;
-        
-        
-        var response2 = new ParticipantResponse();
-        response2.Id = _participant2.Id;
-        
-        var responseList = new List<ParticipantResponse> { response1, response2 };
-
-        _mocker.Mock<IEventHandlerFactory>()
-            .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
-            .Returns(_mocker.Mock<IEventHandler>().Object);
+        var participantsToNotify = _conference.Participants.Select(ParticipantDtoForResponseMapper.Map).ToList();
         
         // Act
         await _notifier.PushParticipantsUpdatedEvent(_conference, _conference.Participants);
         
         
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, responseList))), Times.Once);
-    }
-    
-    [Test]
-    public async Task Should_send_event_when_participants_to_notify_specified()
-    {
-        // Arrange
-        var participant1ToNotify = new Participant();
-        participant1ToNotify.Id = _participant1.Id;
+        const int vhoCount = 1;
+        const int nonParticipantStaffMemberCount = 1; // Non-participant staff member = a staff member who is not a participant on the conference
+        var nonStaffMemberParticipantCount = _conference.Participants.Count(p => p.Role != Role.StaffMember); // Non-staff member participants = participants minus staff members
+        var expectedMessageCount = nonParticipantStaffMemberCount + vhoCount + nonStaffMemberParticipantCount;
         
-        var participant2ToNotify = new Participant();
-        participant2ToNotify.Id = _participant2.Id;
-        
-        var participant3 = new Participant();
-        participant3.Id = Guid.NewGuid();
-        
-        _conference.Participants.Add(participant3);
-        
-        var participant3ToNotify = new Participant();
-        participant3ToNotify.Id = participant3.Id;
-        
-        var participantsToNotify = new List<Participant> { participant1ToNotify, participant2ToNotify, participant3ToNotify };
-        
-        var participant1Mapped = new ParticipantResponse();
-        participant1Mapped.Id = _participant1.Id;
-        
-        var participant2Mapped = new ParticipantResponse();
-        participant2Mapped.Id = _participant2.Id;
-        
-        var participant1ToNotifyMapped = new ParticipantResponse();
-        participant1ToNotifyMapped.Id = participant1ToNotify.Id;
-        
-        var participant2ToNotifyMapped = new ParticipantResponse();
-        participant2ToNotifyMapped.Id = participant2ToNotify.Id;
-        
-        var participant3ToNotifyMapped = new ParticipantResponse();
-        participant3ToNotifyMapped.Id = participant3ToNotify.Id;
-        
-        var participantsToNotifyMapped = new List<ParticipantResponse> { participant1ToNotifyMapped, participant2ToNotifyMapped, participant3ToNotifyMapped };
-        
-        _mocker.Mock<IEventHandlerFactory>()
-            .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
-            .Returns(_mocker.Mock<IEventHandler>().Object);
-        
-        // Act
-        await _notifier.PushParticipantsUpdatedEvent(_conference, participantsToNotify);
-        
-        
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id
-            && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
+        _eventHelper.EventHubClientMock.Verify(
+            x => x.ParticipantsUpdatedMessage(
+                _conference.Id,
+                It.Is<List<ParticipantResponse>>(list => ParticipantResponseListsMatch(list, participantsToNotify))),
+            Times.Exactly(expectedMessageCount));
     }
     
     private static bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)

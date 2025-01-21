@@ -1,7 +1,5 @@
 using FizzWare.NBuilder;
 using System;
-using System.Collections.Generic;
-using BookingsApi.Contract.V2.Responses;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 

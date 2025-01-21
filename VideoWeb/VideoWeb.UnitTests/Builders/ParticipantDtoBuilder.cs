@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Builders

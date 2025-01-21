@@ -1,30 +1,28 @@
 using System;
-using Autofac.Extras.Moq;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using VideoApi.Contract.Requests;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Helpers;
 
 internal class AllocationHearingsEventNotifierTests
 {
     private AllocationHearingsEventNotifier _notifier;
-    private AutoMock _mocker;
+    private Conference _conference;
+    private EventComponentHelper _eventHelper;
     private List<HearingDetailRequest> _hearings;
     private const string CsoUserName = "username@email.com";
     
     [SetUp]
     public void SetUp()
     {
-        _mocker = AutoMock.GetLoose();
-        _notifier = _mocker.Create<AllocationHearingsEventNotifier>();
-        
         _hearings = new List<HearingDetailRequest>();
         
         var hearing = new HearingDetailRequest();
@@ -34,20 +32,25 @@ internal class AllocationHearingsEventNotifierTests
         
         _hearings.Add(hearing);
         
+        _conference = new ConferenceCacheModelBuilder().Build();
+        _eventHelper = new EventComponentHelper
+        {
+            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+            EventHubClientMock = new Mock<IEventHubClient>()
+        };
+        // this will register all participants as connected to the hub
+        _eventHelper.RegisterUsersForHubContext(_conference.Participants);
+        _eventHelper.RegisterParticipantForHubContext(CsoUserName);
+        _notifier = new AllocationHearingsEventNotifier(_eventHelper.EventHubContextMock.Object);
     }
     
     [Test]
     public async Task Should_send_event()
     {
-        _mocker.Mock<IEventHandlerFactory>()
-            .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.AllocationHearings)))
-            .Returns(_mocker.Mock<IEventHandler>().Object);
-        
         // Act
         await _notifier.PushAllocationHearingsEvent(CsoUserName, _hearings);
         
-        
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Once);
+        _eventHelper.EventHubClientMock.Verify(x => x.AllocationHearings(CsoUserName, _hearings), Times.Once);
     }
     
     [Test]
@@ -60,6 +63,6 @@ internal class AllocationHearingsEventNotifierTests
         await _notifier.PushAllocationHearingsEvent(CsoUserName, _hearings);
         
         // assert
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Never);
+        _eventHelper.EventHubClientMock.Verify(x => x.AllocationHearings(CsoUserName, _hearings), Times.Never);
     }
 }

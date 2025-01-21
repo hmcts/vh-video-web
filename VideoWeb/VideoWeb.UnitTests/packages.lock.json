@@ -21,15 +21,15 @@
       },
       "coverlet.msbuild": {
         "type": "Direct",
-        "requested": "[6.0.3, )",
-        "resolved": "6.0.3",
-        "contentHash": "QptuqnNCaVlSJcO4lfAPv+9X1Ke+TW216HYD5gSkSb1mbK4K+di1MtsWa3zGCAjnTHDN2TvWVs/Wuw6+mQDhhA=="
+        "requested": "[6.0.4, )",
+        "resolved": "6.0.4",
+        "contentHash": "Qa7Hg+wrOMDKpXVn2dw4Wlun490bIWsFW0fdNJQFJLZnbU27MCP0HJ2mPgS+3EQBQUb0zKlkwiQzP+j38Hc3Iw=="
       },
       "FluentAssertions": {
         "type": "Direct",
-        "requested": "[7.0.0, )",
-        "resolved": "7.0.0",
-        "contentHash": "mTLbcU991EQ1SEmNbVBaGGGJy0YFzvGd1sYJGNZ07nlPKuyHSn1I22aeKzqQXgEiaKyRO6MSCto9eN9VxMwBdA==",
+        "requested": "[7.1.0, )",
+        "resolved": "7.1.0",
+        "contentHash": "98Dt8m2ZYAjxAzoVGnv+yYh441lhM/SLIxWXp9aZU1rF0mRtA8W49GzTPhwQcclqAiRnjeM0VydVkM1OwKF4NQ==",
         "dependencies": {
           "System.Configuration.ConfigurationManager": "6.0.0"
         }
@@ -176,24 +176,24 @@
       },
       "FluentValidation": {
         "type": "Transitive",
-        "resolved": "11.5.1",
-        "contentHash": "0h1Q5lNOLLyYTWMJmyNoMqhY4CBRvvUWvJP1R4F2CnmmzuWwvB0A8aVmw5+lOuwYnwUwCRrdeMLbc81F38ahNQ=="
+        "resolved": "11.2.1",
+        "contentHash": "ZrQD0TGd0mHqf/zErZOEaba8cBeInaJj02nqinO+0La3uE08sJ5ScTYqsCbdx9fLHsX8rh+5KH5RtL2eOUS+OA=="
       },
       "FluentValidation.AspNetCore": {
         "type": "Transitive",
-        "resolved": "11.3.0",
-        "contentHash": "jtFVgKnDFySyBlPS8bZbTKEEwJZnn11rXXJ2SQnjDhZ56rQqybBg9Joq4crRLz3y0QR8WoOq4iE4piV81w/Djg==",
+        "resolved": "11.2.2",
+        "contentHash": "jU/MHXqg9cnOU18dY75vorP2c2WDKMan4zegOPsoc34xZVjzTEtXP0fKvkDEdeaChUVooNWuRr27u9w3sYbEFA==",
         "dependencies": {
-          "FluentValidation": "11.5.1",
-          "FluentValidation.DependencyInjectionExtensions": "11.5.1"
+          "FluentValidation": "11.2.1",
+          "FluentValidation.DependencyInjectionExtensions": "11.2.1"
         }
       },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "Transitive",
-        "resolved": "11.5.1",
-        "contentHash": "iWM0LS1MDYX06pcjMEQKqHirl2zkjHlNV23mEJSoR1IZI7KQmTa0RcTtGEJpj5+iHvBCfrzP2mYKM4FtRKVb+A==",
+        "resolved": "11.2.1",
+        "contentHash": "WqR2kt0OidUCg9xS+YOoiDmdCu7EnYLLgQb/bX+5fTTVor+90dWmr1OdJaWlLZvg2nbwV9EfxA9FZp91+JmQtg==",
         "dependencies": {
-          "FluentValidation": "11.5.1",
+          "FluentValidation": "11.2.1",
           "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
         }
       },
@@ -252,23 +252,23 @@
       },
       "MicroElements.OpenApi.FluentValidation": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "6XD28ux6GP7C+rspfKhV7aG4ZMeA138uXszbk+EnzXHMv2Gj3fxsU/gKvHlyixT+GBAErbzZO4bbjMi3XXo/Ww==",
+        "resolved": "6.1.0",
+        "contentHash": "qJPAI3bL70ND6fIi4bGqQf/lpV9wUod23R7JVhVVYRonoT/ZGmPBjMbO//IPPy3yP2F21iMX05brYjyU4/WqwQ==",
         "dependencies": {
           "FluentValidation": "[10.0.0, 12.0.0)",
-          "Microsoft.AspNetCore.Http.Abstractions": "2.1.0",
+          "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
           "Microsoft.Extensions.Options": "6.0.0"
         }
       },
       "MicroElements.Swashbuckle.FluentValidation": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "uCQMS4ww1yjf6KThudk6ncErudMPqxHMeK8oIYSfGxhumedm7uu0fUjtvA+TnBeZ/HXvmcR7rrc5sI487U9oBA==",
+        "resolved": "6.1.0",
+        "contentHash": "VzqApLPY8xIqXDvWqRuvoDYEoCHII42c4LgvLO3BikKoIVcECD+ZSG727I7yPZ/J07VEoa8aJddoqUtSm4E4gw==",
         "dependencies": {
           "FluentValidation": "[10.0.0, 12.0.0)",
-          "MicroElements.OpenApi.FluentValidation": "6.0.0",
-          "Swashbuckle.AspNetCore.SwaggerGen": "[6.3.0, 7.0.0)"
+          "MicroElements.OpenApi.FluentValidation": "6.1.0",
+          "Swashbuckle.AspNetCore.SwaggerGen": "[6.3.0, 8.0.0)"
         }
       },
       "Microsoft.ApplicationInsights": {
@@ -454,10 +454,10 @@
       },
       "Microsoft.AspNetCore.Http.Abstractions": {
         "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "kQUEVOU4loc8CPSb2WoHFTESqwIa8Ik7ysCBfTwzHAd0moWovc9JQLmhDIHlYLjHbyexqZAlkq/FPRUZqokebw==",
+        "resolved": "2.2.0",
+        "contentHash": "Nxs7Z1q3f1STfLYKJSVXCs1iBl+Ya6E8o4Oy1bCxJ/rNI44E/0f6tbsrVqAWfB7jlnJfyaAtIalBVxPKUPQb4Q==",
         "dependencies": {
-          "Microsoft.AspNetCore.Http.Features": "2.1.1",
+          "Microsoft.AspNetCore.Http.Features": "2.2.0",
           "System.Text.Encodings.Web": "4.5.0"
         }
       },
@@ -482,10 +482,10 @@
       },
       "Microsoft.AspNetCore.Http.Features": {
         "type": "Transitive",
-        "resolved": "2.1.1",
-        "contentHash": "VklZ7hWgSvHBcDtwYYkdMdI/adlf7ebxTZ9kdzAhX+gUs5jSHE9mZlTamdgf9miSsxc1QjNazHXTDJdVPZKKTw==",
+        "resolved": "2.2.0",
+        "contentHash": "ziFz5zH8f33En4dX81LW84I6XrYXKf9jg6aM39cM+LffN9KJahViKZ61dGMSO2gd3e+qe5yBRwsesvyqlZaSMg==",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "2.1.1"
+          "Microsoft.Extensions.Primitives": "2.2.0"
         }
       },
       "Microsoft.AspNetCore.SpaServices.Extensions": {
@@ -2109,8 +2109,8 @@
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
           "BookingsApi.Client": "[3.1.18, )",
           "Castle.Core": "[5.1.1, )",
-          "FluentValidation.AspNetCore": "[11.3.0, )",
-          "MicroElements.Swashbuckle.FluentValidation": "[6.0.0, )",
+          "FluentValidation.AspNetCore": "[11.2.2, )",
+          "MicroElements.Swashbuckle.FluentValidation": "[6.1.0, )",
           "Microsoft.ApplicationInsights.Profiler.AspNetCore": "[2.7.1, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.5, )",
           "Microsoft.AspNetCore.Http.Connections.Common": "[8.0.5, )",
