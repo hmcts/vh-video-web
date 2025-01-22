@@ -21,12 +21,17 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/assets",
+              "src/scripts",
               {
                 "glob": "*",
                 "input": "node_modules/govuk-frontend/dist/govuk/assets/fonts",
                 "output": "assets/fonts/"
               },
-              "src/scripts"
+              {
+                "glob": "*",
+                "input": "node_modules/govuk-frontend/dist/govuk/assets/images",
+                "output": "assets/images/"
+              }
             ],
             "styles": ["src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
             "stylePreprocessorOptions": {
@@ -119,6 +124,16 @@
                 "glob": "*",
                 "input": "node_modules/govuk-frontend/dist/govuk/assets/fonts",
                 "output": "assets/fonts/"
+              },
+              {
+                "glob": "*",
+                "input": "node_modules/govuk-frontend/dist/govuk/assets/images",
+                "output": "assets/images/"
+              },
+              {
+                "glob": "manifest.json",
+                "input": "node_modules/govuk-frontend/dist/govuk/assets",
+                "output": "assets/"
               }
             ]
           }

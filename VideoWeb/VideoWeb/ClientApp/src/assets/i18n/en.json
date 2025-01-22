@@ -130,6 +130,8 @@
     "button-continue": " Continue"
   },
   "header": {
+    "organisation-name": "HMCTS",
+    "service-name": "Video Hearings",
     "hm-courts": "HM Courts",
     "tribunals-service": "Tribunals Service",
     "sign-out": "Sign out",

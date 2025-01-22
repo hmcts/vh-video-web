@@ -5,18 +5,18 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="3.1.10" />
+    <PackageReference Include="BookingsApi.Client" Version="3.1.18" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.5.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.61.3" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.5.0.109200">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />
-    <PackageReference Include="VideoApi.Client" Version="3.1.10" />
+    <PackageReference Include="VideoApi.Client" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
   </ItemGroup>

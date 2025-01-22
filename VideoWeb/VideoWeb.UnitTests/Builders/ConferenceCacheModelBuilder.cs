@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bogus;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
 
@@ -9,6 +10,7 @@ namespace VideoWeb.UnitTests.Builders
     public class ConferenceCacheModelBuilder
     {
         private readonly Conference _conference;
+        private static readonly Faker Faker = new();
 
         public ConferenceCacheModelBuilder()
         {

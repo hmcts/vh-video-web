@@ -21,6 +21,7 @@ using VideoWeb.Common;
 using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Helpers.Interfaces;
+using Bogus;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController;
 
@@ -28,6 +29,7 @@ public class DeleteParticipantTests
 {
     private AutoMock _mocker;
     private ParticipantsController _sut;
+    private static readonly Faker Faker = new();
     
     [SetUp]
     public void Setup()

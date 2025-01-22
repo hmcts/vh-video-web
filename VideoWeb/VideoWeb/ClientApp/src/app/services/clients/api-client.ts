@@ -55,7 +55,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -1858,7 +1858,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2151,7 +2151,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2261,7 +2261,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2371,7 +2371,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2481,7 +2481,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2590,7 +2590,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2698,7 +2698,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2807,7 +2807,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -3711,7 +3711,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -3911,7 +3911,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4014,7 +4014,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4437,7 +4437,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4547,7 +4547,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4659,7 +4659,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4887,7 +4887,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -5913,7 +5913,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json',
+                'Content-Type': 'application/json',
                 Accept: 'application/json'
             })
         };
@@ -7097,7 +7097,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -7180,116 +7180,6 @@ export class ApiClient extends ApiClientBase {
             );
         }
         return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @param participantType (optional)
-     * @return OK
-     */
-    getParticipantRoomForParticipant(
-        conferenceId: string,
-        participantId: string,
-        participantType: string | undefined
-    ): Observable<SharedParticipantRoom> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/shared/{participantId}?';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
-        if (participantType === null) throw new Error("The parameter 'participantType' cannot be null.");
-        else if (participantType !== undefined) url_ += 'participantType=' + encodeURIComponent('' + participantType) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetParticipantRoomForParticipant(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetParticipantRoomForParticipant(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<SharedParticipantRoom>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<SharedParticipantRoom>;
-                })
-            );
-    }
-
-    protected processGetParticipantRoomForParticipant(response: HttpResponseBase): Observable<SharedParticipantRoom> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = SharedParticipantRoom.fromJS(resultData200);
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = resultData404 !== undefined ? resultData404 : <any>null;
-
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<SharedParticipantRoom>(null as any);
     }
 }
 
@@ -7491,12 +7381,12 @@ export interface IProblemDetails {
 }
 
 export class ValidationProblemDetails implements IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 
@@ -7513,6 +7403,11 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
             for (var property in _data) {
                 if (_data.hasOwnProperty(property)) this[property] = _data[property];
             }
+            this.type = _data['type'];
+            this.title = _data['title'];
+            this.status = _data['status'];
+            this.detail = _data['detail'];
+            this.instance = _data['instance'];
             if (_data['errors']) {
                 this.errors = {} as any;
                 for (let key in _data['errors']) {
@@ -7520,11 +7415,6 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
                         (<any>this.errors)![key] = _data['errors'][key] !== undefined ? _data['errors'][key] : [];
                 }
             }
-            this.type = _data['type'];
-            this.title = _data['title'];
-            this.status = _data['status'];
-            this.detail = _data['detail'];
-            this.instance = _data['instance'];
         }
     }
 
@@ -7540,28 +7430,28 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
         for (var property in this) {
             if (this.hasOwnProperty(property)) data[property] = this[property];
         }
+        data['type'] = this.type;
+        data['title'] = this.title;
+        data['status'] = this.status;
+        data['detail'] = this.detail;
+        data['instance'] = this.instance;
         if (this.errors) {
             data['errors'] = {};
             for (let key in this.errors) {
                 if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key];
             }
         }
-        data['type'] = this.type;
-        data['title'] = this.title;
-        data['status'] = this.status;
-        data['detail'] = this.detail;
-        data['instance'] = this.instance;
         return data;
     }
 }
 
 export interface IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 }
@@ -8375,7 +8265,6 @@ export interface ITestCallScoreResponse {
 }
 
 export enum Supplier {
-    Kinly = 'Kinly',
     Vodafone = 'Vodafone'
 }
 
@@ -11000,53 +10889,6 @@ export class SelfTestPexipResponse implements ISelfTestPexipResponse {
 
 export interface ISelfTestPexipResponse {
     pexip_self_test_node?: string | undefined;
-}
-
-export class SharedParticipantRoom implements ISharedParticipantRoom {
-    pexip_node?: string | undefined;
-    participant_join_uri?: string | undefined;
-    display_name?: string | undefined;
-    tile_display_name?: string | undefined;
-
-    constructor(data?: ISharedParticipantRoom) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.pexip_node = _data['pexip_node'];
-            this.participant_join_uri = _data['participant_join_uri'];
-            this.display_name = _data['display_name'];
-            this.tile_display_name = _data['tile_display_name'];
-        }
-    }
-
-    static fromJS(data: any): SharedParticipantRoom {
-        data = typeof data === 'object' ? data : {};
-        let result = new SharedParticipantRoom();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['pexip_node'] = this.pexip_node;
-        data['participant_join_uri'] = this.participant_join_uri;
-        data['display_name'] = this.display_name;
-        data['tile_display_name'] = this.tile_display_name;
-        return data;
-    }
-}
-
-export interface ISharedParticipantRoom {
-    pexip_node?: string | undefined;
-    participant_join_uri?: string | undefined;
-    display_name?: string | undefined;
-    tile_display_name?: string | undefined;
 }
 
 export class SupplierConfigurationResponse implements ISupplierConfigurationResponse {

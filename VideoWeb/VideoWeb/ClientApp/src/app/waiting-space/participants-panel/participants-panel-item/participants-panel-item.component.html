@@ -12,7 +12,7 @@
         appCrestLogoImageSource
         [sctsImageSource]="'/assets/images/scot-crest-white.png'"
         [sctsAltText]="'participants-panel.scottish-crest' | translate"
-        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+        [hmctsImageSource]="'/assets/images/govuk-crest-white.svg'"
         [hmctsAltText]="'participants-panel.crest' | translate"
         class="panel-icon panel-icon-crest"
         alt=""
@@ -32,7 +32,7 @@
         appCrestLogoImageSource
         [sctsImageSource]="'/assets/images/scot-crest-white.png'"
         [sctsAltText]="'participants-panel.scottish-crest' | translate"
-        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+        [hmctsImageSource]="'/assets/images/govuk-crest-white.svg'"
         [hmctsAltText]="'participants-panel.crest' | translate"
         class="panel-icon panel-icon-crest"
         alt=""
@@ -94,7 +94,7 @@
         </ng-container>
       </div>
       <div
-        *ngIf="(participant.isCallable || vodafoneEnabled) && !participant.isInHearing()"
+        *ngIf="!participant.isInHearing()"
         [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'"
       >
         <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
@@ -184,7 +184,6 @@
     <div>
       <app-judge-context-menu
         [participantInput]="participant"
-        [vodafoneEnabled]="vodafoneEnabled"
         *ngIf="!isHost"
         [hidden]="!participant.isInHearing() && !participant.isAvailable()"
         (toggleMuteParticipantEvent)="toggleParticipantMute()"

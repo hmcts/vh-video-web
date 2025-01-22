@@ -11,6 +11,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using Autofac.Extras.Moq;
 using VideoWeb.Common;
+using Bogus;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -18,6 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
     {
         protected AutoMock _mocker;
         protected Conference TestConference;
+        private static readonly Faker Faker = new();
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {

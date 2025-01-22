@@ -241,6 +241,15 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.caseName).toEqual('Updating conference');
             expect(result.currentConference.endpoints[0].pexipInfo).toBeTruthy();
         });
+
+        it('should ignore the conference if the id does not match the active conference id', () => {
+            const conferenceWithDifferentId: VHConference = { ...conferenceTestData, id: 'different-id' };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.loadConferenceSuccess({ conference: conferenceWithDifferentId })
+            );
+            expect(result).toEqual(existingInitialState);
+        });
     });
 
     describe('leaveConference action', () => {

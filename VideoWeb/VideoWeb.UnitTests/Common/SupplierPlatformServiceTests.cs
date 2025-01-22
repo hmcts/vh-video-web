@@ -17,9 +17,9 @@ namespace VideoWeb.UnitTests.Common
         public void SetUp()
         {
             _jwtTokenProvider = new Mock<IJwtTokenProvider>();
-            _supplierConfiguration = new KinlyConfiguration
+            _supplierConfiguration = new VodafoneConfiguration
             {
-                HeartbeatUrlBase = "kinly-heartbeat-url-base"
+                HeartbeatUrlBase = "vodafone-heartbeat-url-base"
             };
 
             _sut = new SupplierPlatformService(_jwtTokenProvider.Object, _supplierConfiguration);

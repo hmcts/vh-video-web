@@ -24,7 +24,6 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(EventType.EndpointJoined, typeof(EndpointJoinedEventHandler))]
         [TestCase(EventType.EndpointDisconnected, typeof(EndpointDisconnectedEventHandler))]
         [TestCase(EventType.EndpointTransfer, typeof(EndpointTransferEventHandler))]
-        [TestCase(EventType.AllocationHearings, typeof(AllocationHearingsEventHandler))]
         [TestCase(EventType.TelephoneJoined, typeof(TelephoneJoinedEventHandler))]
         [TestCase(EventType.TelephoneDisconnected, typeof(TelephoneDisconnectedEventHandler))]
         [TestCase(EventType.TelephoneTransfer, typeof(TelephoneTransferEventHandler))]
