@@ -4,6 +4,6 @@ export function convertStringToTranslationId(str): string {
     }
     return str
         .trim()
-        .replace(/[,\s’,'/]/g, '-')
+        .replace(/[,\s’'/]/g, '-')
         .toLowerCase();
 }
