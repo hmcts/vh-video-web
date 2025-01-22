@@ -5,9 +5,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using BookingsApi.Client;
+using Bogus;
 using BookingsApi.Contract.V1.Responses;
-using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -20,8 +19,6 @@ using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
-using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Controllers.EndOfDayController;
 
@@ -29,6 +26,7 @@ public class GetActiveConferencesTests
 {
     private AutoMock _mocker;
     private VideoWeb.Controllers.EndOfDayController _sut;
+    private static readonly Faker Faker = new();
     
     [SetUp]
     public void Setup()

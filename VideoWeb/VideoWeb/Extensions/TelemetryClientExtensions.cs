@@ -60,21 +60,6 @@ namespace VideoWeb.Extensions
                 eventProperties.Add("isParticipantInVmr", callbackEvent.IsParticipantInVmr.ToString());
                 eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
                 eventProperties.Add("isOtherParticipantsInConsultationRoom", callbackEvent.IsOtherParticipantsInConsultationRoom.ToString());
-                
-                var participantIds = new StringBuilder();
-                var participantDisplayNames = new StringBuilder();
-                if (callbackEvent.Participants != null)
-                {
-                    foreach (var participantResponse in callbackEvent.Participants)
-                    {
-                        participantIds.Append(ReplaceWhitespaceOrNull(participantResponse?.Id.ToString()));
-                        participantDisplayNames.Append(ReplaceWhitespaceOrNull(participantResponse?.DisplayName));
-                    }
-                }
-                
-                eventProperties.Add("participantIds", ReplaceWhitespaceOrNull(participantIds.ToString()));
-                eventProperties.Add("participantDisplayNames", ReplaceWhitespaceOrNull(participantDisplayNames.ToString()));
-
                 telemetryClient.TrackEvent(eventName, eventProperties);
             }
             catch (Exception e)
