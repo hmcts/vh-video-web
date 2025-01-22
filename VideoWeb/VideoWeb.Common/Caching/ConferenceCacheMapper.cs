@@ -61,7 +61,7 @@ public static class ConferenceCacheMapper
         conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
         conference.CaseName = caseInformation.Name;
         conference.CaseNumber = caseInformation.Number;
-        conference.CaseType = hearingDetailsResponse.ServiceName;
+        conference.CaseType = hearingDetailsResponse.ServiceName.Trim();
         conference.ScheduledDateTime = conferenceResponse.ScheduledDateTime;
         conference.ScheduledDuration = conferenceResponse.ScheduledDuration;
         conference.ClosedDateTime = conferenceResponse.ClosedDateTime;
