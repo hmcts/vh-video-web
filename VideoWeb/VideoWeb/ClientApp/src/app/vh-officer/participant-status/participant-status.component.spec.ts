@@ -1,11 +1,5 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import {
-    LinkedParticipantResponse,
-    LinkType,
-    ParticipantContactDetailsResponseVho,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+import { ParticipantContactDetailsResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -76,6 +70,27 @@ describe('ParticipantStatusComponent', () => {
                     })
                 )
             );
+            participantsToSort.push(
+                new ParticipantContactDetails(
+                    new ParticipantContactDetailsResponseVho({
+                        display_name: 'JOH1',
+                        hearing_role: HearingRole.PANELMEMBER,
+                        linked_participants: [],
+                        role: Role.JudicialOfficeHolder
+                    })
+                )
+            );
+
+            participantsToSort.push(
+                new ParticipantContactDetails(
+                    new ParticipantContactDetailsResponseVho({
+                        display_name: 'JOH2',
+                        hearing_role: HearingRole.PANEL_MEMBER,
+                        linked_participants: [],
+                        role: Role.JudicialOfficeHolder
+                    })
+                )
+            );
 
             participantsToSort.push(
                 new ParticipantContactDetails(
@@ -84,17 +99,6 @@ describe('ParticipantStatusComponent', () => {
                         hearing_role: HearingRole.STAFF_MEMBER,
                         linked_participants: [],
                         role: Role.StaffMember
-                    })
-                )
-            );
-
-            participantsToSort.push(
-                new ParticipantContactDetails(
-                    new ParticipantContactDetailsResponseVho({
-                        display_name: 'M Individual 10',
-                        hearing_role: 'Family Member',
-                        linked_participants: [],
-                        role: Role.Individual
                     })
                 )
             );
@@ -113,10 +117,10 @@ describe('ParticipantStatusComponent', () => {
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'M PanelMember 04',
-                        hearing_role: HearingRole.MEDICAL_MEMBER,
+                        display_name: 'QuickLink',
+                        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
                         linked_participants: [],
-                        role: Role.JudicialOfficeHolder
+                        role: Role.QuickLinkParticipant
                     })
                 )
             );
@@ -124,49 +128,29 @@ describe('ParticipantStatusComponent', () => {
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'P Member_01',
-                        hearing_role: HearingRole.LAY_MEMBER,
+                        display_name: 'Individual 01',
+                        hearing_role: HearingRole.APPELLANT,
                         linked_participants: [],
-                        role: Role.JudicialOfficeHolder
-                    })
-                )
-            );
-
-            const linkedParticipants1: LinkedParticipantResponse[] = [];
-            linkedParticipants1.push(
-                new LinkedParticipantResponse({
-                    link_type: LinkType.Interpreter,
-                    linked_id: 'f195ea9d-0118-4790-bda9-dbc49796584f'
-                })
-            );
-
-            participantsToSort.push(
-                new ParticipantContactDetails(
-                    new ParticipantContactDetailsResponseVho({
-                        display_name: 'M Interpreter 06',
-                        hearing_role: HearingRole.INTERPRETER,
-                        id: '77bb94c6-040b-47f3-87ce-378a4fb2ab57',
-                        linked_participants: linkedParticipants1,
                         role: Role.Individual
                     })
                 )
             );
-
-            const linkedParticipants2: LinkedParticipantResponse[] = [];
-            linkedParticipants2.push(
-                new LinkedParticipantResponse({
-                    link_type: LinkType.Interpreter,
-                    linked_id: '77bb94c6-040b-47f3-87ce-378a4fb2ab57'
-                })
-            );
-
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'M Individual 12',
-                        hearing_role: 'Family Member',
-                        id: 'f195ea9d-0118-4790-bda9-dbc49796584f',
-                        linked_participants: linkedParticipants2,
+                        display_name: 'Witness 02',
+                        hearing_role: HearingRole.WITNESS,
+                        linked_participants: [],
+                        role: Role.Individual
+                    })
+                )
+            );
+            participantsToSort.push(
+                new ParticipantContactDetails(
+                    new ParticipantContactDetailsResponseVho({
+                        display_name: 'Individual 02',
+                        hearing_role: HearingRole.APPELLANT,
+                        linked_participants: [],
                         role: Role.Individual
                     })
                 )
@@ -175,7 +159,7 @@ describe('ParticipantStatusComponent', () => {
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'M Observer 03',
+                        display_name: 'Observer',
                         hearing_role: HearingRole.OBSERVER,
                         linked_participants: [],
                         role: Role.Individual
@@ -192,32 +176,32 @@ describe('ParticipantStatusComponent', () => {
             expect(judgeIndex).toEqual(0);
 
             // Panel members and wingers
-            const panelMember1Index = participantList.findIndex(x => x.displayName === 'M PanelMember 04');
-            const panelMember2Index = participantList.findIndex(x => x.displayName === 'P Member_01');
+            const panelMember1Index = participantList.findIndex(x => x.displayName === 'JOH1');
+            const panelMember2Index = participantList.findIndex(x => x.displayName === 'JOH2');
             expect(panelMember1Index).toEqual(1);
             expect(panelMember2Index).toEqual(2);
 
-            // Others
-            const other1Index = participantList.findIndex(x => x.displayName === 'A Staff Member');
-            const other2Index = participantList.findIndex(x => x.displayName === 'M Individual 10');
-            const other3Index = participantList.findIndex(x => x.displayName === 'Witness 01');
-            expect(other1Index).toEqual(3);
-            expect(other2Index).toEqual(4);
-            expect(other3Index).toEqual(5);
+            // Staff
+            const staff = participantList.findIndex(x => x.displayName === 'A Staff Member');
+            expect(staff).toEqual(3);
 
-            // Interpreters and interpretees
-            const interp1Index = participantList.findIndex(x => x.displayName === 'M Interpreter 06');
-            const interp2Index = participantList.findIndex(x => x.displayName === 'M Individual 12');
-            expect(interp1Index).toEqual(6);
-            expect(interp2Index).toEqual(7);
+            // Participants
+            const pariticpant1 = participantList.findIndex(x => x.displayName === 'Individual 01');
+            const pariticpant2 = participantList.findIndex(x => x.displayName === 'Individual 02');
+            expect(pariticpant1).toEqual(4);
+            expect(pariticpant2).toEqual(5);
 
-            // Interpreter 06
-            // Individual 12
+            const witness1 = participantList.findIndex(x => x.displayName === 'Witness 01');
+            const witness2 = participantList.findIndex(x => x.displayName === 'Witness 02');
+            expect(witness1).toEqual(6);
+            expect(witness2).toEqual(7);
 
             // Observers
-            const observer1Index = participantList.findIndex(x => x.displayName === 'M Observer 03');
-            expect(observer1Index).toEqual(8);
-            // Observer 03
+            const observerIndex = participantList.findIndex(x => x.displayName === 'Observer');
+            expect(observerIndex).toEqual(8);
+            // Quicklink
+            const quicklinkIndex = participantList.findIndex(x => x.displayName === 'QuickLink');
+            expect(quicklinkIndex).toEqual(9);
         });
     });
 
