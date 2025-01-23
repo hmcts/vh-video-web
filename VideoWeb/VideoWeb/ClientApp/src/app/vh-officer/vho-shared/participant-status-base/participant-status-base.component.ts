@@ -144,18 +144,18 @@ export abstract class ParticipantStatusDirective {
                 return 1;
             }
             // Sort by initialedName
-            return a.initialedName.localeCompare(b.initialedName);
+            return a.displayName.localeCompare(b.displayName);
         };
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
         const panelMembersAndWingers = this.participants
             .filter(participant => [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole))
-            .sort((a, b) => a.displayName.localeCompare(b.displayName));
+            .sort(orderByHearingRoleThenName);
         const staff = this.participants
             .filter(participant => participant.hearingRole === HearingRole.STAFF_MEMBER)
-            .sort((a, b) => a.displayName.localeCompare(b.displayName));
+            .sort(orderByHearingRoleThenName);
         const observers = this.participants
             .filter(participant => participant.hearingRole === HearingRole.OBSERVER)
-            .sort((a, b) => a.displayName.localeCompare(b.initialedName));
+            .sort(orderByHearingRoleThenName);
         const quickLinks = this.participants
             .filter(participant => participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver)
             .sort(orderByHearingRoleThenName);

@@ -70,10 +70,11 @@ describe('ParticipantStatusComponent', () => {
                     })
                 )
             );
+
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'JOH1',
+                        display_name: 'JOH2',
                         hearing_role: HearingRole.PANELMEMBER,
                         linked_participants: [],
                         role: Role.JudicialOfficeHolder
@@ -84,7 +85,7 @@ describe('ParticipantStatusComponent', () => {
             participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
-                        display_name: 'JOH2',
+                        display_name: 'JOH1',
                         hearing_role: HearingRole.PANEL_MEMBER,
                         linked_participants: [],
                         role: Role.JudicialOfficeHolder
