@@ -135,30 +135,37 @@ export abstract class ParticipantStatusDirective {
     }
 
     sortParticipants() {
-        const orderByHearingRoleThenName = (a, b) => {
-            // Sort by hearingRole
+        const orderByRoleThenName = (a, b) => {
+            // Sort by User Role
+            if (a.role < b.role) {
+                return -1;
+            }
+            if (a.role > b.role) {
+                return 1;
+            }
+            // Sort by Hearing Role
             if (a.hearingRole < b.hearingRole) {
                 return -1;
             }
             if (a.hearingRole > b.hearingRole) {
                 return 1;
             }
-            // Sort by initialedName
+            // Sort by Name
             return a.displayName.localeCompare(b.displayName);
         };
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
         const panelMembersAndWingers = this.participants
             .filter(participant => [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole))
-            .sort(orderByHearingRoleThenName);
+            .sort(orderByRoleThenName);
         const staff = this.participants
             .filter(participant => participant.hearingRole === HearingRole.STAFF_MEMBER)
-            .sort(orderByHearingRoleThenName);
+            .sort(orderByRoleThenName);
         const observers = this.participants
             .filter(participant => participant.hearingRole === HearingRole.OBSERVER)
-            .sort(orderByHearingRoleThenName);
+            .sort(orderByRoleThenName);
         const quickLinks = this.participants
             .filter(participant => participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver)
-            .sort(orderByHearingRoleThenName);
+            .sort(orderByRoleThenName);
 
         const participants = this.participants
             .filter(
@@ -169,7 +176,7 @@ export abstract class ParticipantStatusDirective {
                     !quickLinks.includes(participant) &&
                     !staff.includes(participant)
             )
-            .sort(orderByHearingRoleThenName);
+            .sort(orderByRoleThenName);
 
         this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...staff, ...participants, ...observers, ...quickLinks];
         return this.sortedParticipants;
