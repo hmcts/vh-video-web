@@ -98,7 +98,7 @@ export class HeartbeatService {
     stopHeartbeat() {
         this.logger.debug(`${this.loggerPrefix} Attempting to stop heartbeat`);
         if (!this.heartbeat) {
-            this.logger.warn(`${this.loggerPrefix} Couldn't stop the heartbeat as it didn't exist`);
+            this.logger.debug(`${this.loggerPrefix} Couldn't stop the heartbeat as it didn't exist`);
             return;
         }
 

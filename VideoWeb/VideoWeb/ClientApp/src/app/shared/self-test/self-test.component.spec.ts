@@ -128,6 +128,7 @@ describe('SelfTestComponent', () => {
         it('should initialise showChangeDevices to the false when video filters is NOT supported', () => {
             // Arrange
             spyOn(component, 'initialiseData');
+            userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(false));
             videoFilterServiceSpy.doesSupportVideoFiltering.and.returnValue(false);
 
             // Act
@@ -149,6 +150,7 @@ describe('SelfTestComponent', () => {
             it('should setup subscribers, configure and make call; additionally only handle once', fakeAsync(() => {
                 // Arrange
                 spyOn(component, 'initialiseData');
+                const setupPexipClientSpy = spyOn(component, 'setupPexipClient');
                 const setupSubscribersSpy = spyOn(component, 'setupSubscribers');
                 const setupTestAndCallSpy = spyOn(component, 'setupTestAndCall');
 
@@ -160,6 +162,7 @@ describe('SelfTestComponent', () => {
                 flush();
 
                 // Assert
+                expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
                 expect(setupSubscribersSpy).toHaveBeenCalledTimes(1);
                 expect(setupTestAndCallSpy).toHaveBeenCalledTimes(1);
             }));
@@ -167,6 +170,7 @@ describe('SelfTestComponent', () => {
             it('should handle an error and call the error service', fakeAsync(() => {
                 // Arrange
                 spyOn(component, 'initialiseData');
+                spyOn(component, 'setupPexipClient');
 
                 // Act
                 component.ngOnInit();
@@ -608,21 +612,18 @@ describe('SelfTestComponent', () => {
     describe('setupTestAndCall', () => {
         const selfTestParticipantId = 'participant-id';
         let callSpy: jasmine.Spy<() => Promise<void>>;
-        let setupPexipClientSpy: jasmine.Spy<() => Promise<void>>;
 
         beforeEach(() => {
             component.selfTestParticipantId = selfTestParticipantId;
             callSpy = spyOn(component, 'call');
-            setupPexipClientSpy = spyOn(component, 'setupPexipClient');
         });
 
-        it('should set up the pexip client; get the self test token and call... call', fakeAsync(() => {
+        it('should set get the self test token and invoke call', fakeAsync(() => {
             // Act
             component.setupTestAndCall();
             flush();
 
             // Assert
-            expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
             expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
             expect(callSpy).toHaveBeenCalledTimes(1);
         }));
@@ -637,7 +638,6 @@ describe('SelfTestComponent', () => {
             flush();
 
             // Assert
-            expect(setupPexipClientSpy).toHaveBeenCalledTimes(1);
             expect(videoWebServiceSpy.getSelfTestToken).toHaveBeenCalledOnceWith(selfTestParticipantId);
             expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
             expect(callSpy).not.toHaveBeenCalled();
