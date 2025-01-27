@@ -224,5 +224,16 @@ describe('HeartbeatService', () => {
             expect(heartbeatSpy.kill).toHaveBeenCalledTimes(1);
             expect(sut.heartbeat).toBeFalsy();
         });
+
+        it('should do nothing if the heartbeat is null', () => {
+            // Arrange
+            sut.heartbeat = null;
+
+            // Act
+            sut.stopHeartbeat();
+
+            // Assert
+            expect(loggerSpy.debug).toHaveBeenCalledWith(jasmine.stringMatching(/Couldn't stop the heartbeat as it didn't exist/));
+        });
     });
 });

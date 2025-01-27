@@ -795,4 +795,31 @@ describe('SelfTestComponent', () => {
             expect(retrieveSelfTestScoreSpy).toHaveBeenCalledTimes(1);
         }));
     });
+
+    describe('setupPexipClient', () => {
+        it('should subscribe to video call events and set up the pexip client', async () => {
+            // Arrange
+            videoCallServiceSpy.onCallSetup.and.returnValue(of(new CallSetup(new MediaStream())));
+            videoCallServiceSpy.onCallConnected.and.returnValue(of(new ConnectedCall(new MediaStream())));
+            videoCallServiceSpy.onError.and.returnValue(of(new CallError('error')));
+            videoCallServiceSpy.onCallDisconnected.and.returnValue(of(new DisconnectedCall('reason')));
+
+            const handleCallSetupSpy = spyOn(component, 'handleCallSetup');
+            const handleCallConnectedSpy = spyOn(component, 'handleCallConnected');
+            const handleCallErrorSpy = spyOn(component, 'handleCallError');
+            const handleCallDisconnectSpy = spyOn(component, 'handleCallDisconnect');
+
+            videoCallServiceSpy.setupClient.and.resolveTo();
+
+            // Act
+            await component.setupPexipClient();
+
+            // Assert
+            expect(handleCallSetupSpy).toHaveBeenCalledTimes(1);
+            expect(handleCallConnectedSpy).toHaveBeenCalledTimes(1);
+            expect(handleCallErrorSpy).toHaveBeenCalledTimes(1);
+            expect(handleCallDisconnectSpy).toHaveBeenCalledTimes(1);
+            expect(videoCallServiceSpy.setupClient).toHaveBeenCalledTimes(1);
+        });
+    });
 });
