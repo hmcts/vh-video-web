@@ -45,8 +45,6 @@ namespace VideoWeb.EventHub.Hub
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
         Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
         Task NewConferenceAddedMessage(Guid conferenceId);
-        [Obsolete("Use AllocationsUpdated instead")]
-        Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
         Task AllocationsUpdated(List<UpdatedAllocationDto> updatedAllocationDtos);
         Task EndpointsUpdated(Guid conferenceId, UpdateEndpointsDto endpoints);
         Task HearingCancelledMessage(Guid conferenceId);

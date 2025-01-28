@@ -31,7 +31,8 @@ internal class AllocationHearingsEventNotifierTests
         _eventHelper = new EventComponentHelper
         {
             EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
-            EventHubClientMock = new Mock<IEventHubClient>()
+            EventHubClientMock = new Mock<IEventHubClient>(),
+            ConferenceServiceMock = new Mock<IConferenceService>()
         };
         _eventHelper.ConferenceServiceMock
             .Setup(x => x.GetConferences(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
