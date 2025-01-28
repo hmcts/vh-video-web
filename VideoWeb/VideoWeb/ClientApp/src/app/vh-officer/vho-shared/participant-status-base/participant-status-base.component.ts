@@ -135,22 +135,50 @@ export abstract class ParticipantStatusDirective {
     }
 
     sortParticipants() {
+        const orderByRoleThenName = (a, b) => {
+            // Sort by User Role
+            if (a.role < b.role) {
+                return -1;
+            }
+            if (a.role > b.role) {
+                return 1;
+            }
+            // Sort by Hearing Role
+            if (a.hearingRole < b.hearingRole) {
+                return -1;
+            }
+            if (a.hearingRole > b.hearingRole) {
+                return 1;
+            }
+            // Sort by Name
+            return a.displayName.localeCompare(b.displayName);
+        };
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
+        const panelMembersAndWingers = this.participants
+            .filter(participant => [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole))
+            .sort(orderByRoleThenName);
+        const staff = this.participants
+            .filter(participant => participant.hearingRole === HearingRole.STAFF_MEMBER)
+            .sort(orderByRoleThenName);
+        const observers = this.participants
+            .filter(participant => participant.hearingRole === HearingRole.OBSERVER)
+            .sort(orderByRoleThenName);
+        const quickLinks = this.participants
+            .filter(participant => participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver)
+            .sort(orderByRoleThenName);
 
-        const panelMembersAndWingers = this.participants.filter(participant =>
-            [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole)
-        );
-        const observers = this.participants.filter(participant => participant.hearingRole === HearingRole.OBSERVER);
-        const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
-        const others = this.participants.filter(
-            participant =>
-                !judges.includes(participant) &&
-                !panelMembersAndWingers.includes(participant) &&
-                !interpretersAndInterpretees.includes(participant) &&
-                !observers.includes(participant)
-        );
+        const participants = this.participants
+            .filter(
+                participant =>
+                    !judges.includes(participant) &&
+                    !panelMembersAndWingers.includes(participant) &&
+                    !observers.includes(participant) &&
+                    !quickLinks.includes(participant) &&
+                    !staff.includes(participant)
+            )
+            .sort(orderByRoleThenName);
 
-        this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...others, ...interpretersAndInterpretees, ...observers];
+        this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...staff, ...participants, ...observers, ...quickLinks];
         return this.sortedParticipants;
     }
 }

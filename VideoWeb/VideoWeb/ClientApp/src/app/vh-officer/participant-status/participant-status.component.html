@@ -11,13 +11,9 @@
         </span>
       </div>
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
-          <ng-container
-              *ngIf="participant.isJudge || participant.isQuickLinkUser || participant.isStaffMember; else individualName">
+         <ng-container>
           {{ participant.displayName }}
         </ng-container>
-        <ng-template #individualName>
-          {{ participant.initialedName }}
-        </ng-template>
         <div id="tooltip-{{ participant.id }}" class="tooltip">
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
