@@ -23,10 +23,10 @@ internal class AllocationHearingsEventNotifierTests
     private Conference _conference;
     private EventComponentHelper _eventHelper;
     private const string CsoUserName = "username@email.com";
-    
+
     [SetUp]
     public void SetUp()
-    { 
+    {
         _conference = new ConferenceCacheModelBuilder().Build();
         _eventHelper = new EventComponentHelper
         {
@@ -37,15 +37,14 @@ internal class AllocationHearingsEventNotifierTests
         _eventHelper.ConferenceServiceMock
             .Setup(x => x.GetConferences(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync([_conference]);
-            
-            // .ReturnsAsync((List<Guid> ids) => _conferences.Where(c => ids.Contains(c.Id)).ToList());
+
         // this will register all participants as connected to the hub
         _eventHelper.RegisterUsersForHubContext(_conference.Participants);
         _eventHelper.RegisterParticipantForHubContext(CsoUserName);
         _notifier = new AllocationHearingsEventNotifier(_eventHelper.EventHubContextMock.Object,
             _eventHelper.ConferenceServiceMock.Object);
     }
-    
+
     [Test]
     public async Task Should_send_event()
     {
