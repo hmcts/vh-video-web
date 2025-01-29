@@ -303,10 +303,10 @@ describe('CommandCentreComponent - Events', () => {
         component.setupEventHubSubscribers();
 
         const hearingDetails: UpdatedAllocation = {
-            caseName: 'case name',
-            judgeDisplayName: 'judge fudge',
-            scheduledDateTime: new Date(),
-            conferenceId: Guid.create().toString()
+            case_name: 'case name',
+            judge_display_name: 'judge fudge',
+            scheduled_date_time: new Date(),
+            conference_id: Guid.create().toString()
         };
         const message = new NewAllocationMessage([hearingDetails]);
 

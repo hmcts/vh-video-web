@@ -543,10 +543,10 @@ export class NotificationToastrService {
         let messageBody = '';
 
         hearings.forEach(h => {
-            const judge = h.judgeDisplayName;
+            const judge = h.judge_display_name;
             const options = { hour: '2-digit', minute: '2-digit', hour12: false } as Intl.DateTimeFormatOptions;
-            const time = new Date(h.scheduledDateTime).toLocaleTimeString('en-GB', options);
-            const caseName = h.caseName;
+            const time = new Date(h.scheduled_date_time).toLocaleTimeString('en-GB', options);
+            const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
             if (judge) {

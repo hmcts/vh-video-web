@@ -1581,17 +1581,17 @@ describe('NotificationToastrService', () => {
         const expectedToastId = 2;
         const hearingsPassed: UpdatedAllocation[] = [];
         let hearing: UpdatedAllocation = {
-            judgeDisplayName: 'Judge1',
-            scheduledDateTime: new Date(2023, 1, 1, 10, 0, 0, 0),
-            caseName: 'case name 1',
-            conferenceId: 'conferenceId1'
+            judge_display_name: 'Judge1',
+            scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
+            case_name: 'case name 1',
+            conference_id: 'conferenceId1'
         };
         hearingsPassed.push(hearing);
         hearing = {
-            judgeDisplayName: 'Judge2',
-            scheduledDateTime: new Date(2023, 1, 1, 11, 0, 0, 0),
-            caseName: 'case name 2',
-            conferenceId: 'conferenceId2'
+            judge_display_name: 'Judge2',
+            scheduled_date_time: new Date(2023, 1, 1, 11, 0, 0, 0),
+            case_name: 'case name 2',
+            conference_id: 'conferenceId2'
         };
         hearingsPassed.push(hearing);
 
@@ -1636,7 +1636,7 @@ describe('NotificationToastrService', () => {
 
         it('should call toastr.show with the correct parameters without a judge', () => {
             toastrService.show.and.returnValue(mockToast);
-            hearingsPassed[0].judgeDisplayName = null;
+            hearingsPassed[0].judge_display_name = null;
 
             // Act
             service.createAllocationNotificationToast(hearingsPassed);
