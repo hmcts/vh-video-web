@@ -38,8 +38,8 @@ import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
 import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
-import { HearingDetailRequest } from 'src/app/services/clients/api-client';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -302,11 +302,12 @@ describe('CommandCentreComponent - Events', () => {
         notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
         component.setupEventHubSubscribers();
 
-        const hearingDetails = new HearingDetailRequest({
-            case_name: 'case name',
-            judge: 'judge fudge',
-            time: new Date()
-        });
+        const hearingDetails: UpdatedAllocation = {
+            caseName: 'case name',
+            judgeDisplayName: 'judge fudge',
+            scheduledDateTime: new Date(),
+            conferenceId: Guid.create().toString()
+        };
         const message = new NewAllocationMessage([hearingDetails]);
 
         newAllocationMessageSubjectMock.next(message);

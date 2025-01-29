@@ -15,7 +15,6 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
-    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -50,6 +49,7 @@ import { NewConferenceAddedMessage } from './models/new-conference-added-message
 import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
 import { HearingCancelledMessage } from './models/hearing-cancelled-message';
 import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
+import { UpdatedAllocation } from '../shared/models/update-allocation-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -124,10 +124,12 @@ export class EventsService {
             this.hearingCancelledSubject.next(message);
         },
 
-        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
-            this.eventsHubConnection.invoke('AddToGroup', csoUserName);
-            const message = new NewAllocationMessage(hearingDetails);
-            this.logger.debug('[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings');
+        AllocationsUpdated: (updatedAllocations: UpdatedAllocation[]) => {
+            const message = new NewAllocationMessage(updatedAllocations);
+            updatedAllocations?.forEach(allocation => {
+                this.eventsHubConnection.invoke('AddToGroup', allocation.conferenceId);
+            });
+            this.logger.debug('[EventsService] - AllocationsUpdated received', message);
             this.messageAllocationSubject.next(message);
         },
 
