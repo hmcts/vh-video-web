@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
+using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
@@ -23,6 +23,7 @@ internal class AllocationHearingsEventNotifierTests
     private Conference _conference;
     private EventComponentHelper _eventHelper;
     private const string CsoUserName = "username@email.com";
+    private Guid CsoId = Guid.NewGuid();
 
     [SetUp]
     public void SetUp()
@@ -49,7 +50,8 @@ internal class AllocationHearingsEventNotifierTests
     public async Task Should_send_event()
     {
         // Act
-        await _notifier.PushAllocationHearingsEvent(CsoUserName, [_conference.Id]);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, CsoId);
+        await _notifier.PushAllocationHearingsEvent(update, [_conference.Id]);
 
         List<UpdatedAllocationDto> expected =
             [ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto(_conference)];
@@ -64,7 +66,8 @@ internal class AllocationHearingsEventNotifierTests
         var conferences = Enumerable.Empty<Guid>().ToList();
         
         // act
-        await _notifier.PushAllocationHearingsEvent(CsoUserName, conferences);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, CsoId);
+        await _notifier.PushAllocationHearingsEvent(update, conferences);
         
         // assert
         _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(It.IsAny<List<UpdatedAllocationDto>>()),

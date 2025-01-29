@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,10 +48,12 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
         {
             // Arrange
             var conferenceIds = _conferenceDetailsResponses.Select(x => x.Id).ToList();
+            var csoId = Guid.NewGuid();
             var allocationHearingsToCsoRequest = new HearingAllocationNotificationRequest()
             {
                 ConferenceIds = conferenceIds,
-                AllocatedCsoUserName = "csousername@email.com"
+                AllocatedCsoUserName = "csousername@email.com",
+                AllocatedCsoUserId = csoId
             };
             
 
@@ -61,8 +64,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             result.Should().BeOfType<NoContentResult>();
 
             _mocker.Mock<IAllocationHearingsEventNotifier>().Verify(
-                x => x.PushAllocationHearingsEvent("csousername@email.com", conferenceIds),
-                Times.Once);
+                x => x.PushAllocationHearingsEvent(new UpdatedAllocationJusticeUserDto("csousername@email.com", csoId),
+                    conferenceIds), Times.Once);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace VideoWeb.Contract.Request;
 
 public class HearingAllocationNotificationRequest
 {
-    public string AllocatedCsoUserName { get; set; }   
+    public string AllocatedCsoUserName { get; set; }
+    public Guid AllocatedCsoUserId { get; set; }
     public List<Guid> ConferenceIds { get; set; }
 }

@@ -25,7 +25,8 @@ public class InternalEventAllocationController(ILogger<InternalEventAllocationCo
     public async Task<IActionResult> AllocationHearings(HearingAllocationNotificationRequest request)
     {
         logger.LogDebug("AllocationHearings called. Request {Serialize}", JsonSerializer.Serialize(request));
-        await allocationHearingsEventNotifier.PushAllocationHearingsEvent(request.AllocatedCsoUserName,
+        await allocationHearingsEventNotifier.PushAllocationHearingsEvent(
+            new UpdatedAllocationJusticeUserDto(request.AllocatedCsoUserName, request.AllocatedCsoUserId),
             request.ConferenceIds);
         return NoContent();
     }
