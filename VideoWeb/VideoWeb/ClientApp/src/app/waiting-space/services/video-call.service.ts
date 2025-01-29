@@ -220,12 +220,16 @@ export class VideoCallService {
         this.deviceAvailability = await this.userMediaService.checkCameraAndMicrophonePresence();
         const hasCameraDevices = this.deviceAvailability.hasACamera;
         const hasMicrophoneDevices = this.deviceAvailability.hasAMicrophone;
-
+        const callType: PexipCallType = conferenceAlias.includes('testcall2') ? 'test_call' : null;
+        this.logger.debug(`${this.loggerPrefix} making call`, {
+            callType,
+            conferenceAlias
+        });
         if (hasCameraDevices && hasMicrophoneDevices) {
-            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         } else if (!hasCameraDevices && hasMicrophoneDevices) {
             this.pexipAPI.video_source = false;
-            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
+            this.makePexipCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
         } else {
             this.pexipAPI.video_source = false;
             this.pexipAPI.audio_source = false;
@@ -578,7 +582,10 @@ export class VideoCallService {
         callType?: PexipCallType
     ) {
         this.logger.debug(`${this.loggerPrefix} make pexip call`, {
-            pexipNode: pexipNode
+            pexipNode: pexipNode,
+            conferenceAlias,
+            participantDisplayName,
+            callType
         });
         this.stopPresentation();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
@@ -589,6 +596,9 @@ export class VideoCallService {
     }
 
     private handleConnect(stream: MediaStream | URL) {
+        this.logger.debug(`${this.loggerPrefix} handling connect`, {
+            call_type: this.pexipAPI.call_type
+        });
         if (this.renegotiating || this.justRenegotiated) {
             this.logger.warn(
                 `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
