@@ -9,6 +9,7 @@ import { ConferenceState } from '../waiting-space/store/reducers/conference.redu
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { ConferenceStatus } from './clients/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -68,6 +69,9 @@ export class AudioRecordingService {
 
     async reconnectToWowza(callback: Function = null) {
         this.restartActioned = true;
+        if (this.conference.status !== ConferenceStatus.InSession) {
+            return;
+        }
         this.videoCallService.connectWowzaAgent(this.conference.audioRecordingIngestUrl, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
                 this.logger.debug(`${this.loggerPrefix} dial-out request successful`);
