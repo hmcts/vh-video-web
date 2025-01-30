@@ -7,4 +7,3 @@ public record UpdatedAllocationDto(
     DateTime ScheduledDateTime,
     string CaseName,
     string JudgeDisplayName);
-    
