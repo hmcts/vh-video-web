@@ -10,6 +10,7 @@ import {
     initAllWRDependencies,
     mockConferenceStore
 } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import {ConferenceStatus} from "./clients/api-client";
 
 describe('AudioRecordingService', () => {
     let service: AudioRecordingService;
@@ -81,9 +82,18 @@ describe('AudioRecordingService', () => {
         });
 
         describe('reconnectToWowza', () => {
+            beforeEach(() => {
+                service.conference = { id: globalConference.id, audioRecordingIngestUrl: 'ingestUrl', status: ConferenceStatus.InSession } as any;
+                service.restartActioned = false;
+            });
+            it('should exit if conference is not in session', async () => {
+                service.conference.status = ConferenceStatus.Paused;
+                await service.reconnectToWowza();
+                expect(videoCallServiceSpy.connectWowzaAgent).not.toHaveBeenCalled();
+            });
+
             it('should reconnect to Wowza', async () => {
                 const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
-                service.conference = { id: globalConference.id, audioRecordingIngestUrl: 'ingestUrl' } as any;
                 videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
                     callback({ status: 'success', result: ['newUUID'] });
                 });
@@ -97,7 +107,6 @@ describe('AudioRecordingService', () => {
 
             it('should call failedToConnectCallback if reconnect to Wowza fails', async () => {
                 const failedToConnectCallback = jasmine.createSpy('failedToConnectCallback');
-                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
                 videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
                     callback({ status: 'failure' });
                 });
@@ -107,7 +116,6 @@ describe('AudioRecordingService', () => {
             });
 
             it('should call push false to wowzaAgentConnection$ if reconnect to Wowza fails', async () => {
-                service.conference = { id: 'conferenceId', audioRecordingIngestUrl: 'ingestUrl' } as any;
                 videoCallServiceSpy.connectWowzaAgent.and.callFake((url, callback) => {
                     callback({ status: 'failure' });
                 });
