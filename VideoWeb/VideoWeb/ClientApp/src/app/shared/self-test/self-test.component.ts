@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -56,8 +56,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     selfTestPexipNode: string;
 
     maxBandwidth = 1280;
-    subscription: Subscription = new Subscription();
-    videoCallSubscription$ = new Subscription();
 
     private destroyedSubject = new Subject();
     private readonly loggerPrefix = '[SelfTest] -';
@@ -86,12 +84,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     async ngOnDestroy() {
-        this.subscription.unsubscribe();
-        this.videoCallSubscription$.unsubscribe();
-        this.disconnect();
-
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+        this.disconnect();
         this.userMediaStreamService.closeCurrentStream();
         if (this.conference) {
             let reason: SelfTestFailureReason;
@@ -110,12 +105,13 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
         this.userMediaService.initialise();
         this.userMediaStreamService.createAndPublishStream();
+        this.setupSubscribers();
+        this.setupPexipClient();
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
                 this.scoreSent = false;
-                this.setupSubscribers();
                 this.setupTestAndCall();
             },
             error: error => {
@@ -150,7 +146,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        await this.setupPexipClient();
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug(`${this.loggerPrefix} Retrieved token for self test`, {
@@ -205,14 +200,25 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
 
-        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
-        this.videoCallSubscription$.add(
-            this.videoCallService.onCallConnected().subscribe(callConnected => this.handleCallConnected(callConnected))
-        );
-        this.videoCallSubscription$.add(this.videoCallService.onError().subscribe(callError => this.handleCallError(callError)));
-        this.videoCallSubscription$.add(
-            this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
-        );
+        this.videoCallService
+            .onCallSetup()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(setup => this.handleCallSetup(setup));
+
+        this.videoCallService
+            .onCallConnected()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(callConnected => this.handleCallConnected(callConnected));
+
+        this.videoCallService
+            .onError()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(callError => this.handleCallError(callError));
+
+        this.videoCallService
+            .onCallDisconnected()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall));
 
         // conference will be null if running from the hearing list page
         await this.videoCallService.setupClient(this.conference?.supplier);

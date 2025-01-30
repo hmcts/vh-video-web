@@ -205,6 +205,30 @@ describe('ConferenceEffects', () => {
             expect(errorServiceSpy.goToServiceError).toHaveBeenCalled();
         });
 
+        it('should navigate to error page if participant is disconnected due to heartbeat related issues', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.updateParticipantStatus({
+                participantId: vhParticipant.id,
+                conferenceId: conference.id,
+                status: ParticipantStatus.Disconnected,
+                reason: 'Bad or no heartbeat received due to temporary network disruption'
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.participantDisconnect$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.goToServiceError).toHaveBeenCalled();
+        });
+
         it('should ignore if the status is not disconnected', () => {
             // arrange
             const conference = new ConferenceTestData().getConferenceDetailNow();
