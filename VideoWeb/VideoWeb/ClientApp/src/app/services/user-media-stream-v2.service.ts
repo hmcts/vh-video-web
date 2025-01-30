@@ -81,6 +81,7 @@ export class UserMediaStreamServiceV2 {
             if (this.currentCamDevice) {
                 this.logger.debug(`${this.loggerPrefix} Creating video stream with cam device ${this.currentCamDevice.label}.`);
                 videoStream$ = this.mediaStreamService.getStreamForCam(this.currentCamDevice);
+                videoStream$.subscribe();
             } else {
                 this.logger.debug(`${this.loggerPrefix} Creating video stream without cam device.`);
                 videoStream$ = of(this.mediaStreamService.initialiseNewStream([]));
