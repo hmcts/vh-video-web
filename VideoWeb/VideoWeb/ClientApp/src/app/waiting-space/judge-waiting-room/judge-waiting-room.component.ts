@@ -124,6 +124,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     videoClosedExt() {
+        this.audioErrorRetryToast?.remove();
         this.audioErrorRetryToast = null;
     }
 
@@ -523,9 +524,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private reconnectWowzaAgent = (): void => {
-        this.audioRecordingService.cleanupDialOutConnections();
-        this.audioRecordingService.reconnectToWowza(() => {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        });
+        // Confirm in a hearing and not a consultation
+        if(this.hearing.isInSession() && !this.isPrivateConsultation) {
+            this.audioRecordingService.cleanupDialOutConnections();
+            this.audioRecordingService.reconnectToWowza(() => {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            });
+        }
+        else {
+            this.logger.warn(`${this.loggerPrefixJudge} can not reconnect to Wowza agent as not in a hearing`);
+        }
     };
 }
