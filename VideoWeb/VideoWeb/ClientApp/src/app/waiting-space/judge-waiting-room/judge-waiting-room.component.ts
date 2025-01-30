@@ -124,6 +124,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     videoClosedExt() {
+        this.audioErrorRetryToast.remove();
         this.audioErrorRetryToast = null;
     }
 
