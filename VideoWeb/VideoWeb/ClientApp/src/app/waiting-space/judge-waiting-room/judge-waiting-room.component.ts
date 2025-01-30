@@ -525,7 +525,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     private reconnectWowzaAgent = (): void => {
         // Confirm in a hearing and not a consultation
-        if(this.hearing.isInSession() && !this.isPrivateConsultation) {
+        if(this.conference.status === ConferenceStatus.InSession && !this.isPrivateConsultation) {
             this.audioRecordingService.cleanupDialOutConnections();
             this.audioRecordingService.reconnectToWowza(() => {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));

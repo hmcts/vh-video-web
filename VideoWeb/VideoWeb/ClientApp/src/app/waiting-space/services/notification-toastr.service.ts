@@ -603,6 +603,9 @@ export class NotificationToastrService {
             concludeToast: async fn => {
                 this.toastr.remove(toast.toastId);
                 this.showAudioRecordingRestartSuccess(fn);
+            },
+            onNoAction: () => {
+                this.toastr.remove(toast.toastId);
             }
         };
         return toast.toastRef.componentInstance as VhToastComponent;
