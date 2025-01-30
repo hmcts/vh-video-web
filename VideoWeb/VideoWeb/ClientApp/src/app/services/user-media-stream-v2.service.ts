@@ -3,7 +3,7 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { AudioOnlyImageService } from './audio-only-image.service';
 import { MediaStreamService } from './media-stream.service';
 import { UserMediaService } from './user-media.service';
-import { map, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Logger } from './logging/logger-base';
 
@@ -31,15 +31,20 @@ export class UserMediaStreamServiceV2 {
         const activeMicrophoneDevice$ = this.userMediaService.activeMicrophoneDevice$;
         const isAudioOnly$ = this.userMediaService.isAudioOnly$;
 
-        combineLatest([activeVideoDevice$, activeMicrophoneDevice$, isAudioOnly$]).subscribe(
-            ([videoDevice, microphoneDevice, audioOnly]) => {
+        combineLatest([activeVideoDevice$, activeMicrophoneDevice$, isAudioOnly$])
+            .pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)))
+            .subscribe(([videoDevice, microphoneDevice, audioOnly]) => {
+                this.logger.debug(`${this.loggerPrefix} Active devices changed.`, {
+                    videoDevice: videoDevice?.label ?? 'No Camera Device',
+                    microphoneDevice: microphoneDevice?.label ?? 'No Microphone Device',
+                    audioOnly
+                });
                 this.currentCamDevice = videoDevice;
                 this.currentMicDevice = microphoneDevice;
                 this.audioOnly = audioOnly;
 
                 this.createAndPublishStream();
-            }
-        );
+            });
     }
 
     get currentStream$() {
@@ -99,6 +104,11 @@ export class UserMediaStreamServiceV2 {
                 tap(combinedStream => {
                     this.currentStream = combinedStream;
                     this._currentStream$.next(combinedStream);
+                    this.logger.debug(`${this.loggerPrefix} New stream created and published.`, {
+                        videoDevice: this.currentCamDevice?.label ?? 'No Camera Device',
+                        microphoneDevice: this.currentMicDevice?.label ?? 'No Microphone Device',
+                        audioOnly: this.audioOnly
+                    });
                 })
             )
             .subscribe();
@@ -109,6 +119,7 @@ export class UserMediaStreamServiceV2 {
             this.currentStream.getTracks().forEach(track => track.stop());
             this.currentStream = null;
             this._currentStream$.next(null);
+            this.logger.debug(`${this.loggerPrefix} current stream set to null.`);
         }
     }
 

@@ -304,8 +304,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
             this.resetMute();
         }
-
-        this.participant.status = message.status;
     }
 
     async handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
