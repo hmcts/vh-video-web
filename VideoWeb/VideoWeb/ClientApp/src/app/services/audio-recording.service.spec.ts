@@ -10,7 +10,7 @@ import {
     initAllWRDependencies,
     mockConferenceStore
 } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
-import {ConferenceStatus} from "./clients/api-client";
+import { ConferenceStatus } from './clients/api-client';
 
 describe('AudioRecordingService', () => {
     let service: AudioRecordingService;
@@ -83,7 +83,11 @@ describe('AudioRecordingService', () => {
 
         describe('reconnectToWowza', () => {
             beforeEach(() => {
-                service.conference = { id: globalConference.id, audioRecordingIngestUrl: 'ingestUrl', status: ConferenceStatus.InSession } as any;
+                service.conference = {
+                    id: globalConference.id,
+                    audioRecordingIngestUrl: 'ingestUrl',
+                    status: ConferenceStatus.InSession
+                } as any;
                 service.restartActioned = false;
             });
             it('should exit if conference is not in session', async () => {

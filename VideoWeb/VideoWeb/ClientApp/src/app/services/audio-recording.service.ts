@@ -9,7 +9,7 @@ import { ConferenceState } from '../waiting-space/store/reducers/conference.redu
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import {ConferenceStatus} from "./clients/api-client";
+import { ConferenceStatus } from './clients/api-client';
 
 @Injectable({
     providedIn: 'root'

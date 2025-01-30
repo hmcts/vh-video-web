@@ -1224,7 +1224,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     videoClosedExt() {
-        ///This is overriden in the child judge waiting room component
+        /// This is overriden in the child judge waiting room component
         this.logger.debug(`${this.loggerPrefix} - video closed`);
     }
 
