@@ -22,7 +22,9 @@
         </p>
         <p id="participant-case-number-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
           {{ 'hearing-list-table.case-number' | translate }}:
-          <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text></strong>
+          <strong
+            ><app-truncatable-text [text]="conference.case_number" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text
+          ></strong>
         </p>
       </td>
       <td class="govuk-table__cell">
@@ -33,16 +35,16 @@
           type="button"
           *ngIf="canStartHearing(conference)"
           (click)="signIntoConference(conference)"
-          [attr.aria-label]="('hearing-list-table.button.sign-into-hearing' | translate) + ' ' + conference.case_name"
+          [attr.aria-label]="('hearing-list-table.button.sign-into-hearing' | translate) + ' ' + conference.case_number"
         >
-        {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
+          {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
         </button>
         <span *ngIf="!canStartHearing(conference)">
           <p id="participant-sign-in-date-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-            {{ 'hearing-list-table.sign-in' | translate:{ date: getSignInDate(conference)} }}
+            {{ 'hearing-list-table.sign-in' | translate: { date: getSignInDate(conference) } }}
           </p>
           <p id="participant-sign-in-time-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-            {{ 'hearing-list-table.from' | translate:{ time: getSignInTime(conference) | date: 'HH:mm' } }}
+            {{ 'hearing-list-table.from' | translate: { time: getSignInTime(conference) | date: 'HH:mm' } }}
           </p>
         </span>
       </td>
