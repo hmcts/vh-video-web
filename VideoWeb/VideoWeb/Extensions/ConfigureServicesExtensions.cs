@@ -88,7 +88,6 @@ namespace VideoWeb.Extensions
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
-            services.AddTransient<UserApiTokenHandler>();
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IVodafoneJwtTokenProvider, VodafoneJwtTokenProvider>();
