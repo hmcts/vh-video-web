@@ -102,7 +102,7 @@ namespace VideoWeb.UnitTests.Extensions
             Assert.Throws<ArgumentNullException>(() => request.SetRoleForParticipantEvent(null));
         }
 
-        private Conference BuildConferenceForTest()
+        private static Conference BuildConferenceForTest()
         {
             var conference = new Conference
             {
