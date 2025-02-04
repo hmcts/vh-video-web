@@ -194,6 +194,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             });
 
         this.conferenceStore
+            .select(ConferenceSelectors.getPexipConference)
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                filter(x => !!x && x.started)
+            )
+            .subscribe(() => {
+                this.handleHearingCountdownComplete(this.conferenceId);
+            });
+
+        this.conferenceStore
             .select(ConferenceSelectors.getParticipants)
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(participants => {

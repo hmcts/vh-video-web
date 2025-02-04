@@ -25,7 +25,7 @@ export class NotificationEffects {
                 ]),
                 filter(
                     ([action, activeConference, loggedInParticipant]) =>
-                        action.conferenceId === activeConference.id && loggedInParticipant.role === Role.JudicialOfficeHolder
+                        action.conferenceId === activeConference?.id && loggedInParticipant?.role === Role.JudicialOfficeHolder
                 ),
                 tap(([action]) => {
                     if (action.status === ConferenceStatus.InSession) {
@@ -48,9 +48,9 @@ export class NotificationEffects {
                 ]),
                 filter(
                     ([action, activeConference, loggedInParticipant]) =>
-                        action.conferenceId === activeConference.id &&
-                        loggedInParticipant.hearingRole !== HearingRole.WITNESS &&
-                        (loggedInParticipant.role === Role.Individual || loggedInParticipant.role === Role.Representative)
+                        action.conferenceId === activeConference?.id &&
+                        loggedInParticipant?.hearingRole !== HearingRole.WITNESS &&
+                        (loggedInParticipant?.role === Role.Individual || loggedInParticipant?.role === Role.Representative)
                 ),
                 tap(([action, activeConference, loggedInParticipant]) => {
                     let hasWitnessLink = false;
