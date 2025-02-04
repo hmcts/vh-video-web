@@ -54,6 +54,8 @@ public class VideoEventsController(
                 request.ParticipantId = null;
                 events = request.CreateEventsForParticipantsInRoom(conference, roomId);
             }
+            // Assign conference roles based on screening rules utilised by the Supplier API
+            request.SetRoleForParticipantEvent(conference);
             
             var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
             

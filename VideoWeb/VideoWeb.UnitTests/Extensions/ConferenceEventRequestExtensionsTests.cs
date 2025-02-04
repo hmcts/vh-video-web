@@ -49,8 +49,60 @@ namespace VideoWeb.UnitTests.Extensions
             var result = request.CreateEventsForParticipantsInRoom(_testConference, civilianRoom.Id);
             result.All(r => r.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
         }
+        
+        [Test]
+        public void SetRoleForParticipantEvent_SetsGuestRole_WhenIndividualParticipantIsNonScreened()
+        {
+            _testConference.Participants.ForEach(p => p.ProtectFrom = new List<string>());
+            var participant = _testConference.Participants.Find(x => x.Role == Role.Individual);
+            var request = new ConferenceEventRequest { ParticipantId = participant.Id.ToString() };
 
-        protected Conference BuildConferenceForTest()
+            request.SetRoleForParticipantEvent(_testConference);
+
+            request.ConferenceRole.Should().Be(ConferenceRole.Guest);
+        }
+        
+        [Test]
+        public void SetRoleForParticipantEvent_SetsHostRole_WhenHostParticipantIsNonScreened()
+        {
+            _testConference.Participants.ForEach(p => p.ProtectFrom = new List<string>());
+            var participant = _testConference.Participants.Find(x => x.Role == Role.Judge);
+            var request = new ConferenceEventRequest { ParticipantId = participant.Id.ToString() };
+
+            request.SetRoleForParticipantEvent(_testConference);
+
+            request.ConferenceRole.Should().Be(ConferenceRole.Host);
+        }
+
+        [Test]
+        public void SetRoleForParticipantEvent_SetsGuestRole_WhenHostParticipantIsScreened()
+        {
+            _testConference.Participants.ForEach(p => p.ProtectFrom = new List<string>());
+            var participant = _testConference.Participants.Find(x => x.Role == Role.Individual);
+            participant.ProtectFrom.Add(_testConference.Endpoints[0].ExternalReferenceId);
+            var request = new ConferenceEventRequest { ParticipantId = participant.Id.ToString() };
+
+            request.SetRoleForParticipantEvent(_testConference);
+
+            request.ConferenceRole.Should().Be(ConferenceRole.Guest);
+        }
+
+        [Test]
+        public void SetRoleForParticipantEvent_DoNothing_WhenHostParticipantIsNotProvided()
+        {
+            var request = new ConferenceEventRequest { ParticipantId = null };
+            Assert.Throws<ArgumentNullException>(() => request.SetRoleForParticipantEvent(null));
+        }
+
+        [Test]
+        public void SetRoleForParticipantEvent_ThrowsArgumentNullException_WhenConferenceIsNull()
+        {
+            var request = new ConferenceEventRequest { ParticipantId = Guid.NewGuid().ToString() };
+
+            Assert.Throws<ArgumentNullException>(() => request.SetRoleForParticipantEvent(null));
+        }
+
+        private static Conference BuildConferenceForTest()
         {
             var conference = new Conference
             {
