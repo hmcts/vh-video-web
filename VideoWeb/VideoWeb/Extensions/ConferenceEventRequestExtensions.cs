@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -96,6 +97,16 @@ namespace VideoWeb.Extensions
             };
 
             return videoApiRequest;
+        }
+        
+        public static void SetRoleForParticipantEvent(this ConferenceEventRequest request, Conference conference)
+        {
+            ArgumentNullException.ThrowIfNull(conference);
+            if (string.IsNullOrWhiteSpace(request.ParticipantId)) return;
+            var role = conference.GetNonScreenedParticipantsAndEndpoints().Contains(Guid.Parse(request.ParticipantId))
+                ? ConferenceRole.Host
+                : ConferenceRole.Guest;
+            request.ConferenceRole = role;
         }
     }
 }
