@@ -199,9 +199,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                 takeUntil(this.destroyedSubject),
                 filter(x => !!x && x.started)
             )
-            .subscribe(() => {
-                this.handleHearingCountdownComplete(this.conferenceId);
-            });
+            .subscribe(() => this.handleHearingCountdownComplete(this.conferenceId));
 
         this.conferenceStore
             .select(ConferenceSelectors.getParticipants)

@@ -48,6 +48,8 @@ export class NotificationEffects {
                 ]),
                 filter(
                     ([action, activeConference, loggedInParticipant]) =>
+                        !!activeConference &&
+                        !!loggedInParticipant &&
                         action.conferenceId === activeConference?.id &&
                         loggedInParticipant?.hearingRole !== HearingRole.WITNESS &&
                         (loggedInParticipant?.role === Role.Individual || loggedInParticipant?.role === Role.Representative)
@@ -83,6 +85,7 @@ export class NotificationEffects {
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
+                filter(([action, activeConference, loggedInParticipant]) => !!activeConference && !!loggedInParticipant),
                 tap(([action, activeConference, loggedInParticipant]) => {
                     const isHost = loggedInParticipant?.role === Role.Judge || loggedInParticipant?.role === Role.StaffMember;
                     if (activeConference.id !== action.conferenceId) {

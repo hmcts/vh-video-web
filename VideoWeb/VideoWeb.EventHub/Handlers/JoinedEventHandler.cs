@@ -31,6 +31,8 @@ namespace VideoWeb.EventHub.Handlers
                 state = ParticipantState.InConsultation;
             }
 
+            Logger.LogTrace("Participant {ParticipantId} joined conference {ConferenceId} with status {ParticipantStatus}",
+                callbackEvent.ParticipantId, callbackEvent.ConferenceId, newStatus);
             await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason);
         }
     }
