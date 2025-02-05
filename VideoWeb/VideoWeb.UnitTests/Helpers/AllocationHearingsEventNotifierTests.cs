@@ -73,4 +73,25 @@ internal class AllocationHearingsEventNotifierTests
         _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(It.IsAny<List<UpdatedAllocationDto>>()),
             Times.Never);
     }
+
+    [Test]
+    public async Task Should_send_event_to_new_and_previously_allocated_cso()
+    {
+        // arrange
+        const string newCsoUsername = CsoUserName;
+        const string previousCsoUsername = "previous-cso@email.com";
+        _conference.AllocatedCso = previousCsoUsername;
+        _conference.AllocatedCsoId = Guid.NewGuid();
+        _eventHelper.RegisterParticipantForHubContext(previousCsoUsername);
+        var update = new UpdatedAllocationJusticeUserDto(newCsoUsername, CsoId);
+
+        // act
+        await _notifier.PushAllocationHearingsEvent(update, [_conference.Id]);
+
+        // assert
+        List<UpdatedAllocationDto> expectedContent =
+            [ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto(_conference)];
+        
+        _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(expectedContent), Times.Exactly(2));
+    }
 }

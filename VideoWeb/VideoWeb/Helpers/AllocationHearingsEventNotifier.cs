@@ -21,19 +21,30 @@ public class AllocationHearingsEventNotifier(
         {
             return;
         }
-
+    
         var conferences = (await conferenceService.GetConferences(conferenceIds)).ToList();
+        var usernamesToNotify = new List<string>();
         foreach (var conference in conferences)
         {
+            var previouslyAllocatedCsoUsername = conference.AllocatedCso;
+            var newAllocatedCsoUsername = update.AllocatedCsoUsername;
+            
+            if (!string.IsNullOrEmpty(previouslyAllocatedCsoUsername))
+                usernamesToNotify.Add(previouslyAllocatedCsoUsername);
+            usernamesToNotify.Add(newAllocatedCsoUsername);
+    
             conference.AllocatedCsoId = update.AllocatedCsoId;
             conference.AllocatedCso = update.AllocatedCsoUsername;
             await conferenceService.UpdateConferenceAsync(conference);
         }
         var updatedAllocationDtos = conferences
             .Select(ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto).ToList();
-        
-        await hubContext.Clients.Group(update.AllocatedCsoUsername.ToLowerInvariant())
-            .AllocationsUpdated(updatedAllocationDtos);
+    
+        foreach (var username in usernamesToNotify)
+        {
+            await hubContext.Clients.Group(username.ToLowerInvariant())
+                .AllocationsUpdated(updatedAllocationDtos);
+        }
     }
 }
 
