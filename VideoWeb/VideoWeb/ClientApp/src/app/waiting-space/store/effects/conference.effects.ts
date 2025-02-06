@@ -107,7 +107,7 @@ export class ConferenceEffects {
                             false
                         );
                     }
-                    if (action.reason.includes('Bad or no heartbeat received due to temporary network disruption')) {
+                    if (action.reason.toLowerCase().includes('no heartbeat received due to temporary network disruption')) {
                         this.errorService.goToServiceError('error-service.unexpected-error', 'error-service.problem-with-connection', true);
                     }
                     return of();
