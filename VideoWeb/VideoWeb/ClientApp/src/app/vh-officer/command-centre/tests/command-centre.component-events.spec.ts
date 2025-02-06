@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ClientSettingsResponse,
@@ -43,6 +43,7 @@ import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -57,6 +58,8 @@ describe('CommandCentreComponent - Events', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let userDataSubject: Subject<any>;
+    let currentSecurityServiceSubject: BehaviorSubject<ISecurityService>;
+    let currentIdpSubject: BehaviorSubject<IdpProviders>;
 
     const logger: Logger = new MockLogger();
 
@@ -111,13 +114,18 @@ describe('CommandCentreComponent - Events', () => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         userDataSubject = new Subject<any>();
         securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+        currentSecurityServiceSubject = new BehaviorSubject<ISecurityService>(securityServiceSpy);
+        currentIdpSubject = new BehaviorSubject<IdpProviders>(IdpProviders.vhaad);
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
-        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(
+            currentSecurityServiceSubject.asObservable()
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -133,10 +141,11 @@ describe('CommandCentreComponent - Events', () => {
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
-        component.userData = {
+        const userData = {
             name: 'CSO',
             preferred_username: loggedInUsername
         };
+        userDataSubject.next(userData);
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();
     });
