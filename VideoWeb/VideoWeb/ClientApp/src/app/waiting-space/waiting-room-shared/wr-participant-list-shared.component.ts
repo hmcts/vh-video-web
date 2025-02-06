@@ -181,6 +181,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
+            //.sort((a, b) => b.role.localeCompare(a.role) || (b.name || b.displayName).localeCompare(a.name || a.displayName));
             .sort((a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName));
 
         nonJudgeParts = [
