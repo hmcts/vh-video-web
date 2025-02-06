@@ -69,7 +69,10 @@ describe('CommandCentreComponent - Events', () => {
     const hearing = new Hearing(conference);
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
-    const loggedInUsername = 'cso@email.com';
+    let userData = {
+        name: '',
+        preferred_username: ''
+    };
 
     beforeAll(() => {
         TestFixtureHelper.setupVenues();
@@ -112,7 +115,11 @@ describe('CommandCentreComponent - Events', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
-        userDataSubject = new Subject<any>();
+        userData = {
+            name: 'CSO',
+            preferred_username: 'cso@email.com'
+        };
+        userDataSubject = new BehaviorSubject<any>(userData);
         securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
         currentSecurityServiceSubject = new BehaviorSubject<ISecurityService>(securityServiceSpy);
         currentIdpSubject = new BehaviorSubject<IdpProviders>(IdpProviders.vhaad);
@@ -141,11 +148,6 @@ describe('CommandCentreComponent - Events', () => {
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
-        const userData = {
-            name: 'CSO',
-            preferred_username: loggedInUsername
-        };
-        userDataSubject.next(userData);
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();
     });
@@ -359,7 +361,7 @@ describe('CommandCentreComponent - Events', () => {
                 judge_display_name: 'judge fudge',
                 scheduled_date_time: new Date(),
                 conference_id: Guid.create().toString(),
-                allocated_to_cso_username: loggedInUsername
+                allocated_to_cso_username: userData.preferred_username
             };
             return message;
         }
