@@ -40,6 +40,7 @@ public class AllocationHearingsEventNotifier(
         var updatedAllocationDtos = conferences
             .Select(ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto).ToList();
     
+        usernamesToNotify = usernamesToNotify.Distinct().ToList();
         foreach (var username in usernamesToNotify)
         {
             await hubContext.Clients.Group(username.ToLowerInvariant())
