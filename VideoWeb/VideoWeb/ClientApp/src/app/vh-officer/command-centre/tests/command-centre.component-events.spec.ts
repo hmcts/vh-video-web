@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ClientSettingsResponse,
@@ -40,6 +40,9 @@ import { NotificationToastrService } from '../../../waiting-space/services/notif
 import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -51,6 +54,9 @@ describe('CommandCentreComponent - Events', () => {
     let router: jasmine.SpyObj<Router>;
     let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let userDataSubject: Subject<any>;
 
     const logger: Logger = new MockLogger();
 
@@ -60,6 +66,7 @@ describe('CommandCentreComponent - Events', () => {
     const hearing = new Hearing(conference);
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
+    const loggedInUsername = 'cso@email.com';
 
     beforeAll(() => {
         TestFixtureHelper.setupVenues();
@@ -101,6 +108,16 @@ describe('CommandCentreComponent - Events', () => {
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
+        userDataSubject = new Subject<any>();
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -111,10 +128,15 @@ describe('CommandCentreComponent - Events', () => {
             screenHelper,
             pageServiceSpy,
             configService,
-            notificationToastrServiceSpy
+            notificationToastrServiceSpy,
+            securityServiceProviderServiceSpy
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
+        component.userData = {
+            name: 'CSO',
+            preferred_username: loggedInUsername
+        };
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();
     });
@@ -286,33 +308,51 @@ describe('CommandCentreComponent - Events', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should not create an allocation toast when allocation hearings message is received and is an empty list', () => {
-        notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
-        component.setupEventHubSubscribers();
+    describe('handleAllocationUpdate', () => {
+        beforeEach(() => {
+            notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
+            component.setupEventHubSubscribers();
+        });
 
-        const message = new NewAllocationMessage([]);
+        it('should not create an allocation toast when allocation hearings message is received and is an empty list', () => {
+            const message = new NewAllocationMessage([]);
 
-        newAllocationMessageSubjectMock.next(message);
+            newAllocationMessageSubjectMock.next(message);
 
-        expect(component).toBeTruthy();
-        expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(0);
-    });
+            expect(component).toBeTruthy();
+            expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(0);
+        });
 
-    it('should create an allocation toast when allocation hearings message is received and not an empty list', () => {
-        notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
-        component.setupEventHubSubscribers();
+        it('should create an allocation toast when allocation hearings message is received and not an empty list', () => {
+            const hearingDetails = createUpdatedAllocationMessage();
+            const message = new NewAllocationMessage([hearingDetails]);
 
-        const hearingDetails: UpdatedAllocation = {
-            case_name: 'case name',
-            judge_display_name: 'judge fudge',
-            scheduled_date_time: new Date(),
-            conference_id: Guid.create().toString()
-        };
-        const message = new NewAllocationMessage([hearingDetails]);
+            newAllocationMessageSubjectMock.next(message);
 
-        newAllocationMessageSubjectMock.next(message);
+            expect(component).toBeTruthy();
+            expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(1);
+        });
 
-        expect(component).toBeTruthy();
-        expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(1);
+        it('should not create an allocation toast when allocation hearings message is received and hearing is not allocated to the logged in user', () => {
+            const hearingDetails = createUpdatedAllocationMessage();
+            hearingDetails.allocated_to_cso_username = 'different-user@email.com';
+            const message = new NewAllocationMessage([hearingDetails]);
+
+            newAllocationMessageSubjectMock.next(message);
+
+            expect(component).toBeTruthy();
+            expect(notificationToastrServiceSpy.createAllocationNotificationToast).not.toHaveBeenCalled();
+        });
+
+        function createUpdatedAllocationMessage(): UpdatedAllocation {
+            const message: UpdatedAllocation = {
+                case_name: 'case name',
+                judge_display_name: 'judge fudge',
+                scheduled_date_time: new Date(),
+                conference_id: Guid.create().toString(),
+                allocated_to_cso_username: loggedInUsername
+            };
+            return message;
+        }
     });
 });
