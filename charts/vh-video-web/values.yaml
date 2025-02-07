@@ -45,15 +45,11 @@ java:
         - vodafoneconfiguration--conferencephonenumber
         - vodafoneconfiguration--conferencephonenumberWelsh
         - vodafoneconfiguration--heartbeaturlbase
-        - name: kinlyconfiguration--joinbyphonefromdate
-          alias: vodafoneconfiguration--joinbyphonefromdate
+        - vodafoneconfiguration--joinbyphonefromdate
         - vodafoneconfiguration--selftestapisecret
-        - name: kinlyconfiguration--turnserver
-          alias: vodafoneconfiguration--turnserver
-        - name: kinlyconfiguration--turnservercredential
-          alias: vodafoneconfiguration--turnservercredential
-        - name: kinlyconfiguration--turnserveruser
-          alias: vodafoneconfiguration--turnserveruser
+        - vodafoneconfiguration--turnserver
+        - vodafoneconfiguration--turnservercredential
+        - vodafoneconfiguration--turnserveruser
 
         - quicklinks--issuer
         - quicklinks--rsapublickey
