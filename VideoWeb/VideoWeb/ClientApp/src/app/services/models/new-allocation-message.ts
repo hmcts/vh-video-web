@@ -1,5 +1,5 @@
-import { HearingDetailRequest } from '../clients/api-client';
+import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 
 export class NewAllocationMessage {
-    constructor(public hearingDetails: HearingDetailRequest[]) {}
+    constructor(public updatedAllocations: UpdatedAllocation[]) {}
 }

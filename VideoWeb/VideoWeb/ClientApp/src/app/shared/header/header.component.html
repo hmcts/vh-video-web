@@ -17,17 +17,21 @@
         <app-header-logo-svg></app-header-logo-svg>
       </ng-template>
 
-      <a class="moj-header__link moj-header__link--organisation-name" href="javascript:void(0)">{{
+      <a id="header-organisation-name" class="moj-header__link moj-header__link--organisation-name" href="/">{{
         'header.organisation-name' | translate
       }}</a>
 
-      <a class="moj-header__link moj-header__link--service-name" href="javascript:void(0)">{{ 'header.service-name' | translate }}</a>
+      <a id="header-service-name" class="moj-header__link moj-header__link--service-name" href="/">{{
+        'header.service-name' | translate
+      }}</a>
     </div>
     <div *ngIf="loggedIn" class="moj-header__content">
       <nav class="moj-header__navigation" aria-label="Account navigation">
         <ul class="moj-header__navigation-list">
           <li class="moj-header__navigation-item">
-            <a id="header-username" class="moj-header__navigation-link" href="javascript:void(0)" aria-current="page">{{ username }}</a>
+            <a id="header-username" class="moj-header__navigation-link force-no-underline" href="javascript:void(0)" aria-current="page">{{
+              username
+            }}</a>
           </li>
 
           <li class="moj-header__navigation-item">
