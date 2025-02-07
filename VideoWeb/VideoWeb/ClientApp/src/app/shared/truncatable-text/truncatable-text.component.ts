@@ -17,6 +17,7 @@ export class TruncatableTextComponent implements OnInit {
 
     @Input() set text(value: string) {
         this.originalText = value;
+        this.checkOverFlow();
     }
 
     ngOnInit(): void {

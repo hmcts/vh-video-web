@@ -26,6 +26,7 @@ import { NotificationToastrService } from '../../waiting-space/services/notifica
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { catchError, takeUntil } from 'rxjs/operators';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -157,6 +158,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             .getAllocationMessage()
             .pipe(takeUntil(this.destroy$))
             .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage));
+
+        this.eventService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -373,6 +379,12 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
         if (allocationHearingMessage.updatedAllocations.length > 0) {
             this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);
+            this.queryService.runQuery();
+        }
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        if (hearingDetailMessage.conference) {           
             this.queryService.runQuery();
         }
     }
