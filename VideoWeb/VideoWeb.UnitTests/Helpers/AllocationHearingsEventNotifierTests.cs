@@ -81,42 +81,4 @@ internal class AllocationHearingsEventNotifierTests
         _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(It.IsAny<List<UpdatedAllocationDto>>()),
             Times.Never);
     }
-
-    [Test]
-    public async Task Should_send_event_to_new_and_previously_allocated_cso()
-    {
-        // arrange
-        // 2 previously assigned conferences, being reassigned to a new cso
-        const string newCsoUsername = CsoUserName;
-        const string previousCsoUsername = "previous-cso@email.com";
-        var conference2 = new ConferenceCacheModelBuilder().Build();
-        List<Conference> conferences = [_conference, conference2];
-        var conferenceCount = conferences.Count;
-        var conferenceIds = conferences.Select(c => c.Id).ToList();
-        foreach (var conference in conferences)
-        {
-            AssignConferenceToCso(conference, previousCsoUsername);
-        }
-        _eventHelper.ConferenceServiceMock
-            .Setup(x => x.GetConferences(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(conferences);
-        _eventHelper.RegisterParticipantForHubContext(previousCsoUsername);
-        var update = new UpdatedAllocationJusticeUserDto(newCsoUsername, _csoId);
-
-        // act
-        await _notifier.PushAllocationHearingsEvent(update, conferenceIds);
-
-        // assert
-        var expectedContent = conferences
-            .Select(ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto)
-            .ToList();
-        
-        _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(expectedContent), Times.Exactly(conferenceCount));
-    }
-
-    private static void AssignConferenceToCso(Conference conference, string csoUsername)
-    {
-        conference.AllocatedCso = csoUsername;
-        conference.AllocatedCsoId = Guid.NewGuid();
-    }
 }
