@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -11,6 +10,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
@@ -87,6 +87,57 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForHost!.Count.Should().Be(conferences.Count);
             conferencesForHost[0].Participants.Should().NotBeNullOrEmpty();
             conferencesForHost[0].Participants.Count.Should().Be(participants.Count);
+        }
+
+        [Test]
+        public async Task
+            Should_return_ok_with_list_of_conferences_where_hearings_and_conferences_match_and_log_error_for_difference()
+        {
+            // arrange
+            var hearingVenueNamesQuery = new List<string>();
+            var participants = new List<ParticipantCoreResponse>
+            {
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Individual).Build(),
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Representative).Build(),
+                Builder<ParticipantCoreResponse>.CreateNew().With(x => x.UserRole = UserRole.Judge).Build()
+            };
+            var conferences = Builder<ConferenceCoreResponse>.CreateListOfSize(10).All()
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
+                .With(x => x.Participants = participants)
+                .Build().ToList();
+            
+            var hearings = Builder<HearingDetailsResponseV2>.CreateListOfSize(10)
+                .All()
+                .With(x => x.Cases = Builder<CaseResponseV2>.CreateListOfSize(1).Build().ToList())
+                .Build().ToList();
+            
+            for (var i = 0; i < hearings.Count; i++)
+            {
+                conferences[i].HearingId = hearings[i].Id;
+            }
+
+            conferences = conferences.Skip(1).ToList();
+            
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesByHearingRefIdsAsync(It.IsAny<GetConferencesByHearingIdsRequest>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(conferences);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(hearings);
+            
+            // act
+            var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery, CancellationToken.None);
+            
+            // assert
+            var typedResult = (OkObjectResult)result.Result;
+            _mocker.Mock<ILogger<ConferencesController>>().Verify(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Exactly(1));
+            var conferencesForUser = (List<ConferenceForHostResponse>) typedResult.Value;
+            conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser!.Count.Should().Be(conferences.Count);
         }
 
         [Test]
