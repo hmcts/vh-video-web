@@ -384,7 +384,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
-        if (hearingDetailMessage.conference) {           
+        if (hearingDetailMessage.conference) {
             this.queryService.runQuery();
         }
     }
