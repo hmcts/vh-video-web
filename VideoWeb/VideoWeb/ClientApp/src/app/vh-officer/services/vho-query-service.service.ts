@@ -1,7 +1,8 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
+    ConferenceResponse,
     ConferenceResponseVho,
     ParticipantHeartbeatResponse,
     Role,
@@ -9,10 +10,11 @@ import {
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 import { CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
+import { EventsService } from 'src/app/services/events.service';
 
 @Injectable()
 export class VhoQueryService {
@@ -31,8 +33,12 @@ export class VhoQueryService {
     private readonly csoFilterStorage: SessionStorage<CsoFilter>;
 
     private readonly pollingInterval = 300000; // 5 minutes
+    private readonly onDestroy$ = new Subject<void>();
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private eventsService: EventsService
+    ) {
         this.csoFilterStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.courtAccountsFilterStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.courtRoomsAccountsFilters = this.getCourtAccountFiltersFromStorage();
@@ -46,13 +52,31 @@ export class VhoQueryService {
         this.includeUnallocated = includeUnallocated;
         this.activeSessionsOnly = activeSessionsOnly;
         this.runQuery();
+        this.eventsService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(hearingDetails => {
+                const foundIndex = this.vhoConferences.findIndex(x => x.id === hearingDetails.conference.id);
+                if (foundIndex > -1) {
+                    this.updateConferenceDetails(foundIndex, hearingDetails.conference);
+                    this.vhoConferencesSubject.next(this.vhoConferences);
+                }
+            });
         this.interval = setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
     }
 
+    updateConferenceDetails(foundIndex: number, conference: ConferenceResponse) {
+        let found = this.vhoConferences[foundIndex];
+        found = new ConferenceForVhOfficerResponse({ ...found, case_name: conference.case_name, case_number: conference.case_number });
+        this.vhoConferences[foundIndex] = found;
+    }
+
     stopQuery() {
         clearInterval(this.interval);
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
         this.vhoConferences = [];
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
