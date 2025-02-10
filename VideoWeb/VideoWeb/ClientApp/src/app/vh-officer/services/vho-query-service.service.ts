@@ -13,6 +13,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
+import { EventsService } from 'src/app/services/events.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 @Injectable()
 export class VhoQueryService {
@@ -32,7 +34,10 @@ export class VhoQueryService {
 
     private readonly pollingInterval = 300000; // 5 minutes
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private eventService: EventsService
+    ) {
         this.csoFilterStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.courtAccountsFilterStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.courtRoomsAccountsFilters = this.getCourtAccountFiltersFromStorage();
@@ -49,6 +54,22 @@ export class VhoQueryService {
         this.interval = setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
+        this.eventService
+            .getHearingDetailsUpdated()
+            //.pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        if (hearingDetailMessage.conference) {
+            const newConference = hearingDetailMessage.conference;
+            const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+            if (index !== -1) {
+                this.vhoConferences[index] = newConference;
+                this.vhoConferencesSubject.next(this.vhoConferences);
+                return;
+            }
+        }
     }
 
     stopQuery() {
