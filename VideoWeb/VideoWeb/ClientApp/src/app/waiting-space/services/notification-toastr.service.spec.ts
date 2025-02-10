@@ -1584,14 +1584,16 @@ describe('NotificationToastrService', () => {
             judge_display_name: 'Judge1',
             scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
             case_name: 'case name 1',
-            conference_id: 'conferenceId1'
+            conference_id: 'conferenceId1',
+            allocated_to_cso_username: 'cso@email.com'
         };
         hearingsPassed.push(hearing);
         hearing = {
             judge_display_name: 'Judge2',
             scheduled_date_time: new Date(2023, 1, 1, 11, 0, 0, 0),
             case_name: 'case name 2',
-            conference_id: 'conferenceId2'
+            conference_id: 'conferenceId2',
+            allocated_to_cso_username: 'cso@email.com'
         };
         hearingsPassed.push(hearing);
 
