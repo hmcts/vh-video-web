@@ -307,10 +307,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     return h;
                 });
 
-                this.pageService.emitPageRefreshed();
-                // if (this.selectedHearing) {
-                //     this.pageService.emitPageRefreshed();
-                // }
+                 if (this.selectedHearing) {
+                     this.pageService.emitPageRefreshed();
+                 }
 
                 this.loadingData = false;
             });
@@ -406,7 +405,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.queryService.runQuery();
         }
     }
-    
+
 
     private getSupplierConfiguration(supplier: Supplier) {
         return this.configSettings?.supplier_configurations.find(x => x.supplier === supplier);

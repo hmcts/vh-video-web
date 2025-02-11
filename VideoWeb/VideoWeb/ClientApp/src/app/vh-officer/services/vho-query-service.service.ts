@@ -67,11 +67,11 @@ export class VhoQueryService {
             const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
             if (index !== -1) {
                 const newHearing = new ConferenceForVhOfficerResponse(newConference);
+
                 this.vhoConferences[index] = newHearing;
                 this.vhoConferencesSubject.next(this.vhoConferences);
                 return;
             }
-            // this.runQuery();
         }
     }
 
