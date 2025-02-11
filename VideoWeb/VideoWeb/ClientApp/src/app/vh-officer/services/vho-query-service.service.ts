@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
@@ -9,7 +9,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 import { CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
@@ -33,6 +33,7 @@ export class VhoQueryService {
     private readonly csoFilterStorage: SessionStorage<CsoFilter>;
 
     private readonly pollingInterval = 300000; // 5 minutes
+    private destroy$ = new Subject<void>();
 
     constructor(
         private apiClient: ApiClient,
@@ -54,13 +55,31 @@ export class VhoQueryService {
         this.interval = setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
-        
+        this.eventService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        if (hearingDetailMessage.conference) {
+            const newConference = hearingDetailMessage.conference;
+            const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+            if (index !== -1) {
+                const newHearing = new ConferenceForVhOfficerResponse(newConference);
+                this.vhoConferences[index] = newHearing;
+                this.vhoConferencesSubject.next(this.vhoConferences);
+                return;
+            }
+            // this.runQuery();
+        }
     }
 
     stopQuery() {
         clearInterval(this.interval);
         this.vhoConferences = [];
         this.vhoConferencesSubject.next(this.vhoConferences);
+        this.destroy$.next();
     }
 
     async runQuery() {

@@ -26,7 +26,6 @@ import { NotificationToastrService } from '../../waiting-space/services/notifica
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { catchError, takeUntil } from 'rxjs/operators';
-import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -159,10 +158,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage));
 
-        this.eventService
-            .getHearingDetailsUpdated()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -411,23 +406,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.queryService.runQuery();
         }
     }
-
-    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
-        if (hearingDetailMessage.conference) {
-            const newConference = hearingDetailMessage.conference;
-            // const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
-            // if (index !== -1) {
-            //     const updatedConferences = [...this.vhoConferences];
-            //     this.vhoConferences = null;
-            //     const newHearing = ConferenceForVhOfficerResponse
-            //     updatedConferences[index] = newConference;
-            //     this.vhoConferencesSubject.next(updatedConferences);
-            //     this.vhoConferences = updatedConferences;
-            //     return;
-            // }
-            this.queryService.runQuery();
-        }
-    }
+    
 
     private getSupplierConfiguration(supplier: Supplier) {
         return this.configSettings?.supplier_configurations.find(x => x.supplier === supplier);
