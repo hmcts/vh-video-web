@@ -26,6 +26,7 @@ import { NotificationToastrService } from '../../waiting-space/services/notifica
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { catchError, takeUntil } from 'rxjs/operators';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -158,7 +159,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage));
 
-        
+        this.eventService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -286,6 +290,35 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
                 this.loadingData = false;
             });
+
+        this.queryService
+            .getQueryResults()
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError(error => {
+                    this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
+                    this.loadingData = false;
+                    this.errorService.handleApiError(error);
+                    return [];
+                })
+            )
+            .subscribe(data => {
+                this.hearings = data.map(c => {
+                    const h = new HearingSummary(c);
+                    h.isJoinByPhone = this.isJoinByPhone(h);
+                    h.getParticipants().forEach(p => {
+                        p.participantHertBeatHealth = this.participantsHeartBeat[p.id];
+                    });
+                    return h;
+                });
+
+                this.pageService.emitPageRefreshed();
+                // if (this.selectedHearing) {
+                //     this.pageService.emitPageRefreshed();
+                // }
+
+                this.loadingData = false;
+            });
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
@@ -375,6 +408,23 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
         if (allocationHearingMessage.updatedAllocations.length > 0) {
             this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);
+            this.queryService.runQuery();
+        }
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        if (hearingDetailMessage.conference) {
+            const newConference = hearingDetailMessage.conference;
+            // const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+            // if (index !== -1) {
+            //     const updatedConferences = [...this.vhoConferences];
+            //     this.vhoConferences = null;
+            //     const newHearing = ConferenceForVhOfficerResponse
+            //     updatedConferences[index] = newConference;
+            //     this.vhoConferencesSubject.next(updatedConferences);
+            //     this.vhoConferences = updatedConferences;
+            //     return;
+            // }
             this.queryService.runQuery();
         }
     }

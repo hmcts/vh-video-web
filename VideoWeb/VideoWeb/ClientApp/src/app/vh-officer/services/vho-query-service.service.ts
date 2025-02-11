@@ -54,22 +54,7 @@ export class VhoQueryService {
         this.interval = setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
-        this.eventService
-            .getHearingDetailsUpdated()
-            //.pipe(takeUntil(this.destroy$))
-            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
-    }
-
-    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
-        if (hearingDetailMessage.conference) {
-            const newConference = hearingDetailMessage.conference;
-            const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
-            if (index !== -1) {
-                this.vhoConferences[index] = newConference;
-                this.vhoConferencesSubject.next(this.vhoConferences);
-                return;
-            }
-        }
+        
     }
 
     stopQuery() {
