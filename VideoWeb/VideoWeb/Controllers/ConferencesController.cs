@@ -95,7 +95,13 @@ public class ConferencesController(
         ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
         if (hearingsForToday.Count > 0)
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        
+        if (conferences.Count != hearingsForToday.Count)
+            logger.LogError(
+                "Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for venue(s) {Venues}",
+                hearingsForToday.Count, conferences.Count, hearingVenueNames);
         var response = hearingsForToday
+            .Where(h => conferences.Any(c => c.HearingId == h.Id))
             .Select(hearing =>
                 BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
             .ToList();

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
 import { ClientSettingsResponse, ConferenceForVhOfficerResponse, Supplier } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -26,6 +26,7 @@ import { NotificationToastrService } from '../../waiting-space/services/notifica
 import { CsoFilter } from '../services/models/cso-filter';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { catchError, takeUntil } from 'rxjs/operators';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Component({
     selector: 'app-command-centre',
@@ -52,6 +53,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     configSettings: ClientSettingsResponse;
     displayFilters = false;
+    userData;
 
     protected readonly activeSessionsStorage: SessionStorage<boolean>;
 
@@ -69,12 +71,24 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private screenHelper: ScreenHelper,
         private pageService: PageService,
         private configService: ConfigService,
-        protected notificationToastrService: NotificationToastrService
+        protected notificationToastrService: NotificationToastrService,
+        securityServiceProviderService: SecurityServiceProvider
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.activeSessionsStorage = new SessionStorage<boolean>(VhoStorageKeys.ACTIVE_SESSIONS_END_OF_DAY_KEY);
         this.activeSessionsOnly = this.activeSessionsStorage.get() ?? false;
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(([service, idp]) => {
+                service.getUserData(idp).subscribe(userData => {
+                    this.userData = userData;
+                });
+            });
+    }
+
+    private get loggedInUsername(): string {
+        return this.userData?.preferred_username;
     }
 
     ngOnInit(): void {
@@ -401,7 +415,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
         if (allocationHearingMessage.updatedAllocations.length > 0) {
-            this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);
+            // All hearings in this message will be allocated to the same user
+            const allocatedCsoUsername = allocationHearingMessage.updatedAllocations[0].allocated_to_cso_username;
+
+            if (allocatedCsoUsername.toLowerCase() === this.loggedInUsername.toLowerCase()) {
+                this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);
+            }
+
             this.queryService.runQuery();
         }
     }

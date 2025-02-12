@@ -8,6 +8,6 @@ public static class ConferenceDetailsToUpdatedAllocationDtoMapper
     public static UpdatedAllocationDto MapToUpdatedAllocationDto(Conference conference)
     {
         return new UpdatedAllocationDto(conference.Id, conference.ScheduledDateTime, conference.CaseName,
-            conference.GetJudge()?.DisplayName);
+            conference.GetJudge()?.DisplayName, conference.AllocatedCso);
     }
 }
