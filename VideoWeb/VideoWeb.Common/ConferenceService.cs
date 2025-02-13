@@ -58,7 +58,6 @@ public class ConferenceService(
     specific conference. Here's a breakdown of what it does: */
     ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
-        //Thread.Sleep(1000); // Simulate a long running operation
         var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
         var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId, cancellationToken);
         await conferenceCache.AddConferenceAsync(conferenceDetails, hearingDetails, cancellationToken);
