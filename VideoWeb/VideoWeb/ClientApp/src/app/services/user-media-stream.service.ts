@@ -34,8 +34,6 @@ export class UserMediaStreamService {
             `${this.loggerPrefix} Constructor called. Attempting to get active devices from userMediaService to initialise the stream.`
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
-
         this.initialiseCurrentStream();
 
         this.userMediaService.activeVideoDevice$.subscribe(videoDevice => {
