@@ -8,11 +8,13 @@ import { take, takeLast } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
+import { EventsService } from 'src/app/services/events.service';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
     let service: VhoQueryService;
     let apiClient: jasmine.SpyObj<ApiClient>;
+    let eventService: jasmine.SpyObj<EventsService>;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -23,10 +25,14 @@ describe('VhoQueryService', () => {
             'getHeartbeatDataForParticipant',
             'getActiveConferences'
         ]);
+
+        eventService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'getHearingDetailsUpdated']);
     });
 
+    service = new VhoQueryService(apiClient, eventService);
     beforeEach(() => {
-        service = new VhoQueryService(apiClient);
+        service = new VhoQueryService(apiClient, eventService);
         apiClient.getConferencesForVhOfficer.calls.reset();
     });
 
