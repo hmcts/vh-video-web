@@ -103,7 +103,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     addSharedEventHubSubcribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);

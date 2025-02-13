@@ -122,9 +122,10 @@ export class VideoCallService {
         };
 
         this.userMediaService.initialise();
+        this.userMediaStreamService.createAndPublishStream();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
-        this.logger.debug(`${this.loggerPrefix} set user media stream`);
+        this.logMediaStreamInfo();
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -180,6 +181,8 @@ export class VideoCallService {
 
         this.userMediaStreamService.currentStream$.pipe(skip(1), takeUntil(this.hasDisconnected$)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
+            this.logMediaStreamInfo();
+
             if (currentStream) {
                 this.renegotiateCall();
                 self.logger.info(`${self.loggerPrefix} Renegotiate due to user media stream change`);
@@ -498,6 +501,8 @@ export class VideoCallService {
         this.userMediaStreamService.createAndPublishStream();
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
+
+            this.logMediaStreamInfo();
             this.renegotiateCall();
             this.onVideoEvidenceStoppedSubject.next();
             this.logger.debug(
@@ -572,6 +577,10 @@ export class VideoCallService {
 
     receiveAudioFromMix(mixName: string, uuid: string) {
         this.pexipAPI.setReceiveFromAudioMix(mixName, uuid);
+    }
+
+    logMediaStreamInfo() {
+        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI.user_media_stream ? 'stream set' : 'stream not set');
     }
 
     private makePexipCall(

@@ -7518,6 +7518,7 @@ export enum TaskType {
 }
 
 export enum TestScore {
+    Unknown = 'Unknown',
     Good = 'Good',
     Okay = 'Okay',
     Bad = 'Bad'
@@ -7548,6 +7549,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
+    conference_role?: ConferenceRole;
 
     constructor(data?: IConferenceEventRequest) {
         if (data) {
@@ -7569,6 +7571,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
             this.transfer_to = _data['transfer_to'];
             this.reason = _data['reason'];
             this.phone = _data['phone'];
+            this.conference_role = _data['conference_role'];
         }
     }
 
@@ -7591,6 +7594,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
         data['transfer_to'] = this.transfer_to;
         data['reason'] = this.reason;
         data['phone'] = this.phone;
+        data['conference_role'] = this.conference_role;
         return data;
     }
 }
@@ -7606,6 +7610,7 @@ export interface IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
+    conference_role?: ConferenceRole;
 }
 
 export enum HearingLayout {
@@ -8464,6 +8469,7 @@ export interface IAddSelfTestFailureEventRequest {
 
 export class HearingAllocationNotificationRequest implements IHearingAllocationNotificationRequest {
     allocated_cso_user_name?: string | undefined;
+    allocated_cso_user_id?: string;
     conference_ids?: string[] | undefined;
 
     constructor(data?: IHearingAllocationNotificationRequest) {
@@ -8477,6 +8483,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
     init(_data?: any) {
         if (_data) {
             this.allocated_cso_user_name = _data['allocated_cso_user_name'];
+            this.allocated_cso_user_id = _data['allocated_cso_user_id'];
             if (Array.isArray(_data['conference_ids'])) {
                 this.conference_ids = [] as any;
                 for (let item of _data['conference_ids']) this.conference_ids!.push(item);
@@ -8494,6 +8501,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['allocated_cso_user_name'] = this.allocated_cso_user_name;
+        data['allocated_cso_user_id'] = this.allocated_cso_user_id;
         if (Array.isArray(this.conference_ids)) {
             data['conference_ids'] = [];
             for (let item of this.conference_ids) data['conference_ids'].push(item);
@@ -8504,6 +8512,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
 
 export interface IHearingAllocationNotificationRequest {
     allocated_cso_user_name?: string | undefined;
+    allocated_cso_user_id?: string;
     conference_ids?: string[] | undefined;
 }
 
