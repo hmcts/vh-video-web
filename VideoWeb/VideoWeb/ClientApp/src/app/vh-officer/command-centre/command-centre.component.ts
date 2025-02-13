@@ -171,7 +171,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             .getAllocationMessage()
             .pipe(takeUntil(this.destroy$))
             .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage));
-
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -299,7 +298,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
                 this.loadingData = false;
             });
-
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
@@ -398,7 +396,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.queryService.runQuery();
         }
     }
-
 
     private getSupplierConfiguration(supplier: Supplier) {
         return this.configSettings?.supplier_configurations.find(x => x.supplier === supplier);
