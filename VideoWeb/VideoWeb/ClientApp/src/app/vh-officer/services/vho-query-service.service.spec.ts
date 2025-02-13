@@ -10,15 +10,12 @@ import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
     let service: VhoQueryService;
     let apiClient: jasmine.SpyObj<ApiClient>;
     let eventService: jasmine.SpyObj<EventsService>;
-
-    let hearingDetailsUpdatedSpy: jasmine.Spy;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -32,9 +29,6 @@ describe('VhoQueryService', () => {
         eventService = jasmine.createSpyObj<EventsService>('EventsService', [], {
             getHearingDetailsUpdated: jasmine.createSpy().and.returnValue(of({} as HearingDetailsUpdatedMessage))
         });
-
-        
-        hearingDetailsUpdatedSpy = eventService.getHearingDetailsUpdated;
     });
 
     service = new VhoQueryService(apiClient, eventService);
@@ -370,5 +364,4 @@ describe('VhoQueryService', () => {
         expect(service['vhoConferences'][0].case_name).toBe('Case Name');
         expect(service['vhoConferences'][0].participants[0].name).toBe('Judge Test New');
     });
-
 });
