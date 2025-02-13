@@ -51,11 +51,11 @@ export class TestLanguageService {
             const varSections = section.split('}}');
             const last = varSections
                 .pop()
-                .replace(/\a/gi, 'á')
-                .replace(/\e/gi, 'é')
-                .replace(/\i/gi, 'í')
-                .replace(/\o/gi, 'ó')
-                .replace(/\u/gi, 'ú');
+                .replace(/a/gi, 'á')
+                .replace(/e/gi, 'é')
+                .replace(/i/gi, 'í')
+                .replace(/o/gi, 'ó')
+                .replace(/u/gi, 'ú');
             varSections.push(last);
             return varSections.join('}}');
         });
