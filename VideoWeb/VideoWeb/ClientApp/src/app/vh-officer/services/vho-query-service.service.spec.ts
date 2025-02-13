@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ApiClient } from '../../services/clients/api-client';
+import { ApiClient, ConferenceForVhOfficerResponse, ParticipantForUserResponse } from '../../services/clients/api-client';
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
@@ -9,12 +9,16 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
     let service: VhoQueryService;
     let apiClient: jasmine.SpyObj<ApiClient>;
     let eventService: jasmine.SpyObj<EventsService>;
+
+    let hearingDetailsUpdatedSpy: jasmine.Spy;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -25,9 +29,12 @@ describe('VhoQueryService', () => {
             'getHeartbeatDataForParticipant',
             'getActiveConferences'
         ]);
+        eventService = jasmine.createSpyObj<EventsService>('EventsService', [], {
+            getHearingDetailsUpdated: jasmine.createSpy().and.returnValue(of({} as HearingDetailsUpdatedMessage))
+        });
 
-        eventService = jasmine.createSpyObj<EventsService>('EventsService', [
-            'getHearingDetailsUpdated']);
+        
+        hearingDetailsUpdatedSpy = eventService.getHearingDetailsUpdated;
     });
 
     service = new VhoQueryService(apiClient, eventService);
@@ -277,4 +284,91 @@ describe('VhoQueryService', () => {
         expect(actual.allocatedCsoIds).toEqual(filter.allocatedCsoIds);
         expect(actual.includeUnallocated).toEqual(filter.includeUnallocated);
     });
+
+    it('should update case name and case number conference when hearing detail message contains a conference', () => {
+        const conference = new ConferenceForVhOfficerResponse({
+            id: '123',
+            case_name: 'Case Name',
+            case_number: '12345',
+            case_type: 'Civil',
+            scheduled_date_time: new Date(),
+            participants: [],
+            hearing_venue_name: 'Venue 1',
+            scheduled_duration: 60,
+            closed_date_time: null,
+            allocated_cso: 'CSO1'
+        });
+        const originalConference = new ConferenceForVhOfficerResponse({
+            id: '123',
+            case_name: 'Old Case Name',
+            case_number: '54321',
+            case_type: 'Criminal',
+            scheduled_date_time: new Date(),
+            participants: [],
+            hearing_venue_name: 'Venue 2',
+            scheduled_duration: 30,
+            closed_date_time: null,
+            allocated_cso: 'CSO1'
+        });
+
+        service['vhoConferences'] = [originalConference];
+        service['vhoConferencesSubject'].next([originalConference]);
+
+        const message = new HearingDetailsUpdatedMessage(conference);
+        service.handleHearingDetailUpdate(message);
+
+        expect(service['vhoConferences'][0].case_name).toBe('Case Name');
+        expect(service['vhoConferences'][0].case_number).toBe('12345');
+    });
+
+    it('should update judge conference when hearing detail message contains a conference', () => {
+        const conference = new ConferenceForVhOfficerResponse({
+            id: '123',
+            case_name: 'Case Name',
+            case_number: '12345',
+            case_type: 'Civil',
+            scheduled_date_time: new Date(),
+            participants: [
+                new ParticipantForUserResponse({
+                    id: '123',
+                    name: 'Judge Test New',
+                    hearing_role: 'Judge',
+                    representee: null
+                })
+            ],
+            hearing_venue_name: 'Venue 1',
+            scheduled_duration: 60,
+            closed_date_time: null,
+            allocated_cso: 'CSO1'
+        });
+        const originalConference = new ConferenceForVhOfficerResponse({
+            id: '123',
+            case_name: 'Old Case Name',
+            case_number: '54321',
+            case_type: 'Criminal',
+            scheduled_date_time: new Date(),
+            participants: [
+                new ParticipantForUserResponse({
+                    id: '123',
+                    name: 'Judge Test',
+                    hearing_role: 'Judge',
+                    representee: null
+                })
+            ],
+            hearing_venue_name: 'Venue 2',
+            scheduled_duration: 30,
+            closed_date_time: null,
+            allocated_cso: 'CSO1'
+        });
+
+        service['vhoConferences'] = [originalConference];
+        service['vhoConferencesSubject'].next([originalConference]);
+
+        const message = new HearingDetailsUpdatedMessage(conference);
+        service.handleHearingDetailUpdate(message);
+
+        expect(service['vhoConferences'][0].case_name).toBe('Case Name');
+        expect(service['vhoConferences'][0].participants[0].name).toBe('Judge Test New');
+    });
+
 });
