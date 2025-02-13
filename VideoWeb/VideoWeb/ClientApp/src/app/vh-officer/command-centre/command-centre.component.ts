@@ -300,33 +300,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
             });
 
-        this.queryService
-            .getQueryResults()
-            .pipe(
-                takeUntil(this.destroy$),
-                catchError(error => {
-                    this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
-                    this.loadingData = false;
-                    this.errorService.handleApiError(error);
-                    return [];
-                })
-            )
-            .subscribe(data => {
-                this.hearings = data.map(c => {
-                    const h = new HearingSummary(c);
-                    h.isJoinByPhone = this.isJoinByPhone(h);
-                    h.getParticipants().forEach(p => {
-                        p.participantHertBeatHealth = this.participantsHeartBeat[p.id];
-                    });
-                    return h;
-                });
-
-                 if (this.selectedHearing) {
-                     this.pageService.emitPageRefreshed();
-                 }
-
-                this.loadingData = false;
-            });
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {

@@ -53,8 +53,12 @@ public class ConferenceService(
     /// <param name="conferenceId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
+    public async Task<Conference> /* `ForceGetConference` is a method in the `ConferenceService` class
+    that forces a query of the database and updates the cache for a
+    specific conference. Here's a breakdown of what it does: */
+    ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
+        //Thread.Sleep(1000); // Simulate a long running operation
         var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
         var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId, cancellationToken);
         await conferenceCache.AddConferenceAsync(conferenceDetails, hearingDetails, cancellationToken);

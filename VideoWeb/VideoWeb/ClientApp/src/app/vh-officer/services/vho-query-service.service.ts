@@ -3,7 +3,9 @@ import {
     ApiClient,
     ConferenceForVhOfficerResponse,
     ConferenceResponseVho,
+    ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
+    ParticipantResponseVho,
     Role,
     TaskResponse
 } from 'src/app/services/clients/api-client';
@@ -57,7 +59,9 @@ export class VhoQueryService {
         }, this.pollingInterval);
         this.eventService
             .getHearingDetailsUpdated()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(
+                takeUntil(this.destroy$)
+            )
             .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
     }
 
@@ -65,9 +69,10 @@ export class VhoQueryService {
         if (hearingDetailMessage.conference) {
             const newConference = hearingDetailMessage.conference;
             const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+            const originalConference = this.vhoConferences[index];
             if (index !== -1) {
-                const newHearing = new ConferenceForVhOfficerResponse(newConference);
-
+                const newHearing = this.mapConferenceResponseToConferenceForVhOfficerResponse(newConference);
+                newHearing.allocated_cso = originalConference.allocated_cso;
                 this.vhoConferences[index] = newHearing;
                 this.vhoConferencesSubject.next(this.vhoConferences);
                 return;
@@ -75,11 +80,41 @@ export class VhoQueryService {
         }
     }
 
+    private mapConferenceResponseToConferenceForVhOfficerResponse(conference: ConferenceResponseVho): ConferenceForVhOfficerResponse {
+        const conferenceResponse = new ConferenceForVhOfficerResponse({
+            id: conference.id,
+            case_name: conference.case_name,
+            case_number: conference.case_number,
+            case_type: conference.case_type,
+            scheduled_date_time: conference.scheduled_date_time,
+            status: conference.status,
+            participants: this.mapParticipantResponseToParticipantForUserResponse(conference.participants),
+            hearing_venue_name: conference.hearing_venue_name,
+            scheduled_duration: conference.scheduled_duration,
+            closed_date_time: conference.closed_date_time
+        });
+        return conferenceResponse;
+    }
+
+    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
+        return participants.map(participant => new ParticipantForUserResponse({
+            id: participant.id,
+            name: participant.name,
+            role: participant.role,
+            status: participant.status,
+            display_name: participant.display_name,
+            representee: participant.representee,
+            hearing_role: participant.hearing_role,
+            linked_participants: participant.linked_participants
+        }));
+    }
+
     stopQuery() {
         clearInterval(this.interval);
         this.vhoConferences = [];
         this.vhoConferencesSubject.next(this.vhoConferences);
         this.destroy$.next();
+        this.destroy$.complete();
     }
 
     async runQuery() {
@@ -91,6 +126,7 @@ export class VhoQueryService {
         this.vhoConferences = await this.apiClient
             .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
+                
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 

@@ -57,6 +57,6 @@ export class VhoHearingListComponent {
     }
 
     trackConference(index: number, conference: HearingSummary) {
-        return conference.id + conference.caseName + conference.caseNumber + conference.hearingVenueName + conference.judgeName;
+        return conference.id;
     }
 }
