@@ -185,36 +185,18 @@ export class VhoQueryService {
         return this.apiClient.getActiveConferences().toPromise();
     }
 
-    private mapConferenceResponseToConferenceForVhOfficerResponse(conference: ConferenceResponseVho): ConferenceForVhOfficerResponse {
-        const conferenceResponse = new ConferenceForVhOfficerResponse({
-            id: conference.id,
-            case_name: conference.case_name,
-            case_number: conference.case_number,
-            case_type: conference.case_type,
-            scheduled_date_time: conference.scheduled_date_time,
-            status: conference.status,
-            participants: this.mapParticipantResponseToParticipantForUserResponse(conference.participants),
-            hearing_venue_name: conference.hearing_venue_name,
-            scheduled_duration: conference.scheduled_duration,
-            closed_date_time: conference.closed_date_time
+    private mapConferenceResponseToConferenceForVhOfficerResponse(
+        conference: ConferenceResponseVho
+    ): ConferenceForVhOfficerResponse {
+        return new ConferenceForVhOfficerResponse({
+            ...conference, // Spread all properties from the conference object
+            participants: this.mapParticipantResponseToParticipantForUserResponse(conference.participants)
         });
-        return conferenceResponse;
     }
-
-    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
-        return participants.map(
-            participant =>
-                new ParticipantForUserResponse({
-                    id: participant.id,
-                    name: participant.name,
-                    role: participant.role,
-                    status: participant.status,
-                    display_name: participant.display_name,
-                    representee: participant.representee,
-                    hearing_role: participant.hearing_role,
-                    linked_participants: participant.linked_participants
-                })
-        );
+    private mapParticipantResponseToParticipantForUserResponse(
+        participants: ParticipantResponseVho[]
+    ): ParticipantForUserResponse[] {
+        return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
 
     private mapConferencesToCourtRoomsAccounts(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccounts[] {
