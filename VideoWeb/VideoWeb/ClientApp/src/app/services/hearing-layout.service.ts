@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { distinctUntilChanged, filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ApiClient, HearingLayout } from './clients/api-client';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
@@ -123,14 +123,14 @@ export class HearingLayoutService {
     getCurrentRecommendedLayout(): Observable<HearingLayout> {
         return this.activeConference$.pipe(
             take(1),
-            mergeMap(currentConferenceId => this.apiClient.getRecommendedLayoutForHearing(currentConferenceId))
+            switchMap(currentConferenceId => this.apiClient.getRecommendedLayoutForHearing(currentConferenceId))
         );
     }
 
     getCurrentLayout(): Observable<HearingLayout> {
         return this.activeConference$.pipe(
             take(1),
-            mergeMap(currentConferenceId => this.apiClient.getLayoutForHearing(currentConferenceId))
+            switchMap(currentConferenceId => this.apiClient.getLayoutForHearing(currentConferenceId))
         );
     }
 
