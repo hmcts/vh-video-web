@@ -185,17 +185,13 @@ export class VhoQueryService {
         return this.apiClient.getActiveConferences().toPromise();
     }
 
-    private mapConferenceResponseToConferenceForVhOfficerResponse(
-        conference: ConferenceResponseVho
-    ): ConferenceForVhOfficerResponse {
+    private mapConferenceResponseToConferenceForVhOfficerResponse(conference: ConferenceResponseVho): ConferenceForVhOfficerResponse {
         return new ConferenceForVhOfficerResponse({
             ...conference, // Spread all properties from the conference object
             participants: this.mapParticipantResponseToParticipantForUserResponse(conference.participants)
         });
     }
-    private mapParticipantResponseToParticipantForUserResponse(
-        participants: ParticipantResponseVho[]
-    ): ParticipantForUserResponse[] {
+    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
         return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
 
