@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { distinctUntilChanged, filter, map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ApiClient, HearingLayout } from './clients/api-client';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
@@ -42,38 +42,50 @@ export class HearingLayoutService {
     }
 
     initialiseCurrentLayoutSubscriptions(): void {
-        this.eventsService.getServiceConnected().subscribe(() => {
-            this.logger.debug(`${this.loggerPrefix} eventsService connected/reconnected getting the current layout`);
-            this.getCurrentLayout().subscribe(layout => {
+        this.eventsService
+            .getServiceConnected()
+            .pipe(
+                switchMap(() => {
+                    this.logger.debug(`${this.loggerPrefix} eventsService connected/reconnected getting the current layout`);
+                    return this.getCurrentLayout();
+                })
+            )
+            .subscribe(layout => {
                 this.currentLayoutSubject.next(layout);
                 this.logger.debug(`${this.loggerPrefix} Retrieved and updated current layout (${layout})`);
             });
-        });
 
-        this.activeConference$.subscribe(currentConferenceId => {
-            this.logger.debug(`${this.loggerPrefix} Retrieving current layout for conference: ${currentConferenceId}`);
-            this.apiClient.getLayoutForHearing(currentConferenceId).subscribe(layout => {
-                this.logger.debug(`${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`);
-                this.currentLayoutSubject.next(layout);
-            });
-
-            const hearingLayoutChanged$ = this.eventsService.getHearingLayoutChanged();
-            hearingLayoutChanged$
-                .pipe(
-                    takeUntil(
-                        this.store
-                            .select(ConferenceSelectors.getActiveConference)
-                            .pipe(filter(conference => conference?.id !== currentConferenceId))
-                    ),
-                    filter(layoutChanged => layoutChanged.conferenceId === currentConferenceId)
-                )
-                .subscribe(layoutChanged => {
-                    this.logger.info(
-                        `${this.loggerPrefix} layout changed from ${layoutChanged.oldHearingLayout} to ${layoutChanged.newHearingLayout} in current conference: ${currentConferenceId}`
+        this.activeConference$
+            .pipe(
+                switchMap(currentConferenceId => {
+                    this.logger.debug(`${this.loggerPrefix} Retrieving current layout for conference: ${currentConferenceId}`);
+                    return this.apiClient.getLayoutForHearing(currentConferenceId).pipe(
+                        tap(layout => {
+                            this.logger.debug(
+                                `${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`
+                            );
+                            this.currentLayoutSubject.next(layout);
+                        }),
+                        switchMap(() =>
+                            this.eventsService.getHearingLayoutChanged().pipe(
+                                takeUntil(
+                                    this.store
+                                        .select(ConferenceSelectors.getActiveConference)
+                                        .pipe(filter(conference => conference?.id !== currentConferenceId))
+                                ),
+                                filter(layoutChanged => layoutChanged.conferenceId === currentConferenceId),
+                                tap(layoutChanged => {
+                                    this.logger.info(
+                                        `${this.loggerPrefix} layout changed from ${layoutChanged.oldHearingLayout} to ${layoutChanged.newHearingLayout} in current conference: ${currentConferenceId}`
+                                    );
+                                    this.currentLayoutSubject.next(layoutChanged.newHearingLayout);
+                                })
+                            )
+                        )
                     );
-                    this.currentLayoutSubject.next(layoutChanged.newHearingLayout);
-                });
-        });
+                })
+            )
+            .subscribe();
     }
 
     initialiseRecommendedLayoutSubscriptions() {
@@ -87,7 +99,7 @@ export class HearingLayoutService {
                         this.recommendedLayoutSubject.next(layout);
                     });
                 }),
-                mergeMap(currentConferenceId =>
+                switchMap(currentConferenceId =>
                     participantsUpdated$.pipe(
                         takeUntil(
                             this.store
@@ -98,7 +110,7 @@ export class HearingLayoutService {
                         tap(() => {
                             this.logger.debug(`${this.loggerPrefix} Participant list updated getting the new recommended layout`);
                         }),
-                        mergeMap(() => this.getCurrentRecommendedLayout())
+                        switchMap(() => this.getCurrentRecommendedLayout())
                     )
                 )
             )
