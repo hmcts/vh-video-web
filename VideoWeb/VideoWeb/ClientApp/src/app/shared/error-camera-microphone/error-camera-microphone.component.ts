@@ -5,6 +5,7 @@ import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
+    standalone: false,
     selector: 'app-error-camera-microphone',
     templateUrl: './error-camera-microphone.component.html'
 })

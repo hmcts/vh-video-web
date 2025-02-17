@@ -16,10 +16,12 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { BetaBannerComponent } from './beta-banner.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
-@Component({ selector: 'app-mock-component', template: '' })
+@Component({
+    standalone: false, selector: 'app-mock-component', template: '' })
 class Mock1Component {}
 
-@Component({ selector: 'app-mock-component2', template: '' })
+@Component({
+    standalone: false, selector: 'app-mock-component2', template: '' })
 class Mock2Component {}
 
 const routes = [

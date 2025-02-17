@@ -6,6 +6,7 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Component({
+    standalone: false,
     selector: 'app-host-hearing-table',
     templateUrl: './host-hearing-table.component.html',
     styleUrls: ['./host-hearing-table.component.scss']

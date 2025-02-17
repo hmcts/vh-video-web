@@ -5,6 +5,7 @@ import { ConferenceForIndividualResponse } from 'src/app/services/clients/api-cl
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
+    standalone: false,
     selector: 'app-hearing-list-table',
     templateUrl: './hearing-list-table.component.html'
 })

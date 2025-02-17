@@ -3,6 +3,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { SupportedBrowserModel } from './SupportedBrowserModel';
 
 @Component({
+    standalone: false,
     selector: 'app-unsupported-browser',
     templateUrl: './unsupported-browser.component.html'
 })

@@ -15,6 +15,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-participants',
     templateUrl: './private-consultation-participants.component.html',
     styleUrls: ['./private-consultation-participants.component.scss']

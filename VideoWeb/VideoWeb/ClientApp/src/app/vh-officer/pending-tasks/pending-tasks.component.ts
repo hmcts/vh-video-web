@@ -8,6 +8,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     selector: 'app-pending-tasks',
     templateUrl: './pending-tasks.component.html',
     styleUrls: ['./pending-tasks.component.scss', '../vho-global-styles.scss']

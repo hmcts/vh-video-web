@@ -12,6 +12,7 @@ import { CustomValidators } from 'src/app/shared/custom-validators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-quick-links',
     templateUrl: './quick-links.component.html'
 })

@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-status',
     templateUrl: './participant-status.component.html',
     styleUrls: ['./participant-status.component.scss', '../vho-global-styles.scss']

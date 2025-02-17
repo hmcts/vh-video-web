@@ -5,7 +5,8 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { Component } from '@angular/core';
 
-@Component({})
+@Component({
+    standalone: false,})
 class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective {
     conferenceId = '123456789';
     constructor(

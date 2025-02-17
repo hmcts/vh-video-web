@@ -3,6 +3,7 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
+    standalone: false,
     selector: 'app-hearing-status',
     templateUrl: './hearing-status.component.html',
     styleUrls: ['./hearing-status.component.scss']

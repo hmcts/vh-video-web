@@ -3,6 +3,7 @@ import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-item',
     templateUrl: './participant-item.component.html',
     styleUrls: ['./participant-item.component.scss']

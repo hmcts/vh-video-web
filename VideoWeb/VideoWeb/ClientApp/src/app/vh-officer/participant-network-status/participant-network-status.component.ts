@@ -8,6 +8,7 @@ import { ParticipantGraphInfo } from '../services/models/participant-graph-info'
 import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-network-status',
     templateUrl: './participant-network-status.component.html',
     styleUrls: ['./participant-network-status.component.scss', '../vho-global-styles.scss']

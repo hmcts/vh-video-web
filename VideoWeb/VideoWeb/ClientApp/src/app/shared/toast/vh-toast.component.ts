@@ -19,6 +19,7 @@ export interface VhToastButton {
 }
 
 @Component({
+    standalone: false,
     selector: 'vh-toast',
     templateUrl: './vh-toast.component.html',
     styleUrls: ['./vh-toast.component.scss']

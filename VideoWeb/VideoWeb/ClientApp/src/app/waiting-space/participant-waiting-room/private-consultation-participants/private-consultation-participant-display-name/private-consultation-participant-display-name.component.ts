@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-participant-display-name',
     templateUrl: './private-consultation-participant-display-name.component.html',
     styleUrls: ['./private-consultation-participant-display-name.component.scss'],

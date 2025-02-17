@@ -11,6 +11,7 @@ import { pageUrls } from '../../shared/page-url.constants';
 import { EventsService } from 'src/app/services/events.service';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-hearings',
     templateUrl: './participant-hearings.component.html'
 })

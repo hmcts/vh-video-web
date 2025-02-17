@@ -3,6 +3,7 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
+    standalone: false,
     selector: 'app-mute-microphone',
     templateUrl: './mute-microphone.component.html'
 })

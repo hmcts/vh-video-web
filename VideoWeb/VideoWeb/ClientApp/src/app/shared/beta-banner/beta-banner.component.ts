@@ -7,6 +7,7 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 
 @Component({
+    standalone: false,
     selector: 'app-beta-banner',
     templateUrl: './beta-banner.component.html'
 })

@@ -11,6 +11,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
+    standalone: false,
     selector: 'app-microphone-check',
     templateUrl: './microphone-check.component.html'
 })

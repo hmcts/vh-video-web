@@ -11,6 +11,7 @@ import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-vh-officer-venue-list',
     templateUrl: '../venue-list.component.html',
     styleUrls: ['../venue-list.component.scss']

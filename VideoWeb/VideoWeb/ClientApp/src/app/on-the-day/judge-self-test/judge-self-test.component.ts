@@ -9,6 +9,7 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 
 @Component({
+    standalone: false,
     selector: 'app-judge-self-test',
     templateUrl: './judge-self-test.component.html'
 })

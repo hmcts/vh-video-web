@@ -30,10 +30,12 @@ class MockRouter {
     }
 }
 
-@Component({ selector: 'app-mock-component', template: '' })
+@Component({
+    standalone: false, selector: 'app-mock-component', template: '' })
 class Mock1Component {}
 
-@Component({ selector: 'app-mock-component2', template: '' })
+@Component({
+    standalone: false, selector: 'app-mock-component2', template: '' })
 class Mock2Component {}
 
 describe('ErrorComponent', () => {
