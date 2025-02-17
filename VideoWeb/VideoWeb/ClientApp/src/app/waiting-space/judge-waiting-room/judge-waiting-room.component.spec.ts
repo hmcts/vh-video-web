@@ -478,7 +478,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
                 component.ngOnInit();
                 wowzaAgentConnectionState$.next(false);
-                //trigger second time
+                // trigger second time
                 wowzaAgentConnectionState$.next(false);
 
                 expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
@@ -492,9 +492,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
                 component.ngOnInit();
                 wowzaAgentConnectionState$.next(false);
-                //trigger second time
-                wowzaAgentConnectionState$.next(true);
-                //trigger third time
+                wowzaAgentConnectionState$.next(false);
+                wowzaAgentConnectionState$.next(true); // reconnected ok, so reset monitoring
                 wowzaAgentConnectionState$.next(false);
 
                 expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
