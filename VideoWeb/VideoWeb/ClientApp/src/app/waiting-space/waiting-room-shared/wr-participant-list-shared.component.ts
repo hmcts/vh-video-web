@@ -170,6 +170,24 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterNonJudgeParticipants(): void {
+        const orderByRoleThenName = (a, b) => {
+            // Sort by User Role
+            if (a.role < b.role) {
+                return -1;
+            }
+            if (a.role > b.role) {
+                return 1;
+            }
+            // Sort by Hearing Role
+            if (a.hearingRole < b.hearingRole) {
+                return -1;
+            }
+            if (a.hearingRole > b.hearingRole) {
+                return 1;
+            }
+            // // Sort by Name
+            return a.displayName.localeCompare(b.displayName);
+        };
         let nonJudgeParts = this._conference.participants
             .filter(
                 x =>
@@ -180,8 +198,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
-            //.sort((a, b) => b.role.localeCompare(a.role) || (b.name || b.displayName).localeCompare(a.name || a.displayName));
-            .sort((a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName));
+            .sort(orderByRoleThenName);
 
         nonJudgeParts = [
             ...nonJudgeParts,
