@@ -18,7 +18,6 @@ export class AudioRecordingService {
     loggerPrefix = '[AudioRecordingService]';
     dialOutUUID = [];
     restartActioned: boolean;
-    previouslyFailedToConnect: boolean;
     conference: VHConference;
     wowzaAgent: VHPexipParticipant;
 
@@ -112,12 +111,10 @@ export class AudioRecordingService {
         }
         this.wowzaAgent = participant;
         if (participant?.isAudioOnlyCall) {
-            this.previouslyFailedToConnect = false;
             this.wowzaAgentConnection$.next(true);
             this.restartActioned = false;
             await this.eventService.sendAudioRecordingPaused(this.conference.id, false);
         } else {
-            this.previouslyFailedToConnect = true;
             this.wowzaAgentConnection$.next(false);
         }
     }

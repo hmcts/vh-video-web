@@ -475,13 +475,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             it('Should not display audio alert if wowza listener is disconnected, but previously showed the alert last time a connection was handled', () => {
                 component.conference.status = ConferenceStatus.InSession;
                 component.conference.audio_recording_required = true;
-                audioRecordingServiceSpy.previouslyFailedToConnect = true;
 
                 component.ngOnInit();
                 wowzaAgentConnectionState$.next(false);
+                //trigger second time
+                wowzaAgentConnectionState$.next(false);
 
                 expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
-                expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
+                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
             });
 
             it('Should not display audio alert if wowza listener is disconnected, but conference is not in session', () => {

@@ -34,7 +34,6 @@ const mockWowzaAgent: VHPexipParticipant = {
 
 const getWowzaAgentConnectionState$ = new Subject<boolean>();
 const getAudioRecordingPauseState$ = new Subject<boolean>();
-const previouslyFailedToConnect = false;
 
 export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>(
     'AudioRecordingService',
@@ -51,8 +50,7 @@ export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingServi
         wowzaAgent: mockWowzaAgent,
         dialOutUUID: [],
         restartActioned: false,
-        loggerPrefix: '[AudioRecordingService]',
-        previouslyFailedToConnect
+        loggerPrefix: '[AudioRecordingService]'
     }
 );
 
