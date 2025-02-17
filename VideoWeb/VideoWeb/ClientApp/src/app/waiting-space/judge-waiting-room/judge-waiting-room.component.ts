@@ -494,7 +494,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private onWowzaDisconnected() {
-        if (this.conference.audio_recording_required && this.conference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+        if (this.conference.audio_recording_required &&
+            this.conference.status === ConferenceStatus.InSession &&
+            !this.recordingPaused &&
+            // If we have previously failed to connect, we don't want to spam the alert if the supplier keeps creating a new agent (i.e. the wowza server is off)
+            !this.audioRecordingService.previouslyFailedToConnect
+        ) {
             if (this.audioRecordingService.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             } else {
