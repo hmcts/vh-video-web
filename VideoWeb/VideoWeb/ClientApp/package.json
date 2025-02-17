@@ -53,6 +53,7 @@
     "@ng-select/ng-select": "^14.x",
     "@ngrx/component-store": "^19.0.1",
     "@ngrx/effects": "^19.0.1",
+    "@ngrx/operators": "^18.0.0",
     "@ngrx/store": "^19.0.1",
     "@ngrx/store-devtools": "^19.0.1",
     "@ngx-translate/core": "^15.0.0",
@@ -61,7 +62,7 @@
     "aspnet-prerendering": "^3.0.1",
     "chart.js": "^4.4.2",
     "core-js": "^3.8.2",
-    "govuk-frontend": "^5.7.1",
+    "govuk-frontend": "^5.8.0",
     "guid-typescript": "^1.0.9",
     "launchdarkly-js-client-sdk": "^3.5.0",
     "libphonenumber-js": "^1.11.9",
@@ -73,8 +74,7 @@
     "rxjs": "^6.6.6",
     "tslib": "^2.1.0",
     "webrtc-adapter": "^9.0.1",
-    "zone.js": "^0.15.0",
-    "@ngrx/operators": "^18.0.0"
+    "zone.js": "^0.15.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.1.7",
