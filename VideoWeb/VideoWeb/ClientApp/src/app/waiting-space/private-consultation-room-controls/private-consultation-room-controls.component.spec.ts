@@ -24,8 +24,6 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { of, Subject } from 'rxjs';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -35,6 +33,8 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
+import { JoinConsultationDecider } from './models/join-consultation-decider';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
@@ -58,9 +58,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
-    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
-    let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
-
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
     });
@@ -76,6 +73,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         } as VHPexipParticipant;
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
+        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, gloalConference);
 
         translateService.instant.calls.reset();
 
@@ -89,10 +87,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
         userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
-        onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
-        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
-
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
@@ -100,7 +94,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             logger,
             translateService,
             userMediaServiceSpy,
-            conferenceServiceSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
             mockStore,
@@ -122,55 +115,21 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('canJoinHearingFromConsultation', () => {
-        const testCases: {
-            isHost: boolean;
-            shouldShow: boolean;
-            newConferenceStatus: ConferenceStatus;
-            participantStatus: ParticipantStatus;
-        }[] = [];
-        for (const isHost of [false, true]) {
-            for (const conferenceStatus of [
+        it('should invoke JoinConsultationDecider.shouldJoinConsultation with correct params', () => {
+            const expected = JoinConsultationDecider.shouldJoinConsultation(
                 ConferenceStatus.InSession,
-                ConferenceStatus.Paused,
-                ConferenceStatus.NotStarted,
-                ConferenceStatus.Suspended
-            ]) {
-                if (conferenceStatus) {
-                    for (const participantStatus of [ParticipantStatus.InConsultation, ParticipantStatus.InHearing]) {
-                        if (participantStatus) {
-                            testCases.push({
-                                isHost: isHost,
-                                shouldShow:
-                                    conferenceStatus === ConferenceStatus.InSession &&
-                                    participantStatus === ParticipantStatus.InConsultation &&
-                                    isHost,
-                                newConferenceStatus: <ConferenceStatus>conferenceStatus,
-                                participantStatus: <ParticipantStatus>participantStatus
-                            });
-                        }
-                    }
-                }
-            }
-        }
+                ParticipantStatus.InConsultation,
+                true
+            );
 
-        for (const testCase of testCases) {
-            it(`should ${testCase.shouldShow ? '' : 'NOT'} show the join hearing button when the new status is ${
-                testCase.newConferenceStatus
-            } and the participant status is ${testCase.participantStatus} and the participant is ${
-                testCase.isHost ? '' : 'NOT'
-            } a host`, fakeAsync(() => {
-                // Arrange
-                onCurrentConferenceStatusSubject.next({ oldStatus: null, newStatus: testCase.newConferenceStatus });
-                component.participant.status = testCase.participantStatus;
-                spyOnProperty(component, 'isHost').and.returnValue(testCase.isHost);
+            component['conferenceStatus'] = ConferenceStatus.InSession;
+            component.participant.status = ParticipantStatus.InConsultation;
+            spyOnProperty(component, 'isHost').and.returnValue(true);
 
-                // Act
-                const shouldShow = component.canJoinHearingFromConsultation;
+            const result = component.canJoinHearingFromConsultation;
 
-                // Assert
-                expect(shouldShow).toEqual(testCase.shouldShow);
-            }));
-        }
+            expect(result).toBe(expected);
+        });
     });
 
     describe('joinHearingFromConsultation', () => {

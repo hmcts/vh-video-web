@@ -60,6 +60,9 @@ import { NotificationEffects } from './store/effects/notification.effects';
 import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm-non-host-leave-hearing-popup.component';
 import { HearingControlIconComponent } from './hearing-control-icon/hearing-control-icon.component';
 import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/dial-out-participant-popup.component';
+import { provideStore } from '@ngrx/store';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
+import { RouterEffects } from './store/effects/router.effects';
 
 @NgModule({
     imports: [
@@ -69,7 +72,7 @@ import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/d
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects])
+        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects, RouterEffects])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
@@ -121,7 +124,11 @@ import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/d
         NotificationToastrService,
         RoomClosingToastrService,
         LoggedUserResolveService,
-        ParticipantRemoteMuteStoreService
+        ParticipantRemoteMuteStoreService,
+        provideStore({
+            router: routerReducer
+        }),
+        provideRouterStore()
     ]
 })
 export class WaitingSpaceModule {}
