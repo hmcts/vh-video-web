@@ -496,7 +496,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private onWowzaDisconnected() {
-        if (this.conference.audio_recording_required &&
+        if (
+            this.conference.audio_recording_required &&
             this.conference.status === ConferenceStatus.InSession &&
             !this.recordingPaused &&
             // If we have previously failed to connect, we don't want to spam the alert if the supplier keeps creating a new agent (i.e. the wowza server is off)
