@@ -17,6 +17,28 @@ pool:
   vmImage: ubuntu-22.04
 
 stages:
+  - stage: Pre_Release_Tasks
+    displayName: Pre-Release Tasks
+    variables:
+      - template: variables/shared.yaml
+    jobs:
+      - job: GitVersion
+        displayName: "GitVersion"
+        steps:
+          - checkout: self
+            fetchTags: true
+        
+          - task: gitversion/setup@3.0.3
+            displayName: Install GitVersion
+            inputs:
+              versionSpec: '5.11.1'
+
+          - task: gitversion/execute@3.0.3
+            displayName: Determine Version
+            inputs:
+              useConfigFile: true
+              configFilePath: ${{ variables.git_version_config_path }}
+
   #####################################################
   # CI Build Checks. ##################################
   - stage: CI_Build

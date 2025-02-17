@@ -54,7 +54,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     setupInviteStatusSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
@@ -68,7 +67,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 // Set 'Calling...'
@@ -79,7 +77,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 // If the participant state changes reset the state.

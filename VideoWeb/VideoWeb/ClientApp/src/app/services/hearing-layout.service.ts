@@ -56,7 +56,6 @@ export class HearingLayoutService {
                     this.currentLayoutSubject.next(layout);
                 });
 
-                this.logger.debug(`${this.loggerPrefix} subscribing to event hub message for conference: ${currentConferenceId}`);
                 this.eventsService
                     .getHearingLayoutChanged()
                     .pipe(
