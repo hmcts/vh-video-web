@@ -42,9 +42,8 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { ConsultationInvitation } from '../services/consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { Guid } from 'guid-typescript';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Observable, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { HearingRole } from '../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
@@ -132,7 +131,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
     let consultationInvitiation: ConsultationInvitation;
-    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
@@ -168,15 +166,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
 
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>(
-            'ConferenceService',
-            ['getConferenceById'],
-            ['onCurrentConferenceStatusChanged$', 'currentConferenceId', 'currentConference']
-        );
-        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(
-            jasmine.createSpyObj<Observable<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>>('Observable', ['subscribe'])
-        );
-
         hearingLayoutServiceSpy = jasmine.createSpyObj<HearingLayoutService>([], ['currentLayout$']);
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
@@ -199,7 +188,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clockService,
             translateService,
             consultationInvitiationService,
-            conferenceServiceSpy,
             unloadDetectorServiceSpy,
             hearingLayoutServiceSpy,
             participantRemoteMuteStoreServiceSpy,

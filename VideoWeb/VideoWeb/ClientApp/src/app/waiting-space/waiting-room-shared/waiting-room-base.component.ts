@@ -682,9 +682,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 const pexipDisplayNameModel = PexipDisplayNameModel.fromString(participantUpdate.pexipDisplayName);
 
                 if (pexipDisplayNameModel === null) {
-                    this.logger.warn(
-                        `${this.loggerPrefix} Could NOT parse pexip display (${participantUpdate.pexipDisplayName}) name when handling participant update.`
-                    );
                     return;
                 }
 
@@ -1152,7 +1149,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.roomClosingToastrService.clearToasts();
 
-        this.store.dispatch(ConferenceActions.leaveConference({ conferenceId: this.vhConference.id }));
+        this.store.dispatch(ConferenceActions.leaveConference({ conferenceId: this.vhConference?.id }));
     }
 
     subscribeToClock(): void {
