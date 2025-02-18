@@ -1,4 +1,4 @@
-@use 'govuk-frontend/dist/govuk/base';
+@import 'govuk-frontend/dist/govuk/base';
 
 .pending-alerts {
   color: govuk-colour('red');

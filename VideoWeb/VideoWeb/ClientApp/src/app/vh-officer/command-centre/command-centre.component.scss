@@ -1,4 +1,4 @@
-@use 'govuk-frontend/dist/govuk/all';
+@import 'govuk-frontend/dist/govuk/all';
 
 .menu {
   @include govuk-responsive-padding(2, 'top');

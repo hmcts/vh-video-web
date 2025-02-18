@@ -1,11 +1,11 @@
-@use 'functions';
+@import 'functions';
 
 $breakpoints: (
   smallest: 0px,
-  extra-small : 481px,
+  extra-small: 481px,
   small: 641px,
-  medium : 769px,
-  large: 1025px,
+  medium: 769px,
+  large: 1025px
 );
 
 // 1024px

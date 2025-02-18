@@ -1,5 +1,5 @@
-@use 'govuk-frontend/dist/govuk/base';
-@use 'govuk-frontend/dist/govuk/core/index';
+@import 'govuk-frontend/dist/govuk/base';
+@import 'govuk-frontend/dist/govuk/core/index';
 
 .selection-list {
   @extend .govuk-body;

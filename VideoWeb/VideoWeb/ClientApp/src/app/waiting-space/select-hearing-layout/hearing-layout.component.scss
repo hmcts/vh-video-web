@@ -1,4 +1,4 @@
-@use 'govuk-frontend/dist/govuk/base';
+@import 'govuk-frontend/dist/govuk/base';
 
 .sub-layout-grid {
   @include govuk-font($size: 16);

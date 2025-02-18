@@ -1,4 +1,4 @@
-@use 'variables';
+@import 'variables';
 
 @function stripUnit($value) {
   @return $value / ($value * 0 + 1);
@@ -14,50 +14,47 @@
 
 // https://gist.github.com/agorilla/9df052eb1e15d8aea446
 @function map-get-next($map, $key, $fallback: false, $return: value) {
-
   // Check if map is valid
   @if type-of($map) == map {
+    // Check if key exists in map
+    @if map-has-key($map, $key) {
+      // Init index counter variable
+      $i: 0;
 
-      // Check if key exists in map
-      @if map-has-key($map, $key) {
+      // Init key index
+      $key-index: false;
 
-          // Init index counter variable
-          $i: 0;
+      // Traverse map for key
+      @each $map-key, $map-value in $map {
+        // Update index
+        $i: $i + 1;
 
-          // Init key index
-          $key-index: false;
+        // If map key found, set key index
+        @if $map-key == $key {
+          $key-index: $i;
+        }
 
-          // Traverse map for key
-          @each $map-key, $map-value in $map {
-              // Update index
-              $i: $i + 1;
-
-              // If map key found, set key index
-              @if $map-key == $key {
-                  $key-index: $i;
-              }
-
-              // If next index return next value or key based on $return
-              @if $i == $key-index + 1 {
-                  @if $return == key {
-                      @return $map-key;
-                  } @else {
-                      @return $map-value;
-                  }
-              }
-
-              // If last entry return false
-              @if $i == length($map) {
-                  @return $fallback;
-              }
+        // If next index return next value or key based on $return
+        @if $i == $key-index + 1 {
+          @if $return == key {
+            @return $map-key;
+          } @else {
+            @return $map-value;
           }
+        }
 
-          @warn 'No next map item for key #{$key}';
+        // If last entry return false
+        @if $i == length($map) {
           @return $fallback;
+        }
       }
 
-      @warn 'No valid key #{$key} in map';
+      @warn 'No next map item for key #{$key}';
       @return $fallback;
+    }
+
+    @warn 'No valid key #{$key} in map';
+    @return $fallback;
   }
 
   @warn 'No valid map';
