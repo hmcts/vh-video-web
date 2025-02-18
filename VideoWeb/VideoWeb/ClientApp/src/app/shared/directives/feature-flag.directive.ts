@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Directive({
+    standalone: false,
     selector: '[appFeatureFlag]'
 })
 export class FeatureFlagDirective implements OnDestroy {

@@ -2,6 +2,7 @@ import { Directive, ElementRef, OnDestroy, OnInit, Renderer2, RendererFactory2 }
 import { Logger } from '../services/logging/logger-base';
 
 @Directive({
+    standalone: false,
     selector: '[appForcePlayVideo]'
 })
 export class ForcePlayVideoDirective implements OnInit, OnDestroy {
