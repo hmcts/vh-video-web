@@ -1,5 +1,5 @@
-@import 'functions';
-@import 'breakpoints';
+@use 'functions';
+@use 'breakpoints';
 
 
 @mixin responds-to($name) {

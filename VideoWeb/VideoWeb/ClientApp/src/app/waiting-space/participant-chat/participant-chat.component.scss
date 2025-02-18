@@ -1,6 +1,6 @@
 @use 'govuk-frontend/dist/govuk/base';
-@import 'govuk-frontend/dist/govuk/core/links';
-@import 'abstracts';
+@use 'govuk-frontend/dist/govuk/core/links';
+@use 'abstracts';
 
 button {
   all: unset;

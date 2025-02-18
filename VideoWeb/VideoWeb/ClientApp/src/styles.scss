@@ -1,8 +1,11 @@
-$govuk-global-styles: true;
-@use 'govuk-frontend/dist/govuk/all' as *;
-@use '@ministryofjustice/frontend/moj/all' as *;
-@import '@ng-select/ng-select/themes/default.theme.css';
-@import 'main';
+@use 'govuk-frontend/dist/govuk/index';
+@use '@ministryofjustice/frontend/moj/all';
+@use '@ng-select/ng-select/themes/default.theme.css';
+@use 'main';
+
+$govuk-suppressed-warnings: (
+    govuk-typography-scale-14
+);
 
 .grey-btn {
   background-color: govuk-colour('light-grey');

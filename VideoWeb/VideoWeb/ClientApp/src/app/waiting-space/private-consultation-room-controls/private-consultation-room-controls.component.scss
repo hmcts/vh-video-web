@@ -1,5 +1,5 @@
 @use 'govuk-frontend/dist/govuk/base';
-@import 'abstracts';
+@use 'abstracts';
 
 @mixin all-main-container {
   position: fixed;
