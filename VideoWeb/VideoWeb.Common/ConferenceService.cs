@@ -53,8 +53,7 @@ public class ConferenceService(
     /// <param name="conferenceId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<Conference>
-    ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
+    public async Task<Conference> ForceGetConference(Guid conferenceId, CancellationToken cancellationToken = default)
     {
         var conferenceDetails = await videoApiClient.GetConferenceDetailsByIdAsync(conferenceId, cancellationToken);
         var hearingDetails = await bookingApiClient.GetHearingDetailsByIdV2Async(conferenceDetails.HearingId, cancellationToken);

@@ -64,18 +64,41 @@ export class VhoQueryService {
     }
 
     handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
-        if (hearingDetailMessage.conference) {
-            const newConference = hearingDetailMessage.conference;
-            const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
-            const originalConference = this.vhoConferences[index];
-            if (index !== -1) {
-                const newHearing = this.mapConferenceResponseToConferenceForVhOfficerResponse(newConference);
-                newHearing.allocated_cso = originalConference.allocated_cso;
-                this.vhoConferences[index] = newHearing;
-                this.vhoConferencesSubject.next(this.vhoConferences);
-                return;
-            }
+        if (!hearingDetailMessage.conference) {
+            return;
         }
+        const newConference = hearingDetailMessage.conference;
+        const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+
+        if (index === -1) {
+            return;
+        }
+
+        let foundConference = this.vhoConferences[index];
+        foundConference = new ConferenceForVhOfficerResponse({
+            ...foundConference,
+            case_name: newConference.case_name,
+            case_number: newConference.case_number,
+            scheduled_date_time: newConference.scheduled_date_time,
+            scheduled_duration: newConference.scheduled_duration,
+            hearing_venue_name: newConference.hearing_venue_name,
+            participants: this.mapParticipantResponseToParticipantForUserResponse(newConference.participants)
+        });
+        this.vhoConferences[index] = foundConference;
+
+        // Filter the list based on filterCriteria
+        const filterCriteria = this.courtRoomsAccountsFilters;
+        if (filterCriteria && filterCriteria.length > 0) {
+            this.vhoConferences = this.mapFilteredConferences(filterCriteria, this.vhoConferences);
+        }
+
+        // Filter this.vhoConferences based on the selected court rooms in this.venueNames
+        if (this.venueNames && this.venueNames.length > 0) {
+            this.vhoConferences = this.vhoConferences.filter(conference => this.venueNames.includes(conference.hearing_venue_name));
+        }
+
+        this.vhoConferencesSubject.next(this.vhoConferences);
+        return;
     }
 
     stopQuery() {
@@ -185,12 +208,6 @@ export class VhoQueryService {
         return this.apiClient.getActiveConferences().toPromise();
     }
 
-    private mapConferenceResponseToConferenceForVhOfficerResponse(conference: ConferenceResponseVho): ConferenceForVhOfficerResponse {
-        return new ConferenceForVhOfficerResponse({
-            ...conference, // Spread all properties from the conference object
-            participants: this.mapParticipantResponseToParticipantForUserResponse(conference.participants)
-        });
-    }
     private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
         return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
