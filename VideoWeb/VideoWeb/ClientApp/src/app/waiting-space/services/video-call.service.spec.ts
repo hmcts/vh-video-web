@@ -18,12 +18,13 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ConferenceUpdated, ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamAndMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
-import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
 import { MockStore, createMockStore } from '@ngrx/store/testing';
 import { initialState as initialConferenceState, ConferenceState } from '../store/reducers/conference.reducer';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { ConferenceActions } from '../store/actions/conference.actions';
+import { mapPexipConferenceToVhPexipConference } from '../store/models/api-contract-to-state-model-mappers';
 
 const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
@@ -49,14 +50,12 @@ describe('VideoCallService', () => {
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let heartbeatServiceSpy: jasmine.SpyObj<HeartbeatService>;
-    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
     let mockStore: MockStore<ConferenceState>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     beforeEach(fakeAsync(() => {
         const initialState = initialConferenceState;
-        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>('VideoCallEventsService', ['handleParticipantUpdated']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.uniqueCallTags, true).and.returnValue(of(true));
         mockStore = createMockStore({ initialState });
@@ -128,7 +127,6 @@ describe('VideoCallService', () => {
             apiClient,
             configServiceSpy,
             heartbeatServiceSpy,
-            videoCallEventsServiceSpy,
             streamMixerServiceSpy,
             mockStore,
             launchDarklyServiceSpy
@@ -479,6 +477,8 @@ describe('VideoCallService', () => {
     describe('handleConferenceUpdate', () => {
         it('should publish the conference update', fakeAsync(() => {
             // Arrange
+            service.pexipAPI.call_type = 'hearing';
+            const dispatchSpy = spyOn(mockStore, 'dispatch');
             const pexipConference: PexipConference = { started: true, locked: false, guests_muted: true, direct_media: false };
             // Act
             let result: ConferenceUpdated | null = null;
@@ -491,6 +491,31 @@ describe('VideoCallService', () => {
             // Assert
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedUpdated);
+            expect(dispatchSpy).toHaveBeenCalledWith(
+                ConferenceActions.upsertPexipConference({
+                    pexipConference: mapPexipConferenceToVhPexipConference(ConferenceUpdated.fromPexipConference(pexipConference))
+                })
+            );
+        }));
+
+        it('should not publish the conference update if test call', fakeAsync(() => {
+            // Arrange
+            service.pexipAPI.call_type = 'test_call';
+            const dispatchSpy = spyOn(mockStore, 'dispatch');
+            const pexipConference: PexipConference = { started: true, locked: false, guests_muted: true, direct_media: false };
+            // Act
+            let result: ConferenceUpdated | null = null;
+            const expectedUpdated = ConferenceUpdated.fromPexipConference(pexipConference);
+            service.onConferenceUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onConferenceUpdate(pexipConference);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdated);
+
+            expect(dispatchSpy).not.toHaveBeenCalled();
         }));
     });
 
@@ -621,48 +646,6 @@ describe('VideoCallService', () => {
             // Assert
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedUpdate);
-            expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
-        }));
-
-        it('should not raise the event through video event service if the participant is undefined', fakeAsync(() => {
-            // Arrange
-            const pexipParticipant: PexipParticipant = {
-                buzz_time: 0,
-                is_muted: undefined,
-                display_name: undefined,
-                local_alias: undefined,
-                start_time: 0,
-                uuid: undefined,
-                spotlight: 0,
-                mute_supported: undefined,
-                is_external: false,
-                external_node_uuid: undefined,
-                has_media: false,
-                call_tag: undefined,
-                is_audio_only_call: undefined,
-                is_video_call: undefined,
-                role: 'GUEST',
-                is_video_silent: false,
-                protocol: undefined,
-                disconnect_supported: undefined,
-                transfer_supported: undefined,
-                is_main_video_dropped_out: undefined,
-                is_video_muted: undefined,
-                is_streaming_conference: undefined,
-                send_to_audio_mixes: undefined,
-                receive_from_audio_mix: undefined
-            };
-
-            // Act
-            let result: ParticipantUpdated | null = null;
-            service.onParticipantUpdated().subscribe(update => (result = update));
-
-            service.pexipAPI.onParticipantUpdate(pexipParticipant);
-            flush();
-
-            // Assert
-            expect(result).toBeNull();
-            expect(videoCallEventsServiceSpy.handleParticipantUpdated).not.toHaveBeenCalled();
         }));
     });
 

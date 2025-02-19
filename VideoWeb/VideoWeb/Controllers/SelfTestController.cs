@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -55,48 +56,33 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CheckUserCompletedATestTodayAsync() 
             => Ok(await testCallCache.HasUserCompletedATestToday(User.Identity?.Name));
-        
-        
+
+
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet]
         [Route("conferences/{conferenceId}/participants/{participantId}/selftestresult")]
         [SwaggerOperation(OperationId = "GetTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId,
+            CancellationToken cancellationToken)
         {
-            try
-            {
-                var score = await videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name);
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e,
-                    "Unable to get test call result for participant: {ParticipantId} in conference: {ConferenceId}",
-                    participantId, conferenceId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            var score = await videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId,
+                cancellationToken);
+            await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name, cancellationToken);
+            return Ok(score);
         }
-        
+
         [HttpGet("independentselftestresult/{participantId}")]
         [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId)
+        public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId,
+            CancellationToken cancellationToken)
         {
-            try
-            {
-                var score = await videoApiClient.GetIndependentTestCallResultAsync(participantId);
-                await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name);
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                logger.LogError(e, "Unable to get independent test call result for participant: {ParticipantId}", participantId);
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            var score = await videoApiClient.GetIndependentTestCallResultAsync(participantId, cancellationToken);
+            await testCallCache.AddTestCompletedForTodayAsync(User.Identity?.Name, cancellationToken);
+            return Ok(score);
         }
     }
 }

@@ -52,6 +52,7 @@ namespace VideoWeb
                 {
                     opt.Filters.Add(typeof(LoggingMiddleware));
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
+                    opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 504));
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddApplicationInsightsTelemetry();
