@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
