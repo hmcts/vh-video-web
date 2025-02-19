@@ -98,7 +98,6 @@ export class VhoQueryService {
         }
 
         this.vhoConferencesSubject.next(this.vhoConferences);
-        return;
     }
 
     stopQuery() {
