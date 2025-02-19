@@ -119,7 +119,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     };
 
     CALL_TIMEOUT = 31000; // 31 seconds
-    callbackTimeout: NodeJS.Timer;
+    callbackTimeout: ReturnType<typeof setTimeout> | number;
 
     loggedInUser: LoggedParticipantResponse;
     contactDetails = vhContactDetails;
@@ -878,7 +878,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
-            this.callbackTimeout = setTimeout(async () => {
+            this.callbackTimeout = window.setTimeout(async () => {
                 await this.loadConferenceAndUpdateVideo();
                 this.call();
             }, this.CALL_TIMEOUT);

@@ -24,8 +24,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     loading: boolean;
     monitoringParticipant: ParticipantGraphInfo;
     packageLostArray: PackageLost[];
-
-    timeout: NodeJS.Timer;
+    timeout: ReturnType<typeof setTimeout> | number;
     mouseEvent: MouseEvent;
 
     constructor(
@@ -41,7 +40,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     onMouseEnter($event: MouseEvent) {
         const self = this;
         this.mouseEvent = $event;
-        this.timeout = setTimeout(async function () {
+        this.timeout = window.setTimeout(async function () {
             await self.showParticipantGraph($event);
         }, 500);
     }
