@@ -22,7 +22,7 @@
     "prettify-api-client": "run-script-os",
     "prettify-api-client:nix": "npx prettier --write 'src/app/services/clients/api-client.ts'",
     "prettify-api-client:default": "npx prettier --write \"src\\app\\services\\clients\\api-client.ts\"",
-    "update-api-client": "nswag run /runtime:Net60 && npm run prettify-fix"
+    "update-api-client": "nswag run && npm run prettify-fix"
   },
   "private": true,
   "dependencies": {
@@ -114,7 +114,7 @@
     "karma-junit-reporter": "^2.0.1",
     "ng-bullet": "^1.0.3",
     "ng-mocks": "^14.12.2",
-    "nswag": "^14.1.0",
+    "nswag": "^14.2.0",
     "prettier": "^3.3.3",
     "puppeteer": "^23.11.1",
     "run-script-os": "^1.1.6",

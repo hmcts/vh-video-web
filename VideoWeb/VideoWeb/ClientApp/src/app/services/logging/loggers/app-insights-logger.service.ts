@@ -133,6 +133,9 @@ export class AppInsightsLoggerService implements LogAdapter {
                 }
                 this.appInsights.loadAppInsights();
                 this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                    if (envelope.data.someField === 'keepalive') {
+                        return false;
+                    }
                     const remoteDepedencyType = 'RemoteDependencyData';
                     if (envelope.baseType === remoteDepedencyType && (envelope.baseData.name as string)) {
                         const name = envelope.baseData.name as string;

@@ -29,7 +29,6 @@ import {
     Presentation,
     StoppedScreenshare
 } from '../models/video-call-models';
-import { VideoCallEventsService } from './video-call-events.service';
 
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../store/actions/conference.actions';
@@ -89,7 +88,6 @@ export class VideoCallService {
         private apiClient: ApiClient,
         private configService: ConfigService,
         private heartbeatService: HeartbeatService,
-        private videoCallEventsService: VideoCallEventsService,
         private streamMixerService: StreamMixerService,
         private store: Store<ConferenceState>,
         private ldService: LaunchDarklyService
@@ -144,6 +142,10 @@ export class VideoCallService {
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate: PexipConference) {
             const conference = ConferenceUpdated.fromPexipConference(conferenceUpdate);
             self.onConferenceUpdatedSubject.next(conference);
+
+            if (self.pexipAPI.call_type === 'test_call') {
+                return;
+            }
 
             self.store.dispatch(
                 ConferenceActions.upsertPexipConference({ pexipConference: mapPexipConferenceToVhPexipConference(conference) })
@@ -629,10 +631,16 @@ export class VideoCallService {
         if (!participant.pexipDisplayName) {
             return;
         }
+
+        this.onParticipantCreatedSubject.next(participant);
+
+        if (this.pexipAPI.call_type === 'test_call') {
+            return;
+        }
+
         this.store.dispatch(
             ConferenceActions.createPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
         );
-        this.onParticipantCreatedSubject.next(participant);
     }
 
     private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
@@ -646,11 +654,16 @@ export class VideoCallService {
         if (!participant.pexipDisplayName) {
             return;
         }
+
+        this.onParticipantUpdatedSubject.next(participant);
+
+        if (this.pexipAPI.call_type === 'test_call') {
+            return;
+        }
+
         this.store.dispatch(
             ConferenceActions.upsertPexipParticipant({ participant: mapPexipParticipantToVHPexipParticipant(participant) })
         );
-        this.videoCallEventsService.handleParticipantUpdated(participant);
-        this.onParticipantUpdatedSubject.next(participant);
     }
 
     private handleError(error: string) {

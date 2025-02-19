@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
@@ -56,7 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId, CancellationToken.None);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -71,10 +72,10 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
+                .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId, CancellationToken.None))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeFalse();
@@ -89,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId, CancellationToken.None);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -106,7 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId, CancellationToken.None);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeFalse();
