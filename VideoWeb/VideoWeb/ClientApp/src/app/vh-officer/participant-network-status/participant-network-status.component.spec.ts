@@ -1,6 +1,10 @@
 import { ElementRef } from '@angular/core';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import {
+    ConferenceForVhOfficerResponse,
+    ParticipantHeartbeatResponse,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -170,8 +174,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     }));
 
     it('should clear timer on mouse exit', () => {
-        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component.timeout = timer;
+        component.timeout = jasmine.createSpyObj('number', ['ref', 'unref']);
         spyOn(global, 'clearTimeout');
         component.onMouseExit(mouseEvent);
 
