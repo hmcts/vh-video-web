@@ -3,10 +3,7 @@ import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/partic
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { Component } from '@angular/core';
 
-@Component({
-    standalone: false,})
 class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective {
     conferenceId = '123456789';
     constructor(
