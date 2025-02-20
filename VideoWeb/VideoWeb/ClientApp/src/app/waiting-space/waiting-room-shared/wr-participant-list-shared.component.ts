@@ -13,6 +13,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { ConsultationRules } from 'src/app/services/models/consultation-rules';
+import { SortingHelper } from 'src/app/shared/helpers/sorting-helper';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
@@ -170,24 +171,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     protected filterNonJudgeParticipants(): void {
-        const orderByRoleThenName = (a, b) => {
-            // Sort by User Role
-            if (a.role < b.role) {
-                return -1;
-            }
-            if (a.role > b.role) {
-                return 1;
-            }
-            // Sort by Hearing Role
-            if (a.hearingRole < b.hearingRole) {
-                return -1;
-            }
-            if (a.hearingRole > b.hearingRole) {
-                return 1;
-            }
-            // // Sort by Name
-            return a.displayName.localeCompare(b.displayName);
-        };
         let nonJudgeParts = this._conference.participants
             .filter(
                 x =>
@@ -198,7 +181,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
 
         nonJudgeParts = [
             ...nonJudgeParts,

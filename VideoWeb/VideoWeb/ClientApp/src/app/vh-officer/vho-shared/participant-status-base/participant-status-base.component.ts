@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+import { SortingHelper } from 'src/app/shared/helpers/sorting-helper';
 
 @Directive()
 export abstract class ParticipantStatusDirective {
@@ -135,37 +136,19 @@ export abstract class ParticipantStatusDirective {
     }
 
     sortParticipants() {
-        const orderByRoleThenName = (a, b) => {
-            // Sort by User Role
-            if (a.role < b.role) {
-                return -1;
-            }
-            if (a.role > b.role) {
-                return 1;
-            }
-            // Sort by Hearing Role
-            if (a.hearingRole < b.hearingRole) {
-                return -1;
-            }
-            if (a.hearingRole > b.hearingRole) {
-                return 1;
-            }
-            // // Sort by Name
-            return a.displayName.localeCompare(b.displayName);
-        };
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
         const panelMembersAndWingers = this.participants
             .filter(participant => [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole))
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
         const staff = this.participants
             .filter(participant => participant.hearingRole === HearingRole.STAFF_MEMBER)
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
         const observers = this.participants
             .filter(participant => participant.hearingRole === HearingRole.OBSERVER)
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
         const quickLinks = this.participants
             .filter(participant => participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver)
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
 
         const participants = this.participants
             .filter(
@@ -176,7 +159,7 @@ export abstract class ParticipantStatusDirective {
                     !quickLinks.includes(participant) &&
                     !staff.includes(participant)
             )
-            .sort(orderByRoleThenName);
+            .sort(SortingHelper.orderByRoleThenName);
 
         this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...staff, ...participants, ...observers, ...quickLinks];
         return this.sortedParticipants;
