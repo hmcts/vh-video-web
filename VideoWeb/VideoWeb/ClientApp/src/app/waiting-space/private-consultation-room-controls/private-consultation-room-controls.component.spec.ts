@@ -1,13 +1,5 @@
 import { Guid } from 'guid-typescript';
-import {
-    ConferenceResponse,
-    ConferenceStatus,
-    HearingLayout,
-    ParticipantForUserResponse,
-    ParticipantStatus,
-    Role,
-    RoomSummaryResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceStatus, HearingLayout, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -28,44 +20,26 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject, of, Subject } from 'rxjs';
-import { HearingRole } from '../models/hearing-role-model';
-import { ParticipantModel } from 'src/app/shared/models/participant';
+import { of, Subject } from 'rxjs';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
-    const participantOneId = Guid.create().toString();
-    const participantOne = new ParticipantForUserResponse({
-        id: participantOneId,
-        status: ParticipantStatus.NotSignedIn,
-        display_name: 'Interpreter',
-        role: Role.Individual,
-        representee: null,
-        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
-        hearing_role: HearingRole.INTERPRETER,
-        first_name: 'Interpreter',
-        last_name: 'Doe',
-        interpreter_room: null,
-        linked_participants: []
-    });
-
     let component: PrivateConsultationRoomControlsComponent;
     let mockStore: MockStore<ConferenceState>;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
+    const gloalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
@@ -81,43 +55,30 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['storeFocus', 'restoreFocus']);
     const translateService = translateServiceSpy;
 
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
-
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
 
-    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
-
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
     });
     beforeEach(() => {
+        globalParticipant.pexipInfo = {
+            isRemoteMuted: false,
+            isSpotlighted: false,
+            isVideoMuted: false,
+            handRaised: false,
+            pexipDisplayName: '1922_John Doe',
+            uuid: '1922_John Doe',
+            callTag: 'john-cal-tag'
+        } as VHPexipParticipant;
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
 
         translateService.instant.calls.reset();
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['loggedInParticipant$', 'participants']
-        );
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setSpotlightStatus',
-            'setSpotlightStatusById',
-            'setRemoteMuteStatusById',
-            'setHandRaiseStatusById'
-        ]);
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
-            'setSpotlightStatus',
-            'clearHandRaiseStatusForAll',
-            'setHandRaiseStatus'
-        ]);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['getConferenceSetting', 'checkCameraAndMicrophonePresence'],
@@ -128,11 +89,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
         userMediaServiceSpy.checkCameraAndMicrophonePresence.and.returnValue(Promise.resolve({ hasACamera: true, hasAMicrophone: true }));
 
-        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
-            ParticipantModel.fromParticipantForUserResponse(participantOne)
-        );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
-
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
         onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
@@ -142,12 +98,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             eventsService,
             deviceTypeService,
             logger,
-            participantServiceSpy,
             translateService,
-            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            videoControlCacheSpy,
             launchDarklyServiceSpy,
             focusServiceSpy,
             mockStore,
@@ -296,7 +249,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.buzz_time = 0;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
@@ -305,17 +258,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         expect(component.handToggleText).toBe(expectedText);
     });
 
-    it('should show remote muted when muted by host', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.remoteMuted).toBeTruthy();
-    });
-
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        otherParticipant.pexipInfo = {
+            handRaised: false
+        } as VHPexipParticipant;
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 0;
         pexipParticipant.spotlight = 0;
@@ -330,18 +278,18 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.buzz_time = 123;
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.handRaised).toBeTruthy();
+        globalParticipant.pexipInfo.handRaised = true;
+        component.participant = globalParticipant;
         const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        otherParticipant.pexipInfo = {
+            handRaised: false
+        } as VHPexipParticipant;
+        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(otherParticipant.pexipInfo.pexipDisplayName);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
@@ -352,32 +300,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         expect(component.handToggleText).toBe(expectedText);
     });
 
-    it('should mute locally if remote muted and not muted locally', () => {
-        videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        component.audioMuted = false;
-
-        component.handleParticipantUpdatedInVideoCall(payload);
-
-        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
-    });
-
-    it('should skip mute locally if remote muted and already muted locally', () => {
-        videoCallService.toggleMute.calls.reset();
-        const pexipParticipant = VideoCallTestData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
-        pexipParticipant.is_muted = 'Yes';
-        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        component.audioMuted = true;
-        component.handleParticipantUpdatedInVideoCall(payload);
-        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
-    });
-
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.display_name, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.displayName, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -388,7 +314,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, participant.display_name, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, participant.displayName, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -399,7 +325,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const message = new ParticipantStatusMessage(participant.id, participant.display_name, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, participant.displayName, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -594,13 +520,13 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
     it('should confirm that the consultation room is a judge and JOH court room', async () => {
         component.participant = globalParticipant;
-        component.participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        component.participant.room = { label: 'JudgeJOHCourtRoom' } as VHRoom;
 
         expect(component.isJOHRoom).toBe(true);
     });
     it('should confirm that the consultation room is not a judge and JOH court room', async () => {
         component.participant = globalParticipant;
-        component.participant.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
+        component.participant.room = { label: 'ParticipantCourtRoom' } as VHRoom;
 
         expect(component.isJOHRoom).toBe(false);
     });
@@ -714,26 +640,11 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             });
             it('should call super leave method with participants', () => {
                 const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
-                getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
-                    new ParticipantModel(
-                        '7879c48a-f513-4d3b-bb1b-151831427507',
-                        'Participant Name',
-                        'DisplayName',
-                        'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
-                        Role.Judge,
-                        HearingRole.JUDGE,
-                        false,
-                        null,
-                        null,
-                        ParticipantStatus.Available,
-                        null
-                    )
-                ]);
 
                 component.leave(true);
 
                 expect(spy).toHaveBeenCalledTimes(1);
-                expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+                expect(spy).toHaveBeenCalledWith(true, component['participants']);
             });
         });
 
@@ -799,38 +710,14 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('canShowLeaveButton', () => {
-        describe('when vodafone is enabled', () => {
-            beforeEach(() => {
-                component.vodafoneEnabled = true;
-            });
-
-            it('should return true when the participant is not in private consultation', () => {
-                component.isPrivateConsultation = false;
-                expect(component.canShowLeaveButton).toBeTrue();
-            });
-
-            it('should return false when the participant is in private consultation', () => {
-                component.isPrivateConsultation = true;
-                expect(component.canShowLeaveButton).toBeFalse();
-            });
+        it('should return true when the participant is not in private consultation', () => {
+            component.isPrivateConsultation = false;
+            expect(component.canShowLeaveButton).toBeTrue();
         });
 
-        describe('when vodafone is disabled', () => {
-            beforeEach(() => {
-                component.vodafoneEnabled = false;
-            });
-
-            it('should return true when the participant is a host and not in private consultation', () => {
-                component.participant.role = Role.Judge;
-                component.isPrivateConsultation = false;
-                expect(component.canShowLeaveButton).toBeTrue();
-            });
-
-            it('should return false when the participant is not a host', () => {
-                component.participant.role = Role.Individual;
-                component.isPrivateConsultation = false;
-                expect(component.canShowLeaveButton).toBeFalse();
-            });
+        it('should return false when the participant is in private consultation', () => {
+            component.isPrivateConsultation = true;
+            expect(component.canShowLeaveButton).toBeFalse();
         });
     });
 

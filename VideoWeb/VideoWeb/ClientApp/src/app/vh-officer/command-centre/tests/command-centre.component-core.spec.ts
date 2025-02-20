@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -21,6 +21,9 @@ import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -35,6 +38,10 @@ describe('CommandCentreComponent - Core', () => {
     let router: jasmine.SpyObj<Router>;
     let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
+    let courtRoomAccounts: CourtRoomsAccounts[] = [];
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let userDataSubject: Subject<boolean>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -45,20 +52,16 @@ describe('CommandCentreComponent - Core', () => {
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>(
-            'VhoQueryService',
-            [
-                'startQuery',
-                'stopQuery',
-                'getFilteredQueryResults',
-                'getConferencesForVHOfficer',
-                'getConferenceByIdVHO',
-                'getCsoFilterFromStorage',
-                'getAvailableCourtRoomFilters',
-                'getCsoFilterFromStorage'
-            ],
-            ['courtRoomFilterChanged$']
-        );
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
+            'startQuery',
+            'stopQuery',
+            'getFilteredQueryResults',
+            'getConferencesForVHOfficer',
+            'getConferenceByIdVHO',
+            'getCsoFilterFromStorage',
+            'getAvailableCourtRoomFilters',
+            'getCsoFilterFromStorage'
+        ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -71,7 +74,6 @@ describe('CommandCentreComponent - Core', () => {
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({
             supplier_configurations: [
-                new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
                 new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
             ]
         });
@@ -80,6 +82,7 @@ describe('CommandCentreComponent - Core', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+        vhoQueryService.courtRoomFilterChanged$.next(courtRoomAccounts);
     });
 
     afterAll(() => {
@@ -90,14 +93,21 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getFilteredQueryResults.and.returnValue(of(conferences));
 
-        const courtRoomAccounts: CourtRoomsAccounts[] = [];
-        courtRoomAccounts.push(new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true));
+        courtRoomAccounts = [new CourtRoomsAccounts('Birmingham', ['Judge Fudge'], true)];
         vhoQueryService.getAvailableCourtRoomFilters.and.returnValue(of(courtRoomAccounts));
-        spyOnProperty(vhoQueryService, 'courtRoomFilterChanged$').and.returnValue(
-            new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts)
-        );
+        vhoQueryService.courtRoomFilterChanged$ = new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts);
 
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
+        userDataSubject = new Subject<any>();
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -108,7 +118,8 @@ describe('CommandCentreComponent - Core', () => {
             screenHelper,
             pageServiceSpy,
             configService,
-            notificationToastrServiceSpy
+            notificationToastrServiceSpy,
+            securityServiceProviderServiceSpy
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();

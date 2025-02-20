@@ -12,15 +12,13 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse,
-    SharedParticipantRoom
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
     clockService,
@@ -52,6 +50,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { CallError } from '../../models/video-call-models';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -80,7 +79,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeEach(() => {
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         component = new WRTestComponent(
             activatedRoute,
@@ -449,7 +447,6 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should clean up timeouts and subscriptions', () => {
         component.eventHubSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.videoCallSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component.callbackTimeout = timer;
         spyOn(global, 'clearTimeout');
@@ -458,7 +455,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(component.eventHubSubscription$.unsubscribe).toHaveBeenCalled();
         expect(component.videoCallSubscription$.unsubscribe).toHaveBeenCalled();
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(clearTimeout).toHaveBeenCalled();
     });
 
@@ -504,6 +500,25 @@ describe('WaitingRoomComponent message and clock', () => {
             deviceTypeService.isSupportedBrowser.and.returnValue(testcase.isSupportedBrowser);
             deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
             expect(component.isSupportedBrowserForNetworkHealth).toBe(testcase.expected);
+        });
+    });
+
+    describe('handleHearingDetailsUpdated', () => {
+        it('should update the hearing details when the hearing is updated', () => {
+            const conferenceNew = new ConferenceTestData().getConferenceDetailNow();
+            conferenceNew.scheduled_date_time = new Date(new Date().setHours(new Date().getHours() + 1));
+            const message = new HearingDetailsUpdatedMessage(conferenceNew);
+            component.handleHearingDetailsUpdated(message);
+            expect(component.conference.scheduled_date_time).toBe(conferenceNew.scheduled_date_time);
+        });
+
+        it('should ignore the message when the conference id does not match', () => {
+            const conferenceNew = new ConferenceTestData().getConferenceDetailNow();
+            conferenceNew.scheduled_date_time = new Date(new Date().setHours(new Date().getHours() + 1));
+            const message = new HearingDetailsUpdatedMessage(conferenceNew);
+            message.conference.id = Guid.create().toString();
+            component.handleHearingDetailsUpdated(message);
+            expect(component.conference.scheduled_date_time).not.toBe(conferenceNew.scheduled_date_time);
         });
     });
 
@@ -566,7 +581,7 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.hearingStartingAnnounced).toBeTruthy();
     });
 
-    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+    it('should go to hearing list when conference is past closed time', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
@@ -574,11 +589,9 @@ describe('WaitingRoomComponent message and clock', () => {
         conf.status = status;
         conf.closed_date_time = closedDateTime;
         component.hearing = new Hearing(conf);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
 
         component.checkIfHearingIsClosed();
 
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
     it('should return string with case name and number', () => {
@@ -633,117 +646,36 @@ describe('WaitingRoomComponent message and clock', () => {
             });
         });
 
-        describe('when eventHubIsConnected and token is set', () => {
-            beforeEach(() => {
-                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
-            });
-            it('should use interpreter room when participant has links', async () => {
-                component.participant.linked_participants = [
-                    new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
-                ];
-                const room = new SharedParticipantRoom({
-                    participant_join_uri: 'patjoinuri',
-                    pexip_node: 'sip.test.node',
-                    display_name: 'foo',
-                    tile_display_name: `I1;Interpreter1;${component.participant.id}`
-                });
-                videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+        it('should use standard conferene room when when paticipant is a joh', async () => {
+            spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+            component.participant.role = Role.JudicialOfficeHolder;
 
-                await component.call();
+            await component.call();
 
-                expect(videoCallService.makeCall).toHaveBeenCalledWith(
-                    room.pexip_node,
-                    room.participant_join_uri,
-                    room.tile_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
-
-            it('should use witness interpreter room when participant or links is a witness', async () => {
-                const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
-                witness.linked_participants = [
-                    new LinkedParticipantResponse({ linked_id: component.participant.id, link_type: LinkType.Interpreter })
-                ];
-                component.participant.linked_participants = [
-                    new LinkedParticipantResponse({ linked_id: witness.id, link_type: LinkType.Interpreter })
-                ];
-                const room = new SharedParticipantRoom({
-                    participant_join_uri: 'patjoinuri',
-                    pexip_node: 'sip.test.node',
-                    display_name: 'foo',
-                    tile_display_name: `I1;Interpreter1;${component.participant.id}`
-                });
-                videoCallService.retrieveWitnessInterpreterRoom.and.resolveTo(room);
-
-                await component.call();
-
-                expect(videoCallService.makeCall).toHaveBeenCalledWith(
-                    room.pexip_node,
-                    room.participant_join_uri,
-                    room.tile_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
-
-            it('should use judicial room when participant is a joh', async () => {
-                component.participant.role = Role.JudicialOfficeHolder;
-                const room = new SharedParticipantRoom({
-                    participant_join_uri: 'patjoinuri',
-                    pexip_node: 'sip.test.node',
-                    display_name: 'foo',
-                    tile_display_name: `T1;PanelMember;${component.participant.id}`
-                });
-                videoCallService.retrieveJudicialRoom.and.resolveTo(room);
-
-                await component.call();
-
-                expect(videoCallService.makeCall).toHaveBeenCalledWith(
-                    room.pexip_node,
-                    room.participant_join_uri,
-                    room.tile_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
+            expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                component.conference.pexip_node_uri,
+                component.conference.participant_uri,
+                component.participant.tiled_display_name,
+                component.maxBandwidth,
+                component.conference.id
+            );
         });
 
-        describe('when the vodafone toggle is enabled', () => {
-            beforeEach(() => {
-                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
-                component.vodafoneEnabled = true;
-            });
+        it('should use standard conference room when when paticipant or links is a witness', async () => {
+            spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+            component.participant.linked_participants = [
+                new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+            ];
 
-            it('should use standard conferene room when when paticipant is a joh', async () => {
-                component.participant.role = Role.JudicialOfficeHolder;
+            await component.call();
 
-                await component.call();
-
-                expect(videoCallService.makeCall).toHaveBeenCalledWith(
-                    component.conference.pexip_node_uri,
-                    component.conference.participant_uri,
-                    component.participant.tiled_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
-
-            it('should use standard conference room when when paticipant or links is a witness', async () => {
-                component.participant.linked_participants = [
-                    new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
-                ];
-
-                await component.call();
-
-                expect(videoCallService.makeCall).toHaveBeenCalledWith(
-                    component.conference.pexip_node_uri,
-                    component.conference.participant_uri,
-                    component.participant.tiled_display_name,
-                    component.maxBandwidth,
-                    component.conference.id
-                );
-            });
+            expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                component.conference.pexip_node_uri,
+                component.conference.participant_uri,
+                component.participant.tiled_display_name,
+                component.maxBandwidth,
+                component.conference.id
+            );
         });
     });
 

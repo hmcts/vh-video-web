@@ -35,12 +35,6 @@ export class ParticipantContactDetails {
         return this.participant.contact_telephone;
     }
 
-    get initialedName(): string {
-        const initial = this.participant.first_name ? this.participant.first_name.substr(0, 1) : '';
-        const name = this.participant.last_name || '';
-        return `${initial} ${name}`;
-    }
-
     get status(): ParticipantStatus {
         return this.participant.status;
     }

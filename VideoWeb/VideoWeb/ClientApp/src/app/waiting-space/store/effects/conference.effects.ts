@@ -30,11 +30,13 @@ export class ConferenceEffects {
     loadLoggedInParticipant$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ConferenceActions.loadLoggedInParticipant),
-            switchMap(action =>
-                this.store.select(ConferenceSelectors.getParticipants).pipe(
-                    map(participants => participants.filter(p => p.id === action.participantId)),
-                    map(participant => ConferenceActions.loadLoggedInParticipantSuccess({ participant: participant[0] }))
-                )
+            concatLatestFrom(() => this.store.select(ConferenceSelectors.getParticipants)),
+            filter(
+                ([action, participants]) =>
+                    participants?.length > 0 && participants.includes(participants.find(p => p.id === action.participantId))
+            ),
+            switchMap(([action, participants]) =>
+                of(ConferenceActions.loadLoggedInParticipantSuccess({ participant: participants.find(p => p.id === action.participantId) }))
             )
         )
     );
@@ -104,6 +106,9 @@ export class ConferenceEffects {
                             'error-service.connected-another-device',
                             false
                         );
+                    }
+                    if (action.reason.toLowerCase().includes('no heartbeat received due to temporary network disruption')) {
+                        this.errorService.goToServiceError('error-service.unexpected-error', 'error-service.problem-with-connection', true);
                     }
                     return of();
                 })

@@ -1,65 +1,84 @@
 using System;
-using Autofac.Extras.Moq;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using VideoApi.Contract.Requests;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
+using Microsoft.AspNetCore.SignalR;
+using VideoWeb.Common;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
+using VideoWeb.Helpers.Interfaces;
+using VideoWeb.Mappings;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Helpers;
 
 internal class AllocationHearingsEventNotifierTests
 {
     private AllocationHearingsEventNotifier _notifier;
-    private AutoMock _mocker;
-    private List<HearingDetailRequest> _hearings;
+    private Conference _conference;
+    private EventComponentHelper _eventHelper;
     private const string CsoUserName = "username@email.com";
-    
+    private readonly Guid _csoId = Guid.NewGuid();
+
     [SetUp]
     public void SetUp()
     {
-        _mocker = AutoMock.GetLoose();
-        _notifier = _mocker.Create<AllocationHearingsEventNotifier>();
-        
-        _hearings = new List<HearingDetailRequest>();
-        
-        var hearing = new HearingDetailRequest();
-        hearing.Judge = "Judge Name 1";
-        hearing.Time = new DateTimeOffset(new DateTime(2023,04,01,10,00,00));
-        hearing.CaseName = "Case Name";
-        
-        _hearings.Add(hearing);
-        
+        _conference = new ConferenceCacheModelBuilder().Build();
+        _eventHelper = new EventComponentHelper
+        {
+            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+            EventHubClientMock = new Mock<IEventHubClient>(),
+            ConferenceServiceMock = new Mock<IConferenceService>()
+        };
+        _eventHelper.ConferenceServiceMock
+            .Setup(x => x.GetConferences(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([_conference]);
+
+        // this will register all participants as connected to the hub
+        _eventHelper.RegisterUsersForHubContext(_conference.Participants);
+        _eventHelper.RegisterParticipantForHubContext(CsoUserName);
+        _notifier = new AllocationHearingsEventNotifier(_eventHelper.EventHubContextMock.Object,
+            _eventHelper.ConferenceServiceMock.Object);
     }
-    
+
     [Test]
     public async Task Should_send_event()
     {
-        _mocker.Mock<IEventHandlerFactory>()
-            .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.AllocationHearings)))
-            .Returns(_mocker.Mock<IEventHandler>().Object);
-        
         // Act
-        await _notifier.PushAllocationHearingsEvent(CsoUserName, _hearings);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId);
+        await _notifier.PushAllocationHearingsEvent(update, [_conference.Id]);
+
+        List<UpdatedAllocationDto> expected =
+            [ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto(_conference)];
         
-        
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Once);
+        _eventHelper.EventHubClientMock.Verify(
+            x => x.AllocationsUpdated(It.Is<List<UpdatedAllocationDto>>(list => 
+                list.Count == 1 &&
+                list[0].ConferenceId == expected[0].ConferenceId &&
+                list[0].ScheduledDateTime == expected[0].ScheduledDateTime &&
+                list[0].CaseName == expected[0].CaseName &&
+                list[0].JudgeDisplayName == expected[0].JudgeDisplayName &&
+                list[0].AllocatedToCsoUsername == expected[0].AllocatedToCsoUsername)),
+            Times.Exactly(1));
     }
     
     [Test]
     public async Task Should_not_send_event_when_hearings_is_empty()
     {
         // arrange
-        _hearings = new List<HearingDetailRequest>();
+        var conferences = Enumerable.Empty<Guid>().ToList();
         
         // act
-        await _notifier.PushAllocationHearingsEvent(CsoUserName, _hearings);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId);
+        await _notifier.PushAllocationHearingsEvent(update, conferences);
         
         // assert
-        _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Never);
+        _eventHelper.EventHubClientMock.Verify(x => x.AllocationsUpdated(It.IsAny<List<UpdatedAllocationDto>>()),
+            Times.Never);
     }
 }

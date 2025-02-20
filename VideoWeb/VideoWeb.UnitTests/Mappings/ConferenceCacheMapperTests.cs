@@ -18,11 +18,14 @@ using ParticipantResponse = VideoApi.Contract.Responses.ParticipantResponse;
 using RoomType = VideoApi.Contract.Enums.RoomType;
 using Supplier = VideoWeb.Common.Enums.Supplier;
 using TelephoneParticipantResponse = VideoApi.Contract.Responses.TelephoneParticipantResponse;
+using Bogus;
 
 namespace VideoWeb.UnitTests.Mappings;
 
 public class ConferenceCacheMapperTests
 {
+    private static readonly Faker Faker = new();
+    
     [Test]
     public void Should_map_all_properties()
     {

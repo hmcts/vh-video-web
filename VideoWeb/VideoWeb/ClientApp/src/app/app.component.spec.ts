@@ -69,8 +69,6 @@ describe('AppComponent', () => {
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
         supplier_configurations: [
-            ,
-            new SupplierConfigurationResponse({ supplier: Supplier.Kinly, join_by_phone_from_date: '2020-09-01' }),
             new SupplierConfigurationResponse({ supplier: Supplier.Vodafone, join_by_phone_from_date: '2020-09-01' })
         ],
         app_insights_connection_string: 'InstrumentationKey=appinsights'

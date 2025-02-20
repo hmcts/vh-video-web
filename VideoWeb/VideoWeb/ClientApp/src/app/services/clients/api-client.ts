@@ -55,7 +55,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -1858,7 +1858,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2151,7 +2151,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2261,7 +2261,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2371,7 +2371,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2481,7 +2481,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2590,7 +2590,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2698,7 +2698,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -2807,7 +2807,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -3092,111 +3092,6 @@ export class ApiClient extends ApiClientBase {
             );
         }
         return _observableOf<VideoEndpointResponse[]>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
-        let url_ = this.baseUrl + '/video-endpoints/{conferenceId}/allowed-video-call-endpoints';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processAllowedVideoCallEndpoints(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processAllowedVideoCallEndpoints(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<AllowedEndpointResponse[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<AllowedEndpointResponse[]>;
-                })
-            );
-    }
-
-    protected processAllowedVideoCallEndpoints(response: HttpResponseBase): Observable<AllowedEndpointResponse[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(AllowedEndpointResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<AllowedEndpointResponse[]>(null as any);
     }
 
     /**
@@ -3805,7 +3700,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return No Content
      */
-    allocationHearings(body: AllocationHearingsToCsoRequest | undefined): Observable<void> {
+    allocationHearings(body: HearingAllocationNotificationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/internalevent/AllocationHearings';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -3816,7 +3711,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4016,7 +3911,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4119,7 +4014,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4542,7 +4437,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4652,7 +4547,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4764,7 +4659,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -4992,7 +4887,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -6018,7 +5913,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json',
+                'Content-Type': 'application/json',
                 Accept: 'application/json'
             })
         };
@@ -7202,7 +7097,7 @@ export class ApiClient extends ApiClientBase {
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
+                'Content-Type': 'application/json'
             })
         };
 
@@ -7285,116 +7180,6 @@ export class ApiClient extends ApiClientBase {
             );
         }
         return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @param participantType (optional)
-     * @return OK
-     */
-    getParticipantRoomForParticipant(
-        conferenceId: string,
-        participantId: string,
-        participantType: string | undefined
-    ): Observable<SharedParticipantRoom> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/shared/{participantId}?';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
-        if (participantType === null) throw new Error("The parameter 'participantType' cannot be null.");
-        else if (participantType !== undefined) url_ += 'participantType=' + encodeURIComponent('' + participantType) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetParticipantRoomForParticipant(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetParticipantRoomForParticipant(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<SharedParticipantRoom>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<SharedParticipantRoom>;
-                })
-            );
-    }
-
-    protected processGetParticipantRoomForParticipant(response: HttpResponseBase): Observable<SharedParticipantRoom> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                  ? (response as any).error
-                  : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Internal Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = SharedParticipantRoom.fromJS(resultData200);
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = resultData404 !== undefined ? resultData404 : <any>null;
-
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<SharedParticipantRoom>(null as any);
     }
 }
 
@@ -7596,12 +7381,12 @@ export interface IProblemDetails {
 }
 
 export class ValidationProblemDetails implements IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 
@@ -7618,6 +7403,11 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
             for (var property in _data) {
                 if (_data.hasOwnProperty(property)) this[property] = _data[property];
             }
+            this.type = _data['type'];
+            this.title = _data['title'];
+            this.status = _data['status'];
+            this.detail = _data['detail'];
+            this.instance = _data['instance'];
             if (_data['errors']) {
                 this.errors = {} as any;
                 for (let key in _data['errors']) {
@@ -7625,11 +7415,6 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
                         (<any>this.errors)![key] = _data['errors'][key] !== undefined ? _data['errors'][key] : [];
                 }
             }
-            this.type = _data['type'];
-            this.title = _data['title'];
-            this.status = _data['status'];
-            this.detail = _data['detail'];
-            this.instance = _data['instance'];
         }
     }
 
@@ -7645,28 +7430,28 @@ export class ValidationProblemDetails implements IValidationProblemDetails {
         for (var property in this) {
             if (this.hasOwnProperty(property)) data[property] = this[property];
         }
+        data['type'] = this.type;
+        data['title'] = this.title;
+        data['status'] = this.status;
+        data['detail'] = this.detail;
+        data['instance'] = this.instance;
         if (this.errors) {
             data['errors'] = {};
             for (let key in this.errors) {
                 if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key];
             }
         }
-        data['type'] = this.type;
-        data['title'] = this.title;
-        data['status'] = this.status;
-        data['detail'] = this.detail;
-        data['instance'] = this.instance;
         return data;
     }
 }
 
 export interface IValidationProblemDetails {
-    errors?: { [key: string]: string[] } | undefined;
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    errors?: { [key: string]: string[] } | undefined;
 
     [key: string]: any;
 }
@@ -7733,6 +7518,7 @@ export enum TaskType {
 }
 
 export enum TestScore {
+    Unknown = 'Unknown',
     Good = 'Good',
     Okay = 'Okay',
     Bad = 'Bad'
@@ -7752,51 +7538,6 @@ export enum UserRole {
     StaffMember = 'StaffMember'
 }
 
-export class AllocationHearingsToCsoRequest implements IAllocationHearingsToCsoRequest {
-    allocated_cso_user_name?: string | undefined;
-    hearings?: HearingDetailRequest[] | undefined;
-
-    constructor(data?: IAllocationHearingsToCsoRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.allocated_cso_user_name = _data['allocated_cso_user_name'];
-            if (Array.isArray(_data['hearings'])) {
-                this.hearings = [] as any;
-                for (let item of _data['hearings']) this.hearings!.push(HearingDetailRequest.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): AllocationHearingsToCsoRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new AllocationHearingsToCsoRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['allocated_cso_user_name'] = this.allocated_cso_user_name;
-        if (Array.isArray(this.hearings)) {
-            data['hearings'] = [];
-            for (let item of this.hearings) data['hearings'].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IAllocationHearingsToCsoRequest {
-    allocated_cso_user_name?: string | undefined;
-    hearings?: HearingDetailRequest[] | undefined;
-}
-
 export class ConferenceEventRequest implements IConferenceEventRequest {
     event_id?: string | undefined;
     event_type?: EventType;
@@ -7808,6 +7549,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
+    conference_role?: ConferenceRole;
 
     constructor(data?: IConferenceEventRequest) {
         if (data) {
@@ -7829,6 +7571,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
             this.transfer_to = _data['transfer_to'];
             this.reason = _data['reason'];
             this.phone = _data['phone'];
+            this.conference_role = _data['conference_role'];
         }
     }
 
@@ -7851,6 +7594,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
         data['transfer_to'] = this.transfer_to;
         data['reason'] = this.reason;
         data['phone'] = this.phone;
+        data['conference_role'] = this.conference_role;
         return data;
     }
 }
@@ -7866,49 +7610,7 @@ export interface IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
-}
-
-export class HearingDetailRequest implements IHearingDetailRequest {
-    time?: Date;
-    judge?: string | undefined;
-    case_name?: string | undefined;
-
-    constructor(data?: IHearingDetailRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.time = _data['time'] ? new Date(_data['time'].toString()) : <any>undefined;
-            this.judge = _data['judge'];
-            this.case_name = _data['case_name'];
-        }
-    }
-
-    static fromJS(data: any): HearingDetailRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new HearingDetailRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['time'] = this.time ? this.time.toISOString() : <any>undefined;
-        data['judge'] = this.judge;
-        data['case_name'] = this.case_name;
-        return data;
-    }
-}
-
-export interface IHearingDetailRequest {
-    time?: Date;
-    judge?: string | undefined;
-    case_name?: string | undefined;
+    conference_role?: ConferenceRole;
 }
 
 export enum HearingLayout {
@@ -8480,7 +8182,6 @@ export interface ITestCallScoreResponse {
 }
 
 export enum Supplier {
-    Kinly = 'Kinly',
     Vodafone = 'Vodafone'
 }
 
@@ -8764,6 +8465,55 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 
 export interface IAddSelfTestFailureEventRequest {
     self_test_failure_reason?: SelfTestFailureReason;
+}
+
+export class HearingAllocationNotificationRequest implements IHearingAllocationNotificationRequest {
+    allocated_cso_user_name?: string | undefined;
+    allocated_cso_user_id?: string;
+    conference_ids?: string[] | undefined;
+
+    constructor(data?: IHearingAllocationNotificationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.allocated_cso_user_name = _data['allocated_cso_user_name'];
+            this.allocated_cso_user_id = _data['allocated_cso_user_id'];
+            if (Array.isArray(_data['conference_ids'])) {
+                this.conference_ids = [] as any;
+                for (let item of _data['conference_ids']) this.conference_ids!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): HearingAllocationNotificationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new HearingAllocationNotificationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['allocated_cso_user_name'] = this.allocated_cso_user_name;
+        data['allocated_cso_user_id'] = this.allocated_cso_user_id;
+        if (Array.isArray(this.conference_ids)) {
+            data['conference_ids'] = [];
+            for (let item of this.conference_ids) data['conference_ids'].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IHearingAllocationNotificationRequest {
+    allocated_cso_user_name?: string | undefined;
+    allocated_cso_user_id?: string;
+    conference_ids?: string[] | undefined;
 }
 
 export class InviteToConsultationRequest implements IInviteToConsultationRequest {
@@ -9407,49 +9157,6 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
 
 export interface IUpdateParticipantStatusEventRequest {
     event_type?: EventType;
-}
-
-export class AllowedEndpointResponse implements IAllowedEndpointResponse {
-    id?: string;
-    display_name?: string | undefined;
-    defence_advocate_username?: string | undefined;
-
-    constructor(data?: IAllowedEndpointResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data['id'];
-            this.display_name = _data['display_name'];
-            this.defence_advocate_username = _data['defence_advocate_username'];
-        }
-    }
-
-    static fromJS(data: any): AllowedEndpointResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AllowedEndpointResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['id'] = this.id;
-        data['display_name'] = this.display_name;
-        data['defence_advocate_username'] = this.defence_advocate_username;
-        return data;
-    }
-}
-
-export interface IAllowedEndpointResponse {
-    id?: string;
-    display_name?: string | undefined;
-    defence_advocate_username?: string | undefined;
 }
 
 export class ChatResponse implements IChatResponse {
@@ -11148,53 +10855,6 @@ export class SelfTestPexipResponse implements ISelfTestPexipResponse {
 
 export interface ISelfTestPexipResponse {
     pexip_self_test_node?: string | undefined;
-}
-
-export class SharedParticipantRoom implements ISharedParticipantRoom {
-    pexip_node?: string | undefined;
-    participant_join_uri?: string | undefined;
-    display_name?: string | undefined;
-    tile_display_name?: string | undefined;
-
-    constructor(data?: ISharedParticipantRoom) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.pexip_node = _data['pexip_node'];
-            this.participant_join_uri = _data['participant_join_uri'];
-            this.display_name = _data['display_name'];
-            this.tile_display_name = _data['tile_display_name'];
-        }
-    }
-
-    static fromJS(data: any): SharedParticipantRoom {
-        data = typeof data === 'object' ? data : {};
-        let result = new SharedParticipantRoom();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['pexip_node'] = this.pexip_node;
-        data['participant_join_uri'] = this.participant_join_uri;
-        data['display_name'] = this.display_name;
-        data['tile_display_name'] = this.tile_display_name;
-        return data;
-    }
-}
-
-export interface ISharedParticipantRoom {
-    pexip_node?: string | undefined;
-    participant_join_uri?: string | undefined;
-    display_name?: string | undefined;
-    tile_display_name?: string | undefined;
 }
 
 export class SupplierConfigurationResponse implements ISupplierConfigurationResponse {

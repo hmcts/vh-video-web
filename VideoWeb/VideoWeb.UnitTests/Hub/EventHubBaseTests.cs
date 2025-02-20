@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Bogus;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
         protected Mock<IConferenceVideoControlStatusService> ConferenceVideoControlStatusService;
         protected Mock<IConferenceManagementService> ConferenceManagementServiceMock;
+        private static readonly Faker Faker = new();
 
         [SetUp]
         public void Setup()

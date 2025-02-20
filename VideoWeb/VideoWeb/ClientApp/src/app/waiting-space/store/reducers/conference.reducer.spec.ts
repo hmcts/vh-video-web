@@ -241,6 +241,25 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.caseName).toEqual('Updating conference');
             expect(result.currentConference.endpoints[0].pexipInfo).toBeTruthy();
         });
+
+        it('should ignore the conference if the id does not match the active conference id', () => {
+            const conferenceWithDifferentId: VHConference = { ...conferenceTestData, id: 'different-id' };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.loadConferenceSuccess({ conference: conferenceWithDifferentId })
+            );
+            expect(result).toEqual(existingInitialState);
+        });
+    });
+
+    describe('leaveConference action', () => {
+        it('should reset the conference state', () => {
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.leaveConference({ conferenceId: conferenceTestData.id })
+            );
+            expect(result).toEqual(initialState);
+        });
     });
 
     describe('upsertPexipConference', () => {
@@ -781,6 +800,8 @@ describe('Conference Reducer', () => {
 
     describe('upsertPexipParticipant action', () => {
         it('should add pexip info to the participant', () => {
+            existingInitialState = { ...existingInitialState, loggedInParticipant: conferenceTestData.participants[0] };
+
             const pexipParticipant = {
                 isRemoteMuted: false,
                 isSpotlighted: false,
@@ -802,6 +823,7 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].pexipInfo).toEqual(pexipParticipant);
+            expect(result.loggedInParticipant.pexipInfo).toEqual(pexipParticipant);
         });
 
         it('should update-wowza participant', () => {

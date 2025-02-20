@@ -1,33 +1,19 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
-import { Guid } from 'guid-typescript';
 import { Subject } from 'rxjs';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Heartbeat } from 'src/app/shared/models/heartbeat';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pexipApiMock } from 'src/app/testing/mocks/mock-video-call.service';
-import { ApiClient, ConferenceResponse, HeartbeatConfigurationResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { ApiClient, HeartbeatConfigurationResponse } from '../clients/api-client';
 import { DeviceTypeService } from '../device-type.service';
 import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
-import { ConferenceService } from './conference.service';
 import { HeartbeatService } from './heartbeat.service';
-import { ParticipantService } from './participant.service';
+import { initialState as initialConferenceState, ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import * as ConferenceSelectors from 'src/app/waiting-space/store/selectors/conference.selectors';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { VHConference, VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
 
 describe('HeartbeatService', () => {
-    const participant = new ParticipantModel(
-        Guid.create().toString(),
-        null,
-        null,
-        null,
-        Role.None,
-        null,
-        false,
-        null,
-        null,
-        ParticipantStatus.None
-    );
-    const conference = new ConferenceResponse({ id: Guid.create().toString() });
     const heartbeatConfig = new HeartbeatConfigurationResponse({ heartbeat_url_base: 'url', heartbeat_jwt: 'jwt' });
 
     let sut: HeartbeatService;
@@ -35,11 +21,7 @@ describe('HeartbeatService', () => {
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let heartbeatConfigSubject: Subject<HeartbeatConfigurationResponse>;
 
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
-    let loggedInParticipantSubject: Subject<ParticipantModel>;
-
-    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
-    let currentConferenceSubject: Subject<ConferenceResponse>;
+    let mockStore: MockStore<ConferenceState>;
 
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let heartbeatMapperSpy: jasmine.SpyObj<HeartbeatModelMapper>;
@@ -47,17 +29,11 @@ describe('HeartbeatService', () => {
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeEach(() => {
+        const initialState = initialConferenceState;
+        mockStore = createMockStore({ initialState });
         apiClientSpy = jasmine.createSpyObj<ApiClient>(['getHeartbeatConfigForParticipant'], []);
         heartbeatConfigSubject = new Subject<HeartbeatConfigurationResponse>();
         apiClientSpy.getHeartbeatConfigForParticipant.and.returnValue(heartbeatConfigSubject.asObservable());
-
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>([], ['loggedInParticipant$']);
-        loggedInParticipantSubject = new Subject<ParticipantModel>();
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
-
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
-        currentConferenceSubject = new Subject<ConferenceResponse>();
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
 
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(
             ['getBrowserName', 'getBrowserVersion', 'getOSName', 'getOSVersion', 'getDevice'],
@@ -67,25 +43,22 @@ describe('HeartbeatService', () => {
         eventServiceSpy = jasmine.createSpyObj<EventsService>(['sendHeartbeat'], []);
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error'], []);
 
-        sut = new HeartbeatService(
-            apiClientSpy,
-            participantServiceSpy,
-            conferenceServiceSpy,
-            deviceTypeServiceSpy,
-            heartbeatMapperSpy,
-            eventServiceSpy,
-            loggerSpy
-        );
+        sut = new HeartbeatService(apiClientSpy, mockStore, deviceTypeServiceSpy, heartbeatMapperSpy, eventServiceSpy, loggerSpy);
+    });
+
+    afterEach(() => {
+        mockStore.resetSelectors();
     });
 
     describe('initialiseHeartbeat', () => {
         it('should do nothing if the current conference is undefined', fakeAsync(() => {
-            // Act
-            sut.initialiseHeartbeat(pexipApiMock);
-            flush();
+            // arrange
+            const loggedInParticipant = { id: '456' } as VHParticipant;
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, undefined);
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
-            currentConferenceSubject.next(undefined);
-            loggedInParticipantSubject.next(participant);
+            // act
+            sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
             // Assert
@@ -116,41 +89,14 @@ describe('HeartbeatService', () => {
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
-        it('should do nothing if the current conference is null', fakeAsync(() => {
-            // Act
-            sut.initialiseHeartbeat(pexipApiMock);
-            flush();
-
-            currentConferenceSubject.next(null);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
-            // Assert
-            expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
-        }));
-
         it('should do nothing if the current participant is undefined', fakeAsync(() => {
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(undefined);
-            flush();
-
-            // Assert
-            expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
-        }));
-
-        it('should do nothing if the current participant is null', fakeAsync(() => {
-            // Act
-            sut.initialiseHeartbeat(pexipApiMock);
-            flush();
-
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(null);
+            const activeConference = { id: '123' } as VHConference;
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, undefined);
             flush();
 
             // Assert
@@ -159,12 +105,14 @@ describe('HeartbeatService', () => {
         }));
 
         it('should get the heartbeat configuration for the participant and initialise the heartbeat', fakeAsync(() => {
+            // Arrange
+            const activeConference = { id: '123' } as VHConference;
+            const loggedInParticipant = { id: '456' } as VHParticipant;
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
-            flush();
-
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
             flush();
 
             heartbeatConfigSubject.next(heartbeatConfig);
@@ -172,7 +120,7 @@ describe('HeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeTruthy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(conference.id, participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(activeConference.id, loggedInParticipant.id);
 
             // Cleanup
             sut.heartbeat?.kill();
@@ -182,11 +130,13 @@ describe('HeartbeatService', () => {
 
         it('should catch errors from getHeartbeatConfigForParticipant', fakeAsync(() => {
             // Act & Assert
+            const activeConference = { id: '123' } as VHConference;
+            const loggedInParticipant = { id: '456' } as VHParticipant;
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
             expect(() => {
                 sut.initialiseHeartbeat(pexipApiMock);
 
-                currentConferenceSubject.next(conference);
-                loggedInParticipantSubject.next(participant);
                 flush();
 
                 heartbeatConfigSubject.error(new Error());
@@ -195,16 +145,21 @@ describe('HeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(conference.id, participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(activeConference.id, loggedInParticipant.id);
         }));
     });
 
     describe('handleHeartbeat', () => {
+        let activeConference: VHConference;
+        let loggedInParticipant: VHParticipant;
+
         beforeEach(fakeAsync(() => {
+            activeConference = { id: '123' } as VHConference;
+            loggedInParticipant = { id: '456' } as VHParticipant;
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
+            mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
             sut.initialiseHeartbeat(pexipApiMock);
 
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
             flush();
         }));
 
@@ -227,8 +182,6 @@ describe('HeartbeatService', () => {
             const device = 'device-type';
             deviceTypeServiceSpy.getDevice.and.returnValue(device);
 
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
             flush();
 
             // Act
@@ -246,9 +199,6 @@ describe('HeartbeatService', () => {
 
             const heartbeat = new Heartbeat();
             heartbeatMapperSpy.map.and.returnValue(heartbeat);
-
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
             flush();
 
             // Act
@@ -257,7 +207,7 @@ describe('HeartbeatService', () => {
 
             // Assert
             expect(stopHeartbeatSpy).not.toHaveBeenCalled();
-            expect(eventServiceSpy.sendHeartbeat).toHaveBeenCalledOnceWith(conference.id, participant.id, heartbeat);
+            expect(eventServiceSpy.sendHeartbeat).toHaveBeenCalledOnceWith(activeConference.id, loggedInParticipant.id, heartbeat);
         }));
     });
 
@@ -273,6 +223,17 @@ describe('HeartbeatService', () => {
             // Assert
             expect(heartbeatSpy.kill).toHaveBeenCalledTimes(1);
             expect(sut.heartbeat).toBeFalsy();
+        });
+
+        it('should do nothing if the heartbeat is null', () => {
+            // Arrange
+            sut.heartbeat = null;
+
+            // Act
+            sut.stopHeartbeat();
+
+            // Assert
+            expect(loggerSpy.debug).toHaveBeenCalledWith(jasmine.stringMatching(/Couldn't stop the heartbeat as it didn't exist/));
         });
     });
 });

@@ -1,19 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { take, takeUntil, tap } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
-import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -21,7 +16,6 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { CallError, ParticipantUpdated } from '../models/video-call-models';
@@ -83,9 +77,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected conferenceService: ConferenceService,
-        protected participantService: ParticipantService,
-        protected videoControlService: VideoControlService,
-        protected videoControlCacheService: VideoControlCacheService,
         private readonly unloadDetectorService: UnloadDetectorService,
         private readonly hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
@@ -133,6 +124,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     videoClosedExt() {
+        this.audioErrorRetryToast?.remove();
         this.audioErrorRetryToast = null;
     }
 
@@ -154,94 +146,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     isStaffMember(): boolean {
         return this.loggedInUser.role === Role.StaffMember;
-    }
-
-    onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
-        if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
-            this.logger.debug(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
-
-            const participants = this.participantService.participants;
-
-            if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                this.videoControlCacheService.setSpotlightStatus(participants.find(p => p.role === Role.Judge).id, true);
-            }
-
-            participants.forEach(participant => {
-                this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
-            });
-
-            this.participantService.virtualMeetingRooms.forEach(vmr => {
-                this.videoControlService.restoreParticipantsSpotlight(vmr);
-            });
-        }
-    }
-
-    restoreSpotlightState(): void {
-        this.participantService.participants.forEach(participant => {
-            this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
-        });
-
-        this.participantService.virtualMeetingRooms.forEach(vmr => {
-            this.videoControlService.restoreParticipantsSpotlight(vmr);
-        });
-    }
-
-    onConferenceInSessionCheckForDisconnectedParticipants(update: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {
-        if (update.newStatus === ConferenceStatus.InSession) {
-            this.participantService.participants
-                .filter(x => !x.virtualMeetingRoomSummary)
-                .forEach(participant => {
-                    if (participant.status === ParticipantStatus.Disconnected) {
-                        this.videoControlCacheService.setSpotlightStatus(participant.id, false);
-                    }
-                });
-
-            this.participantService.virtualMeetingRooms.forEach(vmr => {
-                if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
-                    this.videoControlCacheService.setSpotlightStatus(vmr.id, false);
-                }
-            });
-        }
-    }
-
-    updateSpotlightStateOnParticipantDisconnectDuringConference(participant: ParticipantModel) {
-        if (
-            participant.status === ParticipantStatus.Disconnected &&
-            this.conferenceService.currentConference.status === ConferenceStatus.InSession
-        ) {
-            this.logger.debug(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
-                message: participant
-            });
-
-            let participantOrVmr: ParticipantModel | VirtualMeetingRoomModel = participant;
-            if (participant.virtualMeetingRoomSummary) {
-                const vmr = this.participantService.virtualMeetingRooms.find(
-                    x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
-                );
-
-                this.logger.debug(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
-                    vmr: vmr
-                });
-
-                if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
-                    this.logger.debug(
-                        `${this.loggerPrefixJudge} Some participants are still in hearing. Not going to unspotlight the VMR.`,
-                        {
-                            vmr: vmr
-                        }
-                    );
-                    return;
-                }
-
-                participantOrVmr = vmr;
-            }
-
-            this.logger.debug(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
-                participantOrVmr: participantOrVmr
-            });
-
-            this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, false);
-        }
     }
 
     ngOnDestroy(): void {
@@ -452,8 +356,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
-        this.initConferenceStatusLogic();
-
         this.videoCallService
             .onParticipantCreated()
             .pipe(
@@ -561,36 +463,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.cleanUp();
     }
 
-    private initConferenceStatusLogic() {
-        this.hearingCountdownFinishedSubscription = this.eventService.getHearingCountdownCompleteMessage().subscribe(() => {
-            this.conferenceStatusChangedSubscription?.unsubscribe();
-            this.conferenceStatusChangedSubscription = this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(
-                conferenceStatus => this.onConferenceStatusChanged(conferenceStatus)
-            );
-            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
-            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
-                this.participantService.onParticipantConnectedToPexip$,
-                this.participantService.onParticipantPexipIdChanged$,
-                this.participantService.onVmrConnectedToPexip$,
-                this.participantService.onVmrPexipIdChanged$
-            ).subscribe(() => this.restoreSpotlightState());
-        });
-
-        this.participantStatusChangedSubscription = this.participantService.onParticipantStatusChanged$.subscribe(participant =>
-            this.updateSpotlightStateOnParticipantDisconnectDuringConference(participant)
-        );
-
-        this.onConferenceStatusChangedSubscription = this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(update =>
-            this.onConferenceInSessionCheckForDisconnectedParticipants(update)
-        );
-    }
-
-    private restoreSpotlightIfParticipantIsNotInAVMR(participant: ParticipantModel) {
-        if (!participant.virtualMeetingRoomSummary) {
-            this.videoControlService.restoreParticipantsSpotlight(participant);
-        }
-    }
-
     private cleanupVideoControlCacheLogic() {
         this.hearingCountdownFinishedSubscription?.unsubscribe();
         this.hearingCountdownFinishedSubscription = null;
@@ -651,10 +523,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectWowzaAgent);
     }
 
-    private reconnectWowzaAgent(): void {
-        this.audioRecordingService.cleanupDialOutConnections();
-        this.audioRecordingService.reconnectToWowza.bind(this, () => {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        });
-    }
+    private reconnectWowzaAgent = (): void => {
+        // Confirm in a hearing and not a consultation
+        if (this.vhConference.status === ConferenceStatus.InSession && !this.isPrivateConsultation) {
+            this.audioRecordingService.cleanupDialOutConnections();
+            this.audioRecordingService.reconnectToWowza(() => {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            });
+        } else {
+            this.logger.warn(`${this.loggerPrefixJudge} can not reconnect to Wowza agent as not in a hearing`);
+        }
+    };
 }

@@ -1,72 +1,72 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace VideoWeb.EventHub.Models
 {
     public class Heartbeat
     {
-        [JsonProperty("outgoingAudioPercentageLost")]
+        [JsonPropertyName("outgoingAudioPercentageLost")]
         public decimal OutgoingAudioPercentageLost { get; set; }
-        [JsonProperty("outgoingAudioPercentageLostRecent")]
+        [JsonPropertyName("outgoingAudioPercentageLostRecent")]
         public decimal OutgoingAudioPercentageLostRecent { get; set; }
-        [JsonProperty("incomingAudioPercentageLost")]
+        [JsonPropertyName("incomingAudioPercentageLost")]
         public decimal IncomingAudioPercentageLost { get; set; }
-        [JsonProperty("incomingAudioPercentageLostRecent")]
+        [JsonPropertyName("incomingAudioPercentageLostRecent")]
         public decimal IncomingAudioPercentageLostRecent { get; set; }
-        [JsonProperty("outgoingVideoPercentageLost")]
+        [JsonPropertyName("outgoingVideoPercentageLost")]
         public decimal OutgoingVideoPercentageLost { get; set; }
-        [JsonProperty("outgoingVideoPercentageLostRecent")]
+        [JsonPropertyName("outgoingVideoPercentageLostRecent")]
         public decimal OutgoingVideoPercentageLostRecent { get; set; }
-        [JsonProperty("incomingVideoPercentageLost")]
+        [JsonPropertyName("incomingVideoPercentageLost")]
         public decimal IncomingVideoPercentageLost { get; set; }
-        [JsonProperty("incomingVideoPercentageLostRecent")]
+        [JsonPropertyName("incomingVideoPercentageLostRecent")]
         public decimal IncomingVideoPercentageLostRecent { get; set; }
-        [JsonProperty("browserName")]
+        [JsonPropertyName("browserName")]
         public string BrowserName { get; set; }
-        [JsonProperty("browserVersion")]
+        [JsonPropertyName("browserVersion")]
         public string BrowserVersion { get; set; }
-        [JsonProperty("operatingSystem")]
+        [JsonPropertyName("operatingSystem")]
         public string OperatingSystem { get; set; }
-        [JsonProperty("operatingSystemVersion")]
+        [JsonPropertyName("operatingSystemVersion")]
         public string OperatingSystemVersion { get; set; }
-        [JsonProperty("outgoingAudioPacketsLost")]
+        [JsonPropertyName("outgoingAudioPacketsLost")]
         public int OutgoingAudioPacketsLost { get; set; }
-        [JsonProperty("outgoingAudioBitrate")]
+        [JsonPropertyName("outgoingAudioBitrate")]
         public string OutgoingAudioBitrate { get; set; }
-        [JsonProperty("outgoingAudioCodec")]
+        [JsonPropertyName("outgoingAudioCodec")]
         public string OutgoingAudioCodec { get; set; }
-        [JsonProperty("outgoingAudioPacketSent")]
+        [JsonPropertyName("outgoingAudioPacketSent")]
         public int OutgoingAudioPacketSent { get; set; }
-        [JsonProperty("outgoingVideoPacketSent")]
+        [JsonPropertyName("outgoingVideoPacketSent")]
         public int OutgoingVideoPacketSent { get; set; }
-        [JsonProperty("outgoingVideoPacketsLost")]
+        [JsonPropertyName("outgoingVideoPacketsLost")]
         public int OutgoingVideoPacketsLost { get; set; }
-        [JsonProperty("outgoingVideoFramerate")]
+        [JsonPropertyName("outgoingVideoFramerate")]
         public int OutgoingVideoFramerate { get; set; }
-        [JsonProperty("outgoingVideoBitrate")]
+        [JsonPropertyName("outgoingVideoBitrate")]
         public string OutgoingVideoBitrate { get; set; }
-        [JsonProperty("outgoingVideoCodec")]
+        [JsonPropertyName("outgoingVideoCodec")]
         public string OutgoingVideoCodec { get; set; }
-        [JsonProperty("outgoingVideoResolution")]
+        [JsonPropertyName("outgoingVideoResolution")]
         public string OutgoingVideoResolution { get; set; }
-        [JsonProperty("incomingAudioBitrate")]
+        [JsonPropertyName("incomingAudioBitrate")]
         public string IncomingAudioBitrate { get; set; }
-        [JsonProperty("incomingAudioCodec")]
+        [JsonPropertyName("incomingAudioCodec")]
         public string IncomingAudioCodec { get; set; }
-        [JsonProperty("incomingAudioPacketReceived")]
+        [JsonPropertyName("incomingAudioPacketReceived")]
         public int IncomingAudioPacketReceived { get; set; }
-        [JsonProperty("incomingAudioPacketsLost")]
+        [JsonPropertyName("incomingAudioPacketsLost")]
         public int IncomingAudioPacketsLost { get; set; }
-        [JsonProperty("incomingVideoBitrate")]
+        [JsonPropertyName("incomingVideoBitrate")]
         public string IncomingVideoBitrate { get; set; }
-        [JsonProperty("incomingVideoCodec")]
+        [JsonPropertyName("incomingVideoCodec")]
         public string IncomingVideoCodec { get; set; }
-        [JsonProperty("incomingVideoResolution")]
+        [JsonPropertyName("incomingVideoResolution")]
         public string IncomingVideoResolution { get; set; }
-        [JsonProperty("incomingVideoPacketReceived")]
+        [JsonPropertyName("incomingVideoPacketReceived")]
         public int IncomingVideoPacketReceived { get; set; }
-        [JsonProperty("incomingVideoPacketsLost")]
+        [JsonPropertyName("incomingVideoPacketsLost")]
         public int IncomingVideoPacketsLost { get; set; }
-        [JsonProperty(nameof(Device))]
+        [JsonPropertyName(nameof(Device))]
         public string Device { get; set; }
     }
 }

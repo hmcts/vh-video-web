@@ -8,9 +8,9 @@
   <div *ngIf="isBannerVisible">
     <app-cookie-banner (cookieAnswered)="onCookieAnswered()"></app-cookie-banner>
   </div>
-  <header class="govuk-header" data-module="govuk-header">
-    <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn" [username]="username"></app-header>
-  </header>
+
+  <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn" [username]="username"></app-header>
+
   <div class="govuk-width-container app-width-container--wide" id="master-container">
     <section
       aria-label="Beta banner and back navigation container"

@@ -1,50 +1,41 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using VideoApi.Contract.Requests;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
+using Microsoft.AspNetCore.SignalR;
+using VideoWeb.Common;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
-using EventType = VideoWeb.EventHub.Enums.EventType;
+using VideoWeb.Mappings;
+using Hub = VideoWeb.EventHub.Hub;
 
 namespace VideoWeb.Helpers;
 
 public class AllocationHearingsEventNotifier(
-    IEventHandlerFactory eventHandlerFactory,
-    ILogger<AllocationHearingsEventNotifier> logger)
+    IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+    IConferenceService conferenceService)
     : IAllocationHearingsEventNotifier
 {
-    public Task PushAllocationHearingsEvent(string csoUserName, IList<HearingDetailRequest> hearings)
+    public async Task PushAllocationHearingsEvent(UpdatedAllocationJusticeUserDto update, List<Guid> conferenceIds)
     {
-        if (!hearings.Any())
+        if (conferenceIds.Count == 0)
         {
-            return Task.CompletedTask;
+            return;
         }
-        
-        CallbackEvent callbackEvent = new CallbackEvent()
-        {
-            EventType = EventType.AllocationHearings,
-            TimeStampUtc = DateTime.UtcNow,
-            AllocatedHearingsDetails = hearings.ToList(),
-            CsoAllocatedUserName = csoUserName
-        };
-        
-        logger.LogTrace("Publishing event to UI: {Event}", JsonSerializer.Serialize(callbackEvent));
-        return PublishEventToUi(callbackEvent);
-    }
     
-    private Task PublishEventToUi(CallbackEvent callbackEvent)
-    {
-        if (callbackEvent == null)
+        var conferences = (await conferenceService.GetConferences(conferenceIds)).ToList();
+        foreach (var conference in conferences)
         {
-            return Task.CompletedTask;
+            conference.AllocatedCsoId = update.AllocatedCsoId;
+            conference.AllocatedCso = update.AllocatedCsoUsername;
+            await conferenceService.UpdateConferenceAsync(conference);
         }
-        
-        var handler = eventHandlerFactory.Get(callbackEvent.EventType);
-        
-        return handler.HandleAsync(callbackEvent);
+        var updatedAllocationDtos = conferences
+            .Select(ConferenceDetailsToUpdatedAllocationDtoMapper.MapToUpdatedAllocationDto).ToList();
+
+        await hubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            .AllocationsUpdated(updatedAllocationDtos);
     }
 }
+
+

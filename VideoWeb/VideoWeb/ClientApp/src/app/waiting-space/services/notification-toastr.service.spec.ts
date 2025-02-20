@@ -1,11 +1,5 @@
 import { ActiveToast } from 'ngx-toastr';
-import {
-    ConsultationAnswer,
-    EndpointStatus,
-    HearingDetailRequest,
-    ParticipantResponse,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, EndpointStatus, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -27,7 +21,8 @@ import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
+import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
@@ -993,15 +988,17 @@ describe('NotificationToastrService', () => {
     describe('endpoint notifications', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const testAddEndpoint = new VideoEndpointResponse();
-        testAddEndpoint.display_name = 'TestAddEndpointDisplayName';
-        testAddEndpoint.defence_advocate_username = 'TestAddAdvocateUserName@gmail.com';
-        testAddEndpoint.status = EndpointStatus.NotYetJoined;
+        const testAddEndpointResponse = new VideoEndpointResponse();
+        testAddEndpointResponse.display_name = 'TestAddEndpointDisplayName';
+        testAddEndpointResponse.defence_advocate_username = 'TestAddAdvocateUserName@gmail.com';
+        testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
+        const testAddEndpoint = mapEndpointToVHEndpoint(testAddEndpointResponse);
 
-        const testUpdateEndpoint = new VideoEndpointResponse();
-        testAddEndpoint.display_name = 'TestUpdateEndpointDisplayName';
-        testAddEndpoint.defence_advocate_username = 'TestUpdateAdvocateUserName@gmail.com';
-        testAddEndpoint.status = EndpointStatus.NotYetJoined;
+        const testUpdateEndpointReponse = new VideoEndpointResponse();
+        testUpdateEndpointReponse.display_name = 'TestUpdateEndpointDisplayName';
+        testUpdateEndpointReponse.defence_advocate_username = 'TestUpdateAdvocateUserName@gmail.com';
+        testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
+        const testUpdateEndpoint = mapEndpointToVHEndpoint(testUpdateEndpointReponse);
 
         const translatedMessageAddedEndpoint = 'TranslatedMessageAddedEndpoint';
         const translatedMessageUpdatedEndpoint = 'TranslatedMessageUpdatedEndpoint';
@@ -1033,13 +1030,13 @@ describe('NotificationToastrService', () => {
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.endpoint-added.title', {
-                    name: testAddEndpoint.display_name
+                    name: testAddEndpoint.displayName
                 })
                 .and.returnValue(translatedNameMessage);
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.endpoint-updated.title', {
-                    name: testUpdateEndpoint.display_name
+                    name: testUpdateEndpoint.displayName
                 })
                 .and.returnValue(translatedNameMessage);
         });
@@ -1470,9 +1467,9 @@ describe('NotificationToastrService', () => {
     describe('showHearingLayoutChanged', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const testParticipant = new ParticipantResponse();
-        testParticipant.display_name = 'TestParticipantDisplayName';
-
+        const testParticipantResponse = new ParticipantResponse();
+        testParticipantResponse.display_name = 'TestParticipantDisplayName';
+        const testParticipant = mapParticipantToVHParticipant(testParticipantResponse);
         const translatedNameMessage = 'TranslatedNameMessage';
 
         const translatedMessage = 'TranslatedMessage';
@@ -1582,16 +1579,22 @@ describe('NotificationToastrService', () => {
     describe('showAllocationHearings', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const hearingsPassed: HearingDetailRequest[] = [];
-        let hearing = new HearingDetailRequest();
-        hearing.judge = 'Judge1';
-        hearing.time = new Date(2023, 1, 1, 10, 0, 0, 0);
-        hearing.case_name = 'case name 1';
+        const hearingsPassed: UpdatedAllocation[] = [];
+        let hearing: UpdatedAllocation = {
+            judge_display_name: 'Judge1',
+            scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
+            case_name: 'case name 1',
+            conference_id: 'conferenceId1',
+            allocated_to_cso_username: 'cso@email.com'
+        };
         hearingsPassed.push(hearing);
-        hearing = new HearingDetailRequest();
-        hearing.judge = 'Judge2';
-        hearing.time = new Date(2023, 1, 1, 11, 0, 0, 0);
-        hearing.case_name = 'case name 2';
+        hearing = {
+            judge_display_name: 'Judge2',
+            scheduled_date_time: new Date(2023, 1, 1, 11, 0, 0, 0),
+            case_name: 'case name 2',
+            conference_id: 'conferenceId2',
+            allocated_to_cso_username: 'cso@email.com'
+        };
         hearingsPassed.push(hearing);
 
         const translatedMessageHeader = 'TranslatedMessageHeader';
@@ -1635,7 +1638,7 @@ describe('NotificationToastrService', () => {
 
         it('should call toastr.show with the correct parameters without a judge', () => {
             toastrService.show.and.returnValue(mockToast);
-            hearingsPassed[0].judge = null;
+            hearingsPassed[0].judge_display_name = null;
 
             // Act
             service.createAllocationNotificationToast(hearingsPassed);

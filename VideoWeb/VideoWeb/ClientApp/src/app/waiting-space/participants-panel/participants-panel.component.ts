@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -30,7 +29,6 @@ import { IndividualPanelModel } from '../models/individual-panel-model';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHEndpoint, VHParticipant, VHPexipConference } from '../store/models/vh-conference';
 
 @Component({
@@ -47,8 +45,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isMuteAll = false;
     conferenceId: string;
 
-    vodafoneEnabled = false;
-
     transferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     readonly idPrefix = 'participants-panel';
@@ -58,13 +54,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private mapper: ParticipantPanelModelMapper = new ParticipantPanelModelMapper();
     constructor(
         private videoCallService: VideoCallService,
-        private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
         private translateService: TranslateService,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        private store: Store<ConferenceState>,
-        private ldService: LaunchDarklyService
+        private store: Store<ConferenceState>
     ) {}
 
     get participantsInHearing() {
@@ -80,13 +74,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.ldService
-            .getFlag<boolean>(FEATURE_FLAGS.vodafone)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(flag => {
-                this.vodafoneEnabled = flag;
-            });
-
         this.store
             .select(ConferenceSelectors.getActiveConference)
             .pipe(
@@ -288,7 +275,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.participants
             .filter(x => x.isInHearing() && x.isMicRemoteMuted())
             .forEach(p => {
-                this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, false);
+                this.videoCallService.muteParticipant(p.pexipId, false, this.conferenceId, p.id);
             });
     }
 
@@ -316,7 +303,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.videoControlService.setSpotlightStatusById(panelModel.id, panelModel.pexipId, !panelModel.hasSpotlight());
+        this.videoCallService.spotlightParticipant(panelModel.pexipId, !panelModel.hasSpotlight(), this.conferenceId, panelModel.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
@@ -333,7 +320,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             new: newMuteStatus
         });
 
-        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, newMuteStatus);
+        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
 
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
@@ -385,9 +372,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async callParticipantIntoHearing(participant: PanelModel) {
-        if (!this.vodafoneEnabled && !participant.isCallableAndReadyToJoin) {
-            return;
-        }
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
             conference: this.conferenceId,
             participant: participant.id
@@ -422,7 +406,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async dismissParticipantFromHearing(participant: PanelModel) {
-        const canDismiss = this.vodafoneEnabled ? participant.isInHearing() : participant.isCallableAndReadyToBeDismissed;
+        const canDismiss = participant.isInHearing();
         if (!canDismiss) {
             return;
         }

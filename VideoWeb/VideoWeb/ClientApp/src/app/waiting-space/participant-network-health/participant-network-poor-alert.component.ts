@@ -10,17 +10,13 @@ import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-
     template: ''
 })
 export class ParticipantNetworkPoorAlertComponent extends ParticipantNetworkHealthBaseDirective {
-    @Input() participant: ParticipantResponse;
+    @Input() VHParticipant: ParticipantResponse;
 
     constructor(
         protected eventsService: EventsService,
         private notificationToastrService: NotificationToastrService
     ) {
         super(eventsService);
-    }
-
-    setupSubscribers() {
-        this.eventSubscriptions$.add(this.eventsService.getHeartbeat().subscribe(heartbeat => this.handleHeartbeat(heartbeat)));
     }
 
     handleHeartbeat(heartbeat: ParticipantHeartbeat): void {

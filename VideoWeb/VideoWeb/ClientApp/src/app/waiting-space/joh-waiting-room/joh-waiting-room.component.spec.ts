@@ -77,7 +77,6 @@ describe('JohWaitingRoomComponent', () => {
     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(async () => {
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
@@ -239,7 +238,6 @@ describe('JohWaitingRoomComponent', () => {
             component.ngOnInit();
             flushMicrotasks();
             tick(100);
-            expect(component.clockSubscription$).toBeDefined();
             expect(component.eventHubSubscription$).toBeDefined();
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();

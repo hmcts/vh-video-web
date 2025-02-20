@@ -4,7 +4,6 @@ using System.Security.Principal;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Newtonsoft.Json;
 
 namespace VideoWeb.Common
 {
@@ -19,60 +18,6 @@ namespace VideoWeb.Common
             var config = TelemetryConfiguration.CreateDefault();
             var client = new TelemetryClient(config);
             return client;
-        }
-
-        public static void Trace(string traceCategory, string eventTitle, string information)
-        {
-            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
-            telemetryTrace.Properties.Add("Information", information);
-            telemetryTrace.Properties.Add(EventString, eventTitle);
-            TelemetryClient.TrackTrace(telemetryTrace);
-        }
-
-        public static void TraceWithProperties(string traceCategory, string eventTitle, string user, IDictionary<string, string> properties)
-        {
-            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
-
-            telemetryTrace.Properties.Add(EventString, eventTitle);
-
-            telemetryTrace.Properties.Add("User", user);
-
-            if (properties != null)
-            {
-                foreach (KeyValuePair<string, string> entry in properties)
-                {
-                    telemetryTrace.Properties.Add(entry.Key, entry.Value);
-                }
-            }
-
-            TelemetryClient.TrackTrace(telemetryTrace);
-          
-        }
-   
-        public static void TraceWithProperties(string traceCategory, string eventTitle, string user)
-        {
-            TraceWithProperties(traceCategory, eventTitle, user, null);
-        }
-
-        public static void TraceWithObject(string traceCategory, string eventTitle, string user, object valueToSerialized)
-        {
-            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
-
-            telemetryTrace.Properties.Add(EventString, eventTitle);
-
-            telemetryTrace.Properties.Add("User", user);
-
-            if (valueToSerialized != null)
-            {
-                telemetryTrace.Properties.Add(valueToSerialized.GetType().Name, JsonConvert.SerializeObject(valueToSerialized, Formatting.None));
-            }
-
-            TelemetryClient.TrackTrace(telemetryTrace);
-        }
-
-        public static void TraceWithObject(string traceCategory, string eventTitle, string user)
-        {
-            TraceWithObject(traceCategory, eventTitle, user, null);
         }
 
         public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user, IDictionary<string, string> properties)
@@ -97,32 +42,6 @@ namespace VideoWeb.Common
             }
 
             TelemetryClient.TrackException(telemetryException);
-        }
-
-        public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user)
-        {
-            TraceException(traceCategory, eventTitle, exception, user, null);
-        }
-
-        public static void TraceEvent(string eventTitle, IDictionary<string, string> properties)
-        {
-            var telemetryEvent = new EventTelemetry(eventTitle);
-
-            if (properties != null)
-            {
-                foreach (KeyValuePair<string, string> entry in properties)
-                {
-                    telemetryEvent.Properties.Add(entry.Key, entry.Value);
-                }
-            }
-
-            TelemetryClient.TrackEvent(telemetryEvent);
-        }
-
-        public static void TraceRequest(string operationName, DateTimeOffset startTime, TimeSpan duration, string responseCode, bool success)
-        {
-            var telemetryOperation = new Microsoft.ApplicationInsights.DataContracts.RequestTelemetry(operationName, startTime, duration, responseCode, success);
-            TelemetryClient.TrackRequest(telemetryOperation);
         }
     }
 }

@@ -31,9 +31,25 @@ function getCurrentConference(state: ConferenceState, conferenceId: string): VHC
     return conference;
 }
 
+const updateLoggedInParticipant = (state: ConferenceState, participants: VHParticipant[]) => {
+    if (!state.loggedInParticipant) {
+        return state;
+    }
+    const updatedParticipant = participants.find(p => p.id === state.loggedInParticipant.id);
+    if (!updatedParticipant) {
+        return state;
+    }
+    return { ...state, loggedInParticipant: { ...updatedParticipant } };
+};
+
 export const conferenceReducer = createReducer(
     initialState,
     on(ConferenceActions.loadConferenceSuccess, (state, { conference }) => {
+        if (state.currentConference && state.currentConference.id !== conference.id) {
+            // participants will get updates to other hearings they're booked to on the same day. We only want to update the current conference
+            // To replace the hearing, dispatch the leaveConference action first
+            return state;
+        }
         // retain the pexip info and media device status for the participants (this does not come from the API)
         const updatedParticipants = conference.participants.map(p => {
             const existingParticipant = state.currentConference?.participants.find(cp => cp.id === p.id);
@@ -51,8 +67,10 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
         const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
         const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
-        return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete, loggedInParticipant };
     }),
+    on(ConferenceActions.leaveConference, _ => ({ ...initialState })),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {
@@ -94,7 +112,8 @@ export const conferenceReducer = createReducer(
         });
 
         const updatedConference: VHConference = { ...conference, participants: participants };
-        return { ...state, currentConference: updatedConference };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     }),
     on(ConferenceActions.updateEndpointStatus, (state, { conferenceId, endpointId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
@@ -131,7 +150,8 @@ export const conferenceReducer = createReducer(
         );
         const endpoints = conference.endpoints.map(e => (e.id === participantId ? { ...e, transferDirection: transferDirection } : e));
         const updatedConference: VHConference = { ...conference, participants: participants, endpoints: endpoints };
-        return { ...state, currentConference: updatedConference };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     }),
     on(ConferenceActions.updateParticipantMediaStatus, (state, { participantId, conferenceId, mediaStatus }) => {
         const conference = getCurrentConference(state, conferenceId);
@@ -151,7 +171,8 @@ export const conferenceReducer = createReducer(
                 : p
         );
         const updatedConference: VHConference = { ...conference, participants: participants };
-        return { ...state, currentConference: updatedConference };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     }),
     on(ConferenceActions.updateParticipantList, (state, { conferenceId, participants }) => {
         const conference = getCurrentConference(state, conferenceId);
@@ -240,7 +261,8 @@ export const conferenceReducer = createReducer(
             wowzaParticipant = participant;
         }
 
-        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant };
+        const loggedInParticipant = updateLoggedInParticipant(state, participants).loggedInParticipant;
+        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant, loggedInParticipant };
     }),
     on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
         const conference = state.currentConference;
@@ -252,14 +274,14 @@ export const conferenceReducer = createReducer(
             wowzaParticipant = null;
         }
 
-        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant };
+        const loggedInParticipant = updateLoggedInParticipant(state, participants).loggedInParticipant;
+        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant, loggedInParticipant };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
         let updatedRoomList = state.availableRooms;
         let updatedParticipantsList = state.currentConference.participants;
         let updatedEndpointsList = state.currentConference.endpoints;
         const roomIndex = updatedRoomList.findIndex(r => r.label === room.label);
-
         if (roomIndex > -1) {
             updatedRoomList = updatedRoomList.map((item, index) => {
                 if (index === roomIndex) {
@@ -284,11 +306,12 @@ export const conferenceReducer = createReducer(
         } else {
             updatedRoomList = [...updatedRoomList, room];
         }
-
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedParticipantsList).loggedInParticipant;
         return {
             ...state,
             availableRooms: updatedRoomList,
-            currentConference: { ...state.currentConference, participants: updatedParticipantsList, endpoints: updatedEndpointsList }
+            currentConference: { ...state.currentConference, participants: updatedParticipantsList, endpoints: updatedEndpointsList },
+            loggedInParticipant
         };
     }),
     on(ConferenceActions.updateParticipantRoom, (state, { participantId, toRoom, fromRoom }) => {
@@ -326,10 +349,12 @@ export const conferenceReducer = createReducer(
 
         if (participant) {
             const updatedParticipants = state.currentConference.participants.map(p => (p.id === participantId ? { ...p, room: room } : p));
+            const loggedInParticipant = updateLoggedInParticipant(state, updatedParticipants).loggedInParticipant;
             return {
                 ...state,
                 currentConference: { ...state.currentConference, participants: updatedParticipants },
-                availableRooms: updatedAvailableRooms
+                availableRooms: updatedAvailableRooms,
+                loggedInParticipant
             };
         }
 
@@ -364,7 +389,8 @@ export const conferenceReducer = createReducer(
         });
 
         const updatedConference: VHConference = { ...conference, participants: participants };
-        return { ...state, currentConference: updatedConference };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     }),
     on(ConferenceActions.loadLoggedInParticipantSuccess, (state, { participant }) => ({
         ...state,
@@ -390,7 +416,8 @@ export const conferenceReducer = createReducer(
         });
 
         const updatedConference: VHConference = { ...conference, participants: participants };
-        return { ...state, currentConference: updatedConference };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     })
 );
 

@@ -1,7 +1,7 @@
 import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActiveToast } from 'ngx-toastr';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -49,6 +49,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -86,7 +87,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(() => {
-        launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.vodafone, false).and.returnValue(of(false));
         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
@@ -372,7 +372,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
     });
 
-    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+    it('should clear go to hearing list when conference is past closed time', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
@@ -380,11 +380,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         conf.status = status;
         conf.closed_date_time = closedDateTime;
         component.hearing = new Hearing(conf);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
 
         component.checkIfHearingIsClosed();
 
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
@@ -578,6 +576,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const representative = new ParticipantResponse();
         representative.hearing_role = HearingRole.REPRESENTATIVE;
         component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh, staff];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should return non observer and witness participants from getPrivateConsultationParticipants', () => {
@@ -588,6 +587,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const representative = new ParticipantResponse();
         representative.hearing_role = HearingRole.REPRESENTATIVE;
         component.conference.participants = [witness, witness, observer, observer, representative, representative, representative];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should not return current participant from private consultation participants', () => {
@@ -597,6 +597,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         otherParticipant.id = 'other-guid';
         component.participant = thisParticipant;
         component.conference.participants = [thisParticipant, otherParticipant];
+        component.vhConference = mapConferenceToVHConference(component.conference);
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
@@ -614,6 +615,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
+            component.vhConference = mapConferenceToVHConference(component.conference);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
 
@@ -630,6 +632,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
+            component.vhConference = mapConferenceToVHConference(component.conference);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
     });
@@ -715,7 +718,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.ngOnInit();
             flushMicrotasks();
             tick(100);
-            expect(component.clockSubscription$).toBeDefined();
             expect(component.eventHubSubscription$).toBeDefined();
             expect(component.videoCallSubscription$).toBeDefined();
             expect(component.displayDeviceChangeModal).toBeFalsy();

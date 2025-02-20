@@ -484,7 +484,9 @@ export class ConferenceTestData {
                 description: 'Spanish',
                 type: InterpreterType.Verbal
             }),
-            linked_participants: []
+            linked_participants: [],
+            external_reference_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08',
+            protect_from: []
         });
 
         const participant2 = new ParticipantResponse({
@@ -498,7 +500,9 @@ export class ConferenceTestData {
             tiled_display_name: 'CIVILIAN;James Green;9F681318-4955-49AF-A887-DED64554429J',
             hearing_role: HearingRole.REPRESENTATIVE,
             current_room: new RoomSummaryResponse(),
-            linked_participants: []
+            linked_participants: [],
+            external_reference_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A',
+            protect_from: []
         });
 
         const participant3 = new ParticipantResponse({
@@ -511,7 +515,9 @@ export class ConferenceTestData {
             tiled_display_name: 'JUDGE;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
             hearing_role: HearingRole.JUDGE,
             current_room: new RoomSummaryResponse(),
-            linked_participants: []
+            linked_participants: [],
+            external_reference_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
+            protect_from: []
         });
 
         const participant4 = new ParticipantResponse({
@@ -524,7 +530,9 @@ export class ConferenceTestData {
             tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,
             current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
-            linked_participants: []
+            linked_participants: [],
+            external_reference_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
+            protect_from: []
         });
 
         participants.push(participant1);
@@ -1348,8 +1356,8 @@ export class ConferenceTestData {
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
-            participant_uri: 'participant@kinly.com',
-            pexip_node_uri: 'node@kinly.com',
+            participant_uri: 'participant@supplier.com',
+            pexip_node_uri: 'node@supplier.com',
             hearing_venue_name: 'venue name',
             endpoints: endpoints,
             ingest_url: 'rtmp://vh-wowza-node/hearing_id'

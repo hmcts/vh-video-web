@@ -15,7 +15,6 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
-    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -40,12 +39,17 @@ import { ConferenceState } from '../waiting-space/store/reducers/conference.redu
 import { Store } from '@ngrx/store';
 import { ConferenceActions } from '../waiting-space/store/actions/conference.actions';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
-import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
+import {
+    mapConferenceToVHConference,
+    mapEndpointToVHEndpoint,
+    mapParticipantToVHParticipant
+} from '../waiting-space/store/models/api-contract-to-state-model-mappers';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 import { NewConferenceAddedMessage } from './models/new-conference-added-message';
 import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-message';
 import { HearingCancelledMessage } from './models/hearing-cancelled-message';
 import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
+import { UpdatedAllocation } from '../shared/models/update-allocation-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -110,6 +114,7 @@ export class EventsService {
         HearingDetailsUpdatedMessage: (conference: ConferenceResponse) => {
             const message = new HearingDetailsUpdatedMessage(conference);
             this.logger.debug('[EventsService] - HearingDetailsUpdatedMessage received', message);
+            this.store.dispatch(ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(conference) }));
             this.hearingDetailsUpdatedSubject.next(message);
         },
 
@@ -119,10 +124,12 @@ export class EventsService {
             this.hearingCancelledSubject.next(message);
         },
 
-        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
-            this.eventsHubConnection.invoke('AddToGroup', csoUserName);
-            const message = new NewAllocationMessage(hearingDetails);
-            this.logger.debug('[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings');
+        AllocationsUpdated: (updatedAllocations: UpdatedAllocation[]) => {
+            const message = new NewAllocationMessage(updatedAllocations);
+            updatedAllocations?.forEach(allocation => {
+                this.eventsHubConnection.invoke('AddToGroup', allocation.conference_id);
+            });
+            this.logger.debug('[EventsService] - AllocationsUpdated received', message);
             this.messageAllocationSubject.next(message);
         },
 

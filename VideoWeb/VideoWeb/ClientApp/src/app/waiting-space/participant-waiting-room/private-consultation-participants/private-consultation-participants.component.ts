@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, LinkType, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, LinkType, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -54,38 +54,52 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     setupInviteStatusSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.participantCallStatuses[message.requestedFor] = message.answer;
+                    this.setParticipantCallStatus(message.requestedFor, message.answer, null);
                     setTimeout(() => {
                         if (this.participantCallStatuses[message.requestedFor] === message.answer) {
-                            this.participantCallStatuses[message.requestedFor] = null;
+                            this.setParticipantCallStatus(message.requestedFor, null, null);
                         }
                     }, 10000);
                 }
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 // Set 'Calling...'
                 // No need to timeout here the text because when the notification times out it will send another event.
                 if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.participantCallStatuses[message.requestedFor] = 'Calling';
+                    this.setParticipantCallStatus(message.requestedFor, 'Calling', 'Protected');
                 }
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 // If the participant state changes reset the state.
-                this.participantCallStatuses[message.participantId] = null;
+                this.setParticipantCallStatus(message.participantId, null, null);
             })
         );
+    }
+
+    setParticipantCallStatus(participantId: string, status, protectedFromStatus): void {
+        // Update the call status for the given participant
+        this.participantCallStatuses[participantId] = status;
+
+        // Find the participant with the given ID
+        const participant = this.nonJudgeParticipants.find(p => p.id === participantId);
+        // for each non-judge participant, if the participant is on their protected from list, disable the call button
+        this.nonJudgeParticipants.forEach(p => {
+            if (p.protectedFrom.includes(participant?.externalReferenceId)) {
+                this.participantCallStatuses[p.id] = protectedFromStatus;
+            }
+            if (participant.protectedFrom.includes(p?.externalReferenceId)) {
+                this.participantCallStatuses[p.id] = protectedFromStatus;
+            }
+        });
     }
 
     canCallEndpoint(endpoint: VHEndpoint): boolean {
@@ -187,24 +201,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return item.status;
     }
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
-        const userIsJudicial =
-            this.loggedInUser.role === Role.Judge ||
-            this.loggedInUser.role === Role.StaffMember ||
-            this.loggedInUser.role === Role.JudicialOfficeHolder;
-        if (!userIsJudicial) {
-            switch (participant.hearingRole) {
-                case HearingRole.WINGER:
-                case HearingRole.WITNESS:
-                case HearingRole.OBSERVER:
-                case HearingRole.JUDGE:
-                case HearingRole.STAFF_MEMBER:
-                case HearingRole.PANEL_MEMBER:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        return false;
+        const vhParticipant = this.conference.participants.find(x => x.id === participant.id);
+        const vhLoggedInUser = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+
+        return this.consultationRules.participantHasInviteRestrictions(vhParticipant, this.roomLabel, vhLoggedInUser);
     }
 
     private mapResponseToListItem(vhParticipant: VHParticipant): ParticipantListItem {

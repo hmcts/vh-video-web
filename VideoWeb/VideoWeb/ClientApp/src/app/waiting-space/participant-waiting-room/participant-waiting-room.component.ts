@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -12,7 +12,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -32,6 +31,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VHParticipant } from '../store/models/vh-conference';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -42,7 +42,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
-    clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
 
@@ -166,12 +165,15 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     subscribeToClock(): void {
-        this.clockSubscription$ = this.clockService.getClock().subscribe(time => {
-            this.currentTime = time;
-            this.checkIfHearingIsClosed();
-            this.checkIfHearingIsStarting();
-            this.showRoomClosingToast(time);
-        });
+        this.clockService
+            .getClock()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(time => {
+                this.currentTime = time;
+                this.checkIfHearingIsClosed();
+                this.checkIfHearingIsStarting();
+                this.showRoomClosingToast(time);
+            });
     }
 
     showRoomClosingToast(dateNow: Date) {
@@ -190,7 +192,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     checkIfHearingIsClosed(): void {
         if (this.hearing.isPastClosedTime()) {
-            this.clockSubscription$.unsubscribe();
             this.router.navigate([pageUrls.ParticipantHearingList]);
         }
     }
@@ -243,18 +244,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.consultationService.consultationNameToString(this.participant?.current_room?.label, false);
     }
 
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        super.handleConferenceStatusChange(message);
-        if (!this.validateIsForConference(message.conferenceId)) {
-            return;
-        }
-        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkUser) {
-            this.notificationSoundsService.playHearingAlertSound();
-        } else {
-            this.notificationSoundsService.stopHearingAlertSound();
-        }
-    }
-
     openStartConsultationModal() {
         this.displayStartPrivateConsultationModal = true;
     }
@@ -271,17 +260,17 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.displayLanguageModal = false;
     }
 
-    getPrivateConsultationParticipants(): ParticipantResponse[] {
-        return this.conference.participants.filter(
+    getPrivateConsultationParticipants(): VHParticipant[] {
+        return this.vhConference.participants.filter(
             p =>
                 p.id !== this.participant.id &&
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
                 p.role !== Role.StaffMember &&
-                p.hearing_role !== HearingRole.OBSERVER &&
-                p.hearing_role !== HearingRole.WITNESS &&
-                !p.protect_from?.includes(this.participant.external_reference_id) &&
-                !this.participant.protect_from?.includes(p.external_reference_id)
+                p.hearingRole !== HearingRole.OBSERVER &&
+                p.hearingRole !== HearingRole.WITNESS &&
+                !p.protectedFrom?.includes(this.participant.external_reference_id) &&
+                !this.participant.protect_from?.includes(p.externalReferenceId)
         );
     }
 
