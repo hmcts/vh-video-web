@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 
 using System.Text.Json;
+using VideoWeb.Common;
 using VideoWeb.Contract.Request;
 using VideoWeb.Helpers.Interfaces;
 
@@ -15,7 +16,7 @@ namespace VideoWeb.Controllers.InternalEventControllers;
 [ApiController]
 [Route("internalevent")]
 [Authorize(AuthenticationSchemes = "InternalEvent")]
-public class InternalEventAllocationController(ILogger<InternalEventAllocationController> logger, IAllocationHearingsEventNotifier allocationHearingsEventNotifier)
+public class InternalEventAllocationController(IAllocationHearingsEventNotifier allocationHearingsEventNotifier)
     : ControllerBase
 {
     [HttpPost("AllocationHearings")]
@@ -24,9 +25,8 @@ public class InternalEventAllocationController(ILogger<InternalEventAllocationCo
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> AllocationHearings(HearingAllocationNotificationRequest request)
     {
-        logger.LogDebug("AllocationHearings called. Request {Serialize}", JsonSerializer.Serialize(request));
         await allocationHearingsEventNotifier.PushAllocationHearingsEvent(
-            new UpdatedAllocationJusticeUserDto(request.AllocatedCsoUserName, request.AllocatedCsoUserId),
+            new UpdatedAllocationJusticeUserDto(request.AllocatedCsoUserName, request.AllocatedCsoUserId, request.AllocatedCsoFullName),
             request.ConferenceIds);
         return NoContent();
     }

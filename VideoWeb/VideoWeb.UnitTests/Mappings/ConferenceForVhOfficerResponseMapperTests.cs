@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
@@ -18,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         public void Should_map_all_properties()
         {
             var conference = new ConferenceCacheModelBuilder().Build();
-            conference.AllocatedCso = ConferenceForVhOfficerResponseMapper.NotAllocated;
+            conference.UpdateAllocation(null, ConferenceForVhOfficerResponseMapper.NotAllocated, null);
 
             var response = ConferenceForVhOfficerResponseMapper.Map(conference);
 

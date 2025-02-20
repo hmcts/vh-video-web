@@ -7,4 +7,6 @@ public record UpdatedAllocationDto(
     DateTime ScheduledDateTime,
     string CaseName,
     string JudgeDisplayName,
-    string AllocatedToCsoUsername);
+    string AllocatedToCsoUsername,
+    string AllocatedToCsoDisplayName,
+    Guid? AllocatedToCsoId);
