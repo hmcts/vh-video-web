@@ -67,7 +67,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
     }
 
     async setupChatSubscription(): Promise<Subscription> {
-        this.logger.debug('[ChatHub] Subscribing');
         this.translateService.onLangChange.subscribe(() => {
             this.messages
                 .filter(m => m.is_user)

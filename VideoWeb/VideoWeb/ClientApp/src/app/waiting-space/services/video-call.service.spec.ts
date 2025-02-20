@@ -864,4 +864,22 @@ describe('VideoCallService', () => {
             expect(pexipSpy.dialOut).toHaveBeenCalledWith(`611${phoneNumber}`, 'auto', 'GUEST', callbackFn, expectedParams);
         });
     });
+
+    describe('logMediaStreamInfo', () => {
+        it('should log media stream set when user stream has been assigned to pexip client', () => {
+            service.pexipAPI = pexipSpy;
+            pexipSpy.user_media_stream = mockCamAndMicStream;
+            spyOn(logger, 'debug');
+            service.logMediaStreamInfo();
+            expect(logger.debug).toHaveBeenCalledWith('[VideoCallService] - set user media stream', 'stream set');
+        });
+
+        it('should log media stream not set when user stream has not been assigned to pexip client', () => {
+            service.pexipAPI = pexipSpy;
+            pexipSpy.user_media_stream = null;
+            spyOn(logger, 'debug');
+            service.logMediaStreamInfo();
+            expect(logger.debug).toHaveBeenCalledWith('[VideoCallService] - set user media stream', 'stream not set');
+        });
+    });
 });

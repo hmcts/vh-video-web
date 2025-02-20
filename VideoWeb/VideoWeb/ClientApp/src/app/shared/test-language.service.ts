@@ -10,7 +10,6 @@ export class TestLanguageService {
     constructor(private translateService: TranslateService) {}
 
     setupSubscriptions() {
-        console.info(`${this.loggerPrefix} Subscribing to onLanguageChange`);
         this.translateService.onLangChange
             .pipe(
                 filter(e => e.lang === 'tl'),

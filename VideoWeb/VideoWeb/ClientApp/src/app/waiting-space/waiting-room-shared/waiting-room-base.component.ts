@@ -369,7 +369,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     startEventHubSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
@@ -377,7 +376,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to participant status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
@@ -385,7 +383,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to endpoint status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
@@ -393,14 +390,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to local audio and video mute status...`);
         this.eventHubSubscription$.add(
             this.eventService.getParticipantMediaStatusMessage().subscribe(message => {
                 this.handleLocalAudioVideoMuteStatus(message);
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.answer) {
@@ -423,13 +418,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 const requestedFor = this.resolveParticipant(message.requestedFor);
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
-                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
+                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`, message);
 
                     const requestedBy = this.resolveParticipant(message.requestedBy);
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
@@ -478,14 +472,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub disconnects`);
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomUpdate().subscribe(async room => {
                 const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
@@ -503,7 +495,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
@@ -541,7 +532,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
             this.eventService.getServiceConnected().subscribe(async () => {
                 this.logger.debug(`${this.loggerPrefix} EventHub re-connected`, {
@@ -552,7 +542,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to hearing transfer message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
@@ -560,7 +549,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to countdown complete message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
                 this.handleCountdownCompleteMessage(conferenceId);
@@ -568,14 +556,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
                 this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
                 await this.getConference.bind(this);
@@ -583,7 +569,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to hearing details updated message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingDetailsUpdated().subscribe(hearingDetailsUpdatedMessage => {
                 this.handleHearingDetailsUpdated(hearingDetailsUpdatedMessage);
@@ -1225,7 +1210,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     videoClosedExt() {
         /// This is overriden in the child judge waiting room component
-        this.logger.debug(`${this.loggerPrefix} - video closed`);
+        this.logger.debug(`${this.loggerPrefix} video closed`);
     }
 
     async loadConferenceAndUpdateVideo(): Promise<void> {

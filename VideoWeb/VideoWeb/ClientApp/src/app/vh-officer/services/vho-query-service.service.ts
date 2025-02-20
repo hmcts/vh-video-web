@@ -1,18 +1,22 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
     ConferenceResponseVho,
+    ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
+    ParticipantResponseVho,
     Role,
     TaskResponse
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 import { CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
+import { EventsService } from 'src/app/services/events.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 
 @Injectable()
 export class VhoQueryService {
@@ -31,8 +35,12 @@ export class VhoQueryService {
     private readonly csoFilterStorage: SessionStorage<CsoFilter>;
 
     private readonly pollingInterval = 300000; // 5 minutes
+    private destroy$ = new Subject<void>();
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private eventService: EventsService
+    ) {
         this.csoFilterStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.courtAccountsFilterStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.courtRoomsAccountsFilters = this.getCourtAccountFiltersFromStorage();
@@ -50,12 +58,55 @@ export class VhoQueryService {
         this.interval = window.setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
+        this.eventService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        if (!hearingDetailMessage.conference) {
+            return;
+        }
+        const newConference = hearingDetailMessage.conference;
+        const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+
+        if (index === -1) {
+            return;
+        }
+
+        let foundConference = this.vhoConferences[index];
+        foundConference = new ConferenceForVhOfficerResponse({
+            ...foundConference,
+            case_name: newConference.case_name,
+            case_number: newConference.case_number,
+            scheduled_date_time: newConference.scheduled_date_time,
+            scheduled_duration: newConference.scheduled_duration,
+            hearing_venue_name: newConference.hearing_venue_name,
+            participants: this.mapParticipantResponseToParticipantForUserResponse(newConference.participants)
+        });
+        this.vhoConferences[index] = foundConference;
+
+        // Filter the list based on filterCriteria
+        const filterCriteria = this.courtRoomsAccountsFilters;
+        if (filterCriteria && filterCriteria.length > 0) {
+            this.vhoConferences = this.mapFilteredConferences(filterCriteria, this.vhoConferences);
+        }
+
+        // Filter this.vhoConferences based on the selected court rooms in this.venueNames
+        if (this.venueNames && this.venueNames.length > 0) {
+            this.vhoConferences = this.vhoConferences.filter(conference => this.venueNames.includes(conference.hearing_venue_name));
+        }
+
+        this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
     stopQuery() {
         clearInterval(this.interval);
         this.vhoConferences = [];
         this.vhoConferencesSubject.next(this.vhoConferences);
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     async runQuery() {
@@ -67,6 +118,7 @@ export class VhoQueryService {
         this.vhoConferences = await this.apiClient
             .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
+
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
@@ -154,6 +206,10 @@ export class VhoQueryService {
 
     getActiveConferences() {
         return this.apiClient.getActiveConferences().toPromise();
+    }
+
+    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
+        return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
 
     private mapConferencesToCourtRoomsAccounts(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccounts[] {
