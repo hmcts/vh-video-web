@@ -17,11 +17,17 @@ import { BetaBannerComponent } from './beta-banner.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 @Component({
-    standalone: false, selector: 'app-mock-component', template: '' })
+    standalone: false,
+    selector: 'app-mock-component',
+    template: ''
+})
 class Mock1Component {}
 
 @Component({
-    standalone: false, selector: 'app-mock-component2', template: '' })
+    standalone: false,
+    selector: 'app-mock-component2',
+    template: ''
+})
 class Mock2Component {}
 
 const routes = [
