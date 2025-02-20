@@ -361,7 +361,9 @@ describe('CommandCentreComponent - Events', () => {
                 judge_display_name: 'judge fudge',
                 scheduled_date_time: new Date(),
                 conference_id: Guid.create().toString(),
-                allocated_to_cso_username: userData.preferred_username
+                allocated_to_cso_username: userData.preferred_username,
+                allocated_to_cso_display_name: userData.name,
+                allocated_to_cso_id: Guid.create().toString()
             };
             return message;
         }
