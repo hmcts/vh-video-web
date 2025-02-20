@@ -16,8 +16,8 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
+            "builder": "@angular-devkit/build-angular:browser-esbuild",
+            "options": {
             "progress": true,
             "outputPath": "dist",
             "index": "src/index.html",
