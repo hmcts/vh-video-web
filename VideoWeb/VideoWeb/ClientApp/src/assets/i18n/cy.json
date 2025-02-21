@@ -1563,6 +1563,14 @@
         "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
         "expires": "Pan fyddwch yn cau eich porwr"
       }
+    },
+    "cookie-banner" : {
+      "title": "Cwcis ar gyfer y Gwasanaeth Gwrandawiadau Fideo",
+      "intro": "Rydym yn defnyddio cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
+      "intro2": "Hoffem osod cwcis ychwanegol ar eich dyfais fel y gallwn gofio eich gosodiadau, deall sut mae pobl yn defnyddio'r gwasanaeth a gwneud gwelliannau.",
+      "accept": "Derbyn cwcis ychwanegol",
+      "reject": "Gwrthod cwcis ychwanegol",
+      "cookie-page": "Gweld cwcis"
     }
   },
   "audio-mix-selection": {
