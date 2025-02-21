@@ -1,7 +1,7 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, Subject } from 'rxjs';
-import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -32,8 +32,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
@@ -51,21 +49,6 @@ import { mapConferenceToVHConference } from '../store/models/api-contract-to-sta
 import { VHConference, VHParticipant, VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 
 describe('HearingControlsBaseComponent', () => {
-    const participantOneId = Guid.create().toString();
-    const participantOne = new ParticipantForUserResponse({
-        id: participantOneId,
-        status: ParticipantStatus.NotSignedIn,
-        display_name: 'Interpreter',
-        role: Role.Individual,
-        representee: null,
-        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
-        hearing_role: HearingRole.INTERPRETER,
-        first_name: 'Interpreter',
-        last_name: 'Doe',
-        interpreter_room: null,
-        linked_participants: []
-    });
-
     let component: HearingControlsBaseComponent;
     let mockStore: MockStore<ConferenceState>;
     const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse);
@@ -92,8 +75,6 @@ describe('HearingControlsBaseComponent', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
-    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
-    let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     beforeEach(() => {
@@ -110,6 +91,7 @@ describe('HearingControlsBaseComponent', () => {
         mockStore = createMockStore({ initialState });
 
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, globalParticipant);
+        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, globalConference);
         translateService.instant.calls.reset();
         focusService.storeFocus.calls.reset();
 
@@ -123,10 +105,6 @@ describe('HearingControlsBaseComponent', () => {
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
-        onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
-        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
-
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['showError']);
 
@@ -137,7 +115,6 @@ describe('HearingControlsBaseComponent', () => {
             logger,
             translateService,
             userMediaServiceSpy,
-            conferenceServiceSpy,
             launchDarklyServiceSpy,
             focusService,
             mockStore,
