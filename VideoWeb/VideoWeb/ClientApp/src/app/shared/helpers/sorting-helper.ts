@@ -1,5 +1,5 @@
 export class SortingHelper {
-    static orderByRoleThenName = (a, b) => {
+    static readonly orderByRoleThenName = (a, b) => {
         // Sort by User Role
         if (a.role < b.role) {
             return -1;
