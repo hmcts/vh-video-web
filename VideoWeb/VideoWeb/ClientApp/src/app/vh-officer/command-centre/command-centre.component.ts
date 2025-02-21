@@ -393,8 +393,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             if (allocatedCsoUsername.toLowerCase() === this.loggedInUsername.toLowerCase()) {
                 this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);
             }
-
-            this.queryService.runQuery();
         }
     }
 

@@ -210,11 +210,11 @@ public class ConferencesController(
     /// <param name="cancellationToken"></param>
     /// <returns>the details of a conference, if permitted</returns>
     [HttpGet("{conferenceId}/vhofficer")]
-    [ProducesResponseType(typeof(ConferenceResponseVho), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
     [Authorize(AppRoles.VhOfficerRole)]
-    public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
+    public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         if (conferenceId == Guid.Empty)
         {
@@ -252,7 +252,7 @@ public class ConferencesController(
             .Participants
             .Where(x => displayRoles.Contains(x.Role)).ToList();
 
-        return Ok(ConferenceResponseVhoMapper.Map(conference));
+        return Ok(ConferenceResponseMapper.Map(conference));
     }
 
     /// <summary>

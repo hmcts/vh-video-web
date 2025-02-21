@@ -1791,7 +1791,7 @@ export class ApiClient extends ApiClientBase {
      * @param conferenceId The unique id of the conference
      * @return OK
      */
-    getConferenceByIdVHO(conferenceId: string): Observable<ConferenceResponseVho> {
+    getConferenceByIdVHO(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/vhofficer';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -1822,14 +1822,14 @@ export class ApiClient extends ApiClientBase {
                         try {
                             return this.processGetConferenceByIdVHO(response_ as any);
                         } catch (e) {
-                            return _observableThrow(e) as any as Observable<ConferenceResponseVho>;
+                            return _observableThrow(e) as any as Observable<ConferenceResponse>;
                         }
-                    } else return _observableThrow(response_) as any as Observable<ConferenceResponseVho>;
+                    } else return _observableThrow(response_) as any as Observable<ConferenceResponse>;
                 })
             );
     }
 
-    protected processGetConferenceByIdVHO(response: HttpResponseBase): Observable<ConferenceResponseVho> {
+    protected processGetConferenceByIdVHO(response: HttpResponseBase): Observable<ConferenceResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse
@@ -1869,7 +1869,7 @@ export class ApiClient extends ApiClientBase {
                 _observableMergeMap(_responseText => {
                     let result200: any = null;
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = ConferenceResponseVho.fromJS(resultData200);
+                    result200 = ConferenceResponse.fromJS(resultData200);
                     return _observableOf(result200);
                 })
             );
@@ -1895,7 +1895,7 @@ export class ApiClient extends ApiClientBase {
                 })
             );
         }
-        return _observableOf<ConferenceResponseVho>(null as any);
+        return _observableOf<ConferenceResponse>(null as any);
     }
 
     /**
@@ -9169,6 +9169,7 @@ export interface IAddSelfTestFailureEventRequest {
 
 export class HearingAllocationNotificationRequest implements IHearingAllocationNotificationRequest {
     allocated_cso_user_name?: string | undefined;
+    allocated_cso_full_name?: string | undefined;
     allocated_cso_user_id?: string;
     conference_ids?: string[] | undefined;
 
@@ -9183,6 +9184,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
     init(_data?: any) {
         if (_data) {
             this.allocated_cso_user_name = _data['allocated_cso_user_name'];
+            this.allocated_cso_full_name = _data['allocated_cso_full_name'];
             this.allocated_cso_user_id = _data['allocated_cso_user_id'];
             if (Array.isArray(_data['conference_ids'])) {
                 this.conference_ids = [] as any;
@@ -9201,6 +9203,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['allocated_cso_user_name'] = this.allocated_cso_user_name;
+        data['allocated_cso_full_name'] = this.allocated_cso_full_name;
         data['allocated_cso_user_id'] = this.allocated_cso_user_id;
         if (Array.isArray(this.conference_ids)) {
             data['conference_ids'] = [];
@@ -9212,6 +9215,7 @@ export class HearingAllocationNotificationRequest implements IHearingAllocationN
 
 export interface IHearingAllocationNotificationRequest {
     allocated_cso_user_name?: string | undefined;
+    allocated_cso_full_name?: string | undefined;
     allocated_cso_user_id?: string;
     conference_ids?: string[] | undefined;
 }
@@ -10403,6 +10407,10 @@ export class ConferenceResponse implements IConferenceResponse {
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
     supplier?: Supplier;
+    /** Allocated Cso Full name */
+    allocated_cso?: string | undefined;
+    /** Allocated Cso Id */
+    allocated_cso_id?: string | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -10439,6 +10447,8 @@ export class ConferenceResponse implements IConferenceResponse {
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
             this.ingest_url = _data['ingest_url'];
             this.supplier = _data['supplier'];
+            this.allocated_cso = _data['allocated_cso'];
+            this.allocated_cso_id = _data['allocated_cso_id'];
         }
     }
 
@@ -10476,6 +10486,8 @@ export class ConferenceResponse implements IConferenceResponse {
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
         data['ingest_url'] = this.ingest_url;
         data['supplier'] = this.supplier;
+        data['allocated_cso'] = this.allocated_cso;
+        data['allocated_cso_id'] = this.allocated_cso_id;
         return data;
     }
 }
@@ -10518,127 +10530,10 @@ export interface IConferenceResponse {
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
     ingest_url?: string | undefined;
     supplier?: Supplier;
-}
-
-/** Detailed information about a conference for VHO officer */
-export class ConferenceResponseVho implements IConferenceResponseVho {
-    /** Conference ID */
-    id?: string;
-    /** Scheduled date time as UTC */
-    scheduled_date_time?: Date;
-    /** Scheduled duration in minutes */
-    scheduled_duration?: number;
-    /** The case type */
-    case_type?: string | undefined;
-    /** The case number */
-    case_number?: string | undefined;
-    /** The case name */
-    case_name?: string | undefined;
-    status?: ConferenceStatus;
-    /** The uri of the Admin iFrame */
-    admin_i_frame_uri?: string | undefined;
-    /** The participant meeting room uri */
-    participant_uri?: string | undefined;
-    /** The pexip node to connect to */
-    pexip_node_uri?: string | undefined;
-    /** The participants in the conference */
-    participants?: ParticipantResponseVho[] | undefined;
-    /** Closed date time as UTC */
-    closed_date_time?: Date | undefined;
-    /** The name of venue */
-    hearing_venue_name?: string | undefined;
-    /** The hearing id of the video hearing conference */
-    hearing_id?: string;
-
-    constructor(data?: IConferenceResponseVho) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data['id'];
-            this.scheduled_date_time = _data['scheduled_date_time'] ? new Date(_data['scheduled_date_time'].toString()) : <any>undefined;
-            this.scheduled_duration = _data['scheduled_duration'];
-            this.case_type = _data['case_type'];
-            this.case_number = _data['case_number'];
-            this.case_name = _data['case_name'];
-            this.status = _data['status'];
-            this.admin_i_frame_uri = _data['admin_i_frame_uri'];
-            this.participant_uri = _data['participant_uri'];
-            this.pexip_node_uri = _data['pexip_node_uri'];
-            if (Array.isArray(_data['participants'])) {
-                this.participants = [] as any;
-                for (let item of _data['participants']) this.participants!.push(ParticipantResponseVho.fromJS(item));
-            }
-            this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
-            this.hearing_venue_name = _data['hearing_venue_name'];
-            this.hearing_id = _data['hearing_id'];
-        }
-    }
-
-    static fromJS(data: any): ConferenceResponseVho {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConferenceResponseVho();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['id'] = this.id;
-        data['scheduled_date_time'] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
-        data['scheduled_duration'] = this.scheduled_duration;
-        data['case_type'] = this.case_type;
-        data['case_number'] = this.case_number;
-        data['case_name'] = this.case_name;
-        data['status'] = this.status;
-        data['admin_i_frame_uri'] = this.admin_i_frame_uri;
-        data['participant_uri'] = this.participant_uri;
-        data['pexip_node_uri'] = this.pexip_node_uri;
-        if (Array.isArray(this.participants)) {
-            data['participants'] = [];
-            for (let item of this.participants) data['participants'].push(item.toJSON());
-        }
-        data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
-        data['hearing_venue_name'] = this.hearing_venue_name;
-        data['hearing_id'] = this.hearing_id;
-        return data;
-    }
-}
-
-/** Detailed information about a conference for VHO officer */
-export interface IConferenceResponseVho {
-    /** Conference ID */
-    id?: string;
-    /** Scheduled date time as UTC */
-    scheduled_date_time?: Date;
-    /** Scheduled duration in minutes */
-    scheduled_duration?: number;
-    /** The case type */
-    case_type?: string | undefined;
-    /** The case number */
-    case_number?: string | undefined;
-    /** The case name */
-    case_name?: string | undefined;
-    status?: ConferenceStatus;
-    /** The uri of the Admin iFrame */
-    admin_i_frame_uri?: string | undefined;
-    /** The participant meeting room uri */
-    participant_uri?: string | undefined;
-    /** The pexip node to connect to */
-    pexip_node_uri?: string | undefined;
-    /** The participants in the conference */
-    participants?: ParticipantResponseVho[] | undefined;
-    /** Closed date time as UTC */
-    closed_date_time?: Date | undefined;
-    /** The name of venue */
-    hearing_venue_name?: string | undefined;
-    /** The hearing id of the video hearing conference */
-    hearing_id?: string;
+    /** Allocated Cso Full name */
+    allocated_cso?: string | undefined;
+    /** Allocated Cso Id */
+    allocated_cso_id?: string | undefined;
 }
 
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
@@ -11339,103 +11234,6 @@ export interface IParticipantResponse {
     external_reference_id?: string | undefined;
     /** List of external references to protect this participant from */
     protect_from?: string[] | undefined;
-}
-
-/** Information about a participant in a conference */
-export class ParticipantResponseVho implements IParticipantResponseVho {
-    /** The participant id in a conference */
-    id?: string;
-    /** The participant's full name */
-    name?: string | undefined;
-    role?: Role;
-    status?: ParticipantStatus;
-    /** The participant's display name */
-    display_name?: string | undefined;
-    /** The tiled display name (the fixed tile location, display name and UUID) */
-    tiled_display_name?: string | undefined;
-    /** The representee the participant is acting on behalf */
-    representee?: string | undefined;
-    /** The hearing role */
-    hearing_role?: string | undefined;
-    current_room?: RoomSummaryResponse;
-    interpreter_room?: RoomSummaryResponse;
-    /** The linked participants */
-    linked_participants?: LinkedParticipantResponse[] | undefined;
-
-    constructor(data?: IParticipantResponseVho) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data['id'];
-            this.name = _data['name'];
-            this.role = _data['role'];
-            this.status = _data['status'];
-            this.display_name = _data['display_name'];
-            this.tiled_display_name = _data['tiled_display_name'];
-            this.representee = _data['representee'];
-            this.hearing_role = _data['hearing_role'];
-            this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
-            this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
-            if (Array.isArray(_data['linked_participants'])) {
-                this.linked_participants = [] as any;
-                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ParticipantResponseVho {
-        data = typeof data === 'object' ? data : {};
-        let result = new ParticipantResponseVho();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['id'] = this.id;
-        data['name'] = this.name;
-        data['role'] = this.role;
-        data['status'] = this.status;
-        data['display_name'] = this.display_name;
-        data['tiled_display_name'] = this.tiled_display_name;
-        data['representee'] = this.representee;
-        data['hearing_role'] = this.hearing_role;
-        data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
-        data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
-        if (Array.isArray(this.linked_participants)) {
-            data['linked_participants'] = [];
-            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-/** Information about a participant in a conference */
-export interface IParticipantResponseVho {
-    /** The participant id in a conference */
-    id?: string;
-    /** The participant's full name */
-    name?: string | undefined;
-    role?: Role;
-    status?: ParticipantStatus;
-    /** The participant's display name */
-    display_name?: string | undefined;
-    /** The tiled display name (the fixed tile location, display name and UUID) */
-    tiled_display_name?: string | undefined;
-    /** The representee the participant is acting on behalf */
-    representee?: string | undefined;
-    /** The hearing role */
-    hearing_role?: string | undefined;
-    current_room?: RoomSummaryResponse;
-    interpreter_room?: RoomSummaryResponse;
-    /** The linked participants */
-    linked_participants?: LinkedParticipantResponse[] | undefined;
 }
 
 export class QuickLinkParticipantJoinResponse implements IQuickLinkParticipantJoinResponse {

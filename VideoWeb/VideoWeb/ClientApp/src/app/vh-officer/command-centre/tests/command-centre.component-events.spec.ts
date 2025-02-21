@@ -4,9 +4,9 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ClientSettingsResponse,
-    ConferenceResponseVho,
+    ConferenceResponse,
     ConferenceStatus,
-    ParticipantResponseVho,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     Supplier,
@@ -164,7 +164,7 @@ describe('CommandCentreComponent - Events', () => {
 
     it('should selected hearing status when conference status message is received for currently selected conference', () => {
         component.setupEventHubSubscribers();
-        const clone: ConferenceResponseVho = Object.assign(conferenceDetail);
+        const clone: ConferenceResponse = Object.assign(conferenceDetail);
         component.selectedHearing = new Hearing(clone);
         component.selectedHearing.getConference().status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(component.selectedHearing.id, ConferenceStatus.Paused);
@@ -201,7 +201,7 @@ describe('CommandCentreComponent - Events', () => {
         const conferenceId = hearing.id;
         const newList = hearing.getParticipants();
         newList.push(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: '123New',
                 name: 'new participant',
                 role: Role.JudicialOfficeHolder,
@@ -288,7 +288,7 @@ describe('CommandCentreComponent - Events', () => {
         const conferenceId = hearing.id;
         const newList = hearing.getParticipants();
         newList.push(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: '123New',
                 name: 'new participant',
                 role: Role.JudicialOfficeHolder,

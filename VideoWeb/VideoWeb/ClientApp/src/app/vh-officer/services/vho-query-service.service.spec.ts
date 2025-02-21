@@ -10,6 +10,8 @@ import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
+import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
@@ -277,6 +279,102 @@ describe('VhoQueryService', () => {
         // assert
         expect(actual.allocatedCsoIds).toEqual(filter.allocatedCsoIds);
         expect(actual.includeUnallocated).toEqual(filter.includeUnallocated);
+    });
+
+    fdescribe('handleAllocationUpdated', () => {
+        describe('CSO filter selected', () => {
+            beforeEach(() => {
+                const data = testData.getTestData(); // 3 conferences
+                data[0].allocated_cso = 'test-cso-1';
+                data[0].allocated_cso_id = 'test-cso-1';
+
+                data[1].allocated_cso = 'test-cso-2';
+                data[1].allocated_cso_id = 'test-cso-2';
+
+                data[2].allocated_cso = 'test-cso-2';
+                data[2].allocated_cso_id = 'test-cso-2';
+                service.allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+                service.venueNames = [];
+                service['vhoConferences'] = data;
+            });
+
+            it('should add conference to list when conference allocated to filtered cso', () => {
+                const conference = new ConferenceForVhOfficerResponse({
+                    id: '123',
+                    case_name: 'Case Name',
+                    case_number: '12345',
+                    case_type: 'Civil',
+                    scheduled_date_time: new Date(),
+                    participants: [],
+                    hearing_venue_name: 'Venue 1',
+                    scheduled_duration: 60,
+                    closed_date_time: null,
+                    allocated_cso: 'test-cso-1',
+                    allocated_cso_id: 'test-cso-1'
+                });
+
+                const updatedAllocation: UpdatedAllocation = {
+                    allocated_to_cso_display_name: 'test-cso-1',
+                    allocated_to_cso_id: 'test-cso-1',
+                    allocated_to_cso_username: 'test-cso-1',
+                    case_name: 'Case Name',
+                    conference: conference,
+                    conference_id: conference.id,
+                    judge_display_name: 'Judge Test',
+                    scheduled_date_time: conference.scheduled_date_time
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                service.handleAllocationUpdated(message);
+
+                expect(service['vhoConferences'].length).toBe(4);
+            });
+
+            it('should update conference in list when conference is allocated to filtered cso', () => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.allocated_cso = 'test-cso-2';
+                updatedConference.allocated_cso_id = 'test-cso-2';
+
+                const updatedAllocation: UpdatedAllocation = {
+                    allocated_to_cso_display_name: 'test-cso-2',
+                    allocated_to_cso_id: 'test-cso-2',
+                    allocated_to_cso_username: 'test-cso-2',
+                    case_name: 'Case Name',
+                    conference: updatedConference,
+                    conference_id: updatedConference.id,
+                    judge_display_name: 'Judge Test',
+                    scheduled_date_time: updatedConference.scheduled_date_time
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                service.handleAllocationUpdated(message);
+
+                expect(service['vhoConferences'].length).toBe(3);
+                const count = service['vhoConferences'].filter(x => x.allocated_cso === 'test-cso-2').length;
+                expect(count).toBe(3);
+            });
+
+            it('should remove conference from list when conference is not allocated to filtered cso', () => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.allocated_cso = 'test-cso-3';
+                updatedConference.allocated_cso_id = 'test-cso-3';
+
+                const updatedAllocation: UpdatedAllocation = {
+                    allocated_to_cso_display_name: 'test-cso-3',
+                    allocated_to_cso_id: 'test-cso-3',
+                    allocated_to_cso_username: 'test-cso-3',
+                    case_name: 'Case Name',
+                    conference: updatedConference,
+                    conference_id: updatedConference.id,
+                    judge_display_name: 'Judge Test',
+                    scheduled_date_time: updatedConference.scheduled_date_time
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                service.handleAllocationUpdated(message);
+
+                expect(service['vhoConferences'].length).toBe(2);
+                const count = service['vhoConferences'].filter(x => x.allocated_cso === 'test-cso-3').length;
+                expect(count).toBe(0);
+            });
+        });
     });
 
     it('should update case name and case number conference when hearing detail message contains a conference', () => {

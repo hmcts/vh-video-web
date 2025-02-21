@@ -1,5 +1,8 @@
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
+
 export interface UpdatedAllocation {
     conference_id: string;
+    conference?: ConferenceResponse;
     scheduled_date_time: Date;
     case_name: string;
     judge_display_name: string;

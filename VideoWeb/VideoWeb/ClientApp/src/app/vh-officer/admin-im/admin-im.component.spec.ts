@@ -1,11 +1,11 @@
-import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { AdminImComponent } from './admin-im.component';
 
 describe('AdminImComponent', () => {
     let component: AdminImComponent;
-    let conference: ConferenceResponseVho;
+    let conference: ConferenceResponse;
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
