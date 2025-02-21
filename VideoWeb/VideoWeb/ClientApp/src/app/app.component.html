@@ -5,6 +5,9 @@
       'app.skip-to-main-content' | translate
     }}</a>
   </nav>
+  <div *ngIf="isBannerVisible">
+    <app-cookie-banner (cookieAnswered)="onCookieAnswered()"></app-cookie-banner>
+  </div>
 
   <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn" [username]="username"></app-header>
 
