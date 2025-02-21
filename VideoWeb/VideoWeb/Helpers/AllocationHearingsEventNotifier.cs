@@ -26,8 +26,8 @@ public class AllocationHearingsEventNotifier(
         var conferences = (await conferenceService.GetConferences(conferenceIds)).ToList();
         foreach (var conference in conferences)
         {
-            conference.AllocatedCsoId = update.AllocatedCsoId;
-            conference.AllocatedCso = update.AllocatedCsoUsername;
+            conference.UpdateAllocation(update.AllocatedCsoId, update.AllocatedCsoFullName,
+                update.AllocatedCsoUsername);
             await conferenceService.UpdateConferenceAsync(conference);
         }
         var updatedAllocationDtos = conferences

@@ -4,4 +4,6 @@ export interface UpdatedAllocation {
     case_name: string;
     judge_display_name: string;
     allocated_to_cso_username: string;
+    allocated_to_cso_display_name: string;
+    allocated_to_cso_id: string;
 }
