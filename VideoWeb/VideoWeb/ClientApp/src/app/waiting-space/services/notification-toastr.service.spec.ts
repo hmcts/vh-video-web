@@ -1585,7 +1585,9 @@ describe('NotificationToastrService', () => {
             scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
             case_name: 'case name 1',
             conference_id: 'conferenceId1',
-            allocated_to_cso_username: 'cso@email.com'
+            allocated_to_cso_username: 'cso@email.com',
+            allocated_to_cso_display_name: 'cso display name',
+            allocated_to_cso_id: 'csoId'
         };
         hearingsPassed.push(hearing);
         hearing = {
@@ -1593,7 +1595,9 @@ describe('NotificationToastrService', () => {
             scheduled_date_time: new Date(2023, 1, 1, 11, 0, 0, 0),
             case_name: 'case name 2',
             conference_id: 'conferenceId2',
-            allocated_to_cso_username: 'cso@email.com'
+            allocated_to_cso_username: 'cso@email.com',
+            allocated_to_cso_display_name: 'cso display name',
+            allocated_to_cso_id: 'csoId'
         };
         hearingsPassed.push(hearing);
 

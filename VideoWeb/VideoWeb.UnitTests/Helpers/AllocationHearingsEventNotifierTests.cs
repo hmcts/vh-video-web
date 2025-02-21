@@ -23,6 +23,7 @@ internal class AllocationHearingsEventNotifierTests
     private Conference _conference;
     private EventComponentHelper _eventHelper;
     private const string CsoUserName = "username@email.com";
+    private const string CsoName = "CSO Name";
     private readonly Guid _csoId = Guid.NewGuid();
 
     [SetUp]
@@ -50,7 +51,7 @@ internal class AllocationHearingsEventNotifierTests
     public async Task Should_send_event()
     {
         // Act
-        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId, CsoName);
         await _notifier.PushAllocationHearingsEvent(update, [_conference.Id]);
 
         List<UpdatedAllocationDto> expected =
@@ -63,7 +64,9 @@ internal class AllocationHearingsEventNotifierTests
                 list[0].ScheduledDateTime == expected[0].ScheduledDateTime &&
                 list[0].CaseName == expected[0].CaseName &&
                 list[0].JudgeDisplayName == expected[0].JudgeDisplayName &&
-                list[0].AllocatedToCsoUsername == expected[0].AllocatedToCsoUsername)),
+                list[0].AllocatedToCsoUsername == expected[0].AllocatedToCsoUsername &&
+                list[0].AllocatedToCsoDisplayName == expected[0].AllocatedToCsoDisplayName &&
+                list[0].AllocatedToCsoId == expected[0].AllocatedToCsoId)),
             Times.Exactly(1));
     }
     
@@ -74,7 +77,7 @@ internal class AllocationHearingsEventNotifierTests
         var conferences = Enumerable.Empty<Guid>().ToList();
         
         // act
-        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId);
+        var update = new UpdatedAllocationJusticeUserDto(CsoUserName, _csoId, CsoName);
         await _notifier.PushAllocationHearingsEvent(update, conferences);
         
         // assert
