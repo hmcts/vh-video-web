@@ -16,6 +16,7 @@ import {
 } from '../../../shared/models/participant-event';
 
 @Component({
+    standalone: false,
     selector: 'app-participants-panel-item',
     templateUrl: './participants-panel-item.component.html',
     styleUrl: './participants-panel-item.component.scss'

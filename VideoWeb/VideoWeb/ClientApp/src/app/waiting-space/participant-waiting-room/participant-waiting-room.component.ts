@@ -34,6 +34,7 @@ import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']

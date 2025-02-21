@@ -3,6 +3,7 @@ import { UntypedFormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
+    standalone: false,
     selector: 'app-chat-input-box',
     templateUrl: './chat-input-box.component.html',
     styleUrls: ['./chat-input-box.component.scss']

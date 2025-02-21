@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-legal-rep-terms-of-service',
     templateUrl: './private-consultation-legal-rep-terms-of-service.component.html'
 })

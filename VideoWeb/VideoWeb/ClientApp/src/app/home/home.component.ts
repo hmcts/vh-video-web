@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { pageUrls } from '../shared/page-url.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-home',
     templateUrl: './home.component.html'
 })

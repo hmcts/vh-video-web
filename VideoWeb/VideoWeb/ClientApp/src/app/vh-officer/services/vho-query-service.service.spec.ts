@@ -64,7 +64,7 @@ describe('VhoQueryService', () => {
     }));
 
     it('should clear interval on stop', fakeAsync(() => {
-        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        const interval = jasmine.createSpyObj('number', ['ref', 'unref']);
         service.interval = interval;
         spyOn(window, 'clearInterval');
         service.stopQuery();

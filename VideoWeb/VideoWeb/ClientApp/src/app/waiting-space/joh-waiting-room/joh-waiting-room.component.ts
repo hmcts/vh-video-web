@@ -29,6 +29,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']

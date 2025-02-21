@@ -16,6 +16,7 @@ import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models
 import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-self-test',
     templateUrl: './participant-self-test.component.html'
 })

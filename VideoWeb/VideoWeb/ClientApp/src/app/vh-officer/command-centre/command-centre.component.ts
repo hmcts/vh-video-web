@@ -29,6 +29,7 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Component({
+    standalone: false,
     selector: 'app-command-centre',
     templateUrl: './command-centre.component.html',
     styleUrls: ['./command-centre.component.scss', '../vho-global-styles.scss']

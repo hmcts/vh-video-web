@@ -170,8 +170,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     }));
 
     it('should clear timer on mouse exit', () => {
-        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component.timeout = timer;
+        component.timeout = jasmine.createSpyObj('number', ['ref', 'unref']);
         spyOn(global, 'clearTimeout');
         component.onMouseExit(mouseEvent);
 

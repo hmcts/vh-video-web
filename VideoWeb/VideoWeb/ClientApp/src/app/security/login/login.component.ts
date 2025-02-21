@@ -10,6 +10,7 @@ import { SecurityServiceProvider } from '../authentication/security-provider.ser
 import { ISecurityService } from '../authentication/security-service.interface';
 
 @Component({
+    standalone: false,
     selector: 'app-login',
     templateUrl: './login.component.html'
 })

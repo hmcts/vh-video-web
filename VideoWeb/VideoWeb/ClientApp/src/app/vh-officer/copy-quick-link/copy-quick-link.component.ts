@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
+    standalone: false,
     selector: 'app-copy-quick-link',
     templateUrl: './copy-quick-link.component.html'
 })

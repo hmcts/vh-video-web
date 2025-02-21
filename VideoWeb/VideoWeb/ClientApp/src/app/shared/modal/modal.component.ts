@@ -6,6 +6,7 @@ import { ModalService } from 'src/app/services/modal.service';
  * modal setup based on answer
  */
 @Component({
+    standalone: false,
     selector: 'app-modal',
     template: '<ng-content></ng-content>'
 })

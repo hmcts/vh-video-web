@@ -3,6 +3,7 @@ import { YesNoPopupBaseDirective } from '../../shared/confirmation/yes-no-popup-
 import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
+    standalone: false,
     selector: 'app-confirm-close-hearing-popup',
     templateUrl: './confirm-close-hearing-popup.component.html',
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']

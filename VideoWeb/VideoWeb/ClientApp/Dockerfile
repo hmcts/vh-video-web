@@ -1,4 +1,4 @@
-FROM node:18.15-alpine AS client
+FROM node:22.0.0-alpine AS client
 EXPOSE 4200 49153
 USER node
 

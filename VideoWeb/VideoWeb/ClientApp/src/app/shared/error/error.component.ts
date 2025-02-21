@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { vhContactDetails } from '../contact-information';
 
 @Component({
+    standalone: false,
     selector: 'app-error',
     templateUrl: './error.component.html'
 })

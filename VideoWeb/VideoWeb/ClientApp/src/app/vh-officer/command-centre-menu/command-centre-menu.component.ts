@@ -12,6 +12,7 @@ import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     selector: 'app-command-centre-menu',
     templateUrl: './command-centre-menu.component.html',
     styleUrls: ['./command-centre-menu.component.scss']

@@ -5,6 +5,7 @@ import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
 
 @Component({
+    standalone: false,
     template: `
         <ng-container *appFeatureFlag="'myFlag'">
             <div>Flag is enabled</div>

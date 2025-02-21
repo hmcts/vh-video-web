@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM node:18.15-alpine AS client
+FROM node:22.0.0-alpine AS client
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ARG skip_client_build=false
 WORKDIR /app
@@ -11,9 +11,9 @@ COPY VideoWeb/VideoWeb/ClientApp .
 RUN if [[ ${skip_client_build} = true ]]; then \
     echo "Skipping npm install and build"; \
     mkdir dist; \
-else \
+    else \
     npm install --ignore-scripts && npm run-script build-prod; \
-fi
+    fi
 
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

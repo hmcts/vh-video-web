@@ -3,6 +3,7 @@ import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
+    standalone: false,
     selector: 'app-court-rooms-filters',
     templateUrl: './court-rooms-filters.component.html',
     styleUrls: ['./court-rooms-filters.component.scss']

@@ -14,6 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 
 @Component({
+    standalone: false,
     selector: 'app-judge-context-menu',
     templateUrl: './judge-context-menu.component.html',
     styleUrls: ['./judge-context-menu.component.scss']

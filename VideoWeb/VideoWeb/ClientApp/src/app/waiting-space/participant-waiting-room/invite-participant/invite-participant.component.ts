@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 
 @Component({
+    standalone: false,
     selector: 'app-invite-participant',
     templateUrl: './invite-participant.component.html',
     styleUrls: ['./invite-participant.component.scss']

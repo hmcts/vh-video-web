@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Directive({
+    standalone: false,
     selector: '[appCrestLogoImageSource]'
 })
 export class CrestLogoImageSourceDirective implements OnInit, OnChanges, OnDestroy {

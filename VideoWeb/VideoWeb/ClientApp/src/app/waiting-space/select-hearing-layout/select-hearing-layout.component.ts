@@ -7,6 +7,7 @@ import { Accordion, createAll } from 'govuk-frontend';
 import { VHConference } from '../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-select-hearing-layout',
     templateUrl: './select-hearing-layout.component.html',
     styleUrls: ['./select-hearing-layout.component.scss']

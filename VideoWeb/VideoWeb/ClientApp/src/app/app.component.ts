@@ -26,6 +26,7 @@ import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']

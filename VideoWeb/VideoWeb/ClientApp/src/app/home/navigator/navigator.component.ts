@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
 import { PARTICIPANT_ROLES } from '../../shared/user-roles';
 
 @Component({
+    standalone: false,
     selector: 'app-navigator',
     templateUrl: './navigator.component.html'
 })

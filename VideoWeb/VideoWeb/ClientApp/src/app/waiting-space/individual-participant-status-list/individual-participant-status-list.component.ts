@@ -12,6 +12,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { VHParticipant } from '../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-individual-participant-status-list',
     templateUrl: './individual-participant-status-list.component.html',
     styleUrls: ['./individual-participant-status-list.component.scss']

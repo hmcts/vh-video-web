@@ -6,6 +6,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { map, startWith } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     templateUrl: './room-closing-toast.component.html',
     styleUrls: ['./room-closing-toast.component.scss']
 })

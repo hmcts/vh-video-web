@@ -13,6 +13,7 @@ import {
 import 'webrtc-adapter';
 
 @Component({
+    standalone: false,
     selector: 'app-mic-visualiser',
     templateUrl: './mic-visualiser.component.html',
     styleUrls: ['./mic-visualiser.component.scss']

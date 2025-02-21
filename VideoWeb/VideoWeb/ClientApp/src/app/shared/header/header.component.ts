@@ -6,6 +6,7 @@ import { pageUrls } from '../page-url.constants';
 import { topMenuItems } from './topMenuItems';
 
 @Component({
+    standalone: false,
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']

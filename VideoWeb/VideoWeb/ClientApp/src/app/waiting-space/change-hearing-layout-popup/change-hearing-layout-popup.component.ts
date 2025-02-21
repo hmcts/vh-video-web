@@ -4,6 +4,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { VHConference } from '../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-change-hearing-layout-popup',
     templateUrl: './change-hearing-layout-popup.component.html',
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']

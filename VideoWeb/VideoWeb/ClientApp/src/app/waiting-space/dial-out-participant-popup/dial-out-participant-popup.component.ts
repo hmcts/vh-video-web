@@ -3,6 +3,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { YesNoPopupBaseDirective } from 'src/app/shared/confirmation/yes-no-popup-base.component';
 
 @Component({
+    standalone: false,
     selector: 'app-dial-out-participant-popup',
     templateUrl: './dial-out-participant-popup.component.html',
     styleUrl: '../../shared/confirmation/yes-no-popup-base.component.scss'

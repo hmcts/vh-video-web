@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { cookies } from '../cookies.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-cookie-banner',
     templateUrl: './cookie-banner.component.html'
 })

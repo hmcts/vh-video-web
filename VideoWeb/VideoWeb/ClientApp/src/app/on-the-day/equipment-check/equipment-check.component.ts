@@ -6,6 +6,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
+    standalone: false,
     selector: 'app-equipment-check',
     templateUrl: './equipment-check.component.html'
 })

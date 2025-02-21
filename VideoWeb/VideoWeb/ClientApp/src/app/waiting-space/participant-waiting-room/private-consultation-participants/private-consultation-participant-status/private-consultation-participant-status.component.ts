@@ -3,6 +3,7 @@ import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-participant-status',
     templateUrl: './private-consultation-participant-status.component.html',
     styleUrls: ['./private-consultation-participant-status.component.scss']

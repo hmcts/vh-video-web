@@ -5,6 +5,7 @@ import { IdpProviders } from '../idp-providers';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
 
 @Component({
+    standalone: false,
     selector: 'app-dom1-sign-in',
     template: ''
 })

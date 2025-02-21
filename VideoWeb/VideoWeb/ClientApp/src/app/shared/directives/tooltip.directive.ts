@@ -2,6 +2,7 @@ import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Ou
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 @Directive({
+    standalone: false,
     selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnDestroy {

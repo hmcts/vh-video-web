@@ -7,6 +7,7 @@ import { ParticipantStatusReader } from 'src/app/shared/models/participant-statu
 import { ParticipantStatusDirective } from '../participant-status-base/participant-status-base.component';
 
 @Component({
+    standalone: false,
     selector: 'app-test-participant-status',
     template: ''
 })

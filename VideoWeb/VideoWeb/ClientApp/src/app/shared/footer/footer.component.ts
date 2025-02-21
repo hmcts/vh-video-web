@@ -7,6 +7,7 @@ import { pageUrls } from '../page-url.constants';
 import { Observable, Subscription } from 'rxjs';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 @Component({
+    standalone: false,
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.scss']

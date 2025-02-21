@@ -8,6 +8,7 @@ import { ParticipantGraphInfo } from '../services/models/participant-graph-info'
 import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-network-status',
     templateUrl: './participant-network-status.component.html',
     styleUrls: ['./participant-network-status.component.scss', '../vho-global-styles.scss']
@@ -23,8 +24,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     loading: boolean;
     monitoringParticipant: ParticipantGraphInfo;
     packageLostArray: PackageLost[];
-
-    timeout: NodeJS.Timer;
+    timeout: ReturnType<typeof setTimeout> | number;
     mouseEvent: MouseEvent;
 
     constructor(
@@ -40,7 +40,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     onMouseEnter($event: MouseEvent) {
         const self = this;
         this.mouseEvent = $event;
-        this.timeout = setTimeout(async function () {
+        this.timeout = window.setTimeout(async function () {
             await self.showParticipantGraph($event);
         }, 500);
     }

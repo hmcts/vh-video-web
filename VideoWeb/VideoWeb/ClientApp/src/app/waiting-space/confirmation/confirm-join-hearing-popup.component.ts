@@ -4,6 +4,7 @@ import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.comp
 import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
+    standalone: false,
     selector: 'app-confirm-join-hearing-popup',
     templateUrl: './confirm-join-hearing-popup.component.html',
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']

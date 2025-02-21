@@ -4,6 +4,7 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-info-tooltip',
     templateUrl: './participant-info-tooltip.component.html',
     styleUrls: ['../vho-global-styles.scss']

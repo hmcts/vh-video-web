@@ -9,6 +9,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-staff-member-venue-list',
     templateUrl: '../venue-list.component.html',
     styleUrls: ['../venue-list.component.scss']

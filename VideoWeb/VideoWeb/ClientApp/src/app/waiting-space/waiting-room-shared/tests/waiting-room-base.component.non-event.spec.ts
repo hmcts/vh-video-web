@@ -32,6 +32,7 @@ import {
     globalParticipant,
     hideComponentsService,
     initAllWRDependencies,
+    launchDarklyService,
     logger,
     mockConferenceStore,
     mockedHearingVenueFlagsService,
@@ -40,7 +41,6 @@ import {
     roomClosingToastrService,
     router,
     titleService,
-    launchDarklyService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
@@ -447,8 +447,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should clean up timeouts and subscriptions', () => {
         component.eventHubSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.videoCallSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component.callbackTimeout = timer;
+        component.callbackTimeout = jasmine.createSpyObj('number', ['ref', 'unref']);
         spyOn(global, 'clearTimeout');
 
         component.executeWaitingRoomCleanup();

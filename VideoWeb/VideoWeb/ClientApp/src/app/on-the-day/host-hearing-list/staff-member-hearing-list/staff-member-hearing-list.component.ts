@@ -12,6 +12,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { HostHearingListBaseComponentDirective } from '../host-hearing-list.component-base';
 
 @Component({
+    standalone: false,
     selector: 'app-staff-member-hearing-list',
     templateUrl: '../host-hearing-list.component.html',
     styleUrls: ['../host-hearing-list.component.scss']

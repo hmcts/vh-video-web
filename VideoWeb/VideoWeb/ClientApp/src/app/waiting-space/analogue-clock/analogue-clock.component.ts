@@ -3,6 +3,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 
 @Component({
+    standalone: false,
     selector: 'app-analogue-clock',
     templateUrl: './analogue-clock.component.html',
     styleUrls: ['./analogue-clock.component.scss']

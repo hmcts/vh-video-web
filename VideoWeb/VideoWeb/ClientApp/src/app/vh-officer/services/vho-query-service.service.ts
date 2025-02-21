@@ -20,7 +20,7 @@ import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-de
 
 @Injectable()
 export class VhoQueryService {
-    interval: NodeJS.Timer;
+    interval: ReturnType<typeof setInterval> | number;
     venueNames: string[];
     allocatedCsoIds: string[];
     includeUnallocated = false;
@@ -54,7 +54,8 @@ export class VhoQueryService {
         this.includeUnallocated = includeUnallocated;
         this.activeSessionsOnly = activeSessionsOnly;
         this.runQuery();
-        this.interval = setInterval(async () => {
+
+        this.interval = window.setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
         this.eventService

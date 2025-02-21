@@ -17,6 +17,7 @@ import { ConferenceActions } from '../store/actions/conference.actions';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 
 @Component({
+    standalone: false,
     selector: 'app-judge-participant-status-list',
     templateUrl: './judge-participant-status-list.component.html',
     styleUrls: ['./judge-participant-status-list.component.scss']

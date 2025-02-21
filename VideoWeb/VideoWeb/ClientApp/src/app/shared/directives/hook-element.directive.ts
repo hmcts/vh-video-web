@@ -1,6 +1,7 @@
 import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Directive({
+    standalone: false,
     selector: '[appHookElement]'
 })
 export class HookElementDirective implements OnInit {

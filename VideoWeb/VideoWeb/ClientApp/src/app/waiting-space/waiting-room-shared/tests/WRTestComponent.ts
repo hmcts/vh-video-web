@@ -23,6 +23,7 @@ import { ConferenceState } from '../../store/reducers/conference.reducer';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-test-waiting-room',
     template: ''
 })

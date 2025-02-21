@@ -3,6 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
+    standalone: false,
     name: 'translateDate',
     pure: false
 })

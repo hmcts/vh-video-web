@@ -4,6 +4,7 @@ import { ClipboardService } from 'ngx-clipboard';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
+    standalone: false,
     selector: 'app-copy-id',
     templateUrl: './copy-id.component.html'
 })

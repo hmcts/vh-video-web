@@ -6,6 +6,7 @@ import { ParticipantGraphInfo } from '../services/models/participant-graph-info'
 import { MonitorGraphService } from '../services/monitor-graph.service';
 
 @Component({
+    standalone: false,
     selector: 'app-monitoring-graph',
     templateUrl: './monitoring-graph.component.html',
     styleUrls: ['./monitoring-graph.component.scss', '../vho-global-styles.scss']

@@ -6,6 +6,7 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-vho-hearing-list',
     templateUrl: './vho-hearing-list.component.html',
     styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss', '../hearing-status/hearing-status.component.scss']

@@ -32,6 +32,7 @@ import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHEndpoint, VHParticipant, VHPexipConference } from '../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']

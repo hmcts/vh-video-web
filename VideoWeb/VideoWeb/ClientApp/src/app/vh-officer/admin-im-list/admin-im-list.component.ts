@@ -6,6 +6,7 @@ import { ParticipantContactDetails } from 'src/app/shared/models/participant-con
 import { ParticipantStatusDirective } from '../vho-shared/participant-status-base/participant-status-base.component';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 @Component({
+    standalone: false,
     selector: 'app-admin-im-list',
     templateUrl: './admin-im-list.component.html',
     styleUrls: ['./admin-im-list.component.scss']

@@ -4,6 +4,7 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
+    standalone: false,
     selector: 'app-warn-join-hearing-popup',
     templateUrl: './warn-join-hearing-popup.component.html',
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']
