@@ -18,7 +18,6 @@ import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
-import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 
 @Injectable()
 export class VhoQueryService {
@@ -89,6 +88,10 @@ export class VhoQueryService {
 
     handleAllocationUpdated(allocationUpdate: NewAllocationMessage) {
         for (const update of allocationUpdate.updatedAllocations) {
+            if (!update.conference) {
+                // conference is a new property, so if it's not present, we can't update the conference
+                return;
+            }
             const newConference = update.conference;
             this.updateConference(newConference, (foundConference: ConferenceForVhOfficerResponse) => {
                 return new ConferenceForVhOfficerResponse({
