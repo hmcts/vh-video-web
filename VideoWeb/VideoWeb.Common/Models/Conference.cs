@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using VideoApi.Contract.Requests;
 using Supplier = VideoWeb.Common.Enums.Supplier;
 
@@ -41,8 +42,24 @@ namespace VideoWeb.Common.Models
         public string TelephoneConferenceId { get; set; }
         public string TelephoneConferenceNumbers { get; set; }
         public Supplier Supplier { get; set; }
-        public string AllocatedCso { get; set; }
-        public Guid? AllocatedCsoId { get; set; }
+        
+        /// <summary>
+        /// The username of the allocated CSO
+        /// </summary>
+        [JsonInclude]
+        public string AllocatedCsoUsername { get; private set; }
+        
+        /// <summary>
+        /// The full name of the allocated CSO
+        /// </summary>
+        [JsonInclude]
+        public string AllocatedCso { get; private set; }
+        
+        /// <summary>
+        /// The id of the allocated CSO
+        /// </summary>
+        [JsonInclude]
+        public Guid? AllocatedCsoId { get; private set; }
 
         public Participant GetJudge()
         {
@@ -334,6 +351,13 @@ namespace VideoWeb.Common.Models
                 .ToList();
             
             return endpoints;
+        }
+
+        public void UpdateAllocation(Guid? updateAllocatedCsoId, string updateAllocatedToName, string updateAllocatedCsoUsername)
+        {
+            AllocatedCsoId = updateAllocatedCsoId;
+            AllocatedCso = updateAllocatedToName;
+            AllocatedCsoUsername = updateAllocatedCsoUsername;
         }
     }
 }

@@ -53,6 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             {
                 ConferenceIds = conferenceIds,
                 AllocatedCsoUserName = "csousername@email.com",
+                AllocatedCsoFullName = "CSO Full Name",
                 AllocatedCsoUserId = csoId
             };
             
@@ -64,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController
             result.Should().BeOfType<NoContentResult>();
 
             _mocker.Mock<IAllocationHearingsEventNotifier>().Verify(
-                x => x.PushAllocationHearingsEvent(new UpdatedAllocationJusticeUserDto("csousername@email.com", csoId),
+                x => x.PushAllocationHearingsEvent(new UpdatedAllocationJusticeUserDto("csousername@email.com", csoId, "CSO Full Name"),
                     conferenceIds), Times.Once);
         }
     }
