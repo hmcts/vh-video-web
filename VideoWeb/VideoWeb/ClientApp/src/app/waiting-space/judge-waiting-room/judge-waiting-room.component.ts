@@ -7,7 +7,6 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -77,7 +76,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected conferenceService: ConferenceService,
         private readonly unloadDetectorService: UnloadDetectorService,
         private readonly hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,

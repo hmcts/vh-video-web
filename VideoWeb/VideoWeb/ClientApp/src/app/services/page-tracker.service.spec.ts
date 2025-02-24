@@ -1,8 +1,7 @@
 import { TestBed, fakeAsync } from '@angular/core/testing';
 import { PageTrackerService } from './page-tracker.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
-import { NavigationEnd } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Logger } from './logging/logger-base';
 import { MockLogger } from '../testing/mocks/mock-logger';
