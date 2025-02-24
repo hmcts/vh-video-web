@@ -5,11 +5,7 @@ describe('SortingHelper', () => {
         expect(new SortingHelper()).toBeTruthy();
     });
 
-    describe('SortingHelper', () => {
-        it('should create an instance', () => {
-            expect(new SortingHelper()).toBeTruthy();
-        });
-
+    describe('orderByRoleThenName', () => {
         it('should sort by role', () => {
             const users = [
                 { role: 'Admin', hearingRole: 'Judge', displayName: 'Alice' },
