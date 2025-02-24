@@ -388,7 +388,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
         if (allocationHearingMessage.updatedAllocations.length > 0) {
             // All hearings in this message will be allocated to the same user
-            const allocatedCsoUsername = allocationHearingMessage.updatedAllocations[0].allocated_to_cso_username;
+            const allocatedCsoUsername = allocationHearingMessage.updatedAllocations[0].conference.allocated_cso_username;
 
             if (allocatedCsoUsername.toLowerCase() === this.loggedInUsername.toLowerCase()) {
                 this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.updatedAllocations);

@@ -127,7 +127,7 @@ export class EventsService {
         AllocationsUpdated: (updatedAllocations: UpdatedAllocation[]) => {
             const message = new NewAllocationMessage(updatedAllocations);
             updatedAllocations?.forEach(allocation => {
-                this.eventsHubConnection.invoke('AddToGroup', allocation.conference_id);
+                this.eventsHubConnection.invoke('AddToGroup', allocation.conference.id);
             });
             this.logger.debug('[EventsService] - AllocationsUpdated received', message);
             this.messageAllocationSubject.next(message);

@@ -1,4 +1,4 @@
-import { ParticipantForHostResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { HearingRoleHelper } from '../helpers/hearing-role-helper';
 
@@ -7,11 +7,6 @@ export class ParticipantSummary {
     protected participantHeartBeat: ParticipantHeartbeat;
 
     constructor(participant: ParticipantForUserResponse) {
-        const isParticipantForUserResponse = participant instanceof ParticipantForUserResponse;
-        const isParticipantForHostResponse = participant instanceof ParticipantForHostResponse;
-        if (!(isParticipantForUserResponse || isParticipantForHostResponse)) {
-            throw new Error('Object not a ParticipantForUserResponse or ParticipantForHostResponse');
-        }
         this.participant = participant;
     }
 

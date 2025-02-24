@@ -10411,6 +10411,8 @@ export class ConferenceResponse implements IConferenceResponse {
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
+    /** Allocated Cso Username */
+    allocated_cso_username?: string | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -10449,6 +10451,7 @@ export class ConferenceResponse implements IConferenceResponse {
             this.supplier = _data['supplier'];
             this.allocated_cso = _data['allocated_cso'];
             this.allocated_cso_id = _data['allocated_cso_id'];
+            this.allocated_cso_username = _data['allocated_cso_username'];
         }
     }
 
@@ -10488,6 +10491,7 @@ export class ConferenceResponse implements IConferenceResponse {
         data['supplier'] = this.supplier;
         data['allocated_cso'] = this.allocated_cso;
         data['allocated_cso_id'] = this.allocated_cso_id;
+        data['allocated_cso_username'] = this.allocated_cso_username;
         return data;
     }
 }
@@ -10534,6 +10538,8 @@ export interface IConferenceResponse {
     allocated_cso?: string | undefined;
     /** Allocated Cso Id */
     allocated_cso_id?: string | undefined;
+    /** Allocated Cso Username */
+    allocated_cso_username?: string | undefined;
 }
 
 export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
