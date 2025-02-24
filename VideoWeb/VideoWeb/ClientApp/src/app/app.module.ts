@@ -24,6 +24,7 @@ import { AuthConfigModule } from './auth-config.module';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 
 import { StoreModule } from '@ngrx/store';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { DynatraceService } from './services/api/dynatrace.service';
@@ -65,7 +66,8 @@ export function getLocale() {
             }
         }),
         AuthConfigModule,
-        StoreModule.forRoot({}),
+        StoreModule.forRoot({ router: routerReducer }),
+        StoreRouterConnectingModule.forRoot(),
         StoreDevtoolsModule.instrument({ logOnly: !isDevMode() }),
         EffectsModule.forRoot([])
     ],

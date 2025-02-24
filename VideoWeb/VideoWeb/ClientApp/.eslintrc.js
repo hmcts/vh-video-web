@@ -34,6 +34,8 @@ module.exports = {
     ],
     root: true,
     rules: {
+        'no-duplicate-imports': 'error',
+        'import/no-duplicates': 'error',
         'unused-imports/no-unused-imports': 'error',
         'jasmine/no-focused-tests': 'error',
         '@angular-eslint/component-class-suffix': 'error',

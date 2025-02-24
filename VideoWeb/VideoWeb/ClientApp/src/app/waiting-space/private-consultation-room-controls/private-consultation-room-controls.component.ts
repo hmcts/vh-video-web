@@ -2,8 +2,6 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
 import { ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
-import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -17,7 +15,9 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { faCirclePause, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHConference } from '../store/models/vh-conference';
+import { JoinConsultationDecider } from './models/join-consultation-decider';
 
 @Component({
     selector: 'app-private-consultation-room-controls',
@@ -50,7 +50,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     recordingButtonDisabled = false;
     wowzaConnected = false;
 
-    private conferenceStatus: ConferenceStatusChanged;
+    private conferenceStatus: ConferenceStatus;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -59,7 +59,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected logger: Logger,
         protected translateService: TranslateService,
         protected userMediaService: UserMediaService,
-        conferenceService: ConferenceService,
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
         protected conferenceStore: Store<ConferenceState>,
@@ -69,9 +68,12 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         super(videoCallService, eventService, deviceTypeService, logger, translateService, userMediaService, focusService, conferenceStore);
         this.canToggleParticipantsPanel = true;
 
-        conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {
-            this.conferenceStatus = status;
-        });
+        this.conferenceStore
+            .select(ConferenceSelectors.getActiveConference)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(conference => {
+                this.conferenceStatus = conference.status;
+            });
 
         ldService
             .getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false)
@@ -106,11 +108,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     get canJoinHearingFromConsultation(): boolean {
-        return (
-            this.conferenceStatus?.newStatus === ConferenceStatus.InSession &&
-            this.participant?.status === ParticipantStatus.InConsultation &&
-            this.isHost
-        );
+        return JoinConsultationDecider.shouldJoinConsultation(this.conferenceStatus, this.participant?.status, this.isHost);
     }
 
     async joinHearingFromConsultation() {
