@@ -7,12 +7,20 @@ import { ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-cli
  */
 export function sortConferencesForVhoOfficer(conferences: ConferenceForVhOfficerResponse[]): ConferenceForVhOfficerResponse[] {
     return conferences.sort((x, y) => {
-        if (x === y) return 0;
-        if (y === null) return 1;
-        if (x === null) return -1;
+        if (x === y) {
+            return 0;
+        }
+        if (y === null) {
+            return 1;
+        }
+        if (x === null) {
+            return -1;
+        }
 
         const conferenceStatusCompare = compareStatus(x, y);
-        if (conferenceStatusCompare !== 0) return conferenceStatusCompare;
+        if (conferenceStatusCompare !== 0) {
+            return conferenceStatusCompare;
+        }
 
         if (x.status === 'Closed' && y.status === 'Closed') {
             return compareClosedConference(x, y);
