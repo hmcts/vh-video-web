@@ -18,6 +18,7 @@ import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
+import { sortConferencesForVhoOfficer } from './sort-conference.helper';
 
 @Injectable()
 export class VhoQueryService {
@@ -257,7 +258,7 @@ export class VhoQueryService {
         let foundConference = this.vhoConferences[index];
         foundConference = updateFn(foundConference);
         this.vhoConferences[index] = foundConference;
-        // todo: sort the list like SortConferenceForVhoOfficerHelper.cs?
+        this.vhoConferences = sortConferencesForVhoOfficer(this.vhoConferences);
     }
 
     private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponse[]): ParticipantForUserResponse[] {

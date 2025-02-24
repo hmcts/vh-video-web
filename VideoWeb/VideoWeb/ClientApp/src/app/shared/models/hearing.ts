@@ -86,9 +86,8 @@ export class Hearing extends HearingBase {
     }
 
     updateEndpoint(ver: VideoEndpointResponse) {
-        const conference = this.conference as ConferenceResponse;
-        const index = conference.endpoints.findIndex(x => x.id === ver.id);
-        conference.endpoints[index] = ver;
+        const index = this.conference.endpoints.findIndex(x => x.id === ver.id);
+        this.conference.endpoints[index] = ver;
     }
 
     retrieveHearingExpiryTime(): moment.Moment {
