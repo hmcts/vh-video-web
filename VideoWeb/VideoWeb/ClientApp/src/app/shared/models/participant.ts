@@ -2,7 +2,6 @@ import {
     LinkedParticipantResponse,
     ParticipantForUserResponse,
     ParticipantResponse,
-    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -76,10 +75,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         return this.fromAParticipantResponseType(participant);
     }
 
-    static fromParticipantResponseVho(participant: ParticipantResponseVho) {
-        return this.fromAParticipantResponseType(participant);
-    }
-
     static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): ParticipantModel {
         return new ParticipantModel(
             videoEndpointResponse.id,
@@ -96,7 +91,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         );
     }
 
-    private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
+    private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse) {
         return new ParticipantModel(
             participant.id,
             participant.name,
@@ -114,13 +109,13 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
 }
 
 export class Participant {
-    private participant: ParticipantResponseVho;
+    private participant: ParticipantResponse;
 
-    constructor(participant: ParticipantResponseVho) {
+    constructor(participant: ParticipantResponse) {
         this.participant = participant;
     }
 
-    get base(): ParticipantResponseVho {
+    get base(): ParticipantResponse {
         return this.participant;
     }
 

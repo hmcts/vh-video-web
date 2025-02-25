@@ -5,7 +5,6 @@ import {
     ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
-    ConferenceResponseVho,
     ConferenceStatus,
     EndpointStatus,
     InterpreterLanguageResponse,
@@ -16,7 +15,6 @@ import {
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
     ParticipantResponse,
-    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -52,9 +50,9 @@ export class ConferenceTestData {
         linked_participants: []
     });
 
-    asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponseVho {
+    asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponse {
         confResponse.endpoints = undefined;
-        return new ConferenceResponseVho(confResponse);
+        return new ConferenceResponse(confResponse);
     }
 
     getConferenceNow(): ConferenceForVhOfficerResponse {
@@ -769,9 +767,9 @@ export class ConferenceTestData {
             .build();
     }
 
-    getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantsObserverAndPanelMembers(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
             id: 'abd18c35-884d-430e-9569-415cafe30afb',
             name: 'Observer Test 1',
             status: ParticipantStatus.Available,
@@ -783,7 +781,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant2 = new ParticipantResponseVho({
+        const participant2 = new ParticipantResponse({
             id: '2ccddb9f-887c-47f9-82b3-896eec0a2595',
             name: 'Observer Test 2',
             representee: 'Chris Green',
@@ -796,7 +794,7 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant3 = new ParticipantResponseVho({
+        const participant3 = new ParticipantResponse({
             id: 'e698a672-8925-46e6-907d-21f1bc3b8bbf',
             name: 'Panel Mem 1',
             status: ParticipantStatus.Available,
@@ -814,9 +812,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantsWingers(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantsWingers(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
             id: 'c8c33015-d164-4a46-a5c9-6b58e892511b',
             name: 'Mr Chris Winger',
             status: ParticipantStatus.Available,
@@ -831,9 +829,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantsWitness(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantsWitness(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
             id: 'c8c33015-d164-4a46-a5c9-6b58e892511a',
             name: 'Mr Chris Witness',
             status: ParticipantStatus.Available,

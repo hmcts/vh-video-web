@@ -1,7 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { LoggedParticipantResponse, ParticipantResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
@@ -16,9 +16,9 @@ import { mapConferenceToVHConference } from '../../store/models/api-contract-to-
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
     let conference: VHConference;
-    let participantsObserverPanelMember: ParticipantResponseVho[];
-    let participantsWinger: ParticipantResponseVho[];
-    let participantsWitness: ParticipantResponseVho[];
+    let participantsObserverPanelMember: ParticipantResponse[];
+    let participantsWinger: ParticipantResponse[];
+    let participantsWitness: ParticipantResponse[];
 
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;

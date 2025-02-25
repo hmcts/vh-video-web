@@ -1,6 +1,6 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponseVho, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
@@ -22,7 +22,7 @@ describe('AdminImListComponent', () => {
     ]);
     let participants: ParticipantContactDetailsResponseVho[];
     let component: AdminImListComponent;
-    let conference: ConferenceResponseVho;
+    let conference: ConferenceResponse;
     let hearing: Hearing;
 
     const participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(

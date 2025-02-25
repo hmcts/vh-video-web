@@ -15,7 +15,6 @@ import {
     ParticipantHeartbeatResponse,
     ConferenceForHostResponse,
     UpdateParticipantDisplayNameRequest,
-    ConferenceResponseVho,
     HearingVenueResponse,
     VideoEndpointResponse,
     ParticipantForUserResponse
@@ -77,7 +76,7 @@ export class MockVideoWebService implements IVideoWebApiService {
         return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
     }
 
-    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponse> {
         console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
         return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
     }

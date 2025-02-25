@@ -1,8 +1,7 @@
 import {
     ConferenceResponse,
-    ConferenceResponseVho,
     ConferenceStatus,
-    ParticipantResponseVho,
+    ParticipantResponse,
     Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
@@ -13,9 +12,9 @@ export class Hearing extends HearingBase {
     participants: ReadonlyArray<Participant>;
 
     private _participants: Participant[];
-    private conference: ConferenceResponseVho;
+    private conference: ConferenceResponse;
 
-    constructor(conference: ConferenceResponseVho) {
+    constructor(conference: ConferenceResponse) {
         super();
         this.conference = conference;
         if (conference.participants) {
@@ -66,11 +65,11 @@ export class Hearing extends HearingBase {
         return this.conference.hearing_venue_name;
     }
 
-    getConference(): ConferenceResponseVho {
+    getConference(): ConferenceResponse {
         return this.conference;
     }
 
-    getParticipants(): ParticipantResponseVho[] {
+    getParticipants(): ParticipantResponse[] {
         return this.conference.participants;
     }
 
@@ -82,14 +81,13 @@ export class Hearing extends HearingBase {
         }
     }
 
-    updateParticipants(participants: ParticipantResponseVho[]) {
+    updateParticipants(participants: ParticipantResponse[]) {
         this.updateParticipantList(participants);
     }
 
     updateEndpoint(ver: VideoEndpointResponse) {
-        const conference = this.conference as ConferenceResponse;
-        const index = conference.endpoints.findIndex(x => x.id === ver.id);
-        conference.endpoints[index] = ver;
+        const index = this.conference.endpoints.findIndex(x => x.id === ver.id);
+        this.conference.endpoints[index] = ver;
     }
 
     retrieveHearingExpiryTime(): moment.Moment {
@@ -104,7 +102,7 @@ export class Hearing extends HearingBase {
         return this._participants.find(p => p.id === participantId);
     }
 
-    private updateParticipantList(participants: ParticipantResponseVho[]) {
+    private updateParticipantList(participants: ParticipantResponse[]) {
         this.conference.participants = participants;
         this._participants = this.conference.participants.map(p => new Participant(p));
         this.participants = this._participants;

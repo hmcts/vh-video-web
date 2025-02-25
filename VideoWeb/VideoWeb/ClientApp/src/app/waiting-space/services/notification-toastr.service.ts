@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -543,10 +543,10 @@ export class NotificationToastrService {
         let messageBody = '';
 
         hearings.forEach(h => {
-            const judge = h.judge_display_name;
+            const judge = h.conference.participants?.find(x => x.role === Role.Judge)?.display_name;
             const options = { hour: '2-digit', minute: '2-digit', hour12: false } as Intl.DateTimeFormatOptions;
-            const time = new Date(h.scheduled_date_time).toLocaleTimeString('en-GB', options);
-            const caseName = h.case_name;
+            const time = new Date(h.conference.scheduled_date_time).toLocaleTimeString('en-GB', options);
+            const caseName = h.conference.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
             if (judge) {

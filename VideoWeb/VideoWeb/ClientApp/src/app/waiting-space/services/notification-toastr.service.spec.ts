@@ -1,5 +1,11 @@
 import { ActiveToast } from 'ngx-toastr';
-import { ConsultationAnswer, EndpointStatus, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConsultationAnswer,
+    EndpointStatus,
+    ParticipantResponse,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -30,6 +36,8 @@ describe('NotificationToastrService', () => {
     let roomLabel: string;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+
+    const testConference = new ConferenceTestData().getConferenceDetailNow();
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -1580,26 +1588,41 @@ describe('NotificationToastrService', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
         const hearingsPassed: UpdatedAllocation[] = [];
-        let hearing: UpdatedAllocation = {
-            judge_display_name: 'Judge1',
+        const conf1 = new ConferenceResponse({
+            ...testConference,
             scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
             case_name: 'case name 1',
-            conference_id: 'conferenceId1',
-            allocated_to_cso_username: 'cso@email.com',
-            allocated_to_cso_display_name: 'cso display name',
-            allocated_to_cso_id: 'csoId'
-        };
-        hearingsPassed.push(hearing);
-        hearing = {
-            judge_display_name: 'Judge2',
-            scheduled_date_time: new Date(2023, 1, 1, 11, 0, 0, 0),
+            id: 'conferenceId1',
+            allocated_cso_username: 'cso@email.com',
+            allocated_cso: 'cso display name',
+            allocated_cso_id: 'csoId'
+        });
+        // update display_name for judge in participants list wit 'Judge2'
+        conf1.participants = conf1.participants.map(x => {
+            if (x.hearing_role === 'Judge') {
+                x.display_name = 'Judge1';
+            }
+            return x;
+        });
+        hearingsPassed.push({ conference: conf1 });
+
+        const conf2 = new ConferenceResponse({
+            ...testConference,
+            scheduled_date_time: new Date(2023, 1, 1, 10, 0, 0, 0),
             case_name: 'case name 2',
-            conference_id: 'conferenceId2',
-            allocated_to_cso_username: 'cso@email.com',
-            allocated_to_cso_display_name: 'cso display name',
-            allocated_to_cso_id: 'csoId'
-        };
-        hearingsPassed.push(hearing);
+            id: 'conferenceId2',
+            allocated_cso_username: 'cso@email.com',
+            allocated_cso: 'cso display name',
+            allocated_cso_id: 'csoId'
+        });
+        // update display_name for judge in participants list wit 'Judge2'
+        conf2.participants = conf2.participants.map(x => {
+            if (x.hearing_role === 'Judge') {
+                x.display_name = 'Judge2';
+            }
+            return x;
+        });
+        hearingsPassed.push({ conference: conf2 });
 
         const translatedMessageHeader = 'TranslatedMessageHeader';
         const translatedMessageClose = 'TranslatedMessageClose';
@@ -1642,7 +1665,7 @@ describe('NotificationToastrService', () => {
 
         it('should call toastr.show with the correct parameters without a judge', () => {
             toastrService.show.and.returnValue(mockToast);
-            hearingsPassed[0].judge_display_name = null;
+            hearingsPassed[0].conference.participants = hearingsPassed[0].conference.participants.filter(x => x.hearing_role !== 'Judge');
 
             // Act
             service.createAllocationNotificationToast(hearingsPassed);

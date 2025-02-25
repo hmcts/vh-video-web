@@ -4,11 +4,6 @@ import { HearingRoleHelper } from '../helpers/hearing-role-helper';
 import { ParticipantSummary } from './participant-summary';
 
 describe('ParticipantSummary', () => {
-    it('should throw an error if passing an invlid type', () => {
-        const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
-        expect(() => new ParticipantSummary(p)).toThrowError();
-    });
-
     it('should get base participant', () => {
         const p = new ConferenceTestData().getConferenceFuture().participants[0];
         const participant = new ParticipantSummary(p);

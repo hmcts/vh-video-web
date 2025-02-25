@@ -12,7 +12,6 @@ import {
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
-    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -578,7 +577,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     resolveParticipant(participantId: any): Participant {
         if (participantId === Guid.EMPTY) {
-            return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
+            return new Participant(new ParticipantResponse({ display_name: 'a Video Hearings Officer' }));
         } else {
             const participant = this.findParticipant(participantId);
 
