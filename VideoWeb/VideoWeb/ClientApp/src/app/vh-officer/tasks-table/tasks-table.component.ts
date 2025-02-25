@@ -11,6 +11,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     selector: 'app-tasks-table',
     templateUrl: './tasks-table.component.html',
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']

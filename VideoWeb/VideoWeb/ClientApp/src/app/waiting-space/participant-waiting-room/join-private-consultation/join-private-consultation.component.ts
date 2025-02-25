@@ -4,6 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
+    standalone: false,
     selector: 'app-join-private-consultation',
     templateUrl: './join-private-consultation.component.html',
     styleUrls: ['./join-private-consultation.component.scss']

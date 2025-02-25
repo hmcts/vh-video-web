@@ -3,6 +3,7 @@ import { YesNoPopupBaseDirective } from '../../shared/confirmation/yes-no-popup-
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
+    standalone: false,
     selector: 'app-confirm-leave-hearing-popup',
     templateUrl: './confirm-leave-hearing-popup.component.html',
     styleUrls: ['../../shared/confirmation/yes-no-popup-base.component.scss']

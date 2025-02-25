@@ -3,6 +3,7 @@ import { HearingsFilter, ListFilter } from '../../shared/models/hearings-filter'
 import { HearingsFilterOptionsService } from '../services/hearings-filter-options.service';
 
 @Component({
+    standalone: false,
     selector: 'app-vho-hearings-filter',
     templateUrl: './vho-hearings-filter.component.html',
     styleUrls: ['./vho-hearings-filter.component.scss', '../vho-global-styles.scss']

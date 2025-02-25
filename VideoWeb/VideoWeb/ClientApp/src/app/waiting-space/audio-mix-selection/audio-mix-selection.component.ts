@@ -15,6 +15,7 @@ import { convertStringToTranslationId } from 'src/app/shared/translation-id-conv
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
+    standalone: false,
     selector: 'app-audio-mix-selection',
     templateUrl: './audio-mix-selection.component.html',
     styleUrls: ['./audio-mix-selection.component.scss']

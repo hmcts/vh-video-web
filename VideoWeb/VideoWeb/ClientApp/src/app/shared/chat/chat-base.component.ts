@@ -14,6 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Component({
+    standalone: false,
     selector: 'app-chat-base-component',
     template: ''
 })

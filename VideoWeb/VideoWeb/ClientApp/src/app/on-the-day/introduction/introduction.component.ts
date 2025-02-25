@@ -15,6 +15,7 @@ import { HearingRole } from '../../waiting-space/models/hearing-role-model';
 import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     selector: 'app-introduction',
     templateUrl: './introduction.component.html',
     styleUrls: ['./introduction.component.scss']

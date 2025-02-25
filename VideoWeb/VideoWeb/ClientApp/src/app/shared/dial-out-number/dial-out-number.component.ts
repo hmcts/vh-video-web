@@ -5,6 +5,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
 @Component({
+    standalone: false,
     selector: 'app-dial-out-number',
     templateUrl: './dial-out-number.component.html',
     styleUrls: ['./dial-out-number.component.scss']

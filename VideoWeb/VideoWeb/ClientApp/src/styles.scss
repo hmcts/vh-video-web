@@ -1,10 +1,8 @@
-$govuk-global-styles: true;
+$govuk-suppressed-warnings: ('govuk-typography-scale-14');
 
-@import 'govuk-frontend/dist/govuk/all';
+@import 'govuk-frontend/dist/govuk/index';
 @import '@ministryofjustice/frontend/moj/all';
 @import '@ng-select/ng-select/themes/default.theme.css';
-@import 'main';
-
 .grey-btn {
   background-color: govuk-colour('light-grey');
   color: $govuk-text-colour;
@@ -67,8 +65,8 @@ $govuk-global-styles: true;
   padding: 20px;
   border: 1px solid $govuk-border-colour;
   width: 90%;
-  @media only screen and (min-width: $breakpoint-medium) {
-    width: 680px;
+  @media only screen and (min-width: map-get($govuk-breakpoints, 'tablet')) {
+    width: 50vw; // 50% of the viewport width
   }
 }
 
@@ -238,7 +236,7 @@ video {
 }
 
 .horizontal-spacer {
-  padding-bottom: rem(10px);
+  padding-bottom: 10px;
   border-bottom: 2px solid govuk-colour('mid-grey');
 }
 

@@ -27,8 +27,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-
-    let timer: jasmine.SpyObj<NodeJS.Timeout>;
     const testdata = new ConferenceTestData();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -66,7 +64,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             snapshot: { data: { loggedUser: logged } }
         };
 
-        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component = new IndividualParticipantStatusListComponent(
             consultationService,
             eventsService,

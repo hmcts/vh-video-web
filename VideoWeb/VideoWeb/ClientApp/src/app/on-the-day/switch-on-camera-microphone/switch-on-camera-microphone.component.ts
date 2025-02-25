@@ -15,6 +15,7 @@ import { catchError } from 'rxjs/operators';
 import { NEVER } from 'rxjs';
 
 @Component({
+    standalone: false,
     selector: 'app-switch-on-camera-microphone',
     templateUrl: './switch-on-camera-microphone.component.html'
 })

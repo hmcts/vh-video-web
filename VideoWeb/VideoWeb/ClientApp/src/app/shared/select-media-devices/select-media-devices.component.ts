@@ -13,6 +13,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Component({
+    standalone: false,
     selector: 'app-select-media-devices',
     templateUrl: './select-media-devices.component.html',
     styleUrls: ['./select-media-devices.component.scss']

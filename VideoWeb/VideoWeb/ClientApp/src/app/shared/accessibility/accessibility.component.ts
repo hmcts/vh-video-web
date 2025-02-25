@@ -3,6 +3,7 @@ import { vhContactDetails } from '../contact-information';
 import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 
 @Component({
+    standalone: false,
     selector: 'app-accessibility',
     templateUrl: './accessibility.component.html',
     styleUrls: ['./accessibility.component.scss']

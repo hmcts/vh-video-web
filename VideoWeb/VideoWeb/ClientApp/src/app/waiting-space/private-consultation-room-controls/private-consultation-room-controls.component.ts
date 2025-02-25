@@ -20,6 +20,7 @@ import { VHConference } from '../store/models/vh-conference';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
     styleUrls: ['./private-consultation-room-controls.component.scss'],

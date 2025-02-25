@@ -23,6 +23,7 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/w
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
 @Component({
+    standalone: false,
     selector: 'app-self-test',
     templateUrl: './self-test.component.html',
     styleUrls: ['./self-test.component.scss']

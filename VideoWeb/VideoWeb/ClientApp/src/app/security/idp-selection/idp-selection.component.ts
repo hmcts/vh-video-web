@@ -8,6 +8,7 @@ import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-dark
 import { IdpSelector } from './models/idp-selection.model';
 
 @Component({
+    standalone: false,
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })

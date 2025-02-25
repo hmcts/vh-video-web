@@ -12,6 +12,7 @@ import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-mes
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
 
 @Component({
+    standalone: false,
     selector: 'app-unread-messages',
     templateUrl: '../unread-messages-shared/unread-messages.component.html',
     styleUrls: ['../unread-messages-shared/unread-messages.component.scss']

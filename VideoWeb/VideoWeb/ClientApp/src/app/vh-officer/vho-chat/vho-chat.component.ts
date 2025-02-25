@@ -27,6 +27,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Component({
+    standalone: false,
     selector: 'app-vho-chat',
     templateUrl: './vho-chat.component.html',
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']

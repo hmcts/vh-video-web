@@ -6,6 +6,7 @@ import { HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-base.component';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-network-health',
     templateUrl: './participant-network-health.component.html',
     styleUrls: ['./participant-network-health.component.scss']

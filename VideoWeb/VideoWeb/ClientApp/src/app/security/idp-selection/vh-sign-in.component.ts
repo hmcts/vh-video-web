@@ -5,6 +5,7 @@ import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
 
 @Component({
+    standalone: false,
     selector: 'app-vh-sign-in',
     template: '',
     styles: []

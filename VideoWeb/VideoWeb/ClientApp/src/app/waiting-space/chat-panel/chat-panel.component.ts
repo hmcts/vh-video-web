@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Component({
+    standalone: false,
     selector: 'app-chat-panel',
     templateUrl: './chat-panel.component.html',
     styleUrls: ['./chat-panel.component.scss'],
