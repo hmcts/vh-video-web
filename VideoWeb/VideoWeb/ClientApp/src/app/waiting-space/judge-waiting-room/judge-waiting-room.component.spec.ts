@@ -460,6 +460,34 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
             });
 
+            it('Should not display audio alert if wowza listener is disconnected, but previously showed the alert last time a connection was handled', () => {
+                component.conference.status = ConferenceStatus.InSession;
+                component.conference.audio_recording_required = true;
+
+                component.ngOnInit();
+                wowzaAgentConnectionState$.next(false);
+                // trigger second time
+                wowzaAgentConnectionState$.next(false);
+
+                expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
+                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
+            });
+
+            // This test should validate the scenario above isnt a false positive
+            it('Should display audio alert again if wowza listener was disconnected once, reconnected ok, but then disconnected a second time', () => {
+                component.conference.status = ConferenceStatus.InSession;
+                component.conference.audio_recording_required = true;
+
+                component.ngOnInit();
+                wowzaAgentConnectionState$.next(false);
+                wowzaAgentConnectionState$.next(false);
+                wowzaAgentConnectionState$.next(true); // reconnected ok, so reset monitoring
+                wowzaAgentConnectionState$.next(false);
+
+                expect(audioRecordingServiceSpy.getWowzaAgentConnectionState).toHaveBeenCalled();
+                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(2);
+            });
+
             it('Should not display audio alert if wowza listener is disconnected, but conference is not in session', () => {
                 component.audioErrorRetryToast = null;
                 component.conference.audio_recording_required = true;

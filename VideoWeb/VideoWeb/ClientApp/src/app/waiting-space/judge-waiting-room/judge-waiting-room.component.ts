@@ -59,6 +59,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private recordingPaused: boolean;
+    private previouslyFailedToConnect: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -490,12 +491,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
         }
         this.continueWithNoRecording = false;
+        this.previouslyFailedToConnect = false;
     }
 
     private onWowzaDisconnected() {
-        if (this.conference.audio_recording_required && this.conference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+        if (
+            this.conference.audio_recording_required &&
+            this.conference.status === ConferenceStatus.InSession &&
+            !this.recordingPaused &&
+            // If we have previously failed to connect, we don't want to spam the alert if the supplier keeps creating a new agent (i.e. the wowza server is off)
+            !this.previouslyFailedToConnect
+        ) {
             if (this.audioRecordingService.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+                this.previouslyFailedToConnect = true;
             } else {
                 this.logWowzaAlert();
                 this.showAudioRecordingRestartAlert();
