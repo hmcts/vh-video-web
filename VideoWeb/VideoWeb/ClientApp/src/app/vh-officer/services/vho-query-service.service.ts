@@ -60,6 +60,7 @@ export class VhoQueryService {
         this.interval = window.setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
+        this.startEventSubscriptions();
     }
 
     startEventSubscriptions() {
