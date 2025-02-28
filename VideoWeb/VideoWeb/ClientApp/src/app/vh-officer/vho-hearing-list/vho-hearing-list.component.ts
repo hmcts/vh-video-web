@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
@@ -40,8 +40,8 @@ export class VhoHearingListComponent {
         return conference.getParticipants();
     }
 
-    mapToHearing(conference: HearingSummary, participants: ParticipantResponseVho[] = null): Hearing {
-        const hearing = new ConferenceResponseVho({
+    mapToHearing(conference: HearingSummary, participants: ParticipantResponse[] = null): Hearing {
+        const hearing = new ConferenceResponse({
             id: conference.id,
             scheduled_date_time: conference.scheduledDateTime,
             status: conference.status,
@@ -53,7 +53,7 @@ export class VhoHearingListComponent {
     mapToHearingWithParticipants(conference: HearingSummary): Hearing {
         const participants = conference
             .getParticipants()
-            .map(x => new ParticipantResponseVho({ id: x.id, display_name: x.displayName, role: x.role }));
+            .map(x => new ParticipantResponse({ id: x.id, display_name: x.displayName, role: x.role }));
         return this.mapToHearing(conference, participants);
     }
 

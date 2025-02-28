@@ -4,9 +4,9 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ClientSettingsResponse,
-    ConferenceResponseVho,
+    ConferenceResponse,
     ConferenceStatus,
-    ParticipantResponseVho,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     Supplier,
@@ -164,7 +164,7 @@ describe('CommandCentreComponent - Events', () => {
 
     it('should selected hearing status when conference status message is received for currently selected conference', () => {
         component.setupEventHubSubscribers();
-        const clone: ConferenceResponseVho = Object.assign(conferenceDetail);
+        const clone: ConferenceResponse = Object.assign(conferenceDetail);
         component.selectedHearing = new Hearing(clone);
         component.selectedHearing.getConference().status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(component.selectedHearing.id, ConferenceStatus.Paused);
@@ -201,7 +201,7 @@ describe('CommandCentreComponent - Events', () => {
         const conferenceId = hearing.id;
         const newList = hearing.getParticipants();
         newList.push(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: '123New',
                 name: 'new participant',
                 role: Role.JudicialOfficeHolder,
@@ -288,7 +288,7 @@ describe('CommandCentreComponent - Events', () => {
         const conferenceId = hearing.id;
         const newList = hearing.getParticipants();
         newList.push(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: '123New',
                 name: 'new participant',
                 role: Role.JudicialOfficeHolder,
@@ -346,7 +346,7 @@ describe('CommandCentreComponent - Events', () => {
 
         it('should not create an allocation toast when allocation hearings message is received and hearing is not allocated to the logged in user', () => {
             const hearingDetails = createUpdatedAllocationMessage();
-            hearingDetails.allocated_to_cso_username = 'different-user@email.com';
+            hearingDetails.conference.allocated_cso_username = 'different-user@email.com';
             const message = new NewAllocationMessage([hearingDetails]);
 
             newAllocationMessageSubjectMock.next(message);
@@ -356,14 +356,12 @@ describe('CommandCentreComponent - Events', () => {
         });
 
         function createUpdatedAllocationMessage(): UpdatedAllocation {
+            const conf = new ConferenceResponse({ ...conference });
+            conf.allocated_cso_username = userData.preferred_username;
+            conf.allocated_cso = userData.name;
+            conf.allocated_cso_id = Guid.create().toString();
             const message: UpdatedAllocation = {
-                case_name: 'case name',
-                judge_display_name: 'judge fudge',
-                scheduled_date_time: new Date(),
-                conference_id: Guid.create().toString(),
-                allocated_to_cso_username: userData.preferred_username,
-                allocated_to_cso_display_name: userData.name,
-                allocated_to_cso_id: Guid.create().toString()
+                conference: conf
             };
             return message;
         }

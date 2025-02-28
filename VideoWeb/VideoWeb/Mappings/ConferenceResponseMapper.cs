@@ -29,7 +29,8 @@ public static class ConferenceResponseMapper
             IngestUrl = conference.IngestUrl,
             Supplier = conference.Supplier,
             AllocatedCso = conference.AllocatedCso,
-            AllocatedCsoId = conference.AllocatedCsoId
+            AllocatedCsoId = conference.AllocatedCsoId,
+            AllocatedCsoUsername = conference.AllocatedCsoUsername,
         };
         
         if (conference.MeetingRoom != null)

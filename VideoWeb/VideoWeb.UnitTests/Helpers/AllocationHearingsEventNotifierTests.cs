@@ -60,13 +60,10 @@ internal class AllocationHearingsEventNotifierTests
         _eventHelper.EventHubClientMock.Verify(
             x => x.AllocationsUpdated(It.Is<List<UpdatedAllocationDto>>(list => 
                 list.Count == 1 &&
-                list[0].ConferenceId == expected[0].ConferenceId &&
-                list[0].ScheduledDateTime == expected[0].ScheduledDateTime &&
-                list[0].CaseName == expected[0].CaseName &&
-                list[0].JudgeDisplayName == expected[0].JudgeDisplayName &&
-                list[0].AllocatedToCsoUsername == expected[0].AllocatedToCsoUsername &&
-                list[0].AllocatedToCsoDisplayName == expected[0].AllocatedToCsoDisplayName &&
-                list[0].AllocatedToCsoId == expected[0].AllocatedToCsoId)),
+                list[0].Conference.Id == expected[0].Conference.Id &&
+                list[0].Conference.ScheduledDateTime == expected[0].Conference.ScheduledDateTime &&
+                list[0].Conference.CaseName == expected[0].Conference.CaseName &&
+                list[0].Conference.AllocatedCsoUsername == expected[0].Conference.AllocatedCsoUsername)),
             Times.Exactly(1));
     }
     

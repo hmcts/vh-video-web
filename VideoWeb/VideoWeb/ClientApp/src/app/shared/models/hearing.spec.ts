@@ -1,6 +1,6 @@
 import { Hearing } from './hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ConferenceStatus, ParticipantResponseVho, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 
 describe('Hearing', () => {
     const testData = new ConferenceTestData();
@@ -28,7 +28,7 @@ describe('Hearing', () => {
         const hearing = new Hearing(conference);
         const newList = hearing.getParticipants();
         newList.push(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: '123',
                 name: 'new participant',
                 role: Role.JudicialOfficeHolder,

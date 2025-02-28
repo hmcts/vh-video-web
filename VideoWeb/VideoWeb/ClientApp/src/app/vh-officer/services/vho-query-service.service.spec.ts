@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ApiClient, ConferenceForVhOfficerResponse, ParticipantForUserResponse } from '../../services/clients/api-client';
+import { ApiClient, ConferenceForVhOfficerResponse } from '../../services/clients/api-client';
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
@@ -8,14 +8,17 @@ import { take, takeLast } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
-import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
+import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
+import { eventsServiceSpy, getHearingDetailsUpdatedMock, newAllocationMessageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
     let service: VhoQueryService;
     let apiClient: jasmine.SpyObj<ApiClient>;
-    let eventService: jasmine.SpyObj<EventsService>;
+    const newAllocationMessageSubject$ = newAllocationMessageSubjectMock;
+    const hearingDetailsUpdatedMessageSubject$ = getHearingDetailsUpdatedMock;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -26,14 +29,10 @@ describe('VhoQueryService', () => {
             'getHeartbeatDataForParticipant',
             'getActiveConferences'
         ]);
-        eventService = jasmine.createSpyObj<EventsService>('EventsService', [], {
-            getHearingDetailsUpdated: jasmine.createSpy().and.returnValue(of({} as HearingDetailsUpdatedMessage))
-        });
     });
 
-    service = new VhoQueryService(apiClient, eventService);
     beforeEach(() => {
-        service = new VhoQueryService(apiClient, eventService);
+        service = new VhoQueryService(apiClient, eventsServiceSpy);
         apiClient.getConferencesForVhOfficer.calls.reset();
     });
 
@@ -43,7 +42,6 @@ describe('VhoQueryService', () => {
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
         service.startQuery(venueNames, null, false, false);
-        tick();
         expect(service.venueNames).toBe(venueNames);
         expect(setInterval).toHaveBeenCalled();
     }));
@@ -279,144 +277,161 @@ describe('VhoQueryService', () => {
         expect(actual.includeUnallocated).toEqual(filter.includeUnallocated);
     });
 
-    it('should update case name and case number conference when hearing detail message contains a conference', () => {
-        const conference = new ConferenceForVhOfficerResponse({
-            id: '123',
-            case_name: 'Case Name',
-            case_number: '12345',
-            case_type: 'Civil',
-            scheduled_date_time: new Date(),
-            participants: [],
-            hearing_venue_name: 'Venue 1',
-            scheduled_duration: 60,
-            closed_date_time: null,
-            allocated_cso: 'CSO1'
+    describe('handleAllocationUpdated', () => {
+        describe('CSO filter selected', () => {
+            beforeEach(() => {
+                const data = testData.getTestData(); // 3 conferences
+                data[0].allocated_cso = 'test-cso-1';
+                data[0].allocated_cso_id = 'test-cso-1';
+
+                data[1].allocated_cso = 'test-cso-2';
+                data[1].allocated_cso_id = 'test-cso-2';
+
+                data[2].allocated_cso = 'test-cso-2';
+                data[2].allocated_cso_id = 'test-cso-2';
+                service.allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+                service.venueNames = [];
+                service['vhoConferences'] = data;
+                service.startEventSubscriptions();
+            });
+
+            afterEach(() => {
+                service.stopQuery();
+            });
+
+            it('should add conference to list when conference allocated to filtered cso', fakeAsync(() => {
+                const conference = new ConferenceForVhOfficerResponse({
+                    ...testData.getConferenceDetailNow(),
+                    id: '123',
+                    case_name: 'Case Name',
+                    case_number: '12345',
+                    case_type: 'Civil',
+                    scheduled_date_time: new Date(),
+                    hearing_venue_name: 'Venue 1',
+                    scheduled_duration: 60,
+                    closed_date_time: null,
+                    allocated_cso: 'test-cso-1',
+                    allocated_cso_id: 'test-cso-1'
+                });
+
+                const updatedAllocation: UpdatedAllocation = {
+                    conference: conference
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                newAllocationMessageSubject$.next(message);
+                tick();
+
+                expect(service['vhoConferences'].length).toBe(4);
+            }));
+
+            it('should update conference in list when conference is allocated to filtered cso', fakeAsync(() => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.allocated_cso = 'test-cso-2';
+                updatedConference.allocated_cso_id = 'test-cso-2';
+
+                const updatedAllocation: UpdatedAllocation = {
+                    conference: updatedConference
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                newAllocationMessageSubject$.next(message);
+                tick();
+
+                expect(service['vhoConferences'].length).toBe(3);
+                const count = service['vhoConferences'].filter(x => x.allocated_cso === 'test-cso-2').length;
+                expect(count).toBe(3);
+            }));
+
+            it('should remove conference from list when conference is not allocated to filtered cso', fakeAsync(() => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.allocated_cso = 'test-cso-3';
+                updatedConference.allocated_cso_id = 'test-cso-3';
+
+                const updatedAllocation: UpdatedAllocation = {
+                    conference: updatedConference
+                };
+                const message = new NewAllocationMessage([updatedAllocation]);
+                newAllocationMessageSubject$.next(message);
+                tick();
+
+                expect(service['vhoConferences'].length).toBe(2);
+                const count = service['vhoConferences'].filter(x => x.allocated_cso === 'test-cso-3').length;
+                expect(count).toBe(0);
+            }));
         });
-        const originalConference = new ConferenceForVhOfficerResponse({
-            id: '123',
-            case_name: 'Old Case Name',
-            case_number: '54321',
-            case_type: 'Criminal',
-            scheduled_date_time: new Date(),
-            participants: [],
-            hearing_venue_name: 'Venue 2',
-            scheduled_duration: 30,
-            closed_date_time: null,
-            allocated_cso: 'CSO1'
-        });
-
-        service['vhoConferences'] = [originalConference];
-        service['vhoConferencesSubject'].next([originalConference]);
-
-        const message = new HearingDetailsUpdatedMessage(conference);
-        service.handleHearingDetailUpdate(message);
-
-        expect(service['vhoConferences'][0].case_name).toBe('Case Name');
-        expect(service['vhoConferences'][0].case_number).toBe('12345');
     });
 
-    it('should update judge conference when hearing detail message contains a conference', () => {
-        const conference = new ConferenceForVhOfficerResponse({
-            id: '123',
-            case_name: 'Case Name',
-            case_number: '12345',
-            case_type: 'Civil',
-            scheduled_date_time: new Date(),
-            participants: [
-                new ParticipantForUserResponse({
+    describe('handleHearingDetailUpdate', () => {
+        describe('venue filter selected', () => {
+            beforeEach(() => {
+                const data = testData.getTestData(); // 3 conferences
+                data[0].hearing_venue_name = 'hearing-venue-1';
+                data[1].hearing_venue_name = 'hearing-venue-2';
+                data[2].hearing_venue_name = 'hearing-venue-2';
+                service.allocatedCsoIds = [];
+                service.venueNames = ['hearing-venue-1', 'hearing-venue-2'];
+                service['vhoConferences'] = data;
+                service.startEventSubscriptions();
+            });
+
+            afterEach(() => {
+                service.stopQuery();
+            });
+
+            it('should add conference to list when filtered venue includes conference', fakeAsync(() => {
+                const conference = new ConferenceForVhOfficerResponse({
+                    ...testData.getConferenceDetailNow(),
                     id: '123',
-                    name: 'Judge Test New',
-                    hearing_role: 'Judge',
-                    representee: null
-                })
-            ],
-            hearing_venue_name: 'Venue 1',
-            scheduled_duration: 60,
-            closed_date_time: null,
-            allocated_cso: 'CSO1'
-        });
-        const originalConference = new ConferenceForVhOfficerResponse({
-            id: '123',
-            case_name: 'Old Case Name',
-            case_number: '54321',
-            case_type: 'Criminal',
-            scheduled_date_time: new Date(),
-            participants: [
-                new ParticipantForUserResponse({
-                    id: '123',
-                    name: 'Judge Test',
-                    hearing_role: 'Judge',
-                    representee: null
-                })
-            ],
-            hearing_venue_name: 'Venue 2',
-            scheduled_duration: 30,
-            closed_date_time: null,
-            allocated_cso: 'CSO1'
-        });
+                    case_name: 'Case Name',
+                    case_number: '12345',
+                    case_type: 'Civil',
+                    scheduled_date_time: new Date(),
+                    hearing_venue_name: 'hearing-venue-1',
+                    scheduled_duration: 60,
+                    closed_date_time: null
+                });
 
-        service['vhoConferences'] = [originalConference];
-        service['vhoConferencesSubject'].next([originalConference]);
+                const message = new HearingDetailsUpdatedMessage(conference);
+                hearingDetailsUpdatedMessageSubject$.next(message);
+                tick();
 
-        const message = new HearingDetailsUpdatedMessage(conference);
-        service.handleHearingDetailUpdate(message);
+                expect(service['vhoConferences'].length).toBe(4);
+            }));
 
-        expect(service['vhoConferences'][0].case_name).toBe('Case Name');
-        expect(service['vhoConferences'][0].participants[0].name).toBe('Judge Test New');
-    });
+            it('should update conference in list when filtered venue includes conference', fakeAsync(() => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.hearing_venue_name = 'hearing-venue-2';
+                updatedConference.case_name = 'Case Name Updated';
+                updatedConference.case_number = 'Case Number Updated';
+                updatedConference.scheduled_date_time = new Date();
+                updatedConference.scheduled_duration = 9999;
 
-    it('should filter conferences based on selected court rooms in venueNames', () => {
-        const conference1 = new ConferenceForVhOfficerResponse({
-            id: '1',
-            case_name: 'Case 1',
-            case_number: '12345',
-            case_type: 'Civil',
-            scheduled_date_time: new Date(),
-            participants: [
-                new ParticipantForUserResponse({
-                    id: '1',
-                    name: 'Judge 1',
-                    hearing_role: 'Judge',
-                    representee: null
-                })
-            ],
-            hearing_venue_name: 'Venue 1',
-            scheduled_duration: 60,
-            closed_date_time: null,
-            allocated_cso: 'CSO1'
-        });
+                const message = new HearingDetailsUpdatedMessage(updatedConference);
+                hearingDetailsUpdatedMessageSubject$.next(message);
+                tick();
 
-        const conference2 = new ConferenceForVhOfficerResponse({
-            id: '2',
-            case_name: 'Case 2',
-            case_number: '54321',
-            case_type: 'Criminal',
-            scheduled_date_time: new Date(),
-            participants: [
-                new ParticipantForUserResponse({
-                    id: '2',
-                    name: 'Judge 2',
-                    hearing_role: 'Judge',
-                    representee: null
-                })
-            ],
-            hearing_venue_name: 'Venue 2',
-            scheduled_duration: 30,
-            closed_date_time: null,
-            allocated_cso: 'CSO2'
-        });
+                expect(service['vhoConferences'].length).toBe(3);
+                const count = service['vhoConferences'].filter(x => x.hearing_venue_name === 'hearing-venue-2').length;
+                expect(count).toBe(3);
 
-        service['vhoConferences'] = [conference1, conference2];
-        service['vhoConferencesSubject'].next([conference1, conference2]);
+                const updated = service['vhoConferences'].find(x => x.id === updatedConference.id);
+                expect(updated.case_name).toBe('Case Name Updated');
+                expect(updated.case_number).toBe('Case Number Updated');
+                expect(updated.scheduled_date_time).toEqual(updatedConference.scheduled_date_time);
+                expect(updated.scheduled_duration).toBe(9999);
+            }));
 
-        service.venueNames = ['Venue 1'];
+            it('should remove conference from list when filtered venue does not include conference', fakeAsync(() => {
+                const updatedConference = new ConferenceForVhOfficerResponse({ ...service['vhoConferences'][0] });
+                updatedConference.hearing_venue_name = 'hearing-venue-3';
 
-        const message = new HearingDetailsUpdatedMessage(conference1);
-        service.handleHearingDetailUpdate(message);
+                const message = new HearingDetailsUpdatedMessage(updatedConference);
+                hearingDetailsUpdatedMessageSubject$.next(message);
+                tick();
 
-        service.getQueryResults().subscribe(result => {
-            expect(result.length).toBe(1);
-            expect(result[0].hearing_venue_name).toBe('Venue 1');
+                expect(service['vhoConferences'].length).toBe(2);
+                const count = service['vhoConferences'].filter(x => x.hearing_venue_name === 'hearing-venue-3').length;
+                expect(count).toBe(0);
+            }));
         });
     });
 });
