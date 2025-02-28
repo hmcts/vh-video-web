@@ -77,7 +77,18 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedConference: VHConference = { ...conference, status: status, countdownComplete: null };
+        let updatedParticipants = conference.participants;
+        if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
+            // reset the transfer direction for all participants
+            updatedParticipants = conference.participants.map(p => ({ ...p, transferDirection: undefined }));
+        }
+
+        const updatedConference: VHConference = {
+            ...conference,
+            status: status,
+            countdownComplete: null,
+            participants: updatedParticipants
+        };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.upsertPexipConference, (state, { pexipConference: conference }) => ({ ...state, pexipConference: conference })),
