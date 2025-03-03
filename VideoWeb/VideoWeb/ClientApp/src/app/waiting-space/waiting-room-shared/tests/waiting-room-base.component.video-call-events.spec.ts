@@ -1,9 +1,7 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -59,17 +57,6 @@ import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
-    const mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-        'HearingVenueFlagsService',
-        ['setHearingVenueIsScottish'],
-        ['hearingVenueIsScottish$']
-    );
-    const hearingVenueIsScottishSubject = new BehaviorSubject(false);
-    getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
-
-    const mockHeartbeat = {
-        kill: jasmine.createSpy()
-    };
 
     const onSetupSubject = onSetupSubjectMock;
     const onConnectedSubject = onConnectedSubjectMock;
@@ -106,7 +93,6 @@ describe('WaitingRoomComponent Video Call', () => {
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,
