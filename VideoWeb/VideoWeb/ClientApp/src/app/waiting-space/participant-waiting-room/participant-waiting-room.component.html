@@ -200,7 +200,7 @@
 
         <div *ngIf="!isOrHasWitnessLink() && hearing.isDelayed()">
           <h2 class="govuk-heading-m">{{ 'participant-waiting-room.hearing-status-messages.delayed-title' | translate }}</h2>
-          <p>{{ 'participant-waiting-room.hearing-status-messages.delayed-body' | translate }}</p>
+          <p class="govuk-body">{{ 'participant-waiting-room.hearing-status-messages.delayed-body' | translate }}</p>
         </div>
 
         <div *ngIf="!isOrHasWitnessLink() && hearing.isClosed()">
@@ -213,7 +213,7 @@
 
         <div *ngIf="hearing.isSuspended()">
           <h2 class="govuk-heading-m">{{ 'participant-waiting-room.hearing-status-messages.suspended-title' | translate }}</h2>
-          <p>{{ 'participant-waiting-room.hearing-status-messages.suspended-body' | translate }}</p>
+          <p class="govuk-body">{{ 'participant-waiting-room.hearing-status-messages.suspended-body' | translate }}</p>
         </div>
 
         <div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && hearing.isInSession()">
