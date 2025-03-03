@@ -75,7 +75,7 @@
                 </div>
             </div>
             <ng-container  *ngIf="availableMicrophoneDevices.length < 1 && availableMicrophoneDevices.length < 1">
-                <p>{{ 'error-camera-microphone.camera-mic-cannot-be-found' | translate }}</p>
+                <p class="govuk-body">{{ 'error-camera-microphone.camera-mic-cannot-be-found' | translate }}</p>
             </ng-container>
             <div class="govuk-grid-row">
                 <div *ngIf="showAudioOnlySetting" class="govuk-grid-column-full">

@@ -13,3 +13,4 @@ export const getParticipantByPexipId = (pexipId: string) =>
     createSelector(getParticipants, participants => participants?.find(p => p?.pexipInfo?.uuid === pexipId));
 export const getEndpointByPexipId = (pexipId: string) =>
     createSelector(getEndpoints, endpoints => endpoints?.find(e => e?.pexipInfo?.uuid === pexipId));
+export const getConsultationStatuses = createSelector(activeConferenceFeature, state => state?.consultationStatuses);

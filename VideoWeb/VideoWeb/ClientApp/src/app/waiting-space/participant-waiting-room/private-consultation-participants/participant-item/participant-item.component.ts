@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
-import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
+import { VHConsultationCallStatus, VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 
 @Component({
     standalone: false,
@@ -11,7 +11,7 @@ import { VHEndpoint, VHParticipant } from '../../../store/models/vh-conference';
 export class ParticipantItemComponent {
     @Input() participant: VHParticipant;
     @Input() interpreter: VHParticipant;
-    @Input() participantCallStatuses: any = {};
+    @Input() participantCallStatuses: VHConsultationCallStatus[] = [];
     @Input() roomLabel: string;
     @Input() conferenceId: string;
     @Input() canInvite: boolean;

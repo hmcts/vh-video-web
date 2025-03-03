@@ -25,7 +25,7 @@
       </div>
     </div>
   
-    <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
+    <p class="govuk-body">{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
 
     <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
       <p *ngIf="error.notEmptyOrWhitespaceError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-empty' | translate }}</p>
@@ -40,7 +40,7 @@
       <p *ngIf="error.roleError" class="govuk-error-message">{{ 'quick-participant-landing-page.role-error' | translate }}</p>
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <p>{{ 'quick-participant-landing-page.role-label' | translate }}</p>
+          <p class="govuk-body">{{ 'quick-participant-landing-page.role-label' | translate }}</p>
         </legend>
         <div *ngFor="let quickLinkParticipantRole of quickLinkParticipantRoles" class="govuk-radios__item">
           <input
