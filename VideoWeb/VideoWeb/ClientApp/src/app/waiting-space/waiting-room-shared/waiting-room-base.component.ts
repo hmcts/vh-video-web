@@ -418,60 +418,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         );
 
         this.eventHubSubscription$.add(
-            this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                const requestedFor = this.resolveParticipant(message.requestedFor);
-                if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
-                    // A request for you to join a consultation room
-                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`, message);
-
-                    const requestedBy = this.resolveParticipant(message.requestedBy);
-                    const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                    const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
-
-                    const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
-                    invitation.invitationId = message.invitationId;
-                    invitation.invitedByName = requestedBy.displayName;
-
-                    // if the invitation has already been accepted; resend the response with the updated invitation id
-                    if (invitation.answer === ConsultationAnswer.Accepted) {
-                        this.consultationService.respondToConsultationRequest(
-                            message.conferenceId,
-                            message.invitationId,
-                            message.requestedBy,
-                            message.requestedFor,
-                            invitation.answer,
-                            message.roomLabel
-                        );
-                    }
-
-                    if (invitation.answer !== ConsultationAnswer.Accepted) {
-                        invitation.answer = ConsultationAnswer.None;
-                        const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
-                            message.roomLabel,
-                            message.conferenceId,
-                            invitation,
-                            requestedBy,
-                            requestedFor,
-                            roomParticipants,
-                            roomEndpoints,
-                            this.participant.status !== ParticipantStatus.Available
-                        );
-
-                        if (consultationInviteToast) {
-                            invitation.activeToast = consultationInviteToast;
-                        }
-                    }
-
-                    for (const linkedParticipant of this.participant.linked_participants) {
-                        if (invitation.linkedParticipantStatuses[linkedParticipant.linked_id] === undefined) {
-                            invitation.linkedParticipantStatuses[linkedParticipant.linked_id] = false;
-                        }
-                    }
-                }
-            })
-        );
-
-        this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
             })
