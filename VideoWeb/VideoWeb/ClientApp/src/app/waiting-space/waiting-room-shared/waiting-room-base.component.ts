@@ -22,7 +22,6 @@ import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -34,7 +33,6 @@ import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
-import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
 import {
@@ -60,7 +58,7 @@ import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
@@ -85,7 +83,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     vhConference: VHConference;
     vhParticipant: VHParticipant;
     participantEndpoints: VHEndpoint[] = [];
-    conferenceRooms: Room[] = [];
+    conferenceRooms: VHRoom[] = [];
 
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
@@ -150,7 +148,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -173,8 +170,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.phoneNumber$ = this.vhConference.isVenueScottish
                     ? of(this.contactDetails.scotland.phoneNumber)
                     : of(this.contactDetails.englandAndWales.phoneNumber);
-                this.hearingVenueFlagsService.setHearingVenueIsScottish(this.vhConference.isVenueScottish);
             });
+
+        this.store
+            .select(ConferenceSelectors.getAvailableRooms)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(rooms => (this.conferenceRooms = rooms));
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
@@ -303,7 +304,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
-            this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
 
             this.participant = this.getLoggedParticipant();
@@ -420,23 +420,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
-            })
-        );
-
-        this.eventHubSubscription$.add(
-            this.eventService.getRoomUpdate().subscribe(async room => {
-                const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
-                if (existingRoom) {
-                    existingRoom.locked = room.locked;
-                    this.conference.participants
-                        .filter(p => p.current_room?.label === existingRoom.label)
-                        .forEach(p => (p.current_room.locked = existingRoom.locked));
-                    this.conference.endpoints
-                        .filter(p => p.current_room?.label === existingRoom.label)
-                        .forEach(p => (p.current_room.locked = existingRoom.locked));
-                } else {
-                    this.conferenceRooms.push(room);
-                }
             })
         );
 
@@ -1211,14 +1194,14 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     private handleMyConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
-        if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
-            this.hasTriedToLeaveConsultation = false;
-            this.onConsultationAccepted(roomLabel);
-        } else if (answer === ConsultationAnswer.Transferring) {
-            this.onTransferingToConsultation(roomLabel);
-        } else if (requestedFor === responseInitiatorId) {
-            this.onConsultationRejected(roomLabel);
-        }
+        // if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
+        //     this.hasTriedToLeaveConsultation = false;
+        //     this.onConsultationAccepted(roomLabel);
+        // } else if (answer === ConsultationAnswer.Transferring) {
+        //     this.onTransferingToConsultation(roomLabel);
+        // } else if (requestedFor === responseInitiatorId) {
+        //     this.onConsultationRejected(roomLabel);
+        // }
     }
 
     private setTitle(roomTransfer: RoomTransfer): void {
@@ -1293,7 +1276,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     private setConference(conferenceResponse: ConferenceResponse) {
-        this.hearingVenueFlagsService.setHearingVenueIsScottish(conferenceResponse.hearing_venue_is_scottish);
         this.errorCount = 0;
         this.loadingData = false;
         this.countdownComplete = conferenceResponse.status === ConferenceStatus.InSession;
