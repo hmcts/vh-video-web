@@ -305,6 +305,54 @@ describe('Conference Reducer', () => {
 
             expect(updatedResult.currentConference.status).toBe(updatedStatus);
         });
+
+        it('should reset the transfer direction of all participants when the status paused', () => {
+            const conferenceWithTransferDirection: VHConference = {
+                ...conferenceTestData,
+                participants: [
+                    {
+                        ...conferenceTestData.participants[0],
+                        transferDirection: TransferDirection.In
+                    },
+                    conferenceTestData.participants[1]
+                ]
+            };
+            const initialStateWithTransferDirection: ConferenceState = {
+                ...initialState,
+                currentConference: conferenceWithTransferDirection
+            };
+
+            const updatedResult = conferenceReducer(
+                initialStateWithTransferDirection,
+                ConferenceActions.updateActiveConferenceStatus({ conferenceId: conferenceTestData.id, status: ConferenceStatus.Paused })
+            );
+
+            expect(updatedResult.currentConference.participants.every(p => p.transferDirection === undefined)).toBeTrue();
+        });
+
+        it('should reset the transfer direction of all participants when the status suspended', () => {
+            const conferenceWithTransferDirection: VHConference = {
+                ...conferenceTestData,
+                participants: [
+                    {
+                        ...conferenceTestData.participants[0],
+                        transferDirection: TransferDirection.In
+                    },
+                    conferenceTestData.participants[1]
+                ]
+            };
+            const initialStateWithTransferDirection: ConferenceState = {
+                ...initialState,
+                currentConference: conferenceWithTransferDirection
+            };
+
+            const updatedResult = conferenceReducer(
+                initialStateWithTransferDirection,
+                ConferenceActions.updateActiveConferenceStatus({ conferenceId: conferenceTestData.id, status: ConferenceStatus.Suspended })
+            );
+
+            expect(updatedResult.currentConference.participants.every(p => p.transferDirection === undefined)).toBeTrue();
+        });
     });
 
     describe('updateParticipantStatus action', () => {

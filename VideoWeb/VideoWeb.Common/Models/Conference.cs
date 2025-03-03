@@ -145,6 +145,11 @@ namespace VideoWeb.Common.Models
             var participantToUpdate = Participants.Find(p => p.Id == participant.Id);
             if (participantToUpdate == null) return;
             participantToUpdate.ParticipantStatus = status;
+            
+            if(participantToUpdate.CurrentRoom != null && status == ParticipantStatus.Disconnected)
+            {
+                RemoveParticipantFromConsultationRoom(participantToUpdate, participantToUpdate.CurrentRoom.Label);
+            }
         }
         
         public void UpdateEndpointStatus(Endpoint endpoint, EndpointStatus status)
