@@ -56,6 +56,7 @@ export class ConsultationEffects {
                     invitation.invitationId = action.invitationId;
                     invitation.invitedByName = requestedBy.displayName;
 
+                    // if the invitation has already been accepted; resend the response with the updated invitation id
                     if (invitation.answer === ConsultationAnswer.Accepted) {
                         this.consultationService.respondToConsultationRequest(
                             action.conferenceId,
@@ -90,8 +91,6 @@ export class ConsultationEffects {
                             invitation.linkedParticipantStatuses[linkedParticipant.linkedId] = false;
                         }
                     }
-
-                    // return of(ConferenceActions.updateConsultationInvitation({ invitation }));
                 })
             ),
         { dispatch: false }

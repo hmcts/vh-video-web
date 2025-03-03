@@ -2,7 +2,7 @@ import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -14,7 +14,6 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
@@ -52,7 +51,6 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
-import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
@@ -162,7 +160,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             });
         this.store
             .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(conf => !!conf)
+            )
             .subscribe(conf => {
                 this.countdownComplete = conf.countdownComplete;
                 this.vhConference = conf;
@@ -188,7 +189,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
 
         combineLatest([loggedInParticipant$, endpoints$])
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(([participant, endpoints]) => !!participant && !!endpoints)
+            )
             .subscribe(([participant, endpoints]) => {
                 this.vhParticipant = participant;
                 this.participantEndpoints = this.filterEndpoints(endpoints, participant);
@@ -397,22 +401,18 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.answer) {
-                    if (message.requestedFor === this.participant.id) {
-                        this.handleMyConsultationResponse(
-                            message.answer,
-                            message.requestedFor,
-                            message.responseInitiatorId,
-                            message.roomLabel
-                        );
-                    } else {
-                        this.handleLinkedParticipantConsultationResponse(
-                            message.answer,
-                            message.requestedFor,
-                            message.responseInitiatorId,
-                            message.roomLabel
-                        );
-                    }
+                if (!message.answer) {
+                    return;
+                }
+                if (message.requestedFor === this.participant.id) {
+                    this.handleMyConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
+                } else {
+                    this.handleLinkedParticipantConsultationResponse(
+                        message.answer,
+                        message.requestedFor,
+                        message.responseInitiatorId,
+                        message.roomLabel
+                    );
                 }
             })
         );
@@ -420,43 +420,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
-            })
-        );
-
-        this.eventHubSubscription$.add(
-            this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
-                const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
-                const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
-
-                if (participant) {
-                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                        participant.current_room = room
-                            ? new RoomSummaryResponse(room)
-                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
-                    } else {
-                        participant.current_room = null;
-                    }
-                } else if (endpoint) {
-                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                        endpoint.current_room = room
-                            ? new RoomSummaryResponse(room)
-                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
-                    } else {
-                        endpoint.current_room = null;
-                    }
-                }
-
-                this.logger.info(
-                    `${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`,
-                    {
-                        message: roomTransfer,
-                        currentParticipantState: participant
-                    }
-                );
-
-                this.setTitle(roomTransfer);
             })
         );
 
@@ -1194,28 +1157,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     private handleMyConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
-        // if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
-        //     this.hasTriedToLeaveConsultation = false;
-        //     this.onConsultationAccepted(roomLabel);
-        // } else if (answer === ConsultationAnswer.Transferring) {
-        //     this.onTransferingToConsultation(roomLabel);
-        // } else if (requestedFor === responseInitiatorId) {
-        //     this.onConsultationRejected(roomLabel);
-        // }
-    }
-
-    private setTitle(roomTransfer: RoomTransfer): void {
-        const room: string = roomTransfer.to_room;
-        if (this.participant.id === roomTransfer.participant_id) {
-            let title = 'Video Hearings - Waiting Room';
-            if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
-                title = 'Video Hearings - JOH Consultation Room';
-            } else if (room.includes('ConsultationRoom')) {
-                title = 'Video Hearings - Private Consultation Room';
-            } else if (room.includes('HearingRoom')) {
-                title = 'Video Hearings - Hearing Room';
-            }
-            this.titleService.setTitle(title);
+        if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
+            this.hasTriedToLeaveConsultation = false;
+            this.onConsultationAccepted(roomLabel);
+        } else if (answer === ConsultationAnswer.Transferring) {
+            this.onTransferingToConsultation(roomLabel);
+        } else if (requestedFor === responseInitiatorId) {
+            this.onConsultationRejected(roomLabel);
         }
     }
 

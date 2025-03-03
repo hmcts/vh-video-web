@@ -139,7 +139,8 @@ describe('Conference Reducer', () => {
         };
         existingInitialState = {
             currentConference: conferenceTestData,
-            availableRooms: [originalRoom]
+            availableRooms: [originalRoom],
+            consultationStatuses: []
         };
         deepFreeze(existingInitialState);
     });
@@ -685,8 +686,8 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.participants[1].name).toEqual('Judge New');
             expect(result.currentConference.participants.some(p => p.name === 'Mr Chris Green')).toBeFalse();
 
-            expect(result.availableRooms.length).toEqual(2);
-            expect(result.availableRooms[1].label).toEqual('Room 1');
+            expect(result.availableRooms.length).toEqual(1);
+            expect(result.availableRooms[0].label).toEqual('Room 1');
         });
     });
 
@@ -740,8 +741,8 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.endpoints[0].room.label).toEqual('Room 1');
             expect(result.currentConference.endpoints[1]).toEqual(conferenceTestData.endpoints[1]);
 
-            expect(result.availableRooms.length).toEqual(2);
-            expect(result.availableRooms[1].label).toEqual('Room 1');
+            expect(result.availableRooms.length).toEqual(1);
+            expect(result.availableRooms[0].label).toEqual('Room 1');
         });
     });
 

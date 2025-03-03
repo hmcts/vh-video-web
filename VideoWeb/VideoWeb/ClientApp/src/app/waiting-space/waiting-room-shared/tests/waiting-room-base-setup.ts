@@ -90,12 +90,13 @@ hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {
     mockConferenceStore = createMockStore({
-        initialState: { currentConference: mapConferenceToVHConference(globalConference), availableRooms: [] }
+        initialState: { currentConference: mapConferenceToVHConference(globalConference), availableRooms: [], consultationStatuses: [] }
     });
 
     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
     mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, globalConference.endpoints.map(mapEndpointToVHEndpoint));
     mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
+    mockConferenceStore.overrideSelector(ConferenceSelectors.getAvailableRooms, []);
 
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',

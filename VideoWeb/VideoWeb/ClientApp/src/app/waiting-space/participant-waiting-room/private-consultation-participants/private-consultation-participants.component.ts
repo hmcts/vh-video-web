@@ -119,7 +119,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return [...observers];
     }
 
-    getParticipantStatus(participant: VHParticipant | VHEndpoint): string {
+    getParticipantCallStatus(participant: VHParticipant | VHEndpoint): string {
         return this.participantCallStatuses.find(x => x.participantId === participant.id && x.callStatus !== null)?.callStatus;
     }
 

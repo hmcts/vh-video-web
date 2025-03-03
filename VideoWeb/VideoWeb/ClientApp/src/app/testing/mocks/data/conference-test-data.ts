@@ -19,6 +19,7 @@ import {
     Role,
     RoomSummaryResponse,
     SelfTestPexipResponse,
+    Supplier,
     TaskResponse,
     TaskType,
     VideoEndpointResponse
@@ -1358,7 +1359,10 @@ export class ConferenceTestData {
             pexip_node_uri: 'node@supplier.com',
             hearing_venue_name: 'venue name',
             endpoints: endpoints,
-            ingest_url: 'rtmp://vh-wowza-node/hearing_id'
+            ingest_url: 'rtmp://vh-wowza-node/hearing_id',
+            supplier: Supplier.Vodafone,
+            hearing_venue_is_scottish: false,
+            hearing_ref_id: '12AB52C6-BDA5-4F4D-95B8-3F49065216A9'
         });
     }
 }
