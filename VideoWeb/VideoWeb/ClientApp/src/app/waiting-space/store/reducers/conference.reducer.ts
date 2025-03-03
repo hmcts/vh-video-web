@@ -89,7 +89,7 @@ export const conferenceReducer = createReducer(
             return { ...e, pexipInfo: existingEndpoint?.pexipInfo, transferDirection: undefined } as VHEndpoint;
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
-        let availableRooms = distinctRoomLabels(conference.participants.map(p => p.room));
+        const availableRooms = distinctRoomLabels(conference.participants.map(p => p.room));
         const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
         return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete, loggedInParticipant };
@@ -148,7 +148,7 @@ export const conferenceReducer = createReducer(
 
         // remove participant from consultation statuses
         const updatedConsultationStatuses = state.consultationStatuses.filter(
-            status => status.participantId !== participantId && status.requestedFor !== participantId
+            consultationStatus => consultationStatus.participantId !== participantId && consultationStatus.requestedFor !== participantId
         );
 
         const updatedConference: VHConference = { ...conference, participants: participants };
