@@ -35,7 +35,6 @@ import {
     launchDarklyService,
     logger,
     mockConferenceStore,
-    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -96,7 +95,6 @@ describe('WaitingRoomComponent message and clock', () => {
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,
@@ -297,38 +295,6 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
     }));
 
-    it('getConference sets HearingVenueIsScottish property to true when hearing venue is in scotland', fakeAsync(async () => {
-        // Arrange
-        component.hearing = undefined;
-        component.conference = undefined;
-        component.participant = undefined;
-        component.connected = false;
-        globalConference.hearing_venue_is_scottish = true;
-        videoWebService.getConferenceById.and.resolveTo(globalConference);
-
-        // Act
-        await component.getConference();
-
-        // Assert
-        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
-    }));
-
-    it('getConference sets HearingVenueIsScottish property to false when hearing venue is not in scotland', fakeAsync(async () => {
-        // Arrange
-        component.hearing = undefined;
-        component.conference = undefined;
-        component.participant = undefined;
-        component.connected = false;
-        globalConference.hearing_venue_is_scottish = false;
-        videoWebService.getConferenceById.and.resolveTo(globalConference);
-
-        // Act
-        await component.getConference();
-
-        // Assert
-        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
-    }));
-
     it('should handle api error with error service when get conference fails', async () => {
         component.hearing = undefined;
         component.conference = undefined;
@@ -365,42 +331,6 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
         expect(component.participant).toBe(expectedParticipant);
         expect(originalParticipant.id).toBe(component.participant.id);
-    });
-
-    it('getConferenceClosedTime sets HearingVenueIsScottish property to true when hearing venue is in scotland', async () => {
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        component.hearing.getConference().closed_date_time = null;
-        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
-        closedConference.status = ConferenceStatus.Closed;
-        closedConference.closed_date_time = new Date();
-        closedConference.hearing_venue_is_scottish = true;
-        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
-
-        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
-
-        videoWebService.getConferenceById.and.resolveTo(closedConference);
-
-        await component.getConferenceClosedTime(component.conference.id);
-
-        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
-    });
-
-    it('getConferenceClosedTime sets HearingVenueIsScottish property to false when hearing venue is not in scotland', async () => {
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        component.hearing.getConference().closed_date_time = null;
-        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
-        closedConference.status = ConferenceStatus.Closed;
-        closedConference.closed_date_time = new Date();
-        closedConference.hearing_venue_is_scottish = false;
-        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
-
-        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
-
-        videoWebService.getConferenceById.and.resolveTo(closedConference);
-
-        await component.getConferenceClosedTime(component.conference.id);
-
-        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should get the conference for closed time', async () => {

@@ -7,7 +7,6 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import {
     consultationService,
@@ -83,7 +82,7 @@ describe('NotificationToastrService', () => {
         it('should remove any active rejected by linked participant toasts for the invite key', async () => {
             // Arrange
             const expectedInviteKey = 'invite-key';
-            const participant = new Participant(globalParticipant);
+            const participant = mapParticipantToVHParticipant(globalParticipant);
             const mockToast = {
                 toastRef: {
                     componentInstance: {}
@@ -111,7 +110,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -131,7 +130,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -152,7 +151,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -169,7 +168,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], true);
@@ -186,7 +185,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], true);
@@ -203,7 +202,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -221,7 +220,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -248,7 +247,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -267,8 +266,8 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-            const p2 = new Participant(globalWitness);
+            const p = mapParticipantToVHParticipant(globalParticipant);
+            const p2 = mapParticipantToVHParticipant(globalWitness);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p2], [], false);
@@ -288,9 +287,9 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-            const p2 = new Participant(globalWitness);
-            const endpoint = globalEndpoint;
+            const p = mapParticipantToVHParticipant(globalParticipant);
+            const p2 = mapParticipantToVHParticipant(globalWitness);
+            const endpoint = mapEndpointToVHEndpoint(globalEndpoint);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p, p2], [endpoint], false);
@@ -310,7 +309,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
@@ -331,7 +330,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
             const btnId = 'notification-toastr-invite-accept';
 
             // Act
@@ -364,7 +363,7 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
             const btnId = 'notification-toastr-invite-decline';
 
             // Act
@@ -401,7 +400,7 @@ describe('NotificationToastrService', () => {
                     toastComponent: VhToastComponent
                 })
                 .and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
+            const p = mapParticipantToVHParticipant(globalParticipant);
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);

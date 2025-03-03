@@ -20,7 +20,7 @@ export interface ConferenceState {
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
     countdownComplete?: boolean;
-    consultationStatuses: VHConsultationCallStatus[];
+    consultationStatuses?: VHConsultationCallStatus[];
 }
 
 export const initialState: ConferenceState = {
