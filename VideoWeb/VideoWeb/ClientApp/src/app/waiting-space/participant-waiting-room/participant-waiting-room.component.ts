@@ -21,7 +21,6 @@ import { ConsultationInvitationService } from '../services/consultation-invitati
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { Title } from '@angular/platform-browser';
@@ -73,7 +72,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected userMediaService: UserMediaService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
@@ -97,7 +95,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,

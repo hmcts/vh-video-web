@@ -88,6 +88,21 @@ export const ConferenceActions = createActionGroup({
             answer: ConsultationAnswer;
             responseInitiatorId: string;
         }>(),
+
+        'Upsert Consultation Call Status': props<{
+            conferenceId: string;
+            participantId: string;
+            callStatus: string;
+            invitationId: string;
+            roomLabel: string;
+            requestedBy: string;
+            requestedFor: string;
+        }>(),
+
+        'Clear Consultation Call Status': props<{
+            requestedFor: string;
+            invitationId: string;
+        }>(),
         'Update Judge Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
         'Update StaffMember Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
         'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),

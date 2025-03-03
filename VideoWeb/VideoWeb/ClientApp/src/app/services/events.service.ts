@@ -220,6 +220,17 @@ export class EventsService {
             this.store.dispatch(
                 ConferenceActions.consultationRequested({ conferenceId, requestedFor, requestedBy, invitationId, roomLabel })
             );
+            this.store.dispatch(
+                ConferenceActions.upsertConsultationCallStatus({
+                    conferenceId,
+                    participantId: requestedFor,
+                    invitationId,
+                    roomLabel,
+                    requestedBy,
+                    requestedFor,
+                    callStatus: 'Calling'
+                })
+            );
             this.requestedConsultationMessageSubject.next(message);
         },
 

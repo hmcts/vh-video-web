@@ -21,8 +21,6 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -76,7 +74,6 @@ export let mockCamAndMicStream = jasmine.createSpyObj<MediaStream>(
     ['getAudioTracks', 'getVideoTracks', 'active'],
     ['active']
 );
-export let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 export const testDataDevice = new MediaDeviceTestData();
 export const jwToken = new TokenResponse({
     expires_on: '06/10/2020 01:13:00',
@@ -99,13 +96,6 @@ export function initAllWRDependencies() {
     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
     mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, globalConference.endpoints.map(mapEndpointToVHEndpoint));
     mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, mapParticipantToVHParticipant(globalParticipant));
-    mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-        'HearingVenueFlagsService',
-        ['setHearingVenueIsScottish'],
-        ['hearingVenueIsScottish$']
-    );
-    const hearingVenueIsScottishSubject = new BehaviorSubject(false);
-    getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
 
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
