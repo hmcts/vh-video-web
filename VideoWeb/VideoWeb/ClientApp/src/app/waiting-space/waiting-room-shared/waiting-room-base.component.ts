@@ -1,6 +1,5 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -28,7 +27,6 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
