@@ -467,21 +467,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         );
     }
 
-    resolveParticipant(participantId: any): Participant {
-        if (participantId === Guid.EMPTY) {
-            return new Participant(new ParticipantResponse({ display_name: 'a Video Hearings Officer' }));
-        } else {
-            const participant = this.findParticipant(participantId);
-
-            if (participant) {
-                return new Participant(participant);
-            } else {
-                this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, participantId);
-                return;
-            }
-        }
-    }
-
     async onConsultationAccepted(roomLabel: string) {
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
