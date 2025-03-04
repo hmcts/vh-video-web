@@ -4,7 +4,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     EndpointStatus,
     LoggedParticipantResponse,
-    ParticipantResponseVho,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse
@@ -141,7 +141,7 @@ describe('JudgeParticipantStatusListComponent', () => {
 
     it('should not show input template for changing staff member display name if for a different staff member', () => {
         const participant5 = mapParticipantToVHParticipant(
-            new ParticipantResponseVho({
+            new ParticipantResponse({
                 id: 'FRGT1318-4965-49AF-A887-DED64554429T',
                 name: 'Staff Member name 2',
                 status: ParticipantStatus.Available,

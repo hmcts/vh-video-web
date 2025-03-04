@@ -47,7 +47,7 @@ public class GetConferenceByIdVhoTests
         var result = await _sut.GetConferenceByIdVhoAsync(conference.Id, It.IsAny<CancellationToken>());
         var typedResult = (OkObjectResult)result.Result;
         typedResult.Should().NotBeNull();
-        var response = (ConferenceResponseVho)typedResult.Value;
+        var response = (ConferenceResponse)typedResult.Value;
         response.Participants.Find(e => e.Id == testParticipant.Id).Role.Should().Be((Role)UserRole.Individual);
     }
     

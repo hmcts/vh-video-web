@@ -2,10 +2,10 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
-    ConferenceResponseVho,
+    ConferenceResponse,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
-    ParticipantResponseVho,
+    ParticipantResponse,
     Role,
     TaskResponse
 } from 'src/app/services/clients/api-client';
@@ -17,6 +17,8 @@ import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
+import { sortConferencesForVhoOfficer } from './sort-conference.helper';
 
 @Injectable()
 export class VhoQueryService {
@@ -58,6 +60,14 @@ export class VhoQueryService {
         this.interval = window.setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
+        this.startEventSubscriptions();
+    }
+
+    startEventSubscriptions() {
+        this.eventService
+            .getAllocationMessage()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(allocationUpdate => this.handleAllocationUpdated(allocationUpdate));
         this.eventService
             .getHearingDetailsUpdated()
             .pipe(takeUntil(this.destroy$))
@@ -65,40 +75,53 @@ export class VhoQueryService {
     }
 
     handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
-        if (!hearingDetailMessage.conference) {
-            return;
-        }
         const newConference = hearingDetailMessage.conference;
-        const index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+        this.updateConference(
+            newConference,
+            (foundConference: ConferenceForVhOfficerResponse) =>
+                new ConferenceForVhOfficerResponse({
+                    ...foundConference,
+                    case_name: newConference.case_name,
+                    case_number: newConference.case_number,
+                    scheduled_date_time: newConference.scheduled_date_time,
+                    scheduled_duration: newConference.scheduled_duration,
+                    hearing_venue_name: newConference.hearing_venue_name,
+                    allocated_cso: newConference.allocated_cso,
+                    allocated_cso_id: newConference.allocated_cso_id,
+                    participants: this.mapParticipantResponseToParticipantForUserResponse(newConference.participants)
+                })
+        );
 
-        if (index === -1) {
-            return;
-        }
+        this.vhoConferencesSubject.next(this.vhoConferences);
+    }
 
-        let foundConference = this.vhoConferences[index];
-        foundConference = new ConferenceForVhOfficerResponse({
-            ...foundConference,
-            case_name: newConference.case_name,
-            case_number: newConference.case_number,
-            scheduled_date_time: newConference.scheduled_date_time,
-            scheduled_duration: newConference.scheduled_duration,
-            hearing_venue_name: newConference.hearing_venue_name,
-            participants: this.mapParticipantResponseToParticipantForUserResponse(newConference.participants)
-        });
-        this.vhoConferences[index] = foundConference;
-
-        // Filter the list based on filterCriteria
-        const filterCriteria = this.courtRoomsAccountsFilters;
-        if (filterCriteria && filterCriteria.length > 0) {
-            this.vhoConferences = this.mapFilteredConferences(filterCriteria, this.vhoConferences);
-        }
-
-        // Filter this.vhoConferences based on the selected court rooms in this.venueNames
-        if (this.venueNames && this.venueNames.length > 0) {
-            this.vhoConferences = this.vhoConferences.filter(conference => this.venueNames.includes(conference.hearing_venue_name));
+    handleAllocationUpdated(allocationUpdate: NewAllocationMessage) {
+        for (const update of allocationUpdate.updatedAllocations) {
+            const newConference = update.conference;
+            this.updateConference(
+                newConference,
+                (foundConference: ConferenceForVhOfficerResponse) =>
+                    new ConferenceForVhOfficerResponse({
+                        ...foundConference,
+                        allocated_cso: newConference.allocated_cso,
+                        allocated_cso_id: newConference.allocated_cso_id
+                    })
+            );
         }
 
         this.vhoConferencesSubject.next(this.vhoConferences);
+    }
+
+    isNewConferencePartOfFilter(newConference: ConferenceResponse): boolean {
+        if (this.venueNames?.length > 0 && !this.venueNames.includes(newConference.hearing_venue_name)) {
+            return false;
+        }
+
+        if (this.allocatedCsoIds?.length > 0 && !this.allocatedCsoIds.includes(newConference.allocated_cso_id)) {
+            return false;
+        }
+
+        return true;
     }
 
     stopQuery() {
@@ -188,7 +211,7 @@ export class VhoQueryService {
         return this.vhoConferencesSubject.asObservable();
     }
 
-    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponse> {
         return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
     }
 
@@ -208,7 +231,38 @@ export class VhoQueryService {
         return this.apiClient.getActiveConferences().toPromise();
     }
 
-    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponseVho[]): ParticipantForUserResponse[] {
+    private updateConference(
+        newConference: ConferenceResponse,
+        updateFn: (foundConference: ConferenceForVhOfficerResponse) => ConferenceForVhOfficerResponse
+    ) {
+        let index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+        const doesConferenceMatchExistingFilter: boolean = this.isNewConferencePartOfFilter(newConference);
+
+        // If the conference is not part of the filter and not in the list, then we don't need to do anything
+        if (index === -1 && !doesConferenceMatchExistingFilter) {
+            return;
+        }
+
+        // If the conference is not in the list but is part of the filter, then we add it to the list
+        if (index === -1 && doesConferenceMatchExistingFilter) {
+            index = this.vhoConferences.length;
+            this.vhoConferences.push(new ConferenceForVhOfficerResponse({ ...newConference, participants: newConference.participants }));
+        }
+
+        // if the conference is in the list but not part of the filter, then we remove it from the list
+        if (!doesConferenceMatchExistingFilter) {
+            this.vhoConferences.splice(index, 1);
+            return;
+        }
+
+        // If the conference is in the list and part of the filter, then we update it with the provided update function
+        let foundConference = this.vhoConferences[index];
+        foundConference = updateFn(foundConference);
+        this.vhoConferences[index] = foundConference;
+        this.vhoConferences = sortConferencesForVhoOfficer(this.vhoConferences);
+    }
+
+    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponse[]): ParticipantForUserResponse[] {
         return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
 

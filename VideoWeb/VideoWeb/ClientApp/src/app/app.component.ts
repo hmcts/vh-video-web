@@ -159,7 +159,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     setupNavigationSubscriptions() {
-        const applTitle = this.titleService.getTitle() + ' - ';
+        const applTitle = this.titleService.getTitle();
         this.subscriptions.add(
             this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
                 let child = this.activatedRoute.firstChild;
@@ -167,7 +167,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     child = child.firstChild;
                 }
                 if (child.snapshot.data['title']) {
-                    this.setPageTitle(applTitle + child.snapshot.data['title']);
+                    this.setPageTitle(`${applTitle} - ${child.snapshot.data['title']}`);
                 } else {
                     this.setPageTitle(applTitle);
                 }

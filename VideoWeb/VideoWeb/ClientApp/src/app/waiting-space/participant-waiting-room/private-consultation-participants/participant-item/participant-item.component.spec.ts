@@ -6,7 +6,7 @@ import {
     LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
-    ParticipantResponseVho,
+    ParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
@@ -165,7 +165,7 @@ describe('ParticipantItemComponent', () => {
 
             linkedParticipants.push(linkedParticipant);
 
-            const interpreter = new ParticipantResponseVho({
+            const interpreter = new ParticipantResponse({
                 id: 'ff685c8a-6170-464f-ad2c-59362ff40e22',
                 name: 'B Smith',
                 status: ParticipantStatus.Available,
@@ -193,7 +193,7 @@ describe('ParticipantItemComponent', () => {
 
             linkedParticipants.push(participant3LinkedParticipants1);
 
-            const participant3 = new ParticipantResponseVho({
+            const participant3 = new ParticipantResponse({
                 id: 'ff685c8a-6170-464f-ad2c-59362ff40e22',
                 name: 'B Smith',
                 status: ParticipantStatus.Disconnected,
