@@ -1,4 +1,6 @@
 using System;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using OpenTelemetry.Instrumentation.Http;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
@@ -17,15 +22,10 @@ using VideoWeb.Middleware;
 
 namespace VideoWeb
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
+        private IConfiguration Configuration { get; } = configuration;
+        
         private Settings Settings { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -33,6 +33,7 @@ namespace VideoWeb
         {
             var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
+            var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
             var featureToggles = new FeatureToggles(sdkKey, envName);
             services.AddSingleton<IFeatureToggles>(featureToggles);
 
@@ -55,11 +56,40 @@ namespace VideoWeb
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 504));
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
-            services.AddApplicationInsightsTelemetry();
-            if (featureToggles.AppInsightsProfilingEnabled())
-            {
-                services.AddServiceProfiler();
-            }
+            
+            //Configure OpenTelemetry for Azure Monitor
+            services.AddOpenTelemetry()
+                .UseAzureMonitor(options =>
+                {
+                    options.ConnectionString = instrumentationKey;
+                }) 
+                .ConfigureResource(rb =>
+                {
+                    rb.AddService("vh-video-web");
+                })
+                .WithMetrics()
+                .WithTracing(tracerProvider =>
+                {
+                    tracerProvider
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddAzureMonitorTraceExporter(options =>
+                        {
+                            options.ConnectionString = instrumentationKey;
+                        })
+                        .AddSource("VideoWeb.Common.ApplicationLogger");
+                    
+                    if (featureToggles.AppInsightsProfilingEnabled())
+                    {
+                        tracerProvider.SetSampler(new TraceIdRatioBasedSampler(0.2));
+                        Console.WriteLine("Profiling Enabled");
+                    }
+                    else
+                    {
+                        tracerProvider.SetSampler(new AlwaysOffSampler());
+                        Console.WriteLine("Profiling Disabled");
+                    }
+                });
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
@@ -123,6 +153,8 @@ namespace VideoWeb
             services.AddSingleton(cacheSettings);
   
             services.AddVhHealthChecks();
+                
+            services.Configure<HttpClientTraceInstrumentationOptions>(options => { options.RecordException = true; });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -170,6 +202,7 @@ namespace VideoWeb
             app.UseAuthorization();
             app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<RequestTelemetryMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
@@ -184,7 +217,6 @@ namespace VideoWeb
 
                 endpoints.AddVhHealthCheckRouteMaps();
             });
-
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,

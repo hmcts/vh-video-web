@@ -1,47 +1,23 @@
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace VideoWeb.Common
+namespace VideoWeb.Common;
+
+public class RequestTelemetryMiddleware(RequestDelegate next)
 {
-    public class RequestTelemetry : ITelemetryInitializer
+    public async Task Invoke(HttpContext context)
     {
-        readonly IHttpContextAccessor _httpContextAccessor;
-
-        public RequestTelemetry(IHttpContextAccessor httpContextAccessor)
+        var activity = Activity.Current;
+        if (activity != null)
         {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public void Initialize(ITelemetry telemetry)
-        {
-            telemetry.Context.Cloud.RoleName = "vh-video-web";
-            
-            if (!(telemetry is Microsoft.ApplicationInsights.DataContracts.RequestTelemetry requestTelemetry))
+            activity.SetTag("cloud.role", "vh-video-web");
+            if (context.Items.TryGetValue("responseBody", out var body))
             {
-                return;
-            }
-
-            if (!IsReadableBadRequest(requestTelemetry))
-            {
-                return;
-            }
-
-            // Check response body
-            var responseBody = (string) _httpContextAccessor.HttpContext.Items["responseBody"];
-            if (responseBody != null)
-            {
-                requestTelemetry.Properties.Add("responseBody", responseBody);
+                activity.SetTag("response.body", body);
             }
         }
-
-        private bool IsReadableBadRequest(Microsoft.ApplicationInsights.DataContracts.RequestTelemetry telemetry)
-        {
-            if (_httpContextAccessor?.HttpContext == null)
-            {
-                return false;
-            }
-            return _httpContextAccessor.HttpContext.Request.Body.CanRead && telemetry.ResponseCode == "400";
-        }
+        
+        await next(context);
     }
 }

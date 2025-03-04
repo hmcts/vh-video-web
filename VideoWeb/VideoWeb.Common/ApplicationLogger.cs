@@ -1,47 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Principal;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common
 {
     /// <summary>
-    /// The application logger class send telemetry to Application Insights.
+    /// The application logger class sends telemetry to OpenTelemetry.
     /// </summary>
     public static class ApplicationLogger
     {
-        private static readonly TelemetryClient TelemetryClient = InitTelemetryClient();
-        private const string EventString = "Event";
-        private static TelemetryClient InitTelemetryClient() {
-            var config = TelemetryConfiguration.CreateDefault();
-            var client = new TelemetryClient(config);
-            return client;
+        private static readonly ILogger Logger;
+        private static readonly ActivitySource ActivitySource = new("VideoWeb.Common.ApplicationLogger");
+
+        static ApplicationLogger()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddOpenTelemetry(logging =>
+                {
+                    logging.IncludeFormattedMessage = true;
+                    logging.IncludeScopes = true;
+                });
+            });
+
+            Logger = loggerFactory.CreateLogger("ApplicationLogger");
         }
 
         public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user, IDictionary<string, string> properties)
         {
             ArgumentNullException.ThrowIfNull(exception);
 
-            var telemetryException = new ExceptionTelemetry(exception);
+            // Start an OpenTelemetry Activity (Span)
+            using var activity = ActivitySource.StartActivity($"{traceCategory} {eventTitle}");
 
-            telemetryException.Properties.Add(EventString, traceCategory + " " + eventTitle);
-
-            if (user is { Identity: not null })
+            if (activity != null)
             {
-                telemetryException.Properties.Add("User", user.Identity.Name);
-            }
+                activity.SetTag("event", $"{traceCategory} {eventTitle}");
+                activity.SetTag("exception.type", exception.GetType().FullName);
+                activity.SetTag("exception.message", exception.Message);
+                activity.SetTag("exception.stacktrace", exception.StackTrace);
 
-            if (properties != null)
-            {
-                foreach (KeyValuePair<string, string> entry in properties)
+                if (user?.Identity?.Name is not null)
                 {
-                    telemetryException.Properties.Add(entry.Key, entry.Value);
+                    activity.SetTag("user", user.Identity.Name);
                 }
+
+                if (properties != null)
+                {
+                    foreach (var entry in properties)
+                    {
+                        activity.SetTag(entry.Key, entry.Value);
+                    }
+                }
+
+                activity.SetStatus(ActivityStatusCode.Error);
             }
 
-            TelemetryClient.TrackException(telemetryException);
+            // Log exception with ILogger
+            var formattedMessage = $"{traceCategory} - {eventTitle}: {exception.Message}";
+            Logger.LogError(exception, formattedMessage);
         }
     }
 }

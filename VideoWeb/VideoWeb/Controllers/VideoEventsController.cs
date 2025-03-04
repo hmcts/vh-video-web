@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -29,8 +29,7 @@ public class VideoEventsController(
     IConferenceService conferenceService,
     IVideoApiClient videoApiClient,
     IEventHandlerFactory eventHandlerFactory,
-    ILogger<VideoEventsController> logger,
-    TelemetryClient telemetryClient)
+    ILogger<VideoEventsController> logger) 
     : ControllerBase
 {
     [HttpPost]
@@ -39,10 +38,13 @@ public class VideoEventsController(
     [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
     {
+        using var activity = new Activity("SendHearingEvent").Start();
         try
         {
-            telemetryClient.TrackCustomEvent("SupplierCallback", request);
-            
+            activity.SetTag("event.source", "SupplierCallback");
+            activity.SetTag("conference.id", request.ConferenceId);
+            activity.SetTag("event.type", request.EventType.ToString());
+
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);
@@ -62,25 +64,20 @@ public class VideoEventsController(
             // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
             foreach (var e in events)
             {
-                telemetryClient.TrackCustomEvent("SentGeneratedEventToVideoApi", e);
+                activity.AddEvent(new ActivityEvent("SentGeneratedEventToVideoApi"));
                 await SendEventToVideoApi(e);
             }
-            
+
             callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
             foreach (var cb in callbackEvents)
             {
-                telemetryClient.TrackCustomEvent("SentGeneratedEventToUI", cb);
+                activity.AddEvent(new ActivityEvent("SentGeneratedEventToUI"));
                 await PublishEventToUi(cb);
             }
-            
+
             await GenerateTransferEventOnVmrParticipantJoining(conference, request);
-            var eventProperties = new Dictionary<string, string>();
-            eventProperties.Add("sourceEventId", request.EventId);
-            eventProperties.Add("eventType", request.EventType.ToString());
-            eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
-            eventProperties.Add("conferenceId", request.ConferenceId);
-            
-            telemetryClient.TrackEvent("SupplierCallbackHandled", eventProperties);
+
+            activity.SetTag("event.handled", true);
             return NoContent();
         }
         catch (VideoApiException e)
@@ -146,7 +143,6 @@ public class VideoEventsController(
             case EventType.Joined:
                 conference.AddParticipantToRoom(vmrId, participantId);
                 break;
-            
             case EventType.Disconnected:
                 conference.RemoveParticipantFromRoom(vmrId, participantId);
                 break;
