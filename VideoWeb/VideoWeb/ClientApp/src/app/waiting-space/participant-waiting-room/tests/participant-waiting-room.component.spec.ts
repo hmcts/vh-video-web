@@ -5,7 +5,6 @@ import { of, Subject } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
