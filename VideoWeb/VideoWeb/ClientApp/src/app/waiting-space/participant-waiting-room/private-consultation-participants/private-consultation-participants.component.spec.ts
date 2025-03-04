@@ -144,31 +144,26 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.room.label = 'test-room';
+        const p = { room: { label: 'test-room', locked: false } } as VHParticipant;
         expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
     it('should get row classes', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.room.label = 'test-room-two';
+        const p = { room: { label: 'test-room-2', locked: false } } as VHParticipant;
         expect(component.getRowClasses(p)).toEqual('');
     });
 
     it('should return can call participant', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.status = ParticipantStatus.Available;
-        p.room.label = 'not-test-room';
+
+        const p = { status: ParticipantStatus.Available, room: { label: 'not-test-room', locked: false } } as VHParticipant;
         expect(component.canCallParticipant(p)).toBeTruthy();
     });
 
     it('should return can not call participant', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.status = ParticipantStatus.Disconnected;
-        p.room.label = 'test-room';
+        const p = { status: ParticipantStatus.Disconnected, room: { label: 'not-test-room', locked: false } } as VHParticipant;
         expect(component.canCallParticipant(p)).toBeFalsy();
     });
 
@@ -285,110 +280,91 @@ describe('PrivateConsultationParticipantsComponent', () => {
         );
     });
 
-    it('should return can call endpoint', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
+    describe('canCallEndpoint', () => {
+        it('should return can call endpoint', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: 'not-test-room', locked: false }
+            } as VHEndpoint;
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeTrue();
+        });
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+        it('should return can not call endpoint - same room', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: 'test-room', locked: false }
+            } as VHEndpoint;
 
-        expect(component.canCallEndpoint(endpoint)).toBeTrue();
-    });
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-    it('should return can not call endpoint - same room', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
+        it('should return can not call endpoint - not available', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Disconnected,
+                room: { label: 'not-test-room', locked: false }
+            } as VHEndpoint;
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
+        it('should return can not call endpoint - when conference is started', () => {
+            // In current room
+            const roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            component.roomLabel = roomLabel;
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: roomLabel, locked: false }
+            } as VHEndpoint;
 
-    it('should return can not call endpoint - not available', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
+            conference.status = ConferenceStatus.InSession;
 
-        // Available
-        endpoint.status = EndpointStatus.Disconnected;
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+        it('should return can not call endpoint - not defense advocate', () => {
+            const roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            component.roomLabel = roomLabel;
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: roomLabel, locked: false }
+            } as VHEndpoint;
 
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
+            conference.status = ConferenceStatus.InSession;
 
-    it('should return can not call endpoint - when endpoint is already in the room', () => {
-        // In current room
-        const roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.room.label = roomLabel;
+            // Has not got permissions to call endpoint
+            component.participantEndpoints = [];
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'test-room';
-
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
-
-    it('should return can not call endpoint - when conference is started', () => {
-        // In current room
-        const roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.room.label = roomLabel;
-
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'test-room';
-        conference.status = ConferenceStatus.InSession;
-
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
-
-    it('should return can not call endpoint - not defense advocate', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
-
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
     });
 
     it('should return participant status', () => {

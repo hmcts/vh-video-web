@@ -209,11 +209,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get numberOfJudgeOrJOHsInConsultation(): number {
-        return this.conference.participants.filter(
+        return this.vhConference.participants.filter(
             x =>
                 (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) &&
                 x.status === ParticipantStatus.InConsultation &&
-                x.current_room?.label.toLowerCase().startsWith('judgejohconsultationroom')
+                x.room?.label.toLowerCase().startsWith('judgejohconsultationroom')
         ).length;
     }
 
@@ -649,20 +649,20 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     isQuickLinkParticipant(): boolean {
         return (
-            this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
-            this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
+            this.vhParticipant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
+            this.vhParticipant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
         );
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
-        if (!this.participant?.linked_participants.length) {
+        if (!this.vhParticipant?.linkedParticipants.length) {
             return false;
         }
         const linkedParticipants = this.conference.participants.filter(p =>
-            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
+            this.vhParticipant.linkedParticipants.map(lp => lp.linkedId).includes(p.id)
         );
         return linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase());
     }

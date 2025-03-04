@@ -265,6 +265,11 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should call consultation service to show leave consultation modal', () => {
+        // Arrange
+        // Mock the element returned by document.getElementById
+        const mockElement = document.createElement('div');
+        spyOn(document, 'getElementById').and.returnValue(mockElement);
+
         // Act
         component.showLeaveConsultationModal();
 
@@ -452,11 +457,11 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should return the total number of judge and JOHs in consultation', () => {
-        component.conference.participants.forEach(x => (x.status = ParticipantStatus.InConsultation));
-        const expectecCount = component.conference.participants.filter(
+        component.vhConference.participants.forEach(x => (x.status = ParticipantStatus.InConsultation));
+        const expectecCount = component.vhConference.participants.filter(
             x =>
                 (x.role === Role.JudicialOfficeHolder || x.role === Role.Judge) &&
-                x.current_room?.label.toLowerCase().includes('judgejohconsultationroom')
+                x.room?.label.toLowerCase().includes('judgejohconsultationroom')
         ).length;
 
         expect(component.numberOfJudgeOrJOHsInConsultation).toBe(expectecCount);

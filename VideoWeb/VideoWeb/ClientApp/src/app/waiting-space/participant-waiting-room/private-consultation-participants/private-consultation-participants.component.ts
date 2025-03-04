@@ -67,11 +67,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
             this.isEndpointAvailable(endpoint) &&
+            this.conference.status !== ConferenceStatus.InSession &&
             this.participantEndpoints.some(x => x.id === endpoint.id)
         );
     }
 
-    getRowClasses(participant: any): string {
+    getRowClasses(participant: VHParticipant | VHEndpoint): string {
         return this.isParticipantInCurrentRoom(participant) ? 'yellow' : '';
     }
 

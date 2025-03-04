@@ -48,7 +48,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
-import { mapConferenceToVHConference } from '../../store/models/api-contract-to-state-model-mappers';
+import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
@@ -143,7 +143,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;
+        component.vhConference = mapConferenceToVHConference(conference);
         component.participant = participant;
+        component.vhParticipant = component.vhConference.participants.find(x => x.id === participant.id);
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
         clockService.getClock.calls.reset();
@@ -174,103 +176,59 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('get allowAudioOnlyToggle', () => {
-        it('should return false if the conference is null', () => {
-            // Arrange
-            component.conference = null;
+        it('should return true participant is available', () => {
+            // arrange
+            component.vhParticipant.status = ParticipantStatus.Available;
 
-            // Act
+            // act
             const result = component.allowAudioOnlyToggle;
 
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if the conference is undefined', () => {
-            // Arrange
-            component.conference = undefined;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if the participant is null', () => {
-            // Arrange
-            component.participant = null;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if the participant is undefined', () => {
-            // Arrange
-            component.participant = undefined;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if the participant is InConsultation', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.InConsultation;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return false if the participant is InHearing', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.InHearing;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
-            expect(result).toBeFalse();
-        });
-
-        it('should return true if the participant is Joining', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.Joining;
-
-            // Act
-            const result = component.allowAudioOnlyToggle;
-
-            // Arrange
+            // assert
             expect(result).toBeTrue();
         });
 
-        it('should return true if the participant is Available', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.Available;
+        it('should return false participant is is a consultation', () => {
+            // arrange
+            component.vhParticipant.status = ParticipantStatus.InConsultation;
 
-            // Act
+            // act
             const result = component.allowAudioOnlyToggle;
 
-            // Arrange
-            expect(result).toBeTrue();
+            // assert
+            expect(result).toBeFalse();
         });
 
-        it('should return true if the participant is Disconnected', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.Disconnected;
+        it('should return false participant is in a hearing', () => {
+            // arrange
+            component.vhParticipant.status = ParticipantStatus.InHearing;
 
-            // Act
+            // act
             const result = component.allowAudioOnlyToggle;
 
-            // Arrange
-            expect(result).toBeTrue();
+            // assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if participant is not set', () => {
+            // arrange
+            component.vhParticipant = null;
+
+            // act
+            const result = component.allowAudioOnlyToggle;
+
+            // assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if conference is not set', () => {
+            // arrange
+            component.vhConference = null;
+
+            // act
+            const result = component.allowAudioOnlyToggle;
+
+            // assert
+            expect(result).toBeFalse();
         });
     });
 
@@ -427,95 +385,92 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('should return if the participant is a witness or not - canStartJoinConsultation', () => {
-        [
-            [HearingRole.REPRESENTATIVE, true],
-            [HearingRole.WITNESS, false],
-            [HearingRole.OBSERVER, false]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
-            component.participant.linked_participants = [];
-            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+    describe('canStartJoinConsultation', () => {
+        it('should return true if the participant is a representative', () => {
+            component.vhParticipant.hearingRole = HearingRole.REPRESENTATIVE;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeTrue();
+        });
+
+        it('should return false if the participant is a witness', () => {
+            component.vhParticipant.hearingRole = HearingRole.WITNESS;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeFalse();
+        });
+
+        it('should return false if the participant is an observer', () => {
+            component.vhParticipant.hearingRole = HearingRole.OBSERVER;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeFalse();
+        });
+
+        it('should return false if the participant is a individual with interpreter', () => {
+            component.vhParticipant.hearingRole = HearingRole.LITIGANT_IN_PERSON;
+            component.vhParticipant.linkedParticipants = [{ linkedType: LinkType.Interpreter }];
+            expect(component.canStartJoinConsultation).toBeFalse();
+        });
+
+        it('should return false if the participant is a QL observer', () => {
+            component.vhParticipant.role = Role.QuickLinkObserver;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeFalse();
+        });
+
+        it('should return true if the participant is a QL participant', () => {
+            component.vhParticipant.role = Role.QuickLinkParticipant;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeTrue();
+        });
+
+        it('should return false if the participant is a victim', () => {
+            component.vhParticipant.hearingRole = HearingRole.VICTIM;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeFalsy();
+        });
+
+        it('should return false if the participant is police', () => {
+            component.vhParticipant.hearingRole = HearingRole.POLICE;
+            component.vhParticipant.linkedParticipants = [];
+            expect(component.canStartJoinConsultation).toBeFalsy();
         });
     });
 
-    it('should return false if the participant is a individual with interpreter - canStartJoinConsultation', () => {
-        component.participant.hearing_role = HearingRole.LITIGANT_IN_PERSON;
-        const linkedParticipant = new LinkedParticipantResponse();
-        linkedParticipant.link_type = LinkType.Interpreter;
-        component.participant.linked_participants = [linkedParticipant];
-        expect(component.canStartJoinConsultation).toBeFalsy();
-    });
+    describe('isWitness', () => {
+        it('should return true if the participant is a witness', () => {
+            component.vhParticipant.hearingRole = HearingRole.WITNESS;
+            expect(component.isOrHasWitnessLink()).toBeTrue();
+        });
 
-    it('should return false/true if the participant is a quick link observer/participant - canStartJoinConsultation', () => {
-        [
-            [Role.QuickLinkObserver, false],
-            [Role.QuickLinkParticipant, true]
-        ].forEach(([role, expected]) => {
-            component.participant.role = role as Role;
-            component.participant.linked_participants = [];
-            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+        it('should return false if the participant is not a witness', () => {
+            component.vhParticipant.hearingRole = HearingRole.OBSERVER;
+            expect(component.isOrHasWitnessLink()).toBeFalse();
         });
     });
 
-    it('should return false if the participant is a victim - canStartJoinConsultation', () => {
-        component.participant.hearing_role = HearingRole.VICTIM;
-        component.participant.linked_participants = [];
-        expect(component.canStartJoinConsultation).toBeFalsy();
-    });
+    describe('isObserver', () => {
+        it('should return true if the participant is an observer', () => {
+            component.vhParticipant.hearingRole = HearingRole.OBSERVER;
+            expect(component.isObserver).toBeTrue();
+        });
 
-    it('should return false if the participant is police - canStartJoinConsultation', () => {
-        component.participant.hearing_role = HearingRole.POLICE;
-        component.participant.linked_participants = [];
-        expect(component.canStartJoinConsultation).toBeFalsy();
-    });
-
-    it('should return if the participant is a witness or not - isWitness', () => {
-        [
-            [HearingRole.WINGER, false],
-            [HearingRole.WINGER, false],
-            [HearingRole.WITNESS, true],
-            [HearingRole.OBSERVER, false],
-            [HearingRole.JUDGE, false]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
-            expect(component.isOrHasWitnessLink()).toBe(expected as boolean);
+        it('should return false if the participant is not an observer', () => {
+            component.vhParticipant.hearingRole = HearingRole.WINGER;
+            expect(component.isObserver).toBeFalse();
         });
     });
 
-    it('should return false when the participant is null - isWitness', () => {
-        component.participant = null;
+    describe('isQuickLinkObserver', () => {
+        it('should return true if the participant is a quick link observer', () => {
+            component.vhParticipant.role = Role.QuickLinkObserver;
+            expect(component.isQuickLinkObserver).toBeTrue();
+        });
 
-        expect(component.isOrHasWitnessLink()).toBeFalsy();
-    });
-
-    it('should return if the participant is a witness or not - isObserver', () => {
-        [
-            [HearingRole.WINGER, false],
-            [HearingRole.WINGER, false],
-            [HearingRole.WITNESS, false],
-            [HearingRole.JUDGE, false],
-            [HearingRole.OBSERVER, true]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
-            expect(component.isObserver).toBe(expected as boolean);
+        it('should return false if the participant is not a quick link observer', () => {
+            component.vhParticipant.role = Role.Individual;
+            expect(component.isQuickLinkObserver).toBeFalse();
         });
     });
 
-    it('should return false when the participant is null - isObserver', () => {
-        component.participant = null;
-
-        expect(component.isObserver).toBeFalsy();
-    });
-    it('should return if the participant is a quick link observer or not - isQuickLinkObserver', () => {
-        [
-            [Role.QuickLinkObserver, true],
-            [Role.Individual, false]
-        ].forEach(([role, expected]) => {
-            component.participant.role = role as Role;
-            expect(component.isQuickLinkObserver).toBe(expected as boolean);
-        });
-    });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;
         component.showVideo = false;
@@ -547,7 +502,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     }));
     it('should return "Meeting room" from getRoomName when room label is null', () => {
         // Arrange
-        component.participant = null;
+        component.vhParticipant = null;
 
         // Act
         const roomName = component.getRoomName();
@@ -596,6 +551,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = thisParticipant;
         component.conference.participants = [thisParticipant, otherParticipant];
         component.vhConference = mapConferenceToVHConference(component.conference);
+        component.vhParticipant = component.vhConference.participants.find(x => x.id === thisParticipant.id);
+
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
@@ -614,6 +571,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
             component.vhConference = mapConferenceToVHConference(component.conference);
+            component.vhParticipant = component.vhConference.participants.find(x => x.id === participant1.id);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
 
@@ -631,6 +589,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.participant = participant1;
             component.conference.participants = [participant1, participant2];
             component.vhConference = mapConferenceToVHConference(component.conference);
+            component.vhParticipant = component.vhConference.participants.find(x => x.id === participant1.id);
             expect(component.getPrivateConsultationParticipants().length).toBe(0);
         });
     });
@@ -640,7 +599,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(consultationService.createParticipantConsultationRoom).toHaveBeenCalledTimes(1);
     }));
     it('should call consultation service when locking room', fakeAsync(() => {
-        component.participant.current_room.label = 'label';
+        component.vhParticipant.room = { label: 'label', locked: false };
         component.setRoomLock(true);
         flushMicrotasks();
         expect(consultationService.lockConsultation).toHaveBeenCalledTimes(1);
@@ -670,14 +629,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.privateConsultationAccordianExpanded).toBe(false);
     });
     it('should confirm that participant in the judge and joh consultation room', () => {
-        component.participant = globalParticipant;
-        component.participant.current_room.label = 'JudgeJOHConsutationRoom';
+        component.vhParticipant = mapParticipantToVHParticipant(globalParticipant);
+        component.vhParticipant.room = { label: 'JudgeJOHConsutationRoom', locked: false };
 
         expect(component.isJohRoom).toBe(true);
     });
     it('should confirm that participant not in the judge and joh consultation room', () => {
-        component.participant = globalParticipant;
-        component.participant.current_room.label = 'ParticipantConsutationRoom';
+        component.vhParticipant = mapParticipantToVHParticipant(globalParticipant);
+        component.vhParticipant.room = { label: 'ParticipantConsutationRoom', locked: false };
 
         expect(component.isJohRoom).toBe(false);
     });
@@ -741,17 +700,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             flush();
             expect(component['onShouldReload']).toHaveBeenCalled();
         }));
-    });
-
-    describe('canStartJoinConsultation', () => {
-        it('returns false if the participant has Observer Case Type Group', () => {
-            component.participant = new ParticipantResponse({
-                hearing_role: HearingRole.OBSERVER,
-                linked_participants: []
-            });
-
-            expect(component.canStartJoinConsultation).toBeFalse();
-        });
     });
 
     describe('onLeaveHearingButtonClicked', () => {
