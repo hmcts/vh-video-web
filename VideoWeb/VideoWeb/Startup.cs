@@ -57,16 +57,11 @@ namespace VideoWeb
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             
-            //Configure OpenTelemetry for Azure Monitor
             services.AddOpenTelemetry()
                 .UseAzureMonitor(options =>
                 {
                     options.ConnectionString = instrumentationKey;
                 }) 
-                .ConfigureResource(rb =>
-                {
-                    rb.AddService("vh-video-web");
-                })
                 .WithMetrics()
                 .WithTracing(tracerProvider =>
                 {
@@ -76,19 +71,7 @@ namespace VideoWeb
                         .AddAzureMonitorTraceExporter(options =>
                         {
                             options.ConnectionString = instrumentationKey;
-                        })
-                        .AddSource("VideoWeb.Common.ApplicationLogger");
-                    
-                    if (featureToggles.AppInsightsProfilingEnabled())
-                    {
-                        tracerProvider.SetSampler(new TraceIdRatioBasedSampler(0.2));
-                        Console.WriteLine("Profiling Enabled");
-                    }
-                    else
-                    {
-                        tracerProvider.SetSampler(new AlwaysOffSampler());
-                        Console.WriteLine("Profiling Disabled");
-                    }
+                        });
                 });
 
             // In production, the Angular files will be served from this directory
@@ -202,7 +185,6 @@ namespace VideoWeb
             app.UseAuthorization();
             app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseMiddleware<RequestTelemetryMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
