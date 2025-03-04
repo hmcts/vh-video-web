@@ -1,6 +1,22 @@
-import { ConferenceStatus, EndpointStatus, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
+import {
+    ConferenceStatus,
+    ConsultationAnswer,
+    EndpointStatus,
+    InterpreterType,
+    ParticipantStatus,
+    Role,
+    Supplier
+} from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import {
+    VHConference,
+    VHConsultationCallStatus,
+    VHEndpoint,
+    VHParticipant,
+    VHPexipConference,
+    VHPexipParticipant,
+    VHRoom
+} from '../models/vh-conference';
 import { ConferenceState, conferenceReducer, initialState } from './conference.reducer';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -46,6 +62,7 @@ describe('Conference Reducer', () => {
             participants: [
                 {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df7',
+                    externalReferenceId: 'john-external-ref-123',
                     name: 'Mr John Doe',
                     username: 'john.doe@test.com',
                     status: ParticipantStatus.InConsultation,
@@ -60,10 +77,12 @@ describe('Conference Reducer', () => {
                     role: Role.Representative,
                     linkedParticipants: [],
                     localMediaStatus: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
                 },
                 {
                     id: '7b875df1-bf37-4f5a-9d23-d3493f319a08',
+                    externalReferenceId: 'judge-external-ref-123',
                     name: 'Judge Fudge',
                     username: 'judge.fudge@test.com',
                     status: ParticipantStatus.Available,
@@ -76,10 +95,12 @@ describe('Conference Reducer', () => {
                     role: Role.Judge,
                     linkedParticipants: [],
                     localMediaStatus: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
                 },
                 {
                     id: '729ae52a-f894-4680-af4b-4d9fcc6ffdaf',
+                    externalReferenceId: 'chris-external-ref-123',
                     name: 'Mr Chris Green',
                     username: 'chris.green@test.com',
                     status: ParticipantStatus.InConsultation,
@@ -94,7 +115,28 @@ describe('Conference Reducer', () => {
                     role: Role.Representative,
                     linkedParticipants: [],
                     localMediaStatus: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
+                },
+                {
+                    id: '52a88d2c-960d-4ee2-ad50-1fa0cd0e04ec',
+                    externalReferenceId: 'jane-external-ref-123',
+                    name: 'Ms Jane Doe',
+                    username: 'jane.doe@test.com',
+                    status: ParticipantStatus.InConsultation,
+                    tiledDisplayName: 'CIVILIAN;NO_HEARTBEAT;Ms Jane Doe;52a88d2c-960d-4ee2-ad50-1fa0cd0e04ec',
+                    room: originalRoom,
+                    representee: '',
+                    displayName: 'Jane Doe',
+                    firstName: 'Jane',
+                    lastName: 'Doe',
+                    hearingRole: HearingRole.APPELLANT,
+                    pexipInfo: undefined,
+                    role: Role.Individual,
+                    linkedParticipants: [],
+                    localMediaStatus: undefined,
+                    transferDirection: undefined,
+                    protectedFrom: []
                 },
                 {
                     id: 'Xf497ffa-802c-4dfb-a3f2-208de0c12345',
@@ -112,27 +154,32 @@ describe('Conference Reducer', () => {
                     role: undefined,
                     linkedParticipants: [],
                     localMediaStatus: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
                 }
             ],
             endpoints: [
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5e',
+                    externalReferenceId: 'endpoint1-external-ref-123',
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
                     defenceAdvocate: 'john.doe@test.com',
                     room: originalRoom,
                     pexipInfo: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
+                    externalReferenceId: 'endpoint2-external-ref-123',
                     displayName: 'Endpoint 2',
                     status: EndpointStatus.NotYetJoined,
                     defenceAdvocate: null,
                     room: null,
                     pexipInfo: undefined,
-                    transferDirection: undefined
+                    transferDirection: undefined,
+                    protectedFrom: []
                 }
             ],
             supplier: Supplier.Vodafone
@@ -432,6 +479,69 @@ describe('Conference Reducer', () => {
             expect(updatedResult.currentConference.participants[0].status).toBe(updatedStatus);
             expect(updatedResult.currentConference.participants[0].room).toBeNull();
             expect(updatedResult.currentConference.participants[0].pexipInfo).toBeNull();
+        });
+
+        it('should remove the participant from pending consultationStatuses they are requested for on status change', () => {
+            const updatedStatus = ParticipantStatus.Available;
+            const updatedResult = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [
+                        {
+                            callStatus: 'Transferring...',
+                            participantId: conferenceTestData.participants[0].id,
+                            invitationId: '1234',
+                            requestedBy: conferenceTestData.participants[1].id,
+                            requestedFor: conferenceTestData.participants[0].id,
+                            roomLabel: 'Room 1'
+                        }
+                    ]
+                },
+                ConferenceActions.updateParticipantStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.participants[0].id,
+                    status: updatedStatus,
+                    reason: undefined
+                })
+            );
+
+            expect(updatedResult.consultationStatuses).toEqual([]);
+        });
+
+        it('should not remove the participant from pending consultationStatuses they are not requested for on status change', () => {
+            const updatedStatus = ParticipantStatus.Available;
+            const updatedResult = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [
+                        {
+                            callStatus: 'Transferring...',
+                            participantId: conferenceTestData.participants[1].id,
+                            invitationId: '1234',
+                            requestedBy: conferenceTestData.participants[0].id,
+                            requestedFor: conferenceTestData.participants[1].id,
+                            roomLabel: 'Room 1'
+                        }
+                    ]
+                },
+                ConferenceActions.updateParticipantStatus({
+                    conferenceId: conferenceTestData.id,
+                    participantId: conferenceTestData.participants[0].id,
+                    status: updatedStatus,
+                    reason: undefined
+                })
+            );
+
+            expect(updatedResult.consultationStatuses).toEqual([
+                {
+                    callStatus: 'Transferring...',
+                    participantId: conferenceTestData.participants[1].id,
+                    invitationId: '1234',
+                    requestedBy: conferenceTestData.participants[0].id,
+                    requestedFor: conferenceTestData.participants[1].id,
+                    roomLabel: 'Room 1'
+                }
+            ]);
         });
     });
 
@@ -1254,6 +1364,7 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.participants[0].currentAudioMix).toEqual('en');
         });
     });
+
     describe('countdownComplete action', () => {
         it('should update the count down complete conference state', () => {
             const result = conferenceReducer(
@@ -1273,6 +1384,228 @@ describe('Conference Reducer', () => {
                 })
             );
             expect(result).toEqual(existingInitialState);
+        });
+    });
+
+    describe('upsertConsultationCallStatus action', () => {
+        it('should add the consultation call status to the list', () => {
+            const expectedConsultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Transferring...',
+                participantId: conferenceTestData.participants[0].id,
+                invitationId: '1234',
+                requestedBy: conferenceTestData.participants[1].id,
+                requestedFor: conferenceTestData.participants[0].id,
+                roomLabel: 'Room 1'
+            };
+            const result = conferenceReducer(
+                existingInitialState,
+                ConferenceActions.upsertConsultationCallStatus({
+                    callStatus: 'Transferring...',
+                    participantId: conferenceTestData.participants[0].id,
+                    invitationId: '1234',
+                    requestedBy: conferenceTestData.participants[1].id,
+                    requestedFor: conferenceTestData.participants[0].id,
+                    conferenceId: conferenceTestData.id,
+                    roomLabel: 'Room 1'
+                })
+            );
+
+            expect(result.consultationStatuses.length).toEqual(1);
+            expect(result.consultationStatuses[0]).toEqual(expectedConsultationStatus);
+        });
+
+        it('should update the consultation call status in the list', () => {
+            const consultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Calling...',
+                participantId: conferenceTestData.participants[0].id,
+                invitationId: '1234',
+                requestedBy: conferenceTestData.participants[1].id,
+                requestedFor: conferenceTestData.participants[0].id,
+                roomLabel: 'Room 1'
+            };
+            const result = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [consultationStatus]
+                },
+                ConferenceActions.upsertConsultationCallStatus({
+                    callStatus: 'Transferring...',
+                    participantId: conferenceTestData.participants[0].id,
+                    invitationId: '1234',
+                    requestedBy: conferenceTestData.participants[1].id,
+                    requestedFor: conferenceTestData.participants[0].id,
+                    conferenceId: conferenceTestData.id,
+                    roomLabel: 'Room 1'
+                })
+            );
+
+            expect(result.consultationStatuses.length).toEqual(1);
+            expect(result.consultationStatuses[0].callStatus).toEqual('Transferring...');
+        });
+
+        it('should upsert the consultation call status and apply "Protected" status to that of participants protected from the participant', () => {
+            let participant = conferenceTestData.participants.find(x => x.role === Role.Individual);
+            const protectedParticipant = conferenceTestData.participants.find(x => x.role === Role.Representative);
+
+            const judge = conferenceTestData.participants.find(x => x.role === Role.Judge);
+            participant = { ...participant, protectedFrom: [protectedParticipant.externalReferenceId] };
+            participant.protectedFrom = [protectedParticipant.externalReferenceId];
+
+            const conferenceWithScreening: VHConference = {
+                ...conferenceTestData,
+                participants: [participant, judge, protectedParticipant]
+            };
+
+            const initialStateWithScreening: ConferenceState = {
+                ...initialState,
+                currentConference: conferenceWithScreening
+            };
+
+            const expectedConsultationStatus: VHConsultationCallStatus[] = [
+                {
+                    callStatus: 'Protected',
+                    participantId: protectedParticipant.id
+                } as VHConsultationCallStatus,
+
+                {
+                    callStatus: 'Calling...',
+                    participantId: participant.id,
+                    invitationId: '1234',
+                    requestedBy: judge.id,
+                    requestedFor: participant.id,
+                    roomLabel: 'Room 1'
+                }
+            ];
+            const result = conferenceReducer(
+                {
+                    ...initialStateWithScreening,
+                    consultationStatuses: []
+                },
+                ConferenceActions.upsertConsultationCallStatus({
+                    callStatus: 'Calling...',
+                    participantId: participant.id,
+                    invitationId: '1234',
+                    requestedBy: judge.id,
+                    requestedFor: participant.id,
+                    conferenceId: conferenceTestData.id,
+                    roomLabel: 'Room 1'
+                })
+            );
+
+            expect(result.consultationStatuses).toEqual(expectedConsultationStatus);
+        });
+    });
+
+    describe('consultationResponded action', () => {
+        it('should update the consultation call status in the list', () => {
+            const invitationId = '1234';
+            const roomLabel = 'Room 1';
+            const participant = conferenceTestData.participants.find(x => x.role === Role.Individual);
+            const representative = conferenceTestData.participants.find(x => x.role === Role.Representative);
+
+            const consultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Calling...',
+                participantId: participant.id,
+                invitationId,
+                requestedBy: representative.id,
+                requestedFor: participant.id,
+                roomLabel
+            };
+            const result = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [consultationStatus]
+                },
+                ConferenceActions.consultationResponded({
+                    invitationId,
+                    answer: ConsultationAnswer.Accepted,
+                    conferenceId: conferenceTestData.id,
+                    requestedFor: participant.id,
+                    responseInitiatorId: participant.id,
+                    roomLabel
+                })
+            );
+
+            const expectedConsultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Accepted',
+                participantId: participant.id,
+                invitationId,
+                requestedBy: representative.id,
+                requestedFor: participant.id,
+                roomLabel
+            };
+            expect(result.consultationStatuses).toEqual([expectedConsultationStatus]);
+        });
+
+        it('should ignore update the consultation call status for an invitation id that does not exist', () => {
+            const invitationId = '1234';
+            const roomLabel = 'Room 1';
+            const participant = conferenceTestData.participants.find(x => x.role === Role.Judge);
+            const judge = conferenceTestData.participants.find(x => x.role === Role.Judge);
+            const representative = conferenceTestData.participants.find(x => x.role === Role.Representative);
+
+            const consultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Calling...',
+                participantId: participant.id,
+                invitationId,
+                requestedBy: representative.id,
+                requestedFor: participant.id,
+                roomLabel
+            };
+            const result = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [consultationStatus]
+                },
+                ConferenceActions.consultationResponded({
+                    invitationId: '3456',
+                    answer: ConsultationAnswer.Accepted,
+                    conferenceId: conferenceTestData.id,
+                    requestedFor: judge.id,
+                    responseInitiatorId: participant.id,
+                    roomLabel
+                })
+            );
+
+            const expectedConsultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Calling...',
+                participantId: participant.id,
+                invitationId,
+                requestedBy: representative.id,
+                requestedFor: participant.id,
+                roomLabel
+            };
+            expect(result.consultationStatuses).toEqual([expectedConsultationStatus]);
+        });
+    });
+
+    describe('clearConsultationCallStatus action', () => {
+        it('should remove the consultation call status from the list', () => {
+            const invitationId = '1234';
+            const roomLabel = 'Room 1';
+            const participant = conferenceTestData.participants.find(x => x.role === Role.Individual);
+            const representative = conferenceTestData.participants.find(x => x.role === Role.Representative);
+
+            const consultationStatus: VHConsultationCallStatus = {
+                callStatus: 'Calling...',
+                participantId: participant.id,
+                invitationId,
+                requestedBy: representative.id,
+                requestedFor: participant.id,
+                roomLabel
+            };
+            const result = conferenceReducer(
+                {
+                    ...existingInitialState,
+                    consultationStatuses: [consultationStatus]
+                },
+                ConferenceActions.clearConsultationCallStatus({
+                    invitationId,
+                    requestedFor: participant.id
+                })
+            );
+
+            expect(result.consultationStatuses.length).toEqual(0);
         });
     });
 });

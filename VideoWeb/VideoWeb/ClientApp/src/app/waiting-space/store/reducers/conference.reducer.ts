@@ -459,22 +459,23 @@ export const conferenceReducer = createReducer(
         );
 
         const participant = state.currentConference.participants.find(p => p.id === requestedFor);
+        const updatedStatuses = [...state.consultationStatuses];
 
         state.currentConference.participants.forEach(p => {
             if (p.protectedFrom?.includes(participant.externalReferenceId)) {
-                callStatus = 'Rejected';
                 updatedStatuses.push({
+                    participantId: p.id,
                     callStatus: 'Protected'
                 } as VHConsultationCallStatus);
             }
             if (participant.protectedFrom?.includes(p.externalReferenceId)) {
                 updatedStatuses.push({
+                    participantId: p.id,
                     callStatus: 'Protected'
                 } as VHConsultationCallStatus);
             }
         });
 
-        const updatedStatuses = [...state.consultationStatuses];
         if (index > -1) {
             const existingStatus = updatedStatuses[index];
             updatedStatuses[index] = {
