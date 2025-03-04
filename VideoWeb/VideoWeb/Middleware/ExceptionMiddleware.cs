@@ -44,7 +44,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
     
     private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception, string eventTitle)
     {
-        TraceException(context, exception);
+        TraceException(context, exception, eventTitle);
         
         logger.LogError(exception, "{EventTitle}: {Message}", eventTitle, exception.Message);
 
@@ -60,13 +60,15 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
     }
     
     //For structured logging
-    private static void TraceException(HttpContext context, Exception exception)
+    private static void TraceException(HttpContext context, Exception exception, string eventTitle)
     {
         var activity = Activity.Current;
-        activity?.RecordException(exception);
-        activity?.SetStatus(ActivityStatusCode.Error);
-        activity?.SetTag("user", context.User.Identity?.Name ?? "Unknown");
-        activity?.SetTag("http.status_code", context.Response.StatusCode);
+        if (activity == null) return;
+        activity.DisplayName = eventTitle;
+        activity.RecordException(exception);
+        activity.SetStatus(ActivityStatusCode.Error);
+        activity.SetTag("user", context.User.Identity?.Name ?? "Unknown");
+        activity.SetTag("http.status_code", context.Response.StatusCode);
     }
     
     private static string BuildExceptionMessage(Exception exception)

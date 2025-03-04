@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
@@ -43,6 +44,26 @@ public class ExceptionMiddlewareTests
         ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, _logger.Object);
         await ExceptionMiddleware.InvokeAsync(new DefaultHttpContext());
         RequestDelegateMock.Verify(x => x.RequestDelegate(It.IsAny<HttpContext>()), Times.Once);
+    }
+    
+    [Test]
+    public async Task Should_create_activity_span_for_structure_logging()
+    {
+        var customErrorMessage = "Custom Error Message";
+        using var activity = new Activity("TestActivity").Start();
+        Activity.Current = activity;
+        
+        RequestDelegateMock
+            .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
+            .Returns(Task.FromException(new BadRequestException(customErrorMessage)));
+        ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, _logger.Object);
+        
+        await ExceptionMiddleware.InvokeAsync(HttpContext);
+        
+        activity.DisplayName.Should().Be("400 Exception");
+        activity.Tags.Should().ContainKey("user").WhoseValue.Should().Be("Unknown");
+        var exceptionTags = activity.Events.First(e => e.Name == "exception").Tags;
+        exceptionTags.Should().ContainKey("exception.message").WhoseValue.Should().Be(customErrorMessage);
     }
     
     [Test]
@@ -130,7 +151,7 @@ public class ExceptionMiddlewareTests
     }
     
     [Test]
-    public async Task should_return_request_timeout_when_operationcancelled_exception_is_thrown()
+    public async Task should_return_request_timeout_when_operation_cancelled_exception_is_thrown()
     {
         var exception = new OperationCanceledException("This is a test timeout exception");
         RequestDelegateMock
