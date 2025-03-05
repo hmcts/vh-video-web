@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,14 @@ public class VideoEventsController(
             activity.SetTag("event.source", "SupplierCallback");
             activity.SetTag("conference.id", request.ConferenceId);
             activity.SetTag("event.type", request.EventType.ToString());
-
+            using (logger.BeginScope(new Dictionary<string, object>
+                   {
+                       ["traceId"] = activity.Id,
+                       ["supplierCallback"] = JsonSerializer.Serialize(request)
+                   }))
+            {
+                logger.LogInformation("Handling SupplierCallback event.");
+            }
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);

@@ -51,13 +51,14 @@ public abstract class BaseSendHearingEventTests
                 Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                     .With(x => x.Id = Guid.NewGuid()).Build()
             ],
-            Endpoints = new List<Endpoint>
-            {
+            Endpoints =
+            [
                 Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
                     .Build(),
+                
                 Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
                     .Build()
-            },
+            ],
             HearingVenueName = "Hearing Venue Test",
             CivilianRooms = [new() { Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>() }]
         };
@@ -80,7 +81,7 @@ public abstract class BaseSendHearingEventTests
             .Build();
     }
     
-    private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
+    private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
     {
         var participants = Builder<ParticipantResponse>.CreateListOfSize(2).Build().ToList();
         if (!string.IsNullOrWhiteSpace(username))

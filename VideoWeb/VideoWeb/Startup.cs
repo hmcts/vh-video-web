@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using OpenTelemetry.Instrumentation.Http;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
@@ -56,7 +56,6 @@ namespace VideoWeb
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 504));
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
-            
             services.AddOpenTelemetry()
                 .UseAzureMonitor(options =>
                 {
@@ -66,7 +65,10 @@ namespace VideoWeb
                 .WithTracing(tracerProvider =>
                 {
                     tracerProvider
-                        .AddAspNetCoreInstrumentation()
+                        .AddAspNetCoreInstrumentation(options =>
+                        {
+                            options.RecordException = true;
+                        })
                         .AddHttpClientInstrumentation()
                         .AddAzureMonitorTraceExporter(options =>
                         {
