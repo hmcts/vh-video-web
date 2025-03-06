@@ -56,19 +56,6 @@ module.exports = {
             }
         ],
         '@typescript-eslint/indent': 'off',
-        '@typescript-eslint/member-delimiter-style': [
-            'error',
-            {
-                multiline: {
-                    delimiter: 'semi',
-                    requireLast: true
-                },
-                singleline: {
-                    delimiter: 'semi',
-                    requireLast: false
-                }
-            }
-        ],
         '@typescript-eslint/member-ordering': 'error',
         '@typescript-eslint/naming-convention': [
             'error',
@@ -97,9 +84,6 @@ module.exports = {
         ],
         '@typescript-eslint/no-unused-expressions': 'error',
         '@typescript-eslint/prefer-function-type': 'error',
-        '@typescript-eslint/quotes': ['error', 'single'],
-        '@typescript-eslint/semi': ['error', 'always'],
-        '@typescript-eslint/type-annotation-spacing': 'error',
         '@typescript-eslint/unified-signatures': 'error',
         'arrow-body-style': 'error',
         'brace-style': ['error', '1tbs'],
@@ -107,7 +91,6 @@ module.exports = {
         curly: 'error',
         'dot-notation': 'off',
         'eol-last': 'error',
-        eqeqeq: ['error', 'smart'],
         'guard-for-in': 'error',
         'id-denylist': 'error',
         'id-match': 'error',
