@@ -119,8 +119,6 @@ public class ParticipantsServiceTests
         var result = _service.InitialiseAddStaffMemberRequest(staffMemberProfile, ContactEmail);
         result.Should().BeEquivalentTo(new AddStaffMemberRequest
         {
-            FirstName = staffMemberProfile.FirstName,
-            LastName = staffMemberProfile.LastName,
             Username = staffMemberProfile.Username,
             HearingRole = HearingRoleName.StaffMember,
             Name = staffMemberProfile.Name,
