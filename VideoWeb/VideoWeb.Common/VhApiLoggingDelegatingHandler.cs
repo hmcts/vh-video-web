@@ -1,46 +1,31 @@
-using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common;
 
-public class VhApiLoggingDelegatingHandler(
-    ILogger<VhApiLoggingDelegatingHandler> logger,
-    TelemetryClient telemetryClient)
-    : DelegatingHandler
+public class VhApiLoggingDelegatingHandler(ILogger<VhApiLoggingDelegatingHandler> logger) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var requestTelemetry = new Microsoft.ApplicationInsights.DataContracts.RequestTelemetry
-        {
-            Name = $"HTTP {request.Method} {request.RequestUri}",
-            Url = request.RequestUri,
-            Timestamp = DateTimeOffset.Now
-        };
-
-        // Log request body if it exists
+        using var activity = Activity.Current ?? new Activity("HttpClientRequest").Start();
+        activity.SetTag("http.method", request.Method);
+        activity.SetTag("http.url", request.RequestUri);
+        
         if (request.Content != null)
         {
             var requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
-            requestTelemetry.Properties.Add("VHApiRequestBody", requestBody);
+            activity.SetTag("http.request.body", requestBody);
             logger.LogInformation("Request to {RequestUri}: {RequestBody}", request.RequestUri, requestBody);
         }
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        // Proceed with the request
+        
         var response = await base.SendAsync(request, cancellationToken);
-
-        stopwatch.Stop();
-        requestTelemetry.Duration = stopwatch.Elapsed;
-        requestTelemetry.ResponseCode = response.StatusCode.ToString();
-        requestTelemetry.Success = response.IsSuccessStatusCode;
-        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-        requestTelemetry.Properties.Add("VHApiResponseBody", responseBody);
-
-        telemetryClient.TrackRequest(requestTelemetry);
-
+        
+        activity.SetTag("http.status_code", (int)response.StatusCode);
+        activity.SetTag("http.success", response.IsSuccessStatusCode);
+        
         return response;
     }
 }

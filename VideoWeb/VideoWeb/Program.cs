@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.KeyPerFile;
 using Microsoft.Extensions.FileProviders;
+using OpenTelemetry.Logs;
 
 namespace VideoWeb
 {
@@ -18,7 +18,7 @@ namespace VideoWeb
 
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            var keyVaults=new List<string> (){
+            var keyVaults=new List<string> {
                 "vh-bookings-api",
                 "vh-infra-core",
                 "vh-video-api",
@@ -46,10 +46,7 @@ namespace VideoWeb
                     webBuilder.ConfigureLogging((hostingContext, logging) =>
                     {
                         logging.AddEventSourceLogger();
-                        logging
-                            .AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.
-                                    ApplicationInsightsLoggerProvider>
-                                ("", LogLevel.Trace);
+                        logging.AddFilter<OpenTelemetryLoggerProvider>("", LogLevel.Trace);
                     });
                     webBuilder.ConfigureAppConfiguration(configBuilder =>
                     {
