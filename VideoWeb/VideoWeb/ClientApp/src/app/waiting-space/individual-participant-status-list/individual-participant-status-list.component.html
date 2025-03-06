@@ -99,7 +99,7 @@
             [innerHtml]="getHearingRole(participant)"
           ></dd>
 
-          <dd *ngIf="!isLoggedInParticipant(participant)" class="govuk-body-s govuk-!-margin-bottom-3">
+          <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <span
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
