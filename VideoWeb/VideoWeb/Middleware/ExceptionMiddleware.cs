@@ -65,7 +65,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         var activity = Activity.Current;
         if (activity == null) return;
         activity.DisplayName = eventTitle;
-        activity.RecordException(exception);
+        activity.AddException(exception);
         activity.SetStatus(ActivityStatusCode.Error);
         activity.SetTag("user", context.User.Identity?.Name ?? "Unknown");
         activity.SetTag("http.status_code", context.Response.StatusCode);

@@ -39,25 +39,18 @@ public class VideoEventsController(
     [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
     {
-        using var activity = new Activity("SendHearingEvent").Start();
+        using var activity = Activity.Current ?? new Activity(nameof(SendHearingEventAsync)).Start();
         try
         {
             activity.SetTag("event.source", "SupplierCallback");
             activity.SetTag("conference.id", request.ConferenceId);
             activity.SetTag("event.type", request.EventType.ToString());
-            using (logger.BeginScope(new Dictionary<string, object>
-                   {
-                       ["traceId"] = activity.Id,
-                       ["supplierCallback"] = JsonSerializer.Serialize(request)
-                   }))
-            {
-                logger.LogInformation("Handling SupplierCallback event.");
-            }
+            activity.SetTag("supplierCallbackPayload", JsonSerializer.Serialize(request));
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);
             
-            var events = new List<ConferenceEventRequest>() {request};
+            var events = new List<ConferenceEventRequest> {request};
             if (request.IsParticipantAVmr(conference, out var roomId))
             {
                 request.ParticipantRoomId = roomId.ToString();
@@ -90,8 +83,8 @@ public class VideoEventsController(
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
-                e.StatusCode);
+            activity.SetStatus(ActivityStatusCode.Error, e.Message);
+            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId, e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
