@@ -10,6 +10,7 @@ import {
     VHConsultationCallStatus
 } from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { VideoCallActions } from '../actions/video-call.action';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -512,7 +513,28 @@ export const conferenceReducer = createReducer(
             status => status.participantId !== requestedFor && status.invitationId !== invitationId
         );
         return { ...state, consultationStatuses: updatedStatuses };
+    }),
+
+    // Video Call Control - potentially remove the below actions if pexip client can manage cam and mic mute?
+    on(VideoCallActions.toggleAudioMuteSuccess, (state, { participantId, isMuted }) => {
+        const updatedParticipants = state.currentConference.participants.map(p =>
+            p.id === participantId ? { ...p, localMediaStatus: { ...p.localMediaStatus, isMicrophoneMuted: isMuted } } : p
+        );
+        const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
+    }),
+    on(VideoCallActions.toggleOutgoingVideoSuccess, (state, { participantId, isVideoOn }) => {
+        const updatedParticipants = state.currentConference.participants.map(p =>
+            p.id === participantId ? { ...p, localMediaStatus: { ...p.localMediaStatus, isCameraOff: !isVideoOn } } : p
+        );
+        const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
+        const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
+        return { ...state, currentConference: updatedConference, loggedInParticipant };
     })
+    // Video Call Host Controls
 );
+
+export const videocallControlsReducer = createReducer(initialState);
 
 export const activeConferenceFeature = createFeatureSelector<ConferenceState>(conferenceFeatureKey);
