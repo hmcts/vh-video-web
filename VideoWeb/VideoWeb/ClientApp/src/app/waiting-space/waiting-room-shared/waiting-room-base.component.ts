@@ -1,8 +1,7 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -14,7 +13,6 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
@@ -22,7 +20,6 @@ import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -30,11 +27,9 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
-import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
 import {
@@ -54,13 +49,12 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
-import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
+import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
@@ -85,7 +79,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     vhConference: VHConference;
     vhParticipant: VHParticipant;
     participantEndpoints: VHEndpoint[] = [];
-    conferenceRooms: Room[] = [];
+    conferenceRooms: VHRoom[] = [];
 
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
@@ -150,7 +144,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -165,7 +158,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             });
         this.store
             .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(conf => !!conf)
+            )
             .subscribe(conf => {
                 this.countdownComplete = conf.countdownComplete;
                 this.vhConference = conf;
@@ -173,8 +169,12 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.phoneNumber$ = this.vhConference.isVenueScottish
                     ? of(this.contactDetails.scotland.phoneNumber)
                     : of(this.contactDetails.englandAndWales.phoneNumber);
-                this.hearingVenueFlagsService.setHearingVenueIsScottish(this.vhConference.isVenueScottish);
             });
+
+        this.store
+            .select(ConferenceSelectors.getAvailableRooms)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(rooms => (this.conferenceRooms = rooms));
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
@@ -187,7 +187,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         const endpoints$ = this.store.select(ConferenceSelectors.getEndpoints);
 
         combineLatest([loggedInParticipant$, endpoints$])
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(([participant, endpoints]) => !!participant && !!endpoints)
+            )
             .subscribe(([participant, endpoints]) => {
                 this.vhParticipant = participant;
                 this.participantEndpoints = this.filterEndpoints(endpoints, participant);
@@ -206,11 +209,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get numberOfJudgeOrJOHsInConsultation(): number {
-        return this.conference.participants.filter(
+        return this.vhConference.participants.filter(
             x =>
                 (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) &&
                 x.status === ParticipantStatus.InConsultation &&
-                x.current_room?.label.toLowerCase().startsWith('judgejohconsultationroom')
+                x.room?.label.toLowerCase().startsWith('judgejohconsultationroom')
         ).length;
     }
 
@@ -303,7 +306,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
-            this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
 
             this.participant = this.getLoggedParticipant();
@@ -397,76 +399,18 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.answer) {
-                    if (message.requestedFor === this.participant.id) {
-                        this.handleMyConsultationResponse(
-                            message.answer,
-                            message.requestedFor,
-                            message.responseInitiatorId,
-                            message.roomLabel
-                        );
-                    } else {
-                        this.handleLinkedParticipantConsultationResponse(
-                            message.answer,
-                            message.requestedFor,
-                            message.responseInitiatorId,
-                            message.roomLabel
-                        );
-                    }
+                if (!message.answer) {
+                    return;
                 }
-            })
-        );
-
-        this.eventHubSubscription$.add(
-            this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                const requestedFor = this.resolveParticipant(message.requestedFor);
-                if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
-                    // A request for you to join a consultation room
-                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`, message);
-
-                    const requestedBy = this.resolveParticipant(message.requestedBy);
-                    const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                    const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
-
-                    const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
-                    invitation.invitationId = message.invitationId;
-                    invitation.invitedByName = requestedBy.displayName;
-
-                    // if the invitation has already been accepted; resend the response with the updated invitation id
-                    if (invitation.answer === ConsultationAnswer.Accepted) {
-                        this.consultationService.respondToConsultationRequest(
-                            message.conferenceId,
-                            message.invitationId,
-                            message.requestedBy,
-                            message.requestedFor,
-                            invitation.answer,
-                            message.roomLabel
-                        );
-                    }
-
-                    if (invitation.answer !== ConsultationAnswer.Accepted) {
-                        invitation.answer = ConsultationAnswer.None;
-                        const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
-                            message.roomLabel,
-                            message.conferenceId,
-                            invitation,
-                            requestedBy,
-                            requestedFor,
-                            roomParticipants,
-                            roomEndpoints,
-                            this.participant.status !== ParticipantStatus.Available
-                        );
-
-                        if (consultationInviteToast) {
-                            invitation.activeToast = consultationInviteToast;
-                        }
-                    }
-
-                    for (const linkedParticipant of this.participant.linked_participants) {
-                        if (invitation.linkedParticipantStatuses[linkedParticipant.linked_id] === undefined) {
-                            invitation.linkedParticipantStatuses[linkedParticipant.linked_id] = false;
-                        }
-                    }
+                if (message.requestedFor === this.participant.id) {
+                    this.handleMyConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
+                } else {
+                    this.handleLinkedParticipantConsultationResponse(
+                        message.answer,
+                        message.requestedFor,
+                        message.responseInitiatorId,
+                        message.roomLabel
+                    );
                 }
             })
         );
@@ -474,60 +418,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
-            })
-        );
-
-        this.eventHubSubscription$.add(
-            this.eventService.getRoomUpdate().subscribe(async room => {
-                const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
-                if (existingRoom) {
-                    existingRoom.locked = room.locked;
-                    this.conference.participants
-                        .filter(p => p.current_room?.label === existingRoom.label)
-                        .forEach(p => (p.current_room.locked = existingRoom.locked));
-                    this.conference.endpoints
-                        .filter(p => p.current_room?.label === existingRoom.label)
-                        .forEach(p => (p.current_room.locked = existingRoom.locked));
-                } else {
-                    this.conferenceRooms.push(room);
-                }
-            })
-        );
-
-        this.eventHubSubscription$.add(
-            this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
-                const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
-                const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
-
-                if (participant) {
-                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                        participant.current_room = room
-                            ? new RoomSummaryResponse(room)
-                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
-                    } else {
-                        participant.current_room = null;
-                    }
-                } else if (endpoint) {
-                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                        endpoint.current_room = room
-                            ? new RoomSummaryResponse(room)
-                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
-                    } else {
-                        endpoint.current_room = null;
-                    }
-                }
-
-                this.logger.info(
-                    `${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`,
-                    {
-                        message: roomTransfer,
-                        currentParticipantState: participant
-                    }
-                );
-
-                this.setTitle(roomTransfer);
             })
         );
 
@@ -573,21 +463,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                 this.handleHearingDetailsUpdated(hearingDetailsUpdatedMessage);
             })
         );
-    }
-
-    resolveParticipant(participantId: any): Participant {
-        if (participantId === Guid.EMPTY) {
-            return new Participant(new ParticipantResponse({ display_name: 'a Video Hearings Officer' }));
-        } else {
-            const participant = this.findParticipant(participantId);
-
-            if (participant) {
-                return new Participant(participant);
-            } else {
-                this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, participantId);
-                return;
-            }
-        }
     }
 
     async onConsultationAccepted(roomLabel: string) {
@@ -774,20 +649,20 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     isQuickLinkParticipant(): boolean {
         return (
-            this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
-            this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
+            this.vhParticipant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
+            this.vhParticipant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
         );
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
-        if (!this.participant?.linked_participants.length) {
+        if (!this.vhParticipant?.linkedParticipants.length) {
             return false;
         }
         const linkedParticipants = this.conference.participants.filter(p =>
-            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
+            this.vhParticipant.linkedParticipants.map(lp => lp.linkedId).includes(p.id)
         );
         return linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase());
     }
@@ -1275,21 +1150,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    private setTitle(roomTransfer: RoomTransfer): void {
-        const room: string = roomTransfer.to_room;
-        if (this.participant.id === roomTransfer.participant_id) {
-            let title = 'Video Hearings - Waiting Room';
-            if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
-                title = 'Video Hearings - JOH Consultation Room';
-            } else if (room.includes('ConsultationRoom')) {
-                title = 'Video Hearings - Private Consultation Room';
-            } else if (room.includes('HearingRoom')) {
-                title = 'Video Hearings - Hearing Room';
-            }
-            this.titleService.setTitle(title);
-        }
-    }
-
     private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
         this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
         if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
@@ -1347,7 +1207,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     private setConference(conferenceResponse: ConferenceResponse) {
-        this.hearingVenueFlagsService.setHearingVenueIsScottish(conferenceResponse.hearing_venue_is_scottish);
         this.errorCount = 0;
         this.loadingData = false;
         this.countdownComplete = conferenceResponse.status === ConferenceStatus.InSession;

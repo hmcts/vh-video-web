@@ -11,7 +11,7 @@
             [roomLabel]="roomLabel"
             [participantCallStatuses]="participantCallStatuses"
             [canInvite]="canInvite"
-            [status]="getParticipantStatus(judge)"
+            [status]="getParticipantCallStatus(judge)"
           >
           </app-participant-item>
         </div>
@@ -28,7 +28,7 @@
                 [roomLabel]="roomLabel"
                 [participantCallStatuses]="participantCallStatuses"
                 [canInvite]="canInvite"
-                [status]="getParticipantStatus(participant)"
+                [status]="getParticipantCallStatus(participant)"
               >
               </app-participant-item>
             </ng-container>
@@ -44,7 +44,7 @@
           [roomLabel]="roomLabel"
           [participantCallStatuses]="participantCallStatuses"
           [canInvite]="canInvite && !participantHasInviteRestrictions(staffMember)"
-          [status]="getParticipantStatus(staffMember)"
+          [status]="getParticipantCallStatus(staffMember)"
         >
         </app-participant-item>
       </div>
@@ -58,7 +58,7 @@
           [roomLabel]="roomLabel"
           [participantCallStatuses]="participantCallStatuses"
           [canInvite]="canInvite && !participantHasInviteRestrictions(participant)"
-          [status]="getParticipantStatus(participant)"
+          [status]="getParticipantCallStatus(participant)"
         >
         </app-participant-item>
       </div>
@@ -82,7 +82,11 @@
         >
         </app-private-consultation-participant-display-name>
 
-        <app-private-consultation-participant-status [entity]="endpoint" [status]="getParticipantStatus(endpoint)" [roomLabel]="roomLabel">
+        <app-private-consultation-participant-status
+          [entity]="endpoint"
+          [status]="getParticipantCallStatus(endpoint)"
+          [roomLabel]="roomLabel"
+        >
         </app-private-consultation-participant-status>
       </div>
     </ng-container>
@@ -96,7 +100,7 @@
             [roomLabel]="roomLabel"
             [participantCallStatuses]="participantCallStatuses"
             [canInvite]="canInvite"
-            [status]="getParticipantStatus(participant)"
+            [status]="getParticipantCallStatus(participant)"
           >
           </app-participant-item>
         </div>

@@ -12,7 +12,6 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -79,7 +78,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private readonly unloadDetectorService: UnloadDetectorService,
         private readonly hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -103,7 +101,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,

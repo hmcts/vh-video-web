@@ -51,7 +51,7 @@
       *ngIf="isPrivateConsultation"
       [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
-      [roomLabel]="this.participant.current_room?.label"
+      [roomLabel]="this.vhParticipant.room?.label"
     >
     </app-private-consultation-participants>
   </div>
@@ -89,7 +89,7 @@
     </div>
   </div>
   <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container-video">
-    <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
+    <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
   </div>
 </div>
 
@@ -109,7 +109,7 @@
       </div>
       <div class="govuk-grid-column-two-thirds" style="float: right">
         <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container-loading">
-          <app-participant-network-health [participant]="participant" [showDetail]="false"></app-participant-network-health>
+          <app-participant-network-health [participant]="vhParticipant" [showDetail]="false"></app-participant-network-health>
         </div>
       </div>
     </div>
