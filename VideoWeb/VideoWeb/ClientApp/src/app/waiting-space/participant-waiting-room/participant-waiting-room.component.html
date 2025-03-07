@@ -10,14 +10,14 @@
           <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
         </div>
         <div class="room-status">
-          <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{
-            (this.participant?.current_room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
+          <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
+            (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
           }}</span>
         </div>
-        <div *ngIf="!this.participant?.current_room?.locked" class="room-status-desc">
+        <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
           {{ 'participant-waiting-room.lock-the-room' | translate }}
         </div>
-        <div *ngIf="this.participant?.current_room?.locked" class="room-status-desc">
+        <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
           {{ 'participant-waiting-room.invite-others' | translate }}
         </div>
       </ng-container>
@@ -61,7 +61,7 @@
     <app-private-consultation-participants
       [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
-      [roomLabel]="this.participant.current_room?.label"
+      [roomLabel]="this.vhParticipant.room?.label"
     >
     </app-private-consultation-participants>
   </div>
@@ -97,7 +97,7 @@
   </div>
 
   <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-    <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
+    <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
   </div>
 </div>
 
@@ -149,7 +149,7 @@
       </div>
       <div class="govuk-grid-column-two-thirds" style="float: right">
         <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-          <app-participant-network-health [participant]="participant" [showDetail]="false"> </app-participant-network-health>
+          <app-participant-network-health [participant]="vhParticipant" [showDetail]="false"> </app-participant-network-health>
         </div>
       </div>
     </div>

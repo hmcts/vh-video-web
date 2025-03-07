@@ -103,3 +103,12 @@ export interface VHInterpreterLanguage {
     description: string;
     type: InterpreterType;
 }
+
+export interface VHConsultationCallStatus {
+    participantId: string;
+    callStatus: string;
+    invitationId: string;
+    roomLabel: string;
+    requestedBy: string;
+    requestedFor: string;
+}

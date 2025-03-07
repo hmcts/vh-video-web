@@ -43,6 +43,7 @@ import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
+import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -163,6 +164,7 @@ describe('AppComponent', () => {
                 AppComponent,
                 TranslatePipeMock,
                 MockComponent(BackNavigationComponent),
+                MockComponent(CookieBannerComponent),
                 MockComponent(HeaderComponent),
                 MockComponent(FooterComponent),
                 MockComponent(BetaBannerComponent)

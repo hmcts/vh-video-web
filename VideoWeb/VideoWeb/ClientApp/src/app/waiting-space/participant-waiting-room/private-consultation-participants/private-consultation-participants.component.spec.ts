@@ -1,10 +1,9 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceStatus,
-    ConsultationAnswer,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -12,19 +11,11 @@ import {
     Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
-import {
-    consultationRequestResponseMessageSubjectMock,
-    eventsServiceSpy,
-    participantStatusSubjectMock,
-    requestedConsultationMessageSubjectMock,
-    roomTransferSubjectMock
-} from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy, roomTransferSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../../models/hearing-role-model';
@@ -32,8 +23,11 @@ import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-p
 import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 import { FocusService } from 'src/app/services/focus.service';
-import { VHConference, VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
+import { VHConference, VHConsultationCallStatus, VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../../store/models/api-contract-to-state-model-mappers';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import * as ConferenceSelectors from '../../../waiting-space/store/selectors/conference.selectors';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -44,12 +38,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const invitationId = 'invitation-id';
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     let focusServiceSpy: jasmine.SpyObj<FocusService>;
     const translateService = translateServiceSpy;
+    let mockConferenceStore: MockStore<ConferenceState>;
 
     beforeAll(() => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
@@ -70,6 +64,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
         const judge = conference.participants.find(x => x.role === Role.Judge);
 
+        mockConferenceStore = createMockStore({
+            initialState: { currentConference: conference, availableRooms: [], consultationStatuses: [] }
+        });
+
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getAvailableRooms, []);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getConsultationStatuses, []);
+
         logged = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.displayName,
@@ -86,7 +88,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             videoWebService,
             activatedRoute,
             translateService,
-            focusServiceSpy
+            focusServiceSpy,
+            mockConferenceStore
         );
 
         component.conference = conference;
@@ -103,6 +106,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+        mockConferenceStore.resetSelectors();
     });
 
     it('should create', () => {
@@ -140,41 +144,27 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.room.label = 'test-room';
+        const p = { room: { label: 'test-room', locked: false } } as VHParticipant;
         expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
     it('should get row classes', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.room.label = 'test-room-two';
+        const p = { room: { label: 'test-room-2', locked: false } } as VHParticipant;
         expect(component.getRowClasses(p)).toEqual('');
     });
 
     it('should return can call participant', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.status = ParticipantStatus.Available;
-        p.room.label = 'not-test-room';
+
+        const p = { status: ParticipantStatus.Available, room: { label: 'not-test-room', locked: false } } as VHParticipant;
         expect(component.canCallParticipant(p)).toBeTruthy();
     });
 
     it('should return can not call participant', () => {
         component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.status = ParticipantStatus.Disconnected;
-        p.room.label = 'test-room';
+        const p = { status: ParticipantStatus.Disconnected, room: { label: 'not-test-room', locked: false } } as VHParticipant;
         expect(component.canCallParticipant(p)).toBeFalsy();
-    });
-
-    it('should setup subscribers on init', () => {
-        component.ngOnInit();
-
-        // Assert
-        expect(eventsService.getConsultationRequestResponseMessage).toHaveBeenCalledTimes(1);
-        expect(eventsService.getRequestedConsultationMessage).toHaveBeenCalledTimes(1);
-        expect(eventsService.getParticipantStatusMessage).toHaveBeenCalledTimes(2);
     });
 
     it('should init participants on init', () => {
@@ -189,142 +179,19 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.wingers.length).toBe(0);
     });
 
-    it('should set answer on response message', () => {
+    it('should get participant call status', () => {
         component.roomLabel = 'Room1';
-        const participantId1 = conference.participants.find(x => x.role === Role.Individual).id;
-        consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantId1, ConsultationAnswer.Rejected)
-        );
+
+        const statusString = 'Transferring...';
+        const participantId = 'Participant1';
+        const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id']);
+        participant.id = participantId;
+        component.participantCallStatuses.push({ participantId: participantId, callStatus: statusString } as VHConsultationCallStatus);
+
+        const result = component.getParticipantCallStatus(participant);
 
         // Assert
-        expect(component.participantCallStatuses[participantId1]).toBe('Rejected');
-    });
-
-    it('should not set answer if different room', () => {
-        component.roomLabel = 'Room1';
-        consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, 'Room2', 'Participant1', ConsultationAnswer.Rejected)
-        );
-
-        // Assert
-        expect(component.participantCallStatuses['Participant1']).toBeUndefined();
-    });
-
-    it('should not set answer if different conference', () => {
-        component.roomLabel = 'Room1';
-        consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(
-                'IncorrectConferenceId',
-                invitationId,
-                'Room1',
-                'Participant1',
-                ConsultationAnswer.Rejected
-            )
-        );
-
-        // Assert
-        expect(component.participantCallStatuses['Participant1']).toBeUndefined();
-    });
-
-    it('should set answer on response message then reset after timeout', fakeAsync(() => {
-        component.roomLabel = 'Room1';
-        const participantid = conference.participants.find(x => x.role === Role.Individual).id;
-        consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantid, ConsultationAnswer.Rejected)
-        );
-        flushMicrotasks();
-
-        // Assert
-        expect(component.participantCallStatuses[participantid]).toBe('Rejected');
-        tick(10000);
-        expect(component.participantCallStatuses[participantid]).toBeNull();
-    }));
-
-    it('should a 2nd call after answering should prevent timeout call', fakeAsync(() => {
-        component.roomLabel = 'Room1';
-        const participantid1 = conference.participants.find(x => x.role === Role.Individual).id;
-        const participantid2 = conference.participants.find(x => x.role === Role.Representative).id;
-        consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', participantid1, ConsultationAnswer.Rejected)
-        );
-        flushMicrotasks();
-        tick(2000);
-        requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', participantid2, participantid1)
-        );
-        tick(9000);
-
-        // Assert
-        expect(component.participantCallStatuses[participantid1]).toBe('Calling');
-    }));
-
-    it('should not set calling if different room', () => {
-        component.roomLabel = 'Room1';
-        requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, invitationId, 'Room2', 'Participant2', 'Participant1')
-        );
-
-        // Assert
-        expect(component.participantCallStatuses['Participant1']).toBeUndefined();
-    });
-
-    it('should not set calling if different conference', () => {
-        component.roomLabel = 'Room1';
-        requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage('IncorrectConferenceId', invitationId, 'Room1', 'Participant2', 'Participant1')
-        );
-
-        // Assert
-        expect(component.participantCallStatuses['Participant1']).toBeUndefined();
-    });
-
-    it('should reset participant call status on status message', () => {
-        component.roomLabel = 'Room1';
-        const participantid1 = conference.participants.find(x => x.role === Role.Individual).id;
-        const participantid2 = conference.participants.find(x => x.role === Role.Representative).id;
-        requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', participantid2, participantid1)
-        );
-        participantStatusSubjectMock.next(
-            new ParticipantStatusMessage(participantid1, 'Username', conference.id, ParticipantStatus.Disconnected)
-        );
-
-        // Assert
-        expect(component.participantCallStatuses[participantid1]).toBeNull();
-    });
-
-    it('should get participant status', () => {
-        component.roomLabel = 'Room1';
-        const allStatuses = Object.values(ParticipantStatus);
-        allStatuses.forEach(status => {
-            const statusString = status.toString();
-            const participantId = 'Participant1';
-            const participant = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['id']);
-            participant.id = participantId;
-            component.participantCallStatuses[participantId] = statusString;
-
-            const result = component.getParticipantStatus(participant);
-
-            // Assert
-            expect(result).toBe(statusString);
-        });
-    });
-
-    it('should get endpoint status', () => {
-        component.roomLabel = 'Room1';
-        const allStatuses = Object.values(EndpointStatus);
-        allStatuses.forEach(status => {
-            const statusString = status.toString();
-            const endpointId = 'Endpoint1';
-            const endpoint = jasmine.createSpyObj<VHEndpoint>('VHParticipant', ['id']);
-            endpoint.id = endpointId;
-            component.participantCallStatuses[endpointId] = statusString;
-
-            const result = component.getParticipantStatus(endpoint);
-
-            // Assert
-            expect(result).toBe(statusString);
-        });
+        expect(result).toBe('Transferring...');
     });
 
     it('should get participant available if available', () => {
@@ -413,110 +280,91 @@ describe('PrivateConsultationParticipantsComponent', () => {
         );
     });
 
-    it('should return can call endpoint', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
+    describe('canCallEndpoint', () => {
+        it('should return can call endpoint', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: 'not-test-room', locked: false }
+            } as VHEndpoint;
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeTrue();
+        });
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+        it('should return can not call endpoint - same room', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: 'test-room', locked: false }
+            } as VHEndpoint;
 
-        expect(component.canCallEndpoint(endpoint)).toBeTrue();
-    });
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-    it('should return can not call endpoint - same room', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
+        it('should return can not call endpoint - not available', () => {
+            // Not in current room
+            component.roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Disconnected,
+                room: { label: 'not-test-room', locked: false }
+            } as VHEndpoint;
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
+        it('should return can not call endpoint - when conference is started', () => {
+            // In current room
+            const roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            component.roomLabel = roomLabel;
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: roomLabel, locked: false }
+            } as VHEndpoint;
 
-    it('should return can not call endpoint - not available', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
+            conference.status = ConferenceStatus.InSession;
 
-        // Available
-        endpoint.status = EndpointStatus.Disconnected;
+            // Has permissions
+            component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
-        // Room doesnt contain another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
 
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
+        it('should return can not call endpoint - not defense advocate', () => {
+            const roomLabel = 'test-room';
+            const endpoint = conference.endpoints[0];
+            component.roomLabel = roomLabel;
+            const vhEndpoint = {
+                id: endpoint.id,
+                status: EndpointStatus.Connected,
+                room: { label: roomLabel, locked: false }
+            } as VHEndpoint;
 
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
+            conference.status = ConferenceStatus.InSession;
 
-    it('should return can not call endpoint - when endpoint is already in the room', () => {
-        // In current room
-        const roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.room.label = roomLabel;
+            // Has not got permissions to call endpoint
+            component.participantEndpoints = [];
 
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'test-room';
-
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
-
-    it('should return can not call endpoint - when conference is started', () => {
-        // In current room
-        const roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        component.roomLabel = endpoint.room.label = roomLabel;
-
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'test-room';
-        conference.status = ConferenceStatus.InSession;
-
-        // Has permissions
-        component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
-    });
-
-    it('should return can not call endpoint - not defense advocate', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
-        const endpoint = conference.endpoints[0];
-        endpoint.room.label = 'not-test-room';
-
-        // Available
-        endpoint.status = EndpointStatus.Connected;
-
-        // Room contains another endpount
-        conference.endpoints[1].room.label = 'not-test-room';
-
-        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+            expect(component.canCallEndpoint(vhEndpoint)).toBeFalse();
+        });
     });
 
     it('should return participant status', () => {
@@ -792,27 +640,27 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
     });
 
-    describe('setParticipantCallStatus', () => {
-        it('should set the participant call status and that of participants protected by the participant', () => {
-            const participant = conference.participants.find(x => x.role === Role.Individual);
-            const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
-            participant.protectedFrom = [protectedParticipant.externalReferenceId];
+    // describe('setParticipantCallStatus', () => {
+    //     it('should set the participant call status and that of participants protected by the participant', () => {
+    //         const participant = conference.participants.find(x => x.role === Role.Individual);
+    //         const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
+    //         participant.protectedFrom = [protectedParticipant.externalReferenceId];
 
-            component.setParticipantCallStatus(participant.id, 'Calling', 'Restricted');
+    //         component.setParticipantCallStatus(participant.id, 'Calling', 'Restricted');
 
-            expect(component.participantCallStatuses[participant.id]).toBe('Calling');
-            expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Restricted');
-        });
+    //         expect(component.participantCallStatuses[participant.id]).toBe('Calling');
+    //         expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Restricted');
+    //     });
 
-        it('should set the participant call status and that of participants protected by the participant', () => {
-            const participant = conference.participants.find(x => x.role === Role.Individual);
-            const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
-            protectedParticipant.protectedFrom = [participant.externalReferenceId];
+    //     it('should set the participant call status and that of participants protected by the participant', () => {
+    //         const participant = conference.participants.find(x => x.role === Role.Individual);
+    //         const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
+    //         protectedParticipant.protectedFrom = [participant.externalReferenceId];
 
-            component.setParticipantCallStatus(participant.id, 'Calling', 'Protected');
+    //         component.setParticipantCallStatus(participant.id, 'Calling', 'Protected');
 
-            expect(component.participantCallStatuses[participant.id]).toBe('Calling');
-            expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Protected');
-        });
-    });
+    //         expect(component.participantCallStatuses[participant.id]).toBe('Calling');
+    //         expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Protected');
+    //     });
+    // });
 });
