@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Participant } from 'src/app/shared/models/participant';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -41,10 +40,10 @@ export class NotificationToastrService {
         roomLabel: string,
         conferenceId: string,
         consultationInvitation: ConsultationInvitation,
-        requestedBy: Participant,
-        requestedFor: Participant,
-        participants: Participant[],
-        endpoints: VideoEndpointResponse[],
+        requestedBy: VHParticipant,
+        requestedFor: VHParticipant,
+        participants: VHParticipant[],
+        endpoints: VHEndpoint[],
         inHearing: boolean
     ) {
         const inviteKey = this.getInviteKey(conferenceId, roomLabel);
@@ -76,7 +75,7 @@ export class NotificationToastrService {
             .join('<br/>');
         const endpointsList = endpoints
             .filter(p => p.id !== requestedById)
-            .map(p => p.display_name)
+            .map(p => p.displayName)
             .join('<br/>');
         if (participantsList || endpointsList) {
             message += '<br/>' + this.translateService.instant('notification-toastr.invite.with');

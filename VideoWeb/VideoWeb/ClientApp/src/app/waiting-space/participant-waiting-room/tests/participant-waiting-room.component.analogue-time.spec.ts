@@ -15,7 +15,6 @@ import {
     initAllWRDependencies,
     logger,
     mockConferenceStore,
-    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -77,7 +76,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             consultationInvitiationService,
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService,
             userMediaServiceSpy,
             titleService,
             hideComponentsService,
@@ -146,8 +144,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         const conference = new ConferenceTestData().getConferenceDetailPast();
         conference.status = ConferenceStatus.NotStarted;
         component.hearing = new Hearing(conference);
-        component.participant = conference.participants[0];
-        component.participant.hearing_role = HearingRole.WITNESS;
+        component.vhParticipant.hearingRole = HearingRole.WITNESS;
 
         expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
     });

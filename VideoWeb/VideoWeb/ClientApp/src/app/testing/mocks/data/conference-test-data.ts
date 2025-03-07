@@ -19,6 +19,7 @@ import {
     Role,
     RoomSummaryResponse,
     SelfTestPexipResponse,
+    Supplier,
     TaskResponse,
     TaskType,
     VideoEndpointResponse
@@ -476,7 +477,6 @@ export class ConferenceTestData {
             display_name: 'Greeno',
             tiled_display_name: 'CIVILIAN;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            current_room: new RoomSummaryResponse(),
             interpreter_language: new InterpreterLanguageResponse({
                 code: 'spa',
                 description: 'Spanish',
@@ -497,7 +497,6 @@ export class ConferenceTestData {
 
             tiled_display_name: 'CIVILIAN;James Green;9F681318-4955-49AF-A887-DED64554429J',
             hearing_role: HearingRole.REPRESENTATIVE,
-            current_room: new RoomSummaryResponse(),
             linked_participants: [],
             external_reference_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A',
             protect_from: []
@@ -512,7 +511,6 @@ export class ConferenceTestData {
 
             tiled_display_name: 'JUDGE;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
             hearing_role: HearingRole.JUDGE,
-            current_room: new RoomSummaryResponse(),
             linked_participants: [],
             external_reference_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
             protect_from: []
@@ -852,8 +850,7 @@ export class ConferenceTestData {
             display_name: 'DispName1',
             status: EndpointStatus.NotYetJoined,
             id: '1232323',
-            pexip_display_name: 'PSTN;DispName1;1232323',
-            current_room: new RoomSummaryResponse()
+            pexip_display_name: 'PSTN;DispName1;1232323'
         });
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
@@ -861,7 +858,6 @@ export class ConferenceTestData {
             id: '123232355',
             defence_advocate_username: 'john.doe@hearings.net',
             pexip_display_name: 'PSTN;DispName2;123232355',
-            current_room: new RoomSummaryResponse(),
             interpreter_language: new InterpreterLanguageResponse({
                 code: 'spa',
                 description: 'Spanish',
@@ -1358,7 +1354,10 @@ export class ConferenceTestData {
             pexip_node_uri: 'node@supplier.com',
             hearing_venue_name: 'venue name',
             endpoints: endpoints,
-            ingest_url: 'rtmp://vh-wowza-node/hearing_id'
+            ingest_url: 'rtmp://vh-wowza-node/hearing_id',
+            supplier: Supplier.Vodafone,
+            hearing_venue_is_scottish: false,
+            hearing_ref_id: '12AB52C6-BDA5-4F4D-95B8-3F49065216A9'
         });
     }
 }
