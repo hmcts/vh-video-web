@@ -10,7 +10,7 @@ public class VhApiLoggingDelegatingHandler(ILogger<VhApiLoggingDelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        using var activity = Activity.Current ?? new Activity("HttpClientRequest").Start();
+        var activity = Activity.Current;
         activity.SetTag("http.method", request.Method);
         activity.SetTag("http.url", request.RequestUri);
         

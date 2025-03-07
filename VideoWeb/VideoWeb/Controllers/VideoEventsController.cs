@@ -33,13 +33,15 @@ public class VideoEventsController(
     ILogger<VideoEventsController> logger) 
     : ControllerBase
 {
+    private readonly ActivitySource _callbackActivity = new("SupplierCallbackEvent");
+    
     [HttpPost]
     [SwaggerOperation(OperationId = "SendEvent")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
     {
-        using var activity = Activity.Current ?? new Activity(nameof(SendHearingEventAsync)).Start();
+        var activity = _callbackActivity.StartActivity() ?? new Activity("SupplierCallbackEvent");
         try
         {
             activity.SetTag("event.source", "SupplierCallback");
@@ -86,6 +88,10 @@ public class VideoEventsController(
             activity.SetStatus(ActivityStatusCode.Error, e.Message);
             logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId, e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
+        }
+        finally
+        {
+            activity.Stop();
         }
     }
     
