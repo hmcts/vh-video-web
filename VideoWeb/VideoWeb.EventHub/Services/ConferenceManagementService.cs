@@ -48,7 +48,8 @@ public class ConferenceManagementService(
     IConferenceService conferenceService,
     IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IVideoApiClient videoApiClient,
-    ILogger<ConferenceManagementService> logger)
+    ILogger<ConferenceManagementService> logger,
+    IFeatureToggles featureToggles)
     : IConferenceManagementService
 {
     public async Task StartOrResumeVideoHearingAsync(Guid conferenceId, string startedByUsername,  HearingLayout? layout,
@@ -71,6 +72,7 @@ public class ConferenceManagementService(
         
         await videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
         
+        if(!featureToggles.TransferringOnStartEnabled()) return;
         var participantsWhoAreTransferringIn = conference.Participants.Where(x =>
                 x.ParticipantStatus is ParticipantStatus.Available or ParticipantStatus.InConsultation && x.IsTransferredOnStart())
             .ToList();

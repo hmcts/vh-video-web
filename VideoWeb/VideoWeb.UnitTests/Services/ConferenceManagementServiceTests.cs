@@ -158,6 +158,8 @@ public class ConferenceManagementServiceTests
     public async Task
         StartOrResumeVideoHearingAsync_should_send_request_to_start_hearing_and_publish_transfer_message_for_booked_partcicipants_connected()
     {
+        _mocker.Mock<IFeatureToggles>().Setup(x=> x.TransferringOnStartEnabled()).Returns(true);
+        
         var participantsAvailable = _conference.Participants.Where(x => !x.IsHost()).Take(2).ToList();
         participantsAvailable.ForEach(p => p.ParticipantStatus = ParticipantStatus.Available);
         var participantsNotSignedIn = _conference.Participants.Where(x => !x.IsHost()).Skip(2).ToList();
