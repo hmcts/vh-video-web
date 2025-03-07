@@ -3,6 +3,7 @@ import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 import { WindowScrolling } from './window-scrolling';
 
 @Directive({
+    standalone: false,
     selector: '[appScrollTrigger]'
 })
 export class ScrollTriggerDirective {

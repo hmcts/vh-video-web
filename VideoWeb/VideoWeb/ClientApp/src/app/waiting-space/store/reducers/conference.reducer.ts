@@ -1,6 +1,14 @@
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { ConferenceActions } from '../actions/conference.actions';
-import { VHConference, VHEndpoint, VHParticipant, VHPexipConference, VHPexipParticipant, VHRoom } from '../models/vh-conference';
+import {
+    VHConference,
+    VHEndpoint,
+    VHParticipant,
+    VHPexipConference,
+    VHPexipParticipant,
+    VHRoom,
+    VHConsultationCallStatus
+} from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export const conferenceFeatureKey = 'active-conference';
@@ -12,6 +20,7 @@ export interface ConferenceState {
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
     countdownComplete?: boolean;
+    consultationStatuses?: VHConsultationCallStatus[];
 }
 
 export const initialState: ConferenceState = {
@@ -20,7 +29,8 @@ export const initialState: ConferenceState = {
     loggedInParticipant: undefined,
     availableRooms: [],
     wowzaParticipant: undefined,
-    countdownComplete: undefined
+    countdownComplete: undefined,
+    consultationStatuses: []
 };
 
 function getCurrentConference(state: ConferenceState, conferenceId: string): VHConference {
@@ -41,6 +51,20 @@ const updateLoggedInParticipant = (state: ConferenceState, participants: VHParti
     }
     return { ...state, loggedInParticipant: { ...updatedParticipant } };
 };
+
+function distinctRoomLabels(rooms: VHRoom[]): VHRoom[] {
+    const uniqueRooms: VHRoom[] = [];
+    const labels = new Set<string>();
+
+    for (const room of rooms) {
+        if (room && !labels.has(room.label)) {
+            labels.add(room.label);
+            uniqueRooms.push(room);
+        }
+    }
+
+    return uniqueRooms;
+}
 
 export const conferenceReducer = createReducer(
     initialState,
@@ -65,7 +89,7 @@ export const conferenceReducer = createReducer(
             return { ...e, pexipInfo: existingEndpoint?.pexipInfo, transferDirection: undefined } as VHEndpoint;
         });
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
-        const availableRooms = conference.participants.map(p => p.room).filter(r => r !== null);
+        const availableRooms = distinctRoomLabels(conference.participants.map(p => p.room));
         const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
         return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete, loggedInParticipant };
@@ -77,7 +101,18 @@ export const conferenceReducer = createReducer(
             return state;
         }
 
-        const updatedConference: VHConference = { ...conference, status: status, countdownComplete: null };
+        let updatedParticipants = conference.participants;
+        if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
+            // reset the transfer direction for all participants
+            updatedParticipants = conference.participants.map(p => ({ ...p, transferDirection: undefined }));
+        }
+
+        const updatedConference: VHConference = {
+            ...conference,
+            status: status,
+            countdownComplete: null,
+            participants: updatedParticipants
+        };
         return { ...state, currentConference: updatedConference };
     }),
     on(ConferenceActions.upsertPexipConference, (state, { pexipConference: conference }) => ({ ...state, pexipConference: conference })),
@@ -111,9 +146,14 @@ export const conferenceReducer = createReducer(
             }
         });
 
+        // remove participant from consultation statuses
+        const updatedConsultationStatuses = state.consultationStatuses.filter(
+            consultationStatus => consultationStatus.participantId !== participantId && consultationStatus.requestedFor !== participantId
+        );
+
         const updatedConference: VHConference = { ...conference, participants: participants };
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
-        return { ...state, currentConference: updatedConference, loggedInParticipant };
+        return { ...state, currentConference: updatedConference, loggedInParticipant, consultationStatuses: updatedConsultationStatuses };
     }),
     on(ConferenceActions.updateEndpointStatus, (state, { conferenceId, endpointId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
@@ -191,12 +231,9 @@ export const conferenceReducer = createReducer(
             return updatedParticipant;
         });
 
-        let updatedAvailableRooms: VHRoom[] = state.availableRooms;
-        updatedParticipants.forEach(p => {
-            if (p.room && !updatedAvailableRooms.some(r => r.label === p.room.label)) {
-                updatedAvailableRooms = [...updatedAvailableRooms, p.room];
-            }
-        });
+        const updatedAvailableRooms = distinctRoomLabels([
+            ...updatedParticipants.map(p => p.room, ...conference.endpoints.map(e => e.room))
+        ]);
         const updatedConference: VHConference = { ...conference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
@@ -216,12 +253,9 @@ export const conferenceReducer = createReducer(
                 updatedList.push(e);
             }
         });
-        let updatedAvailableRooms: VHRoom[] = state.availableRooms;
-        updatedList.forEach(e => {
-            if (e.room && !updatedAvailableRooms.some(r => r.label === e.room.label)) {
-                updatedAvailableRooms = [...updatedAvailableRooms, e.room];
-            }
-        });
+
+        const updatedAvailableRooms = distinctRoomLabels([...updatedList.map(p => p.room, ...conference.participants.map(e => e.room))]);
+
         const updatedConference: VHConference = { ...conference, endpoints: updatedList };
         return { ...state, currentConference: updatedConference, availableRooms: updatedAvailableRooms };
     }),
@@ -418,6 +452,66 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, participants: participants };
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
         return { ...state, currentConference: updatedConference, loggedInParticipant };
+    }),
+    on(ConferenceActions.upsertConsultationCallStatus, (state, { invitationId, roomLabel, requestedBy, requestedFor, callStatus }) => {
+        const index = state.consultationStatuses.findIndex(
+            status => status.participantId === requestedFor && status.invitationId === invitationId
+        );
+
+        const participant = state.currentConference.participants.find(p => p.id === requestedFor);
+        const updatedStatuses = [...state.consultationStatuses];
+
+        state.currentConference.participants.forEach(p => {
+            if (p.protectedFrom?.includes(participant.externalReferenceId)) {
+                updatedStatuses.push({
+                    participantId: p.id,
+                    callStatus: 'Protected'
+                } as VHConsultationCallStatus);
+            }
+            if (participant.protectedFrom?.includes(p.externalReferenceId)) {
+                updatedStatuses.push({
+                    participantId: p.id,
+                    callStatus: 'Protected'
+                } as VHConsultationCallStatus);
+            }
+        });
+
+        if (index > -1) {
+            const existingStatus = updatedStatuses[index];
+            updatedStatuses[index] = {
+                ...existingStatus,
+                callStatus: callStatus,
+                roomLabel: roomLabel,
+                invitationId: invitationId
+            };
+        } else {
+            updatedStatuses.push({
+                participantId: requestedFor,
+                requestedBy: requestedBy,
+                requestedFor: requestedFor,
+                invitationId: invitationId,
+                roomLabel: roomLabel,
+                callStatus: callStatus
+            });
+        }
+
+        return { ...state, consultationStatuses: updatedStatuses };
+    }),
+    on(ConferenceActions.consultationResponded, (state, { invitationId, requestedFor, answer }) => {
+        const updatedStatuses = state.consultationStatuses.map(status => {
+            if (status.participantId === requestedFor && status.invitationId === invitationId) {
+                return { ...status, callStatus: answer };
+            }
+            return status;
+        });
+
+        return { ...state, consultationStatuses: updatedStatuses };
+    }),
+    on(ConferenceActions.clearConsultationCallStatus, (state, { requestedFor, invitationId }) => {
+        const updatedStatuses = state.consultationStatuses.filter(
+            status => status.participantId !== requestedFor && status.invitationId !== invitationId
+        );
+        return { ...state, consultationStatuses: updatedStatuses };
     })
 );
 

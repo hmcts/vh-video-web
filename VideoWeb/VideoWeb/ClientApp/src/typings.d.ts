@@ -41,7 +41,7 @@ declare interface PexRTC {
     PexRTC(): PexipClient;
 }
 
-declare type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none';
+declare type PexipCallType = 'presentation' | 'screen' | 'audioonly' | 'recvonly' | 'rtmp' | 'stream' | 'none' | 'test_call';
 
 declare type PexipDialOutCallType = 'video' | 'video-only ' | 'audio';
 

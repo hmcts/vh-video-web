@@ -13,6 +13,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 
 @Component({
+    standalone: false,
     selector: 'app-judge-hearing-list',
     templateUrl: '../host-hearing-list.component.html',
     styleUrls: ['../host-hearing-list.component.scss']

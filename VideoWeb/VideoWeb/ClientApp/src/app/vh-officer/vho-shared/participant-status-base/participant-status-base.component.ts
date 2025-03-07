@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+import { SortingHelper } from 'src/app/shared/helpers/sorting-helper';
 
 @Directive()
 export abstract class ParticipantStatusDirective {
@@ -136,21 +137,31 @@ export abstract class ParticipantStatusDirective {
 
     sortParticipants() {
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
+        const panelMembersAndWingers = this.participants
+            .filter(participant => [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole))
+            .sort(SortingHelper.orderByRoleThenName);
+        const staff = this.participants
+            .filter(participant => participant.hearingRole === HearingRole.STAFF_MEMBER)
+            .sort(SortingHelper.orderByRoleThenName);
+        const observers = this.participants
+            .filter(participant => participant.hearingRole === HearingRole.OBSERVER)
+            .sort(SortingHelper.orderByRoleThenName);
+        const quickLinks = this.participants
+            .filter(participant => participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver)
+            .sort(SortingHelper.orderByRoleThenName);
 
-        const panelMembersAndWingers = this.participants.filter(participant =>
-            [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole)
-        );
-        const observers = this.participants.filter(participant => participant.hearingRole === HearingRole.OBSERVER);
-        const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
-        const others = this.participants.filter(
-            participant =>
-                !judges.includes(participant) &&
-                !panelMembersAndWingers.includes(participant) &&
-                !interpretersAndInterpretees.includes(participant) &&
-                !observers.includes(participant)
-        );
+        const participants = this.participants
+            .filter(
+                participant =>
+                    !judges.includes(participant) &&
+                    !panelMembersAndWingers.includes(participant) &&
+                    !observers.includes(participant) &&
+                    !quickLinks.includes(participant) &&
+                    !staff.includes(participant)
+            )
+            .sort(SortingHelper.orderByRoleThenName);
 
-        this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...others, ...interpretersAndInterpretees, ...observers];
+        this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...staff, ...participants, ...observers, ...quickLinks];
         return this.sortedParticipants;
     }
 }

@@ -13,6 +13,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { FocusService } from 'src/app/services/focus.service';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { ConsultationRules } from 'src/app/services/models/consultation-rules';
+import { SortingHelper } from 'src/app/shared/helpers/sorting-helper';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective implements OnChanges {
@@ -103,7 +104,6 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     addSharedEventHubSubcribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
@@ -181,7 +181,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearingRole !== HearingRole.STAFF_MEMBER
             )
-            .sort((a, b) => a.role.localeCompare(b.role) || (a.name || a.displayName).localeCompare(b.name || b.displayName));
+            .sort(SortingHelper.orderByRoleThenName);
 
         nonJudgeParts = [
             ...nonJudgeParts,

@@ -3,6 +3,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 
 @Component({
+    standalone: false,
     selector: 'app-chat-body-window',
     templateUrl: './chat-body-window.component.html',
     styleUrls: ['./chat-body-window.component.scss', '../../vh-officer/vho-global-styles.scss']

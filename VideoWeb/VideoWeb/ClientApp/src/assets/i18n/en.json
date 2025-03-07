@@ -917,7 +917,7 @@
     "upper-tribunals-notice-of-reference-finance-services": "Upper Tribunals Notice of Reference Finance Services",
     "upper-tribunals-notice-of-reference-energy-market-decisions": "Upper Tribunals Notice of Reference Energy Market Decisions",
     "upper-tribunals-notice-of-reference-trade-remedies": "Upper Tribunals Notice of Reference Trade Remedies",
-    "upper-tribunals-notice-of-appeal-trade-remedies ": "Upper Tribunals Notice of Appeal Trade Remedies",
+    "upper-tribunals-notice-of-appeal-trade-remedies": "Upper Tribunals Notice of Appeal Trade Remedies",
     "upper-tribunals-notice-of-appeal-financial-sanctions": "Upper Tribunals Notice of Appeal Financial Sanctions",
     "upper-tribunals-judicial-review-applications-(tax)": "Upper Tribunals Judicial Review Applications (Tax)",
     "upper-tribunals-agricultural-land-and-drainage": "Upper Tribunals Agricultural Land and Drainage",
@@ -1568,6 +1568,14 @@
         "purpose": "Used to secure communications with HMCTS data services",
         "expires": "When you close your browser"
       }
+    },
+    "cookie-banner" : {
+      "title": "Cookies on Video Hearings",
+      "intro": "We use some essential cookies to make this service work.",
+      "intro2": "We’d like to set additional cookies so we can remember your settings, understand how people use the service and make improvements.",
+      "accept": "Accept additional cookies",
+      "reject": "Reject additional cookies",
+      "cookie-page": "View cookies"
     }
   },
   "audio-mix-selection": {

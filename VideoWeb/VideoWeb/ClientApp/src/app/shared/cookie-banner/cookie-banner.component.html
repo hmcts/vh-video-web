@@ -1,0 +1,24 @@
+<section class="cookie-container govuk-cookie-banner" data-nosnippet aria-label="Cookies on Video Hearing Service">
+    <div class="govuk-cookie-banner__message govuk-width-container govuk-!-padding-3">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+            {{ 'cookies.cookie-banner.title' | translate }}
+          </h2>
+          <div class="govuk-cookie-banner__content">
+            <p class="govuk-body">{{ 'cookies.cookie-banner.intro' | translate }}</p>
+            <p class="govuk-body">{{ 'cookies.cookie-banner.intro2' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-button-group">
+        <button value="yes" (click)="acceptCookies()" type="submit" name="cookies[additional]" class="govuk-button" data-module="govuk-button">
+            {{ 'cookies.cookie-banner.accept' | translate }}
+        </button>
+        <button value="no" (click)="rejectCookies()" type="submit" name="cookies[additional]" class="govuk-button" data-module="govuk-button">
+            {{ 'cookies.cookie-banner.reject' | translate }}
+        </button>
+        <a class="govuk-link" href="/cookies">{{ 'cookies.cookie-banner.cookie-page' | translate }}</a>
+      </div>
+    </div>
+  </section>

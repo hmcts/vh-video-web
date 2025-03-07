@@ -1,16 +1,18 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
 using VideoApi.Client;
 using VideoWeb.Common;
 
 namespace VideoWeb.Middleware;
 
-public class ExceptionMiddleware(RequestDelegate next)
+public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {
     public async Task InvokeAsync(HttpContext httpContext)
     {
@@ -20,45 +22,57 @@ public class ExceptionMiddleware(RequestDelegate next)
         }
         catch (VideoApiException apiException)
         {
-            var properties = new Dictionary<string, string> { { "response", apiException.Response } };
-            ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Video API Client Exception",
-                apiException, null, properties);
-            await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException);
+            await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException, "Video API Client Exception");
         }
         catch (BookingsApiException apiException)
         {
-            var properties = new Dictionary<string, string> { { "response", apiException.Response } };
-            ApplicationLogger.TraceException(TraceCategory.Dependency.ToString(), "Bookings API Client Exception",
-                apiException, null, properties);
-            await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException);
+            await HandleExceptionAsync(httpContext, (HttpStatusCode)apiException.StatusCode, apiException, "Bookings API Client Exception");
         }
         catch (BadRequestException ex)
         {
-            ApplicationLogger.TraceException(TraceCategory.AppException.ToString(), "400 Exception", ex, null,
-                null);
-            await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, ex);
+            await HandleExceptionAsync(httpContext, HttpStatusCode.BadRequest, ex, "400 Exception");
         }
         catch (OperationCanceledException ex)
         {
-            ApplicationLogger.TraceException(TraceCategory.OperationCancelled.ToString(), "Operation Cancelled Exception",
-                ex, httpContext.User, null);
-            await HandleExceptionAsync(httpContext, HttpStatusCode.RequestTimeout, ex);
+            await HandleExceptionAsync(httpContext, HttpStatusCode.RequestTimeout, ex, "Operation Cancelled Exception");
         }
         catch (Exception ex)
         {
-            ApplicationLogger.TraceException(TraceCategory.AppException.ToString(), "App Exception", ex, null, null);
-            await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
+            await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex, "App Exception");
         }
     }
     
-    private static Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception, string eventTitle)
     {
+        TraceException(context, exception, eventTitle);
+        
+        logger.LogError(exception, "{EventTitle}: {Message}", eventTitle, exception.Message);
+
         if (context.Response.HasStarted)
         {
-            Console.WriteLine("The response has already started, the error handling middleware will not be executed.");
-            return Task.CompletedTask;
+            Console.WriteLine("The response has already started, skipping error handling middleware.");
+            return;
         }
+
         context.Response.StatusCode = (int)statusCode;
+        var responseMessage = BuildExceptionMessage(exception);
+        await context.Response.WriteAsJsonAsync(responseMessage);
+    }
+    
+    //For structured logging
+    private static void TraceException(HttpContext context, Exception exception, string eventTitle)
+    {
+        var activity = Activity.Current;
+        if (activity == null) return;
+        activity.DisplayName = eventTitle;
+        activity.AddException(exception);
+        activity.SetStatus(ActivityStatusCode.Error);
+        activity.SetTag("user", context.User.Identity?.Name ?? "Unknown");
+        activity.SetTag("http.status_code", context.Response.StatusCode);
+    }
+    
+    private static string BuildExceptionMessage(Exception exception)
+    {
         var sb = new StringBuilder(exception.Message);
         var innerException = exception.InnerException;
         while (innerException != null)
@@ -66,6 +80,6 @@ public class ExceptionMiddleware(RequestDelegate next)
             sb.Append($" {innerException.Message}");
             innerException = innerException.InnerException;
         }
-        return context.Response.WriteAsJsonAsync(sb.ToString());
+        return sb.ToString();
     }
 }

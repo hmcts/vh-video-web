@@ -6,6 +6,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-hearing-rules',
     templateUrl: './hearing-rules.component.html',
     styleUrls: ['./hearing-rules.component.scss']

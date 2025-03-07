@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
+    standalone: false,
     selector: 'app-back-navigation',
     templateUrl: './back-navigation.component.html'
 })

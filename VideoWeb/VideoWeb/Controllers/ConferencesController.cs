@@ -95,7 +95,13 @@ public class ConferencesController(
         ICollection<ConferenceCoreResponse> conferences = new List<ConferenceCoreResponse>();
         if (hearingsForToday.Count > 0)
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
+        
+        if (conferences.Count != hearingsForToday.Count)
+            logger.LogError(
+                "Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for venue(s) {Venues}",
+                hearingsForToday.Count, conferences.Count, hearingVenueNames);
         var response = hearingsForToday
+            .Where(h => conferences.Any(c => c.HearingId == h.Id))
             .Select(hearing =>
                 BookingForHostResponseMapper.Map(hearing, conferences.First(c => hearing.Id == c.HearingId)))
             .ToList();
@@ -204,11 +210,11 @@ public class ConferencesController(
     /// <param name="cancellationToken"></param>
     /// <returns>the details of a conference, if permitted</returns>
     [HttpGet("{conferenceId}/vhofficer")]
-    [ProducesResponseType(typeof(ConferenceResponseVho), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
     [Authorize(AppRoles.VhOfficerRole)]
-    public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
+    public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdVhoAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
         if (conferenceId == Guid.Empty)
         {
@@ -246,7 +252,7 @@ public class ConferencesController(
             .Participants
             .Where(x => displayRoles.Contains(x.Role)).ToList();
 
-        return Ok(ConferenceResponseVhoMapper.Map(conference));
+        return Ok(ConferenceResponseMapper.Map(conference));
     }
 
     /// <summary>

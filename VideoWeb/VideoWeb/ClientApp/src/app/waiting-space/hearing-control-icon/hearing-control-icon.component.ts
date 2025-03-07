@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
+    standalone: false,
     selector: 'app-hearing-control-icon',
     templateUrl: './hearing-control-icon.component.html',
     styleUrl: './hearing-control-icon.component.scss'

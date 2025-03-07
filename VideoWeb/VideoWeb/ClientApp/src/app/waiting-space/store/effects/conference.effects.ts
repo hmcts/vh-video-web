@@ -12,6 +12,7 @@ import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
 import { VideoCallService } from '../../services/video-call.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -47,6 +48,7 @@ export class ConferenceEffects {
                 ofType(ConferenceActions.loadConferenceSuccess),
                 tap(action => {
                     this.supplierClientService.loadSupplierScript(action.conference.supplier);
+                    this.venueFlagService.setHearingVenueIsScottish(action.conference.isVenueScottish);
                 })
             ),
         { dispatch: false }
@@ -107,6 +109,9 @@ export class ConferenceEffects {
                             false
                         );
                     }
+                    if (action.reason.toLowerCase().includes('no heartbeat received due to temporary network disruption')) {
+                        this.errorService.goToServiceError('error-service.unexpected-error', 'error-service.problem-with-connection', true);
+                    }
                     return of();
                 })
             ),
@@ -119,6 +124,7 @@ export class ConferenceEffects {
         private apiClient: ApiClient,
         private supplierClientService: SupplierClientService,
         private videoCallService: VideoCallService,
+        private venueFlagService: HearingVenueFlagsService,
         private errorService: ErrorService
     ) {}
 }

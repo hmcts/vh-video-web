@@ -24,10 +24,12 @@ import { AuthConfigModule } from './auth-config.module';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 
 import { StoreModule } from '@ngrx/store';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { SupplierClientService } from './services/api/supplier-client.service';
+import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -46,7 +48,7 @@ export function getLocale() {
 }
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, NavigatorComponent],
+    declarations: [AppComponent, HomeComponent, NavigatorComponent, CookieBannerComponent],
     imports: [
         BrowserModule,
         FormsModule,
@@ -64,7 +66,8 @@ export function getLocale() {
             }
         }),
         AuthConfigModule,
-        StoreModule.forRoot({}),
+        StoreModule.forRoot({ router: routerReducer }),
+        StoreRouterConnectingModule.forRoot(),
         StoreDevtoolsModule.instrument({ logOnly: !isDevMode() }),
         EffectsModule.forRoot([])
     ],

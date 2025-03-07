@@ -6,7 +6,7 @@ It represents the closest reasonable ESLint configuration to this
 project's original TSLint configuration.
 
 We recommend eventually switching this configuration to extend from
-the recommended rulesets in typescript-eslint. 
+the recommended rulesets in typescript-eslint.
 https://github.com/typescript-eslint/tslint-to-eslint-config/blob/master/docs/FAQs.md
 
 Happy linting! 💖
@@ -34,11 +34,12 @@ module.exports = {
     ],
     root: true,
     rules: {
+        'no-duplicate-imports': 'error',
+        'import/no-duplicates': 'error',
         'unused-imports/no-unused-imports': 'error',
         'jasmine/no-focused-tests': 'error',
         '@angular-eslint/component-class-suffix': 'error',
         '@angular-eslint/directive-class-suffix': 'error',
-        '@angular-eslint/no-host-metadata-property': 'error',
         '@angular-eslint/no-input-rename': 'error',
         '@angular-eslint/no-inputs-metadata-property': 'off',
         '@angular-eslint/no-output-on-prefix': 'error',
@@ -55,19 +56,6 @@ module.exports = {
             }
         ],
         '@typescript-eslint/indent': 'off',
-        '@typescript-eslint/member-delimiter-style': [
-            'error',
-            {
-                multiline: {
-                    delimiter: 'semi',
-                    requireLast: true
-                },
-                singleline: {
-                    delimiter: 'semi',
-                    requireLast: false
-                }
-            }
-        ],
         '@typescript-eslint/member-ordering': 'error',
         '@typescript-eslint/naming-convention': [
             'error',
@@ -96,9 +84,6 @@ module.exports = {
         ],
         '@typescript-eslint/no-unused-expressions': 'error',
         '@typescript-eslint/prefer-function-type': 'error',
-        '@typescript-eslint/quotes': ['error', 'single'],
-        '@typescript-eslint/semi': ['error', 'always'],
-        '@typescript-eslint/type-annotation-spacing': 'error',
         '@typescript-eslint/unified-signatures': 'error',
         'arrow-body-style': 'error',
         'brace-style': ['error', '1tbs'],
@@ -106,7 +91,6 @@ module.exports = {
         curly: 'error',
         'dot-notation': 'off',
         'eol-last': 'error',
-        eqeqeq: ['error', 'smart'],
         'guard-for-in': 'error',
         'id-denylist': 'error',
         'id-match': 'error',

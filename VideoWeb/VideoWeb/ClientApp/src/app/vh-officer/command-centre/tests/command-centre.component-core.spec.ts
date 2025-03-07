@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -21,6 +21,9 @@ import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -36,6 +39,9 @@ describe('CommandCentreComponent - Core', () => {
     let pageServiceSpy: jasmine.SpyObj<PageService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
     let courtRoomAccounts: CourtRoomsAccounts[] = [];
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let userDataSubject: Subject<boolean>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -92,6 +98,16 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.courtRoomFilterChanged$ = new BehaviorSubject<CourtRoomsAccounts[]>(courtRoomAccounts);
 
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
+        userDataSubject = new Subject<any>();
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -102,7 +118,8 @@ describe('CommandCentreComponent - Core', () => {
             screenHelper,
             pageServiceSpy,
             configService,
-            notificationToastrServiceSpy
+            notificationToastrServiceSpy,
+            securityServiceProviderServiceSpy
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();

@@ -14,6 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Component({
+    standalone: false,
     selector: 'app-chat-base-component',
     template: ''
 })
@@ -66,7 +67,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
     }
 
     async setupChatSubscription(): Promise<Subscription> {
-        this.logger.debug('[ChatHub] Subscribing');
         this.translateService.onLangChange.subscribe(() => {
             this.messages
                 .filter(m => m.is_user)

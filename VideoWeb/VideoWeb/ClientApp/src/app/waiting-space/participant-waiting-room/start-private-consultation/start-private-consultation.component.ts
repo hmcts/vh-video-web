@@ -5,6 +5,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantListItem } from '../participant-list-item';
 import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
 @Component({
+    standalone: false,
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
     styleUrls: ['./start-private-consultation.component.scss']

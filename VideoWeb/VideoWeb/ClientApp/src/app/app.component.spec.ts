@@ -42,6 +42,8 @@ import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
+import { cookies } from './shared/cookies.constants';
+import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -110,7 +112,7 @@ describe('AppComponent', () => {
             'logoffAndRevokeTokens',
             'isAuthenticated'
         ]);
-        dynatraceServiceSpy = jasmine.createSpyObj<DynatraceService>('DynatraceService', ['addDynatraceScript', 'addUserIdentifyScript']);
+        dynatraceServiceSpy = jasmine.createSpyObj<DynatraceService>('DynatraceService', ['addDynatraceScript', 'addUserIdentifier']);
     });
 
     afterAll(() => {
@@ -162,6 +164,7 @@ describe('AppComponent', () => {
                 AppComponent,
                 TranslatePipeMock,
                 MockComponent(BackNavigationComponent),
+                MockComponent(CookieBannerComponent),
                 MockComponent(HeaderComponent),
                 MockComponent(FooterComponent),
                 MockComponent(BetaBannerComponent)
@@ -181,7 +184,44 @@ describe('AppComponent', () => {
         routerSpy.navigateByUrl.calls.reset();
         profileServiceSpy.getUserProfile.calls.reset();
         publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
+        localStorage.clear();
+        dynatraceServiceSpy.addUserIdentifier.calls.reset();
     }));
+
+    it('should call addUserIdentifier when cookie consent is accepted', () => {
+        // Arrange
+        localStorage.setItem(cookies.cookieConsentKey, cookies.cookieAccptedValue);
+        component.username = 'testUser'; // Set username for dynatrace user identification
+
+        // Act
+        component.setDynatraceUserIdentify();
+
+        // Assert
+        expect(dynatraceServiceSpy.addUserIdentifier).toHaveBeenCalledWith('testUser');
+    });
+
+    it('should NOT call addUserIdentifier when cookie consent is rejected', () => {
+        // Arrange
+        localStorage.setItem(cookies.cookieConsentKey, cookies.cookieRejectedValue);
+        component.username = 'testUser'; // Set username for dynatrace user identification
+
+        // Act
+        component.setDynatraceUserIdentify();
+
+        // Assert
+        expect(dynatraceServiceSpy.addUserIdentifier).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call dynatraceService.addUserIdentifier when cookie consent is missing', () => {
+        // Arrange
+        component.username = 'testUser'; // Set username for dynatrace user identification
+
+        // Act
+        component.setDynatraceUserIdentify();
+
+        // Assert
+        expect(dynatraceServiceSpy.addUserIdentifier).not.toHaveBeenCalled();
+    });
 
     it('should enable the no sleep service on init', fakeAsync(() => {
         // Arrange

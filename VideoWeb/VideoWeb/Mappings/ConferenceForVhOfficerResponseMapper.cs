@@ -39,7 +39,7 @@ public static class ConferenceForVhOfficerResponseMapper
     
     public static ConferenceForVhOfficerResponse Map(ConferenceDetailsResponse conference, HearingDetailsResponseV2 hearingDetails)
     {
-        var allocatedCso = hearingDetails?.SupportsWorkAllocation ?? false
+        var allocatedCso = !hearingDetails?.SupportsWorkAllocation ?? false
             ? NotRequired
             : hearingDetails?.AllocatedToName ?? NotAllocated;
         

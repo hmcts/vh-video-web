@@ -6,6 +6,7 @@ import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 
 @Component({
+    standalone: false,
     selector: 'app-video-filter',
     templateUrl: './video-filter.component.html',
     styleUrls: ['./video-filter.component.scss']

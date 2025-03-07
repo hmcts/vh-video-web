@@ -5,6 +5,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { DesktopOnlyDirective } from './desktop-only.directive';
 
 @Component({
+    standalone: false,
     template: '<div *appDesktopOnly>Desktop Content</div>'
 })
 class TestComponent {}

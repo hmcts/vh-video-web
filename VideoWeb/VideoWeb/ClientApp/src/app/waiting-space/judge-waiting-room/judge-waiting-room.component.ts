@@ -7,13 +7,11 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
-import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -38,6 +36,7 @@ import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
 
 @Component({
+    standalone: false,
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
@@ -76,11 +75,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected conferenceService: ConferenceService,
         private readonly unloadDetectorService: UnloadDetectorService,
         private readonly hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -104,7 +101,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,
@@ -124,6 +120,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     videoClosedExt() {
+        this.audioErrorRetryToast?.remove();
         this.audioErrorRetryToast = null;
     }
 
@@ -523,9 +520,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private reconnectWowzaAgent = (): void => {
-        this.audioRecordingService.cleanupDialOutConnections();
-        this.audioRecordingService.reconnectToWowza(() => {
-            this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-        });
+        // Confirm in a hearing and not a consultation
+        if (this.vhConference.status === ConferenceStatus.InSession && !this.isPrivateConsultation) {
+            this.audioRecordingService.cleanupDialOutConnections();
+            this.audioRecordingService.reconnectToWowza(() => {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            });
+        } else {
+            this.logger.warn(`${this.loggerPrefixJudge} can not reconnect to Wowza agent as not in a hearing`);
+        }
     };
 }

@@ -103,5 +103,20 @@ namespace VideoWeb.Contract.Responses
         /// The supplier that the conference is booked with
         /// </summary>
         public Supplier Supplier { get; set; }
+        
+        /// <summary>
+        /// Allocated Cso Full name
+        /// </summary>
+        public string AllocatedCso { get; set; }
+
+        /// <summary>
+        /// Allocated Cso Id
+        /// </summary>
+        public Guid? AllocatedCsoId { get; set; }
+
+        /// <summary>
+        /// Allocated Cso Username
+        /// </summary>
+        public string AllocatedCsoUsername { get; set; }
     }
 }

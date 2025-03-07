@@ -56,8 +56,6 @@ public class StaffMemberJoinConferenceTests
         var conferenceId = _testConference.Id;
         var addStaffMemberRequest = new AddStaffMemberRequest()
         {
-            FirstName = "FirstName",
-            LastName = "LastName",
             Username = "Staff_UserName",
             HearingRole = HearingRoleName.StaffMember,
             Name = "FullName",

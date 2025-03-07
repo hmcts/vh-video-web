@@ -1337,7 +1337,7 @@
     "upper-tribunals-notice-of-reference-finance-services": "Uwch Dribiwnlys - Hysbysiad Geirda Gwasanaethau Cyllid",
     "upper-tribunals-notice-of-reference-energy-market-decisions": "Uwch Dribiwnlys - Hysbysiad Geirda Penderfyniadau'r Farchnad Ynni",
     "upper-tribunals-notice-of-reference-trade-remedies": "Uwch Dribiwnlys - Hysbysiad Geirda Rhwymedïau Masnach",
-    "upper-tribunals-notice-of-appeal-trade-remedies ": "Uwch Dribiwnlys - Hysbysiad o Apêl Rhwymedïau Masnach",
+    "upper-tribunals-notice-of-appeal-trade-remedies": "Uwch Dribiwnlys - Hysbysiad o Apêl Rhwymedïau Masnach",
     "upper-tribunals-notice-of-appeal-financial-sanctions": "Uwch Dribiwnlys - Hysbysiad o Apêl Cosbau Ariannol",
     "upper-tribunals-judicial-review-applications-(tax)": "Uwch Dribiwnlys - Ceisiadau am Adolygiad Barnwrol (Treth)",
     "upper-tribunals-agricultural-land-and-drainage": "Uwch Dribiwnlys - Tir Amaethyddol a Draenio",
@@ -1563,6 +1563,14 @@
         "purpose": "Defnyddir i ddiogelu cyfathrebu gyda gwasanaethau data GLlTEF.",
         "expires": "Pan fyddwch yn cau eich porwr"
       }
+    },
+    "cookie-banner" : {
+      "title": "Cwcis ar gyfer y Gwasanaeth Gwrandawiadau Fideo",
+      "intro": "Rydym yn defnyddio cwcis hanfodol i wneud i'r gwasanaeth hwn weithio.",
+      "intro2": "Hoffem osod cwcis ychwanegol ar eich dyfais fel y gallwn gofio eich gosodiadau, deall sut mae pobl yn defnyddio'r gwasanaeth a gwneud gwelliannau.",
+      "accept": "Derbyn cwcis ychwanegol",
+      "reject": "Gwrthod cwcis ychwanegol",
+      "cookie-page": "Gweld cwcis"
     }
   },
   "audio-mix-selection": {

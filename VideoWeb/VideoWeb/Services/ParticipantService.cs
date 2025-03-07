@@ -40,8 +40,6 @@ public class ParticipantService(
     {
         return new AddStaffMemberRequest
         {
-            FirstName = staffMemberProfile.FirstName,
-            LastName = staffMemberProfile.LastName,
             Username = staffMemberProfile.Username,
             HearingRole = HearingRoleName.StaffMember,
             Name = staffMemberProfile.Name,

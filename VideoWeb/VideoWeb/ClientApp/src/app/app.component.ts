@@ -23,8 +23,10 @@ import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
+import { cookies } from './shared/cookies.constants';
 
 @Component({
+    standalone: false,
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
@@ -47,6 +49,8 @@ export class AppComponent implements OnInit, OnDestroy {
     backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
 
     hideNonVideoComponents$ = new Observable<boolean>();
+
+    isBannerVisible = true;
 
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();
@@ -88,7 +92,26 @@ export class AppComponent implements OnInit, OnDestroy {
         return window.location.pathname.includes(pageUrls.EJudSignIn) || window.location.pathname.includes(pageUrls.VHSignIn);
     }
 
+    getUserName(): any {
+        return this.username;
+    }
+
+    onCookieAnswered() {
+        this.setDynatraceUserIdentify();
+        this.isBannerVisible = false;
+    }
+
+    setDynatraceUserIdentify() {
+        const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
+        if (cookieConsent && cookieConsent === cookies.cookieAccptedValue) {
+            this.dynatraceService.addUserIdentifier(this.username);
+        }
+    }
+
     ngOnInit() {
+        // Check if the user has already made a decision
+        const cookieConsent = localStorage.getItem(cookies.cookieConsentKey);
+        this.isBannerVisible = !cookieConsent;
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
@@ -101,7 +124,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.dynatraceService.addDynatraceScript(clientSettings.dynatrace_rum_link);
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
-
+                        this.username = userData?.preferred_username?.toLowerCase();
                         if (isAuthenticated) {
                             this.eventhubService.configureConnection();
 
@@ -111,10 +134,7 @@ export class AppComponent implements OnInit, OnDestroy {
                             service. This method is used to identify the user in Dynatrace
                             monitoring by passing the user's preferred username in lowercase as a
                             parameter.*/
-                            // TODO: uncomment the below line to add this identification
-                            // To be implemented behind the cookie banner VIH-5622
-
-                            // this.dynatraceService.addUserIdentifyScript(userData?.preferred_username?.toLowerCase());
+                            this.setDynatraceUserIdentify();
                         }
 
                         if (this.currentIdp !== 'quickLink') {
@@ -122,7 +142,6 @@ export class AppComponent implements OnInit, OnDestroy {
                                 .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.CheckingAuthFinished))
                                 .subscribe(() => {
-                                    this.username = userData?.preferred_username?.toLowerCase();
                                     this.logger.addUserIdToLogger(this.username);
                                 });
 
@@ -140,7 +159,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     setupNavigationSubscriptions() {
-        const applTitle = this.titleService.getTitle() + ' - ';
+        const applTitle = this.titleService.getTitle();
         this.subscriptions.add(
             this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
                 let child = this.activatedRoute.firstChild;
@@ -148,7 +167,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     child = child.firstChild;
                 }
                 if (child.snapshot.data['title']) {
-                    this.setPageTitle(applTitle + child.snapshot.data['title']);
+                    this.setPageTitle(`${applTitle} - ${child.snapshot.data['title']}`);
                 } else {
                     this.setPageTitle(applTitle);
                 }

@@ -9,6 +9,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 
 @Component({
+    standalone: false,
     selector: 'app-independent-self-test',
     templateUrl: './independent-self-test.component.html'
 })

@@ -61,7 +61,7 @@ public static class ConferenceCacheMapper
         conference.IsWaitingRoomOpen = conferenceResponse.IsWaitingRoomOpen;
         conference.CaseName = caseInformation.Name;
         conference.CaseNumber = caseInformation.Number;
-        conference.CaseType = hearingDetailsResponse.ServiceName;
+        conference.CaseType = hearingDetailsResponse.ServiceName.Trim();
         conference.ScheduledDateTime = conferenceResponse.ScheduledDateTime;
         conference.ScheduledDuration = conferenceResponse.ScheduledDuration;
         conference.ClosedDateTime = conferenceResponse.ClosedDateTime;
@@ -72,12 +72,20 @@ public static class ConferenceCacheMapper
         conference.CreatedDateTime = hearingDetailsResponse.CreatedDate;
         conference.TelephoneConferenceId = conferenceResponse.TelephoneConferenceId;
         conference.TelephoneConferenceNumbers = conferenceResponse.TelephoneConferenceNumbers;
-        
-        var allocatedCso = !hearingDetailsResponse?.SupportsWorkAllocation ?? false
-            ? NotRequired
-            : hearingDetailsResponse.AllocatedToName ?? NotAllocated;
-        conference.AllocatedCso = allocatedCso;
-        conference.AllocatedCsoId = hearingDetailsResponse.AllocatedToId;
+
+
+        if (hearingDetailsResponse.SupportsWorkAllocation)
+        {
+            conference.UpdateAllocation(
+                hearingDetailsResponse.AllocatedToId,
+                hearingDetailsResponse.AllocatedToName ?? NotAllocated,
+                hearingDetailsResponse.AllocatedToUsername);
+        }
+        else
+        {
+            conference.UpdateAllocation(null, NotRequired, NotRequired);
+        }
+
         conference.Supplier = (Supplier)hearingDetailsResponse.BookingSupplier;
         return conference;
     }

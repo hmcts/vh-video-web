@@ -6,6 +6,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-base.component';
 
 @Component({
+    standalone: false,
     selector: 'app-participant-network-alert',
     template: ''
 })

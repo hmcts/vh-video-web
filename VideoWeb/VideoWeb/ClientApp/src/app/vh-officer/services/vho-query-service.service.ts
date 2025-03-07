@@ -1,22 +1,28 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
-    ConferenceResponseVho,
+    ConferenceResponse,
+    ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
+    ParticipantResponse,
     Role,
     TaskResponse
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 import { CourtRoomsAccounts } from './models/court-rooms-accounts';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CsoFilter } from './models/cso-filter';
 import { VhoStorageKeys } from './models/session-keys';
+import { EventsService } from 'src/app/services/events.service';
+import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
+import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
+import { sortConferencesForVhoOfficer } from './sort-conference.helper';
 
 @Injectable()
 export class VhoQueryService {
-    interval: NodeJS.Timer;
+    interval: ReturnType<typeof setInterval> | number;
     venueNames: string[];
     allocatedCsoIds: string[];
     includeUnallocated = false;
@@ -31,8 +37,12 @@ export class VhoQueryService {
     private readonly csoFilterStorage: SessionStorage<CsoFilter>;
 
     private readonly pollingInterval = 300000; // 5 minutes
+    private destroy$ = new Subject<void>();
 
-    constructor(private apiClient: ApiClient) {
+    constructor(
+        private apiClient: ApiClient,
+        private eventService: EventsService
+    ) {
         this.csoFilterStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
         this.courtAccountsFilterStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.courtRoomsAccountsFilters = this.getCourtAccountFiltersFromStorage();
@@ -46,15 +56,80 @@ export class VhoQueryService {
         this.includeUnallocated = includeUnallocated;
         this.activeSessionsOnly = activeSessionsOnly;
         this.runQuery();
-        this.interval = setInterval(async () => {
+
+        this.interval = window.setInterval(async () => {
             await this.runQuery();
         }, this.pollingInterval);
+        this.startEventSubscriptions();
+    }
+
+    startEventSubscriptions() {
+        this.eventService
+            .getAllocationMessage()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(allocationUpdate => this.handleAllocationUpdated(allocationUpdate));
+        this.eventService
+            .getHearingDetailsUpdated()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(hearingDetailMessage => this.handleHearingDetailUpdate(hearingDetailMessage));
+    }
+
+    handleHearingDetailUpdate(hearingDetailMessage: HearingDetailsUpdatedMessage) {
+        const newConference = hearingDetailMessage.conference;
+        this.updateConference(
+            newConference,
+            (foundConference: ConferenceForVhOfficerResponse) =>
+                new ConferenceForVhOfficerResponse({
+                    ...foundConference,
+                    case_name: newConference.case_name,
+                    case_number: newConference.case_number,
+                    scheduled_date_time: newConference.scheduled_date_time,
+                    scheduled_duration: newConference.scheduled_duration,
+                    hearing_venue_name: newConference.hearing_venue_name,
+                    allocated_cso: newConference.allocated_cso,
+                    allocated_cso_id: newConference.allocated_cso_id,
+                    participants: this.mapParticipantResponseToParticipantForUserResponse(newConference.participants)
+                })
+        );
+
+        this.vhoConferencesSubject.next(this.vhoConferences);
+    }
+
+    handleAllocationUpdated(allocationUpdate: NewAllocationMessage) {
+        for (const update of allocationUpdate.updatedAllocations) {
+            const newConference = update.conference;
+            this.updateConference(
+                newConference,
+                (foundConference: ConferenceForVhOfficerResponse) =>
+                    new ConferenceForVhOfficerResponse({
+                        ...foundConference,
+                        allocated_cso: newConference.allocated_cso,
+                        allocated_cso_id: newConference.allocated_cso_id
+                    })
+            );
+        }
+
+        this.vhoConferencesSubject.next(this.vhoConferences);
+    }
+
+    isNewConferencePartOfFilter(newConference: ConferenceResponse): boolean {
+        if (this.venueNames?.length > 0 && !this.venueNames.includes(newConference.hearing_venue_name)) {
+            return false;
+        }
+
+        if (this.allocatedCsoIds?.length > 0 && !this.allocatedCsoIds.includes(newConference.allocated_cso_id)) {
+            return false;
+        }
+
+        return true;
     }
 
     stopQuery() {
         clearInterval(this.interval);
         this.vhoConferences = [];
         this.vhoConferencesSubject.next(this.vhoConferences);
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     async runQuery() {
@@ -66,6 +141,7 @@ export class VhoQueryService {
         this.vhoConferences = await this.apiClient
             .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
+
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
@@ -135,7 +211,7 @@ export class VhoQueryService {
         return this.vhoConferencesSubject.asObservable();
     }
 
-    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponse> {
         return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
     }
 
@@ -153,6 +229,41 @@ export class VhoQueryService {
 
     getActiveConferences() {
         return this.apiClient.getActiveConferences().toPromise();
+    }
+
+    private updateConference(
+        newConference: ConferenceResponse,
+        updateFn: (foundConference: ConferenceForVhOfficerResponse) => ConferenceForVhOfficerResponse
+    ) {
+        let index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+        const doesConferenceMatchExistingFilter: boolean = this.isNewConferencePartOfFilter(newConference);
+
+        // If the conference is not part of the filter and not in the list, then we don't need to do anything
+        if (index === -1 && !doesConferenceMatchExistingFilter) {
+            return;
+        }
+
+        // If the conference is not in the list but is part of the filter, then we add it to the list
+        if (index === -1 && doesConferenceMatchExistingFilter) {
+            index = this.vhoConferences.length;
+            this.vhoConferences.push(new ConferenceForVhOfficerResponse({ ...newConference, participants: newConference.participants }));
+        }
+
+        // if the conference is in the list but not part of the filter, then we remove it from the list
+        if (!doesConferenceMatchExistingFilter) {
+            this.vhoConferences.splice(index, 1);
+            return;
+        }
+
+        // If the conference is in the list and part of the filter, then we update it with the provided update function
+        let foundConference = this.vhoConferences[index];
+        foundConference = updateFn(foundConference);
+        this.vhoConferences[index] = foundConference;
+        this.vhoConferences = sortConferencesForVhoOfficer(this.vhoConferences);
+    }
+
+    private mapParticipantResponseToParticipantForUserResponse(participants: ParticipantResponse[]): ParticipantForUserResponse[] {
+        return participants.map(participant => new ParticipantForUserResponse({ ...participant }));
     }
 
     private mapConferencesToCourtRoomsAccounts(conferences: ConferenceForVhOfficerResponse[]): CourtRoomsAccounts[] {

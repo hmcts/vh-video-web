@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
@@ -41,7 +40,7 @@ namespace VideoWeb.Extensions
 {
     public static class ConfigureServicesExtensions
     {
-        public static IServiceCollection AddSwagger(this IServiceCollection serviceCollection)
+        public static void AddSwagger(this IServiceCollection serviceCollection)
         {
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -77,7 +76,6 @@ namespace VideoWeb.Extensions
                 });
                 c.OperationFilter<AuthResponsesOperationFilter>();
             });
-            return serviceCollection;
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
@@ -85,10 +83,8 @@ namespace VideoWeb.Extensions
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
             services.AddControllers().AddControllersAsServices();
             services.AddMemoryCache();
-            services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
-            services.AddTransient<UserApiTokenHandler>();
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IVodafoneJwtTokenProvider, VodafoneJwtTokenProvider>();
@@ -214,6 +210,7 @@ namespace VideoWeb.Extensions
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
         }
 

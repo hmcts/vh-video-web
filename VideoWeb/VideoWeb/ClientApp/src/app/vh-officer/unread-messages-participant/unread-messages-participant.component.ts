@@ -9,6 +9,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
 
 @Component({
+    standalone: false,
     selector: 'app-unread-messages-participant',
     templateUrl: '../unread-messages-shared/unread-messages.component.html',
     styleUrls: ['../unread-messages-shared/unread-messages.component.scss']

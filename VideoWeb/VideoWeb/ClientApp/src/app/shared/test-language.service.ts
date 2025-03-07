@@ -10,7 +10,6 @@ export class TestLanguageService {
     constructor(private translateService: TranslateService) {}
 
     setupSubscriptions() {
-        console.info(`${this.loggerPrefix} Subscribing to onLanguageChange`);
         this.translateService.onLangChange
             .pipe(
                 filter(e => e.lang === 'tl'),
@@ -51,11 +50,11 @@ export class TestLanguageService {
             const varSections = section.split('}}');
             const last = varSections
                 .pop()
-                .replace(/\a/gi, 'á')
-                .replace(/\e/gi, 'é')
-                .replace(/\i/gi, 'í')
-                .replace(/\o/gi, 'ó')
-                .replace(/\u/gi, 'ú');
+                .replace(/a/gi, 'á')
+                .replace(/e/gi, 'é')
+                .replace(/i/gi, 'í')
+                .replace(/o/gi, 'ó')
+                .replace(/u/gi, 'ú');
             varSections.push(last);
             return varSections.join('}}');
         });

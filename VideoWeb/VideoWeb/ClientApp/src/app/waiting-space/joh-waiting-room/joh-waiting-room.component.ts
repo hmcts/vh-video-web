@@ -10,7 +10,6 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
@@ -29,6 +28,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
+    standalone: false,
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
@@ -60,7 +60,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
         participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -83,7 +82,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService,
             titleService,
             hideComponentsService,
             focusService,

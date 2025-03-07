@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -6,22 +8,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
+using VideoWeb.Contract.Request;
 using VideoWeb.Controllers.InternalEventControllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.InternalEventControllers
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class AllocationHearingsTests
     {
         private AutoMock _mocker;
-        private InternalEventAllocationController allocationController;
+        private InternalEventAllocationController _allocationController;
+        private List<ConferenceDetailsResponse> _conferenceDetailsResponses;
 
         [SetUp]
         public void Setup()
         {
+            _conferenceDetailsResponses = ConferenceDetailsResponseBuilder.BuildConferenceDetailsResponseList(10);
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole("Judge").Build();
             var context = new ControllerContext
@@ -32,8 +36,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllers
                 }
             };
             
-            allocationController = _mocker.Create<InternalEventAllocationController>();
-            allocationController.ControllerContext = context;
+            _allocationController = _mocker.Create<InternalEventAllocationController>();
+            _allocationController.ControllerContext = context;
 
             _mocker.Mock<IAllocationHearingsEventNotifier>();
         }
@@ -43,45 +47,26 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllers
         public async Task Should_send_event()
         {
             // Arrange
-            var allocatedHearingsDetails = new List<HearingDetailRequest>();
-            var allocationHearingsToCsoRequest = new AllocationHearingsToCsoRequest()
+            var conferenceIds = _conferenceDetailsResponses.Select(x => x.Id).ToList();
+            var csoId = Guid.NewGuid();
+            var allocationHearingsToCsoRequest = new HearingAllocationNotificationRequest()
             {
-                Hearings = allocatedHearingsDetails,
-                AllocatedCsoUserName = "csousername@email.com"
+                ConferenceIds = conferenceIds,
+                AllocatedCsoUserName = "csousername@email.com",
+                AllocatedCsoFullName = "CSO Full Name",
+                AllocatedCsoUserId = csoId
             };
             
 
             // Act
-            var result = await allocationController.AllocationHearings(allocationHearingsToCsoRequest);
+            var result = await _allocationController.AllocationHearings(allocationHearingsToCsoRequest);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IAllocationHearingsEventNotifier>().Verify(x => x.PushAllocationHearingsEvent("csousername@email.com", allocatedHearingsDetails), Times.Once);
-        }
-        
-        [Test]
-        public async Task Should_not_send_event_if_exception_throwed()
-        {
-            _mocker.Mock<IAllocationHearingsEventNotifier>().Setup(x =>
-                    x.PushAllocationHearingsEvent("csousername@email.com", new List<HearingDetailRequest>()))
-                .Throws(new VideoApiException("error", StatusCodes.Status500InternalServerError, "", null, null));
-            // Arrange
-            var allocatedHearingsDetails = new List<HearingDetailRequest>();
-            var allocationHearingsToCsoRequest = new AllocationHearingsToCsoRequest()
-            {
-                Hearings = allocatedHearingsDetails,
-                AllocatedCsoUserName = "csousername@email.com"
-            };
-            
-
-            // Act
-            var result = await allocationController.AllocationHearings(allocationHearingsToCsoRequest);
-
-            // Assert
-            result.Should().BeOfType<ObjectResult>();
-
-            _mocker.Mock<IAllocationHearingsEventNotifier>().Verify(x => x.PushAllocationHearingsEvent("csousername@email.com", allocatedHearingsDetails), Times.Once);
+            _mocker.Mock<IAllocationHearingsEventNotifier>().Verify(
+                x => x.PushAllocationHearingsEvent(new UpdatedAllocationJusticeUserDto("csousername@email.com", csoId, "CSO Full Name"),
+                    conferenceIds), Times.Once);
         }
     }
 }

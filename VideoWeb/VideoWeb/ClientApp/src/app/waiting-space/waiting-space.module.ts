@@ -43,7 +43,7 @@ import { StartPrivateConsultationComponent } from './participant-waiting-room/st
 import { JoinPrivateConsultationComponent } from './participant-waiting-room/join-private-consultation/join-private-consultation.component';
 import { PrivateConsultationLegalRepTermsOfServiceComponent } from './participant-waiting-room/private-consultation-legal-rep-terms-of-service/private-consultation-legal-rep-terms-of-service.component';
 import { NgOptimizedImage } from '@angular/common';
-import { StoreModule } from '@ngrx/store';
+import { StoreModule, provideStore } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
 import { EffectsModule } from '@ngrx/effects';
@@ -60,6 +60,9 @@ import { NotificationEffects } from './store/effects/notification.effects';
 import { ConfirmNonHostLeaveHearingPopupComponent } from './confirmation/confirm-non-host-leave-hearing-popup.component';
 import { HearingControlIconComponent } from './hearing-control-icon/hearing-control-icon.component';
 import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/dial-out-participant-popup.component';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
+import { RouterEffects } from './store/effects/router.effects';
+import { ConsultationEffects } from './store/effects/consultation.effects';
 
 @NgModule({
     imports: [
@@ -69,7 +72,14 @@ import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/d
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
         environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forFeature([ConferenceEffects, VideoCallEffects, ReferenceDataEffects, NotificationEffects])
+        EffectsModule.forFeature([
+            ConferenceEffects,
+            VideoCallEffects,
+            ReferenceDataEffects,
+            NotificationEffects,
+            ConsultationEffects,
+            RouterEffects
+        ])
     ],
     declarations: [
         JudgeParticipantStatusListComponent,
@@ -121,7 +131,11 @@ import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/d
         NotificationToastrService,
         RoomClosingToastrService,
         LoggedUserResolveService,
-        ParticipantRemoteMuteStoreService
+        ParticipantRemoteMuteStoreService,
+        provideStore({
+            router: routerReducer
+        }),
+        provideRouterStore()
     ]
 })
 export class WaitingSpaceModule {}

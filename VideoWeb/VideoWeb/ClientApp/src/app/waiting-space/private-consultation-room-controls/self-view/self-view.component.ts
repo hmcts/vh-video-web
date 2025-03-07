@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
+    standalone: false,
     selector: 'app-self-view',
     templateUrl: './self-view.component.html',
     styleUrls: ['./self-view.component.scss']

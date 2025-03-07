@@ -3,6 +3,7 @@ import { HearingLayout } from 'src/app/services/clients/api-client';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
+    standalone: false,
     selector: 'app-hearing-layout',
     templateUrl: './hearing-layout.component.html',
     styleUrls: ['./hearing-layout.component.scss']

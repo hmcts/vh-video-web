@@ -12,17 +12,25 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { FocusService } from 'src/app/services/focus.service';
-import { VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
+import { VHConsultationCallStatus, VHEndpoint, VHParticipant } from '../../store/models/vh-conference';
+import { ConferenceState } from '../../store/reducers/conference.reducer';
+import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
+import { Store } from '@ngrx/store';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
+    standalone: false,
     selector: 'app-private-consultation-participants',
     templateUrl: './private-consultation-participants.component.html',
     styleUrls: ['./private-consultation-participants.component.scss']
 })
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
-    participantCallStatuses = {};
+    participantCallStatuses: VHConsultationCallStatus[] = [];
     johGroupResult: ParticipantListItem[][];
+
+    private onDestroy$ = new Subject<void>();
 
     constructor(
         protected consultationService: ConsultationService,
@@ -31,7 +39,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
         protected translateService: TranslateService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        private conferenceStore: Store<ConferenceState>
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService, focusService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
@@ -41,7 +50,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
-        this.setupInviteStatusSubscribers();
     }
 
     initParticipants() {
@@ -50,70 +58,21 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     ngOnDestroy() {
+        this.onDestroy$.next();
+        this.onDestroy$.complete();
         this.executeTeardown();
-    }
-
-    setupInviteStatusSubscribers() {
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
-        this.eventHubSubscriptions$.add(
-            this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.setParticipantCallStatus(message.requestedFor, message.answer, null);
-                    setTimeout(() => {
-                        if (this.participantCallStatuses[message.requestedFor] === message.answer) {
-                            this.setParticipantCallStatus(message.requestedFor, null, null);
-                        }
-                    }, 10000);
-                }
-            })
-        );
-
-        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
-        this.eventHubSubscriptions$.add(
-            this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                // Set 'Calling...'
-                // No need to timeout here the text because when the notification times out it will send another event.
-                if (message.roomLabel === this.roomLabel && message.conferenceId === this.conference.id) {
-                    this.setParticipantCallStatus(message.requestedFor, 'Calling', 'Protected');
-                }
-            })
-        );
-
-        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
-        this.eventHubSubscriptions$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
-                // If the participant state changes reset the state.
-                this.setParticipantCallStatus(message.participantId, null, null);
-            })
-        );
-    }
-
-    setParticipantCallStatus(participantId: string, status, protectedFromStatus): void {
-        // Update the call status for the given participant
-        this.participantCallStatuses[participantId] = status;
-
-        // Find the participant with the given ID
-        const participant = this.nonJudgeParticipants.find(p => p.id === participantId);
-        // for each non-judge participant, if the participant is on their protected from list, disable the call button
-        this.nonJudgeParticipants.forEach(p => {
-            if (p.protectedFrom.includes(participant?.externalReferenceId)) {
-                this.participantCallStatuses[p.id] = protectedFromStatus;
-            }
-            if (participant.protectedFrom.includes(p?.externalReferenceId)) {
-                this.participantCallStatuses[p.id] = protectedFromStatus;
-            }
-        });
     }
 
     canCallEndpoint(endpoint: VHEndpoint): boolean {
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
             this.isEndpointAvailable(endpoint) &&
+            this.conference.status !== ConferenceStatus.InSession &&
             this.participantEndpoints.some(x => x.id === endpoint.id)
         );
     }
 
-    getRowClasses(participant: any): string {
+    getRowClasses(participant: VHParticipant | VHEndpoint): string {
         return this.isParticipantInCurrentRoom(participant) ? 'yellow' : '';
     }
 
@@ -161,8 +120,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return [...observers];
     }
 
-    getParticipantStatus(participant: VHParticipant | VHEndpoint): string {
-        return this.participantCallStatuses[participant.id];
+    getParticipantCallStatus(participant: VHParticipant | VHEndpoint): string {
+        return this.participantCallStatuses.find(x => x.participantId === participant.id && x.callStatus !== null)?.callStatus;
     }
 
     isParticipantAvailable(participant: VHParticipant): boolean {
@@ -182,6 +141,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     setupSubscribers(): void {
+        this.conferenceStore
+            .select(ConferenceSelectors.getConsultationStatuses)
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(consulationStatuses => (this.participantCallStatuses = consulationStatuses));
         this.addSharedEventHubSubcribers();
 
         this.eventHubSubscriptions$.add(
