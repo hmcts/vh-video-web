@@ -159,10 +159,4 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             });
         });
     });
-
-    it('should return true for logged in participant', () => {
-        const participant = component.conference.participants[0];
-        component.loggedInUser.participant_id = participant.id;
-        expect(component.isLoggedInParticipant(participant)).toBeTrue();
-    });
 });

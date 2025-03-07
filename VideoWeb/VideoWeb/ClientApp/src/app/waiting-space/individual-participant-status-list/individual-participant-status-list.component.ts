@@ -75,10 +75,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         return participant.status;
     }
 
-    isLoggedInParticipant(participant: VHParticipant) {
-        return participant.id === this.loggedInUser.participant_id;
-    }
-
     private hasUnavailableLinkedParticipants(participant: VHParticipant) {
         if (participant.linkedParticipants.length) {
             return participant.linkedParticipants.some(lp => {
