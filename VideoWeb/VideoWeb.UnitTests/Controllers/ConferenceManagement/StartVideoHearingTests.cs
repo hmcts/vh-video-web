@@ -88,13 +88,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IConferenceManagementService>().Verify(
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id, participant.Username, HearingLayout.Dynamic,
                     CancellationToken.None), Times.Once);
-
-            // _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-            //     It.Is<StartHearingRequest>(r =>
-            //         r.Layout == HearingLayout.Dynamic &&
-            //         r.HostsForScreening.SequenceEqual(hostsForScreening) &&
-            //         r.Hosts.SequenceEqual(hosts)), 
-            //     It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
