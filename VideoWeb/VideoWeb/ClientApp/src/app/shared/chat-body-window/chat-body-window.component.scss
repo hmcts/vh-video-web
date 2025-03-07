@@ -33,6 +33,7 @@
   float: left;
   margin-left: 10px;
   padding-left: 25px;
+  word-wrap: break-word;
 }
 
 .message-item-received::after {
@@ -53,6 +54,7 @@
   padding-right: 25px;
   text-align: right;
   float: right;
+  word-wrap: break-word;
 }
 
 .message-item-sent::after {
