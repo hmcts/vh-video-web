@@ -26,7 +26,6 @@ namespace VideoWeb.Controllers;
 [ApiController]
 [Route("callback")]
 [Authorize(AuthenticationSchemes = "Callback")]
-[AllowAnonymous]
 public class VideoEventsController(
     IConferenceService conferenceService,
     IVideoApiClient videoApiClient,
@@ -50,7 +49,7 @@ public class VideoEventsController(
                 supplierCallbackActivity?.SetTag("event.source", "SupplierCallback");
                 supplierCallbackActivity?.SetTag("conference.id", request.ConferenceId);
                 supplierCallbackActivity?.SetTag("event.type", request.EventType.ToString());
-                supplierCallbackActivity?.SetTag("supplierCallbackPayload", request);
+                supplierCallbackActivity?.SetTag("supplierCallbackPayload", JsonSerializer.Serialize(request));
             }
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
