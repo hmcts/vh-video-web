@@ -50,20 +50,8 @@ public class ConferenceManagementController(
             return validatedRequest;
         }
 
-        var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
-        var triggeredById = conference.GetParticipant(User.Identity!.Name)?.Id;
-        var hostsForScreening = conference.GetNonScreenedParticipantsAndEndpoints();
-        var hosts = conference.Participants.Where(x => x.IsHost()).Select(p => p.Id).ToList();
-        var apiRequest = new StartHearingRequest
-        {
-            Layout = request.Layout,
-            MuteGuests = false,
-            TriggeredByHostId = triggeredById ?? Guid.Empty,
-            Hosts = hosts,
-            HostsForScreening = hostsForScreening
-        };
-
-        await videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, apiRequest, cancellationToken);
+        await conferenceManagementService.StartOrResumeVideoHearingAsync(conferenceId, User.Identity!.Name,
+            request.Layout, cancellationToken);
         logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
         return Accepted();
     }
