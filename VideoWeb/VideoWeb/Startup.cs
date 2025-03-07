@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using FluentValidation.AspNetCore;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using OpenTelemetry.Instrumentation.Http;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
@@ -56,23 +58,22 @@ namespace VideoWeb
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddOpenTelemetry()
-                .UseAzureMonitor(options =>
+                .ConfigureResource(r =>
                 {
-                    options.ConnectionString = instrumentationKey;
-                }) 
+                    r.AddService("vh-video-web")
+                        .AddTelemetrySdk()
+                        .AddAttributes(new Dictionary<string, object>
+                            { ["service.instance.id"] = Environment.MachineName });
+                })
+                .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
                 .WithMetrics()
                 .WithTracing(tracerProvider =>
                 {
                     tracerProvider
-                        .AddAspNetCoreInstrumentation(options =>
-                        {
-                            options.RecordException = true;
-                        })
+                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                        .AddSource("SupplierCallbackEvent")
                         .AddHttpClientInstrumentation()
-                        .AddAzureMonitorTraceExporter(options =>
-                        {
-                            options.ConnectionString = instrumentationKey;
-                        });
+                        .AddAzureMonitorTraceExporter(options => options.ConnectionString = instrumentationKey );
                 });
 
             // In production, the Angular files will be served from this directory
