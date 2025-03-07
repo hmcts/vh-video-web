@@ -6,24 +6,19 @@ import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { browsers } from 'src/app/shared/browser.constants';
-import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
-import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { ConferenceActions } from '../store/actions/conference.actions';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHParticipant } from '../store/models/vh-conference';
+import { VideoCallActions } from '../store/actions/video-call.action';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -157,13 +152,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         if (!value) {
             return;
         }
-        this.remoteMuted = value.pexipInfo?.isRemoteMuted;
-        this.handRaised = value.pexipInfo?.handRaised;
-
-        if (this.remoteMuted && !this.audioMuted) {
-            this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
-            this.toggleMute();
-        }
+        this.updateControlBooleans(value);
     }
 
     ngOnInit(): void {
@@ -181,7 +170,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         });
 
         this.setupVideoCallSubscribers();
-        this.setupEventhubSubscribers();
 
         this.conferenceStore
             .select(ConferenceSelectors.getLoggedInParticipant)
@@ -189,17 +177,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                 takeUntil(this.destroyedSubject),
                 filter(x => !!x)
             )
-            .subscribe(loggedInParticipant => {
-                this.isSpotlighted = loggedInParticipant.pexipInfo?.isSpotlighted;
-            });
-
-        this.conferenceStore
-            .select(ConferenceSelectors.getPexipConference)
-            .pipe(
-                takeUntil(this.destroyedSubject),
-                filter(x => !!x && x.started)
-            )
-            .subscribe(() => this.handleHearingCountdownComplete(this.conferenceId));
+            .subscribe(loggedInParticipant => this.updateControlBooleans(loggedInParticipant));
 
         this.conferenceStore
             .select(ConferenceSelectors.getParticipants)
@@ -207,56 +185,17 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .subscribe(participants => {
                 this.participants = participants;
             });
-
-        this.initialiseMuteStatus();
     }
 
-    initialiseMuteStatus() {
-        if (this.isPrivateConsultation && this.audioMuted) {
-            this.resetMute();
-        }
-
-        if (!this.isHost && !this.isPrivateConsultation && !this.audioMuted) {
-            this.toggleMute();
-        }
-    }
-
-    setupEventhubSubscribers() {
-        const self = this;
-        this.eventService
-            .getParticipantStatusMessage()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(message => {
-                self.handleParticipantStatusChange(message);
-            });
-
-        this.eventService
-            .getHearingCountdownCompleteMessage()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(conferenceId => {
-                self.handleHearingCountdownComplete(conferenceId).then();
-            });
-
-        this.eventService
-            .getParticipantHandRaisedMessage()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(message => {
-                self.handleParticipantHandRaiseChange(message);
-            });
-
-        this.eventService
-            .getParticipantRemoteMuteStatusMessage()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(message => {
-                self.handleParticipantRemoteMuteChange(message);
-            });
-
-        this.eventService
-            .getParticipantToggleLocalMuteMessage()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(message => {
-                self.handleParticipantToggleLocalMuteChange(message).then();
-            });
+    /**
+     * Update the current participant conference settings
+     */
+    updateControlBooleans(participant: VHParticipant) {
+        this.remoteMuted = participant.pexipInfo?.isRemoteMuted;
+        this.handRaised = participant.pexipInfo?.handRaised;
+        this.audioMuted = participant.localMediaStatus?.isMicrophoneMuted;
+        this.videoMuted = participant.localMediaStatus?.isCameraOff;
+        this.isSpotlighted = participant.pexipInfo?.isSpotlighted;
     }
 
     ngOnDestroy(): void {
@@ -300,101 +239,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.screenShareStream = null;
     }
 
-    handleParticipantStatusChange(message: ParticipantStatusMessage) {
-        if (message.participantId !== this.participant.id) {
-            if (message.status === ParticipantStatus.InHearing) {
-                this.newParticipantEnteredHandshake(message.username);
-            }
-            return;
-        }
-
-        if (message.status === ParticipantStatus.InConsultation) {
-            this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
-            this.resetMute();
-        }
-    }
-
-    async handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
-        if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
-            this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
-                messageParticipantId: message.participantId,
-                messageConferenceId: message.conferenceId,
-                currentParticipantId: this.participant.id,
-                currentConferenceId: this.conferenceId
-            });
-            return;
-        }
-
-        if (this.remoteMuted) {
-            return;
-        }
-
-        if (this.audioMuted && !message.muted) {
-            await this.toggleMute();
-            this.logger.info(`${this.loggerPrefix} Participant has been locally unmuted by the judge`, this.logPayload);
-            return;
-        }
-
-        if (!this.audioMuted && message.muted) {
-            await this.toggleMute();
-            this.logger.info(`${this.loggerPrefix} Participant has been locally muted by the judge`, this.logPayload);
-        }
-    }
-
-    handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
-        if (message.participantId !== this.participant.id) {
-            return;
-        }
-        this.logger.info(
-            `${this.loggerPrefix} Participant has been ${message.isRemoteMuted ? ' muted' : 'unmuted'} by the judge`,
-            this.logPayload
-        );
-        this.remoteMuted = message.isRemoteMuted;
-    }
-
-    handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
-        if (message.participantId !== this.participant.id) {
-            return;
-        }
-        this.logger.info(`${this.loggerPrefix} Participant has ${message.handRaised ? 'raised' : 'lowered'} hand`, this.logPayload);
-        this.handRaised = message.handRaised;
-    }
-
-    async handleHearingCountdownComplete(conferenceId: string) {
-        if (conferenceId !== this.conferenceId) {
-            return;
-        }
-
-        if (this.isHost && !this.startWithAudioMuted) {
-            await this.resetMute();
-            return;
-        }
-
-        if (this.audioMuted) {
-            this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
-            await this.publishMediaDeviceStatus();
-        } else {
-            this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
-            await this.toggleMute();
-        }
-    }
-
-    async resetMute() {
-        if (this.audioMuted) {
-            this.logger.debug(`${this.loggerPrefix} Resetting participant mute status`, this.logPayload);
-            await this.toggleMute();
-        }
-    }
-
     async toggleMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own audio mute status to ${!this.audioMuted}`,
             this.logPayload
         );
-        const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
-        this.logger.info(`${this.loggerPrefix} Participant audio mute status updated to ${muteAudio}`, this.logPayload);
-        this.audioMuted = muteAudio;
-        await this.publishMediaDeviceStatus();
+        this.conferenceStore.dispatch(VideoCallActions.toggleAudioMute());
     }
 
     async toggleVideoMute() {
@@ -402,15 +252,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             `${this.loggerPrefix} Participant is attempting to toggle own video mute status to ${!this.videoMuted}`,
             this.logPayload
         );
-        const muteVideo = this.videoCallService.toggleVideo(this.conferenceId, this.participant.id);
-        this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
-        this.videoMuted = muteVideo;
-        await this.publishMediaDeviceStatus();
-    }
-
-    async publishMediaDeviceStatus() {
-        const mediaStatus = new ParticipantMediaStatus(this.audioMuted, this.videoMuted);
-        await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
+        this.conferenceStore.dispatch(VideoCallActions.toggleOutgoingVideo());
     }
 
     toggleView(): boolean {
@@ -421,14 +263,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     toggleHandRaised() {
         if (this.handRaised) {
-            this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
-            this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
+            this.conferenceStore.dispatch(VideoCallActions.lowerHand());
         } else {
-            this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
-            this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
+            this.conferenceStore.dispatch(VideoCallActions.raiseHand());
         }
-        this.handRaised = !this.handRaised;
-        this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
     }
 
     displayLanguageChange() {
@@ -471,7 +309,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     nonHostLeave(confirmation: boolean) {
         this.displayLeaveHearingPopup = false;
         if (confirmation) {
-            this.conferenceStore.dispatch(ConferenceActions.participantLeaveHearingRoom({ conferenceId: this.conferenceId }));
+            this.conferenceStore.dispatch(VideoCallActions.participantLeaveHearingRoom({ conferenceId: this.conferenceId }));
         } else {
             this.focusService.restoreFocus();
         }
@@ -557,16 +395,5 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         return false;
-    }
-
-    private newParticipantEnteredHandshake(newParticipantEntered) {
-        this.logger.debug(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
-        if (this.participant.hearingRole !== HearingRole.JUDGE && this.participant.hearingRole !== HearingRole.STAFF_MEMBER) {
-            setTimeout(() => {
-                this.logger.debug(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
-                this.publishMediaDeviceStatus();
-                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
-            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
-        }
     }
 }

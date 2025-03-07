@@ -1006,8 +1006,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     async publishMediaDeviceStatus() {
+        // TODO: make hearing subscribe to store or make `audioOnly` an input
         this.hearingControls.audioOnly = this.audioOnly;
-        await this.hearingControls.publishMediaDeviceStatus();
     }
 
     executeWaitingRoomCleanup() {
