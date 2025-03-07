@@ -15,6 +15,7 @@ import { VHConference, VHEndpoint, VHParticipant } from '../models/vh-conference
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { VideoCallActions } from '../actions/video-call.action';
 
 describe('NotificationEffects', () => {
     const testData = new ConferenceTestData();
@@ -81,7 +82,7 @@ describe('NotificationEffects', () => {
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             // act
-            const action = ConferenceActions.participantLeaveHearingRoomSuccess({
+            const action = VideoCallActions.participantLeaveHearingRoomSuccess({
                 conferenceId: vhConference.id,
                 participant: vhParticipant
             });
@@ -102,7 +103,7 @@ describe('NotificationEffects', () => {
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             // act
-            const action = ConferenceActions.participantLeaveHearingRoomSuccess({
+            const action = VideoCallActions.participantLeaveHearingRoomSuccess({
                 conferenceId: vhConference.id,
                 participant: vhParticipant
             });
@@ -123,7 +124,7 @@ describe('NotificationEffects', () => {
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             // act
-            const action = ConferenceActions.participantLeaveHearingRoomSuccess({
+            const action = VideoCallActions.participantLeaveHearingRoomSuccess({
                 conferenceId: '1234567',
                 participant: vhParticipant
             });
