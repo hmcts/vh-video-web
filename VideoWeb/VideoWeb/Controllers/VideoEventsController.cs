@@ -44,9 +44,8 @@ public class VideoEventsController(
         var activity = Activity.Current;
         try
         {     
-            using (var supplierCallbackActivity = _callbackActivity.StartActivity(ActivityKind.Server))
+            using (var supplierCallbackActivity = _callbackActivity.StartActivity("SupplierCallback" , ActivityKind.Server))
             {
-                supplierCallbackActivity?.SetTag("event.source", "SupplierCallback");
                 supplierCallbackActivity?.SetTag("conference.id", request.ConferenceId);
                 supplierCallbackActivity?.SetTag("event.type", request.EventType.ToString());
                 supplierCallbackActivity?.SetTag("supplierCallbackPayload", JsonSerializer.Serialize(request));
