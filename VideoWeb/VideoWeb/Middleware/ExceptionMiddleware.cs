@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BookingsApi.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace;
 using VideoApi.Client;
 using VideoWeb.Common;
 
@@ -59,7 +58,6 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         await context.Response.WriteAsJsonAsync(responseMessage);
     }
     
-    //For structured logging
     private static void TraceException(HttpContext context, Exception exception, string eventTitle)
     {
         var activity = Activity.Current;

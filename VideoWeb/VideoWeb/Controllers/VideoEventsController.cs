@@ -33,19 +33,23 @@ public class VideoEventsController(
     ILogger<VideoEventsController> logger) 
     : ControllerBase
 {
+    private readonly ActivitySource _callbackActivity = new("SupplierCallbackEvent");
+    
     [HttpPost]
     [SwaggerOperation(OperationId = "SendEvent")]
-    [ProducesResponseType((int) HttpStatusCode.NoContent)]
-    [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
     {
-        using var activity = Activity.Current ?? new Activity(nameof(SendHearingEventAsync)).Start();
+        var activity = Activity.Current;
         try
-        {
-            activity.SetTag("event.source", "SupplierCallback");
-            activity.SetTag("conference.id", request.ConferenceId);
-            activity.SetTag("event.type", request.EventType.ToString());
-            activity.SetTag("supplierCallbackPayload", JsonSerializer.Serialize(request));
+        {     
+            using (var supplierCallbackActivity = _callbackActivity.StartActivity("SupplierCallback" , ActivityKind.Server))
+            {
+                supplierCallbackActivity?.SetTag("conference.id", request.ConferenceId);
+                supplierCallbackActivity?.SetTag("event.type", request.EventType.ToString());
+                supplierCallbackActivity?.SetTag("supplierCallbackPayload", JsonSerializer.Serialize(request));
+            }
             var conferenceId = Guid.Parse(request.ConferenceId);
             var conference = await conferenceService.GetConference(conferenceId, CancellationToken.None);
             await UpdateConferenceRoomParticipants(conference, request);
@@ -65,25 +69,25 @@ public class VideoEventsController(
             // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
             foreach (var e in events)
             {
-                activity.AddEvent(new ActivityEvent("SentGeneratedEventToVideoApi"));
+                activity?.AddEvent(new ActivityEvent("SentGeneratedEventToVideoApi"));
                 await SendEventToVideoApi(e);
             }
 
             callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
             foreach (var cb in callbackEvents)
             {
-                activity.AddEvent(new ActivityEvent("SentGeneratedEventToUI"));
+                activity?.AddEvent(new ActivityEvent("SentGeneratedEventToUI"));
                 await PublishEventToUi(cb);
             }
 
             await GenerateTransferEventOnVmrParticipantJoining(conference, request);
 
-            activity.SetTag("event.handled", true);
+            activity?.SetTag("event.handled", true);
             return NoContent();
         }
         catch (VideoApiException e)
         {
-            activity.SetStatus(ActivityStatusCode.Error, e.Message);
+            activity?.SetStatus(ActivityStatusCode.Error, e.Message);
             logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId, e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
