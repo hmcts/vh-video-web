@@ -13,7 +13,6 @@ import { SupplierClientService } from 'src/app/services/api/supplier-client.serv
 import { VideoCallService } from '../../services/video-call.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { VideoCallActions } from '../actions/video-call.action';
 
 @Injectable()
 export class ConferenceEffects {
@@ -74,19 +73,6 @@ export class ConferenceEffects {
                             })
                         )
                     )
-            )
-        )
-    );
-
-    participantLeaveHearingRoom$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(VideoCallActions.participantLeaveHearingRoom),
-            concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
-            switchMap(([action, participant]) =>
-                this.apiClient.nonHostLeaveHearing(action.conferenceId).pipe(
-                    map(() => VideoCallActions.participantLeaveHearingRoomSuccess({ conferenceId: action.conferenceId, participant })),
-                    catchError(error => of(VideoCallActions.participantLeaveHearingRoomFailure({ error })))
-                )
             )
         )
     );
