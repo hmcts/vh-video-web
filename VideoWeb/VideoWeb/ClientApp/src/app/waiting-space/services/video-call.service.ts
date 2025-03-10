@@ -463,6 +463,10 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
+        if (this.renegotiating) {
+            this.logger.info(`${this.loggerPrefix} Renegotiating in progress, not calling renegotiateCall`);
+            return;
+        }
         this.logger.debug(`${this.loggerPrefix} renegotiating`);
         this.renegotiating = true;
         this.pexipAPI.renegotiate(sendUpdate);
@@ -626,7 +630,7 @@ export class VideoCallService {
     }
 
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
-        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+        this.logger.debug(`${this.loggerPrefix} handling participant created`, participantUpdate);
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         if (!participant.pexipDisplayName) {
             return;
@@ -650,6 +654,7 @@ export class VideoCallService {
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant updated`, participantUpdate);
         const participant = ParticipantUpdated.fromPexipParticipant(participantUpdate);
         if (!participant.pexipDisplayName) {
             return;

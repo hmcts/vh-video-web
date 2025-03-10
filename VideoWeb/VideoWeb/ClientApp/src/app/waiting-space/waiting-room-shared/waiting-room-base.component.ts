@@ -1005,11 +1005,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         elm?.scrollIntoView();
     }
 
-    async publishMediaDeviceStatus() {
-        this.hearingControls.audioOnly = this.audioOnly;
-        await this.hearingControls.publishMediaDeviceStatus();
-    }
-
     executeWaitingRoomCleanup() {
         this.logger.debug(`${this.loggerPrefix} - Clearing intervals and subscriptions for waiting room`, {
             conference: this.conference?.id

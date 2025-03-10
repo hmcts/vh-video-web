@@ -12,6 +12,7 @@ import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clie
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { VideoCallActions } from '../actions/video-call.action';
 
 @Injectable()
 export class NotificationEffects {
@@ -80,7 +81,7 @@ export class NotificationEffects {
     participantLeaveHearingRoomSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(ConferenceActions.participantLeaveHearingRoomSuccess),
+                ofType(VideoCallActions.participantLeaveHearingRoomSuccess),
                 concatLatestFrom(() => [
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
