@@ -70,5 +70,10 @@ namespace VideoWeb.Common.Models
         {
             return IsJudge() || IsStaffMember();
         }
+
+        public bool IsTransferredOnStart()
+        {
+            return !IsWitness() && !IsQuickLinkUser() && !IsHost();
+        }
     }
 }

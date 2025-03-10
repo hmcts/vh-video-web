@@ -11,6 +11,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
+using VideoWeb.EventHub.Services;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -74,8 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(role).Build();
             
-            var hostsForScreening = TestConference.GetNonScreenedParticipantsAndEndpoints();
-            var hosts = TestConference.Participants.Where(e => e.IsHost()).Select(e => e.Id).ToList();
+            
 
             var controller = SetupControllerWithClaims(user);
 
@@ -85,12 +85,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r =>
-                    r.Layout == HearingLayout.Dynamic &&
-                    r.HostsForScreening.SequenceEqual(hostsForScreening) &&
-                    r.Hosts.SequenceEqual(hosts)), 
-                It.IsAny<CancellationToken>()), Times.Once);
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.StartOrResumeVideoHearingAsync(TestConference.Id, participant.Username, HearingLayout.Dynamic,
+                    CancellationToken.None), Times.Once);
         }
     }
 }
