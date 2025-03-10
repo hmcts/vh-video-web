@@ -10,8 +10,6 @@ namespace VideoWeb.Middleware;
 [ExcludeFromCodeCoverage]
 public class RequestBodyLoggingMiddleware(RequestDelegate next)
 {
-    private readonly ActivitySource _activity = new("RequestBodyLogging");
-    
     public async Task InvokeAsync(HttpContext context)
     {
         var method = context.Request.Method;
@@ -35,10 +33,10 @@ public class RequestBodyLoggingMiddleware(RequestDelegate next)
             context.Request.Body.Position = 0;
 
             // Write request body Azure monitor
-            var activity = _activity.StartActivity();
-            activity?.SetTag("http.request.body", requestBody);
-            activity?.SetTag("http.request.method", method);
-            activity?.SetTag("http.request.path", context.Request.Path);
+            var activity = Activity.Current ?? new Activity("RequestBodyLoggingMiddleware").Start();
+            activity.SetTag("http.request.body", requestBody);
+            activity.SetTag("http.request.method", method);
+            activity.SetTag("http.request.path", context.Request.Path);
         }
 
         // Call next middleware in the pipeline
