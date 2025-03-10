@@ -47,7 +47,7 @@
                     [attr.aria-label]="'error.button-reconnect' | translate">
                 {{'error.button-reconnect' | translate}}
             </button>
-            <p *ngIf="failedAttemptToReconnect" id="failed-connect-ui">
+            <p class="govuk-body" *ngIf="failedAttemptToReconnect" id="failed-connect-ui">
                 {{'error.internet-connection-detected' | translate}}: <strong [ngStyle]="{'color':connectionStatus?'green':'red'}"> {{connectionStatus.toString() | translate}} </strong></p>
         </div>
         <h2 class="govuk-heading-m">{{'error.contact-for-help' | translate}}</h2>
