@@ -13,7 +13,7 @@ public class VhApiLoggingDelegatingHandler(ILogger<VhApiLoggingDelegatingHandler
     private readonly ActivitySource _httpActivitySource = new("VhApiLoggingHandler");
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var activity = _httpActivitySource.StartActivity(ActivityKind.Client);
+        using var activity = _httpActivitySource.StartActivity(ActivityKind.Client);
         activity?.SetTag("http.method", request.Method);
         activity?.SetTag("http.url", request.RequestUri);
         
