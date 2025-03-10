@@ -9,6 +9,8 @@ using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
@@ -150,6 +152,62 @@ public class ConferenceManagementServiceTests
         EventHubContextMock.Verify(
             x => x.Clients.Group(conferenceId.ToString())
                 .NonHostTransfer(conferenceId, participant.Id, TransferDirection.Out), Times.Once);
+    }
+
+    [Test]
+    public async Task
+        StartOrResumeVideoHearingAsync_should_send_request_to_start_hearing_and_publish_transfer_message_for_booked_partcicipants_connected()
+    {
+        _mocker.Mock<IFeatureToggles>().Setup(x=> x.TransferringOnStartEnabled()).Returns(true);
+        
+        var participantsAvailable = _conference.Participants.Where(x => !x.IsHost()).Take(2).ToList();
+        participantsAvailable.ForEach(p => p.ParticipantStatus = ParticipantStatus.Available);
+        var participantsNotSignedIn = _conference.Participants.Where(x => !x.IsHost()).Skip(2).ToList();
+        participantsNotSignedIn.ForEach(p => p.ParticipantStatus = ParticipantStatus.NotSignedIn);
+
+        var host = _conference.Participants.Find(x => x.IsHost());
+        var layout = HearingLayout.Dynamic;
+        
+        var hostsForScreening = _conference.GetNonScreenedParticipantsAndEndpoints();
+        var hosts = _conference.Participants.Where(e => e.IsHost()).Select(e => e.Id).ToList();
+        
+        var quickLinkParticipant = new Participant()
+        {
+            Id = Guid.NewGuid(),
+            ExternalReferenceId = null,
+            Role = Role.QuickLinkParticipant,
+            HearingRole = "Quick Link Participant",
+            DisplayName = "QL 1",
+            ParticipantStatus = ParticipantStatus.Available
+        };
+        _conference.AddParticipant(quickLinkParticipant);
+        
+        await _sut.StartOrResumeVideoHearingAsync(_conference.Id, host.Username, layout, CancellationToken.None);
+        
+        _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(_conference.Id,
+            It.Is<StartHearingRequest>(r =>
+                r.Layout == HearingLayout.Dynamic &&
+                r.HostsForScreening.SequenceEqual(hostsForScreening) &&
+                r.Hosts.SequenceEqual(hosts)), 
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        foreach (var participant in participantsAvailable)
+        {
+            EventHubContextMock.Verify(
+                x => x.Clients.Group(host.Username.ToLowerInvariant())
+                    .HearingTransfer(_conference.Id, participant.Id, TransferDirection.In), Times.Once);
+        }
+        
+        foreach (var participant in participantsNotSignedIn)
+        {
+            EventHubContextMock.Verify(
+                x => x.Clients.Group(host.Username.ToLowerInvariant())
+                    .HearingTransfer(_conference.Id, participant.Id, TransferDirection.In), Times.Never);
+        }
+        
+        EventHubContextMock.Verify(
+            x => x.Clients.Group(host.Username.ToLowerInvariant())
+                .HearingTransfer(_conference.Id, quickLinkParticipant.Id, TransferDirection.In), Times.Never);
     }
     
     private void RegisterUsersForHubContext(Guid conferenceId, List<Participant> participants)

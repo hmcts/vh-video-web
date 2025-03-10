@@ -9,6 +9,7 @@ namespace VideoWeb.Common;
 public interface IFeatureToggles
 {
     bool AppInsightsProfilingEnabled();
+    bool TransferringOnStartEnabled();
 }
 
 public class FeatureToggles : IFeatureToggles
@@ -17,6 +18,7 @@ public class FeatureToggles : IFeatureToggles
     private readonly Context _context;
     private const string LdUser = "vh-video-web";
     private const string ProfilingKey = "enable-profiling";
+    private const string TransferringOnStartKey = "joining-message-on-start";
 
     public FeatureToggles(string sdkKey, string environmentName)
     {
@@ -29,6 +31,11 @@ public class FeatureToggles : IFeatureToggles
     public bool AppInsightsProfilingEnabled()
     {
         return GetBoolValueWithKey(ProfilingKey);
+    }
+    
+    public bool TransferringOnStartEnabled()
+    {
+        return GetBoolValueWithKey(TransferringOnStartKey);
     }
     
     private bool GetBoolValueWithKey(string key)
