@@ -266,7 +266,9 @@ export class VideoCallEffects {
             concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
             filter(
                 ([action, loggedInParticipant]) =>
-                    action.participantId === loggedInParticipant.id && action.status === ParticipantStatus.InConsultation
+                    !!loggedInParticipant &&
+                    action.participantId === loggedInParticipant.id &&
+                    action.status === ParticipantStatus.InConsultation
             ),
             switchMap(() => {
                 const isMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
@@ -285,7 +287,9 @@ export class VideoCallEffects {
             concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
             filter(
                 ([action, loggedInParticipant]) =>
-                    action.participantId === loggedInParticipant.id && action.status === ParticipantStatus.InHearing
+                    !!loggedInParticipant &&
+                    action.participantId === loggedInParticipant.id &&
+                    action.status === ParticipantStatus.InHearing
             ),
             switchMap(() => {
                 const isMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
@@ -304,6 +308,7 @@ export class VideoCallEffects {
             concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
             filter(
                 ([action, loggedInParticipant]) =>
+                    !!loggedInParticipant?.pexipInfo &&
                     loggedInParticipant.status === ParticipantStatus.InHearing &&
                     action.participant.uuid === loggedInParticipant?.pexipInfo.uuid
             ),
