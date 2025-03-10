@@ -114,18 +114,22 @@ namespace VideoWeb.Extensions
             services.AddScoped<IReferenceDataService, ReferenceDataService>();
             services.AddScoped<IConferenceLoaderService, ConferenceLoaderService>();
             services.AddSingleton<ICacheLock, CacheLock>();
+            
+            services.AddTransient<VhApiLoggingDelegatingHandler>();
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
 
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler<BookingsApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration))
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
+                .AddHttpMessageHandler<VhApiLoggingDelegatingHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
