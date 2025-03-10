@@ -70,10 +70,26 @@ namespace VideoWeb
                 .WithTracing(tracerProvider =>
                 {
                     tracerProvider
-                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
                         .AddSource("SupplierCallbackEvent")
-                        .AddHttpClientInstrumentation()
-                        .AddAzureMonitorTraceExporter(options => options.ConnectionString = instrumentationKey );
+                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                        .AddHttpClientInstrumentation(options =>
+                        {
+                            options.RecordException = true;
+                            options.EnrichWithHttpRequestMessage = (activity, request) =>
+                            {
+                                if (request.Content != null)
+                                {
+                                    var requestBody = request.Content.ReadAsStringAsync().Result;
+                                    activity.SetTag("http.request.body", requestBody);
+                                }
+                            };
+                            
+                            options.EnrichWithHttpResponseMessage = (activity, response) =>
+                            {
+                                var responseBody = response.Content.ReadAsStringAsync().Result;
+                                activity.SetTag("http.response.body", responseBody);
+                            };
+                        });
                 });
 
             // In production, the Angular files will be served from this directory
