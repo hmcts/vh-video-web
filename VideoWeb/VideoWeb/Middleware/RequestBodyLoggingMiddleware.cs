@@ -35,7 +35,7 @@ public class RequestBodyLoggingMiddleware(RequestDelegate next)
             context.Request.Body.Position = 0;
 
             // Write request body Azure monitor
-            using var activity = _activity.StartActivity();
+            var activity = _activity.StartActivity();
             activity?.SetTag("http.request.body", requestBody);
             activity?.SetTag("http.request.method", method);
             activity?.SetTag("http.request.path", context.Request.Path);
