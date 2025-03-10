@@ -74,6 +74,7 @@ namespace VideoWeb
                         .AddAspNetCoreInstrumentation(options => options.RecordException = true)
                         .AddHttpClientInstrumentation(options =>
                         {
+                            options.RecordException = true;
                             options.EnrichWithHttpRequestMessage = (activity, request) =>
                             {
                                 if (request.Content != null)
