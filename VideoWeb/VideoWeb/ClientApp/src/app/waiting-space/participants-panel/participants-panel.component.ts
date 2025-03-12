@@ -5,7 +5,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
@@ -15,21 +15,18 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
-import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import { VideoCallService } from '../services/video-call.service';
-import { IndividualPanelModel } from '../models/individual-panel-model';
 
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHEndpoint, VHParticipant, VHPexipConference } from '../store/models/vh-conference';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 @Component({
     standalone: false,
@@ -46,15 +43,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isMuteAll = false;
     conferenceId: string;
 
-    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
-
     readonly idPrefix = 'participants-panel';
 
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     private onDestroy$ = new Subject<void>();
     private mapper: ParticipantPanelModelMapper = new ParticipantPanelModelMapper();
+
     constructor(
-        private videoCallService: VideoCallService,
         private eventService: EventsService,
         private logger: Logger,
         private translateService: TranslateService,
@@ -119,8 +114,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
     }
 
-    async updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
-        await this.eventService.updateAllParticipantLocalMuteStatus(this.conferenceId, muteStatus);
+    updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
+        if (muteStatus) {
+            this.store.dispatch(VideoCallHostActions.localMuteAllParticipants());
+        } else {
+            this.store.dispatch(VideoCallHostActions.localUnmuteAllParticipants());
+        }
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {
@@ -142,100 +141,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
-        this.resetAllWitnessTransferTimeouts();
-    }
-
-    updateLocalAudioMutedForWitnessInterpreterVmr(
-        linkedParticipant: IndividualPanelModel,
-        participantId: string,
-        localAudioMuted: boolean
-    ) {
-        this.logger.info(`${this.loggerPrefix} Setting store audio muted to true`, {
-            linkedParticipantId: linkedParticipant.id,
-            participantId: participantId,
-            localAudioMuted: localAudioMuted
-        });
-
-        this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, null);
-        linkedParticipant.updateParticipant(false, false, false, participantId, localAudioMuted, false);
-    }
-
-    resetWitnessTransferTimeout(participantId: string) {
-        clearTimeout(this.transferTimeout[participantId]);
-        this.transferTimeout[participantId] = undefined;
-    }
-
-    resetAllWitnessTransferTimeouts() {
-        for (const participantId of Object.keys(this.transferTimeout)) {
-            this.resetWitnessTransferTimeout(participantId);
-        }
-    }
-
-    handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
-        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
-        if (!participant) {
-            return;
-        }
-        participant.updateParticipant(
-            participant.isMicRemoteMuted(),
-            message.handRaised,
-            participant.hasSpotlight(),
-            participant.id,
-            participant.isLocalMicMuted(),
-            participant.isLocalCameraOff()
-        );
-
-        this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            participants: this.participants,
-            handRaised: message.handRaised
-        });
-    }
-
-    handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
-        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
-
-        if (!participant) {
-            return;
-        }
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(
-                participant.isMicRemoteMuted(),
-                participant.hasHandRaised(),
-                participant.hasSpotlight(),
-                message.participantId,
-                message.mediaStatus.is_local_audio_muted,
-                message.mediaStatus.is_local_video_muted
-            );
-        }
-
-        participant.updateParticipantDeviceStatus(
-            message.mediaStatus.is_local_audio_muted,
-            message.mediaStatus.is_local_video_muted,
-            message.participantId
-        );
-        this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            participants: this.participants,
-            mediaStatus: message.mediaStatus
-        });
-    }
-
-    handleHearingTransferChange(message: HearingTransfer) {
-        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
-        if (!participant) {
-            return;
-        }
-        participant.updateTransferringInStatus(message.transferDirection === TransferDirection.In, message.participantId);
-
-        this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            participants: this.participants,
-            transferDirection: message.transferDirection
-        });
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: VHPexipConference): void {
@@ -261,7 +166,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             current: this.isMuteAll,
             new: true
         });
-        this.videoCallService.muteAllParticipants(true, this.conferenceId);
+        this.store.dispatch(VideoCallHostActions.remoteMuteAndLockAllParticipants());
     }
 
     unlockAll() {
@@ -271,72 +176,32 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             new: false
         });
         // Unlock 'mute all guest participants' setting on conference
-        this.videoCallService.muteAllParticipants(false, this.conferenceId);
-        // If participants have been manually (Administratively) locked - independent of setting above - unmute them too
-        this.participants
-            .filter(x => x.isInHearing() && x.isMicRemoteMuted())
-            .forEach(p => {
-                this.videoCallService.muteParticipant(p.pexipId, false, this.conferenceId, p.id);
-            });
+        this.store.dispatch(VideoCallHostActions.unlockRemoteMute());
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
-        const panelModel = this.participants.find(x => x.id === participant.id);
-
-        this.logger.info(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
-            conferenceId: this.conferenceId,
-            unusedParticipantId: participant?.id ?? null,
-            participantId: panelModel?.id ?? null,
-            pexipId: panelModel?.pexipId ?? null,
-            current: panelModel?.hasSpotlight(),
-            new: !panelModel?.hasSpotlight()
-        });
-
-        if (!panelModel) {
-            return;
+        if (participant.hasSpotlight()) {
+            this.store.dispatch(VideoCallHostActions.removeSpotlightForParticipant({ participantId: participant.id }));
+        } else {
+            this.store.dispatch(VideoCallHostActions.spotlightParticipant({ participantId: participant.id }));
         }
-
-        if (!panelModel.pexipId && !panelModel.id) {
-            this.logger.warn(`${this.loggerPrefix} Cannot spotlight participant as they could not be found or do not have an ID`, {
-                participant: panelModel,
-                participants: this.participants
-            });
-            return;
-        }
-
-        this.videoCallService.spotlightParticipant(panelModel.pexipId, !panelModel.hasSpotlight(), this.conferenceId, panelModel.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
-        const hearingParticipants = this.participants.filter(x => x.isInHearing());
-        const mutedParticipants = hearingParticipants.filter(x => x.isMicRemoteMuted());
         const p = this.participants.find(x => x.id === participant.id);
 
-        const newMuteStatus = !p.isMicRemoteMuted();
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
             pexipParticipant: p.pexipId,
             current: p.isMicRemoteMuted(),
-            new: newMuteStatus
+            new: !p.isMicRemoteMuted()
         });
 
-        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
-
-        if (mutedParticipants.length === 1 && this.isMuteAll) {
-            // check if last person to be unmuted manually
-            this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
-                conference: this.conferenceId
-            });
-            this.videoCallService.muteAllParticipants(false, this.conferenceId);
-        }
-
-        // mute conference if last person manually muted
-        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isMicRemoteMuted()) {
-            this.logger.debug(`${this.loggerPrefix} Judge has manually muted the last unmuted participant. Muting conference`, {
-                conference: this.conferenceId
-            });
-            this.videoCallService.muteAllParticipants(true, this.conferenceId);
+        if (participant.isMicRemoteMuted()) {
+            this.store.dispatch(VideoCallHostActions.unlockRemoteMuteForParticipant({ participantId: participant.id }));
+        } else {
+            this.store.dispatch(VideoCallHostActions.lockRemoteMuteForParticipant({ participantId: participant.id }));
         }
     }
 
@@ -344,13 +209,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        this.videoCallService.lowerAllHands(this.conferenceId);
-        // ClearAllBuzz Pexip command currently does not signal VMR/Linked participant's ParticipantUpdated event handlers - calling them separately
-        this.participants.forEach(participant => {
-            if (participant instanceof LinkedParticipantPanelModel) {
-                this.lowerLinkedParticipantHand(participant);
-            }
-        });
+
+        this.store.dispatch(VideoCallHostActions.lowerAllParticipantHands());
     }
 
     lowerParticipantHand(participant: PanelModel) {
@@ -360,53 +220,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: p.id,
             pexipParticipant: p.pexipId
         });
-        this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-        if (p instanceof LinkedParticipantPanelModel) {
-            this.lowerLinkedParticipantHand(p);
-        }
+        this.store.dispatch(VideoCallHostActions.lowerParticipantHand({ participantId: participant.id }));
     }
 
-    lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
-        linkedParticipant.participants.forEach(async p => {
-            await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
-        });
-    }
-
-    async callParticipantIntoHearing(participant: PanelModel) {
+    callParticipantIntoHearing(participant: PanelModel) {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
-
-        await this.sendTransferDirection(participant, TransferDirection.In);
-        this.transferTimeout[participant.id] = setTimeout(() => {
-            this.initiateTransfer(participant);
-        }, 10000);
+        this.store.dispatch(VideoCallHostActions.admitParticipant({ participantId: participant.id }));
     }
 
-    async initiateTransfer(participant: PanelModel) {
-        try {
-            this.resetWitnessTransferTimeout(participant.id);
-            let participantId = participant.id;
-            if (participant instanceof LinkedParticipantPanelModel) {
-                participantId = participant.witnessParticipant.id;
-            }
-            await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participantId);
-            this.logger.debug(`${this.loggerPrefix} 10 second wait completed, initiating witneses transfer now`, {
-                witness: participant.id,
-                conference: this.conferenceId
-            });
-        } catch (error) {
-            participant.updateTransferringInStatus(false);
-            await this.sendTransferDirection(participant, TransferDirection.Out);
-            this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {
-                witness: participant.id,
-                conference: this.conferenceId
-            });
-        }
-    }
-
-    async dismissParticipantFromHearing(participant: PanelModel) {
+    dismissParticipantFromHearing(participant: PanelModel) {
         const canDismiss = participant.isInHearing();
         if (!canDismiss) {
             return;
@@ -417,26 +242,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        if (participant.hasHandRaised()) {
-            this.lowerParticipantHand(participant);
-        }
-        if (participant.hasSpotlight()) {
-            this.toggleSpotlightParticipant(participant);
-        }
-
-        try {
-            let participantId = participant.id;
-            if (participant instanceof LinkedParticipantPanelModel) {
-                participantId = participant.witnessParticipant.id;
-            }
-            await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participantId);
-            await this.sendTransferDirection(participant, TransferDirection.Out);
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefix} Failed to raise request to dismiss witness out of hearing`, error, {
-                witness: participant.id,
-                conference: this.conferenceId
-            });
-        }
+        this.store.dispatch(VideoCallHostActions.dismissParticipant({ participantId: participant.id }));
     }
 
     isEndpoint(participant: PanelModel) {
@@ -506,6 +312,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isWitness(participant: PanelModel) {
         return participant.isWitness;
     }
+
     private processParticipantAndEndpointUpdates(participants: VHParticipant[], endpoints: VHEndpoint[]) {
         this.totalParticipants = participants.length + endpoints.length;
         this.totalParticipantsInWaitingRoom =
@@ -519,17 +326,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return ep;
         });
         this.updateParticipants();
-    }
-
-    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async linkedParticipant => {
-                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
-                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
-            });
-        } else {
-            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
-        }
     }
 
     private getHearingRole(participant: PanelModel): string {

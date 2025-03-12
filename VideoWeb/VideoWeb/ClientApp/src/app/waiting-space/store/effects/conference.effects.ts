@@ -3,7 +3,7 @@ import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { of } from 'rxjs';
 import { catchError, switchMap, map, tap, filter } from 'rxjs/operators';
-import { ApiClient, ParticipantStatus, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, EndpointStatus, ParticipantStatus, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { ConferenceState } from '../reducers/conference.reducer';
@@ -13,6 +13,8 @@ import { SupplierClientService } from 'src/app/services/api/supplier-client.serv
 import { VideoCallService } from '../../services/video-call.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Injectable()
 export class ConferenceEffects {
@@ -105,6 +107,97 @@ export class ConferenceEffects {
         { dispatch: false }
     );
 
+    sendTransferRequest$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.sendTransferRequest),
+                tap(action => {
+                    this.eventsService.sendTransferRequest(action.conferenceId, action.participantId, action.transferDirection);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    lockConferenceWhenAllInHearingParticipantsMuted$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.upsertPexipParticipant),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getPexipConference)
+                ]),
+                filter(([_, _conference, pexipConference]) => !pexipConference.guestsMuted),
+                filter(([_, conference]) => {
+                    const inHearingParticipants = conference.participants.filter(p => p.status === ParticipantStatus.InHearing);
+                    const inHearingEndpoints = conference.endpoints.filter(e => e.status === EndpointStatus.InHearing);
+
+                    const allParticipantsMuted = inHearingParticipants.every(p => p.pexipInfo.isRemoteMuted);
+                    const allEndpointsMuted = inHearingEndpoints.every(e => e.pexipInfo.isRemoteMuted);
+                    return (
+                        inHearingParticipants.length > 0 && allParticipantsMuted && (inHearingEndpoints.length === 0 || allEndpointsMuted)
+                    );
+                }),
+                tap(([_, conference]) => {
+                    this.logger.info(`${this.loggerPrefix} Locking conference as all in-hearing participants are muted`);
+                    this.videoCallService.muteAllParticipants(true, conference.id);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    unlockConferenceWhenAllInHearingParticipantsUnmuted$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.upsertPexipParticipant),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getPexipConference)
+                ]),
+                filter(([_, _conference, pexipConference]) => pexipConference.guestsMuted),
+                filter(([_, conference]) => {
+                    const inHearingParticipants = conference.participants.filter(p => p.status === ParticipantStatus.InHearing);
+                    const inHearingEndpoints = conference.endpoints.filter(e => e.status === EndpointStatus.InHearing);
+
+                    const allParticipantsUnmuted = inHearingParticipants.every(p => !p.pexipInfo.isRemoteMuted);
+                    const allEndpointsUnmuted = inHearingEndpoints.every(e => !e.pexipInfo.isRemoteMuted);
+                    return (
+                        inHearingParticipants.length > 0 &&
+                        allParticipantsUnmuted &&
+                        (inHearingEndpoints.length === 0 || allEndpointsUnmuted)
+                    );
+                }),
+                tap(([_, conference]) => {
+                    this.logger.info(`${this.loggerPrefix} Unlocking conference as all in-hearing participants are unmuted`);
+                    this.videoCallService.muteAllParticipants(false, conference.id);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     * Some participants may still be remote muted when the conference is unlocked, this will unlock them
+     */
+    unlockAnyRemoteMutedParticipantsWhenConferenceGuestAreRemoteUnmuted$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.upsertPexipConference),
+                concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)),
+                filter(([action, _]) => !action.pexipConference.guestsMuted),
+                tap(([_, conference]) => {
+                    this.logger.info(`${this.loggerPrefix} Unlocking any remote muted participants as conference is unlocked`);
+                    conference.participants
+                        .filter(p => p.pexipInfo.isRemoteMuted)
+                        .forEach(p => this.videoCallService.muteParticipant(p.pexipInfo.uuid, false, conference.id, p.id));
+
+                    conference.endpoints
+                        .filter(e => e.pexipInfo.isRemoteMuted)
+                        .forEach(e => this.videoCallService.muteParticipant(e.pexipInfo.uuid, false, conference.id, e.id));
+                })
+            ),
+        { dispatch: false }
+    );
+
+    private readonly loggerPrefix = '[ConferenceEffects] -';
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
@@ -112,6 +205,8 @@ export class ConferenceEffects {
         private supplierClientService: SupplierClientService,
         private videoCallService: VideoCallService,
         private venueFlagService: HearingVenueFlagsService,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        private eventsService: EventsService,
+        private logger: Logger
     ) {}
 }

@@ -22,6 +22,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { VideoCallActions } from '../actions/video-call.action';
+import { VideoCallHostActions } from '../actions/video-call-host.actions';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -1637,6 +1638,34 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.currentConference.participants[0].localMediaStatus.isCameraOff).toBeFalse();
+        });
+    });
+
+    describe('admitParticipantFailure action', () => {
+        it('should update the participant transfer direction to undefined', () => {
+            const participant = conferenceTestData.participants[0];
+            const initialStateWithTransferDirection: ConferenceState = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    participants: [
+                        {
+                            ...participant,
+                            transferDirection: TransferDirection.In
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(
+                initialStateWithTransferDirection,
+                VideoCallHostActions.admitParticipantFailure({
+                    conferenceId: conferenceTestData.id,
+                    participantId: participant.id,
+                    error: new Error('Failed to admit participant')
+                })
+            );
+
+            expect(result.currentConference.participants[0].transferDirection).toBeUndefined();
         });
     });
 });

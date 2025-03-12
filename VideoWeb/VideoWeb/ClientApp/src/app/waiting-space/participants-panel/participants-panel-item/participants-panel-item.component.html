@@ -186,12 +186,6 @@
         [participantInput]="participant"
         *ngIf="!isHost"
         [hidden]="!participant.isInHearing() && !participant.isAvailable()"
-        (toggleMuteParticipantEvent)="toggleParticipantMute()"
-        (toggleSpotlightParticipantEvent)="toggleParticipantSpotlight()"
-        (lowerParticipantHandEvent)="lowerParticipantHand()"
-        (callParticipantIntoHearingEvent)="callParticipantIntoHearing()"
-        (dismissParticipantFromHearingEvent)="dismissParticipantFromHearing()"
-        (toggleLocalMuteParticipantEvent)="toggleParticipantLocalMute()"
       ></app-judge-context-menu>
     </div>
   </ng-container>

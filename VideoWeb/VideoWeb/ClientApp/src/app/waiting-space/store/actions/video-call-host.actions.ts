@@ -3,15 +3,35 @@ import { HearingLayout } from 'src/app/services/clients/api-client';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export const VideoCallHostActions = createActionGroup({
-    source: 'VideoCall',
+    source: 'VideoCallHost',
     events: {
-        'Lower Participant Hand': props<{ participantId: string }>(),
-        'Lower All Participant Hands': emptyProps(),
-        'Mute Participant': props<{ participantId: string }>(),
-        'Unmute Participant': props<{ participantId: string }>(),
-        'Update Participant Spotlight': props<{ participantId: string; isSpotlighted: boolean }>(),
-        'Update All Participants Mute': props<{ isMuted: boolean }>(),
+        // Top Level Panel List Controls
+        'Local Mute All Participants': emptyProps(),
+        'Local Unmute All Participants': emptyProps(),
 
+        'Remote Mute And Lock All Participants': emptyProps(),
+        'Unlock Remote Mute': emptyProps(),
+
+        'Lower All Participant Hands': emptyProps(),
+
+        // Context Menu actions
+        'Unlock Remote Mute For Participant': props<{ participantId: string }>(),
+        'Lock Remote Mute For Participant': props<{ participantId: string }>(),
+        'Lower Participant Hand': props<{ participantId: string }>(),
+        'Local Mute Participant': props<{ participantId: string }>(),
+        'Local Unmute Participant': props<{ participantId: string }>(),
+        'Spotlight Participant': props<{ participantId: string }>(),
+        'Remove Spotlight For Participant': props<{ participantId: string }>(),
+
+        'Admit Participant': props<{ participantId: string }>(),
+        'Admit Participant Success': emptyProps(),
+        'Admit Participant Failure': props<{ error: Error; participantId: string; conferenceId: string }>(),
+
+        'Dismiss Participant': props<{ participantId: string }>(),
+        'Dismiss Participant Success': emptyProps(),
+        'Dismiss Participant Failure': props<{ error: Error }>(),
+
+        // Conference Management actions
         'Start Hearing': props<{ conferenceId: string; hearingLayout: HearingLayout }>(),
         'Start Hearing Success': emptyProps(),
         'Start Hearing Failure': props<{ error: Error }>(),
@@ -32,16 +52,8 @@ export const VideoCallHostActions = createActionGroup({
         'Host Leave Hearing Success': emptyProps(),
         'Host Leave Hearing Failure': props<{ error: Error }>(),
 
-        'Join Hearing': props<{ conferenceId: string; participantId: string }>(),
+        'Join Hearing': props<{ participantId: string }>(),
         'Join Hearing Success': emptyProps(),
-        'Join Hearing Failure': props<{ error: Error }>(),
-
-        'Admit Participant': props<{ conferenceId: string; participantId: string }>(),
-        'Admit Participant Success': emptyProps(),
-        'Admit Participant Failure': props<{ error: Error }>(),
-
-        'Dismiss Participant': props<{ conferenceId: string; participantId: string }>(),
-        'Dismiss Participant Success': emptyProps(),
-        'Dismiss Participant Failure': props<{ error: Error }>()
+        'Join Hearing Failure': props<{ error: Error }>()
     }
 });
