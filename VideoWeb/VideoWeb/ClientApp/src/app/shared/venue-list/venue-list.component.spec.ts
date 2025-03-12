@@ -170,38 +170,47 @@ describe('VenueListComponent', () => {
     });
 
     describe('ngAfterViewInit', () => {
-        fit('should remove aria-placeholder from ng-select inputs', fakeAsync(() => {
-            // Create the first input inside #venue-allocation-list
-            const venueInput = document.createElement('input');
-            venueInput.setAttribute('aria-placeholder', 'Choose lists');
+        it('should remove aria-placeholder from ng-select lists', fakeAsync(() => {
+            // Arrange
+            const venueList = createListElement();
+            const venueContainer = createContainerElement('venue-allocation-list', venueList);
 
-            const venueContainer = document.createElement('div');
-            venueContainer.id = 'venue-allocation-list';
-            venueContainer.appendChild(venueInput);
+            const csoList = createListElement();
+            const csoContainer = createContainerElement('cso-allocation-list', csoList);
 
-            // Create the second input inside #cso-allocation-list
-            const csoInput = document.createElement('input');
-            csoInput.setAttribute('aria-placeholder', 'Choose lists');
+            const lists = [venueList, csoList];
+            const containers = [venueContainer, csoContainer];
 
-            const csoContainer = document.createElement('div');
-            csoContainer.id = 'cso-allocation-list';
-            csoContainer.appendChild(csoInput);
+            containers.forEach(container => {
+                document.body.appendChild(container);
+            });
 
-            // Append both containers to the document body
-            document.body.appendChild(venueContainer);
-            document.body.appendChild(csoContainer);
-
-            // Call ngAfterViewInit
+            // Act
             component.ngAfterViewInit();
-            tick(); // Simulate the async setTimeout(…, 0)
+            tick();
 
-            // Check that aria-placeholder has been removed from both inputs
-            expect(venueInput.hasAttribute('aria-placeholder')).toBeFalse();
-            expect(csoInput.hasAttribute('aria-placeholder')).toBeFalse();
+            // Assert
+            lists.forEach(list => {
+                expect(list.hasAttribute('aria-placeholder')).toBeFalse();
+            });
 
-            // Cleanup: Remove test elements from the document
-            document.body.removeChild(venueContainer);
-            document.body.removeChild(csoContainer);
+            // Cleanup
+            containers.forEach(container => {
+                document.body.removeChild(container);
+            });
         }));
+
+        function createListElement(): HTMLInputElement {
+            const input = document.createElement('input');
+            input.setAttribute('aria-placeholder', 'Choose lists');
+            return input;
+        }
+
+        function createContainerElement(id: string, input: HTMLInputElement): HTMLDivElement {
+            const container = document.createElement('div');
+            container.id = id;
+            container.appendChild(input);
+            return container;
+        }
     });
 });
