@@ -151,11 +151,11 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
     }
 
     private removeAriaPlaceholderAttributes() {
-        const inputElements: Element[] = [];
-        inputElements.push(document.querySelector('#venue-allocation-list input'));
-        inputElements.push(document.querySelector('#cso-allocation-list input'));
-        inputElements.forEach(element => {
-            element.removeAttribute('aria-placeholder');
+        // Accessibility workaround to remove invalid aria-placeholder attribute from ng-select generated inputs
+        const inputIds = ['#venue-allocation-list input', '#cso-allocation-list input'];
+        inputIds.forEach(id => {
+            const input = document.querySelector(id);
+            input?.removeAttribute('aria-placeholder');
         });
     }
 
