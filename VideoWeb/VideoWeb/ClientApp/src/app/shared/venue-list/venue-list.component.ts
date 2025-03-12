@@ -12,7 +12,6 @@ import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ElementHelper } from '../helpers/element-helper';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit, OnDestroy, AfterViewInit {
@@ -156,7 +155,7 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         inputElements.push(document.querySelector('#venue-allocation-list input'));
         inputElements.push(document.querySelector('#cso-allocation-list input'));
         inputElements.forEach(element => {
-            ElementHelper.removeAriaPlaceholderAttribute(element);
+            element.removeAttribute('aria-placeholder');
         });
     }
 

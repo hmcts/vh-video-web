@@ -168,4 +168,40 @@ describe('VenueListComponent', () => {
             expect(component.activeSessions).toBeTrue();
         });
     });
+
+    describe('ngAfterViewInit', () => {
+        fit('should remove aria-placeholder from ng-select inputs', fakeAsync(() => {
+            // Create the first input inside #venue-allocation-list
+            const venueInput = document.createElement('input');
+            venueInput.setAttribute('aria-placeholder', 'Choose lists');
+
+            const venueContainer = document.createElement('div');
+            venueContainer.id = 'venue-allocation-list';
+            venueContainer.appendChild(venueInput);
+
+            // Create the second input inside #cso-allocation-list
+            const csoInput = document.createElement('input');
+            csoInput.setAttribute('aria-placeholder', 'Choose lists');
+
+            const csoContainer = document.createElement('div');
+            csoContainer.id = 'cso-allocation-list';
+            csoContainer.appendChild(csoInput);
+
+            // Append both containers to the document body
+            document.body.appendChild(venueContainer);
+            document.body.appendChild(csoContainer);
+
+            // Call ngAfterViewInit
+            component.ngAfterViewInit();
+            tick(); // Simulate the async setTimeout(…, 0)
+
+            // Check that aria-placeholder has been removed from both inputs
+            expect(venueInput.hasAttribute('aria-placeholder')).toBeFalse();
+            expect(csoInput.hasAttribute('aria-placeholder')).toBeFalse();
+
+            // Cleanup: Remove test elements from the document
+            document.body.removeChild(venueContainer);
+            document.body.removeChild(csoContainer);
+        }));
+    });
 });
