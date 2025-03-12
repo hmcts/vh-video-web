@@ -20,7 +20,6 @@ import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-
 import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
@@ -53,7 +52,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         private translateService: TranslateService,
-        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         private store: Store<ConferenceState>
     ) {}
 
