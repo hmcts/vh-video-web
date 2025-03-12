@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { ApiClient } from 'src/app/services/clients/api-client';
+import { ApiClient, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
@@ -343,6 +343,101 @@ export class VideoCallHostEffects {
                 return this.apiClient.dismissParticipant(conference.id, action.participantId).pipe(
                     map(() => VideoCallHostActions.dismissParticipantSuccess()),
                     catchError(error => of(VideoCallHostActions.dismissParticipantFailure({ error })))
+                );
+            })
+        )
+    );
+
+    startHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.startHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Starting hearing`, {
+                    conferenceId: action.conferenceId,
+                    hearingLayout: action.hearingLayout
+                });
+                const request = new StartOrResumeVideoHearingRequest({
+                    layout: action.hearingLayout
+                });
+                return this.apiClient.startOrResumeVideoHearing(action.conferenceId, request).pipe(
+                    map(() => VideoCallHostActions.startHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.startHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    pauseHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.pauseHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Pausing hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.pauseVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.pauseHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.pauseHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    suspendHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.suspendHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Suspending hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.suspendVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.suspendHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.suspendHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    endHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.endHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Ending hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.endVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.endHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.endHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    hostLeaveHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.hostLeaveHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Host leaving hearing`, {
+                    conferenceId: action.conferenceId,
+                    participantId: action.participantId
+                });
+                return this.apiClient.leaveHearing(action.conferenceId, action.participantId).pipe(
+                    map(() => VideoCallHostActions.hostLeaveHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.hostLeaveHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    joinHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.joinHearing),
+            switchMap(action => {
+                this.logger.info(`${this.loggerPrefix} Joining hearing`, {
+                    participantId: action.participantId
+                });
+                return this.apiClient.joinHearingInSession(action.conferenceId, action.participantId).pipe(
+                    map(() => VideoCallHostActions.joinHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.joinHearingFailure({ error })))
                 );
             })
         )

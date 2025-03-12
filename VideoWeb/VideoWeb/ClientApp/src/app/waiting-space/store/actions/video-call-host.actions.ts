@@ -52,7 +52,7 @@ export const VideoCallHostActions = createActionGroup({
         'Host Leave Hearing Success': emptyProps(),
         'Host Leave Hearing Failure': props<{ error: Error }>(),
 
-        'Join Hearing': props<{ participantId: string }>(),
+        'Join Hearing': props<{ conferenceId: string; participantId: string }>(),
         'Join Hearing Success': emptyProps(),
         'Join Hearing Failure': props<{ error: Error }>()
     }
