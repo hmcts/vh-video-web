@@ -112,12 +112,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
     }
 
-    updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
-        if (muteStatus) {
-            this.store.dispatch(VideoCallHostActions.localMuteAllParticipants());
-        } else {
-            this.store.dispatch(VideoCallHostActions.localUnmuteAllParticipants());
-        }
+    localMuteAllParticipants() {
+        this.store.dispatch(VideoCallHostActions.localMuteAllParticipants());
+    }
+
+    localUnmuteAllParticipants() {
+        this.store.dispatch(VideoCallHostActions.localUnmuteAllParticipants());
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {
