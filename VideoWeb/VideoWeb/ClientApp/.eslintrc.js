@@ -30,7 +30,8 @@ module.exports = {
         '@typescript-eslint',
         '@typescript-eslint/tslint',
         'jasmine',
-        'unused-imports'
+        'unused-imports',
+        '@ngrx'
     ],
     root: true,
     rules: {

@@ -52,6 +52,7 @@ export const ConferenceActions = createActionGroup({
         'Update Participant Local Mute Status': props<{ participantId: string; conferenceId: string; isMuted: boolean }>(),
         'Update Participant Hand Raised': props<{ participantId: string; conferenceId: string; hasHandRaised: boolean }>(),
 
+        'Send Transfer Request': props<{ conferenceId: string; participantId: string; transferDirection: TransferDirection }>(),
         'Update Participant Hearing Transfer Status': props<{
             participantId: string;
             conferenceId: string;

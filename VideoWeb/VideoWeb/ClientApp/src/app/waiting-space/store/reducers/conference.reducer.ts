@@ -11,6 +11,7 @@ import {
 } from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { VideoCallActions } from '../actions/video-call.action';
+import { VideoCallHostActions } from '../actions/video-call-host.actions';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -531,8 +532,14 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
         return { ...state, currentConference: updatedConference, loggedInParticipant };
-    })
+    }),
     // Video Call Host Controls
+    on(VideoCallHostActions.admitParticipantFailure, state => {
+        // set participant transfer direction to none
+        const updatedParticipants = state.currentConference.participants.map(p => ({ ...p, transferDirection: undefined }));
+        const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
+        return { ...state, currentConference: updatedConference };
+    })
 );
 
 export const videocallControlsReducer = createReducer(initialState);
