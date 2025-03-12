@@ -388,7 +388,7 @@ export class VideoCallEffects {
             })
         )
     );
-
+  
     private readonly loggerPrefix = '[VideoCallEffect] -';
 
     constructor(

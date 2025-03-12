@@ -540,6 +540,7 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference };
     })
+    // Video Call Host Controls
 );
 
 export const videocallControlsReducer = createReducer(initialState);
