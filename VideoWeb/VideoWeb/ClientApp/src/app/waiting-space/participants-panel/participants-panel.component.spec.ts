@@ -344,7 +344,7 @@ describe('ParticipantsPanelComponent', () => {
             spyOn(mockConferenceStore, 'dispatch');
 
             // act
-            component.updateAllParticipantsLocalMuteStatus(true);
+            component.localMuteAllParticipants();
 
             // assert
             expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(VideoCallHostActions.localMuteAllParticipants());
@@ -355,7 +355,7 @@ describe('ParticipantsPanelComponent', () => {
             spyOn(mockConferenceStore, 'dispatch');
 
             // act
-            component.updateAllParticipantsLocalMuteStatus(false);
+            component.localUnmuteAllParticipants();
 
             // assert
             expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(VideoCallHostActions.localUnmuteAllParticipants());
