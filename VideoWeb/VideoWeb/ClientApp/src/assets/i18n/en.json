@@ -13,7 +13,8 @@
     "on-date": "on {{date}}",
     "button": {
       "sign-into-hearing": "Sign into hearing"
-    }
+    },
+    "action": "Action"
   },
   "footer": {
     "privacy-policy": "Privacy policy",
@@ -1569,7 +1570,7 @@
         "expires": "When you close your browser"
       }
     },
-    "cookie-banner" : {
+    "cookie-banner": {
       "title": "Cookies on Video Hearings",
       "intro": "We use some essential cookies to make this service work.",
       "intro2": "We’d like to set additional cookies so we can remember your settings, understand how people use the service and make improvements.",
