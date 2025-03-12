@@ -87,6 +87,7 @@
     "@angular/cli": "^19.1.7",
     "@angular/compiler-cli": "^19.1.6",
     "@angular/language-service": "^19.1.6",
+    "@ngrx/eslint-plugin": "^19.0.1",
     "@ngrx/schematics": "^19.0.1",
     "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",

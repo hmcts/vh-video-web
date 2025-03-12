@@ -11,7 +11,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { ApiClient, InterpreterType, ParticipantStatus, Role, Supplier } from 'src/app/services/clients/api-client';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VideoCallActions } from '../actions/video-call.action';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, NEVER, of } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -367,6 +367,24 @@ export class VideoCallEffects {
                 }
                 this.logger.debug(`${this.loggerPrefix} Host mute preference is already set correctly`);
                 return EMPTY;
+            })
+        )
+    );
+
+    // update the participant local mute requested by a host
+    updateParticipantLocalMuteStatus$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.updateParticipantLocalMuteStatus),
+            concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+            filter(([action, loggedInParticipant]) => action.participantId === loggedInParticipant.id),
+            switchMap(([action, participant]) => {
+                if (participant.localMediaStatus.isMicrophoneMuted !== action.isMuted) {
+                    this.logger.debug(
+                        `${this.loggerPrefix} Updating local mute status for participant ${participant.id} to ${action.isMuted ? 'muted' : 'unmuted'}`
+                    );
+                    return [VideoCallActions.toggleAudioMute()];
+                }
+                return NEVER;
             })
         )
     );

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable, of } from 'rxjs';
-import { provideHttpClientTesting } from '@angular/common/http/testing'; // import this
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -1041,6 +1041,49 @@ describe('VideoCallEffects', () => {
             const expectedAction = VideoCallActions.toggleAudioMute();
             const expected = cold('-b', { b: expectedAction });
             expect(effects.restoreHostMutePreferenceOnCountdownComplete$).toBeObservable(expected);
+        });
+    });
+
+    describe('updateParticipantLocalMuteStatus$', () => {
+        const conference = conferenceTestData.getConferenceDetailNow();
+        let vhConference: VHConference;
+        let participant: VHParticipant;
+        beforeEach(() => {
+            vhConference = mapConferenceToVHConference(conference);
+            participant = vhConference.participants.find(x => x.role === Role.Individual);
+            participant.localMediaStatus = { isCameraOff: true, isMicrophoneMuted: false };
+            participant.status = ParticipantStatus.InHearing;
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+        });
+
+        it('should update local mute status when participant is locally muted', () => {
+            // arrange
+            const action = ConferenceActions.updateParticipantLocalMuteStatus({
+                conferenceId: conference.id,
+                participantId: participant.id,
+                isMuted: true
+            });
+            actions$ = hot('-a', { a: action });
+
+            // act
+            const expectedAction = VideoCallActions.toggleAudioMute();
+            const expected = cold('-b', { b: expectedAction });
+            expect(effects.updateParticipantLocalMuteStatus$).toBeObservable(expected);
+        });
+
+        it('should not take actions when the requested mute status matches the current mute status', () => {
+            // arrange
+            const action = ConferenceActions.updateParticipantLocalMuteStatus({
+                conferenceId: conference.id,
+                participantId: participant.id,
+                isMuted: false
+            });
+            actions$ = hot('-a', { a: action });
+
+            // act
+            const expected = cold('-');
+            expect(effects.updateParticipantLocalMuteStatus$).toBeObservable(expected);
         });
     });
 });

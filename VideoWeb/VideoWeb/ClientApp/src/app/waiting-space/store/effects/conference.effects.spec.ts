@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { provideHttpClientTesting } from '@angular/common/http/testing'; // import this
 
 import { ConferenceEffects } from './conference.effects';
-import { ApiClient, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ApiClient, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../models/api-contract-to-state-model-mappers';
@@ -13,9 +13,12 @@ import { VideoCallService } from '../../services/video-call.service';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { VHParticipant } from '../models/vh-conference';
+import { VHParticipant, VHPexipConference, VHPexipParticipant } from '../models/vh-conference';
 import { SupplierClientService } from 'src/app/services/api/supplier-client.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { EventsService } from 'src/app/services/events.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -27,15 +30,18 @@ describe('ConferenceEffects', () => {
     let supplierClientService: jasmine.SpyObj<SupplierClientService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let pexipClientSpy: jasmine.SpyObj<PexipClient>;
+    let eventsService: jasmine.SpyObj<EventsService>;
 
     beforeEach(() => {
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
         apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing']);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [], {
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['muteAllParticipants', 'muteParticipant'], {
             pexipAPI: pexipClientSpy
         });
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['sendTransferRequest']);
+
         TestBed.configureTestingModule({
             providers: [
                 ConferenceEffects,
@@ -43,9 +49,11 @@ describe('ConferenceEffects', () => {
                 provideMockStore(),
                 provideMockActions(() => actions$),
                 { provide: ApiClient, useValue: apiClient },
+                { provide: Logger, useValue: new MockLogger() },
                 { provide: SupplierClientService, useValue: supplierClientService },
                 { provide: VideoCallService, useValue: videoCallServiceSpy },
-                { provide: ErrorService, useValue: errorServiceSpy }
+                { provide: ErrorService, useValue: errorServiceSpy },
+                { provide: EventsService, useValue: eventsService }
             ]
         });
 
@@ -253,6 +261,116 @@ describe('ConferenceEffects', () => {
 
             // assert
             expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('lockConferenceWhenAllInHearingParticipantsMuted$', () => {
+        it('should lock the conference when all in hearing participants are remote muted', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            const pexipConference: VHPexipConference = {
+                guestsMuted: false,
+                locked: false,
+                started: true
+            };
+            vhConference.participants.forEach(p => {
+                p.status = ParticipantStatus.InHearing;
+                return (p.pexipInfo = { isRemoteMuted: true } as VHPexipParticipant);
+            });
+            vhConference.endpoints.forEach(e => {
+                e.status = EndpointStatus.InHearing;
+                return (e.pexipInfo = { isRemoteMuted: true } as VHPexipParticipant);
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getPexipConference, pexipConference);
+
+            const action = ConferenceActions.upsertPexipParticipant({ participant: vhConference.participants[0].pexipInfo });
+
+            actions$ = of(action);
+
+            // act
+            effects.lockConferenceWhenAllInHearingParticipantsMuted$.subscribe();
+
+            // assert
+            expect(videoCallServiceSpy.muteAllParticipants).toHaveBeenCalledWith(true, conference.id);
+        });
+    });
+
+    describe('unlockConferenceWhenAllInHearingParticipantsUnmuted$', () => {
+        it('should unlock the conference when all in hearing participants are remote unmuted', () => {
+            // arrange
+            const pexipConference: VHPexipConference = {
+                guestsMuted: true,
+                locked: false,
+                started: true
+            };
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            vhConference.participants.forEach(p => {
+                p.status = ParticipantStatus.InHearing;
+                return (p.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+            });
+            vhConference.endpoints.forEach(e => {
+                e.status = EndpointStatus.InHearing;
+                return (e.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+            });
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getPexipConference, pexipConference);
+
+            const action = ConferenceActions.upsertPexipParticipant({ participant: vhConference.participants[0].pexipInfo });
+
+            actions$ = of(action);
+
+            // act
+            effects.unlockConferenceWhenAllInHearingParticipantsUnmuted$.subscribe();
+
+            // assert
+            expect(videoCallServiceSpy.muteAllParticipants).toHaveBeenCalledWith(false, conference.id);
+        });
+    });
+
+    describe('unlockAnyRemoteMutedParticipantsWhenConferenceGuestAreRemoteUnmuted$', () => {
+        it('should unlock any remote muted participants when conference remote unmuted', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            vhConference.participants.forEach(p => {
+                p.status = ParticipantStatus.InHearing;
+                return (p.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+            });
+            vhConference.endpoints.forEach(e => {
+                e.status = EndpointStatus.InHearing;
+                return (e.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+            });
+            vhConference.participants[0].pexipInfo.isRemoteMuted = true;
+            vhConference.endpoints[0].pexipInfo.isRemoteMuted = true;
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+            const action = ConferenceActions.upsertPexipConference({
+                pexipConference: {
+                    guestsMuted: false,
+                    locked: false,
+                    started: true
+                }
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.unlockAnyRemoteMutedParticipantsWhenConferenceGuestAreRemoteUnmuted$.subscribe();
+
+            // assert
+            const participant = vhConference.participants[0];
+            expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledWith(
+                participant.pexipInfo.uuid,
+                false,
+                conference.id,
+                participant.id
+            );
         });
     });
 });
