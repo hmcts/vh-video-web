@@ -1,4 +1,4 @@
-import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -12,9 +12,10 @@ import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ElementHelper } from '../helpers/element-helper';
 
 @Directive()
-export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
+export abstract class VenueListComponentDirective implements OnInit, OnDestroy, AfterViewInit {
     static readonly ALLOCATED_TO_ME = 'AllocatedToMe';
     static readonly UNALLOCATED = 'Unallocated';
 
@@ -69,6 +70,12 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
         this.profileService.getUserProfile().then(user => {
             this.isAdministrator = user.roles.includes(Role.Administrator);
         });
+    }
+
+    ngAfterViewInit() {
+        setTimeout(() => {
+            this.removeAriaPlaceholderAttributes();
+        }, 0);
     }
 
     ngOnDestroy(): void {
@@ -141,6 +148,15 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();
+        });
+    }
+
+    private removeAriaPlaceholderAttributes() {
+        const inputElements: Element[] = [];
+        inputElements.push(document.querySelector('#venue-allocation-list input'));
+        inputElements.push(document.querySelector('#cso-allocation-list input'));
+        inputElements.forEach(element => {
+            ElementHelper.removeAriaPlaceholderAttribute(element);
         });
     }
 
