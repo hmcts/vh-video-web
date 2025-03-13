@@ -8,12 +8,10 @@ java:
   livenessPath: /health/liveness
   readinessPath: /health/readiness
   startupPath: /health/startup
-  aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: connectionstrings--applicationinsights
           alias: applicationinsights--connectionstring
@@ -31,7 +29,6 @@ java:
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: FeatureToggles--SDK-Key
           alias: launchdarkly--sdkkey
@@ -65,21 +62,18 @@ java:
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: azuread--identifieruri
           alias: vhservices--bookingsapiresourceid
     vh-user-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: azuread--identifieruri
           alias: vhservices--userapiresourceid
     vh-video-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - name: azuread--identifieruri
           alias: vhservices--videoapiresourceid
