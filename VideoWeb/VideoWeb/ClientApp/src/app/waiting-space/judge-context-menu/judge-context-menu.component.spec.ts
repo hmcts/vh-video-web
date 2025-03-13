@@ -3,14 +3,6 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ParticipantStatus, Role } from '../../services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { JudgeContextMenuComponent } from './judge-context-menu.component';
-import {
-    ToggleMuteParticipantEvent,
-    ToggleSpotlightParticipantEvent,
-    LowerParticipantHandEvent,
-    CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent,
-    ToggleLocalMuteParticipantEvent
-} from 'src/app/shared/models/participant-event';
 import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
@@ -25,6 +17,11 @@ import { By } from '@angular/platform-browser';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VHConference, VHParticipant } from '../store/models/vh-conference';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 export class MockElementRef extends ElementRef {
     constructor() {
@@ -33,7 +30,9 @@ export class MockElementRef extends ElementRef {
 }
 
 describe('JudgeContextMenuComponent', () => {
-    const participants = new ConferenceTestData().getListOfParticipants();
+    let mockConferenceStore: MockStore<ConferenceState>;
+    let vhConference: VHConference;
+    let participants: VHParticipant[];
     const logger = new MockLogger();
 
     const elementRef = new MockElementRef();
@@ -60,6 +59,12 @@ describe('JudgeContextMenuComponent', () => {
     let random: jasmine.Spy;
 
     beforeEach(async () => {
+        const conference = new ConferenceTestData().getConferenceDetailNow();
+        vhConference = mapConferenceToVHConference(conference);
+        participants = vhConference.participants;
+        mockConferenceStore = createMockStore({
+            initialState: { currentConference: vhConference, availableRooms: [] }
+        });
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
@@ -74,6 +79,7 @@ describe('JudgeContextMenuComponent', () => {
                 MockPipe(RandomPipe, random)
             ],
             providers: [
+                provideMockStore(),
                 {
                     provide: Logger,
                     useValue: logger
@@ -88,11 +94,11 @@ describe('JudgeContextMenuComponent', () => {
                 }
             ]
         }).compileComponents();
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(JudgeContextMenuComponent);
         component = fixture.componentInstance;
+
+        mockConferenceStore = TestBed.inject(MockStore);
 
         testParticipipantPanelModel = new ParticipantPanelModel(
             testParticipantId,
@@ -103,158 +109,51 @@ describe('JudgeContextMenuComponent', () => {
             testParticipantRepresentee,
             testParticipantStatus
         );
+        component.participantInput = testParticipipantPanelModel;
         component.participant = testParticipipantPanelModel;
 
         fixture.detectChanges();
     });
 
-    describe('showHearingRole', () => {
-        const dontShowForHearingRole = [HearingRole.JUDGE, ...HearingRoleHelper.panelMemberRoles];
-        const hearingRoles = Object.keys(HearingRole);
+    afterEach(() => {
+        fixture.destroy();
+        mockConferenceStore.resetSelectors();
+    });
 
-        hearingRoles.forEach(hearingRoleString => {
-            const testHearingRole = HearingRole[hearingRoleString];
-            const showFor = !dontShowForHearingRole.includes(testHearingRole);
-            it(`should return ${showFor} when hearing role is ${hearingRoleString}`, () => {
-                component.participant.hearingRole = testHearingRole;
-                expect(component.showHearingRole()).toBe(showFor);
-            });
+    describe('isJudge', () => {
+        it('should return true when hearing role is judge', () => {
+            component.participant.hearingRole = HearingRole.JUDGE;
+            expect(component.isJudge).toBeTruthy();
         });
 
-        it('should return true when hearing role is any other value', () => {
-            const hearingRole = 'AnyOtherValue';
-            component.participant.hearingRole = hearingRole;
-            expect(hearingRoles).not.toContain(hearingRole);
-            expect(component.showHearingRole()).toBe(true);
+        it('should return false when hearing role is not judge', () => {
+            component.participant.hearingRole = HearingRole.APPELLANT;
+            expect(component.isJudge).toBeFalsy();
         });
     });
 
-    it('should emit event when lowering participant hand', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.lowerParticipantHandEvent, 'emit');
-
-        // Act
-        component.lowerParticipantHand();
-
-        // Assert
-        expect(component.lowerParticipantHandEvent.emit).toHaveBeenCalled();
-        expect(component.lowerParticipantHandEvent.emit).toHaveBeenCalledWith(new LowerParticipantHandEvent(model));
-    });
-
-    it('should emit event when toggling spotlight', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.toggleSpotlightParticipantEvent, 'emit');
-
-        // Act
-        component.toggleSpotlightParticipant();
-
-        // Assert
-        expect(component.toggleSpotlightParticipantEvent.emit).toHaveBeenCalled();
-        expect(component.toggleSpotlightParticipantEvent.emit).toHaveBeenCalledWith(new ToggleSpotlightParticipantEvent(model));
-    });
-
-    it('should emit event when toggling mute', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.toggleMuteParticipantEvent, 'emit');
-
-        // Act
-        component.toggleMuteParticipant();
-
-        // Assert
-        expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalled();
-        expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleMuteParticipantEvent(model));
-    });
-
-    it('should emit event when toggling local mute participant', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.toggleLocalMuteParticipantEvent, 'emit');
-
-        // Act
-        component.toggleLocalMuteParticipant(model);
-
-        // Assert
-        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalled();
-        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleLocalMuteParticipantEvent(model));
-    });
-
-    it('should emit event when calling participant', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.callParticipantIntoHearingEvent, 'emit');
-
-        // Act
-        component.callParticipantIntoHearing();
-
-        // Assert
-        expect(component.callParticipantIntoHearingEvent.emit).toHaveBeenCalled();
-        expect(component.callParticipantIntoHearingEvent.emit).toHaveBeenCalledWith(new CallParticipantIntoHearingEvent(model));
-    });
-
-    it('should emit event when dismissing participant', () => {
-        // Arrange
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        spyOn(component.dismissParticipantFromHearingEvent, 'emit');
-
-        // Act
-        component.dismissParticipantFromHearing();
-
-        // Assert
-        expect(component.dismissParticipantFromHearingEvent.emit).toHaveBeenCalled();
-        expect(component.dismissParticipantFromHearingEvent.emit).toHaveBeenCalledWith(new DismissParticipantFromHearingEvent(model));
-    });
-
-    it('should close context menu if click is outside of the menu', () => {
-        // Arrange
-        spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(true);
-        component.isDroppedDown = true;
-        const event = new MouseEvent('click', {
-            clientX: 15,
-            clientY: 15
+    describe('isWitness', () => {
+        it('should return true when hearing role is witness', () => {
+            component.participant.hearingRole = HearingRole.WITNESS;
+            expect(component.isWitness).toBeTruthy();
         });
 
-        // Act
-        component.clickout(event);
-
-        // Assert
-        expect(component.isDroppedDown).toBeFalsy();
+        it('should return false when hearing role is not witness', () => {
+            component.participant.hearingRole = HearingRole.APPELLANT;
+            expect(component.isWitness).toBeFalsy();
+        });
     });
 
-    it('should not close context menu if click is inside of the menu', () => {
-        // Arrange
-        spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(false);
-        component.isDroppedDown = true;
-        const event = new MouseEvent('click', {
-            clientX: 15,
-            clientY: 15
+    describe('isPanelMember', () => {
+        it('should return true when hearing role is panel member', () => {
+            component.participant.hearingRole = HearingRole.PANEL_MEMBER;
+            expect(component.isPanelMember).toBeTruthy();
         });
 
-        // Act
-        component.clickout(event);
-
-        // Assert
-        expect(component.isDroppedDown).toBeTruthy();
+        it('should return false when hearing role is not panel member', () => {
+            component.participant.hearingRole = HearingRole.APPELLANT;
+            expect(component.isPanelMember).toBeFalsy();
+        });
     });
 
     describe('isClickedOutsideOfOpenMenu', () => {
@@ -314,136 +213,211 @@ describe('JudgeContextMenuComponent', () => {
         });
     });
 
-    describe('canCallParticipantIntoHearing', () => {
-        it('should canCallParticipantIntoHearing return true when the participant is a witness and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.hearing_role = HearingRole.WITNESS;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
+    describe('clickout', () => {
+        it('should close context menu if click is outside of the menu', () => {
+            // Arrange
+            spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(true);
+            component.isDroppedDown = true;
+            const event = new MouseEvent('click', {
+                clientX: 15,
+                clientY: 15
+            });
+
+            // Act
+            component.clickout(event);
+
+            // Assert
+            expect(component.isDroppedDown).toBeFalsy();
         });
 
-        it('should canCallParticipantIntoHearing return false when the participant is a quick link observer and in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            p.role = Role.QuickLinkObserver;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeFalsy();
-        });
+        it('should not close context menu if click is inside of the menu', () => {
+            // Arrange
+            spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(false);
+            component.isDroppedDown = true;
+            const event = new MouseEvent('click', {
+                clientX: 15,
+                clientY: 15
+            });
 
-        it('should canCallParticipantIntoHearing return true when the participant is a quick link observer and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.role = Role.QuickLinkObserver;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
-        });
+            // Act
+            component.clickout(event);
 
-        it('should canCallParticipantIntoHearing return false when the participant is a quick link participant and in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            p.role = Role.QuickLinkParticipant;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeFalsy();
-        });
-
-        it('should canCallParticipantIntoHearing return true when the participant is a quick link participant and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.role = Role.QuickLinkParticipant;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
-        });
-
-        it('should return true for any participant when they are not in a hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
+            // Assert
+            expect(component.isDroppedDown).toBeTruthy();
         });
     });
 
-    describe('canDismissParticipantFromHearing', () => {
-        it('should return false when participant is not in the hearing', () => {
-            testParticipipantPanelModel.status = ParticipantStatus.Disconnected;
-            expect(component.canDismissParticipantFromHearing()).toBe(false);
-        });
+    describe('lowerParticipantHand', () => {
+        it('should dispatch lowerParticipantHand action and close context menu', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
 
-        it('should return true when participant is in the hearing', () => {
-            testParticipipantPanelModel.status = ParticipantStatus.InHearing;
-            expect(component.canDismissParticipantFromHearing()).toBe(true);
-        });
+            // Act
+            component.lowerParticipantHand();
 
-        it('should canDismissParticipantFromHearing return false when the participant is a witness and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.hearing_role = HearingRole.WITNESS;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeFalsy();
-        });
-
-        it('should canDismissParticipantFromHearing return true when the participant is a witness and in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            p.hearing_role = HearingRole.WITNESS;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
-        });
-
-        it('should canDismissParticipantFromHearing return false when the participant is a quick link observer and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.role = Role.QuickLinkObserver;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeFalsy();
-        });
-
-        it('should canDismissParticipantFromHearing return true when the participant is a quick link observer and in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            p.role = Role.QuickLinkObserver;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
-        });
-
-        it('should canDismissParticipantFromHearing return false when the participant is a quick link participant and not in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.Available;
-            p.role = Role.QuickLinkParticipant;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeFalsy();
-        });
-
-        it('should canDismissParticipantFromHearing return true when the participant is a quick link participant and in hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            p.role = Role.QuickLinkParticipant;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
-        });
-
-        it('should return true for any participant when they are in a hearing', () => {
-            const p = participants[2];
-            p.status = ParticipantStatus.InHearing;
-            const model = mapper.mapFromParticipantUserResponse(p);
-            component.participant = model;
-            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
+            // Assert
+            const expectedAction = VideoCallHostActions.lowerParticipantHand({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
         });
     });
 
-    describe('text for buttons', () => {
+    describe('toggleSpotlightParticipant', () => {
+        it('should dispatch spotlightParticipant action and close context menu when participant is not spotlighted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'hasSpotlight').and.returnValue(false);
+
+            // Act
+            component.toggleSpotlightParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.spotlightParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+
+        it('should dispatch removeSpotlightForParticipant action and close context menu when participant is spotlighted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'hasSpotlight').and.returnValue(true);
+
+            // Act
+            component.toggleSpotlightParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.removeSpotlightForParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+    });
+
+    describe('toggleMuteParticipant', () => {
+        it('should dispatch lockRemoteMuteForParticipant action and close context menu when participant is not remote muted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'isMicRemoteMuted').and.returnValue(false);
+
+            // Act
+            component.toggleMuteParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.lockRemoteMuteForParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+
+        it('should dispatch unlockRemoteMuteForParticipant action and close context menu when participant is remote muted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'isMicRemoteMuted').and.returnValue(true);
+
+            // Act
+            component.toggleMuteParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.unlockRemoteMuteForParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+    });
+
+    describe('toggleLocalMuteParticipant', () => {
+        it('should dispatch localUnmuteParticipant action and close context menu when participant is locally muted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'isLocalMicMuted').and.returnValue(true);
+
+            // Act
+            component.toggleLocalMuteParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.localUnmuteParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+
+        it('should dispatch localMuteParticipant action and close context menu when participant is not locally muted', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+            spyOn(component.participant, 'isLocalMicMuted').and.returnValue(false);
+
+            // Act
+            component.toggleLocalMuteParticipant();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.localMuteParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+    });
+
+    describe('callParticipantIntoHearing', () => {
+        it('should dispatch admitParticipant action and close context menu', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+
+            // Act
+            component.callParticipantIntoHearing();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.admitParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+    });
+
+    describe('dismissParticipantFromHearing', () => {
+        it('should dispatch dismissParticipant action and close context menu', () => {
+            // Arrange
+            spyOn(mockConferenceStore, 'dispatch');
+
+            // Act
+            component.dismissParticipantFromHearing();
+
+            // Assert
+            const expectedAction = VideoCallHostActions.dismissParticipant({ participantId: component.participant.id });
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(expectedAction);
+        });
+    });
+
+    describe('toggleDropdown', () => {
+        it('should toggle isDroppedDown', () => {
+            // Arrange
+            component.isDroppedDown = false;
+
+            // Act
+            component.toggleDropdown();
+
+            // Assert
+            expect(component.isDroppedDown).toBeTruthy();
+        });
+    });
+
+    describe('showHearingRole', () => {
+        it('should return false when participant is judge', () => {
+            component.participant.hearingRole = HearingRole.JUDGE;
+            expect(component.showHearingRole()).toBeFalsy();
+        });
+
+        it('should return false when participant is panel member', () => {
+            component.participant.hearingRole = HearingRole.PANEL_MEMBER;
+            expect(component.showHearingRole()).toBeFalsy();
+        });
+
+        it('should return true when participant is not judge or panel member', () => {
+            component.participant.hearingRole = HearingRole.APPELLANT;
+            expect(component.showHearingRole()).toBeTruthy();
+        });
+    });
+
+    describe('getMuteAndLockStatusText', () => {
+        it('should return unmute remote translation when participant is remote muted', () => {
+            component.participant.isMicRemoteMuted = () => true;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute-lock');
+        });
+
+        it('should return mute remote translation when participant is remote unmuted', () => {
+            component.participant.isMicRemoteMuted = () => false;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute-lock');
+        });
+    });
+
+    describe('getLocalMuteAStatusText', () => {
         it('should return unmute local translation when participant is muted', () => {
             component.participant.isLocalMicMuted = () => true;
             component.getLocalMuteAStatusText(component.participant);
@@ -472,17 +446,45 @@ describe('JudgeContextMenuComponent', () => {
             // assert
             expect(text).toContain(participant.displayName);
         });
+    });
 
-        it('should return unmute remote translation when participant is remote muted', () => {
-            component.participant.isMicRemoteMuted = () => true;
-            component.getMuteAndLockStatusText();
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute-lock');
+    describe('getPinStatusText', () => {
+        it('should return pin translation when participant is not pinned', () => {
+            // update to not be spotlighted
+            component.participant.updateParticipant(null, null, false);
+            component.getPinStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.pin');
         });
 
-        it('should return mute remote translation when participant is remote unmuted', () => {
-            component.participant.isMicRemoteMuted = () => false;
-            component.getMuteAndLockStatusText();
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute-lock');
+        it('should return unpin translation when participant is pinned', () => {
+            // update to be spotlighted
+            component.participant.updateParticipant(null, null, true);
+            component.getPinStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unpin');
+        });
+    });
+
+    describe('canCallParticipantIntoHearing', () => {
+        it('should return true when participant not in a hearing', () => {
+            component.participant.updateStatus(ParticipantStatus.Available);
+            expect(component.canCallParticipantIntoHearing()).toBeTruthy();
+        });
+
+        it('should return false when participant is in a hearing', () => {
+            component.participant.updateStatus(ParticipantStatus.InHearing);
+            expect(component.canCallParticipantIntoHearing()).toBeFalsy();
+        });
+    });
+
+    describe('canDismissParticipantFromHearing', () => {
+        it('should return false when participant not in a hearing', () => {
+            component.participant.updateStatus(ParticipantStatus.Available);
+            expect(component.canDismissParticipantFromHearing()).toBeFalsy();
+        });
+
+        it('should return true when participant is in a hearing', () => {
+            component.participant.updateStatus(ParticipantStatus.InHearing);
+            expect(component.canDismissParticipantFromHearing()).toBeTruthy();
         });
     });
 

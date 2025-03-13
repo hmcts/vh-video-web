@@ -63,6 +63,7 @@ import { DialOutParticipantPopupComponent } from './dial-out-participant-popup/d
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { RouterEffects } from './store/effects/router.effects';
 import { ConsultationEffects } from './store/effects/consultation.effects';
+import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
 
 @NgModule({
     imports: [
@@ -75,6 +76,7 @@ import { ConsultationEffects } from './store/effects/consultation.effects';
         EffectsModule.forFeature([
             ConferenceEffects,
             VideoCallEffects,
+            VideoCallHostEffects,
             ReferenceDataEffects,
             NotificationEffects,
             ConsultationEffects,

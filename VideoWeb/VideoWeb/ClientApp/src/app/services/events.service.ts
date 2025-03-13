@@ -50,6 +50,7 @@ import { HearingDetailsUpdatedMessage } from './models/hearing-details-updated-m
 import { HearingCancelledMessage } from './models/hearing-cancelled-message';
 import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
 import { UpdatedAllocation } from '../shared/models/update-allocation-dto';
+import { VideoCallActions } from '../waiting-space/store/actions/video-call.action';
 
 @Injectable({
     providedIn: 'root'
@@ -312,7 +313,7 @@ export class EventsService {
                     .select(ConferenceSelectors.getParticipantById(participantId))
                     .pipe(take(1))
                     .subscribe(participant => {
-                        this.store.dispatch(ConferenceActions.participantLeaveHearingRoomSuccess({ conferenceId, participant }));
+                        this.store.dispatch(VideoCallActions.participantLeaveHearingRoomSuccess({ conferenceId, participant }));
                     });
             }
         },

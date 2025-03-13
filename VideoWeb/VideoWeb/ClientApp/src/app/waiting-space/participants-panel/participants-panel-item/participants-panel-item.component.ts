@@ -4,7 +4,6 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { LinkedParticipantPanelModel } from '../../models/linked-participant-panel-model';
 import { VideoEndpointPanelModel } from '../../models/video-endpoint-panel-model';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ParticipantPanelModel } from '../../models/participant-panel-model';
 import {
     CallParticipantIntoHearingEvent,
@@ -14,6 +13,7 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from '../../../shared/models/participant-event';
+import { VHParticipant } from '../../store/models/vh-conference';
 
 @Component({
     standalone: false,
@@ -110,16 +110,16 @@ export class ParticipantsPanelItemComponent {
         this.participantDismissed.emit({ participant: this.participant });
     }
 
-    mapParticipantToParticipantResponse(): ParticipantResponse {
+    mapParticipantToParticipantResponse(): VHParticipant {
         const participantModelTyped = this.participant as ParticipantPanelModel;
-        const participantResponse = new ParticipantResponse();
-        participantResponse.id = participantModelTyped.id;
-        participantResponse.status = participantModelTyped.status;
-        participantResponse.display_name = participantModelTyped.displayName;
-        participantResponse.role = participantModelTyped.role;
-        participantResponse.hearing_role = participantModelTyped.hearingRole;
-        participantResponse.representee = participantModelTyped.representee;
-        return participantResponse;
+        return {
+            id: participantModelTyped.id,
+            status: participantModelTyped.status,
+            displayName: participantModelTyped.displayName,
+            role: participantModelTyped.role,
+            hearingRole: participantModelTyped.hearingRole,
+            representee: participantModelTyped.representee
+        } as VHParticipant;
     }
 
     private getAdditionalText(): string {

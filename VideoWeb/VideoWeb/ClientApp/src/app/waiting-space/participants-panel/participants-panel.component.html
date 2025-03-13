@@ -27,8 +27,8 @@
             appTooltip
             [text]="'participants-panel.mute-all-tooltip' | translate"
             colour="grey"
-            (keydown.enter)="updateAllParticipantsLocalMuteStatus(true)"
-            (click)="updateAllParticipantsLocalMuteStatus(true)"
+            (keydown.enter)="localMuteAllParticipants()"
+            (click)="localMuteAllParticipants()"
         >
             {{ 'participants-panel.mute-all' | translate }}
         </button>
@@ -40,8 +40,8 @@
             appTooltip
             [text]="'participants-panel.unmute-all-tooltip' | translate"
             colour="grey"
-            (keydown.enter)="updateAllParticipantsLocalMuteStatus(false)"
-            (click)="updateAllParticipantsLocalMuteStatus(false)"
+            (keydown.enter)="localUnmuteAllParticipants()"
+            (click)="localUnmuteAllParticipants()"
         >
             {{ 'participants-panel.unmute-all' | translate }}
         </button>

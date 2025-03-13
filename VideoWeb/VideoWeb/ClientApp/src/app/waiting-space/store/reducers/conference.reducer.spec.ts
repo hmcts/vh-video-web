@@ -21,6 +21,8 @@ import { ConferenceState, conferenceReducer, initialState } from './conference.r
 import { HearingRole } from '../../models/hearing-role-model';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { VideoCallActions } from '../actions/video-call.action';
+import { VideoCallHostActions } from '../actions/video-call-host.actions';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -1606,6 +1608,64 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.consultationStatuses.length).toEqual(0);
+        });
+    });
+
+    describe('toggleAudioMuteSuccess action', () => {
+        it('should update the audio mute status of the participant', () => {
+            const participant = conferenceTestData.participants[0];
+            const result = conferenceReducer(
+                existingInitialState,
+                VideoCallActions.toggleAudioMuteSuccess({
+                    participantId: participant.id,
+                    isMuted: true
+                })
+            );
+
+            expect(result.currentConference.participants[0].localMediaStatus.isMicrophoneMuted).toBeTrue();
+        });
+    });
+
+    describe('toggleOutgoingVideoSuccess action', () => {
+        it('should update the video mute status of the participant', () => {
+            const participant = conferenceTestData.participants[0];
+            const result = conferenceReducer(
+                existingInitialState,
+                VideoCallActions.toggleOutgoingVideoSuccess({
+                    participantId: participant.id,
+                    isVideoOn: true
+                })
+            );
+
+            expect(result.currentConference.participants[0].localMediaStatus.isCameraOff).toBeFalse();
+        });
+    });
+
+    describe('admitParticipantFailure action', () => {
+        it('should update the participant transfer direction to undefined', () => {
+            const participant = conferenceTestData.participants[0];
+            const initialStateWithTransferDirection: ConferenceState = {
+                ...existingInitialState,
+                currentConference: {
+                    ...existingInitialState.currentConference,
+                    participants: [
+                        {
+                            ...participant,
+                            transferDirection: TransferDirection.In
+                        }
+                    ]
+                }
+            };
+            const result = conferenceReducer(
+                initialStateWithTransferDirection,
+                VideoCallHostActions.admitParticipantFailure({
+                    conferenceId: conferenceTestData.id,
+                    participantId: participant.id,
+                    error: new Error('Failed to admit participant')
+                })
+            );
+
+            expect(result.currentConference.participants[0].transferDirection).toBeUndefined();
         });
     });
 });
