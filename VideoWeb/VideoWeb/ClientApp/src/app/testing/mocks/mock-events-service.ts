@@ -54,6 +54,7 @@ export const getAudioRestartActionedMock = new Subject<string>();
 export const getNewConferenceAddedMock = new Subject<NewConferenceAddedMessage>();
 export const getHearingCancelledMock = new Subject<HearingCancelledMessage>();
 export const getHearingDetailsUpdatedMock = new Subject<HearingDetailsUpdatedMessage>();
+export const getParticipantsUpdatedMock = new Subject<ParticipantsUpdatedMessage>();
 
 export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -98,7 +99,8 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'sendAudioRestartActioned',
         'getNewConferenceAdded',
         'getHearingCancelled',
-        'getHearingDetailsUpdated'
+        'getHearingDetailsUpdated',
+        'getParticipantsUpdated'
     ],
     ['eventHubIsConnected']
 );
@@ -133,3 +135,4 @@ eventsServiceSpy.getAudioRestartActioned.and.returnValue(getAudioRestartActioned
 eventsServiceSpy.getNewConferenceAdded.and.returnValue(getNewConferenceAddedMock.asObservable());
 eventsServiceSpy.getHearingCancelled.and.returnValue(getHearingCancelledMock.asObservable());
 eventsServiceSpy.getHearingDetailsUpdated.and.returnValue(getHearingDetailsUpdatedMock.asObservable());
+eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedMock.asObservable());
