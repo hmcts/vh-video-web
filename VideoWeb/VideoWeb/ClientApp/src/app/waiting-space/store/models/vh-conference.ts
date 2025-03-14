@@ -16,13 +16,19 @@ export interface VHConference {
     duration: number;
     caseNumber: string;
     caseName: string;
+    caseType: string;
     status: ConferenceStatus;
+    hearingVenueName: string;
     isVenueScottish: boolean;
     participants: Array<VHParticipant>;
     endpoints: Array<VHEndpoint>;
     supplier: Supplier;
     countdownComplete?: boolean;
     audioRecordingIngestUrl: string;
+    audioRecordingRequired: boolean;
+    pexipNodeUri: string;
+    selfTestNodeUri: string;
+    conferenceAlias: string;
 }
 
 export interface VHParticipant {

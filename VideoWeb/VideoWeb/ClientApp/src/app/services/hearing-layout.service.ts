@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { ApiClient, HearingLayout } from './clients/api-client';
+import { distinctUntilChanged, filter, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { ApiClient, HearingLayout, Role } from './clients/api-client';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
@@ -17,10 +17,19 @@ export class HearingLayoutService {
     private currentLayoutSubject = new ReplaySubject<HearingLayout>(1);
     private recommendedLayoutSubject = new ReplaySubject<HearingLayout>(1);
 
+    private loggedInUser$ = this.store.select(ConferenceSelectors.getLoggedInParticipant).pipe(
+        filter(participant => !!participant),
+        distinctUntilChanged((x, y) => x.id === y.id)
+    );
+
     private activeConference$ = this.store.select(ConferenceSelectors.getActiveConference).pipe(
-        filter(conference => !!conference),
-        distinctUntilChanged((x, y) => x.id === y.id),
-        map(conference => conference.id)
+        withLatestFrom(this.loggedInUser$),
+        filter(
+            ([conference, participant]) =>
+                !!conference && !!participant && (participant.role === Role.Judge || participant.role === Role.StaffMember)
+        ),
+        distinctUntilChanged(([prevConference], [nextConference]) => prevConference.id === nextConference.id),
+        map(([conference]) => conference.id)
     );
 
     constructor(

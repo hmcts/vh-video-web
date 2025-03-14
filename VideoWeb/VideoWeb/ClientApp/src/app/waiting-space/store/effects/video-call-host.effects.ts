@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { ApiClient } from 'src/app/services/clients/api-client';
+import { ApiClient, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { VideoCallHostActions } from '../actions/video-call-host.actions';
-import { catchError, delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, delay, exhaustMap, filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { concatLatestFrom } from '@ngrx/operators';
 import { EventsService } from 'src/app/services/events.service';
 import { of } from 'rxjs';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { ConferenceActions } from '../actions/conference.actions';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Injectable()
 export class VideoCallHostEffects {
@@ -348,6 +350,113 @@ export class VideoCallHostEffects {
         )
     );
 
+    startHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.startHearing),
+            withLatestFrom(this.layoutService.currentLayout$),
+            exhaustMap(([action, layout]) => {
+                this.logger.info(`${this.loggerPrefix} Starting hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                const request = new StartOrResumeVideoHearingRequest({
+                    layout
+                });
+                return this.apiClient.startOrResumeVideoHearing(action.conferenceId, request).pipe(
+                    map(() => VideoCallHostActions.startHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.startHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    startHearingFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VideoCallHostActions.startHearingFailure),
+                tap(action => {
+                    this.logger.error(`${this.loggerPrefix} Start hearing failed`, action.error);
+                    this.errorService.handleApiError(action.error);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    pauseHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.pauseHearing),
+            exhaustMap(action => {
+                this.logger.info(`${this.loggerPrefix} Pausing hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.pauseVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.pauseHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.pauseHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    suspendHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.suspendHearing),
+            exhaustMap(action => {
+                this.logger.info(`${this.loggerPrefix} Suspending hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.suspendVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.suspendHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.suspendHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    endHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.endHearing),
+            exhaustMap(action => {
+                this.logger.info(`${this.loggerPrefix} Ending hearing`, {
+                    conferenceId: action.conferenceId
+                });
+                return this.apiClient.endVideoHearing(action.conferenceId).pipe(
+                    map(() => VideoCallHostActions.endHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.endHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    hostLeaveHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.hostLeaveHearing),
+            exhaustMap(action => {
+                this.logger.info(`${this.loggerPrefix} Host leaving hearing`, {
+                    conferenceId: action.conferenceId,
+                    participantId: action.participantId
+                });
+                return this.apiClient.leaveHearing(action.conferenceId, action.participantId).pipe(
+                    map(() => VideoCallHostActions.hostLeaveHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.hostLeaveHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
+    joinHearing$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(VideoCallHostActions.joinHearing),
+            exhaustMap(action => {
+                this.logger.info(`${this.loggerPrefix} Joining hearing`, {
+                    participantId: action.participantId
+                });
+                return this.apiClient.joinHearingInSession(action.conferenceId, action.participantId).pipe(
+                    map(() => VideoCallHostActions.joinHearingSuccess()),
+                    catchError(error => of(VideoCallHostActions.joinHearingFailure({ error })))
+                );
+            })
+        )
+    );
+
     private readonly loggerPrefix = '[VideoCallHostEffect] -';
     constructor(
         private actions$: Actions,
@@ -355,6 +464,8 @@ export class VideoCallHostEffects {
         private eventsService: EventsService,
         private videoCallService: VideoCallService,
         private apiClient: ApiClient,
+        private layoutService: HearingLayoutService,
+        private errorService: ErrorService,
         private logger: Logger
     ) {}
 }

@@ -56,16 +56,8 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'enableH264',
         'raiseHand',
         'lowerHand',
-        'startHearing',
-        'pauseHearing',
-        'endHearing',
-        'leaveHearing',
-        'suspendHearing',
         'lowerAllHands',
         'lowerHandById',
-        'callParticipantIntoHearing',
-        'joinHearingInSession',
-        'dismissParticipantFromHearing',
         'renegotiateCall',
         'onScreenshareConnected',
         'onScreenshareStopped',
@@ -85,7 +77,6 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'onParticipantDeleted',
         'connectWowzaAgent',
         'disconnectWowzaAgent',
-        'onConferenceAdjourned',
         'setParticipantOverlayText',
         'transformLayout'
     ],
@@ -104,7 +95,6 @@ videoCallServiceSpy.onConferenceUpdated.and.returnValue(onConferenceUpdatedMock.
 videoCallServiceSpy.onParticipantCreated.and.returnValue(onParticipantUpdatedMock.asObservable());
 videoCallServiceSpy.onParticipantDeleted.and.returnValue(onParticipantDeleteMock.asObservable());
 videoCallServiceSpy.onCallTransferred.and.returnValue(onCallTransferredMock.asObservable());
-videoCallServiceSpy.onConferenceAdjourned.and.returnValue(onConferenceAdjournedMock.asObservable());
 videoCallServiceSpy.onScreenshareConnected.and.returnValue(onScreenshareConnectedMock.asObservable());
 videoCallServiceSpy.onScreenshareStopped.and.returnValue(onScreenshareStoppedMock.asObservable());
 videoCallServiceSpy.onPresentationConnected.and.returnValue(onPresentationConnectedMock.asObservable());

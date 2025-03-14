@@ -16,6 +16,8 @@ import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallActions } from '../actions/video-call.action';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 
 describe('NotificationEffects', () => {
     const testData = new ConferenceTestData();
@@ -38,7 +40,9 @@ describe('NotificationEffects', () => {
             'showEndpointLinked',
             'showEndpointUnlinked',
             'showEndpointConsultationClosed',
-            'showHearingLayoutchanged'
+            'showHearingLayoutchanged',
+            'showHearingStarted',
+            'showParticipantAdded'
         ]);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
@@ -57,7 +61,8 @@ describe('NotificationEffects', () => {
                 provideMockStore(),
                 provideMockActions(() => actions$),
                 { provide: NotificationToastrService, useValue: toastNotificationService },
-                { provide: NotificationSoundsService, useValue: notificationSoundsService }
+                { provide: NotificationSoundsService, useValue: notificationSoundsService },
+                { provide: Logger, useValue: new MockLogger() }
             ]
         });
 
@@ -67,6 +72,32 @@ describe('NotificationEffects', () => {
 
     afterAll(() => {
         mockConferenceStore.resetSelectors();
+    });
+
+    describe('hearingStartedByAnotherHost$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should show hearing started notification for host participants in a consultation when hearing has started', () => {
+            // arrange
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Judge);
+            loggedInParticipant.status = ParticipantStatus.InConsultation;
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+
+            // act
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.InSession
+            });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            effects.hearingStartedByAnotherHost$.subscribe(() => {
+                expect(toastNotificationService.showHearingStarted).toHaveBeenCalled();
+            });
+        });
     });
 
     describe('participantLeaveHearingRoomSuccess$', () => {
@@ -133,6 +164,36 @@ describe('NotificationEffects', () => {
             // assert
             effects.participantLeaveHearingRoomSuccess$.subscribe(() => {
                 expect(toastNotificationService.showParticipantLeftHearingRoom).toHaveBeenCalledTimes(0);
+            });
+        });
+    });
+
+    describe('participantAdded$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should show participant added notification for host participants when active conference matches conference id', () => {
+            // arrange
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Judge);
+            const participants = vhConference.participants;
+            const newParticipant = { id: '1234567', role: Role.Individual } as VHParticipant;
+            const updatedParticipants = [...participants, newParticipant];
+            effects.previousParticipants = participants;
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, updatedParticipants);
+
+            // act
+            const action = ConferenceActions.updateParticipantList({
+                conferenceId: vhConference.id,
+                participants: updatedParticipants
+            });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            effects.participantAdded$.subscribe(() => {
+                expect(toastNotificationService.showParticipantAdded).toHaveBeenCalledWith(newParticipant, jasmine.any(Boolean));
             });
         });
     });

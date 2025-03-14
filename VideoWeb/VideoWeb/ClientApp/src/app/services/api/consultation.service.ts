@@ -4,13 +4,11 @@ import { NotificationSoundsService } from 'src/app/waiting-space/services/notifi
 import {
     AddEndpointConsultationRequest,
     ApiClient,
-    ConferenceResponse,
     ConsultationAnswer,
     InviteToConsultationRequest,
     JoinPrivateConsultationRequest,
     LeavePrivateConsultationRequest,
     LockConsultationRoomRequest,
-    ParticipantResponse,
     PrivateConsultationRequest,
     StartPrivateConsultationRequest,
     VirtualCourtRoomType
@@ -143,17 +141,17 @@ export class ConsultationService {
         }
     }
 
-    async joinJudicialConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+    async joinJudicialConsultationRoom(conferenceId: string, participantId: string): Promise<void> {
         this.logger.info('[ConsultationService] - Attempting to join a private judicial consultation', {
-            conference: conference.id,
-            participant: participant.id
+            conference: conferenceId,
+            participant: participantId
         });
         try {
             await this.apiClient
                 .startOrJoinConsultation(
                     new StartPrivateConsultationRequest({
-                        conference_id: conference.id,
-                        requested_by: participant.id,
+                        conference_id: conferenceId,
+                        requested_by: participantId,
                         room_type: VirtualCourtRoomType.JudgeJOH
                     })
                 )
@@ -165,21 +163,21 @@ export class ConsultationService {
     }
 
     async createParticipantConsultationRoom(
-        conference: ConferenceResponse,
-        participant: ParticipantResponse,
+        conferenceId: string,
+        participantId: string,
         inviteParticipants: Array<string>,
         inviteEndpoints: Array<string>
     ): Promise<void> {
         this.logger.info('[ConsultationService] - Attempting to create a private consultation', {
-            conference: conference.id,
-            participant: participant.id
+            conference: conferenceId,
+            participant: participantId
         });
         try {
             await this.apiClient
                 .startOrJoinConsultation(
                     new StartPrivateConsultationRequest({
-                        conference_id: conference.id,
-                        requested_by: participant.id,
+                        conference_id: conferenceId,
+                        requested_by: participantId,
                         room_type: VirtualCourtRoomType.Participant,
                         invite_participants: inviteParticipants,
                         invite_endpoints: inviteEndpoints
@@ -192,16 +190,16 @@ export class ConsultationService {
         }
     }
 
-    async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+    async leaveConsultation(conferenceId: string, participantId: string): Promise<void> {
         this.logger.info('[ConsultationService] - Leaving a consultation', {
-            conference: conference.id,
-            participant: participant.id
+            conference: conferenceId,
+            participant: participantId
         });
         await this.apiClient
             .leaveConsultation(
                 new LeavePrivateConsultationRequest({
-                    conference_id: conference.id,
-                    participant_id: participant.id
+                    conference_id: conferenceId,
+                    participant_id: participantId
                 })
             )
             .toPromise();
