@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { filter, pairwise, tap } from 'rxjs/operators';
+import { filter, first, tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { Store } from '@ngrx/store';
@@ -25,14 +25,16 @@ export class NotificationEffects {
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
+                filter(
+                    ([action, activeConference, loggedInParticipant]) =>
+                        action.conferenceId === activeConference.id &&
+                        action.status === ConferenceStatus.InSession &&
+                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember)
+                ),
                 tap(([_action, activeConference, loggedInParticipant]) => {
                     // if the logged in participant is in a consultation and the hearing is in session
                     // and the participant role is staff member or judge, then show the notification
-                    if (
-                        activeConference.status === ConferenceStatus.InSession &&
-                        loggedInParticipant.status === ParticipantStatus.InConsultation &&
-                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember)
-                    ) {
+                    if (loggedInParticipant.status === ParticipantStatus.InConsultation) {
                         this.toastNotificationService.showHearingStarted(activeConference.id, loggedInParticipant.id);
                     }
                 })
@@ -131,22 +133,44 @@ export class NotificationEffects {
     );
 
     participantAdded$ = createEffect(
-        () =>
-            this.actions$.pipe(
+        () => {
+            // Initialize previousParticipants with current store value
+            this.store
+                .select(ConferenceSelectors.getParticipants)
+                .pipe(
+                    filter(x => !!x),
+                    first()
+                )
+                .subscribe(participants => {
+                    this.previousParticipants = [...participants];
+                    this.logger.debug(`${this.loggerPrefix} Initialized previous participants:`, { participants });
+                });
+
+            return this.actions$.pipe(
                 ofType(ConferenceActions.updateParticipantList),
                 concatLatestFrom(() => [
-                    this.store.select(ConferenceSelectors.getParticipants).pipe(pairwise()),
+                    this.store.select(ConferenceSelectors.getParticipants),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
-                tap(([action, [previousParticipants, _], loggedInParticipant]) => {
-                    const newParticipants = action.participants.filter(x => !previousParticipants.find(y => y.id === x.id));
-                    newParticipants.forEach(participant => {
-                        this.logger.debug(`${this.loggerPrefix} participant added, showing notification`, participant);
+                tap(([action, currentParticipants, loggedInParticipant]) => {
+                    const addedParticipants = currentParticipants.filter(
+                        current => !this.previousParticipants.find(prev => prev.id === current.id)
+                    );
 
+                    this.logger.debug(`${this.loggerPrefix} Participant changes:`, {
+                        previous: this.previousParticipants,
+                        current: currentParticipants,
+                        added: addedParticipants
+                    });
+
+                    addedParticipants.forEach(participant => {
                         this.toastNotificationService.showParticipantAdded(participant, this.isVideoOn(loggedInParticipant.status));
                     });
+
+                    this.previousParticipants = [...currentParticipants];
                 })
-            ),
+            );
+        },
         { dispatch: false }
     );
 
@@ -299,6 +323,7 @@ export class NotificationEffects {
         { dispatch: false }
     );
 
+    previousParticipants = [];
     private readonly loggerPrefix = '[NotificationEffects] -';
 
     constructor(

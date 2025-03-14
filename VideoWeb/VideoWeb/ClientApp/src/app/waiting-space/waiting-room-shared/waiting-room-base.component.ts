@@ -501,6 +501,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.presentationStream = connectedPresentation.stream;
     }
 
+    getConference() {
+        this.store.dispatch(ConferenceActions.loadConference({ conferenceId: this.conferenceId }));
+    }
+
     async call() {
         if (!this.eventService.eventHubIsConnected) {
             return;
