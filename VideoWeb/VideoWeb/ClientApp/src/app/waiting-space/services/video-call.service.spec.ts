@@ -2,12 +2,7 @@ import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
-import {
-    ClientSettingsResponse,
-    HearingLayout,
-    Supplier,
-    SupplierConfigurationResponse
-} from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, HearingLayout, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
