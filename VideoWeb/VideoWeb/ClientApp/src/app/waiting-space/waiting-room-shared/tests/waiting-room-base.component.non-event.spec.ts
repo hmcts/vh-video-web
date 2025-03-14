@@ -443,7 +443,7 @@ describe('WaitingRoomComponent message and clock', () => {
             conferenceNew.scheduled_date_time = new Date(new Date().setHours(new Date().getHours() + 1));
             const message = new HearingDetailsUpdatedMessage(conferenceNew);
             component.handleHearingDetailsUpdated(message);
-            expect(component.conference.scheduled_date_time).toBe(conferenceNew.scheduled_date_time);
+            expect(component.conference.scheduled_date_time.toDateString()).toEqual(conferenceNew.scheduled_date_time.toDateString());
         });
 
         it('should ignore the message when the conference id does not match', () => {

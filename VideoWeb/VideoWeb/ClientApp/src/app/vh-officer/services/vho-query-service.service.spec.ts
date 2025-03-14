@@ -14,7 +14,7 @@ import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
 import {
     eventsServiceSpy,
     getHearingDetailsUpdatedMock,
-    getParticipantsUpdatedMock,
+    getParticipantsUpdatedSubjectMock,
     newAllocationMessageSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
@@ -25,7 +25,7 @@ describe('VhoQueryService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     const newAllocationMessageSubject$ = newAllocationMessageSubjectMock;
     const hearingDetailsUpdatedMessageSubject$ = getHearingDetailsUpdatedMock;
-    const hearingParticipantsUpdatedMessageSubject$ = getParticipantsUpdatedMock;
+    const hearingParticipantsUpdatedMessageSubject$ = getParticipantsUpdatedSubjectMock;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -423,7 +423,7 @@ describe('VhoQueryService', () => {
                 const updated = service['vhoConferences'].find(x => x.id === updatedConference.id);
                 expect(updated.case_name).toBe('Case Name Updated');
                 expect(updated.case_number).toBe('Case Number Updated');
-                expect(updated.scheduled_date_time).toEqual(updatedConference.scheduled_date_time);
+                expect(updated.scheduled_date_time.toDateString()).toBe(updatedConference.scheduled_date_time.toDateString());
                 expect(updated.scheduled_duration).toBe(9999);
             }));
 

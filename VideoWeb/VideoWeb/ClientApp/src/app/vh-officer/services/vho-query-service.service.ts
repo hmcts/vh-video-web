@@ -132,11 +132,11 @@ export class VhoQueryService {
     }
 
     isNewConferencePartOfFilter(newConference: ConferenceResponse): boolean {
-        if (this.venueNames?.length > 0 && !this.venueNames.includes(newConference.hearing_venue_name)) {
+        if (this.venueNames?.length > 0 && !this.venueNames.includes(newConference?.hearing_venue_name)) {
             return false;
         }
 
-        if (this.allocatedCsoIds?.length > 0 && !this.allocatedCsoIds.includes(newConference.allocated_cso_id)) {
+        if (this.allocatedCsoIds?.length > 0 && !this.allocatedCsoIds.includes(newConference?.allocated_cso_id)) {
             return false;
         }
 
@@ -254,7 +254,7 @@ export class VhoQueryService {
         newConference: ConferenceResponse,
         updateFn: (foundConference: ConferenceForVhOfficerResponse) => ConferenceForVhOfficerResponse
     ) {
-        let index = this.vhoConferences.findIndex(x => x.id === newConference.id);
+        let index = this.vhoConferences.findIndex(x => x.id === newConference?.id);
         const doesConferenceMatchExistingFilter: boolean = this.isNewConferencePartOfFilter(newConference);
 
         // If the conference is not part of the filter and not in the list, then we don't need to do anything
