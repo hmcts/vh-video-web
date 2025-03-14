@@ -533,6 +533,18 @@ describe('VideoCallHostEffects', () => {
         });
     });
 
+    describe('startHearingFailure', () => {
+        it('should forward the error to the error service', () => {
+            const expectedError = new Error('Test Failure');
+            const action = VideoCallHostActions.startHearingFailure({ error: expectedError });
+            actions$ = of(action);
+
+            effects.startHearingFailure$.subscribe(() => {
+                expect(errorService.handleApiError).toHaveBeenCalledWith(expectedError);
+            });
+        });
+    });
+
     describe('pauseHearing$', () => {
         it('should dispatch success action when pause hearing api call is successful', () => {
             const conference = conferenceTestData.getConferenceDetailNow();

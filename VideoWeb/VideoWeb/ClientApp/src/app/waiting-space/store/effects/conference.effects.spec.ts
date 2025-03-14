@@ -5,7 +5,14 @@ import { Observable, of } from 'rxjs';
 import { provideHttpClientTesting } from '@angular/common/http/testing'; // import this
 
 import { ConferenceEffects } from './conference.effects';
-import { ApiClient, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import {
+    ApiClient,
+    ConferenceStatus,
+    EndpointStatus,
+    ParticipantStatus,
+    Role,
+    UpdateParticipantDisplayNameRequest
+} from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../models/api-contract-to-state-model-mappers';
@@ -21,6 +28,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { EventsService } from 'src/app/services/events.service';
 import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 import { audioRecordingServiceSpy } from 'src/app/testing/mocks/mock-audio-recording.service';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -35,13 +43,17 @@ describe('ConferenceEffects', () => {
     let eventsService: jasmine.SpyObj<EventsService>;
 
     beforeEach(() => {
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
-        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
+        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing', 'updateParticipantDisplayName']);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['muteAllParticipants', 'muteParticipant'], {
-            pexipAPI: pexipClientSpy
-        });
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
+            'VideoCallService',
+            ['muteAllParticipants', 'muteParticipant', 'setParticipantOverlayText'],
+            {
+                pexipAPI: pexipClientSpy
+            }
+        );
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['sendTransferRequest']);
 
         TestBed.configureTestingModule({
@@ -107,6 +119,22 @@ describe('ConferenceEffects', () => {
         });
     });
 
+    describe('loadConferenceFailure$', () => {
+        it('should call error service on load conference failure', () => {
+            // arrange
+            const error = new Error('failed to load conference');
+            const action = ConferenceActions.loadConferenceFailure({ error });
+
+            actions$ = of(action);
+
+            // act
+            effects.loadConferenceFailure$.subscribe();
+
+            // assert
+            expect(errorServiceSpy.handleApiError).toHaveBeenCalled();
+        });
+    });
+
     describe('loadLoggedInParticipant$', () => {
         it('should call getParticipants and expect load logged in participant action to be dispatched on success', () => {
             // arrange
@@ -138,6 +166,68 @@ describe('ConferenceEffects', () => {
                 // assert
                 expect(supplierClientService.loadSupplierScript).toHaveBeenCalledWith(conference.supplier);
             });
+        });
+    });
+
+    describe('updateHostDisplayName$', () => {
+        it('should call api to change display name and dispatch action on success', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            const judge = vhConference.participants.find(x => x.role === Role.Judge);
+            const displayName = 'new display name';
+            const action = ConferenceActions.updateJudgeDisplayName({
+                conferenceId: vhConference.id,
+                participantId: judge.id,
+                displayName
+            });
+            const expectedAction = ConferenceActions.updateParticipantDisplayNameSuccess({
+                conferenceId: vhConference.id,
+                participantId: judge.id,
+                displayName
+            });
+            apiClient.updateParticipantDisplayName.and.returnValue(of(void 0));
+
+            // act
+            actions$ = hot('-a', { a: action });
+            const expected = cold('-b', { b: expectedAction });
+            expect(effects.updateHostDisplayName$).toBeObservable(expected);
+
+            expect(apiClient.updateParticipantDisplayName).toHaveBeenCalledWith(
+                conference.id,
+                judge.id,
+                new UpdateParticipantDisplayNameRequest({ display_name: displayName })
+            );
+        });
+    });
+
+    describe('updateParticipantDisplayNameSuccess$', () => {
+        it('should sync the participant overlay text on display name change', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            const judge = vhConference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.InHearing;
+            judge.pexipInfo = { uuid: '123' } as VHPexipParticipant;
+            const displayName = 'new display name';
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, vhConference.participants);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, judge);
+
+            const action = ConferenceActions.updateParticipantDisplayNameSuccess({
+                conferenceId: vhConference.id,
+                participantId: judge.id,
+                displayName
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.updateParticipantDisplayNameSuccess$.subscribe();
+
+            // assert
+            expect(videoCallServiceSpy.setParticipantOverlayText).toHaveBeenCalledWith(judge.pexipInfo.uuid, displayName);
         });
     });
 
@@ -267,6 +357,31 @@ describe('ConferenceEffects', () => {
         });
     });
 
+    describe('sendTransferRequest$', () => {
+        it('should publish the transfer request via events service', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const participants = conference.participants;
+            const vhParticipant = mapParticipantToVHParticipant(participants[0]);
+
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, vhParticipant);
+
+            const action = ConferenceActions.sendTransferRequest({
+                conferenceId: conference.id,
+                participantId: vhParticipant.id,
+                transferDirection: TransferDirection.In
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.sendTransferRequest$.subscribe();
+
+            // assert
+            expect(eventsService.sendTransferRequest).toHaveBeenCalledWith(conference.id, vhParticipant.id, TransferDirection.In);
+        });
+    });
+
     describe('lockConferenceWhenAllInHearingParticipantsMuted$', () => {
         it('should lock the conference when all in hearing participants are remote muted', () => {
             // arrange
@@ -382,6 +497,68 @@ describe('ConferenceEffects', () => {
                 conference.id,
                 participant.id
             );
+        });
+    });
+
+    describe('pauseAudioRecordingOnPauseOrSuspend$', () => {
+        it('should pause the audio recording when a conference is paused', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Paused
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.pauseAudioRecordingOnPauseOrSuspend$.subscribe(() => {
+                // assert
+                expect(audioRecordingServiceSpy.cleanupDialOutConnections).toHaveBeenCalled();
+            });
+        });
+
+        it('should pause the audio recording when a conference is suspended', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Suspended
+            });
+
+            actions$ = of(action);
+
+            // act
+            effects.pauseAudioRecordingOnPauseOrSuspend$.subscribe(() => {
+                // assert
+                expect(audioRecordingServiceSpy.cleanupDialOutConnections).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('refreshConferenceOnClose$', () => {
+        it('should dispatch LoadConference action to retrieve actual close time', () => {
+            // arrange
+            const conferenceResponse = new ConferenceTestData().getConferenceDetailNow();
+            const vhConference = mapConferenceToVHConference(conferenceResponse);
+            vhConference.status = ConferenceStatus.Closed;
+            apiClient.getConferenceById.and.returnValue(of(conferenceResponse));
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+
+            // act
+            const action = ConferenceActions.updateActiveConferenceStatus({
+                conferenceId: vhConference.id,
+                status: ConferenceStatus.Closed
+            });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            const expected = cold('-b', { b: ConferenceActions.loadConference({ conferenceId: vhConference.id }) });
+            expect(effects.refreshConferenceOnClose$).toBeObservable(expected);
         });
     });
 });

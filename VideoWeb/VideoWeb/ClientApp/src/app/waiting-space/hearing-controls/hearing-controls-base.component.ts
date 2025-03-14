@@ -299,6 +299,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                     VideoCallHostActions.hostLeaveHearing({ conferenceId: this.conferenceId, participantId: this.participant.id })
                 );
             } else {
+                this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing because no host left after leaving`, this.logPayload);
                 this.conferenceStore.dispatch(VideoCallHostActions.suspendHearing({ conferenceId: this.conferenceId }));
             }
         } else {

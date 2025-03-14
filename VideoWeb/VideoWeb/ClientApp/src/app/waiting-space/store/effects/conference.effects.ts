@@ -106,9 +106,10 @@ export class ConferenceEffects {
                     this.store.select(ConferenceSelectors.getLoggedInParticipant),
                     this.store.select(ConferenceSelectors.getParticipants)
                 ]),
+                filter(([action, loggedInParticipant, participants]) => loggedInParticipant.status === ParticipantStatus.InHearing),
                 tap(([action, loggedInParticipant, participants]) => {
                     // only judges and staff members can set the overlay text as chair
-                    if (loggedInParticipant?.role === 'Judge' || loggedInParticipant?.role === 'StaffMember') {
+                    if (loggedInParticipant?.role === Role.Judge || loggedInParticipant?.role === Role.StaffMember) {
                         const participant = participants.find(p => p.id === action.participantId);
                         this.videoCallService.setParticipantOverlayText(participant.pexipInfo.uuid, action.displayName);
                     }
