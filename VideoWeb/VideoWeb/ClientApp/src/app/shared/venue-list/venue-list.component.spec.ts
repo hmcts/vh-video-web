@@ -168,4 +168,49 @@ describe('VenueListComponent', () => {
             expect(component.activeSessions).toBeTrue();
         });
     });
+
+    describe('ngAfterViewInit', () => {
+        it('should remove aria-placeholder from ng-select lists', fakeAsync(() => {
+            // Arrange
+            const venueList = createListElement();
+            const venueContainer = createContainerElement('venue-allocation-list', venueList);
+
+            const csoList = createListElement();
+            const csoContainer = createContainerElement('cso-allocation-list', csoList);
+
+            const lists = [venueList, csoList];
+            const containers = [venueContainer, csoContainer];
+
+            containers.forEach(container => {
+                document.body.appendChild(container);
+            });
+
+            // Act
+            component.ngAfterViewInit();
+            tick();
+
+            // Assert
+            lists.forEach(list => {
+                expect(list.hasAttribute('aria-placeholder')).toBeFalse();
+            });
+
+            // Cleanup
+            containers.forEach(container => {
+                document.body.removeChild(container);
+            });
+        }));
+
+        function createListElement(): HTMLInputElement {
+            const input = document.createElement('input');
+            input.setAttribute('aria-placeholder', 'Choose lists');
+            return input;
+        }
+
+        function createContainerElement(id: string, input: HTMLInputElement): HTMLDivElement {
+            const container = document.createElement('div');
+            container.id = id;
+            container.appendChild(input);
+            return container;
+        }
+    });
 });

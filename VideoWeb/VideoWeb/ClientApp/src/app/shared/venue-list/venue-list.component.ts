@@ -1,4 +1,4 @@
-import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -14,7 +14,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Directive()
-export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
+export abstract class VenueListComponentDirective implements OnInit, OnDestroy, AfterViewInit {
     static readonly ALLOCATED_TO_ME = 'AllocatedToMe';
     static readonly UNALLOCATED = 'Unallocated';
 
@@ -69,6 +69,12 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
         this.profileService.getUserProfile().then(user => {
             this.isAdministrator = user.roles.includes(Role.Administrator);
         });
+    }
+
+    ngAfterViewInit() {
+        setTimeout(() => {
+            this.removeAriaPlaceholderAttributes();
+        }, 0);
     }
 
     ngOnDestroy(): void {
@@ -141,6 +147,15 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy {
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();
+        });
+    }
+
+    private removeAriaPlaceholderAttributes() {
+        // Accessibility workaround to remove invalid aria-placeholder attribute from ng-select generated inputs
+        const inputIds = ['#venue-allocation-list input', '#cso-allocation-list input'];
+        inputIds.forEach(id => {
+            const input = document.querySelector(id);
+            input?.removeAttribute('aria-placeholder');
         });
     }
 

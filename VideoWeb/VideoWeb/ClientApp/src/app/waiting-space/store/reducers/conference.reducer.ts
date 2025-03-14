@@ -542,4 +542,6 @@ export const conferenceReducer = createReducer(
     })
 );
 
+export const videocallControlsReducer = createReducer(initialState);
+
 export const activeConferenceFeature = createFeatureSelector<ConferenceState>(conferenceFeatureKey);
