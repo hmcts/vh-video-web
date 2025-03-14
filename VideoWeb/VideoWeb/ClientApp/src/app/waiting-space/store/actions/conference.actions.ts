@@ -52,6 +52,7 @@ export const ConferenceActions = createActionGroup({
         'Update Participant Local Mute Status': props<{ participantId: string; conferenceId: string; isMuted: boolean }>(),
         'Update Participant Hand Raised': props<{ participantId: string; conferenceId: string; hasHandRaised: boolean }>(),
 
+        'Send Transfer Request': props<{ conferenceId: string; participantId: string; transferDirection: TransferDirection }>(),
         'Update Participant Hearing Transfer Status': props<{
             participantId: string;
             conferenceId: string;
@@ -107,10 +108,6 @@ export const ConferenceActions = createActionGroup({
         'Update StaffMember Display Name': props<{ participantId: string; displayName: string; conferenceId: string }>(),
         'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),
 
-        'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>(),
-
-        'Participant Leave HearingRoom': props<{ conferenceId: string }>(),
-        'Participant Leave HearingRoom Success': props<{ conferenceId: string; participant: VHParticipant }>(),
-        'Participant Leave HearingRoom Failure': props<{ error: Error }>()
+        'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>()
     }
 });

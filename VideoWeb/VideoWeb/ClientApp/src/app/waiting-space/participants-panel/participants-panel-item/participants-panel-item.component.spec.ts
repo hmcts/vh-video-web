@@ -54,9 +54,9 @@ describe('ParticipantsPanelItemComponent', () => {
             const result = component.mapParticipantToParticipantResponse();
             expect(result.id).toBe(participant.id);
             expect(result.status).toBe(participant.status);
-            expect(result.display_name).toBe(participant.display_name);
+            expect(result.displayName).toBe(participant.display_name);
             expect(result.role).toBe(participant.role);
-            expect(result.hearing_role).toBe(participant.hearing_role);
+            expect(result.hearingRole).toBe(participant.hearing_role);
             expect(result.representee).toBe(participant.representee);
         });
     });

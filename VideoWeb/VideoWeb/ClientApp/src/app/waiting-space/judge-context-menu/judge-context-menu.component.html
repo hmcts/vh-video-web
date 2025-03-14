@@ -40,8 +40,8 @@
   <ng-container *ngFor="let pInList of participant.participantsList()">
     <a
       *ngIf="pInList.isInHearing() && !pInList.isMicRemoteMuted()"
-      (click)="toggleLocalMuteParticipant(pInList)"
-      (keyup.enter)="toggleLocalMuteParticipant(pInList)"
+      (click)="toggleLocalMuteParticipant()"
+      (keyup.enter)="toggleLocalMuteParticipant()"
       tabindex="0"
       [id]="idPrefix + '-toggle-mute-' + (1 | random)"
       >{{ getLocalMuteAStatusText(pInList) }}</a
