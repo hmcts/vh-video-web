@@ -11,7 +11,12 @@ import { VhoStorageKeys } from './models/session-keys';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
 import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
-import { eventsServiceSpy, getHearingDetailsUpdatedMock, getParticipantsUpdatedMock, newAllocationMessageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    eventsServiceSpy,
+    getHearingDetailsUpdatedMock,
+    getParticipantsUpdatedMock,
+    newAllocationMessageSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('VhoQueryService', () => {
@@ -437,7 +442,7 @@ describe('VhoQueryService', () => {
         });
     });
 
-    fdescribe('handleParticipantsUpdated', () => {
+    describe('handleParticipantsUpdated', () => {
         describe('venue filter selected', () => {
             beforeEach(() => {
                 const data = testData.getTestData(); // 3 conferences
