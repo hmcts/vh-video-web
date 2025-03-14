@@ -19,6 +19,8 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { EventsService } from 'src/app/services/events.service';
+import { AudioRecordingService } from 'src/app/services/audio-recording.service';
+import { audioRecordingServiceSpy } from 'src/app/testing/mocks/mock-audio-recording.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -53,7 +55,8 @@ describe('ConferenceEffects', () => {
                 { provide: SupplierClientService, useValue: supplierClientService },
                 { provide: VideoCallService, useValue: videoCallServiceSpy },
                 { provide: ErrorService, useValue: errorServiceSpy },
-                { provide: EventsService, useValue: eventsService }
+                { provide: EventsService, useValue: eventsService },
+                { provide: AudioRecordingService, useValue: audioRecordingServiceSpy }
             ]
         });
 
@@ -269,6 +272,9 @@ describe('ConferenceEffects', () => {
             // arrange
             const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
+            const loggedInParticipant = vhConference.participants[0];
+            loggedInParticipant.status = ParticipantStatus.InHearing;
+
             const pexipConference: VHPexipConference = {
                 guestsMuted: false,
                 locked: false,
@@ -285,6 +291,7 @@ describe('ConferenceEffects', () => {
 
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getPexipConference, pexipConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             const action = ConferenceActions.upsertPexipParticipant({ participant: vhConference.participants[0].pexipInfo });
 
@@ -308,6 +315,9 @@ describe('ConferenceEffects', () => {
             };
             const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
+            const loggedInParticipant = vhConference.participants[0];
+            loggedInParticipant.status = ParticipantStatus.InHearing;
+
             vhConference.participants.forEach(p => {
                 p.status = ParticipantStatus.InHearing;
                 return (p.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
@@ -319,6 +329,7 @@ describe('ConferenceEffects', () => {
 
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getPexipConference, pexipConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             const action = ConferenceActions.upsertPexipParticipant({ participant: vhConference.participants[0].pexipInfo });
 

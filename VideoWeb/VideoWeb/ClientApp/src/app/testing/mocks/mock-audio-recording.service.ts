@@ -14,7 +14,13 @@ const mockConference: VHConference = {
     participants: undefined,
     scheduledDateTime: undefined,
     status: undefined,
-    supplier: undefined
+    supplier: undefined,
+    audioRecordingRequired: false,
+    caseType: undefined,
+    hearingVenueName: '',
+    conferenceAlias: '',
+    pexipNodeUri: '',
+    selfTestNodeUri: ''
 };
 const mockWowzaAgent: VHPexipParticipant = {
     handRaised: false,

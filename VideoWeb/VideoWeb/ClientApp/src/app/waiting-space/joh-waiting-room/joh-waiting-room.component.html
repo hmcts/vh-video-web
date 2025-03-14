@@ -30,7 +30,7 @@
       <app-private-consultation-room-controls
         class="govuk-grid-width-half"
         #hearingControls
-        [conferenceId]="conference.id"
+        [conferenceId]="vhConference.id"
         [participant]="vhParticipant"
         [isPrivateConsultation]="isPrivateConsultation"
         [canToggleParticipantsPanel]="isPrivateConsultation"
@@ -124,12 +124,12 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong><app-truncatable-text [text]="conference.case_name" [maxLimit]="40"></app-truncatable-text></strong>
+            <strong><app-truncatable-text [text]="vhConference.caseName" [maxLimit]="40"></app-truncatable-text></strong>
             ({{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }})
             <br />
             <span>{{ 'joh-waiting-room.case-number' | translate }}</span
             >:
-            <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="40"></app-truncatable-text></strong>
+            <strong><app-truncatable-text [text]="vhConference.caseNumber" [maxLimit]="40"></app-truncatable-text></strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}

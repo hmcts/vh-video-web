@@ -111,7 +111,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
         );
     }
 
-    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+    handleParticipantStatusChange(message: ParticipantStatusMessage) {
         const isCurrentUser = this.loggedInUser?.participant_id === message.participantId;
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();

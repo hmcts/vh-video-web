@@ -13,7 +13,6 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { Component } from '@angular/core';
-import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -42,7 +41,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -64,7 +62,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            participantRemoteMuteStoreService,
             titleService,
             hideComponentsService,
             focusService,

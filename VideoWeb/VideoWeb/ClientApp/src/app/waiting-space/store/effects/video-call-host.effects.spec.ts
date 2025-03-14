@@ -18,6 +18,9 @@ import { VHPexipParticipant } from '../models/vh-conference';
 import { cold, getTestScheduler, hot } from 'jasmine-marbles';
 import { ConferenceActions } from '../actions/conference.actions';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { ErrorService } from 'src/app/services/error.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('VideoCallHostEffects', () => {
     let actions$: Observable<any>;
@@ -27,6 +30,9 @@ describe('VideoCallHostEffects', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     let mockConferenceStore: MockStore<ConferenceState>;
     let eventsService: jasmine.SpyObj<EventsService>;
+
+    let hearingLayoutService: jasmine.SpyObj<HearingLayoutService>;
+    let errorService: jasmine.SpyObj<ErrorService>;
 
     const conferenceTestData = new ConferenceTestData();
 
@@ -54,6 +60,13 @@ describe('VideoCallHostEffects', () => {
             'updateParticipantLocalMuteStatus'
         ]);
 
+        hearingLayoutService = jasmine.createSpyObj<HearingLayoutService>('HearingLayoutService', [], {
+            currentLayout$: of(HearingLayout.Dynamic),
+            recommendedLayout$: of(HearingLayout.Dynamic)
+        });
+
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
+
         TestBed.configureTestingModule({
             providers: [
                 VideoCallHostEffects,
@@ -63,7 +76,9 @@ describe('VideoCallHostEffects', () => {
                 { provide: ApiClient, useValue: apiClient },
                 { provide: Logger, useValue: new MockLogger() },
                 { provide: VideoCallService, useValue: videoCallService },
-                { provide: EventsService, useValue: eventsService }
+                { provide: EventsService, useValue: eventsService },
+                { provide: HearingLayoutService, useValue: hearingLayoutService },
+                { provide: ErrorService, useValue: errorService }
             ]
         });
 
@@ -476,13 +491,18 @@ describe('VideoCallHostEffects', () => {
     });
 
     describe('startHearing$', () => {
+        beforeEach(() => {
+            const expectedCurrentLayout$ = of(HearingLayout.Dynamic);
+            getSpiedPropertyGetter(hearingLayoutService, 'currentLayout$').and.returnValue(expectedCurrentLayout$);
+        });
+
         it('should dispatch success action when start hearing api call is successful', () => {
             const conference = conferenceTestData.getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
             apiClient.startOrResumeVideoHearing.and.returnValue(of(void 0));
 
-            const action = VideoCallHostActions.startHearing({ conferenceId: vhConference.id, hearingLayout: HearingLayout.Dynamic });
+            const action = VideoCallHostActions.startHearing({ conferenceId: vhConference.id });
             const expectedAction = VideoCallHostActions.startHearingSuccess();
             actions$ = hot('-a', { a: action });
             const expected = cold('-b', { b: expectedAction });
@@ -500,7 +520,7 @@ describe('VideoCallHostEffects', () => {
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
 
             const expectedError = new Error('Test Failure');
-            const action = VideoCallHostActions.startHearing({ conferenceId: vhConference.id, hearingLayout: HearingLayout.Dynamic });
+            const action = VideoCallHostActions.startHearing({ conferenceId: vhConference.id });
             const expectedAction = VideoCallHostActions.startHearingFailure({
                 error: expectedError
             });

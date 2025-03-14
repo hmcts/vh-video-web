@@ -3,15 +3,17 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, Role } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
-import { VideoCallService } from './video-call.service';
 import { VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 @Injectable()
 export class NotificationToastrService {
@@ -27,7 +29,7 @@ export class NotificationToastrService {
         private consultationService: ConsultationService,
         private notificationSoundService: NotificationSoundsService,
         private translateService: TranslateService,
-        private videoCallService: VideoCallService
+        private conferenceStore: Store<ConferenceState>
     ) {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
@@ -215,7 +217,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.toastr.remove(toast.toastId);
             },
             buttons: [
@@ -259,7 +261,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on poor connection alert`);
             },
             buttons: [
@@ -311,15 +313,15 @@ export class NotificationToastrService {
         return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
     }
 
-    showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+    showParticipantAdded(participant: VHParticipant, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.participant-added.message', {
-            role: this.translateHearingRole(participant.hearing_role)
+            role: this.translateHearingRole(participant.hearingRole)
         });
 
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
-                name: participant.name ?? participant.display_name
+                name: participant.name ?? participant.displayName
             }
         )}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
@@ -333,7 +335,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on participant added alert`);
             },
             buttons: [
@@ -461,7 +463,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on hearing layout change alert`);
             },
             buttons: [
@@ -485,11 +487,11 @@ export class NotificationToastrService {
 
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${title}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
-        const joinHearingFromAlert = async () => {
+        const joinHearingFromAlert = () => {
             this.logger.debug(
                 `${this.loggerPrefix} Participant ${participantId} is join Hearing conference ${conferenceId} from Hearing Started Alert`
             );
-            await this.videoCallService.joinHearingInSession(conferenceId, participantId);
+            this.conferenceStore.dispatch(VideoCallHostActions.joinHearing({ conferenceId, participantId }));
         };
         const toast = this.toastr.show('', '', {
             timeOut: 0,
@@ -500,7 +502,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on hearing started alert`);
             },
             buttons: [
@@ -560,7 +562,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'black',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on allocation hearing alert`);
             },
             buttons: [
@@ -630,7 +632,7 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
-            onNoAction: async () => {
+            onNoAction: () => {
                 this.logger.debug(`${this.loggerPrefix} No action called on endpoint added alert`);
             },
             buttons: [

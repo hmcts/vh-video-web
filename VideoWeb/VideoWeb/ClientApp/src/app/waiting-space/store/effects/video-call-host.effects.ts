@@ -6,13 +6,15 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { VideoCallHostActions } from '../actions/video-call-host.actions';
-import { catchError, delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, delay, exhaustMap, filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { concatLatestFrom } from '@ngrx/operators';
 import { EventsService } from 'src/app/services/events.service';
 import { of } from 'rxjs';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
 import { ConferenceActions } from '../actions/conference.actions';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Injectable()
 export class VideoCallHostEffects {
@@ -351,13 +353,13 @@ export class VideoCallHostEffects {
     startHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.startHearing),
-            switchMap(action => {
+            withLatestFrom(this.layoutService.currentLayout$),
+            exhaustMap(([action, layout]) => {
                 this.logger.info(`${this.loggerPrefix} Starting hearing`, {
-                    conferenceId: action.conferenceId,
-                    hearingLayout: action.hearingLayout
+                    conferenceId: action.conferenceId
                 });
                 const request = new StartOrResumeVideoHearingRequest({
-                    layout: action.hearingLayout
+                    layout
                 });
                 return this.apiClient.startOrResumeVideoHearing(action.conferenceId, request).pipe(
                     map(() => VideoCallHostActions.startHearingSuccess()),
@@ -367,10 +369,22 @@ export class VideoCallHostEffects {
         )
     );
 
+    startHearingFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VideoCallHostActions.startHearingFailure),
+                tap(action => {
+                    this.logger.error(`${this.loggerPrefix} Start hearing failed`, action.error);
+                    this.errorService.handleApiError(action.error);
+                })
+            ),
+        { dispatch: false }
+    );
+
     pauseHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.pauseHearing),
-            switchMap(action => {
+            exhaustMap(action => {
                 this.logger.info(`${this.loggerPrefix} Pausing hearing`, {
                     conferenceId: action.conferenceId
                 });
@@ -385,7 +399,7 @@ export class VideoCallHostEffects {
     suspendHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.suspendHearing),
-            switchMap(action => {
+            exhaustMap(action => {
                 this.logger.info(`${this.loggerPrefix} Suspending hearing`, {
                     conferenceId: action.conferenceId
                 });
@@ -400,7 +414,7 @@ export class VideoCallHostEffects {
     endHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.endHearing),
-            switchMap(action => {
+            exhaustMap(action => {
                 this.logger.info(`${this.loggerPrefix} Ending hearing`, {
                     conferenceId: action.conferenceId
                 });
@@ -415,7 +429,7 @@ export class VideoCallHostEffects {
     hostLeaveHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.hostLeaveHearing),
-            switchMap(action => {
+            exhaustMap(action => {
                 this.logger.info(`${this.loggerPrefix} Host leaving hearing`, {
                     conferenceId: action.conferenceId,
                     participantId: action.participantId
@@ -431,7 +445,7 @@ export class VideoCallHostEffects {
     joinHearing$ = createEffect(() =>
         this.actions$.pipe(
             ofType(VideoCallHostActions.joinHearing),
-            switchMap(action => {
+            exhaustMap(action => {
                 this.logger.info(`${this.loggerPrefix} Joining hearing`, {
                     participantId: action.participantId
                 });
@@ -450,6 +464,8 @@ export class VideoCallHostEffects {
         private eventsService: EventsService,
         private videoCallService: VideoCallService,
         private apiClient: ApiClient,
+        private layoutService: HearingLayoutService,
+        private errorService: ErrorService,
         private logger: Logger
     ) {}
 }

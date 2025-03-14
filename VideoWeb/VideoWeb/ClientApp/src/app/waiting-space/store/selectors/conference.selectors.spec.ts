@@ -24,6 +24,12 @@ describe('Conference Selectors', () => {
             isVenueScottish: false,
             countdownComplete: false,
             audioRecordingIngestUrl: 'http://an-audio-recording-url',
+            audioRecordingRequired: true,
+            caseType: 'Generic',
+            hearingVenueName: 'Birmingham Civil and Family Justice Centre',
+            conferenceAlias: 'Test Alias',
+            pexipNodeUri: 'pexip.node.uri',
+            selfTestNodeUri: 'self.test.node.uri',
             participants: [
                 {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df7',

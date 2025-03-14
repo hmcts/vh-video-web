@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { filter, tap } from 'rxjs/operators';
+import { filter, pairwise, tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { Store } from '@ngrx/store';
@@ -13,9 +13,33 @@ import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallActions } from '../actions/video-call.action';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Injectable()
 export class NotificationEffects {
+    hearingStartedByAnotherHost$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateActiveConferenceStatus),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                tap(([_action, activeConference, loggedInParticipant]) => {
+                    // if the logged in participant is in a consultation and the hearing is in session
+                    // and the participant role is staff member or judge, then show the notification
+                    if (
+                        activeConference.status === ConferenceStatus.InSession &&
+                        loggedInParticipant.status === ParticipantStatus.InConsultation &&
+                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember)
+                    ) {
+                        this.toastNotificationService.showHearingStarted(activeConference.id, loggedInParticipant.id);
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     hearingStartingJudicialOfficeHolder$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -101,6 +125,26 @@ export class NotificationEffects {
                         loggedInParticipant.status === ParticipantStatus.InConsultation ||
                             loggedInParticipant.status === ParticipantStatus.InHearing
                     );
+                })
+            ),
+        { dispatch: false }
+    );
+
+    participantAdded$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateParticipantList),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getParticipants).pipe(pairwise()),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                tap(([action, [previousParticipants, _], loggedInParticipant]) => {
+                    const newParticipants = action.participants.filter(x => !previousParticipants.find(y => y.id === x.id));
+                    newParticipants.forEach(participant => {
+                        this.logger.debug(`${this.loggerPrefix} participant added, showing notification`, participant);
+
+                        this.toastNotificationService.showParticipantAdded(participant, this.isVideoOn(loggedInParticipant.status));
+                    });
                 })
             ),
         { dispatch: false }
@@ -255,11 +299,14 @@ export class NotificationEffects {
         { dispatch: false }
     );
 
+    private readonly loggerPrefix = '[NotificationEffects] -';
+
     constructor(
         private actions$: Actions,
         private store: Store<ConferenceState>,
         private toastNotificationService: NotificationToastrService,
-        private notificationSoundsService: NotificationSoundsService
+        private notificationSoundsService: NotificationSoundsService,
+        private logger: Logger
     ) {}
 
     isVideoOn(status: ParticipantStatus): boolean {

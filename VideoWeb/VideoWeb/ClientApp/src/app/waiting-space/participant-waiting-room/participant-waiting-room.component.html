@@ -40,7 +40,7 @@
         <app-private-consultation-room-controls
           #hearingControls
           [canToggleParticipantsPanel]="isPrivateConsultation"
-          [conferenceId]="conference.id"
+          [conferenceId]="vhConference.id"
           [participant]="vhParticipant"
           [isPrivateConsultation]="isPrivateConsultation"
           [outgoingStream]="outgoingStream"
@@ -165,7 +165,7 @@
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
             <strong><app-truncatable-text [text]="hearing.caseName" [maxLimit]="40"></app-truncatable-text></strong>
-            ({{ 'case-type.' + stringToTranslateId(conference.case_type) | translate }})
+            ({{ 'case-type.' + stringToTranslateId(vhConference.caseType) | translate }})
             <br />
             <span>{{ 'participant-waiting-room.case-number' | translate }}</span
             >:
@@ -345,7 +345,7 @@
 <app-join-private-consultation
   *ngIf="displayJoinPrivateConsultationModal"
   [participants]="getPrivateConsultationParticipants()"
-  [endpoints]="conference.endpoints"
+  [endpoints]="vhConference.endpoints"
   (cancel)="closeJoinPrivateConsultationModal()"
   (continue)="joinPrivateConsultation($event)"
 >

@@ -25,7 +25,7 @@
               </div>
               <app-private-consultation-room-controls
                 #hearingControls
-                [conferenceId]="conference.id"
+                [conferenceId]="vhConference.id"
                 [participant]="vhParticipant"
                 [isPrivateConsultation]="isPrivateConsultation"
                 [outgoingStream]="outgoingStream"
@@ -102,7 +102,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
+  <div *ngIf="!loadingData && vhConference" [ngClass]="{ 'no-mass': showVideo }">
     <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
         <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
@@ -126,12 +126,12 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong><app-truncatable-text [text]="conference.case_name" [maxLimit]="40"></app-truncatable-text></strong>
-            ({{ 'case-type.' + stringToTranslateId(conference.case_type) | translate }})
+            <strong><app-truncatable-text [text]="vhConference.caseName" [maxLimit]="40"></app-truncatable-text></strong>
+            ({{ 'case-type.' + stringToTranslateId(vhConference.caseType) | translate }})
             <br />
             <span>{{ 'judge-waiting-room.case-number' | translate }}</span
             >:
-            <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="40"></app-truncatable-text></strong>
+            <strong><app-truncatable-text [text]="vhConference.caseNumber" [maxLimit]="40"></app-truncatable-text></strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
@@ -145,7 +145,7 @@
     </table>
   </div>
 
-  <div *ngIf="!loadingData && conference" class="govuk-grid-row" [ngClass]="{ 'no-mass': showVideo }">
+  <div *ngIf="!loadingData && vhConference" class="govuk-grid-row" [ngClass]="{ 'no-mass': showVideo }">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
         {{ getConferenceStatusText() }}
@@ -153,7 +153,7 @@
 
       <app-feedback-banner *ngIf="hearing.isClosed() && !isStaffMember()"></app-feedback-banner>
 
-      <app-select-hearing-layout *ngIf="canShowHearingLayoutSelection" [conference]="conference"></app-select-hearing-layout>
+      <app-select-hearing-layout *ngIf="canShowHearingLayoutSelection" [conference]="vhConference"></app-select-hearing-layout>
 
       <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{ 'judge-waiting-room.is-everyone-connected' | translate }}</h2>
 
@@ -200,12 +200,12 @@
           <img
             id="recording-on-img"
             class="audio-icon"
-            src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
+            src="/assets/images/{{ vhConference.audioRecordingRequired ? 'audio_on' : 'audio_off' }}.png"
             alt=""
           />
         </span>
         <strong class="govuk-!-padding-1">
-          {{ 'judge-waiting-room.hearing-is-being-recorded.' + conference.audio_recording_required | translate }}
+          {{ 'judge-waiting-room.hearing-is-being-recorded.' + vhConference.audioRecordingRequired | translate }}
         </strong>
       </p>
 

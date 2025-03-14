@@ -34,8 +34,6 @@ import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -64,7 +62,6 @@ describe('ParticipantsPanelComponent', () => {
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
 
-    let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     let component: ParticipantsPanelComponent;
@@ -105,8 +102,6 @@ describe('ParticipantsPanelComponent', () => {
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
 
-        remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
-
         await TestBed.configureTestingModule({
             declarations: [
                 ParticipantsPanelComponent,
@@ -133,10 +128,6 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: TranslateService,
                     useValue: translateService
-                },
-                {
-                    provide: ParticipantRemoteMuteStoreService,
-                    useValue: remoteMuteServiceSpy
                 },
                 {
                     provide: LaunchDarklyService,

@@ -16,6 +16,8 @@ import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallActions } from '../actions/video-call.action';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 
 describe('NotificationEffects', () => {
     const testData = new ConferenceTestData();
@@ -57,7 +59,8 @@ describe('NotificationEffects', () => {
                 provideMockStore(),
                 provideMockActions(() => actions$),
                 { provide: NotificationToastrService, useValue: toastNotificationService },
-                { provide: NotificationSoundsService, useValue: notificationSoundsService }
+                { provide: NotificationSoundsService, useValue: notificationSoundsService },
+                { provide: Logger, useValue: new MockLogger() }
             ]
         });
 
