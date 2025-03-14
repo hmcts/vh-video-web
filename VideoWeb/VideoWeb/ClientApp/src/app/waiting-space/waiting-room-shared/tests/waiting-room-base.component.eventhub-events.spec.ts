@@ -1450,7 +1450,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             // Assert
             expect(component.conference.id).toBe(updatedConference.id);
-            expect(component.conference.scheduled_date_time).toBe(updatedConference.scheduled_date_time);
+            expect(component.conference.scheduled_date_time).toEqual(updatedConference.scheduled_date_time);
             expect(component.conference.audio_recording_required).toBe(updatedConference.audio_recording_required);
         });
     });
