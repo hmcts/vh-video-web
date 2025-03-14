@@ -16,9 +16,9 @@ export class Hearing extends HearingBase {
 
     constructor(conference: ConferenceResponse) {
         super();
-        
+
         this.conference = conference;
-        if (conference.participants) {  
+        if (conference.participants) {
             this._participants = this.conference.participants.map(p => new Participant(p));
             this.participants = this._participants;
         }
