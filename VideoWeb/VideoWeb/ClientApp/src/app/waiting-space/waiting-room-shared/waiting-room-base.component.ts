@@ -256,7 +256,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     getLoggedParticipant(): VHParticipant {
-        return this.vhConference.participants.find(x => x.id === this.loggedInUser.participant_id);
+        return this.vhParticipant;
     }
 
     stringToTranslateId(str: string) {
