@@ -578,11 +578,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (this.callStream) {
             this.updateShowVideo();
         }
-
-        // todo: confirm if this is needed since effect already manages the mute
-        // if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
-        //     this.hearingControls.toggleVideoMute();
-        // }
     }
 
     handleCallError(error: CallError): void {

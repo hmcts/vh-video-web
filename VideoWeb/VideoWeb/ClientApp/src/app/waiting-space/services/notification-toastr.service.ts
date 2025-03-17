@@ -510,8 +510,8 @@ export class NotificationToastrService {
                     id: 'notification-toastr-hearing-started-join-hearing',
                     label: this.translateService.instant('notification-toastr.hearing-started.join-hearing'),
                     cssClass: 'hearing-started-join-hearing',
-                    action: async () => {
-                        await joinHearingFromAlert();
+                    action: () => {
+                        joinHearingFromAlert();
                     }
                 },
                 {
