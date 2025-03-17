@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil, tap } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -39,6 +39,7 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     continueWithNoRecording = false;
+    recordingPaused: boolean;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
     displayJoinHearingPopup: boolean;
@@ -49,7 +50,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     participants: ParticipantUpdated[] = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
-    private recordingPaused: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -98,10 +98,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-    }
-
-    get isChatVisible() {
-        return this.panelStates['Chat'];
     }
 
     get canShowHearingLayoutSelection() {
@@ -311,9 +307,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.eventService
             .getAudioRestartActioned()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((conferenceId: string) => {
-                if (conferenceId === this.vhConference.id && this.audioErrorRetryToast) {
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(conferenceId => conferenceId === this.vhConference.id)
+            )
+            .subscribe(() => {
+                if (this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
                     this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
                 }
@@ -331,7 +330,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.store
             .select(getCountdownComplete)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(complete => complete)
+            )
             .subscribe(complete => {
                 if (complete) {
                     this.logger.debug(`${this.loggerPrefixJudge} Hearing countdown complete`);

@@ -179,6 +179,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         ).length;
     }
 
+    get isChatVisible() {
+        return this.panelStates['Chat'];
+    }
+
     get areParticipantsVisible() {
         return this.panelStates['Participants'];
     }

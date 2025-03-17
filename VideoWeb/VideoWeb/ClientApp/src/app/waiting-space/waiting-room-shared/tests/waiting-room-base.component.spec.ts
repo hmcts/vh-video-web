@@ -195,7 +195,6 @@ describe('WaitingRoomBaseDirective', () => {
 
     afterEach(() => {
         component.executeWaitingRoomCleanup();
-        // mockStore.resetSelectors();
     });
 
     afterAll(() => {
@@ -315,6 +314,20 @@ describe('WaitingRoomBaseDirective', () => {
             // Assert
             expect(component.panelStates.Participants).toBe(false);
             expect(component.panelStates.Chat).toBe(false);
+            expect(component.areParticipantsVisible).toBeFalse();
+        });
+
+        it('should toggle panel and chat panel should be visible', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = true;
+            component.panelStates[chatPanelName] = false;
+
+            // Act
+            component.togglePanel(chatPanelName);
+
+            // Assert
+            expect(component.panelStates.Participants).toBe(false);
+            expect(component.panelStates.Chat).toBe(true);
             expect(component.areParticipantsVisible).toBeFalse();
         });
     });
