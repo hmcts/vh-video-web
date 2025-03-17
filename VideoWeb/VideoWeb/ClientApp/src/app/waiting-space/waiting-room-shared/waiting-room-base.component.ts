@@ -67,7 +67,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     participantEndpoints: VHEndpoint[] = [];
     conferenceRooms: VHRoom[] = [];
 
-    eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
     currentTime: Date;
 
@@ -322,11 +321,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     startEventHubSubscribers() {
-        this.eventHubSubscription$.add(
-            this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (!message.answer) {
-                    return;
-                }
+        this.eventService
+            .getConsultationRequestResponseMessage()
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(message => !!message && message.conferenceId === this.vhConference.id)
+            )
+            .subscribe(message => {
                 if (message.requestedFor === this.vhParticipant.id) {
                     this.handleMyConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
                 } else {
@@ -337,24 +338,33 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
                         message.roomLabel
                     );
                 }
-            })
-        );
+            });
 
-        this.eventHubSubscription$.add(
-            this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
-                await this.handleEventHubDisconnection(attemptNumber);
-            })
-        );
+        this.eventService
+            .getServiceDisconnected()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(attemptNumber => {
+                this.handleEventHubDisconnection(attemptNumber);
+            });
 
-        this.eventHubSubscription$.add(
-            this.eventService.getServiceConnected().subscribe(() => {
+        this.eventService
+            .getServiceConnected()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(() => {
                 this.logger.debug(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.vhConference.id,
                     participant: this.vhParticipant.id
                 });
                 this.updateShowVideo();
-            })
-        );
+            });
+
+        this.eventService
+            .getHearingStatusMessage()
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(x => x.conferenceId === this.vhConference?.id)
+            )
+            .subscribe(() => this.handleConferenceStatusChange());
     }
 
     async onConsultationAccepted(roomLabel: string) {
@@ -400,7 +410,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    async handleEventHubDisconnection(reconnectionAttempt: number) {
+    handleEventHubDisconnection(reconnectionAttempt: number) {
         const logPayload = {
             conference: this.vhConference.id,
             participant: this.vhParticipant.id,
@@ -408,12 +418,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         };
         if (reconnectionAttempt < 7) {
             this.logger.debug(`${this.loggerPrefix} EventHub disconnection`, logPayload);
-            try {
-                this.store.dispatch(ConferenceActions.loadConference({ conferenceId: this.vhConference?.id }));
-            } catch (error) {
-                this.logger.warn(`${this.loggerPrefix} Failed to recover from disconnection`, logPayload);
-                this.errorService.handleApiError(error);
-            }
+            this.store.dispatch(ConferenceActions.loadConference({ conferenceId: this.vhConference?.id }));
         }
     }
 
@@ -425,15 +430,17 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         try {
             await this.setupPexipEventSubscriptionAndClient();
             this.call();
-            this.eventHubSubscription$.add(
-                this.eventService.onEventsHubReady().subscribe(async () => {
+
+            this.eventService
+                .onEventsHubReady()
+                .pipe(takeUntil(this.onDestroy$))
+                .subscribe(() => {
                     this.logger.debug(`${this.loggerPrefix} EventHub ready`, {
                         conference: this.conferenceId,
                         participant: this.vhParticipant.id
                     });
                     this.updateShowVideo();
-                })
-            );
+                });
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
@@ -574,9 +581,11 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (this.callStream) {
             this.updateShowVideo();
         }
-        if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
-            this.hearingControls.toggleVideoMute();
-        }
+
+        // todo: confirm if this is needed since effect already manages the mute
+        // if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
+        //     this.hearingControls.toggleVideoMute();
+        // }
     }
 
     handleCallError(error: CallError): void {
@@ -622,15 +631,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.callStream = null;
     }
 
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        if (!this.validateIsForConference(message.conferenceId)) {
-            return;
-        }
-        this.logger.debug(
-            `${this.loggerPrefix} Handling conference status message : ${this.conferenceId}, Case name : ${this.vhConference.caseName}, Conference status : ${message.status}`,
-            message
-        );
-
+    handleConferenceStatusChange() {
         this.presentationStream = null;
         this.videoCallService.stopScreenShare();
     }
@@ -749,12 +750,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         return this.vhParticipant.status === ParticipantStatus.InHearing;
     }
 
+    /** @deprecated this does not look to be used by the component any longer. verify and remove */
     isHost(): boolean {
         return this.vhParticipant.role === Role.Judge || this.vhParticipant.role === Role.StaffMember;
-    }
-
-    hasAHostInHearing(participants: ParticipantResponse[]): boolean {
-        return participants.some(p => (p.role === Role.Judge || p.role === Role.StaffMember) && p.status === ParticipantStatus.InHearing);
     }
 
     showChooseCameraDialog() {
@@ -774,7 +772,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         });
         clearTimeout(this.callbackTimeout);
         this.disconnect();
-        this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.onDestroy$.next();
         this.onDestroy$.complete();
@@ -852,14 +849,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     protected findEndpointsInRoom(roomLabel: string): VHEndpoint[] {
         return this.vhConference.endpoints.filter(x => x.room?.label === roomLabel);
-    }
-
-    protected validateIsForConference(conferenceId: string): boolean {
-        if (conferenceId !== this.hearing.id) {
-            this.logger.debug(`${this.loggerPrefix} message not for current conference`);
-            return false;
-        }
-        return true;
     }
 
     private setShowVideo(showVideo: boolean) {
