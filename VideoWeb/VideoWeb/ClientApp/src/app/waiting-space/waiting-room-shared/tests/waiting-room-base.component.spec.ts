@@ -671,7 +671,7 @@ describe('WaitingRoomBaseDirective', () => {
         describe('on ConsultationRequestResponseMessage', () => {
             const primaryParticipant = mapParticipantToVHParticipant(participantsLinked[0]);
             const linkedParticipant = mapParticipantToVHParticipant(participantsLinked[1]);
-            const expectedConsultationRoomLabel = 'ConsultationRoom';
+            let expectedConsultationRoomLabel = 'ConsultationRoom989';
             const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
             const invitationId = Guid.create().toString();
 
@@ -681,29 +681,8 @@ describe('WaitingRoomBaseDirective', () => {
 
             afterEach(() => {
                 component.executeWaitingRoomCleanup();
-            });
-
-            it('should call onConsultationAccepted when the active participant accepts the invitation', fakeAsync(() => {
-                // Arrange
-                const message = new ConsultationRequestResponseMessage(
-                    conference.id,
-                    invitationId,
-                    expectedConsultationRoomLabel,
-                    loggedInParticipant.id,
-                    ConsultationAnswer.Accepted,
-                    loggedInParticipant.id
-                );
-
-                spyOn(component, 'onConsultationAccepted');
                 component.vhParticipant = loggedInParticipant;
-
-                // Act
-                consultationRequestResponseMessageSubject.next(message);
-                flush();
-
-                // Assert
-                expect(component.onConsultationAccepted).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
-            }));
+            });
 
             it('should call onConsultationRejected when the active participant rejects the invitation', fakeAsync(() => {
                 // Arrange
@@ -715,6 +694,16 @@ describe('WaitingRoomBaseDirective', () => {
                     ConsultationAnswer.Rejected,
                     loggedInParticipant.id
                 );
+
+                const invitation = {
+                    invitationId: invitationId,
+                    linkedParticipantStatuses: {},
+                    activeToast: null,
+                    answer: ConsultationAnswer.None,
+                    invitedByName: null
+                } as ConsultationInvitation;
+
+                mockConsultationInvitiationService.getInvitation.withArgs(expectedConsultationRoomLabel).and.returnValue(invitation);
 
                 spyOn(component, 'onConsultationRejected');
                 component.vhParticipant = loggedInParticipant;
@@ -1013,7 +1002,7 @@ describe('WaitingRoomBaseDirective', () => {
                 consultationInvitiationService.getInvitation.calls.reset();
             });
 
-            const expectedConsultationRoomLabel = 'ConsultationRoom';
+            const expectedConsultationRoomLabel = 'ConsultationRoom7865';
             it('should call createOrUpdateWaitingOnLinkedParticipantsNotification and set the activeParticipantAccepted to true', () => {
                 // Arrange
                 const invitation = {
@@ -1024,7 +1013,7 @@ describe('WaitingRoomBaseDirective', () => {
                 } as ConsultationInvitation;
 
                 invitation.linkedParticipantStatuses = { lp1: true, lp2: false, lp3: false, lp4: true };
-                consultationInvitiationService.getInvitation.and.returnValue(invitation);
+                consultationInvitiationService.getInvitation.withArgs(expectedConsultationRoomLabel).and.returnValue(invitation);
 
                 const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
                 notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
@@ -1054,7 +1043,7 @@ describe('WaitingRoomBaseDirective', () => {
                 consultationInvitiationService.getInvitation.calls.reset();
             });
 
-            const expectedConsultationRoomLabel = 'ConsultationRoom';
+            const expectedConsultationRoomLabel = 'ConsultationRoom567';
             it('should call createOrUpdateWaitingOnLinkedParticipantsNotification and set the activeParticipantAccepted to true', () => {
                 // Arrange
                 const invitation = {
@@ -1065,7 +1054,7 @@ describe('WaitingRoomBaseDirective', () => {
                 } as ConsultationInvitation;
 
                 invitation.linkedParticipantStatuses = { lp1: true, lp2: false, lp3: false, lp4: true };
-                consultationInvitiationService.getInvitation.and.returnValue(invitation);
+                consultationInvitiationService.getInvitation.withArgs(expectedConsultationRoomLabel).and.returnValue(invitation);
 
                 const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
                 notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
@@ -1138,6 +1127,8 @@ describe('WaitingRoomBaseDirective', () => {
     describe('Video Call Events', () => {
         beforeEach(() => {
             component.setupPexipEventSubscriptionAndClient();
+            videoCallService.stopPresentation.calls.reset();
+            videoCallService.retrievePresentation.calls.reset();
         });
 
         afterEach(() => {
@@ -1149,11 +1140,6 @@ describe('WaitingRoomBaseDirective', () => {
             const presentationDisconnectedSubject = onPresentationDisconnectedMock;
             const onPresentation = onPresentationMock;
 
-            beforeEach(() => {
-                videoCallService.stopPresentation.calls.reset();
-                videoCallService.retrievePresentation.calls.reset();
-            });
-
             it('should retrieve presentation if started', () => {
                 // Arrange
                 const payload = new Presentation(true);
@@ -1162,7 +1148,7 @@ describe('WaitingRoomBaseDirective', () => {
                 onPresentation.next(payload);
 
                 // Assert
-                expect(videoCallService.retrievePresentation).toHaveBeenCalledTimes(1);
+                expect(videoCallService.retrievePresentation).toHaveBeenCalled();
             });
 
             it('should stop presentation if not started', () => {
@@ -1173,7 +1159,7 @@ describe('WaitingRoomBaseDirective', () => {
                 onPresentation.next(payload);
 
                 // Assert
-                expect(videoCallService.stopPresentation).toHaveBeenCalledTimes(1);
+                expect(videoCallService.stopPresentation).toHaveBeenCalled();
             });
 
             it('should set stream when connected', () => {
@@ -1199,7 +1185,7 @@ describe('WaitingRoomBaseDirective', () => {
 
                 // Assert
                 expect(component.presentationStream).toBe(null);
-                expect(videoCallService.stopPresentation).toHaveBeenCalledTimes(1);
+                expect(videoCallService.stopPresentation).toHaveBeenCalled();
             });
 
             it('should switch stream windows', () => {

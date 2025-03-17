@@ -122,7 +122,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get isQuickLinkUser(): boolean {
-        return this.vhParticipant?.hearingRole === Role.QuickLinkObserver || this.vhParticipant?.hearingRole === Role.QuickLinkParticipant;
+        return (
+            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_OBSERVER ||
+            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_PARTICIPANT
+        );
     }
 
     get isVictim(): boolean {

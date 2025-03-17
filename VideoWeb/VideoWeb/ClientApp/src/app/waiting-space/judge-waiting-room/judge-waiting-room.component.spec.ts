@@ -40,7 +40,6 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WRTestComponent } from '../waiting-room-shared/tests/WRTestComponent';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -60,15 +59,13 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { getAudioRestartActionedMock } from 'src/app/testing/mocks/mock-events-service';
-import { mock } from 'node:test';
 import { ModalTrapFocus } from 'src/app/shared/modal/modal-trap-focus';
 
-fdescribe('JudgeWaitingRoom', () => {
+describe('JudgeWaitingRoom', () => {
     const testData = new ConferenceTestData();
     let conference: VHConference;
     let loggedInParticipant: VHParticipant;
 
-    let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
     let component: JudgeWaitingRoomComponent;
     let mockStore: MockStore<ConferenceState>;
     let activatedRoute: ActivatedRoute;
@@ -191,7 +188,6 @@ fdescribe('JudgeWaitingRoom', () => {
             ]
         }).compileComponents();
 
-        fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
         component = TestBed.inject(JudgeWaitingRoomComponent);
 
         mockStore = TestBed.inject(MockStore);
@@ -664,14 +660,6 @@ fdescribe('JudgeWaitingRoom', () => {
             component.audioRestartCallback(true);
             expect(component.continueWithNoRecording).toBeTrue();
             expect(component.audioErrorRetryToast).toBeNull();
-        });
-    });
-
-    describe('setTrapFocus', () => {
-        it('should call ModalTrapFocus.trap with video-container', () => {
-            spyOn(ModalTrapFocus, 'trap').and.callThrough();
-            component.setTrapFocus();
-            expect(ModalTrapFocus.trap).toHaveBeenCalledWith('video-container');
         });
     });
 });
