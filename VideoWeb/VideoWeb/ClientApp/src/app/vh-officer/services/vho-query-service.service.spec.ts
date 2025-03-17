@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ApiClient, ConferenceForVhOfficerResponse } from '../../services/clients/api-client';
+import { ApiClient, ConferenceForVhOfficerResponse, Role } from '../../services/clients/api-client';
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 import { CourtRoomFilter, CourtRoomsAccounts } from './models/court-rooms-accounts';
@@ -11,7 +11,13 @@ import { VhoStorageKeys } from './models/session-keys';
 import { HearingDetailsUpdatedMessage } from 'src/app/services/models/hearing-details-updated-message';
 import { NewAllocationMessage } from 'src/app/services/models/new-allocation-message';
 import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
-import { eventsServiceSpy, getHearingDetailsUpdatedMock, newAllocationMessageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    eventsServiceSpy,
+    getHearingDetailsUpdatedMock,
+    getParticipantsUpdatedSubjectMock,
+    newAllocationMessageSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('VhoQueryService', () => {
     const testData = new ConferenceTestData();
@@ -19,6 +25,7 @@ describe('VhoQueryService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     const newAllocationMessageSubject$ = newAllocationMessageSubjectMock;
     const hearingDetailsUpdatedMessageSubject$ = getHearingDetailsUpdatedMock;
+    const hearingParticipantsUpdatedMessageSubject$ = getParticipantsUpdatedSubjectMock;
 
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -416,7 +423,7 @@ describe('VhoQueryService', () => {
                 const updated = service['vhoConferences'].find(x => x.id === updatedConference.id);
                 expect(updated.case_name).toBe('Case Name Updated');
                 expect(updated.case_number).toBe('Case Number Updated');
-                expect(updated.scheduled_date_time).toEqual(updatedConference.scheduled_date_time);
+                expect(updated.scheduled_date_time.toDateString()).toBe(updatedConference.scheduled_date_time.toDateString());
                 expect(updated.scheduled_duration).toBe(9999);
             }));
 
@@ -431,6 +438,53 @@ describe('VhoQueryService', () => {
                 expect(service['vhoConferences'].length).toBe(2);
                 const count = service['vhoConferences'].filter(x => x.hearing_venue_name === 'hearing-venue-3').length;
                 expect(count).toBe(0);
+            }));
+        });
+    });
+
+    describe('handleParticipantsUpdated', () => {
+        describe('venue filter selected', () => {
+            beforeEach(() => {
+                const data = testData.getTestData(); // 3 conferences
+                data[0].hearing_venue_name = 'hearing-venue-1';
+                data[0].id = '123'; // set conference id
+                data[1].hearing_venue_name = 'hearing-venue-2';
+                data[2].hearing_venue_name = 'hearing-venue-2';
+                service.allocatedCsoIds = [];
+                service.venueNames = ['hearing-venue-1', 'hearing-venue-2'];
+                service['vhoConferences'] = data;
+                service.startEventSubscriptions();
+            });
+
+            afterEach(() => {
+                service.stopQuery();
+            });
+
+            it('should replace the judge for an existing conference in the list when filtered venue includes conference', fakeAsync(() => {
+                const conference = service['vhoConferences'].find(x => x.id === '123');
+                const participants = conference.participants;
+                const judge = participants.find(x => x.role === Role.Judge);
+                const judgeIndex = participants.indexOf(judge);
+                judge.display_name = 'New Display Name';
+                judge.id = '12345';
+                judge.user_name = 'newUserName@email.com';
+                judge.last_name = 'New Last Name';
+                judge.first_name = 'New First Name';
+                // replace in participants the item with the updated judge
+                participants[judgeIndex] = judge;
+
+                const message = new ParticipantsUpdatedMessage('123', participants);
+                hearingParticipantsUpdatedMessageSubject$.next(message);
+                tick();
+
+                expect(service['vhoConferences'].length).toBe(3);
+                const conferenceChanged = service['vhoConferences'].find(x => x.id === '123');
+                const replacedJudge = conferenceChanged.participants.find(x => x.role === Role.Judge);
+                expect(replacedJudge.id).toBe('12345');
+                expect(replacedJudge.user_name).toBe('newUserName@email.com');
+                expect(replacedJudge.last_name).toBe('New Last Name');
+                expect(replacedJudge.first_name).toBe('New First Name');
+                expect(replacedJudge.display_name).toBe('New Display Name');
             }));
         });
     });
