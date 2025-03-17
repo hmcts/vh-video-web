@@ -1,330 +1,265 @@
-// import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-// import {
-//     ConferenceResponse,
-//     ConferenceStatus,
-//     LoggedParticipantResponse,
-//     ParticipantResponse,
-//     ParticipantStatus
-// } from 'src/app/services/clients/api-client';
-// import { Hearing } from 'src/app/shared/models/hearing';
-// import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-// import {
-//     clockService,
-//     consultationInvitiationService,
-//     consultationService,
-//     deviceTypeService,
-//     errorService,
-//     eventsService,
-//     focusService,
-//     globalConference,
-//     globalParticipant,
-//     hideComponentsService,
-//     initAllWRDependencies,
-//     logger,
-//     mockConferenceStore,
-//     notificationSoundsService,
-//     notificationToastrService,
-//     roomClosingToastrService,
-//     router,
-//     titleService,
-//     videoCallService,
-//     launchDarklyService,
-//     videoWebService
-// } from '../waiting-room-shared/tests/waiting-room-base-setup';
-// import { JohWaitingRoomComponent } from './joh-waiting-room.component';
-// import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-// import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-// import { of, Subject } from 'rxjs';
-// import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-// import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
-// import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { of, Subject } from 'rxjs';
 
-// describe('JohWaitingRoomComponent', () => {
-//     let component: JohWaitingRoomComponent;
-//     const conferenceTestData = new ConferenceTestData();
-//     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { ClockService } from 'src/app/services/clock.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
+import { VideoCallService } from '../services/video-call.service';
+import { VHConference, VHParticipant } from '../store/models/vh-conference';
+import * as ConferenceSelectors from '../store/selectors/conference.selectors';
+import { ConferenceState } from '../store/reducers/conference.reducer';
+import {
+    consultationInvitiationService,
+    consultationService,
+    deviceTypeService,
+    errorService,
+    eventsService,
+    initAllWRDependencies,
+    launchDarklyService,
+    notificationSoundsService,
+    notificationToastrService,
+    roomClosingToastrService,
+    router,
+    titleService,
+    videoCallService,
+    videoWebService
+} from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { ConferenceStatus, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { MockComponent } from 'ng-mocks';
+import { TranslateService } from '@ngx-translate/core';
+import { Title } from 'chart.js';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ConsultationErrorComponent } from '../consultation-modals/consultation-error/consultation-error.component';
+import { ConsultationLeaveComponent } from '../consultation-modals/consultation-leave/consultation-leave.component';
+import { ConsultationInvitationService } from '../services/consultation-invitation.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { VHHearing } from 'src/app/shared/models/hearing.vh';
+import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 
-//     beforeAll(() => {
-//         initAllWRDependencies();
-//     });
+describe('JohWaitingRoomComponent', () => {
+    const testData = new ConferenceTestData();
+    let conference: VHConference;
+    let loggedInParticipant: VHParticipant;
 
-//     afterAll(() => {
-//         mockConferenceStore.resetSelectors();
-//     });
+    let component: JohWaitingRoomComponent;
+    let mockStore: MockStore<ConferenceState>;
+    let activatedRoute: ActivatedRoute;
 
-//     const logged = new LoggedParticipantResponse({
-//         participant_id: globalParticipant.id,
-//         display_name: globalParticipant.display_name,
-//         role: globalParticipant.role
-//     });
-//     const activatedRoute = <any>{
-//         snapshot: { data: { loggedUser: logged } }
-//     };
+    const mockLogger = new MockLogger();
 
-//     const translateService = translateServiceSpy;
+    let mockVideoCallService: jasmine.SpyObj<VideoCallService>;
+    let mockEventsService: jasmine.SpyObj<EventsService>;
+    let mockErrorService: jasmine.SpyObj<ErrorService>;
+    let mockConsultationService: jasmine.SpyObj<ConsultationService>;
+    let mockNotificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
+    let mockNotificationToastrService: jasmine.SpyObj<NotificationToastrService>;
+    let mockDeviceTypeService: jasmine.SpyObj<DeviceTypeService>;
+    let mockRoomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
+    let mockTranslationService = translateServiceSpy;
+    let mockRouter: jasmine.SpyObj<Router>;
+    let mockClockService: jasmine.SpyObj<ClockService>;
+    const clockSubject = new Subject<Date>();
+    let mockConsultationInvitiationService = consultationInvitiationService;
+    let mockTitleService = titleService;
+    let mockLaunchDarklyService: jasmine.SpyObj<LaunchDarklyService>;
+    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let shouldUnloadSubject: Subject<void>;
+    let shouldReloadSubject: Subject<void>;
+    let isAudioOnlySubject: Subject<boolean>;
+    let mockUserMediaService: jasmine.SpyObj<UserMediaService>;
 
-//     const unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
-//         'UnloadDetectorService',
-//         [],
-//         ['shouldUnload', 'shouldReload']
-//     );
-//     const shouldUnloadSubject = new Subject<void>();
-//     const shouldReloadSubject = new Subject<void>();
-//     getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
-//     getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldReload').and.returnValue(shouldReloadSubject.asObservable());
+    beforeAll(() => {
+        initAllWRDependencies();
 
-//     participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
+            'UnloadDetectorService',
+            [],
+            ['shouldUnload', 'shouldReload']
+        );
+        shouldUnloadSubject = new Subject<void>();
+        shouldReloadSubject = new Subject<void>();
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldReload').and.returnValue(shouldReloadSubject.asObservable());
 
-//     beforeEach(() => {
-//         launchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, false).and.returnValue(of(true));
-//         translateService.instant.calls.reset();
-//         component = new JohWaitingRoomComponent(
-//             activatedRoute,
-//             videoWebService,
-//             eventsService,
-//             logger,
-//             errorService,
-//             videoCallService,
-//             deviceTypeService,
-//             router,
-//             consultationService,
-//             notificationSoundsService,
-//             notificationToastrService,
-//             roomClosingToastrService,
-//             clockService,
-//             translateService,
-//             consultationInvitiationService,
-//             unloadDetectorServiceSpy,
-//             participantRemoteMuteStoreServiceSpy,
-//             titleService,
-//             hideComponentsService,
-//             focusService,
-//             launchDarklyService,
-//             mockConferenceStore
-//         );
-//         const conference = new ConferenceResponse(Object.assign({}, globalConference));
-//         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
-//         component.hearing = new Hearing(conference);
-//         component.conference = conference;
-//         component.participant = participant;
-//         component.connected = true; // assume connected to pexip
-//         videoWebService.getConferenceById.calls.reset();
-//         clockService.getClock.calls.reset();
-//     });
+        conference = mapConferenceToVHConference(testData.getConferenceDetailNow());
+        conference.participants = conference.participants.map(x => {
+            x.status = ParticipantStatus.Available;
+            return x;
+        });
+        conference.countdownComplete = false;
 
-//     describe('get allowAudioOnlyToggle', () => {
-//         it('should return false if the conference is null', () => {
-//             // Arrange
-//             component.conference = null;
+        // TOOD: clean up above to delcaration only since the values are only set AFTER initAllWRDependencies is called
+        mockVideoCallService = videoCallService;
+        mockEventsService = eventsService;
+        mockErrorService = errorService;
+        mockConsultationService = consultationService;
+        mockNotificationSoundsService = notificationSoundsService;
+        mockNotificationToastrService = notificationToastrService;
+        mockDeviceTypeService = deviceTypeService;
+        mockRoomClosingToastrService = roomClosingToastrService;
+        mockRouter = router;
+        mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
+        mockClockService.getClock.and.returnValue(clockSubject.asObservable());
+        mockConsultationInvitiationService = consultationInvitiationService;
+        mockTitleService = titleService;
+        mockLaunchDarklyService = launchDarklyService;
+        mockTranslationService = translateServiceSpy;
+        mockUserMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(mockUserMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+    });
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
+    beforeEach(async () => {
+        mockLaunchDarklyService.getFlag.withArgs(FEATURE_FLAGS.instantMessaging, jasmine.any(Boolean)).and.returnValue(of(true));
 
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
+        loggedInParticipant = conference.participants.find(x => x.role === Role.Individual);
 
-//         it('should return false if the conference is undefined', () => {
-//             // Arrange
-//             component.conference = undefined;
+        const logged = new LoggedParticipantResponse({
+            display_name: loggedInParticipant.displayName,
+            role: loggedInParticipant.role,
+            participant_id: loggedInParticipant.id
+        });
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: conference.id }) }
+        };
 
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
+        mockStore = createMockStore({
+            initialState: {
+                currentConference: conference,
+                loggedInParticipant: loggedInParticipant,
+                countdownComplete: false,
+                availableRooms: []
+            }
+        });
 
-//         it('should return false if the participant is null', () => {
-//             // Arrange
-//             component.participant = null;
+        await TestBed.configureTestingModule({
+            declarations: [
+                JohWaitingRoomComponent,
+                MockComponent(ModalComponent),
+                MockComponent(ConsultationLeaveComponent),
+                MockComponent(ConsultationErrorComponent),
+                MockComponent(ConsultationLeaveComponent)
+            ],
+            providers: [
+                JohWaitingRoomComponent,
+                { provide: ActivatedRoute, useValue: activatedRoute },
+                { provide: VideoWebService, useValue: videoWebService },
+                { provide: EventsService, useValue: mockEventsService },
+                { provide: Logger, useValue: mockLogger },
+                { provide: ErrorService, useValue: mockErrorService },
+                { provide: VideoCallService, useValue: mockVideoCallService },
+                { provide: ConsultationService, useValue: mockConsultationService },
+                { provide: NotificationSoundsService, useValue: mockNotificationSoundsService },
+                { provide: NotificationToastrService, useValue: mockNotificationToastrService },
+                { provide: DeviceTypeService, useValue: mockDeviceTypeService },
+                { provide: Router, useValue: mockRouter },
+                { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
+                { provide: ClockService, useValue: mockClockService },
+                { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
+                { provide: Title, useValue: mockTitleService },
+                { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
+                { provide: TranslateService, useValue: mockTranslationService },
+                { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
+                { provide: UserMediaService, useValue: mockUserMediaService },
+                provideMockStore()
+            ]
+        }).compileComponents();
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
+        component = TestBed.inject(JohWaitingRoomComponent);
 
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
+        mockStore = TestBed.inject(MockStore);
+        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
+        mockStore.overrideSelector(ConferenceSelectors.getCountdownComplete, conference.countdownComplete);
+        mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+    });
 
-//         it('should return false if the participant is undefined', () => {
-//             // Arrange
-//             component.participant = undefined;
+    it('should create', fakeAsync(() => {
+        component.ngOnInit();
+        tick();
+        expect(component).toBeTruthy();
+    }));
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
+    describe('allowAudioOnlyToggle', () => {
+        it('should return true when particiant is not in a consultation and not in a hearing', () => {
+            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.Available };
+            expect(component.allowAudioOnlyToggle).toBeTrue();
+        });
 
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
+        it('should return false when particiant is in a consultation', () => {
+            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InConsultation };
+            expect(component.allowAudioOnlyToggle).toBeFalse();
+        });
 
-//         it('should return false if the participant is InConsultation', () => {
-//             // Arrange
-//             component.participant.status = ParticipantStatus.InConsultation;
+        it('should return false when particiant is in a hearing', () => {
+            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InHearing };
+            expect(component.allowAudioOnlyToggle).toBeFalse();
+        });
+    });
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
+    const getConferenceStatusTextTestCases = [
+        { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
+        {
+            conference: testData.getConferenceDetailPast(),
+            status: ConferenceStatus.InSession,
+            expected: 'joh-waiting-room.is-in-session'
+        },
+        {
+            conference: testData.getConferenceDetailPast(),
+            status: ConferenceStatus.Paused,
+            expected: 'joh-waiting-room.is-paused'
+        },
+        {
+            conference: testData.getConferenceDetailPast(),
+            status: ConferenceStatus.Suspended,
+            expected: 'joh-waiting-room.is-suspended'
+        },
+        {
+            conference: testData.getConferenceDetailPast(),
+            status: ConferenceStatus.Closed,
+            expected: 'joh-waiting-room.is-closed'
+        }
+    ];
 
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
+    getConferenceStatusTextTestCases.forEach(test => {
+        it(`should return hearing status text '${test.expected}'`, () => {
+            const vhConference = mapConferenceToVHConference(test.conference);
+            component.hearing = new VHHearing(vhConference);
+            component.hearing.getConference().status = test.status;
+            expect(component.getConferenceStatusText()).toBe(test.expected);
+        });
+    });
 
-//         it('should return false if the participant is InHearing', () => {
-//             // Arrange
-//             component.participant.status = ParticipantStatus.InHearing;
+    const timeClassTestCases = [
+        { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: 'hearing-on-time' },
+        { conference: testData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'hearing-on-time' },
+        { conference: testData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'hearing-on-time' },
+        { conference: testData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'hearing-delayed' },
+        { conference: testData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'hearing-on-time' }
+    ];
 
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
-
-//             // Arrange
-//             expect(result).toBeFalse();
-//         });
-
-//         it('should return true if the participant is Joining', () => {
-//             // Arrange
-//             component.participant.status = ParticipantStatus.Joining;
-
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
-
-//             // Arrange
-//             expect(result).toBeTrue();
-//         });
-
-//         it('should return true if the participant is Available', () => {
-//             // Arrange
-//             component.participant.status = ParticipantStatus.Available;
-
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
-
-//             // Arrange
-//             expect(result).toBeTrue();
-//         });
-
-//         it('should return true if the participant is Disconnected', () => {
-//             // Arrange
-//             component.participant.status = ParticipantStatus.Disconnected;
-
-//             // Act
-//             const result = component.allowAudioOnlyToggle;
-
-//             // Arrange
-//             expect(result).toBeTrue();
-//         });
-//     });
-
-//     afterEach(() => {
-//         if (component.eventHubSubscription$) {
-//             component.ngOnDestroy();
-//         }
-//     });
-
-//     it('should show audio only toggle', fakeAsync(() => {
-//         component.conference = globalConference;
-//         component.participant.status = ParticipantStatus.Available;
-//         const result = component.allowAudioOnlyToggle;
-
-//         expect(result).toBeTrue();
-//     }));
-
-//     describe('ngOnInit', () => {
-//         beforeEach(() => {
-//             spyOn(component.eventHubSubscription$, 'add').and.callThrough();
-//         });
-
-//         it('should init hearing alert and subscribers', fakeAsync(() => {
-//             component.ngOnInit();
-//             flushMicrotasks();
-//             tick(100);
-//             expect(component.eventHubSubscription$).toBeDefined();
-//             expect(component.videoCallSubscription$).toBeDefined();
-//             expect(component.displayDeviceChangeModal).toBeFalsy();
-//             expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
-//             assertSetUpSubscribers();
-//         }));
-
-//         it('should show warning when user is on iPhone', fakeAsync(() => {
-//             deviceTypeService.isIphone.and.returnValue(true);
-//             component.ngOnInit();
-//             tick();
-
-//             expect(component.showWarning).toBeTrue();
-//         }));
-
-//         it('should show warning when user is on iPad', fakeAsync(() => {
-//             deviceTypeService.isIpad.and.returnValue(true);
-//             component.ngOnInit();
-//             tick();
-
-//             expect(component.showWarning).toBeTrue();
-//         }));
-//     });
-
-//     describe('dismissWarning', () => {
-//         beforeEach(() => {
-//             spyOn(component.eventHubSubscription$, 'add').and.callThrough();
-//         });
-
-//         it('should hide warning and start subscribers', fakeAsync(() => {
-//             component.showWarning = true;
-//             component.dismissWarning();
-//             tick();
-
-//             expect(component.showWarning).toBeFalse();
-//             assertSetUpSubscribers();
-//         }));
-//     });
-
-//     function assertSetUpSubscribers() {
-//         expect(clockService.getClock).toHaveBeenCalled();
-//         expect(component.eventHubSubscription$.add).toHaveBeenCalled();
-//     }
-
-//     const getConferenceStatusTextTestCases = [
-//         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-//         {
-//             conference: conferenceTestData.getConferenceDetailPast(),
-//             status: ConferenceStatus.InSession,
-//             expected: 'joh-waiting-room.is-in-session'
-//         },
-//         {
-//             conference: conferenceTestData.getConferenceDetailPast(),
-//             status: ConferenceStatus.Paused,
-//             expected: 'joh-waiting-room.is-paused'
-//         },
-//         {
-//             conference: conferenceTestData.getConferenceDetailPast(),
-//             status: ConferenceStatus.Suspended,
-//             expected: 'joh-waiting-room.is-suspended'
-//         },
-//         {
-//             conference: conferenceTestData.getConferenceDetailPast(),
-//             status: ConferenceStatus.Closed,
-//             expected: 'joh-waiting-room.is-closed'
-//         }
-//     ];
-
-//     getConferenceStatusTextTestCases.forEach(test => {
-//         it(`should return hearing status text '${test.expected}'`, () => {
-//             component.hearing = new Hearing(test.conference);
-//             component.hearing.getConference().status = test.status;
-//             expect(component.getConferenceStatusText()).toBe(test.expected);
-//         });
-//     });
-
-//     const timeClassTestCases = [
-//         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: 'hearing-on-time' },
-//         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'hearing-on-time' },
-//         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'hearing-on-time' },
-//         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'hearing-delayed' },
-//         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'hearing-on-time' }
-//     ];
-
-//     timeClassTestCases.forEach(test => {
-//         it('should return "hearing-delayed" class if suspended and "hearing-on-time" class if not suspended', () => {
-//             component.hearing = new Hearing(test.conference);
-//             component.hearing.getConference().status = test.status;
-//             expect(component.getCurrentTimeClass()).toBe(test.expected);
-//         });
-//     });
-// });
+    timeClassTestCases.forEach(test => {
+        it('should return "hearing-delayed" class if suspended and "hearing-on-time" class if not suspended', () => {
+            const vhConference = mapConferenceToVHConference(test.conference);
+            component.hearing = new VHHearing(vhConference);
+            component.hearing.getConference().status = test.status;
+            expect(component.getCurrentTimeClass()).toBe(test.expected);
+        });
+    });
+});

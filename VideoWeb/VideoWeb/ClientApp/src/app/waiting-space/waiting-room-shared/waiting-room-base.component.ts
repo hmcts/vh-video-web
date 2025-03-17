@@ -824,7 +824,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.consultationService.displayConsultationLeaveModal();
         // focusing on the button
         const elm = document.getElementById(this.CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT);
-        elm.focus();
+        elm?.focus();
     }
 
     switchStreamWindows(): void {
