@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
 import { of, Subject } from 'rxjs';
@@ -59,7 +59,6 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { getAudioRestartActionedMock } from 'src/app/testing/mocks/mock-events-service';
-import { ModalTrapFocus } from 'src/app/shared/modal/modal-trap-focus';
 
 describe('JudgeWaitingRoom', () => {
     const testData = new ConferenceTestData();

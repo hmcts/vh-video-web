@@ -52,7 +52,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
-import { ModalTrapFocus } from 'src/app/shared/modal/modal-trap-focus';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 

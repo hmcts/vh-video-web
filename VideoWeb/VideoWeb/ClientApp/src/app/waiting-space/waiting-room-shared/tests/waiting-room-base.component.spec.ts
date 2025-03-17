@@ -671,7 +671,7 @@ describe('WaitingRoomBaseDirective', () => {
         describe('on ConsultationRequestResponseMessage', () => {
             const primaryParticipant = mapParticipantToVHParticipant(participantsLinked[0]);
             const linkedParticipant = mapParticipantToVHParticipant(participantsLinked[1]);
-            let expectedConsultationRoomLabel = 'ConsultationRoom989';
+            const expectedConsultationRoomLabel = 'ConsultationRoom989';
             const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
             const invitationId = Guid.create().toString();
 
