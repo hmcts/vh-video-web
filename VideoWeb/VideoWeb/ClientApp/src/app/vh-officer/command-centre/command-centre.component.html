@@ -26,14 +26,14 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <div class="conference-list" tabindex="0" role="region" aria-label="Hearing list">
+    <section class="conference-list" tabindex="0" aria-label="Hearing list">
       <app-vho-hearing-list
         #conferenceList
         [conferences]="hearings"
         (selectedConference)="onConferenceSelected($event)"
       >
       </app-vho-hearing-list>
-    </div>
+    </section>
     <div *ngIf="selectedHearing" class="selected-menu-content" [ngSwitch]="selectedMenu">
       <ng-container *ngSwitchCase="menuOption.Hearing">
         <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
