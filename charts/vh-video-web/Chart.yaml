@@ -2,12 +2,12 @@
 apiVersion: v2
 name: vh-video-web
 home: https://github.com/hmcts/vh-video-web
-version: 0.0.24
+version: 0.0.25
 description: Helm Chart for Video Hearing video-web
 maintainers:
   - name: VH Devops
 
 dependencies:
   - name: java
-    version: 5.2.1
-    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+    version: 5.3.0
+    repository: oci://hmctspublic.azurecr.io/helm
