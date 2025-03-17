@@ -94,7 +94,7 @@ describe('WaitingRoomBaseDirective', () => {
     let mockStore: MockStore<ConferenceState>;
     let activatedRoute: ActivatedRoute;
 
-    let mockLogger = new MockLogger();
+    const mockLogger = new MockLogger();
 
     let mockVideoCallService = videoCallService;
     let mockEventsService = eventsService;
@@ -463,7 +463,7 @@ describe('WaitingRoomBaseDirective', () => {
         });
 
         describe('onConsultationRejected', () => {
-            const expectedConsultationRoomLabel = 'ConsultationRoom';
+            let expectedConsultationRoomLabel = 'ConsultationRoom';
 
             beforeEach(() => {
                 consultationInvitiationService.removeInvitation.calls.reset();
@@ -481,8 +481,8 @@ describe('WaitingRoomBaseDirective', () => {
 
             describe('onLinkedParticiantAcceptedConsultationInvite', () => {
                 const linkedParticipant = participantsLinked[1];
-                const expectedConsultationRoomLabel = 'ConsultationRoom';
-                const invitation = {} as ConsultationInvitation;
+                expectedConsultationRoomLabel = 'ConsultationRoom';
+                let invitation = {} as ConsultationInvitation;
 
                 beforeEach(() => {
                     notificationToastrService.showWaitingForLinkedParticipantsToAccept.calls.reset();
@@ -494,7 +494,7 @@ describe('WaitingRoomBaseDirective', () => {
 
                 it('should NOT make any calls and should return when the invitation does NOT have an invitation id', () => {
                     // Arrange
-                    const invitation = {
+                    invitation = {
                         invitationId: null,
                         linkedParticipantStatuses: {},
                         activeToast: null,
