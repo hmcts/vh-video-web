@@ -162,6 +162,5 @@ module.exports = {
                 }
             }
         ]
-        // 'require-await': 'error'
     }
 };
