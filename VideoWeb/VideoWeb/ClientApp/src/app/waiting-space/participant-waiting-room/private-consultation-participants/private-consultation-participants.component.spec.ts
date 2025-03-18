@@ -292,7 +292,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 room: { label: 'not-test-room', locked: false }
             } as VHEndpoint;
 
-            //Has permissions
+            // Has permissions
             component.participantEndpoints.push({ id: endpoint.id } as VHEndpoint);
 
             expect(component.canCallEndpoint(vhEndpoint)).toBeTrue();
