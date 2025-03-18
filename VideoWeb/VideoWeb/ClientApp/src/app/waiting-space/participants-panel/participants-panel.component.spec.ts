@@ -20,13 +20,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import {
-    ConferenceResponse,
-    ParticipantForUserResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from '../../services/clients/api-client';
+import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
