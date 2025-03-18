@@ -974,6 +974,7 @@ describe('VideoCallEffects', () => {
             participant = vhConference.participants.find(x => x.role === Role.Judge);
             participant.status = ParticipantStatus.InHearing;
             participant.localMediaStatus = { isCameraOff: true, isMicrophoneMuted: false };
+            participant.pexipInfo = { ...participant.pexipInfo, uuid: '1234', isRemoteMuted: false, role: 'chair' };
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
         });

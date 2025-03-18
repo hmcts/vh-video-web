@@ -168,7 +168,9 @@ export class ConferenceEffects {
                 ]),
                 filter(
                     ([_, _conference, loggedInParticipant, pexipConference]) =>
-                        loggedInParticipant.status === ParticipantStatus.InHearing && !pexipConference.guestsMuted
+                        loggedInParticipant.status === ParticipantStatus.InHearing &&
+                        !pexipConference.guestsMuted &&
+                        loggedInParticipant.pexipInfo?.role === 'chair'
                 ),
                 filter(([_, conference]) => {
                     const inHearingParticipants = conference.participants.filter(
@@ -204,8 +206,11 @@ export class ConferenceEffects {
                     this.store.select(ConferenceSelectors.getPexipConference)
                 ]),
                 filter(
-                    ([_, _conference, loggedInParticipant, pexipConference]) =>
-                        loggedInParticipant.status === ParticipantStatus.InHearing && pexipConference.guestsMuted
+                    ([_, conference, loggedInParticipant, pexipConference]) =>
+                        loggedInParticipant.status === ParticipantStatus.InHearing &&
+                        loggedInParticipant.pexipInfo?.role === 'chair' &&
+                        pexipConference.guestsMuted &&
+                        conference.countdownComplete
                 ),
                 filter(([_, conference]) => {
                     const inHearingParticipants = conference.participants.filter(
@@ -240,8 +245,17 @@ export class ConferenceEffects {
         () =>
             this.actions$.pipe(
                 ofType(ConferenceActions.upsertPexipConference),
-                concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)),
-                filter(([action, _]) => !action.pexipConference.guestsMuted),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                filter(
+                    ([action, activeConference, loggedInParticipant]) =>
+                        !action.pexipConference.guestsMuted &&
+                        !!activeConference &&
+                        !!loggedInParticipant &&
+                        loggedInParticipant.pexipInfo?.role === 'chair'
+                ),
                 tap(([_, conference]) => {
                     this.logger.info(`${this.loggerPrefix} Unlocking any remote muted participants as conference is unlocked`);
                     conference.participants

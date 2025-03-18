@@ -5,7 +5,6 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
@@ -318,11 +317,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             endpoints.filter(x => x.status === EndpointStatus.InConsultation).length;
 
         this.nonEndpointParticipants = this.mapper.mapFromVHParticipants(participants);
-        this.endpointParticipants = endpoints.map(x => {
-            const ep = new VideoEndpointPanelModel(x);
-            ep.updateTransferringInStatus(x.transferDirection === TransferDirection.In);
-            return ep;
-        });
+        this.endpointParticipants = this.mapper.mapFomVHEndpoint(endpoints);
         this.updateParticipants();
     }
 

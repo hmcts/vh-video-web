@@ -389,6 +389,9 @@ describe('ConferenceEffects', () => {
             const vhConference = mapConferenceToVHConference(conference);
             const loggedInParticipant = vhConference.participants[0];
             loggedInParticipant.status = ParticipantStatus.InHearing;
+            loggedInParticipant.pexipInfo = {
+                role: 'chair'
+            } as VHPexipParticipant;
 
             const pexipConference: VHPexipConference = {
                 guestsMuted: false,
@@ -397,7 +400,7 @@ describe('ConferenceEffects', () => {
             };
             vhConference.participants.forEach(p => {
                 p.status = ParticipantStatus.InHearing;
-                return (p.pexipInfo = { isRemoteMuted: true } as VHPexipParticipant);
+                return (p.pexipInfo = { ...p.pexipInfo, isRemoteMuted: true } as VHPexipParticipant);
             });
             vhConference.endpoints.forEach(e => {
                 e.status = EndpointStatus.InHearing;
@@ -430,12 +433,16 @@ describe('ConferenceEffects', () => {
             };
             const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
+            vhConference.countdownComplete = true;
             const loggedInParticipant = vhConference.participants[0];
             loggedInParticipant.status = ParticipantStatus.InHearing;
+            loggedInParticipant.pexipInfo = {
+                role: 'chair'
+            } as VHPexipParticipant;
 
             vhConference.participants.forEach(p => {
                 p.status = ParticipantStatus.InHearing;
-                return (p.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+                return (p.pexipInfo = { ...p.pexipInfo, isRemoteMuted: false } as VHPexipParticipant);
             });
             vhConference.endpoints.forEach(e => {
                 e.status = EndpointStatus.InHearing;
@@ -463,9 +470,16 @@ describe('ConferenceEffects', () => {
             // arrange
             const conference = new ConferenceTestData().getConferenceDetailNow();
             const vhConference = mapConferenceToVHConference(conference);
+
+            const loggedInParticipant = vhConference.participants.find(x => x.role === Role.Judge);
+            loggedInParticipant.status = ParticipantStatus.InHearing;
+            loggedInParticipant.pexipInfo = {
+                role: 'chair'
+            } as VHPexipParticipant;
+
             vhConference.participants.forEach(p => {
                 p.status = ParticipantStatus.InHearing;
-                return (p.pexipInfo = { isRemoteMuted: false } as VHPexipParticipant);
+                return (p.pexipInfo = { ...p.pexipInfo, isRemoteMuted: false } as VHPexipParticipant);
             });
             vhConference.endpoints.forEach(e => {
                 e.status = EndpointStatus.InHearing;
@@ -475,6 +489,7 @@ describe('ConferenceEffects', () => {
             vhConference.endpoints[0].pexipInfo.isRemoteMuted = true;
 
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
 
             const action = ConferenceActions.upsertPexipConference({
                 pexipConference: {

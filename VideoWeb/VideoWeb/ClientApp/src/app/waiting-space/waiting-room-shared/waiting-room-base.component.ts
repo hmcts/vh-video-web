@@ -426,7 +426,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         };
         try {
             await this.setupPexipEventSubscriptionAndClient();
-            this.call();
+            await this.call();
 
             this.eventService
                 .onEventsHubReady()
@@ -511,6 +511,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     async call() {
         if (!this.eventService.eventHubIsConnected) {
+            this.logger.warn(`${this.loggerPrefix} EventHub is not connected, waiting for connection before it makes a call to pexip`);
             return;
         }
 

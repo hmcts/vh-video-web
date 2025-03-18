@@ -49,6 +49,7 @@ import {
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { VHEndpoint } from '../store/models/vh-conference';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -56,7 +57,7 @@ describe('ParticipantsPanelComponent', () => {
     let conference: ConferenceResponse;
     let conferenceId: string;
     let participants: ParticipantForUserResponse[];
-    let endpoints: VideoEndpointResponse[];
+    let endpoints: VHEndpoint[];
 
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
@@ -87,7 +88,7 @@ describe('ParticipantsPanelComponent', () => {
         participants = testData.getListOfParticipants();
         participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
         conference.participants = participants;
-        endpoints = conference.endpoints;
+        endpoints = conference.endpoints.map(x => mapEndpointToVHEndpoint(x));
 
         initialState = {
             currentConference: mapConferenceToVHConference(conference),
@@ -139,10 +140,7 @@ describe('ParticipantsPanelComponent', () => {
 
         mockConferenceStore = TestBed.inject(MockStore);
 
-        mockConferenceStore.overrideSelector(
-            ConferenceSelectors.getEndpoints,
-            endpoints.map(x => mapEndpointToVHEndpoint(x))
-        );
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, endpoints);
 
         mockConferenceStore.overrideSelector(
             ConferenceSelectors.getParticipants,

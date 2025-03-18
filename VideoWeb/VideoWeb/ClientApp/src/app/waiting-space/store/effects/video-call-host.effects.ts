@@ -115,14 +115,17 @@ export class VideoCallHostEffects {
                 concatLatestFrom(_ => this.store.select(ConferenceSelectors.getActiveConference)),
                 filter(([_, conference]) => !!conference),
                 tap(([action, conference]) => {
-                    const participant = conference.participants.find(x => x.id === action.participantId);
-                    this.logger.info(`${this.loggerPrefix} Remote mute a participant`, {
+                    let pexipParticipant = conference.participants.find(x => x.id === action.participantId)?.pexipInfo;
+
+                    if (!pexipParticipant) {
+                        pexipParticipant = conference.endpoints.find(x => x.id === action.participantId)?.pexipInfo;
+                    }
+                    this.logger.info(`${this.loggerPrefix} Unlocking participant remote mute`, {
                         conferenceId: conference.id,
                         participantId: action.participantId,
-                        pexipUUID: participant.pexipInfo.uuid
+                        pexipUUID: pexipParticipant.uuid
                     });
-
-                    this.videoCallService.muteParticipant(participant.pexipInfo.uuid, false, conference.id, participant.id);
+                    this.videoCallService.muteParticipant(pexipParticipant.uuid, false, conference.id, action.participantId);
                 })
             ),
         { dispatch: false }
@@ -136,13 +139,17 @@ export class VideoCallHostEffects {
                 concatLatestFrom(_ => this.store.select(ConferenceSelectors.getActiveConference)),
                 filter(([_, conference]) => !!conference),
                 tap(([action, conference]) => {
-                    const participant = conference.participants.find(x => x.id === action.participantId);
+                    let pexipParticipant = conference.participants.find(x => x.id === action.participantId)?.pexipInfo;
+
+                    if (!pexipParticipant) {
+                        pexipParticipant = conference.endpoints.find(x => x.id === action.participantId)?.pexipInfo;
+                    }
                     this.logger.info(`${this.loggerPrefix} Toggling participant remote mute`, {
                         conferenceId: conference.id,
                         participantId: action.participantId,
-                        pexipUUID: participant.pexipInfo.uuid
+                        pexipUUID: pexipParticipant.uuid
                     });
-                    this.videoCallService.muteParticipant(participant.pexipInfo.uuid, true, conference.id, participant.id);
+                    this.videoCallService.muteParticipant(pexipParticipant.uuid, true, conference.id, action.participantId);
                 })
             ),
         { dispatch: false }
