@@ -30,7 +30,7 @@ import {
     Role
 } from 'src/app/services/clients/api-client';
 
-fdescribe('PrivateConsultationParticipantsComponent', () => {
+describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
     let conference: VHConference;
     const mockOidcSecurityService = new MockOidcSecurityService();
