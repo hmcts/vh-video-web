@@ -314,7 +314,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 `${this.loggerPrefix} Attempted to disconnect from pexip before the client had initialised. Moving on from self-test`
             );
         } finally {
-            this.userMediaStreamService.closeCurrentStream();
             this.closeMicStreams();
             this.incomingStream = null;
             this.outgoingStream = null;
@@ -372,7 +371,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        this.userMediaStreamService.closeCurrentStream();
         this.outgoingStream = null;
         this.testCompleted.emit(this.testCallResult);
     }

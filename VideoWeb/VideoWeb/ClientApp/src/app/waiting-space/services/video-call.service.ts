@@ -121,7 +121,7 @@ export class VideoCallService {
 
         this.userMediaService.initialise();
         this.userMediaStreamService.createAndPublishStream();
-        this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
+        this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream for pexip as part of client setup`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
         this.logMediaStreamInfo();
 
@@ -247,14 +247,13 @@ export class VideoCallService {
     }
 
     disconnectFromCall() {
-        if (this.pexipAPI) {
+        if (this.pexipAPI?.call) {
             this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
-            this.userMediaStreamService.closeCurrentStream();
         } else {
-            throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
+            this.logger.warn(`${this.loggerPrefix} No active call to disconnect from.`);
         }
     }
 
@@ -615,7 +614,7 @@ export class VideoCallService {
             call_type: this.pexipAPI.call_type
         });
         if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(
+            this.logger.debug(
                 `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
             );
             this.justRenegotiated = false;
@@ -687,10 +686,12 @@ export class VideoCallService {
     }
 
     private cleanUpConnection() {
-        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
-        this.hasDisconnected$.next();
+        this.logger.info(`${this.loggerPrefix} Cleaning up connection.`);
+        this.hasDisconnected$.next(null);
         this.hasDisconnected$.complete();
         this.heartbeatService.stopHeartbeat();
+        this.logger.info(`${this.loggerPrefix} Re-creating a new instance of Pexip API client in preparation for next call.`);
+        this.userMediaStreamService.createAndPublishStream();
         this.setupClient(this.supplier);
     }
 

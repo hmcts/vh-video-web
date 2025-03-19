@@ -131,8 +131,8 @@ export class ConferenceEffects {
                     const inHearingParticipants = conference.participants.filter(p => p.status === ParticipantStatus.InHearing);
                     const inHearingEndpoints = conference.endpoints.filter(e => e.status === EndpointStatus.InHearing);
 
-                    const allParticipantsMuted = inHearingParticipants.every(p => p.pexipInfo.isRemoteMuted);
-                    const allEndpointsMuted = inHearingEndpoints.every(e => e.pexipInfo.isRemoteMuted);
+                    const allParticipantsMuted = inHearingParticipants.every(p => p.pexipInfo?.isRemoteMuted);
+                    const allEndpointsMuted = inHearingEndpoints.every(e => e.pexipInfo?.isRemoteMuted);
                     return (
                         inHearingParticipants.length > 0 && allParticipantsMuted && (inHearingEndpoints.length === 0 || allEndpointsMuted)
                     );
@@ -186,11 +186,11 @@ export class ConferenceEffects {
                 tap(([_, conference]) => {
                     this.logger.info(`${this.loggerPrefix} Unlocking any remote muted participants as conference is unlocked`);
                     conference.participants
-                        .filter(p => p.pexipInfo.isRemoteMuted)
+                        .filter(p => p.pexipInfo?.isRemoteMuted)
                         .forEach(p => this.videoCallService.muteParticipant(p.pexipInfo.uuid, false, conference.id, p.id));
 
                     conference.endpoints
-                        .filter(e => e.pexipInfo.isRemoteMuted)
+                        .filter(e => e.pexipInfo?.isRemoteMuted)
                         .forEach(e => this.videoCallService.muteParticipant(e.pexipInfo.uuid, false, conference.id, e.id));
                 })
             ),

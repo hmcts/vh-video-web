@@ -119,7 +119,7 @@ export class UserMediaStreamServiceV2 {
             this.currentStream.getTracks().forEach(track => track.stop());
             this.currentStream = null;
             this._currentStream$.next(null);
-            this.logger.debug(`${this.loggerPrefix} current stream set to null.`);
+            this.logger.debug(`${this.loggerPrefix} current stream set to closed and set to null.`);
         }
     }
 
