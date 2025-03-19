@@ -263,6 +263,16 @@ export class VideoCallHostEffects {
                 this.store.select(ConferenceSelectors.getCountdownComplete)
             ]),
             filter(([_, conference, isCountdownComplete]) => !!conference && !isCountdownComplete),
+            tap(([action, conference]) => {
+                // Dispatch transfer action immediately
+                this.store.dispatch(
+                    ConferenceActions.sendTransferRequest({
+                        conferenceId: conference.id,
+                        participantId: action.participantId,
+                        transferDirection: TransferDirection.In
+                    })
+                );
+            }),
             switchMap(([action, conference]) => {
                 this.logger.debug(`${this.loggerPrefix} Admitting participant immediately since countdown is not complete`, {
                     conferenceId: conference.id,
@@ -304,7 +314,7 @@ export class VideoCallHostEffects {
                     })
                 );
             }),
-            delay(10000), // Move delay up in the pipe
+            delay(10000),
             switchMap(([action, conference]) =>
                 this.apiClient.callParticipant(conference.id, action.participantId).pipe(
                     map(() => VideoCallHostActions.admitParticipantSuccess()),
