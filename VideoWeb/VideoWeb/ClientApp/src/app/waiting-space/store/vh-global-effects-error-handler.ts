@@ -9,13 +9,12 @@ import { Logger } from 'src/app/services/logging/logger-base';
 export class VHGlobalEffectsErrorHandler {
     constructor(private logger: Logger) {}
 
-    handle: EffectsErrorHandler = <T extends Action>(observable$: Observable<T>, errorHandler: ErrorHandler): Observable<T> => {
-        return observable$.pipe(
+    handle: EffectsErrorHandler = <T extends Action>(observable$: Observable<T>, errorHandler: ErrorHandler): Observable<T> =>
+        observable$.pipe(
             catchError((error, caught) => {
                 this.logger.error('[VHGlobalEffectsErrorHandler] - Unhandled error in effect:\n', error);
                 errorHandler.handleError(error);
                 return caught;
             })
         );
-    };
 }
