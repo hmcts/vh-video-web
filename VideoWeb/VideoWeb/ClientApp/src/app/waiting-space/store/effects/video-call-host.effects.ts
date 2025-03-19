@@ -6,7 +6,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
 import { VideoCallHostActions } from '../actions/video-call-host.actions';
-import { catchError, delay, exhaustMap, filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, delay, exhaustMap, filter, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { concatLatestFrom } from '@ngrx/operators';
 import { EventsService } from 'src/app/services/events.service';
 import { of } from 'rxjs';
@@ -369,6 +369,7 @@ export class VideoCallHostEffects {
                     layout
                 });
                 return this.apiClient.startOrResumeVideoHearing(action.conferenceId, request).pipe(
+                    retry(3), // sometimes the supplier API fail
                     map(() => VideoCallHostActions.startHearingSuccess()),
                     catchError(error => of(VideoCallHostActions.startHearingFailure({ error })))
                 );
