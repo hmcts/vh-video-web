@@ -21,13 +21,13 @@
         &nbsp;
         <a id="edit-link-{{ participant.id }}" href="javascript:void(0);" 
             (click)="setParticipantEdit(participant)" class="govuk-body vh-ml10"
-            aria-label="Edit participant display name">
+            attr.aria-label="{{ 'participant-status.editdisplayname' | translate }}">
             <fa-icon [icon]="editIcon" *ngIf="!isEditingParticipant(participant.id)"></fa-icon>
         </a>
         &nbsp;
         <a id="delete-link-{{ participant.id }}" href="javascript:void(0);" 
             (click)="deleteParticipant(participant)" class="govuk-body vh-ml10"
-            aria-label="Delete participant">
+            attr.aria-label="{{ 'participant-status.deleteparticipant' | translate }}">
             <fa-icon [icon]="deleteIcon" *ngIf="isParticipantDeletable(participant)"></fa-icon>
         </a>
     </div>
