@@ -889,7 +889,9 @@
     "available": "Ar gael",
     "hmcts-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
     "save": "Cadw",
-    "cancel": "Canslo"
+    "cancel": "Canslo",
+    "editdisplayname": "Edit participant display name",
+    "deleteparticipant": "Delete participant"
   },
   "endpoint-status": {
     "inconsultation": "Mewn ymgynghoriad",

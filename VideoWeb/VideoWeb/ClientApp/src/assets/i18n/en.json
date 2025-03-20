@@ -1009,7 +1009,9 @@
     "disconnected": "Disconnected",
     "hmcts-crest": "HM Courts & Tribunals Service crest",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "editdisplayname": "Edit participant display name",
+    "deleteparticipant": "Delete participant"
   },
   "endpoint-status": {
     "notyetjoined": "Not yet joined",
@@ -1101,8 +1103,7 @@
     "join-by-link-text": "Joined by Video Hearing link"
   },
   "copy-quick-link": {
-    "tooltip-copied": "Join by Video Hearing link details copied to clipboard",
-    "display-text": "Copy join by Video Hearing link details to clipboard"
+    "tooltip-copied": "Join by Video Hearing link details copied to clipboard"
   },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",
