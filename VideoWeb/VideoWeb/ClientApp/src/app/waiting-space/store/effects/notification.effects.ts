@@ -152,7 +152,8 @@ export class NotificationEffects {
                     this.store.select(ConferenceSelectors.getParticipants),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
-                tap(([action, currentParticipants, loggedInParticipant]) => {
+                filter(([_action, _currentParticipants, loggedInParticipant]) => !!loggedInParticipant),
+                tap(([_action, currentParticipants, loggedInParticipant]) => {
                     const addedParticipants = currentParticipants.filter(
                         current => !this.previousParticipants.find(prev => prev.id === current.id)
                     );

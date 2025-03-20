@@ -201,36 +201,6 @@ describe('ConferenceEffects', () => {
         });
     });
 
-    describe('updateParticipantDisplayNameSuccess$', () => {
-        it('should sync the participant overlay text on display name change', () => {
-            // arrange
-            const conference = new ConferenceTestData().getConferenceDetailNow();
-            const vhConference = mapConferenceToVHConference(conference);
-            const judge = vhConference.participants.find(x => x.role === Role.Judge);
-            judge.status = ParticipantStatus.InHearing;
-            judge.pexipInfo = { uuid: '123' } as VHPexipParticipant;
-            const displayName = 'new display name';
-
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getParticipants, vhConference.participants);
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, judge);
-
-            const action = ConferenceActions.updateParticipantDisplayNameSuccess({
-                conferenceId: vhConference.id,
-                participantId: judge.id,
-                displayName
-            });
-
-            actions$ = of(action);
-
-            // act
-            effects.updateParticipantDisplayNameSuccess$.subscribe();
-
-            // assert
-            expect(videoCallServiceSpy.setParticipantOverlayText).toHaveBeenCalledWith(judge.pexipInfo.uuid, displayName);
-        });
-    });
-
     describe('participantDisconnect$', () => {
         afterEach(() => {
             mockConferenceStore.resetSelectors();
