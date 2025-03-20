@@ -4,8 +4,9 @@ import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-panel-model';
 import { ParticipantModel } from '../models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
+import { VHEndpoint, VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { VideoEndpointPanelModel } from 'src/app/waiting-space/models/video-endpoint-panel-model';
 
 export class ParticipantPanelModelMapper {
     mapFromVHParticipants(participants: VHParticipant[]): PanelModel[] {
@@ -84,6 +85,18 @@ export class ParticipantPanelModelMapper {
             null,
             participant.status
         );
+    }
+
+    mapFomVHEndpoint(endpoints: VHEndpoint[]): PanelModel[] {
+        return endpoints.map(x => {
+            const ep = new VideoEndpointPanelModel(x);
+            ep.updateTransferringInStatus(x.transferDirection === TransferDirection.In);
+            if (x.pexipInfo) {
+                ep.assignPexipId(x.pexipInfo.uuid);
+                ep.updateParticipant(x.pexipInfo.isRemoteMuted, x.pexipInfo.handRaised, x.pexipInfo.isSpotlighted, x.id);
+            }
+            return ep;
+        });
     }
 
     private getParticipantRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {

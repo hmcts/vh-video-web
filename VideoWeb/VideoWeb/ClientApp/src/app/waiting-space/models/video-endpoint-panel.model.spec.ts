@@ -1,13 +1,15 @@
-import { EndpointStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { EndpointStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoEndpointPanelModel } from './video-endpoint-panel-model';
+import { VHEndpoint } from '../store/models/vh-conference';
+import { mapEndpointToVHEndpoint } from '../store/models/api-contract-to-state-model-mappers';
 
 describe('VideoEndpointPanelModel', () => {
     let model: VideoEndpointPanelModel;
-    let endpoint: VideoEndpointResponse;
+    let endpoint: VHEndpoint;
 
     beforeEach(() => {
-        endpoint = new ConferenceTestData().getListOfEndpoints()[0];
+        endpoint = mapEndpointToVHEndpoint(new ConferenceTestData().getListOfEndpoints()[0]);
     });
 
     it('should return isDisconnected: true when endpoint is disconnected', () => {

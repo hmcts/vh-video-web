@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { ConferenceActions } from '../actions/conference.actions';
 import { ConferenceState } from '../reducers/conference.reducer';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
@@ -16,6 +16,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { VideoCallHostActions } from '../actions/video-call-host.actions';
 
 @Injectable()
 export class VideoCallEffects {
@@ -345,29 +346,60 @@ export class VideoCallEffects {
         )
     );
 
+    unlockConferenceOnCountdownComplete$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.countdownComplete),
+            concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
+            concatMap(([_action, _loggedInParticipant]) =>
+                // the supplier changes the host from 'guest' to 'chair'
+                // wait for this before invoking host actions on countdown
+                this.store.select(ConferenceSelectors.getLoggedInParticipant).pipe(
+                    filter(
+                        participant =>
+                            (participant.role === Role.Judge || participant.role === Role.StaffMember) &&
+                            participant.pexipInfo.role === 'chair' &&
+                            participant.status === ParticipantStatus.InHearing
+                    ),
+                    take(1), // take the first occurrence where the participant is Chair
+                    map(() => {
+                        this.logger.debug(`${this.loggerPrefix} Unlocking conference on countdown complete`);
+                        return VideoCallHostActions.unlockRemoteMute();
+                    })
+                )
+            )
+        )
+    );
+
     restoreHostMutePreferenceOnCountdownComplete$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ConferenceActions.countdownComplete),
             concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
-            filter(
-                ([_action, loggedInParticipant]) =>
-                    (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember) &&
-                    loggedInParticipant.status === ParticipantStatus.InHearing
-            ),
-            switchMap(([action, _]) => {
-                const startWithAudioMuted = this.userMediaService.getConferenceSetting(action.conferenceId)?.startWithAudioMuted ?? false;
-                const isMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
-                if (isMuted && !startWithAudioMuted) {
-                    this.logger.debug(`${this.loggerPrefix} Restoring host mute preference on countdown complete to unmute`);
-                    return [VideoCallActions.toggleAudioMute()];
-                }
-                if (!isMuted && startWithAudioMuted) {
-                    this.logger.debug(`${this.loggerPrefix} Restoring host mute preference on countdown complete to mute`);
-                    return [VideoCallActions.toggleAudioMute()];
-                }
-                this.logger.debug(`${this.loggerPrefix} Host mute preference is already set correctly`);
-                return EMPTY;
-            })
+            concatMap(([action, _loggedInParticipant]) =>
+                this.store.select(ConferenceSelectors.getLoggedInParticipant).pipe(
+                    filter(
+                        participant =>
+                            (participant.role === Role.Judge || participant.role === Role.StaffMember) &&
+                            participant.pexipInfo.role === 'chair' &&
+                            participant.status === ParticipantStatus.InHearing
+                    ),
+                    take(1), // take the first occurrence where the participant is Chair
+                    switchMap(() => {
+                        const startWithAudioMuted =
+                            this.userMediaService.getConferenceSetting(action.conferenceId)?.startWithAudioMuted ?? false;
+                        const isMuted = this.videoCallService.pexipAPI.call?.mutedAudio;
+                        if (isMuted && !startWithAudioMuted) {
+                            this.logger.debug(`${this.loggerPrefix} Restoring host mute preference on countdown complete to unmute`);
+                            return [VideoCallActions.toggleAudioMute()];
+                        }
+                        if (!isMuted && startWithAudioMuted) {
+                            this.logger.debug(`${this.loggerPrefix} Restoring host mute preference on countdown complete to mute`);
+                            return [VideoCallActions.toggleAudioMute()];
+                        }
+                        this.logger.debug(`${this.loggerPrefix} Host mute preference is already set correctly`);
+                        return EMPTY;
+                    })
+                )
+            )
         )
     );
 

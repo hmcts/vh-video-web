@@ -26,10 +26,11 @@ import { NavigatorComponent } from './home/navigator/navigator.component';
 import { StoreModule } from '@ngrx/store';
 import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { EffectsModule } from '@ngrx/effects';
+import { EFFECTS_ERROR_HANDLER, EffectsModule } from '@ngrx/effects';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { SupplierClientService } from './services/api/supplier-client.service';
 import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
+import { VHGlobalEffectsErrorHandler } from './waiting-space/store/vh-global-effects-error-handler';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -76,6 +77,12 @@ export function getLocale() {
         { provide: LOCALE_ID, useFactory: getLocale },
         { provide: APP_ID, useValue: 'moj-vh' },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
+        VHGlobalEffectsErrorHandler,
+        {
+            provide: EFFECTS_ERROR_HANDLER,
+            useFactory: (errorHandler: VHGlobalEffectsErrorHandler) => errorHandler.handle,
+            deps: [VHGlobalEffectsErrorHandler]
+        },
         { provide: Navigator, useValue: window.navigator },
         { provide: Document, useValue: window.document },
         {

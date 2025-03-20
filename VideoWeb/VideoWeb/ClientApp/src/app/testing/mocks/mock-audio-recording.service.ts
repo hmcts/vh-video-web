@@ -14,9 +14,15 @@ const mockConference: VHConference = {
     participants: undefined,
     scheduledDateTime: undefined,
     status: undefined,
-    supplier: undefined
+    supplier: undefined,
+    audioRecordingRequired: false,
+    caseType: undefined,
+    hearingVenueName: '',
+    conferenceAlias: '',
+    pexipNodeUri: '',
+    selfTestNodeUri: ''
 };
-const mockWowzaAgent: VHPexipParticipant = {
+export const mockWowzaAgent: VHPexipParticipant = {
     handRaised: false,
     isAudioOnlyCall: true,
     isRemoteMuted: false,
@@ -32,8 +38,8 @@ const mockWowzaAgent: VHPexipParticipant = {
     callTag: 'callTag'
 };
 
-const getWowzaAgentConnectionState$ = new Subject<boolean>();
-const getAudioRecordingPauseState$ = new Subject<boolean>();
+export const getWowzaAgentConnectionState$ = new Subject<boolean>();
+export const getAudioRecordingPauseState$ = new Subject<boolean>();
 
 export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>(
     'AudioRecordingService',

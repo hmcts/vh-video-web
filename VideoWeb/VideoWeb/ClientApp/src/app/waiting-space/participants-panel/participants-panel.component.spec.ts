@@ -20,13 +20,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import {
-    ConferenceResponse,
-    ParticipantForUserResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from '../../services/clients/api-client';
+import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
@@ -34,8 +28,6 @@ import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
-import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -51,6 +43,7 @@ import {
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { VHEndpoint } from '../store/models/vh-conference';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -58,13 +51,12 @@ describe('ParticipantsPanelComponent', () => {
     let conference: ConferenceResponse;
     let conferenceId: string;
     let participants: ParticipantForUserResponse[];
-    let endpoints: VideoEndpointResponse[];
+    let endpoints: VHEndpoint[];
 
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
 
-    let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     let component: ParticipantsPanelComponent;
@@ -90,7 +82,7 @@ describe('ParticipantsPanelComponent', () => {
         participants = testData.getListOfParticipants();
         participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
         conference.participants = participants;
-        endpoints = conference.endpoints;
+        endpoints = conference.endpoints.map(x => mapEndpointToVHEndpoint(x));
 
         initialState = {
             currentConference: mapConferenceToVHConference(conference),
@@ -104,8 +96,6 @@ describe('ParticipantsPanelComponent', () => {
         });
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-
-        remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -135,10 +125,6 @@ describe('ParticipantsPanelComponent', () => {
                     useValue: translateService
                 },
                 {
-                    provide: ParticipantRemoteMuteStoreService,
-                    useValue: remoteMuteServiceSpy
-                },
-                {
                     provide: LaunchDarklyService,
                     useValue: launchDarklyServiceSpy
                 },
@@ -148,10 +134,7 @@ describe('ParticipantsPanelComponent', () => {
 
         mockConferenceStore = TestBed.inject(MockStore);
 
-        mockConferenceStore.overrideSelector(
-            ConferenceSelectors.getEndpoints,
-            endpoints.map(x => mapEndpointToVHEndpoint(x))
-        );
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, endpoints);
 
         mockConferenceStore.overrideSelector(
             ConferenceSelectors.getParticipants,

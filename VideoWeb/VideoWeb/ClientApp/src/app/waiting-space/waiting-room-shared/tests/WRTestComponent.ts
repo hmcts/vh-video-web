@@ -12,8 +12,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { Component } from '@angular/core';
-import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -24,9 +23,15 @@ import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 @Component({
     standalone: false,
     selector: 'app-test-waiting-room',
-    template: ''
+    template: `
+        <div>
+            <button id="consultation-leave-button" #leaveButton>Leave</button>
+        </div>
+    `
 })
 export class WRTestComponent extends WaitingRoomBaseDirective {
+    @ViewChild('leaveButton', { static: true }) leaveButton: ElementRef;
+
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -42,7 +47,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -64,7 +68,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            participantRemoteMuteStoreService,
             titleService,
             hideComponentsService,
             focusService,

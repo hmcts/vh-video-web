@@ -2,14 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceStatus,
-    EndpointStatus,
-    LoggedParticipantResponse,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role
-} from 'src/app/services/clients/api-client';
+
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { RoomTransfer } from 'src/app/shared/models/room-transfer';
@@ -28,6 +21,14 @@ import { mapConferenceToVHConference, mapParticipantToVHParticipant } from '../.
 import { ConferenceState } from '../../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import * as ConferenceSelectors from '../../../waiting-space/store/selectors/conference.selectors';
+import {
+    ConferenceStatus,
+    EndpointStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -635,32 +636,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             const participant = component.getConsultationParticipants().find(x => x.id === vhParticipant.id);
             // act
             const result = component.participantHasInviteRestrictions(participant);
-            // assert
+            // Assert
             expect(result).toBeFalse();
         });
     });
-
-    // describe('setParticipantCallStatus', () => {
-    //     it('should set the participant call status and that of participants protected by the participant', () => {
-    //         const participant = conference.participants.find(x => x.role === Role.Individual);
-    //         const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
-    //         participant.protectedFrom = [protectedParticipant.externalReferenceId];
-
-    //         component.setParticipantCallStatus(participant.id, 'Calling', 'Restricted');
-
-    //         expect(component.participantCallStatuses[participant.id]).toBe('Calling');
-    //         expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Restricted');
-    //     });
-
-    //     it('should set the participant call status and that of participants protected by the participant', () => {
-    //         const participant = conference.participants.find(x => x.role === Role.Individual);
-    //         const protectedParticipant = conference.participants.find(x => x.role === Role.Representative);
-    //         protectedParticipant.protectedFrom = [participant.externalReferenceId];
-
-    //         component.setParticipantCallStatus(participant.id, 'Calling', 'Protected');
-
-    //         expect(component.participantCallStatuses[participant.id]).toBe('Calling');
-    //         expect(component.participantCallStatuses[protectedParticipant.id]).toBe('Protected');
-    //     });
-    // });
 });

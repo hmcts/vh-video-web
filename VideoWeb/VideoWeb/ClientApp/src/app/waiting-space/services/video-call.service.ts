@@ -3,13 +3,7 @@ import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import {
-    ApiClient,
-    ClientSettingsResponse,
-    HearingLayout,
-    StartOrResumeVideoHearingRequest,
-    Supplier
-} from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, HearingLayout, Supplier } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -62,7 +56,6 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
     private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
-    private conferenceAdjournedSubject = new Subject<void>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -85,7 +78,6 @@ export class VideoCallService {
         private logger: Logger,
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamServiceV2,
-        private apiClient: ApiClient,
         private configService: ConfigService,
         private heartbeatService: HeartbeatService,
         private streamMixerService: StreamMixerService,
@@ -326,10 +318,6 @@ export class VideoCallService {
         return this.onVideoEvidenceStoppedSubject.asObservable();
     }
 
-    onConferenceAdjourned(): Observable<void> {
-        return this.conferenceAdjournedSubject.asObservable();
-    }
-
     toggleMute(conferenceId: string, participantId: string): boolean {
         this.logger.info(`${this.loggerPrefix} Toggling mute`, {
             currentAudioMuteStatus: this.pexipAPI.mutedAudio,
@@ -401,65 +389,6 @@ export class VideoCallService {
     lowerAllHands(conferenceId: string) {
         this.logger.info(`${this.loggerPrefix} Attempting to lower hand for all participants`, { conference: conferenceId });
         this.pexipAPI.clearAllBuzz();
-    }
-
-    startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
-        const request = new StartOrResumeVideoHearingRequest({
-            layout: layout
-        });
-        return this.apiClient.startOrResumeVideoHearing(conferenceId, request).toPromise();
-    }
-
-    pauseHearing(conferenceId: string): Promise<void> {
-        this.conferenceAdjournedSubject.next();
-        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId });
-        return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
-    }
-
-    suspendHearing(conferenceId: string): Promise<void> {
-        this.conferenceAdjournedSubject.next();
-        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
-        return this.apiClient.suspendVideoHearing(conferenceId).toPromise();
-    }
-
-    leaveHearing(conferenceId: string, participantId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId, participant: participantId });
-        return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
-    }
-
-    nonHostLeaveHearing(conferenceId: string) {
-        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId });
-        return this.apiClient.nonHostLeaveHearing(conferenceId);
-    }
-
-    endHearing(conferenceId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
-        return this.apiClient.endVideoHearing(conferenceId).toPromise();
-    }
-
-    async joinHearingInSession(conferenceId: string, participantId: string) {
-        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-        return this.apiClient.joinHearingInSession(conferenceId, participantId).toPromise();
-    }
-
-    async callParticipantIntoHearing(conferenceId: string, participantId: string) {
-        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-        return this.apiClient.callParticipant(conferenceId, participantId).toPromise();
-    }
-
-    async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
-        this.logger.info(`${this.loggerPrefix} Attempting to dismiss participant from hearing`, {
-            conference: conferenceId,
-            participant: participantId
-        });
-        return this.apiClient.dismissParticipant(conferenceId, participantId).toPromise();
     }
 
     renegotiateCall(sendUpdate: boolean = false) {

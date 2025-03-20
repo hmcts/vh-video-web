@@ -27,6 +27,7 @@ import { VideoCallActions } from '../actions/video-call.action';
 import { cold, hot } from 'jasmine-marbles';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
+import { VideoCallHostActions } from '../actions/video-call-host.actions';
 
 describe('VideoCallEffects', () => {
     let actions$: Observable<any>;
@@ -974,6 +975,7 @@ describe('VideoCallEffects', () => {
             participant = vhConference.participants.find(x => x.role === Role.Judge);
             participant.status = ParticipantStatus.InHearing;
             participant.localMediaStatus = { isCameraOff: true, isMicrophoneMuted: false };
+            participant.pexipInfo = { ...participant.pexipInfo, uuid: '1234', isRemoteMuted: false, role: 'chair' };
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
         });
@@ -1084,6 +1086,31 @@ describe('VideoCallEffects', () => {
             // act
             const expected = cold('-');
             expect(effects.updateParticipantLocalMuteStatus$).toBeObservable(expected);
+        });
+    });
+
+    describe('unlockConferenceOnCountdownComplete$', () => {
+        const conference = conferenceTestData.getConferenceDetailNow();
+        let vhConference: VHConference;
+        let participant: VHParticipant;
+        beforeEach(() => {
+            vhConference = mapConferenceToVHConference(conference);
+            participant = vhConference.participants.find(x => x.role === Role.Judge);
+            participant.status = ParticipantStatus.InHearing;
+            participant.pexipInfo = { ...participant.pexipInfo, uuid: '1234', isRemoteMuted: false, role: 'chair' };
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, participant);
+        });
+
+        it('should unlock conference when countdown completes', () => {
+            // arrange
+            const action = ConferenceActions.countdownComplete({ conferenceId: conference.id });
+            actions$ = hot('-a', { a: action });
+
+            // act
+            const expectedAction = VideoCallHostActions.unlockRemoteMute();
+            const expected = cold('-b', { b: expectedAction });
+            expect(effects.unlockConferenceOnCountdownComplete$).toBeObservable(expected);
         });
     });
 });

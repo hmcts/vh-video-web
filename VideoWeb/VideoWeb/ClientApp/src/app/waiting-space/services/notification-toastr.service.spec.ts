@@ -22,19 +22,19 @@ import {
 import { NotificationToastrService } from './notification-toastr.service';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { TranslateService } from '@ngx-translate/core';
-import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { mapEndpointToVHEndpoint, mapParticipantToVHParticipant } from '../store/models/api-contract-to-state-model-mappers';
 import { UpdatedAllocation } from 'src/app/shared/models/update-allocation-dto';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { VHParticipant } from '../store/models/vh-conference';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;
-    let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
 
     const testConference = new ConferenceTestData().getConferenceDetailNow();
 
@@ -49,8 +49,7 @@ describe('NotificationToastrService', () => {
     beforeEach(() => {
         translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         translateServiceSpy.instant.and.callFake(k => k);
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['joinHearingInSession']);
-        videoCallServiceSpy.joinHearingInSession.and.returnValue(Promise.resolve());
+
         logger = jasmine.createSpyObj<Logger>('Logger', ['info', 'debug']);
         service = new NotificationToastrService(
             logger,
@@ -58,7 +57,7 @@ describe('NotificationToastrService', () => {
             consultationService,
             notificationSoundsService,
             translateServiceSpy,
-            videoCallServiceSpy
+            mockConferenceStore
         );
         roomLabel = 'Meeting room 1';
         consultationService.respondToConsultationRequest.calls.reset();
@@ -765,10 +764,12 @@ describe('NotificationToastrService', () => {
     describe('showParticipantAdded', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const testParticipant = new ParticipantResponse();
-        testParticipant.name = 'A Name';
-        testParticipant.display_name = 'TestParticipantDisplayName';
-        testParticipant.hearing_role = 'TestParticipantHearingRole';
+        const testParticipant = {
+            id: '123',
+            name: 'A Name',
+            displayName: 'TestParticipantDisplayName',
+            hearingRole: 'TestParticipantHearingRole'
+        } as VHParticipant;
 
         const translatedNameMessage = 'TranslatedNameMessage';
         const translatedHearingRole = 'TranslatedHearingRole';
@@ -1441,13 +1442,15 @@ describe('NotificationToastrService', () => {
 
         it('should call joinHearingInSession with join hearing button action is triggered', async () => {
             // Arrange
-
+            spyOn(mockConferenceStore, 'dispatch');
             const toastComponentInstance = service.showHearingStarted(conferneceId.toString(), testParticipant.id);
             const button = toastComponentInstance.vhToastOptions.buttons[0];
             // Act
             await button.action();
             // Assert
-            expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledTimes(1);
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledOnceWith(
+                VideoCallHostActions.joinHearing({ conferenceId: conferneceId.toString(), participantId: testParticipant.id })
+            );
         });
 
         it('should NOT call toastr.remove with the toast id when the NO action is triggered', () => {

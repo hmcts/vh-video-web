@@ -115,7 +115,7 @@ export class EventsService {
         HearingDetailsUpdatedMessage: (conference: ConferenceResponse) => {
             const message = new HearingDetailsUpdatedMessage(conference);
             this.logger.debug('[EventsService] - HearingDetailsUpdatedMessage received', message);
-            this.store.dispatch(ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(conference) }));
+            this.store.dispatch(ConferenceActions.loadConferenceSuccess({ conference: mapConferenceToVHConference(message.conference) }));
             this.hearingDetailsUpdatedSubject.next(message);
         },
 

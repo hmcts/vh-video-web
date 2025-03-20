@@ -20,7 +20,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { Title } from '@angular/platform-browser';
@@ -71,7 +70,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected userMediaService: UserMediaService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
@@ -94,7 +92,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            participantRemoteMuteStoreService,
             titleService,
             hideComponentsService,
             focusService,
@@ -125,7 +122,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get isQuickLinkUser(): boolean {
-        return this.vhParticipant?.hearingRole === Role.QuickLinkObserver || this.vhParticipant?.hearingRole === Role.QuickLinkParticipant;
+        return (
+            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_OBSERVER ||
+            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_PARTICIPANT
+        );
     }
 
     get isVictim(): boolean {
@@ -274,23 +274,28 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
         this.logger.info('[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation', {
-            conference: this.conference?.id,
+            conference: this.vhConference?.id,
             participant: this.vhParticipant.id
         });
         this.hasTriedToLeaveConsultation = false;
-        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
+        await this.consultationService.createParticipantConsultationRoom(
+            this.vhConference.id,
+            this.vhParticipant.id,
+            participants,
+            endpoints
+        );
         this.closeStartPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
     }
 
     async joinPrivateConsultation(roomLabel: string) {
         this.logger.info('[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation', {
-            conference: this.conference?.id,
+            conference: this.vhConference?.id,
             participant: this.vhParticipant.id,
             roomLabel: roomLabel
         });
         this.hasTriedToLeaveConsultation = false;
-        await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.vhParticipant.id, roomLabel);
+        await this.consultationService.joinPrivateConsultationRoom(this.vhConference.id, this.vhParticipant.id, roomLabel);
         this.closeJoinPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
     }
@@ -302,12 +307,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         }
 
         this.logger.info('[ParticipantWaitingRoomComponent] - attempting to set room lock state', {
-            conference: this.conference?.id,
+            conference: this.vhConference?.id,
             participant: this.vhParticipant.id,
             roomLabel: roomLabel,
             lock: lock
         });
-        await this.consultationService.lockConsultation(this.conference.id, roomLabel, lock);
+        await this.consultationService.lockConsultation(this.vhConference.id, roomLabel, lock);
     }
 
     closeStartPrivateConsultationModal() {
@@ -364,13 +369,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.getConference().then(() => {
-            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
-                this.showWarning = true;
-            } else {
-                this.setUpSubscribers();
-            }
-        });
+        this.getConference();
+        if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+            this.showWarning = true;
+        } else {
+            this.setUpSubscribers();
+        }
     }
 
     private setUpSubscribers() {
@@ -391,7 +395,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     private cleanUp() {
         this.logger.debug(`${this.loggerPrefixParticipant} Clearing intervals and subscriptions for JOH waiting room`, {
-            conference: this.conference?.id
+            conference: this.vhConference?.id
         });
 
         this.executeWaitingRoomCleanup();

@@ -114,7 +114,7 @@ describe('ConsultationService', () => {
             room_type: VirtualCourtRoomType.JudgeJOH
         });
 
-        await service.joinJudicialConsultationRoom(conference, participant);
+        await service.joinJudicialConsultationRoom(conference.id, participant.id);
 
         expect(apiClient.startOrJoinConsultation).toHaveBeenCalledWith(request);
     });
@@ -125,7 +125,7 @@ describe('ConsultationService', () => {
         const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
         apiClient.startOrJoinConsultation.and.callFake(() => throwError(error));
 
-        await expectAsync(service.joinJudicialConsultationRoom(conference, participant)).toBeRejectedWith(error);
+        await expectAsync(service.joinJudicialConsultationRoom(conference.id, participant.id)).toBeRejectedWith(error);
 
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
     });
@@ -140,7 +140,7 @@ describe('ConsultationService', () => {
             room_type: VirtualCourtRoomType.JudgeJOH
         });
 
-        await service.createParticipantConsultationRoom(conference, participant, ['pat1', 'pat2'], []);
+        await service.createParticipantConsultationRoom(conference.id, participant.id, ['pat1', 'pat2'], []);
 
         expect(apiClient.startOrJoinConsultation).toHaveBeenCalledWith(request);
     });
@@ -151,7 +151,9 @@ describe('ConsultationService', () => {
         const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
         apiClient.startOrJoinConsultation.and.callFake(() => throwError(error));
 
-        await expectAsync(service.createParticipantConsultationRoom(conference, participant, ['pat1', 'pat2'], [])).toBeRejectedWith(error);
+        await expectAsync(service.createParticipantConsultationRoom(conference.id, participant.id, ['pat1', 'pat2'], [])).toBeRejectedWith(
+            error
+        );
 
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
     });
@@ -165,7 +167,7 @@ describe('ConsultationService', () => {
             participant_id: participant.id
         });
 
-        await service.leaveConsultation(conference, participant);
+        await service.leaveConsultation(conference.id, participant.id);
 
         expect(apiClient.leaveConsultation).toHaveBeenCalledWith(request);
     });

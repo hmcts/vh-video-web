@@ -24,12 +24,18 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         duration: conference.scheduled_duration,
         caseNumber: conference.case_number,
         caseName: conference.case_name,
+        caseType: conference.case_type,
         status: conference.status,
         isVenueScottish: conference.hearing_venue_is_scottish,
         participants: conference.participants.map(p => mapParticipantToVHParticipant(p)),
         endpoints: conference.endpoints.map(e => mapEndpointToVHEndpoint(e)),
         supplier: conference.supplier,
-        audioRecordingIngestUrl: conference.ingest_url
+        audioRecordingIngestUrl: conference.ingest_url,
+        audioRecordingRequired: conference.audio_recording_required,
+        hearingVenueName: conference.hearing_venue_name,
+        conferenceAlias: conference.participant_uri,
+        pexipNodeUri: conference.pexip_node_uri,
+        selfTestNodeUri: conference.pexip_self_test_node_uri
     };
 }
 

@@ -1,5 +1,4 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { HearingLayout } from 'src/app/services/clients/api-client';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export const VideoCallHostActions = createActionGroup({
@@ -32,7 +31,7 @@ export const VideoCallHostActions = createActionGroup({
         'Dismiss Participant Failure': props<{ error: Error }>(),
 
         // Conference Management actions
-        'Start Hearing': props<{ conferenceId: string; hearingLayout: HearingLayout }>(),
+        'Start Hearing': props<{ conferenceId: string }>(),
         'Start Hearing Success': emptyProps(),
         'Start Hearing Failure': props<{ error: Error }>(),
 
@@ -52,7 +51,7 @@ export const VideoCallHostActions = createActionGroup({
         'Host Leave Hearing Success': emptyProps(),
         'Host Leave Hearing Failure': props<{ error: Error }>(),
 
-        'Join Hearing': props<{ participantId: string }>(),
+        'Join Hearing': props<{ conferenceId: string; participantId: string }>(),
         'Join Hearing Success': emptyProps(),
         'Join Hearing Failure': props<{ error: Error }>()
     }

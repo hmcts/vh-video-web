@@ -15,6 +15,7 @@ import { JudgeContextMenuComponent } from '../../judge-context-menu/judge-contex
 import { VideoEndpointPanelModel } from '../../models/video-endpoint-panel-model';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
+import { mapEndpointToVHEndpoint } from '../../store/models/api-contract-to-state-model-mappers';
 
 describe('ParticipantsPanelItemComponent', () => {
     let component: ParticipantsPanelItemComponent;
@@ -95,7 +96,7 @@ describe('ParticipantsPanelItemComponent', () => {
         beforeEach(() => {
             const endpoint = conference.endpoints[0];
             endpoint.status = EndpointStatus.Disconnected;
-            const item = new VideoEndpointPanelModel(endpoint);
+            const item = new VideoEndpointPanelModel(mapEndpointToVHEndpoint(endpoint));
             component.item = item;
 
             fixture.detectChanges();

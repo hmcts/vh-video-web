@@ -8,13 +8,13 @@ import {
     getParticipantsUpdatedSubjectMock,
     hearingLayoutChangedSubjectMock
 } from '../testing/mocks/mock-events-service';
-import { ApiClient, HearingLayout } from './clients/api-client';
+import { ApiClient, HearingLayout, Role } from './clients/api-client';
 import { HearingLayoutService } from './hearing-layout.service';
 import { Logger } from './logging/logger-base';
 import { HearingLayoutChanged } from './models/hearing-layout-changed';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { ConferenceState, initialState as initialConferenceState } from '../waiting-space/store/reducers/conference.reducer';
-import { VHConference } from '../waiting-space/store/models/vh-conference';
+import { VHConference, VHParticipant } from '../waiting-space/store/models/vh-conference';
 import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
 import { mapConferenceToVHConference } from '../waiting-space/store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
@@ -25,6 +25,7 @@ describe('HearingLayoutService', () => {
 
     const testData = new ConferenceTestData();
     let conference: VHConference;
+    let loggedInUser: VHParticipant;
     let initialConferenceId: string;
     let mockConferenceStore: MockStore<ConferenceState>;
 
@@ -42,6 +43,9 @@ describe('HearingLayoutService', () => {
         conference = mapConferenceToVHConference(testData.getConferenceDetailNow());
         initialConferenceId = conference.id;
         mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
+
+        loggedInUser = conference.participants.find(x => x.role === Role.Judge);
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInUser);
 
         apiClientSpy.getLayoutForHearing.and.returnValue(of(initialLayout));
         apiClientSpy.getRecommendedLayoutForHearing.and.returnValue(of(initialRecommendedLayout));
