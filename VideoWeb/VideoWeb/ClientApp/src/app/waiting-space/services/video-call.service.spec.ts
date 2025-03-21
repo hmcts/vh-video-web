@@ -48,6 +48,7 @@ describe('VideoCallService', () => {
     let currentStreamSubject: ReplaySubject<MediaStream>;
 
     let pexipSpy: jasmine.SpyObj<PexipClient>;
+    let pexipCallSpy: jasmine.SpyObj<PexRTCCall>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let heartbeatServiceSpy: jasmine.SpyObj<HeartbeatService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
@@ -91,32 +92,43 @@ describe('VideoCallService', () => {
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
-        pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
-            'connect',
-            'makeCall',
-            'muteAudio',
-            'muteVideo',
-            'disconnect',
-            'setBuzz',
-            'clearBuzz',
-            'setParticipantMute',
-            'setMuteAllGuests',
-            'clearAllBuzz',
-            'setParticipantSpotlight',
-            'disconnectCall',
-            'addCall',
-            'present',
-            'getPresentation',
-            'stopPresentation',
-            'renegotiate',
-            'dialOut',
-            'disconnectParticipant',
-            'setParticipantText',
-            'transformLayout',
-            'setParticipantText',
-            'setSendToAudioMixes',
-            'setReceiveFromAudioMix'
-        ]);
+        pexipCallSpy = jasmine.createSpyObj<PexRTCCall>([], {
+            audio_source: null,
+            localStream: null,
+            stream: null
+        });
+        pexipSpy = jasmine.createSpyObj<PexipClient>(
+            'PexipClient',
+            [
+                'connect',
+                'makeCall',
+                'muteAudio',
+                'muteVideo',
+                'disconnect',
+                'setBuzz',
+                'clearBuzz',
+                'setParticipantMute',
+                'setMuteAllGuests',
+                'clearAllBuzz',
+                'setParticipantSpotlight',
+                'disconnectCall',
+                'addCall',
+                'present',
+                'getPresentation',
+                'stopPresentation',
+                'renegotiate',
+                'dialOut',
+                'disconnectParticipant',
+                'setParticipantText',
+                'transformLayout',
+                'setParticipantText',
+                'setSendToAudioMixes',
+                'setReceiveFromAudioMix'
+            ],
+            {
+                call: pexipCallSpy
+            }
+        );
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
 
@@ -179,19 +191,17 @@ describe('VideoCallService', () => {
     });
 
     it('should disconnect from pexip when call is disconnected', () => {
-        const setupClientSpy = spyOn(service, 'setupClient');
-
         service.pexipAPI = pexipSpy;
         service.disconnectFromCall();
         expect(pexipSpy.disconnect).toHaveBeenCalled();
         expect(heartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
-        expect(setupClientSpy).toHaveBeenCalledTimes(1);
-        expect(userMediaStreamService.closeCurrentStream).toHaveBeenCalledTimes(1);
     });
 
     it('should not disconnect from pexip when api has not been initialised', () => {
+        const logSpy = spyOn(logger, 'warn');
         service.pexipAPI = null;
-        expect(() => service.disconnectFromCall()).toThrowError('[VideoCallService] - Pexip Client has not been initialised.');
+        service.disconnectFromCall();
+        expect(logSpy).toHaveBeenCalledWith('[VideoCallService] - No active call to disconnect from.');
     });
 
     it('should call pexip with call details', async () => {
@@ -429,26 +439,6 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.turn_server.urls).toContain(config.supplier_configurations[0].turn_server);
             expect(service.pexipAPI.turn_server.username).toContain(config.supplier_configurations[0].turn_server_user);
             expect(service.pexipAPI.turn_server.credential).toContain(config.supplier_configurations[0].turn_server_credential);
-        });
-
-        it('should setup the client again when an error occurs', () => {
-            // Arrange
-            const setupClientSpy = spyOn(service, 'setupClient');
-            // Act
-            service.pexipAPI.onError('reason');
-
-            // Assert
-            expect(setupClientSpy).toHaveBeenCalledTimes(1);
-        });
-
-        it('should setup the client again when a server disconnect occurs', () => {
-            // Arrange
-            const setupClientSpy = spyOn(service, 'setupClient');
-            // Act
-            service.pexipAPI.onDisconnect('reason');
-
-            // Assert
-            expect(setupClientSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should update user_media_stream', fakeAsync(() => {

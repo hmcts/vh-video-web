@@ -240,7 +240,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.audioOnly = false;
             component.ngOnInit();
             tick();
-
+            component.connected = true;
             isAudioOnlySubject.next(true);
             tick();
 
