@@ -383,8 +383,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     private registerMediaStatusPublisher() {
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
             this.audioOnly = audioOnly;
-
+            if (!this.connected) {
+                return;
+            }
             const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
+
             await this.eventService.sendMediaStatus(this.conferenceId, this.vhParticipant.id, mediaStatus);
         });
     }

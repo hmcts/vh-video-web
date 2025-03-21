@@ -15,6 +15,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -51,6 +52,18 @@ export class ConferenceEffects {
                 tap(action => {
                     this.supplierClientService.loadSupplierScript(action.conference.supplier);
                     this.venueFlagService.setHearingVenueIsScottish(action.conference.isVenueScottish);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    releaseMediaStreamOnLeaveConference$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.leaveConference),
+                tap(() => {
+                    this.logger.info(`${this.loggerPrefix} Releasing media stream on leave conference`);
+                    this.userMediaStreamService.closeCurrentStream();
                 })
             ),
         { dispatch: false }
@@ -207,6 +220,7 @@ export class ConferenceEffects {
         private venueFlagService: HearingVenueFlagsService,
         private errorService: ErrorService,
         private eventsService: EventsService,
+        private userMediaStreamService: UserMediaStreamServiceV2,
         private logger: Logger
     ) {}
 }

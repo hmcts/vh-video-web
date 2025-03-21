@@ -194,7 +194,7 @@ describe('UserMediaStreamServiceV2', () => {
             tick();
 
             sut.currentStream$.subscribe(stream => {
-                expect(stream).toBeNull();
+                expect(stream).toEqual(new MediaStream([]));
             });
 
             expect(sut.currentStream).toBeNull();

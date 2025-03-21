@@ -691,8 +691,6 @@ export class VideoCallService {
         this.hasDisconnected$.complete();
         this.heartbeatService.stopHeartbeat();
         this.logger.info(`${this.loggerPrefix} Re-creating a new instance of Pexip API client in preparation for next call.`);
-        this.userMediaStreamService.createAndPublishStream();
-        this.setupClient(this.supplier);
     }
 
     private getSupplierConfig(config: ClientSettingsResponse) {
