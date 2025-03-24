@@ -35,6 +35,7 @@ import { mapConferenceToVHConference } from '../store/models/api-contract-to-sta
 import { LocalDeviceStatus, VHConference, VHParticipant, VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
 import { VideoCallActions } from '../store/actions/video-call.action';
 import { ConnectedScreenshare, StoppedScreenshare } from '../models/video-call-models';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 describe('HearingControlsBaseComponent', () => {
     let component: HearingControlsBaseComponent;
@@ -417,8 +418,9 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should pause the hearing', () => {
+        const dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
         component.pause();
-        expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);
+        expect(dispatchSpy).toHaveBeenCalledWith(VideoCallHostActions.pauseHearing({ conferenceId: component.conferenceId }));
     });
 
     it('should display confirm close hearing popup', () => {
@@ -428,24 +430,27 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('Close hearing', () => {
-        it('should not close the hearing on keep hearing open', async () => {
+        it('should not close the hearing on keep hearing open', () => {
+            const dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
             component.displayConfirmPopup = true;
             component.close(false);
             expect(component.displayConfirmPopup).toBeFalsy();
-            expect(videoCallService.endHearing).toHaveBeenCalledTimes(0);
+            expect(dispatchSpy).not.toHaveBeenCalled();
         });
 
-        it('should close the hearing on close hearing', async () => {
+        it('should close the hearing on close hearing', () => {
+            const dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
             component.displayConfirmPopup = true;
             component.close(true);
             expect(component.displayConfirmPopup).toBeFalsy();
-            expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+            expect(dispatchSpy).toHaveBeenCalledWith(VideoCallHostActions.endHearing({ conferenceId: component.conferenceId }));
             expect(component.sessionStorage.get()).toBeNull();
         });
 
         it('should close the hearing', () => {
+            const dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
             component.close(true);
-            expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+            expect(dispatchSpy).toHaveBeenCalledWith(VideoCallHostActions.endHearing({ conferenceId: component.conferenceId }));
             expect(component.sessionStorage.get()).toBeNull();
         });
     });
@@ -598,9 +603,9 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('leave', () => {
+        let dispatchSpy: jasmine.Spy;
         beforeEach(() => {
-            videoCallService.dismissParticipantFromHearing.calls.reset();
-            videoCallService.suspendHearing.calls.reset();
+            dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
             component.participant.role = Role.Judge;
         });
 
@@ -612,19 +617,19 @@ describe('HearingControlsBaseComponent', () => {
 
         it('should not make any api calls if confirmation was cancelled', () => {
             component.leave(false, []);
-            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
-            expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
+            expect(dispatchSpy).not.toHaveBeenCalled();
         });
 
         it('should dismiss participant if confirmed leaving and another host is present', () => {
             component.displayLeaveHearingPopup = true;
             const participantsModel = [];
             spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
-            videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
 
             component.leave(true, participantsModel);
 
-            expect(videoCallService.leaveHearing).toHaveBeenCalledOnceWith(component.conferenceId, component.participant.id);
+            expect(dispatchSpy).toHaveBeenCalledWith(
+                VideoCallHostActions.hostLeaveHearing({ conferenceId: component.conferenceId, participantId: component.participant.id })
+            );
         });
 
         it('should suspend the hearing if confirmed leaving and another host is not present', () => {
@@ -632,7 +637,7 @@ describe('HearingControlsBaseComponent', () => {
 
             component.leave(true, []);
 
-            expect(videoCallService.suspendHearing).toHaveBeenCalledOnceWith(component.conferenceId);
+            expect(dispatchSpy).toHaveBeenCalledWith(VideoCallHostActions.suspendHearing({ conferenceId: component.conferenceId }));
         });
     });
 
@@ -653,7 +658,10 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('nonHostLeave', () => {
+        let dispatchSpy: jasmine.Spy;
+
         beforeEach(() => {
+            dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
             component.participant.role = Role.Individual;
         });
 
@@ -661,7 +669,7 @@ describe('HearingControlsBaseComponent', () => {
             component.displayLeaveHearingPopup = true;
             component.nonHostLeave(false);
             expect(component.displayLeaveHearingPopup).toBeFalsy();
-            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
+            expect(dispatchSpy).not.toHaveBeenCalled();
         });
 
         it('should dismiss participant if confirmed leaving', done => {

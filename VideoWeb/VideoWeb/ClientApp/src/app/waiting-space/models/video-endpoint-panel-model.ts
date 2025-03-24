@@ -1,16 +1,13 @@
-import { EndpointStatus, Role, VideoEndpointResponse } from '../../services/clients/api-client';
+import { EndpointStatus, Role } from '../../services/clients/api-client';
 import { VHEndpoint } from '../store/models/vh-conference';
 import { IndividualPanelModel } from './individual-panel-model';
 
 export class VideoEndpointPanelModel extends IndividualPanelModel {
     public status: EndpointStatus;
 
-    constructor(endpoint: VideoEndpointResponse | VHEndpoint) {
-        if (endpoint instanceof VideoEndpointResponse) {
-            super(endpoint.id, endpoint.display_name, Role.Individual, endpoint.pexip_display_name, 'Video access point', '');
-        } else {
-            super(endpoint.id, endpoint.displayName, Role.Individual, endpoint?.pexipInfo?.pexipDisplayName, 'Video access point', '');
-        }
+    constructor(endpoint: VHEndpoint) {
+        super(endpoint.id, endpoint.displayName, Role.Individual, endpoint?.pexipInfo?.pexipDisplayName, 'Video access point', '');
+
         this.status = endpoint.status;
     }
 

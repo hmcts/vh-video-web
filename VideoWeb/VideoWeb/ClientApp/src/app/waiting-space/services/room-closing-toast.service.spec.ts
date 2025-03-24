@@ -4,12 +4,13 @@ import { ToastrService, ActiveToast } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ToastrTestingModule } from 'src/app/shared/toast/toastr-testing.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { RoomClosingToastrService } from './room-closing-toast.service';
+import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VHHearing } from 'src/app/shared/models/hearing.vh';
 
 describe('RoomClosingToastrService', () => {
     const conferenceTestData = new ConferenceTestData();
@@ -35,35 +36,35 @@ describe('RoomClosingToastrService', () => {
     // --> private functions
     // ---------------------
 
-    function getNotClosedHearing(): Hearing {
+    function getNotClosedHearing(): VHHearing {
         const c = conferenceTestData.getConferenceDetailNow();
         c.status = ConferenceStatus.InSession;
 
-        const hearing = new Hearing(c);
+        const hearing = new VHHearing(mapConferenceToVHConference(c));
         expect(hearing.isClosed()).toBeFalsy();
         return hearing;
     }
 
-    function getExpiredHearing(): Hearing {
+    function getExpiredHearing(): VHHearing {
         const c = conferenceTestData.getConferenceDetailFuture();
         c.status = ConferenceStatus.Closed;
         c.closed_date_time = new Date(2000, 1, 1, 10, 0, 0, 0);
 
-        const hearing = new Hearing(c);
+        const hearing = new VHHearing(mapConferenceToVHConference(c));
         expect(hearing.isClosed()).toBeTruthy();
         expect(hearing.isExpired(c.closed_date_time)).toBeTruthy();
         expect(hearing.status).toEqual(ConferenceStatus.Closed);
         return hearing;
     }
 
-    function getClosedButNotExpiredHearing(): Hearing {
+    function getClosedButNotExpiredHearing(): VHHearing {
         const closedDateTime = moment.utc().subtract(20, 'minutes').toDate();
 
         const c = conferenceTestData.getConferenceDetailFuture();
         c.status = ConferenceStatus.Closed;
         c.closed_date_time = closedDateTime;
 
-        const hearing = new Hearing(c);
+        const hearing = new VHHearing(mapConferenceToVHConference(c));
         expect(hearing.isClosed()).toBeTruthy();
         expect(hearing.status).toEqual(ConferenceStatus.Closed);
         return hearing;

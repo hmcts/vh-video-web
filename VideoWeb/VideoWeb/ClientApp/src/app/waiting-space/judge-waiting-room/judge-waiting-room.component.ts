@@ -1,17 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { take, takeUntil, tap } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
-import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -20,7 +17,6 @@ import { CallError, ParticipantUpdated } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -28,12 +24,12 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
-import { ConferenceStatusMessage } from '../../services/models/conference-status-message';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 @Component({
     standalone: false,
@@ -43,21 +39,17 @@ import { getCountdownComplete } from '../store/selectors/conference.selectors';
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     continueWithNoRecording = false;
+    recordingPaused: boolean;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
     displayJoinHearingPopup: boolean;
 
     unreadMessageCount = 0;
     audioErrorRetryToast: VhToastComponent;
-    onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
-    hearingCountdownFinishedSubscription: Subscription;
-    conferenceStatusChangedSubscription: Subscription;
-    participantStatusChangedSubscription: Subscription;
-    onConferenceStatusChangedSubscription: Subscription;
+
     participants: ParticipantUpdated[] = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
-    private recordingPaused: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -76,8 +68,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private readonly unloadDetectorService: UnloadDetectorService,
-        private readonly hearingLayoutService: HearingLayoutService,
-        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -100,7 +90,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            participantRemoteMuteStoreService,
             titleService,
             hideComponentsService,
             focusService,
@@ -109,10 +98,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-    }
-
-    get isChatVisible() {
-        return this.panelStates['Chat'];
     }
 
     get canShowHearingLayoutSelection() {
@@ -125,19 +110,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     ngOnInit() {
-        this.init();
-        this.divTrapId = 'video-container';
-    }
-
-    assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
-        const participantDisplayName = PexipDisplayNameModel.fromString(participant.pexipDisplayName);
-        if (participant.uuid && participantDisplayName !== null) {
-            this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, participant.uuid);
+        if (this.vhConference && this.vhParticipant) {
+            this.init();
         }
-        this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-            pexipId: participant.uuid,
-            participantId: participantDisplayName?.participantOrVmrId
-        });
+        this.divTrapId = 'video-container';
     }
 
     isStaffMember(): boolean {
@@ -149,7 +125,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     getConferenceStatusText() {
-        switch (this.conference.status) {
+        switch (this.vhConference.status) {
             case ConferenceStatus.NotStarted:
                 return this.translateService.instant('judge-waiting-room.start-this-hearing');
             case ConferenceStatus.Suspended:
@@ -174,7 +150,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     displayConfirmStartPopup() {
         this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
             conference: this.conferenceId,
-            status: this.conference.status
+            status: this.vhConference.status
         });
         this.focusService.storeFocus();
         this.displayConfirmStartHearingPopup = true;
@@ -183,7 +159,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     onStartConfirmAnswered(actionConfirmed: boolean) {
         this.logger.debug(`${this.loggerPrefixJudge} Judge responded to start hearing confirmation`, {
             conference: this.conferenceId,
-            status: this.conference.status,
+            status: this.vhConference.status,
             confirmStart: actionConfirmed
         });
         this.displayConfirmStartHearingPopup = false;
@@ -194,19 +170,19 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
     }
 
-    async onJoinConfirmAnswered(actionConfirmed: boolean) {
+    onJoinConfirmAnswered(actionConfirmed: boolean) {
         this.logger.debug(`${this.loggerPrefixJudge} Judge responded to join hearing confirmation`, {
             conference: this.conferenceId,
-            status: this.conference.status,
+            status: this.vhConference.status,
             confirmStart: actionConfirmed
         });
         this.displayJoinHearingPopup = false;
         if (actionConfirmed) {
-            await this.joinHearingInSession();
+            this.joinHearingInSession();
         }
     }
 
-    async joinHearingClicked() {
+    joinHearingClicked() {
         this.displayJoinPopup();
     }
 
@@ -214,25 +190,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.displayJoinHearingPopup = true;
     }
 
-    async startHearing() {
-        const action = this.isNotStarted() ? 'start' : 'resume';
+    startHearing() {
         this.audioRecordingService.restartActioned = false;
-        this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge clicked start/resume hearing`, {
             conference: this.conferenceId,
-            status: this.conference.status
+            status: this.vhConference.status
         });
 
-        this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
-            try {
-                await this.videoCallService.startHearing(this.hearing.id, layout);
-            } catch (err) {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
-                    conference: this.conferenceId,
-                    status: this.conference.status
-                });
-                this.errorService.handleApiError(err);
-            }
-        });
+        this.store.dispatch(VideoCallHostActions.startHearing({ conferenceId: this.conferenceId }));
     }
 
     goToJudgeHearingList(): void {
@@ -250,23 +215,19 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     hearingSuspended(): boolean {
-        return this.conference.status === ConferenceStatus.Suspended;
+        return this.vhConference.status === ConferenceStatus.Suspended;
     }
 
     hearingPaused(): boolean {
-        return this.conference.status === ConferenceStatus.Paused;
+        return this.vhConference.status === ConferenceStatus.Paused;
     }
 
     isHearingInSession(): boolean {
-        return this.conference.status === ConferenceStatus.InSession;
+        return this.vhConference.status === ConferenceStatus.InSession;
     }
 
-    async joinHearingInSession() {
-        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
-    }
-
-    shouldCurrentUserJoinHearing(): boolean {
-        return this.participant.status === ParticipantStatus.InHearing;
+    joinHearingInSession() {
+        this.store.dispatch(VideoCallHostActions.joinHearing({ conferenceId: this.vhConference.id, participantId: this.vhParticipant.id }));
     }
 
     audioRestartCallback(continueWithNoRecording: boolean) {
@@ -282,7 +243,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         // Recording is not paused
         // and the audio streaming agent cannot be validated, then show the alert
         if (
-            this.conference.audio_recording_required &&
+            this.vhConference.audioRecordingRequired &&
             !this.continueWithNoRecording &&
             this.showVideo &&
             !this.audioErrorRetryToast &&
@@ -298,7 +259,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (!this.hearing) {
             return false;
         }
-        if (this.participant.status === ParticipantStatus.InConsultation) {
+        if (this.vhParticipant.status === ParticipantStatus.InConsultation) {
             return false;
         }
         if (this.deviceTypeService.isIpad()) {
@@ -323,27 +284,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ModalTrapFocus.trap('video-container');
     }
 
-    handleHearingStatusMessage(message: ConferenceStatusMessage) {
-        if (message.conferenceId === this.conference.id) {
-            this.logger.debug(`${this.loggerPrefixJudge} Hearing status message received`, {
-                message: message
-            });
-            if (message.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended) {
-                this.audioRecordingService.cleanupDialOutConnections();
-            }
-        }
-    }
-
-    syncDisplayName(pexipParticipant: ParticipantUpdated) {
-        const pexipDisplayModel = PexipDisplayNameModel.fromString(pexipParticipant.pexipDisplayName);
-        if (
-            pexipParticipant.pexipDisplayName.includes(this.participant.id) &&
-            this.participant.display_name !== pexipDisplayModel.displayName
-        ) {
-            this.videoCallService.setParticipantOverlayText(pexipParticipant.uuid, this.participant.display_name);
-        }
-    }
-
     init() {
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
@@ -352,63 +292,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
-        this.videoCallService
-            .onParticipantCreated()
-            .pipe(
-                takeUntil(this.onDestroy$),
-                tap(createdParticipant => {
-                    this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
-                        pexipId: createdParticipant.uuid,
-                        displayName: createdParticipant.pexipDisplayName
-                    });
-                })
-            )
-            .subscribe(createdParticipant => {
-                this.assignPexipIdToRemoteStore(createdParticipant);
-            });
-
-        this.videoCallService
-            .onParticipantUpdated()
-            .pipe(
-                takeUntil(this.onDestroy$),
-                tap(updatedParticipant => {
-                    this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: updatedParticipant.uuid,
-                        dispayName: updatedParticipant.pexipDisplayName
-                    });
-                })
-            )
-            .subscribe(updatedParticipant => {
-                this.assignPexipIdToRemoteStore(updatedParticipant);
-                this.syncDisplayName(updatedParticipant);
-            });
-
-        this.videoCallService
-            .onConferenceAdjourned()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(() => this.audioRecordingService.cleanupDialOutConnections());
-
-        this.eventService
-            .getParticipantMediaStatusMessage()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(participantStatusMessage => {
-                if (participantStatusMessage.conferenceId === this.conference.id) {
-                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(
-                        participantStatusMessage.participantId,
-                        participantStatusMessage.mediaStatus.is_local_audio_muted,
-                        participantStatusMessage.mediaStatus.is_local_video_muted
-                    );
-                }
-            });
-
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
             this.connected = false;
-            this.getConference().then(() => {
-                this.subscribeToClock();
-                this.startEventHubSubscribers();
-                this.connectToPexip();
-            });
+            this.getConference();
+            this.subscribeToClock();
+            this.startEventHubSubscribers();
+            this.connectToPexip();
         } catch (error) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
             const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -417,18 +307,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.eventService
             .getAudioRestartActioned()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((conferenceId: string) => {
-                if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(conferenceId => conferenceId === this.vhConference.id)
+            )
+            .subscribe(() => {
+                if (this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
                     this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
                 }
             });
-
-        this.eventService
-            .getHearingStatusMessage()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((message: ConferenceStatusMessage) => this.handleHearingStatusMessage(message));
 
         this.audioRecordingService
             .getAudioRecordingPauseState()
@@ -442,7 +330,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.store
             .select(getCountdownComplete)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(complete => complete)
+            )
             .subscribe(complete => {
                 if (complete) {
                     this.logger.debug(`${this.loggerPrefixJudge} Hearing countdown complete`);
@@ -459,25 +350,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.cleanUp();
     }
 
-    private cleanupVideoControlCacheLogic() {
-        this.hearingCountdownFinishedSubscription?.unsubscribe();
-        this.hearingCountdownFinishedSubscription = null;
-
-        this.conferenceStatusChangedSubscription?.unsubscribe();
-        this.conferenceStatusChangedSubscription = null;
-
-        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
-        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = null;
-
-        this.participantStatusChangedSubscription?.unsubscribe();
-        this.participantStatusChangedSubscription = null;
-
-        this.onConferenceStatusChangedSubscription?.unsubscribe();
-        this.onConferenceStatusChangedSubscription = null;
-    }
-
     private cleanUp() {
-        this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
         this.audioRecordingService.cleanupSubscriptions();
     }
@@ -490,7 +363,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private onWowzaDisconnected() {
-        if (this.conference.audio_recording_required && this.conference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+        if (this.vhConference.audioRecordingRequired && this.vhConference.status === ConferenceStatus.InSession && !this.recordingPaused) {
             if (this.audioRecordingService.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             } else {
