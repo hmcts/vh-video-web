@@ -585,7 +585,10 @@ export class VideoCallService {
     }
 
     logMediaStreamInfo() {
-        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI.user_media_stream ? 'stream set' : 'stream not set');
+        this.logger.debug(
+            `${this.loggerPrefix} set user media stream`,
+            this.pexipAPI.user_media_stream?.active ? 'stream set' : 'stream not set'
+        );
     }
 
     private makePexipCall(
@@ -691,6 +694,7 @@ export class VideoCallService {
         this.hasDisconnected$.complete();
         this.heartbeatService.stopHeartbeat();
         this.logger.info(`${this.loggerPrefix} Re-creating a new instance of Pexip API client in preparation for next call.`);
+        this.setupClient(this.supplier);
     }
 
     private getSupplierConfig(config: ClientSettingsResponse) {

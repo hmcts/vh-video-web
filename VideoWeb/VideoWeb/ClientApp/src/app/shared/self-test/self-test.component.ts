@@ -174,7 +174,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.userMediaStreamService.currentStream$.pipe(takeUntil(this.destroyedSubject)).subscribe(stream => {
-            if (!stream) {
+            if (!stream || !stream.active) {
                 this.outgoingStream = null;
                 return;
             }
