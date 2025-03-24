@@ -98,7 +98,8 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'sendAudioRestartActioned',
         'getNewConferenceAdded',
         'getHearingCancelled',
-        'getHearingDetailsUpdated'
+        'getHearingDetailsUpdated',
+        'getAudioPaused'
     ],
     ['eventHubIsConnected']
 );

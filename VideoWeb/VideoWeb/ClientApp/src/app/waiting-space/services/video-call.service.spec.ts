@@ -2,14 +2,7 @@ import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
-import {
-    ApiClient,
-    ClientSettingsResponse,
-    HearingLayout,
-    StartOrResumeVideoHearingRequest,
-    Supplier,
-    SupplierConfigurationResponse
-} from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, HearingLayout, Supplier, SupplierConfigurationResponse } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
@@ -40,7 +33,6 @@ const config = new ClientSettingsResponse({
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
-    let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
 
@@ -60,17 +52,6 @@ describe('VideoCallService', () => {
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.uniqueCallTags, true).and.returnValue(of(true));
         mockStore = createMockStore({ initialState });
-        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
-            'startOrResumeVideoHearing',
-            'pauseVideoHearing',
-            'suspendVideoHearing',
-            'leaveHearing',
-            'nonHostLeaveHearing',
-            'endVideoHearing',
-            'callParticipant',
-            'dismissParticipant',
-            'joinHearingInSession'
-        ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'selectScreenToShare',
@@ -136,7 +117,6 @@ describe('VideoCallService', () => {
             logger,
             userMediaService,
             userMediaStreamService,
-            apiClient,
             configServiceSpy,
             heartbeatServiceSpy,
             streamMixerServiceSpy,
@@ -270,73 +250,6 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
         service.lowerAllHands('conference12');
         expect(pexipSpy.clearAllBuzz).toHaveBeenCalledTimes(1);
-    });
-    it('should make api start call on start hearing', async () => {
-        apiClient.startOrResumeVideoHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        const layout = HearingLayout.TwoPlus21;
-        await service.startHearing(conferenceId, layout);
-        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartOrResumeVideoHearingRequest({ layout }));
-    });
-
-    it('should make api pause call on pause hearing', async () => {
-        apiClient.pauseVideoHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        await service.pauseHearing(conferenceId);
-        expect(apiClient.pauseVideoHearing).toHaveBeenCalledWith(conferenceId);
-    });
-
-    it('should make api call to suspend hearing', async () => {
-        apiClient.suspendVideoHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        await service.suspendHearing(conferenceId);
-        expect(apiClient.suspendVideoHearing).toHaveBeenCalledWith(conferenceId);
-    });
-
-    it('should make api call to leave hearing', async () => {
-        apiClient.leaveHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        const participantId = Guid.create().toString();
-        await service.leaveHearing(conferenceId, participantId);
-        expect(apiClient.leaveHearing).toHaveBeenCalledWith(conferenceId, participantId);
-    });
-
-    it('should make api call to leave hearing for non host', async () => {
-        apiClient.nonHostLeaveHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        await service.nonHostLeaveHearing(conferenceId);
-        expect(apiClient.nonHostLeaveHearing).toHaveBeenCalledWith(conferenceId);
-    });
-
-    it('should make api end call on end hearing', async () => {
-        apiClient.endVideoHearing.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        await service.endHearing(conferenceId);
-        expect(apiClient.endVideoHearing).toHaveBeenCalledWith(conferenceId);
-    });
-
-    it('should make api call witness on call witness', async () => {
-        apiClient.callParticipant.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        const witnessId = Guid.create().toString();
-        await service.callParticipantIntoHearing(conferenceId, witnessId);
-        expect(apiClient.callParticipant).toHaveBeenCalledWith(conferenceId, witnessId);
-    });
-
-    it('makes api to join a video hearing currently in session', async () => {
-        apiClient.joinHearingInSession.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        const witnessId = Guid.create().toString();
-        await service.joinHearingInSession(conferenceId, witnessId);
-        expect(apiClient.joinHearingInSession).toHaveBeenCalledWith(conferenceId, witnessId);
-    });
-
-    it('should make api dismiss witness on dismiss witness', async () => {
-        apiClient.dismissParticipant.and.returnValue(of());
-        const conferenceId = Guid.create().toString();
-        const witnessId = Guid.create().toString();
-        await service.dismissParticipantFromHearing(conferenceId, witnessId);
-        expect(apiClient.dismissParticipant).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
     it('should call renegotiate', () => {

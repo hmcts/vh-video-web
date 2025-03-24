@@ -19,6 +19,7 @@ import { Store } from '@ngrx/store';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHParticipant } from '../store/models/vh-conference';
 import { VideoCallActions } from '../store/actions/video-call.action';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -236,7 +237,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.screenShareStream = null;
     }
 
-    async toggleMute() {
+    toggleMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own audio mute status to ${!this.audioMuted}`,
             this.logPayload
@@ -244,7 +245,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.conferenceStore.dispatch(VideoCallActions.toggleAudioMute());
     }
 
-    async toggleVideoMute() {
+    toggleVideoMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own video mute status to ${!this.videoMuted}`,
             this.logPayload
@@ -274,14 +275,14 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     pause() {
         this.focusService.storeFocus();
         this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
-        this.videoCallService.pauseHearing(this.conferenceId);
+        this.conferenceStore.dispatch(VideoCallHostActions.pauseHearing({ conferenceId: this.conferenceId }));
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
             this.logger.info(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
-            this.videoCallService.endHearing(this.conferenceId);
+            this.conferenceStore.dispatch(VideoCallHostActions.endHearing({ conferenceId: this.conferenceId }));
             this.sessionStorage.clear();
         } else {
             this.focusService.restoreFocus();
@@ -294,9 +295,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
 
             if (isAnotherHostInHearing) {
-                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id);
+                this.conferenceStore.dispatch(
+                    VideoCallHostActions.hostLeaveHearing({ conferenceId: this.conferenceId, participantId: this.participant.id })
+                );
             } else {
-                this.videoCallService.suspendHearing(this.conferenceId);
+                this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing because no host left after leaving`, this.logPayload);
+                this.conferenceStore.dispatch(VideoCallHostActions.suspendHearing({ conferenceId: this.conferenceId }));
             }
         } else {
             this.focusService.restoreFocus();

@@ -3,7 +3,14 @@ import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { of } from 'rxjs';
 import { catchError, switchMap, map, tap, filter } from 'rxjs/operators';
-import { ApiClient, EndpointStatus, ParticipantStatus, UpdateParticipantDisplayNameRequest } from 'src/app/services/clients/api-client';
+import {
+    ApiClient,
+    ConferenceStatus,
+    EndpointStatus,
+    ParticipantStatus,
+    Role,
+    UpdateParticipantDisplayNameRequest
+} from 'src/app/services/clients/api-client';
 import { ConferenceActions } from '../actions/conference.actions';
 import { mapConferenceToVHConference } from '../models/api-contract-to-state-model-mappers';
 import { ConferenceState } from '../reducers/conference.reducer';
@@ -16,6 +23,7 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
+import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 
 @Injectable()
 export class ConferenceEffects {
@@ -29,6 +37,17 @@ export class ConferenceEffects {
                 )
             )
         )
+    );
+
+    loadConferenceFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.loadConferenceFailure),
+                tap(action => {
+                    this.errorService.handleApiError(action.error);
+                })
+            ),
+        { dispatch: false }
     );
 
     loadLoggedInParticipant$ = createEffect(() =>
@@ -137,15 +156,27 @@ export class ConferenceEffects {
                 ofType(ConferenceActions.upsertPexipParticipant),
                 concatLatestFrom(() => [
                     this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant),
                     this.store.select(ConferenceSelectors.getPexipConference)
                 ]),
-                filter(([_, _conference, pexipConference]) => !pexipConference.guestsMuted),
+                filter(
+                    ([_, _conference, loggedInParticipant, pexipConference]) =>
+                        loggedInParticipant.status === ParticipantStatus.InHearing &&
+                        !pexipConference.guestsMuted &&
+                        loggedInParticipant.pexipInfo?.role === 'chair'
+                ),
                 filter(([_, conference]) => {
-                    const inHearingParticipants = conference.participants.filter(p => p.status === ParticipantStatus.InHearing);
+                    const inHearingParticipants = conference.participants.filter(
+                        p => p.status === ParticipantStatus.InHearing && ![Role.StaffMember, Role.Judge].includes(p.role)
+                    );
                     const inHearingEndpoints = conference.endpoints.filter(e => e.status === EndpointStatus.InHearing);
 
-                    const allParticipantsMuted = inHearingParticipants.every(p => p.pexipInfo?.isRemoteMuted);
-                    const allEndpointsMuted = inHearingEndpoints.every(e => e.pexipInfo?.isRemoteMuted);
+                    const allParticipantsMuted = inHearingParticipants
+                        .filter(p => p.status === ParticipantStatus.InHearing)
+                        .every(p => p.pexipInfo?.isRemoteMuted);
+                    const allEndpointsMuted = inHearingEndpoints
+                        .filter(e => e.status === EndpointStatus.InHearing)
+                        .every(e => e.pexipInfo?.isRemoteMuted);
                     return (
                         inHearingParticipants.length > 0 && allParticipantsMuted && (inHearingEndpoints.length === 0 || allEndpointsMuted)
                     );
@@ -164,15 +195,28 @@ export class ConferenceEffects {
                 ofType(ConferenceActions.upsertPexipParticipant),
                 concatLatestFrom(() => [
                     this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant),
                     this.store.select(ConferenceSelectors.getPexipConference)
                 ]),
-                filter(([_, _conference, pexipConference]) => pexipConference.guestsMuted),
+                filter(
+                    ([_, conference, loggedInParticipant, pexipConference]) =>
+                        loggedInParticipant.status === ParticipantStatus.InHearing &&
+                        loggedInParticipant.pexipInfo?.role === 'chair' &&
+                        pexipConference.guestsMuted &&
+                        conference.countdownComplete
+                ),
                 filter(([_, conference]) => {
-                    const inHearingParticipants = conference.participants.filter(p => p.status === ParticipantStatus.InHearing);
+                    const inHearingParticipants = conference.participants.filter(
+                        p => p.status === ParticipantStatus.InHearing && ![Role.StaffMember, Role.Judge].includes(p.role)
+                    );
                     const inHearingEndpoints = conference.endpoints.filter(e => e.status === EndpointStatus.InHearing);
 
-                    const allParticipantsUnmuted = inHearingParticipants.every(p => !p.pexipInfo.isRemoteMuted);
-                    const allEndpointsUnmuted = inHearingEndpoints.every(e => !e.pexipInfo.isRemoteMuted);
+                    const allParticipantsUnmuted = inHearingParticipants
+                        .filter(p => p.status === ParticipantStatus.InHearing && !!p.pexipInfo)
+                        .every(p => !p.pexipInfo.isRemoteMuted);
+                    const allEndpointsUnmuted = inHearingEndpoints
+                        .filter(e => e.status === EndpointStatus.InHearing && !!e.pexipInfo)
+                        .every(e => !e.pexipInfo.isRemoteMuted);
                     return (
                         inHearingParticipants.length > 0 &&
                         allParticipantsUnmuted &&
@@ -194,20 +238,61 @@ export class ConferenceEffects {
         () =>
             this.actions$.pipe(
                 ofType(ConferenceActions.upsertPexipConference),
-                concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)),
-                filter(([action, _]) => !action.pexipConference.guestsMuted),
+                concatLatestFrom(() => [
+                    this.store.select(ConferenceSelectors.getActiveConference),
+                    this.store.select(ConferenceSelectors.getLoggedInParticipant)
+                ]),
+                filter(
+                    ([action, activeConference, loggedInParticipant]) =>
+                        !action.pexipConference.guestsMuted &&
+                        !!activeConference &&
+                        !!loggedInParticipant &&
+                        loggedInParticipant.pexipInfo?.role === 'chair'
+                ),
                 tap(([_, conference]) => {
                     this.logger.info(`${this.loggerPrefix} Unlocking any remote muted participants as conference is unlocked`);
                     conference.participants
-                        .filter(p => p.pexipInfo?.isRemoteMuted)
+                        .filter(p => p?.pexipInfo?.isRemoteMuted)
                         .forEach(p => this.videoCallService.muteParticipant(p.pexipInfo.uuid, false, conference.id, p.id));
 
                     conference.endpoints
-                        .filter(e => e.pexipInfo?.isRemoteMuted)
+                        .filter(e => e?.pexipInfo?.isRemoteMuted)
                         .forEach(e => this.videoCallService.muteParticipant(e.pexipInfo.uuid, false, conference.id, e.id));
                 })
             ),
         { dispatch: false }
+    );
+
+    pauseAudioRecordingOnPauseOrSuspend$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.updateActiveConferenceStatus),
+                concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)),
+                filter(
+                    ([action, conference]) =>
+                        !!conference &&
+                        conference.id === action.conferenceId &&
+                        (action.status === ConferenceStatus.Paused || action.status === ConferenceStatus.Suspended)
+                ),
+                tap(([_, _conference]) => {
+                    this.audioRecordingService.cleanupDialOutConnections();
+                })
+            ),
+        { dispatch: false }
+    );
+
+    refreshConferenceOnClose$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.updateActiveConferenceStatus),
+            concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)),
+            filter(
+                ([action, conference]) => !!conference && conference.id === action.conferenceId && action.status === ConferenceStatus.Closed
+            ),
+            switchMap(([action, _]) => {
+                this.logger.info(`${this.loggerPrefix} Conference ${action.conferenceId} has been closed, refreshing conference`);
+                return [ConferenceActions.loadConference({ conferenceId: action.conferenceId })];
+            })
+        )
     );
 
     private readonly loggerPrefix = '[ConferenceEffects] -';
@@ -221,6 +306,7 @@ export class ConferenceEffects {
         private errorService: ErrorService,
         private eventsService: EventsService,
         private userMediaStreamService: UserMediaStreamServiceV2,
+        private audioRecordingService: AudioRecordingService,
         private logger: Logger
     ) {}
 }

@@ -15,7 +15,6 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -59,7 +58,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
@@ -81,7 +79,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            participantRemoteMuteStoreService,
             titleService,
             hideComponentsService,
             focusService,
@@ -92,10 +89,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
     get allowAudioOnlyToggle(): boolean {
         return (
-            !!this.conference &&
-            !!this.participant &&
-            this.participant?.status !== ParticipantStatus.InConsultation &&
-            this.participant?.status !== ParticipantStatus.InHearing
+            this.vhParticipant &&
+            this.vhParticipant.status !== ParticipantStatus.InConsultation &&
+            this.vhParticipant.status !== ParticipantStatus.InHearing
         );
     }
 
@@ -158,13 +154,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.notificationSoundsService.initHearingAlertSound();
-        this.getConference().then(() => {
-            if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
-                this.showWarning = true;
-            } else {
-                this.setUpSubscribers();
-            }
-        });
+        this.getConference();
+
+        if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+            this.showWarning = true;
+        } else {
+            this.setUpSubscribers();
+        }
     }
 
     private setUpSubscribers() {
@@ -175,7 +171,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
     private cleanUp() {
         this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
-            conference: this.conference?.id
+            conference: this.vhConference?.id
         });
 
         this.executeWaitingRoomCleanup();
