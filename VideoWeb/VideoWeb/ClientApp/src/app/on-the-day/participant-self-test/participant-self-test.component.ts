@@ -61,7 +61,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
             await this.raisedSelfTestIncompleted();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.logger.warn('[ParticipantSelfTest] - Navigating to camera check.');
+        this.logger.debug('[ParticipantSelfTest] - Navigating to camera check.');
         this.router.navigate([pageUrls.CameraWorking, conferenceId]);
     }
 

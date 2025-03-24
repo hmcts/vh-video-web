@@ -723,6 +723,7 @@ describe('ParticipantWaitingRoomComponent', () => {
         it('should publish the media status when audio toggle changes', fakeAsync(() => {
             component.ngOnInit();
             tick();
+            component.connected = true;
             isAudioOnlySubject.next(true);
             tick();
             expect(component.audioOnly).toBeTrue();
