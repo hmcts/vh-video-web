@@ -4,11 +4,11 @@
   </h1>
 </div>
 <div class="govuk-grid-row">
-  <div *ngIf="!displayFeed && !didTestComplete" class="govuk-grid-column-full">
+  <div *ngIf="displayConnecting" class="govuk-grid-column-full">
     <p class="govuk-body-l">{{ 'self-test.to-be-connected' | translate }}</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
-    <video appForcePlayVideo *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" width="65%" height="auto">
+    <video appForcePlayVideo *ngIf="streamsActive" id="incomingStream" [srcObject]="incomingStream" width="65%" height="auto">
       {{ 'self-test.browser-not-support' | translate }}
     </video>
   </div>
@@ -18,11 +18,11 @@
   <div class="self-view-container">
     <div>
       <video
-        *ngIf="this.outgoingStream"
+        *ngIf="outgoingStream?.active"
         #selfViewVideo
         [muted]="true"
         id="outgoingStream"
-        [srcObject]="this.outgoingStream"
+        [srcObject]="outgoingStream"
         width="100%"
         height="auto"
         class="selfie-view"
@@ -41,12 +41,20 @@
   </div>
 </div>
 
+<app-select-media-devices *ngIf="displayDeviceChangeModal" (shouldClose)="hideChangeDevices()"></app-select-media-devices>
+
 <div class="govuk-grid-row">
-  <div *ngIf="showChangeDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <a id="change-device-link" href="javascript:void(0);" (click)="changeDevices()" class="govuk-link">{{
-      'self-test.change-camera-mic' | translate
-    }}</a>
+  <div class="govuk-grid-column-full govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+    <div class="govuk-button-group">
+      <button
+        *ngIf="showChangeDevices"
+        type="submit"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="displayChangeDevices()"
+      >
+        {{ 'self-test.change-camera-mic' | translate }}
+      </button>
+    </div>
   </div>
 </div>
-
-<app-select-media-devices *ngIf="displayDeviceChangeModal" (shouldClose)="onSelectMediaDeviceShouldClose()"></app-select-media-devices>

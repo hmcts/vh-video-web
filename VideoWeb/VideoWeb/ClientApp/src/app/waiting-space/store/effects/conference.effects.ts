@@ -38,6 +38,17 @@ export class ConferenceEffects {
         )
     );
 
+    loadLoggedInParticipantOnConferenceLoadSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConferenceActions.loadConferenceSuccess),
+            switchMap(action =>
+                this.apiClient
+                    .getCurrentParticipant(action.conference.id)
+                    .pipe(map(participant => ConferenceActions.loadLoggedInParticipant({ participantId: participant.participant_id })))
+            )
+        )
+    );
+
     loadConferenceFailure$ = createEffect(
         () =>
             this.actions$.pipe(

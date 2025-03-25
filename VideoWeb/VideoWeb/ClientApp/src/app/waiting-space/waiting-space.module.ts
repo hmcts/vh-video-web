@@ -63,6 +63,7 @@ import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { RouterEffects } from './store/effects/router.effects';
 import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
+import { SelfTestEffects } from './store/effects/self-test.effects';
 
 @NgModule({
     imports: [
@@ -79,6 +80,7 @@ import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
             ReferenceDataEffects,
             NotificationEffects,
             ConsultationEffects,
+            SelfTestEffects,
             RouterEffects
         ])
     ],
