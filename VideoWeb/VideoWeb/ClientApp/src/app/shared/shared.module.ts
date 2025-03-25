@@ -21,7 +21,6 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ScreenHelper } from './screen-helper';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
-import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';
@@ -103,6 +102,7 @@ import { CookiesComponent } from './cookies/cookies.component';
 import { FeatureFlagDirective } from './directives/feature-flag.directive';
 import { DialOutNumberComponent } from './dial-out-number/dial-out-number.component';
 import { DesktopOnlyDirective } from './directives/desktop-only.directive';
+import { SelfTestV2Component } from './self-test-v2/self-test-v2.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -135,7 +135,7 @@ export function getSettings(configService: ConfigService) {
         SelectMediaDevicesComponent,
         MicVisualiserComponent,
         EquipmentProblemComponent,
-        SelfTestComponent,
+        SelfTestV2Component,
         UnsupportedBrowserComponent,
         PrivacyPolicyComponent,
         ModalComponent,
@@ -192,7 +192,7 @@ export function getSettings(configService: ConfigService) {
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,
         MicVisualiserComponent,
-        SelfTestComponent,
+        SelfTestV2Component,
         ModalComponent,
         CommonModule,
         FormsModule,
