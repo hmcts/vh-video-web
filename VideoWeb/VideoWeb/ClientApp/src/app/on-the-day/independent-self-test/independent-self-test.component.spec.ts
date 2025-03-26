@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -27,7 +27,7 @@ describe('IndependentSelfTestComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         mockStore = createMockStore({
             initialState: {
                 currentConference: undefined,
@@ -37,7 +37,7 @@ describe('IndependentSelfTestComponent', () => {
             }
         });
 
-        TestBed.configureTestingModule({
+        await TestBed.configureTestingModule({
             declarations: [
                 IndependentSelfTestComponent,
                 MockComponent(SelfTestV2Component),

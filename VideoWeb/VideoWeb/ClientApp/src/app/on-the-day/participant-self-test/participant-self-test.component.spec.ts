@@ -53,7 +53,7 @@ describe('ParticipantSelfTestV2Component', () => {
             }
         });
 
-        TestBed.configureTestingModule({
+        await TestBed.configureTestingModule({
             declarations: [
                 ParticipantSelfTestComponent,
                 MockComponent(SelfTestV2Component),
