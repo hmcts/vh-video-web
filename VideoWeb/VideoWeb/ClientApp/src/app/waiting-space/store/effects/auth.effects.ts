@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { ofType, createEffect, Actions } from '@ngrx/effects';
 import { switchMap, map, shareReplay } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
-import { Store } from '@ngrx/store';
-import { ConferenceState } from '../reducers/conference.reducer';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AuthActions } from '../actions/auth.actions';
 
 @Injectable()
 export class AuthEffects {
-    oadConference$ = createEffect(() =>
+    loadUserProfile$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AuthActions.loadUserProfile),
             switchMap(_action =>
@@ -35,7 +33,6 @@ export class AuthEffects {
     private readonly loggerPrefix = '[AuthEffects] -';
     constructor(
         private actions$: Actions,
-        private store: Store<ConferenceState>,
         private apiClient: ApiClient,
         private logger: Logger
     ) {}
