@@ -230,46 +230,37 @@ describe('SelfTestV2Component', () => {
     });
 
     describe('streamsActive', () => {
-        it('should return false when no streams are active', () => {
+        it('should return false when no streams are defined', () => {
             component.outgoingStream = undefined;
             component.incomingStream = undefined;
             expect(component.streamsActive).toBeFalsy();
         });
 
-        it('should return false when no streams are active', () => {
+        it('should return false when outoing is undefined and incoming is not active', () => {
             component.outgoingStream = undefined;
-            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            component.incomingStream = new MediaStream();
             expect(component.streamsActive).toBeFalsy();
         });
 
-        it('should return false when no streams are active', () => {
-            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+        it('should return false when outoing is not active and incoming is undefined', () => {
+            component.outgoingStream = new MediaStream();
             component.incomingStream = undefined;
             expect(component.streamsActive).toBeFalsy();
         });
 
         it('should return true when streams are active', () => {
-            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
-            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
+            component.outgoingStream = new MediaStream();
+            spyOnProperty(component.outgoingStream, 'active').and.returnValue(true);
+            component.incomingStream = new MediaStream();
+            spyOnProperty(component.incomingStream, 'active').and.returnValue(true);
             expect(component.streamsActive).toBeTruthy();
         });
 
         it('should return true when streams are active urls', () => {
-            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
+            component.outgoingStream = new MediaStream();
+            spyOnProperty(component.outgoingStream, 'active').and.returnValue(true);
             component.incomingStream = new URL('http://www.hmcts.net');
             expect(component.streamsActive).toBeTruthy();
-        });
-
-        it('should return false when outgoing stream is inactive', () => {
-            component.outgoingStream = undefined;
-            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
-            expect(component.streamsActive).toBeFalsy();
-        });
-
-        it('should return false when incoming stream is inactive', () => {
-            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
-            component.incomingStream = undefined;
-            expect(component.streamsActive).toBeFalsy();
         });
     });
 

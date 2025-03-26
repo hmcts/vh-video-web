@@ -9,6 +9,7 @@ import {
     ApiClient,
     ConferenceStatus,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantStatus,
     Role,
     UpdateParticipantDisplayNameRequest
@@ -44,7 +45,12 @@ describe('ConferenceEffects', () => {
 
     beforeEach(() => {
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
-        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing', 'updateParticipantDisplayName']);
+        apiClient = jasmine.createSpyObj('ApiClient', [
+            'getConferenceById',
+            'nonHostLeaveHearing',
+            'updateParticipantDisplayName',
+            'getCurrentParticipant'
+        ]);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
@@ -116,6 +122,32 @@ describe('ConferenceEffects', () => {
             const expected = cold('-b', { b: ConferenceActions.loadConferenceFailure({ error }) });
             expect(effects.loadConference$).toBeObservable(expected);
             expect(apiClient.getConferenceById).toHaveBeenCalledWith(conferenceId);
+        });
+    });
+
+    describe('loadLoggedInParticipantOnConferenceLoadSuccess$', () => {
+        it('should disptach the loadLoggedInParticipant when a conference has loaded successfully', () => {
+            // arrange
+            const conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
+            const loggedInParticipant = conference.participants[0];
+            apiClient.getCurrentParticipant.and.returnValue(
+                of(
+                    new LoggedParticipantResponse({
+                        participant_id: loggedInParticipant.id,
+                        display_name: loggedInParticipant.displayName,
+                        role: loggedInParticipant.role
+                    })
+                )
+            );
+
+            // act
+            const action = ConferenceActions.loadConferenceSuccess({ conference });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            const expectedAction = ConferenceActions.loadLoggedInParticipant({ participantId: loggedInParticipant.id });
+            const expected = cold('-b', { b: expectedAction });
+            expect(effects.loadLoggedInParticipantOnConferenceLoadSuccess$).toBeObservable(expected);
         });
     });
 
