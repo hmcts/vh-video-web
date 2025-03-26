@@ -41,7 +41,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
 
     testInProgress = false;
     displayDeviceChangeModal = false;
-    showChangeDevices = false;
+    showChangeDevicesButton = false;
 
     displayConnecting = false;
     displayFeed = false;
@@ -73,9 +73,8 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
 
     get streamsActive() {
         let outgoingActive = true;
-        if (this.outgoingStream instanceof MediaStream) {
-            outgoingActive = this.outgoingStream.active;
-        }
+        outgoingActive = this.outgoingStream?.active;
+
         let incomingActive = true;
         if (this.incomingStream instanceof MediaStream) {
             incomingActive = this.incomingStream.active;
@@ -90,7 +89,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             .hasMultipleDevices()
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(result => {
-                this.showChangeDevices = result || this.videoFilterService.doesSupportVideoFiltering();
+                this.showChangeDevicesButton = result || this.videoFilterService.doesSupportVideoFiltering();
             });
 
         this.setupPexipSubscribers();
@@ -236,14 +235,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream as MediaStream;
-        if (this.videoElement) {
-            this.videoElement.nativeElement.srcObject = this.outgoingStream;
-            this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-                this.videoElement.nativeElement
-                    .play()
-                    .catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
-            });
-        }
+        this.updateVideoElementWithStream(this.outgoingStream);
         this.videoCallService.connect('0000', null);
     }
 
@@ -285,6 +277,18 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         this.userMediaStreamService.closeCurrentStream();
     }
 
+    updateVideoElementWithStream(stream: MediaStream) {
+        if (this.videoElement) {
+            this.logger.debug(`${this.loggerPrefix} Updating video element with stream`);
+            this.videoElement.nativeElement.srcObject = stream;
+            this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
+                this.videoElement.nativeElement
+                    .play()
+                    .catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
+            });
+        }
+    }
+
     retrieveSelfTestScore() {
         this.logger.debug(`${this.loggerPrefix} Retrieving self test score`, {
             conference: this.conference?.id,
@@ -292,7 +296,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         });
         this.conferenceStore.dispatch(
             SelfTestActions.retrieveSelfTestScore({
-                conferenceId: this.conference.id,
+                conferenceId: this.conference?.id,
                 participantId: this.selfTestParticipantId,
                 independent: this.isIndependentTest
             })
