@@ -27,13 +27,13 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
     equipmentWorksHandler() {
         this.logger.debug('[JudgeSelfTest] - Equiptment works clicked. Navigating to Judge hearing list.');
         this.router.navigateByUrl(pageUrls.JudgeHearingList);
-        this.hideSelfTest = true;
+        // this.hideSelfTest = true;
     }
 
     equipmentFaultyHandler() {
         this.showEquipmentFaultMessage = true;
         this.testInProgress = false;
-        this.hideSelfTest = true;
+        // this.hideSelfTest = true;
     }
 
     restartTest() {
