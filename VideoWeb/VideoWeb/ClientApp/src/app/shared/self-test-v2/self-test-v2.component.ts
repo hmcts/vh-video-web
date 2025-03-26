@@ -274,7 +274,6 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             this.didTestComplete = true;
             this.retrieveSelfTestScore();
         }
-        this.userMediaStreamService.closeCurrentStream();
     }
 
     updateVideoElementWithStream(stream: MediaStream) {

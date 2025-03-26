@@ -75,10 +75,7 @@ describe('SelfTestV2Component', () => {
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
 
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(
-            ['createAndPublishStream', 'closeCurrentStream'],
-            ['currentStream$']
-        );
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(['createAndPublishStream'], ['currentStream$']);
         currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
@@ -322,16 +319,6 @@ describe('SelfTestV2Component', () => {
 
             expect(component.testInProgress).toBeFalse();
             expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
-        }));
-
-        it('should close the media stream when disconnected from pexip', fakeAsync(() => {
-            const disconnectedCall = new DisconnectedCall('Unexpected disconnect');
-            userMediaStreamService.closeCurrentStream.calls.reset();
-
-            onDisconnectedSubjectMock.next(disconnectedCall);
-            tick();
-
-            expect(userMediaStreamService.closeCurrentStream).toHaveBeenCalledTimes(1);
         }));
 
         it('should retrieve the self test score when disconnected from pexip with test call finished', fakeAsync(() => {
