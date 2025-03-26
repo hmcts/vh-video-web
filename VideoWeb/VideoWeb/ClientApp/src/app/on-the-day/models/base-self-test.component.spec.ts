@@ -110,12 +110,10 @@ describe('BaseSelfTestComponentDirective', () => {
     });
 
     describe('restartTest', () => {
-        it('should set testInProgress to false and hideSelfTest to false', () => {
+        it('should set testInProgress to false ', () => {
             component.testInProgress = true;
-            component.hideSelfTest = true;
             component.restartTest();
             expect(component.testInProgress).toBeFalse();
-            expect(component.hideSelfTest).toBeFalse();
         });
     });
 

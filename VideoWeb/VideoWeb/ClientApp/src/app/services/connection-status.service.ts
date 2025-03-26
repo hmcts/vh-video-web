@@ -77,7 +77,6 @@ export class ConnectionStatusService {
     }
 
     private handleConnectionResult(connectionResult: boolean) {
-        this.logger.debug(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
         if (this.status === connectionResult) {
             return;
         }

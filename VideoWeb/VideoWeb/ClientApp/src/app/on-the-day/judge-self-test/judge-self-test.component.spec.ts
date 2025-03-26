@@ -99,12 +99,9 @@ describe('JudgeSelfTestComponent', () => {
 
     describe('equipmentWorksHandler', () => {
         it('should navigate to judge hearing list', () => {
-            component.hideSelfTest = false;
-
             component.equipmentWorksHandler();
 
             expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.JudgeHearingList);
-            expect(component.hideSelfTest).toBeTrue();
         });
     });
 
@@ -112,13 +109,11 @@ describe('JudgeSelfTestComponent', () => {
         it('should show equipment fault message', () => {
             component.showEquipmentFaultMessage = false;
             component.testInProgress = true;
-            component.hideSelfTest = false;
 
             component.equipmentFaultyHandler();
 
             expect(component.showEquipmentFaultMessage).toBeTrue();
             expect(component.testInProgress).toBeFalse();
-            expect(component.hideSelfTest).toBeTrue();
         });
     });
 
