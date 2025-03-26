@@ -69,7 +69,6 @@ describe('IndependentSelfTestComponent', () => {
             component.equipmentWorksHandler();
 
             expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.StaffMemberHearingList);
-            expect(component.hideSelfTest).toBeTrue();
         });
 
         it('should navigate to participant hearing list if not staff member', () => {
@@ -77,7 +76,6 @@ describe('IndependentSelfTestComponent', () => {
             component.equipmentWorksHandler();
 
             expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.ParticipantHearingList);
-            expect(component.hideSelfTest).toBeTrue();
         });
     });
 
@@ -87,18 +85,15 @@ describe('IndependentSelfTestComponent', () => {
 
             expect(component.showEquipmentFaultMessage).toBeTrue();
             expect(component.testInProgress).toBeFalse();
-            expect(component.hideSelfTest).toBeTrue();
         });
     });
 
     describe('restartTest', () => {
         it('should set testInProgress to false and hideSelfTest to false', () => {
             component.testInProgress = true;
-            component.hideSelfTest = true;
             component.restartTest();
 
             expect(component.testInProgress).toBeFalse();
-            expect(component.hideSelfTest).toBeFalse();
             expect(component.showEquipmentFaultMessage).toBeFalse();
         });
     });

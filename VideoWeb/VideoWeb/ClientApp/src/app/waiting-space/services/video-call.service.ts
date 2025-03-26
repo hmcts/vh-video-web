@@ -544,7 +544,7 @@ export class VideoCallService {
             call_type: this.pexipAPI.call_type
         });
         if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(
+            this.logger.debug(
                 `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
             );
             this.justRenegotiated = false;
@@ -616,10 +616,11 @@ export class VideoCallService {
     }
 
     private cleanUpConnection() {
-        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
+        this.logger.info(`${this.loggerPrefix} Cleaning up connection.`);
         this.hasDisconnected$.next();
         this.hasDisconnected$.complete();
         this.heartbeatService.stopHeartbeat();
+        this.logger.info(`${this.loggerPrefix} Re-creating a new instance of Pexip API client in preparation for next call.`);
         this.setupClient(this.supplier);
     }
 

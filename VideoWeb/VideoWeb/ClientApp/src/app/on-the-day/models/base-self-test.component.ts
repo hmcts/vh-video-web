@@ -18,12 +18,9 @@ export abstract class BaseSelfTestComponentDirective implements OnInit, OnDestro
 
     selfTestScore: SelfTestScore;
     testInProgress: boolean;
-    // todo: evaluate if hideSelfTest is needed
-    // hideSelfTest = false;
-    isStaffMember = false;
     selfTestCompleted = false;
+    isStaffMember = false;
 
-    loadingData: boolean;
     conference: VHConference;
     participant: VHParticipant;
 
@@ -94,7 +91,6 @@ export abstract class BaseSelfTestComponentDirective implements OnInit, OnDestro
     restartTest() {
         this.logger.debug(`${this.loggerPrefix} restarting self test`);
         this.testInProgress = false;
-        // this.hideSelfTest = false;
     }
 
     onSelfTestCompleted(): void {

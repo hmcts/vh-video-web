@@ -48,7 +48,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
             this.raisedSelfTestIncompleted();
         }
 
-        this.logger.warn('[ParticipantSelfTest] - Navigating to camera check.');
+        this.logger.debug('[ParticipantSelfTest] - Navigating to camera check.');
         this.router.navigate([pageUrls.CameraWorking, this.conference.id]);
     }
 
