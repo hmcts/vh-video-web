@@ -29,13 +29,11 @@ export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective
         } else {
             this.router.navigateByUrl(pageUrls.ParticipantHearingList);
         }
-        // this.hideSelfTest = true;
     }
 
     equipmentFaultyHandler() {
         this.showEquipmentFaultMessage = true;
         this.testInProgress = false;
-        // this.hideSelfTest = true;
     }
 
     restartTest() {
