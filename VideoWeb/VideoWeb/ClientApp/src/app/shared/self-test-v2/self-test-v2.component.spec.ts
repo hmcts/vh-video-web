@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { SelfTestV2Component } from './self-test-v2.component';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -19,13 +19,26 @@ import { ErrorService } from 'src/app/services/error.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { mapConferenceToVHConference } from 'src/app/waiting-space/store/models/api-contract-to-state-model-mappers';
-import { Subject, of } from 'rxjs';
+import { ReplaySubject, Subject, of } from 'rxjs';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
+import {
+    onConnectedSubjectMock,
+    onDisconnectedSubjectMock,
+    onErrorSubjectMock,
+    onSetupSubjectMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call.service';
+import { ElementRef } from '@angular/core';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
+import { SelfTestActions } from 'src/app/waiting-space/store/actions/self-test.actions';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
 fdescribe('SelfTestV2Component', () => {
     let component: SelfTestV2Component;
     let fixture: ComponentFixture<SelfTestV2Component>;
+
+    let videoElementRefMock: ElementRef<HTMLVideoElement>;
 
     const testData = new ConferenceTestData();
     let conference: VHConference;
@@ -35,6 +48,7 @@ fdescribe('SelfTestV2Component', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
     let currentStreamSubject: Subject<MediaStream>;
+    let cameraAndMicrophoneStream = new MediaStream();
 
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamServiceV2>;
     let videoFilterService: jasmine.SpyObj<VideoFilterService>;
@@ -50,6 +64,9 @@ fdescribe('SelfTestV2Component', () => {
     beforeAll(() => {
         conference = mapConferenceToVHConference(testData.getConferenceDetailNow());
         loggedInParticipant = conference.participants.find(x => x.role === Role.Individual);
+        videoElementRefMock = {
+            nativeElement: document.createElement('video')
+        };
 
         errorService = jasmine.createSpyObj<ErrorService>(['handleApiError', 'handlePexipError']);
 
@@ -57,26 +74,19 @@ fdescribe('SelfTestV2Component', () => {
         userMediaService.hasMultipleDevices.and.returnValue(of(true));
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
-        currentStreamSubject = new Subject<MediaStream>();
-        getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(
             ['createAndPublishStream', 'closeCurrentStream'],
             ['currentStream$']
         );
+        currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
-        videoCallService = jasmine.createSpyObj<VideoCallService>([
-            'onCallConnected',
-            'onCallDisconnected',
-            'onCallSetup',
-            'onError',
-            'setupClient',
-            'connect',
-            'enableH264',
-            'makeCall',
-            'disconnectFromCall'
-        ]);
+        videoCallService = videoCallServiceSpy;
+        videoCallService.makeCall.and.resolveTo();
+
+        cameraAndMicrophoneStream = new MediaStream();
+        spyOnProperty(cameraAndMicrophoneStream, 'active').and.returnValue(true);
 
         videoFilterService = jasmine.createSpyObj<VideoFilterService>(['doesSupportVideoFiltering']);
         videoFilterService.doesSupportVideoFiltering.and.returnValue(false);
@@ -94,6 +104,8 @@ fdescribe('SelfTestV2Component', () => {
     });
 
     beforeEach(async () => {
+        currentStreamSubject.next();
+
         await TestBed.configureTestingModule({
             declarations: [
                 SelfTestV2Component,
@@ -116,35 +128,220 @@ fdescribe('SelfTestV2Component', () => {
 
         fixture = TestBed.createComponent(SelfTestV2Component);
         component = fixture.componentInstance;
+        component.videoElement = videoElementRefMock;
+
+        mockStore = TestBed.inject(MockStore);
     });
 
-    describe('isIndependentTest true', () => {
+    afterEach(() => {
+        component.ngOnDestroy();
+    });
+
+    afterAll(() => {
+        mockStore.resetSelectors();
+    });
+
+    describe('onInit', () => {
         beforeEach(() => {
-            component.isIndependentTest = true;
-            fixture.detectChanges();
+            spyOn(component, 'updateVideoElementWithStream').and.callFake(() => {});
+
+            apiClient.getPexipConfig.calls.reset();
+            apiClient.getSelfTestToken.calls.reset();
+            videoCallService.setupClient.calls.reset();
+            videoCallService.makeCall.calls.reset();
+
+            currentStreamSubject.next(cameraAndMicrophoneStream);
         });
 
-        it('should retrieve pexip config and start test call', () => {
-            expect(apiClient.getPexipConfig).toHaveBeenCalledTimes(1);
-            expect(apiClient.getSelfTestToken).toHaveBeenCalledTimes(1);
-            expect(videoCallService.setupClient).toHaveBeenCalledTimes(1);
-            expect(videoCallService.connect).toHaveBeenCalledTimes(1);
-            expect(videoCallService.makeCall).toHaveBeenCalledTimes(1);
+        describe('isIndependentTest true', () => {
+            beforeEach(() => {
+                component.isIndependentTest = true;
+
+                fixture.detectChanges();
+            });
+
+            it('should retrieve pexip config and start test call', () => {
+                expect(apiClient.getPexipConfig).toHaveBeenCalledTimes(1);
+                expect(apiClient.getSelfTestToken).toHaveBeenCalledTimes(1);
+                expect(videoCallService.setupClient).toHaveBeenCalledTimes(1);
+                expect(videoCallService.makeCall).toHaveBeenCalledTimes(1);
+
+                expect(component.conference).toBeUndefined();
+                expect(component.participant).toBeUndefined();
+            });
+        });
+
+        describe('isIndependentTest false', () => {
+            beforeEach(() => {
+                component.isIndependentTest = false;
+                mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
+                mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+                fixture.detectChanges();
+            });
+
+            it('should create', () => {
+                expect(component.conference).toBeDefined();
+                expect(component.participant).toBeDefined();
+                expect(apiClient.getSelfTestToken).toHaveBeenCalledTimes(1);
+                expect(videoCallService.setupClient).toHaveBeenCalledTimes(1);
+                expect(videoCallService.makeCall).toHaveBeenCalledTimes(1);
+            });
         });
     });
 
-    describe('isIndependentTest false', () => {
+    describe('Change Devices Modal', () => {
+        it('should show the change devices modal', () => {
+            component.displayChangeDevices();
+
+            expect(component.displayDeviceChangeModal).toBeTrue();
+        });
+
+        it('should hide the change devices modal', () => {
+            component.hideChangeDevices();
+
+            expect(component.displayDeviceChangeModal).toBeFalse();
+        });
+    });
+
+    describe('retrieveSelfTestScore', () => {
+        it('should dispatch action to retrieve score', () => {
+            component.conference = conference;
+            component.participant = loggedInParticipant;
+            component.selfTestParticipantId = loggedInParticipant.id;
+            component.isIndependentTest = false;
+
+            spyOn(mockStore, 'dispatch');
+
+            component.retrieveSelfTestScore();
+
+            expect(mockStore.dispatch).toHaveBeenCalledWith(
+                SelfTestActions.retrieveSelfTestScore({
+                    conferenceId: conference.id,
+                    participantId: component.selfTestParticipantId,
+                    independent: false
+                })
+            );
+        });
+    });
+
+    describe('updateVideoElementWithStream', () => {
+        it('should set the video element srcObject', () => {
+            component.updateVideoElementWithStream(cameraAndMicrophoneStream);
+            videoElementRefMock.nativeElement.dispatchEvent(new Event('loadedmetadata'));
+            expect(component.videoElement.nativeElement.srcObject).toBe(cameraAndMicrophoneStream);
+        });
+    });
+
+    describe('streamsActive', () => {
+        it('should return false when no streams are active', () => {
+            component.outgoingStream = undefined;
+            component.incomingStream = undefined;
+            expect(component.streamsActive).toBeFalsy();
+        });
+
+        it('should return false when no streams are active', () => {
+            component.outgoingStream = undefined;
+            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            expect(component.streamsActive).toBeFalsy();
+        });
+
+        it('should return false when no streams are active', () => {
+            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            component.incomingStream = undefined;
+            expect(component.streamsActive).toBeFalsy();
+        });
+
+        it('should return true when streams are active', () => {
+            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
+            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
+            expect(component.streamsActive).toBeTruthy();
+        });
+
+        it('should return true when streams are active urls', () => {
+            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks'], { active: true });
+            component.incomingStream = new URL('http://www.hmcts.net');
+            expect(component.streamsActive).toBeTruthy();
+        });
+
+        it('should return false when outgoing stream is inactive', () => {
+            component.outgoingStream = undefined;
+            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            expect(component.streamsActive).toBeFalsy();
+        });
+
+        it('should return false when incoming stream is inactive', () => {
+            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            component.incomingStream = undefined;
+            expect(component.streamsActive).toBeFalsy();
+        });
+    });
+
+    describe('Pexip Callbacks', () => {
         beforeEach(() => {
             component.isIndependentTest = false;
-            fixture.detectChanges();
+            component.conference = conference;
+            component.participant = loggedInParticipant;
+            component.selfTestParticipantId = loggedInParticipant.id;
+
+            component.setupPexipSubscribers();
         });
 
-        it('should create', () => {
-            expect(component).toBeTruthy();
+        afterEach(() => {
+            component.ngOnDestroy();
         });
-    });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+        it('should connect when pexip call has setup', fakeAsync(() => {
+            const callSetup = new CallSetup(new MediaStream([]));
+            videoCallService.connect.calls.reset();
+
+            onSetupSubjectMock.next(callSetup);
+            tick();
+
+            expect(videoCallService.connect).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should capture incoming stream and emit test started when call is connected', fakeAsync(() => {
+            const connectedCall = new ConnectedCall(new MediaStream([]));
+            spyOn(component.testStarted, 'emit');
+
+            onConnectedSubjectMock.next(connectedCall);
+            tick();
+
+            expect(component.incomingStream).toBe(connectedCall.stream);
+            expect(component.displayFeed).toBeTrue();
+            expect(component.displayConnecting).toBeFalse();
+            expect(component.testInProgress).toBeTrue();
+            expect(component.testStarted.emit).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should handle pexip error', fakeAsync(() => {
+            errorService.handlePexipError.calls.reset();
+
+            onErrorSubjectMock.next(new CallError('random test failure'));
+            tick();
+
+            expect(component.testInProgress).toBeFalse();
+            expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should close the media stream when disconnected from pexip', fakeAsync(() => {
+            const disconnectedCall = new DisconnectedCall('Unexpected disconnect');
+            userMediaStreamService.closeCurrentStream.calls.reset();
+
+            onDisconnectedSubjectMock.next(disconnectedCall);
+            tick();
+
+            expect(userMediaStreamService.closeCurrentStream).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should retrieve the self test score when disconnected from pexip with test call finished', fakeAsync(() => {
+            const disconnectedCall = new DisconnectedCall('Test call finished');
+            spyOn(component, 'retrieveSelfTestScore');
+
+            onDisconnectedSubjectMock.next(disconnectedCall);
+            tick();
+
+            expect(component.retrieveSelfTestScore).toHaveBeenCalledTimes(1);
+        }));
     });
 });
