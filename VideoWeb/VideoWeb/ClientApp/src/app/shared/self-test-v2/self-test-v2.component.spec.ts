@@ -34,7 +34,7 @@ import * as ConferenceSelectors from '../../waiting-space/store/selectors/confer
 import { SelfTestActions } from 'src/app/waiting-space/store/actions/self-test.actions';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
-fdescribe('SelfTestV2Component', () => {
+describe('SelfTestV2Component', () => {
     let component: SelfTestV2Component;
     let fixture: ComponentFixture<SelfTestV2Component>;
 
