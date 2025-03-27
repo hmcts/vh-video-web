@@ -1,6 +1,10 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-self-test-v2 [isIndependentTest]="false" (testCompleted)="onSelfTestCompleted()"></app-self-test-v2>
+    <app-self-test-v2
+      [isIndependentTest]="false"
+      (testStarted)="onTestStarted()"
+      (testCompleted)="onSelfTestCompleted()"
+    ></app-self-test-v2>
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">

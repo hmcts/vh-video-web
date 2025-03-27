@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-self-test-v2 [isIndependentTest]="true" (testCompleted)="onSelfTestCompleted()"></app-self-test-v2>
+    <app-self-test-v2 [isIndependentTest]="true" (testStarted)="onTestStarted()" (testCompleted)="onSelfTestCompleted()"></app-self-test-v2>
 
     <div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
       <app-self-test-actions
