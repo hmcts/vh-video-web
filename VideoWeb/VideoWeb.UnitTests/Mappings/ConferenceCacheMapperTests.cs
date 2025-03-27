@@ -113,7 +113,7 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.Id).Should().Contain(endpoint.Id);
             conference.Endpoints.Select(x => x.DisplayName).Should().Contain(endpoint.DisplayName);
             conference.Endpoints.Select(x => x.Status).Should().Contain((EndpointState)endpoint.EndpointStatus);
-            conference.Endpoints.Select(x => x.LinkedParticipants).Should().BeEquivalentTo(endpoint.ParticipantsLinked);
+            conference.Endpoints.Select(x => x.ParticipantsLinked).Should().BeEquivalentTo(endpoint.ParticipantsLinked);
             var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
             endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
             endpoint.ExternalReferenceId.Should().Be(hearingEndpoint.ExternalReferenceId);
@@ -306,7 +306,7 @@ public class ConferenceCacheMapperTests
         participantB.CurrentRoom = new RoomResponse {Id = 2,Label = "Room 2", Locked = true};
         var endpoints = Builder<EndpointResponse>.CreateListOfSize(2)
             .All()
-            .With(e => e.LinkedParticipants = [participantA])
+            .With(e => e.ParticipantsLinked = [participantA.Username])
             .With(e => e.Id = Guid.NewGuid())
             .Build()
             .ToList();

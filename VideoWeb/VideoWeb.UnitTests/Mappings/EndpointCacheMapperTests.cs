@@ -37,7 +37,7 @@ public class EndpointCacheMapperTests
         cachedModel.Id.Should().Be(ep.Id);
         cachedModel.DisplayName.Should().Be(ep.DisplayName);
         cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-        cachedModel.ParticipantsLinked.Should().BeEquivalentTo(ep.LinkedParticipants);
+        cachedModel.ParticipantsLinked.Should().BeEquivalentTo(ep.ParticipantsLinked);
         cachedModel.CurrentRoom.Id.Should().Be(ep.CurrentRoom.Id);
         cachedModel.CurrentRoom.Label.Should().Be(ep.CurrentRoom.Label);
         cachedModel.CurrentRoom.Locked.Should().Be(ep.CurrentRoom.Locked);
