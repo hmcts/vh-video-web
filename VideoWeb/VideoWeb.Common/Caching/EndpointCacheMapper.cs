@@ -15,7 +15,7 @@ namespace VideoWeb.Common.Caching
                 Id = endpointResponse.Id,
                 DisplayName = endpointResponse.DisplayName,
                 EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
-                ParticipantsLinked = endpointResponse.ParticipantsLinked.ToList(),
+                ParticipantsLinked = endpointResponse.ParticipantsLinked?.ToList() ?? [],
                 CurrentRoom = MapRoom(endpointResponse.CurrentRoom),
                 InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map(),
                 ExternalReferenceId = endpointForHearingResponse.ExternalReferenceId,

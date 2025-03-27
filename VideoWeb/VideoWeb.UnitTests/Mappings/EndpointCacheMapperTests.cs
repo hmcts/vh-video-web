@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using FizzWare.NBuilder;
@@ -15,6 +16,7 @@ public class EndpointCacheMapperTests
     public void should_map_endpoint_to_cache_model()
     {
         var ep = Builder<EndpointResponse>.CreateNew()
+            .With(e => e.ParticipantsLinked = ["Rep1", "Rep2"])
             .With(e => e.CurrentRoom = Builder<RoomResponse>.CreateNew()
                 .With(r => r.Id = 1)
                 .Build())

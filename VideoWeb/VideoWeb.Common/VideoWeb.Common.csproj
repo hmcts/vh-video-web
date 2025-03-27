@@ -15,7 +15,7 @@
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />
-    <PackageReference Include="VideoApi.Client" Version="3.2.10-pr-0729-0009" />
+    <PackageReference Include="VideoApi.Client" Version="3.2.11-pr-0729-0013" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.2" />
   </ItemGroup>
