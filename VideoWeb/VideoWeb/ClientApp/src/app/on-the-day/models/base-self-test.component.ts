@@ -86,6 +86,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit, OnDestro
 
     onTestStarted() {
         this.testInProgress = true;
+        this.selfTestCompleted = false;
     }
 
     restartTest() {
