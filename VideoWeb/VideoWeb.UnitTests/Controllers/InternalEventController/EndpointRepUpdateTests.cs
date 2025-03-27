@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController;
 public class EndpointRepUpdatedTests
 {
     private AutoMock _mocker;
-    private VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController _participantController;
+    private VideoWeb.Controllers.InternalEventControllers.InternalEventEndpointController _endpointController;
     private const string Endpoint = "JvsEndpoint";
     private const string Participant = "participant-username@hearings.reform.hmcts";
     private Guid _conference;
@@ -21,7 +21,7 @@ public class EndpointRepUpdatedTests
     {
         _mocker = AutoMock.GetLoose();
         _endpointsUpdatedEventNotifier = _mocker.Mock<IEndpointsUpdatedEventNotifier>();
-        _participantController = _mocker.Create<VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController>();
+        _endpointController = _mocker.Create<VideoWeb.Controllers.InternalEventControllers.InternalEventEndpointController>();
         
     }
     
@@ -29,7 +29,7 @@ public class EndpointRepUpdatedTests
     public async Task PushUnlinkedParticipantFromEndpoint()
     {
         _conference = Guid.NewGuid();
-        await _participantController.PushUnlinkedParticipantFromEndpoint(_conference, Participant, Endpoint);
+        await _endpointController.PushUnlinkedParticipantFromEndpoint(_conference, Participant, Endpoint);
         _endpointsUpdatedEventNotifier
             .Verify(e => e.PushUnlinkedParticipantFromEndpoint(_conference, Participant, Endpoint), Times.Once);
     }
@@ -38,7 +38,7 @@ public class EndpointRepUpdatedTests
     public async Task PushLinkedNewParticipantToEndpoint()
     {
         _conference = Guid.NewGuid();
-        await _participantController.PushLinkedNewParticipantToEndpoint(_conference, Participant, Endpoint);
+        await _endpointController.PushLinkedNewParticipantToEndpoint(_conference, Participant, Endpoint);
         _endpointsUpdatedEventNotifier
             .Verify(e => e.PushLinkedNewParticipantToEndpoint(_conference, Participant, Endpoint), Times.Once);
     }
@@ -48,7 +48,7 @@ public class EndpointRepUpdatedTests
     public async Task PushCloseConsultationBetweenEndpointAndParticipant()
     {
         _conference = Guid.NewGuid();
-        await _participantController.PushCloseConsultationBetweenEndpointAndParticipant(_conference, Participant, Endpoint);
+        await _endpointController.PushCloseConsultationBetweenEndpointAndParticipant(_conference, Participant, Endpoint);
         _endpointsUpdatedEventNotifier
             .Verify(e => e.PushCloseConsultationBetweenEndpointAndParticipant(_conference, Participant, Endpoint), Times.Once);
     }

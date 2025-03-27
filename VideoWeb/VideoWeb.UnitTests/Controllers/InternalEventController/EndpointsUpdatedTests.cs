@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventController;
 public class EndpointsUpdatedTests
 {
     private AutoMock _mocker;
-    private VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController _participantController;
+    private VideoWeb.Controllers.InternalEventControllers.InternalEventEndpointController _endpointController;
     
     private Conference _conference;
     
@@ -40,8 +40,8 @@ public class EndpointsUpdatedTests
             }
         };
         
-        _participantController = _mocker.Create<VideoWeb.Controllers.InternalEventControllers.InternalEventParticipantController>();
-        _participantController.ControllerContext = context;
+        _endpointController = _mocker.Create<VideoWeb.Controllers.InternalEventControllers.InternalEventEndpointController>();
+        _endpointController.ControllerContext = context;
         
         _mocker.Mock<IConferenceService>()
             .Setup(x => x.ForceGetConference(It.Is<Guid>(id => id == _conference.Id), It.IsAny<CancellationToken>()))
@@ -62,7 +62,7 @@ public class EndpointsUpdatedTests
             .With(x => x.NewEndpoints, newEndpointsList).Build();
         
         // Act
-        var result = await _participantController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
+        var result = await _endpointController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
         
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -89,7 +89,7 @@ public class EndpointsUpdatedTests
             .Throws(new VideoApiException("error", StatusCodes.Status500InternalServerError, "", null, null));
         
         // Act
-        var result = await _participantController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
+        var result = await _endpointController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
         
         // Assert
         result.Should().BeOfType<ObjectResult>();
@@ -119,7 +119,7 @@ public class EndpointsUpdatedTests
             .Setup(x => x.GetConference(It.Is<Guid>(id => id == _conference.Id), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_conference);
         
-        var result = await _participantController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
+        var result = await _endpointController.EndpointsUpdated(_conference.Id, updateEndpointsRequest);
         
         result.Should().BeOfType<NoContentResult>();
         _mocker.Mock<IConferenceService>().Verify(x => x.ForceGetConference(_conference.Id,It.IsAny<CancellationToken>()), Times.Once);
