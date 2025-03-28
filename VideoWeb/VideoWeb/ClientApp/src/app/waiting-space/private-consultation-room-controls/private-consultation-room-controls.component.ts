@@ -18,6 +18,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHConference } from '../store/models/vh-conference';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 @Component({
     standalone: false,
@@ -112,8 +113,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         return JoinConsultationDecider.shouldJoinConsultation(this.conferenceStatus, this.participant?.status, this.isHost);
     }
 
-    async joinHearingFromConsultation() {
-        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant?.id);
+    joinHearingFromConsultation() {
+        this.conferenceStore.dispatch(
+            VideoCallHostActions.joinHearing({ conferenceId: this.conferenceId, participantId: this.participant?.id })
+        );
     }
 
     canCloseOrPauseHearing() {

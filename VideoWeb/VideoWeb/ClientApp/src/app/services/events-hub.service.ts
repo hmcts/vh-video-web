@@ -127,7 +127,7 @@ export class EventsHubService implements OnDestroy {
                     this._reconnectionAttempt = 0;
                     this.onEventHubConnected();
                 })
-                .catch(async error => {
+                .catch(error => {
                     this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
                     this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
                     this.reconnect();
@@ -169,7 +169,7 @@ export class EventsHubService implements OnDestroy {
         }
     }
 
-    async delay(ms: number) {
+    delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 

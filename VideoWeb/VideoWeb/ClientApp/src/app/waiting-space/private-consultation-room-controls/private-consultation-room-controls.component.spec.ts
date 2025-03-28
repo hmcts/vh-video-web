@@ -22,6 +22,7 @@ import { mapConferenceToVHConference } from '../store/models/api-contract-to-sta
 import { VHPexipParticipant } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
@@ -116,12 +117,16 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     describe('joinHearingFromConsultation', () => {
         it('should call videoCallService.joinHearingInSession', fakeAsync(() => {
+            // Arrange
+            spyOn(mockStore, 'dispatch');
             // Act
             component.joinHearingFromConsultation();
             flush();
 
             // Assert
-            expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
+            expect(mockStore.dispatch).toHaveBeenCalledOnceWith(
+                VideoCallHostActions.joinHearing({ conferenceId: component.conferenceId, participantId: component.participant.id })
+            );
         }));
     });
 

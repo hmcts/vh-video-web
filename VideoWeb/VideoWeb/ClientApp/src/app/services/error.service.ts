@@ -106,6 +106,7 @@ export class ErrorService {
             'Error connecting to',
             'There is no connection',
             'Call failed. Please try again',
+            `Call Failed: Can't create multiple calls on one participant`,
             'Call failed: Failed to forward request',
             'The server cannot be reached',
             'Something went wrong',

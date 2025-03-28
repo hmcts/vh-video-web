@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
+import { VHHearing } from 'src/app/shared/models/hearing.vh';
 
 @Injectable()
 export class RoomClosingToastrService {
@@ -24,7 +24,7 @@ export class RoomClosingToastrService {
     /**
      * If conditions are met, show the "room closing" notification
      */
-    showRoomClosingAlert(hearing: Hearing, timeNow: Date) {
+    showRoomClosingAlert(hearing: VHHearing, timeNow: Date) {
         if (hearing.isClosed() && !hearing.isExpired(hearing.actualCloseTime) && !this.currentToast && this.toastsDismissed < 2) {
             const expiryTime = hearing.retrieveExpiryTime();
             if (!expiryTime) {
