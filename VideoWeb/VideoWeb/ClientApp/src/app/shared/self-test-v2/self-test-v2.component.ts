@@ -57,6 +57,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     testCallDetailsRetrieved: boolean;
 
     private onDestroy$ = new Subject<void>();
+    private hasRefreshedStream = false;
 
     private readonly loggerPrefix = '[SelfTestV2] -';
     private readonly validDisconnectReasons = ['Conference terminated by another participant', 'Test call finished'];
@@ -85,6 +86,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.userMediaService.initialise();
+        this.displayConnecting = true;
 
         this.userMediaService
             .hasMultipleDevices()
@@ -256,6 +258,13 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         this.displayConnecting = false;
         this.testInProgress = true;
         this.updateVideoElementWithStream(this.incomingStream, this.incomingVideoElement);
+
+        if (!this.hasRefreshedStream) {
+            this.logger.debug(`${this.loggerPrefix} Call connected, force stream refresh`);
+            this.userMediaStreamService.createAndPublishStream();
+            this.hasRefreshedStream = true; // Set the flag to true
+        }
+
         this.testStarted.emit();
     }
 
@@ -275,6 +284,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         this.testInProgress = false;
         this.outgoingStream = null;
         this.incomingStream = null;
+        this.hasRefreshedStream = false;
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`, {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId,

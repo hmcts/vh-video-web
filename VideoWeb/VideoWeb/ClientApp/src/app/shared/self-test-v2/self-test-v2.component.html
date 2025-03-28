@@ -9,12 +9,13 @@
   </div>
   <div class="govuk-grid-column-full">
     <video
-      *ngIf="displayFeed"
+      *ngIf="incomingStream?.active"
       #incomingVideo
       appForcePlayVideo
       id="incomingFeedPrivate"
       [srcObject]="incomingStream"
       poster="/assets/images/empty_crest.jpg"
+      disablepictureinpicture
       width="65%"
       height="auto"
     >
@@ -27,12 +28,13 @@
   <div class="self-view-container">
     <div>
       <video
-        *ngIf="outgoingStream?.active"
+        *ngIf="displayFeed && outgoingStream?.active"
         #selfViewVideo
         appForcePlayVideo
         [muted]="true"
         id="outgoingStream"
         [srcObject]="outgoingStream"
+        disablepictureinpicture
         width="100%"
         height="auto"
         class="selfie-view"
