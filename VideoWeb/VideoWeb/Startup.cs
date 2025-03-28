@@ -71,10 +71,8 @@ namespace VideoWeb
                 {
                     tracerProvider
                         .AddSource("SupplierCallbackEvent")
-                        .AddSource("VhApiLoggingHandler")
                         .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                        .AddHttpClientInstrumentation(options => options.RecordException = true);
-                    
+                        .AddHttpClientInstrumentation();
                 });
 
             // In production, the Angular files will be served from this directory

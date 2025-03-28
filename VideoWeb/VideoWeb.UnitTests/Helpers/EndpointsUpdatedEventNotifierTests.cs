@@ -47,7 +47,7 @@ public class EndpointsUpdatedEventNotifierTests
         {
             Id = Guid.NewGuid(),
             DisplayName = "NewEndpoint",
-            DefenceAdvocateUsername = "endpointDefenceAdvocate"
+            ParticipantsLinked = ["endpointDefenceAdvocate"]
         };
         
         var request = new UpdateConferenceEndpointsRequest()
@@ -81,7 +81,7 @@ public class EndpointsUpdatedEventNotifierTests
         {
             Id = Guid.NewGuid(),
             DisplayName = "NewEndpoint",
-            DefenceAdvocateUsername = "endpointDefenceAdvocate"
+            ParticipantsLinked = ["endpointDefenceAdvocate"]
         };
         
         var request = new UpdateConferenceEndpointsRequest()

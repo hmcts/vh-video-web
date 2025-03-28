@@ -257,7 +257,7 @@ describe('EventsService', () => {
                 const testVideoEndpointResponse = new VideoEndpointResponse();
                 testVideoEndpointResponse.id = Guid.create().toString();
                 testVideoEndpointResponse.display_name = 'TestDisplayName';
-                testVideoEndpointResponse.defence_advocate_username = 'TestDefenceAdvocateUsername@gmail.com';
+                testVideoEndpointResponse.participants_linked = ['TestDefenceAdvocateUsername@gmail.com'];
 
                 const testUpdateEndpointsDto = new UpdateEndpointsDto();
                 testUpdateEndpointsDto.existing_endpoints = [];

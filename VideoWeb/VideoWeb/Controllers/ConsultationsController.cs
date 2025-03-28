@@ -368,7 +368,7 @@ public class ConsultationsController(
         
         var validSelectedEndpoints = request.InviteEndpoints
             .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-            .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+            .Where(x => x != null && x.ParticipantsLinked.Contains(username));
         
         foreach (var endpointId in validSelectedEndpoints.Select(x => x.Id))
         {

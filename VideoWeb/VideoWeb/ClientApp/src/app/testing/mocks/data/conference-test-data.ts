@@ -856,7 +856,7 @@ export class ConferenceTestData {
             display_name: 'DispName2',
             status: EndpointStatus.InHearing,
             id: '123232355',
-            defence_advocate_username: 'john.doe@hearings.net',
+            participants_linked: ['john.doe@hearings.net'],
             pexip_display_name: 'PSTN;DispName2;123232355',
             interpreter_language: new InterpreterLanguageResponse({
                 code: 'spa',
@@ -1167,7 +1167,7 @@ export class ConferenceTestData {
         const endpoints: VideoEndpointResponse[] = [];
         const endpoint1 = new VideoEndpointResponse({
             current_room: undefined,
-            defence_advocate_username: null,
+            participants_linked: null,
             display_name: 'Endpoint B',
             id: '73a94f6c-e17d-4ce9-bb25-35d7d7192d1a',
             is_current_user: false,
@@ -1176,7 +1176,7 @@ export class ConferenceTestData {
         });
         const endpoint2 = new VideoEndpointResponse({
             current_room: undefined,
-            defence_advocate_username: null,
+            participants_linked: null,
             display_name: 'Endpoint A',
             id: '9d7b9cde-3a48-4acb-9977-34e27667604d',
             is_current_user: false,

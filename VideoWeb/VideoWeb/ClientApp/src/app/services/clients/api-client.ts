@@ -8368,17 +8368,11 @@ export interface ILinkedParticipantRequest {
 export class ParticipantRequest implements IParticipantRequest {
     id?: string;
     participant_ref_id?: string;
-    name?: string | undefined;
     display_name?: string | undefined;
     username?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
     contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
     user_role?: UserRole;
     hearing_role?: string | undefined;
-    case_type_group?: string | undefined;
-    representee?: string | undefined;
     linked_participants?: LinkedParticipantRequest[] | undefined;
 
     constructor(data?: IParticipantRequest) {
@@ -8393,17 +8387,11 @@ export class ParticipantRequest implements IParticipantRequest {
         if (_data) {
             this.id = _data['id'];
             this.participant_ref_id = _data['participant_ref_id'];
-            this.name = _data['name'];
             this.display_name = _data['display_name'];
             this.username = _data['username'];
-            this.first_name = _data['first_name'];
-            this.last_name = _data['last_name'];
             this.contact_email = _data['contact_email'];
-            this.contact_telephone = _data['contact_telephone'];
             this.user_role = _data['user_role'];
             this.hearing_role = _data['hearing_role'];
-            this.case_type_group = _data['case_type_group'];
-            this.representee = _data['representee'];
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
@@ -8422,17 +8410,11 @@ export class ParticipantRequest implements IParticipantRequest {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['participant_ref_id'] = this.participant_ref_id;
-        data['name'] = this.name;
         data['display_name'] = this.display_name;
         data['username'] = this.username;
-        data['first_name'] = this.first_name;
-        data['last_name'] = this.last_name;
         data['contact_email'] = this.contact_email;
-        data['contact_telephone'] = this.contact_telephone;
         data['user_role'] = this.user_role;
         data['hearing_role'] = this.hearing_role;
-        data['case_type_group'] = this.case_type_group;
-        data['representee'] = this.representee;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
             for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
@@ -8444,17 +8426,11 @@ export class ParticipantRequest implements IParticipantRequest {
 export interface IParticipantRequest {
     id?: string;
     participant_ref_id?: string;
-    name?: string | undefined;
     display_name?: string | undefined;
     username?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
     contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
     user_role?: UserRole;
     hearing_role?: string | undefined;
-    case_type_group?: string | undefined;
-    representee?: string | undefined;
     linked_participants?: LinkedParticipantRequest[] | undefined;
 }
 
@@ -8531,18 +8507,12 @@ export interface IUpdateConferenceParticipantsRequest {
 
 export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     participant_ref_id?: string;
-    fullname?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
     display_name?: string | undefined;
-    representee?: string | undefined;
     contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
     username?: string | undefined;
     linked_participants?: LinkedParticipantRequest[] | undefined;
     user_role?: UserRole;
     hearing_role?: string | undefined;
-    case_type_group?: string | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -8555,13 +8525,8 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     init(_data?: any) {
         if (_data) {
             this.participant_ref_id = _data['participant_ref_id'];
-            this.fullname = _data['fullname'];
-            this.first_name = _data['first_name'];
-            this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
-            this.representee = _data['representee'];
             this.contact_email = _data['contact_email'];
-            this.contact_telephone = _data['contact_telephone'];
             this.username = _data['username'];
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
@@ -8569,7 +8534,6 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             }
             this.user_role = _data['user_role'];
             this.hearing_role = _data['hearing_role'];
-            this.case_type_group = _data['case_type_group'];
         }
     }
 
@@ -8583,13 +8547,8 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['participant_ref_id'] = this.participant_ref_id;
-        data['fullname'] = this.fullname;
-        data['first_name'] = this.first_name;
-        data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
-        data['representee'] = this.representee;
         data['contact_email'] = this.contact_email;
-        data['contact_telephone'] = this.contact_telephone;
         data['username'] = this.username;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
@@ -8597,25 +8556,18 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         }
         data['user_role'] = this.user_role;
         data['hearing_role'] = this.hearing_role;
-        data['case_type_group'] = this.case_type_group;
         return data;
     }
 }
 
 export interface IUpdateParticipantRequest {
     participant_ref_id?: string;
-    fullname?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
     display_name?: string | undefined;
-    representee?: string | undefined;
     contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
     username?: string | undefined;
     linked_participants?: LinkedParticipantRequest[] | undefined;
     user_role?: UserRole;
     hearing_role?: string | undefined;
-    case_type_group?: string | undefined;
 }
 
 export class EndpointResponse implements IEndpointResponse {
@@ -8624,9 +8576,9 @@ export class EndpointResponse implements IEndpointResponse {
     sip_address?: string | undefined;
     pin?: string | undefined;
     status?: EndpointState;
-    defence_advocate?: string | undefined;
     current_room?: RoomResponse;
     conference_role?: ConferenceRole;
+    participants_linked?: string[] | undefined;
 
     constructor(data?: IEndpointResponse) {
         if (data) {
@@ -8643,9 +8595,12 @@ export class EndpointResponse implements IEndpointResponse {
             this.sip_address = _data['sip_address'];
             this.pin = _data['pin'];
             this.status = _data['status'];
-            this.defence_advocate = _data['defence_advocate'];
             this.current_room = _data['current_room'] ? RoomResponse.fromJS(_data['current_room']) : <any>undefined;
             this.conference_role = _data['conference_role'];
+            if (Array.isArray(_data['participants_linked'])) {
+                this.participants_linked = [] as any;
+                for (let item of _data['participants_linked']) this.participants_linked!.push(item);
+            }
         }
     }
 
@@ -8663,9 +8618,12 @@ export class EndpointResponse implements IEndpointResponse {
         data['sip_address'] = this.sip_address;
         data['pin'] = this.pin;
         data['status'] = this.status;
-        data['defence_advocate'] = this.defence_advocate;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['conference_role'] = this.conference_role;
+        if (Array.isArray(this.participants_linked)) {
+            data['participants_linked'] = [];
+            for (let item of this.participants_linked) data['participants_linked'].push(item);
+        }
         return data;
     }
 }
@@ -8676,9 +8634,9 @@ export interface IEndpointResponse {
     sip_address?: string | undefined;
     pin?: string | undefined;
     status?: EndpointState;
-    defence_advocate?: string | undefined;
     current_room?: RoomResponse;
     conference_role?: ConferenceRole;
+    participants_linked?: string[] | undefined;
 }
 
 export class ParticipantHeartbeatResponse implements IParticipantHeartbeatResponse {
@@ -11612,7 +11570,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     display_name?: string | undefined;
     status?: EndpointStatus;
     /** The current endpoint status */
-    defence_advocate_username?: string | undefined;
+    participants_linked?: string[] | undefined;
     /** The display name when connected to the pexip node */
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
@@ -11636,7 +11594,10 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.id = _data['id'];
             this.display_name = _data['display_name'];
             this.status = _data['status'];
-            this.defence_advocate_username = _data['defence_advocate_username'];
+            if (Array.isArray(_data['participants_linked'])) {
+                this.participants_linked = [] as any;
+                for (let item of _data['participants_linked']) this.participants_linked!.push(item);
+            }
             this.pexip_display_name = _data['pexip_display_name'];
             this.is_current_user = _data['is_current_user'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
@@ -11663,7 +11624,10 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['id'] = this.id;
         data['display_name'] = this.display_name;
         data['status'] = this.status;
-        data['defence_advocate_username'] = this.defence_advocate_username;
+        if (Array.isArray(this.participants_linked)) {
+            data['participants_linked'] = [];
+            for (let item of this.participants_linked) data['participants_linked'].push(item);
+        }
         data['pexip_display_name'] = this.pexip_display_name;
         data['is_current_user'] = this.is_current_user;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
@@ -11684,7 +11648,7 @@ export interface IVideoEndpointResponse {
     display_name?: string | undefined;
     status?: EndpointStatus;
     /** The current endpoint status */
-    defence_advocate_username?: string | undefined;
+    participants_linked?: string[] | undefined;
     /** The display name when connected to the pexip node */
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;

@@ -172,7 +172,7 @@ describe('Conference Reducer', () => {
                     externalReferenceId: 'endpoint1-external-ref-123',
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
-                    defenceAdvocate: 'john.doe@test.com',
+                    participantsLinked: ['john.doe@test.com'],
                     room: originalRoom,
                     pexipInfo: undefined,
                     transferDirection: undefined,
@@ -183,7 +183,7 @@ describe('Conference Reducer', () => {
                     externalReferenceId: 'endpoint2-external-ref-123',
                     displayName: 'Endpoint 2',
                     status: EndpointStatus.NotYetJoined,
-                    defenceAdvocate: null,
+                    participantsLinked: null,
                     room: null,
                     pexipInfo: undefined,
                     transferDirection: undefined,
@@ -840,7 +840,7 @@ describe('Conference Reducer', () => {
                     id: conferenceTestData.endpoints[0].id,
                     displayName: 'Endpoint 1 Updated',
                     status: EndpointStatus.InConsultation,
-                    defenceAdvocate: null,
+                    participantsLinked: null,
                     room: { label: 'Room 1', locked: false }
                 } as VHEndpoint
             ];
@@ -855,7 +855,7 @@ describe('Conference Reducer', () => {
             expect(result.currentConference.endpoints.length).toEqual(2);
             expect(result.currentConference.endpoints[0].displayName).toEqual('Endpoint 1 Updated');
             expect(result.currentConference.endpoints[0].status).toEqual(EndpointStatus.InConsultation);
-            expect(result.currentConference.endpoints[0].defenceAdvocate).toEqual(null);
+            expect(result.currentConference.endpoints[0].participantsLinked).toEqual(null);
             expect(result.currentConference.endpoints[0].room.label).toEqual('Room 1');
             expect(result.currentConference.endpoints[1]).toEqual(conferenceTestData.endpoints[1]);
 
@@ -934,14 +934,14 @@ describe('Conference Reducer', () => {
                     id: conferenceTestData.endpoints[0].id,
                     displayName: 'Endpoint 1 Updated',
                     status: EndpointStatus.Connected,
-                    defenceAdvocate: null,
+                    participantsLinked: null,
                     room: null
                 },
                 {
                     id: '0f497ffa-802c-4dfb-a3f2-208de0c10df1',
                     displayName: 'Endpoint New',
                     status: EndpointStatus.Connected,
-                    defenceAdvocate: 'chris.green@test.com',
+                    participantsLinked: ['chris.green@test.com'],
                     room: null
                 }
             ];
@@ -961,7 +961,7 @@ describe('Conference Reducer', () => {
             // should add the new endpoint
             expect(result.currentConference.endpoints[2].displayName).toEqual('Endpoint New');
             expect(result.currentConference.endpoints[2].status).toEqual(EndpointStatus.Connected);
-            expect(result.currentConference.endpoints[2].defenceAdvocate).toEqual('chris.green@test.com');
+            expect(result.currentConference.endpoints[2].participantsLinked).toContain('chris.green@test.com');
         });
     });
 

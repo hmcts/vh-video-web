@@ -24,7 +24,7 @@ public class VideoEndpointResponse
     /// <summary>
     /// The current endpoint status
     /// </summary>
-    public string DefenceAdvocateUsername { get; set; }
+    public List<string> ParticipantsLinked { get; set; }
     
     /// <summary>
     /// The display name when connected to the pexip node

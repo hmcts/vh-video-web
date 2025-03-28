@@ -4,8 +4,7 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse,
-    VideoEndpointResponse
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { HearingRole } from '../../waiting-space/models/hearing-role-model';
@@ -73,22 +72,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
 
     static fromParticipantForUserResponse(participant: ParticipantForUserResponse) {
         return this.fromAParticipantResponseType(participant);
-    }
-
-    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): ParticipantModel {
-        return new ParticipantModel(
-            videoEndpointResponse.id,
-            videoEndpointResponse.defence_advocate_username,
-            videoEndpointResponse.display_name,
-            videoEndpointResponse.pexip_display_name, // same as tiled_display_name
-            null,
-            null,
-            true,
-            null,
-            null,
-            ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
-            videoEndpointResponse.current_room
-        );
     }
 
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse) {

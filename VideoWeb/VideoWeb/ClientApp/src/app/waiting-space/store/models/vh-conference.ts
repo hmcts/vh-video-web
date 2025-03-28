@@ -63,7 +63,7 @@ export interface VHEndpoint {
     id?: string;
     displayName: string | undefined;
     status: EndpointStatus;
-    defenceAdvocate: string | undefined;
+    participantsLinked: string[] | undefined;
     room: VHRoom;
     pexipInfo?: VHPexipParticipant;
     interpreterLanguage?: VHInterpreterLanguage;
