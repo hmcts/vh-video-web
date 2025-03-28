@@ -28,7 +28,8 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter();
 
-    @ViewChild('selfViewVideo', { static: false }) videoElement: ElementRef;
+    @ViewChild('selfViewVideo', { static: false }) videoElement: ElementRef<HTMLVideoElement>;
+    @ViewChild('incomingVideo', { static: false }) incomingVideoElement: ElementRef<HTMLVideoElement>;
 
     // used when a part of the journey
     conference: VHConference;
@@ -48,7 +49,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     didTestComplete = false;
 
     token: TokenResponse;
-    incomingStream: MediaStream | URL;
+    incomingStream: MediaStream;
     outgoingStream: MediaStream;
     preferredMicrophoneStream: MediaStream;
 
@@ -149,9 +150,9 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             });
     }
 
-    startTestCall() {
+    async startTestCall() {
         this.userMediaStreamService.createAndPublishStream();
-        this.setupPexipClient();
+        await this.setupPexipClient();
 
         const token$ = this.apiClient.getSelfTestToken(this.selfTestParticipantId);
         const currentStream$ = this.userMediaStreamService.currentStream$.pipe(
@@ -160,12 +161,17 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         );
 
         combineLatest([token$, currentStream$]).subscribe(([token, stream]) => {
+            this.logger.debug(`${this.loggerPrefix} Token and stream retrieved, starting self test call`);
             this.token = token;
             this.outgoingStream = stream;
-            const audioTracks = stream.getAudioTracks();
-            this.preferredMicrophoneStream = new MediaStream(audioTracks);
+            this.preferredMicrophoneStream = this.extractAudioFromOutoingStream();
             this.call();
         });
+    }
+
+    extractAudioFromOutoingStream(): MediaStream {
+        const audioTracks = this.outgoingStream.getAudioTracks();
+        return new MediaStream(audioTracks);
     }
 
     call() {
@@ -221,12 +227,12 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             .subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall));
     }
 
-    setupPexipClient() {
+    async setupPexipClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client`, {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        this.videoCallService.setupClient(this.conference?.supplier);
+        await this.videoCallService.setupClient(this.conference?.supplier);
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -235,7 +241,8 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream as MediaStream;
-        this.updateVideoElementWithStream(this.outgoingStream);
+        this.preferredMicrophoneStream = this.extractAudioFromOutoingStream();
+        this.updateVideoElementWithStream(this.outgoingStream, this.videoElement);
         this.videoCallService.connect('0000', null);
     }
 
@@ -244,10 +251,11 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        this.incomingStream = callConnected.stream;
+        this.incomingStream = callConnected.stream as MediaStream;
         this.displayFeed = true;
         this.displayConnecting = false;
         this.testInProgress = true;
+        this.updateVideoElementWithStream(this.incomingStream, this.incomingVideoElement);
         this.testStarted.emit();
     }
 
@@ -265,6 +273,8 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     handleCallDisconnect(reason: DisconnectedCall) {
         this.displayFeed = false;
         this.testInProgress = false;
+        this.outgoingStream = null;
+        this.incomingStream = null;
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`, {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId,
@@ -276,15 +286,15 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         }
     }
 
-    updateVideoElementWithStream(stream: MediaStream) {
-        if (this.videoElement) {
-            this.logger.debug(`${this.loggerPrefix} Updating video element with stream`);
-            this.videoElement.nativeElement.srcObject = stream;
-            this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-                this.videoElement.nativeElement
-                    .play()
-                    .catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
+    updateVideoElementWithStream(stream: MediaStream, videoElement: ElementRef<HTMLVideoElement>) {
+        if (videoElement?.nativeElement) {
+            this.logger.debug(`${this.loggerPrefix} Updating video element with stream`, { videoElementId: videoElement.nativeElement.id });
+            videoElement.nativeElement.srcObject = stream;
+            videoElement.nativeElement.addEventListener('loadedmetadata', () => {
+                videoElement.nativeElement.play().catch(error => this.logger.error(`${this.loggerPrefix} - Error playing video:`, error));
             });
+        } else {
+            this.logger.warn(`${this.loggerPrefix} Video element is not available to update with stream`);
         }
     }
 

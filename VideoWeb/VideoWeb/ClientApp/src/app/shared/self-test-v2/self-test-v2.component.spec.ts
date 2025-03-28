@@ -151,10 +151,11 @@ describe('SelfTestV2Component', () => {
         });
 
         describe('isIndependentTest true', () => {
-            beforeEach(() => {
+            beforeEach(async () => {
                 component.isIndependentTest = true;
 
                 fixture.detectChanges();
+                await fixture.whenStable();
             });
 
             it('should retrieve pexip config and start test call', () => {
@@ -169,11 +170,12 @@ describe('SelfTestV2Component', () => {
         });
 
         describe('isIndependentTest false', () => {
-            beforeEach(() => {
+            beforeEach(async () => {
                 component.isIndependentTest = false;
                 mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
                 mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
                 fixture.detectChanges();
+                await fixture.whenStable();
             });
 
             it('should create', () => {
@@ -223,7 +225,7 @@ describe('SelfTestV2Component', () => {
 
     describe('updateVideoElementWithStream', () => {
         it('should set the video element srcObject', () => {
-            component.updateVideoElementWithStream(cameraAndMicrophoneStream);
+            component.updateVideoElementWithStream(cameraAndMicrophoneStream, component.videoElement);
             videoElementRefMock.nativeElement.dispatchEvent(new Event('loadedmetadata'));
             expect(component.videoElement.nativeElement.srcObject).toBe(cameraAndMicrophoneStream);
         });
@@ -253,13 +255,6 @@ describe('SelfTestV2Component', () => {
             spyOnProperty(component.outgoingStream, 'active').and.returnValue(true);
             component.incomingStream = new MediaStream();
             spyOnProperty(component.incomingStream, 'active').and.returnValue(true);
-            expect(component.streamsActive).toBeTruthy();
-        });
-
-        it('should return true when streams are active urls', () => {
-            component.outgoingStream = new MediaStream();
-            spyOnProperty(component.outgoingStream, 'active').and.returnValue(true);
-            component.incomingStream = new URL('http://www.hmcts.net');
             expect(component.streamsActive).toBeTruthy();
         });
     });
@@ -295,7 +290,7 @@ describe('SelfTestV2Component', () => {
             onConnectedSubjectMock.next(connectedCall);
             tick();
 
-            expect(component.incomingStream).toBe(connectedCall.stream);
+            expect(component.incomingStream).toEqual(<MediaStream>connectedCall.stream);
             expect(component.displayFeed).toBeTrue();
             expect(component.displayConnecting).toBeFalse();
             expect(component.testInProgress).toBeTrue();
