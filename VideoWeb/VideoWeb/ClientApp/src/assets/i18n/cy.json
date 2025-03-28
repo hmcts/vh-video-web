@@ -280,6 +280,7 @@
   "hearing-list-table": {
     "date-and-time": "Dyddiad ac amser",
     "description": "Tabl rhestr o wrandawiadau",
+    "hearing-list-scrollable": "Hearing list scroll area",
     "hearing-details": "Manylion y gwrandawiad",
     "case-number": "Rhif yr achos",
     "button": {
