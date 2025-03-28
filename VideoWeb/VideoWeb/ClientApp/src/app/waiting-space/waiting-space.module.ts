@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 import { ConsultationErrorComponent } from './consultation-modals/consultation-error/consultation-error.component';
@@ -43,11 +43,9 @@ import { JoinPrivateConsultationComponent } from './participant-waiting-room/joi
 import { PrivateConsultationLegalRepTermsOfServiceComponent } from './participant-waiting-room/private-consultation-legal-rep-terms-of-service/private-consultation-legal-rep-terms-of-service.component';
 import { NgOptimizedImage } from '@angular/common';
 import { StoreModule, provideStore } from '@ngrx/store';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { conferenceFeatureKey, conferenceReducer } from './store/reducers/conference.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ConferenceEffects } from './store/effects/conference.effects';
-import { environment } from 'src/environments/environment';
 import { ParticipantsPanelItemComponent } from './participants-panel/participants-panel-item/participants-panel-item.component';
 import { WarnJoinHearingPopupComponent } from './confirmation/warn-join-hearing-popup.component';
 import { ChangeHearingLayoutPopupComponent } from './change-hearing-layout-popup/change-hearing-layout-popup.component';
@@ -63,6 +61,7 @@ import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { RouterEffects } from './store/effects/router.effects';
 import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
+import { SelfTestEffects } from './store/effects/self-test.effects';
 
 @NgModule({
     imports: [
@@ -71,7 +70,6 @@ import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
         NgOptimizedImage,
         StoreModule.forFeature(conferenceFeatureKey, conferenceReducer),
         StoreModule.forFeature(referenceDataFeatureKey, referenceDataReducer),
-        environment.production ? [] : StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
         EffectsModule.forFeature([
             ConferenceEffects,
             VideoCallEffects,
@@ -79,6 +77,7 @@ import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
             ReferenceDataEffects,
             NotificationEffects,
             ConsultationEffects,
+            SelfTestEffects,
             RouterEffects
         ])
     ],

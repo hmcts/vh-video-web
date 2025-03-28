@@ -1,5 +1,5 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
-import { APP_ID, APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
+import { APP_ID, APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -31,6 +31,7 @@ import { DynatraceService } from './services/api/dynatrace.service';
 import { SupplierClientService } from './services/api/supplier-client.service';
 import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 import { VHGlobalEffectsErrorHandler } from './waiting-space/store/vh-global-effects-error-handler';
+import { environment } from 'src/environments/environment';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -69,7 +70,17 @@ export function getLocale() {
         AuthConfigModule,
         StoreModule.forRoot({ router: routerReducer }),
         StoreRouterConnectingModule.forRoot(),
-        StoreDevtoolsModule.instrument({ logOnly: !isDevMode() }),
+        environment.production
+            ? []
+            : StoreDevtoolsModule.instrument({
+                  maxAge: 25, // Keeps last 25 states
+                  logOnly: environment.production, // Disable extension logging in production
+
+                  autoPause: true, // Auto-pause when DevTools isn't open
+                  trace: true, // Enables tracing for debugging
+                  traceLimit: 25,
+                  serialize: true // Ensures state serialization,
+              }),
         EffectsModule.forRoot([])
     ],
     providers: [
