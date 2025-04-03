@@ -280,6 +280,7 @@
   "hearing-list-table": {
     "date-and-time": "Dyddiad ac amser",
     "description": "Tabl rhestr o wrandawiadau",
+    "hearing-list-scrollable": "Hearing list scroll area",
     "hearing-details": "Manylion y gwrandawiad",
     "case-number": "Rhif yr achos",
     "button": {
@@ -889,7 +890,9 @@
     "available": "Ar gael",
     "hmcts-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
     "save": "Cadw",
-    "cancel": "Canslo"
+    "cancel": "Canslo",
+    "editdisplayname": "Edit participant display name",
+    "deleteparticipant": "Delete participant"
   },
   "endpoint-status": {
     "inconsultation": "Mewn ymgynghoriad",

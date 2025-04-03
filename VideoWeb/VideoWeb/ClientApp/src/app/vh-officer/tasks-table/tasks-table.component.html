@@ -15,9 +15,9 @@
             (click)="completeTask(task)"
             (keydown.enter)="completeTask(task)"
           />
-          <div class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2">
+          <label for="{{ task.id }}-checkbox" class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2">
             <span id="{{ task.id }}-created-date" class="govuk-body-s">{{ task.created | date: 'HH:mm' }}</span>
-          </div>
+          </label>
         </div>
       </div>
       <div class="govuk-grid-column-one-quarter task-body">
