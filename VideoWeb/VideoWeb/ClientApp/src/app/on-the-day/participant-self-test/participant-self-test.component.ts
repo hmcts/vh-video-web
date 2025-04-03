@@ -1,19 +1,13 @@
 import { Component, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    TestCallScoreResponse,
-    AddSelfTestFailureEventRequest,
-    SelfTestFailureReason,
-    EventType
-} from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
+import { Router } from '@angular/router';
+import { SelfTestFailureReason, EventType } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
-import { ProfileService } from 'src/app/services/api/profile.service';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { SelfTestActions } from 'src/app/waiting-space/store/actions/self-test.actions';
 
 @Component({
     standalone: false,
@@ -21,18 +15,14 @@ import { ProfileService } from 'src/app/services/api/profile.service';
     templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective {
-    selfTestCompleted = false;
     continueClicked: boolean;
     constructor(
-        private router: Router,
-        protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
-        protected errorService: ErrorService,
+        protected conferenceStore: Store<ConferenceState>,
         protected logger: Logger,
+        private router: Router,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(route, videoWebService, profileService, errorService, logger);
+        super(conferenceStore, logger);
     }
 
     @HostListener('window:beforeunload', ['$event'])
@@ -42,54 +32,42 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         return 'save';
     }
 
-    onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
-        super.onSelfTestCompleted(testcallScore);
+    onSelfTestCompleted(): void {
+        super.onSelfTestCompleted();
         this.selfTestCompleted = true;
         this.continueClicked = false;
     }
 
-    async continueParticipantJourney() {
+    continueParticipantJourney() {
         if (this.continueClicked) {
             return;
         }
         this.continueClicked = true;
         if (!this.selfTestCompleted) {
             this.logger.warn('[ParticipantSelfTest] - Self test not completed.');
-            this.selfTestComponent?.disconnect();
-            const reason = new DisconnectedCall('Conference terminated by another participant');
-            await this.selfTestComponent?.handleCallDisconnect(reason);
-            await this.raisedSelfTestIncompleted();
+            this.raisedSelfTestIncompleted();
         }
-        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.logger.warn('[ParticipantSelfTest] - Navigating to camera check.');
-        this.router.navigate([pageUrls.CameraWorking, conferenceId]);
+
+        this.logger.debug('[ParticipantSelfTest] - Navigating to camera check.');
+        this.router.navigate([pageUrls.CameraWorking, this.conference.id]);
     }
 
     restartTest() {
         this.continueClicked = false;
         this.logger.debug('[ParticipantSelfTest] - Restarting participant self-test');
-        this.selfTestComponent.replayVideo();
+        this.selfTestComponent.startTestCall();
     }
 
-    async raisedSelfTestIncompleted() {
-        // conference and participan are not always set if the user clicks next very quickly
+    raisedSelfTestIncompleted() {
         const logPayload = {
             conference: this.conference?.id,
             participant: this.participant?.id,
             failureReason: SelfTestFailureReason.IncompleteTest
         };
         this.logger.debug('[ParticipantSelfTest] - Raising incomplete self-test failure', logPayload);
-        try {
-            await this.videoWebService.raiseSelfTestFailureEvent(
-                this.conferenceId,
-                new AddSelfTestFailureEventRequest({
-                    self_test_failure_reason: SelfTestFailureReason.IncompleteTest
-                })
-            );
-            this.logger.debug('[ParticipantSelfTest] - Raised self-test failure event', logPayload);
-        } catch (error) {
-            this.logger.error('[ParticipantSelfTest] - Failed to raise "SelfTestFailureEvent"`', error, logPayload);
-        }
+        this.conferenceStore.dispatch(
+            SelfTestActions.publishSelfTestFailure({ conferenceId: this.conference.id, reason: SelfTestFailureReason.IncompleteTest })
+        );
     }
 
     private raiseNotSignedIn() {

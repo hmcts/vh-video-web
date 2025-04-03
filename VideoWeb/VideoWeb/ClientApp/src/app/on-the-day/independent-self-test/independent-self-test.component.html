@@ -1,49 +1,49 @@
-<div *ngIf="!conference && !participant && !selfTestPexipConfig" class="govuk-grid-column-full">
-  <p class="govuk-body-l">{{ 'independent-self-test.please-wait-to-be-connected' | translate }}</p>
-</div>
-<app-self-test
-  *ngIf="(conference && participant && !hideSelfTest) || (selfTestPexipConfig && !hideSelfTest)"
-  [conference]="conference"
-  [participant]="participant"
-  [selfTestPexipConfig]="selfTestPexipConfig"
-  (testCompleted)="onSelfTestCompleted($event)"
-  (testStarted)="onTestStarted()"
-></app-self-test>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-self-test-v2 [isIndependentTest]="true" (testStarted)="onTestStarted()" (testCompleted)="onSelfTestCompleted()"></app-self-test-v2>
 
-<div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <app-self-test-actions (equipmentWorked)="equipmentWorksHandler()" (equipmentBroken)="equipmentFaultyHandler()"></app-self-test-actions>
-</div>
-
-<div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">{{'equipment-problem.problem-with-equipment' | translate}}</h1>
-      <p class="govuk-body govuk-!-margin-bottom-4">{{'equipment-problem.not-working-call-us' | translate}}</p>
-      <p class="govuk-body govuk-!-margin-bottom-4">{{'equipment-problem.hearing-location' | translate}} {{'equipment-problem.in-england-or-wales' | translate}} <strong>{{'equipment-problem.england-or-wales' | translate}}</strong> {{'equipment-problem.phone' | translate}} {{ contactDetails.englandAndWales.phoneNumber }}</p>
-      <p class="govuk-body govuk-!-margin-bottom-2">{{'equipment-problem.hearing-location' | translate}} {{'equipment-problem.in-scotland' | translate}} <strong>{{'equipment-problem.scotland' | translate}}</strong> {{'equipment-problem.phone' | translate}} {{ contactDetails.scotland.phoneNumber }}</p>
+    <div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+      <app-self-test-actions
+        (equipmentWorked)="equipmentWorksHandler()"
+        (equipmentBroken)="equipmentFaultyHandler()"
+      ></app-self-test-actions>
     </div>
+
+    <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <h1 class="govuk-heading-xl">{{ 'equipment-problem.problem-with-equipment' | translate }}</h1>
+          <p class="govuk-body govuk-!-margin-bottom-4">{{ 'equipment-problem.not-working-call-us' | translate }}</p>
+          <p class="govuk-body govuk-!-margin-bottom-4">
+            {{ 'equipment-problem.hearing-location' | translate }} {{ 'equipment-problem.in-england-or-wales' | translate }}
+            <strong>{{ 'equipment-problem.england-or-wales' | translate }}</strong> {{ 'equipment-problem.phone' | translate }}
+            {{ contactDetails.englandAndWales.phoneNumber }}
+          </p>
+          <p class="govuk-body govuk-!-margin-bottom-2">
+            {{ 'equipment-problem.hearing-location' | translate }} {{ 'equipment-problem.in-scotland' | translate }}
+            <strong>{{ 'equipment-problem.scotland' | translate }}</strong> {{ 'equipment-problem.phone' | translate }}
+            {{ contactDetails.scotland.phoneNumber }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4">
+      <button
+        *ngIf="showEquipmentFaultMessage"
+        id="continue-btn"
+        class="govuk-button govuk-!-margin-right-4"
+        data-module="govuk-button"
+        (click)="equipmentWorksHandler()"
+      >
+        {{ 'independent-self-test.continue' | translate }}
+      </button>
+
+      <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="restartTest()">
+        {{ 'independent-self-test.check-equipment-again' | translate }}
+      </button>
+    </div>
+
+    <app-contact-us-folding></app-contact-us-folding>
   </div>
 </div>
-
-<div class="govuk-!-margin-top-4">
-  <button
-    *ngIf="showEquipmentFaultMessage"
-    id="continue-btn"
-    class="govuk-button govuk-!-margin-right-4"
-    data-module="govuk-button"
-    (click)="equipmentWorksHandler()"
-  >
-  {{ 'independent-self-test.continue' | translate }}
-  </button>
-
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'independent-self-test.check-equipment-again' | translate }}
-  </button>
-</div>
-
-<app-contact-us-folding></app-contact-us-folding>

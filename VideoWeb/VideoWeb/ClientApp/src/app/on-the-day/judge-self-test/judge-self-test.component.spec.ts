@@ -1,145 +1,137 @@
-import { convertToParamMap, Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TestCallScoreResponse, TestScore, SelfTestPexipResponse, UserProfileResponse, Role } from 'src/app/services/clients/api-client';
+import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { JudgeSelfTestComponent } from './judge-self-test.component';
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { ProfileService } from 'src/app/services/api/profile.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
+import { SelfTestV2Component } from 'src/app/shared/self-test-v2/self-test-v2.component';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { videoWebService, errorService, activatedRoute } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { VHConference, VHParticipant } from 'src/app/waiting-space/store/models/vh-conference';
+import { mapConferenceToVHConference } from 'src/app/waiting-space/store/models/api-contract-to-state-model-mappers';
+import { UserProfile } from 'src/app/waiting-space/store/models/user-profile';
+import { By } from '@angular/platform-browser';
+import { pageUrls } from 'src/app/shared/page-url.constants';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MockComponent, MockPipe } from 'ng-mocks';
+import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
+import { SelfTestActionsComponent } from '../self-test-actions/self-test-actions.component';
 
 describe('JudgeSelfTestComponent', () => {
+    const testData = new ConferenceTestData();
+    let conference: VHConference;
+    let loggedInParticipant: VHParticipant;
+    let userProfile: UserProfile;
+    let mockStore: MockStore<ConferenceState>;
+
+    let fixture: ComponentFixture<JudgeSelfTestComponent>;
     let component: JudgeSelfTestComponent;
-    const conference = new ConferenceTestData().getConferenceDetailNow();
-    const profile = new UserProfileResponse({ roles: [Role.Individual] });
 
+    let selfTestComponent: SelfTestV2Component;
     let router: jasmine.SpyObj<Router>;
-    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
-    let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let profileService: jasmine.SpyObj<ProfileService>;
-    let errorService: jasmine.SpyObj<ErrorService>;
-    const logger: Logger = new MockLogger();
 
-    const pexipConfig = new SelfTestPexipResponse({
-        pexip_self_test_node: 'selftest.automated.test'
-    });
+    let logger: Logger;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
-        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-
-        profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
-        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
-
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
-            'goToServiceError',
-            'handleApiError',
-            'returnHomeIfUnauthorised'
-        ]);
     });
 
     beforeEach(() => {
-        component = new JudgeSelfTestComponent(router, activatedRoute, videoWebService, profileService, errorService, logger);
-        component.conference = conference;
-        component.conferenceId = conference.id;
-        router.navigateByUrl.calls.reset();
-    });
+        conference = mapConferenceToVHConference(testData.getConferenceDetailFuture());
+        loggedInParticipant = conference.participants.find(x => x.role === Role.Individual);
+        userProfile = {
+            displayName: loggedInParticipant.displayName,
+            firstName: loggedInParticipant.firstName,
+            lastName: loggedInParticipant.lastName,
+            username: loggedInParticipant.username,
+            name: loggedInParticipant.name,
+            roles: [Role.Judge]
+        };
 
-    it('should get conference when id is found in params', fakeAsync(() => {
-        component.conference = undefined;
-        component.conferenceId = undefined;
-
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.conferenceId).toBe(conference.id);
-        expect(component.conference).toBe(conference);
-        expect(component.testInProgress).toBeFalsy();
-    }));
-
-    it('should get conference when id is found in params', fakeAsync(() => {
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.isStaffMember).toBeFalse();
-    }));
-
-    it('should get pexip config when when id is not found in params', fakeAsync(() => {
-        const emptyParamsRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({}) } };
-        component = new JudgeSelfTestComponent(router, emptyParamsRoute, videoWebService, profileService, errorService, logger);
-
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.testInProgress).toBeFalsy();
-        expect(component.selfTestPexipConfig).toBe(pexipConfig);
-    }));
-
-    it('should navigate to hearing list when equipment works', () => {
-        component.equipmentWorksHandler();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.JudgeHearingList);
-    });
-
-    it('should show equipment fault message when equipment fails', () => {
-        component.equipmentFaultyHandler();
-        expect(component.showEquipmentFaultMessage).toBeTruthy();
-        expect(component.testInProgress).toBeFalsy();
-        expect(component.hideSelfTest).toBeTruthy();
-    });
-
-    it('should show self test restarting video', () => {
-        const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-        selfTestSpy.replayVideo.and.callFake(() => {});
-        component.selfTestComponent = selfTestSpy;
-
-        component.restartTest();
-
-        expect(component.showEquipmentFaultMessage).toBeFalsy();
-        expect(component.testInProgress).toBeFalsy();
-        expect(component.hideSelfTest).toBeFalsy();
-        expect(selfTestSpy.replayVideo).toHaveBeenCalled();
-    });
-
-    it('should set test in progress to true when test begins', () => {
-        component.onTestStarted();
-        expect(component.testInProgress).toBeTruthy();
-    });
-
-    it('should set test in progress to false when test completes', () => {
-        const score = new TestCallScoreResponse({
-            passed: true,
-            score: TestScore.Good
+        mockStore = createMockStore({
+            initialState: {
+                currentConference: conference,
+                loggedInParticipant: loggedInParticipant,
+                userProfile: userProfile,
+                countdownComplete: false,
+                availableRooms: []
+            }
         });
-        component.onSelfTestCompleted(score);
-        expect(component.testInProgress).toBeFalsy();
+        router.navigateByUrl.calls.reset();
+
+        TestBed.configureTestingModule({
+            declarations: [
+                JudgeSelfTestComponent,
+                MockComponent(SelfTestV2Component),
+                MockComponent(SelfTestActionsComponent),
+                MockComponent(ContactUsFoldingComponent),
+                MockPipe(TranslatePipe)
+            ],
+            providers: [
+                { provide: Logger, useValue: new MockLogger() },
+                { provide: Router, useValue: router },
+                { provide: VideoWebService, useValue: videoWebService },
+                { provide: ErrorService, useValue: errorService },
+                { provide: ActivatedRoute, useValue: activatedRoute },
+                provideMockStore()
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(JudgeSelfTestComponent);
+        component = fixture.componentInstance;
+
+        mockStore = TestBed.inject(MockStore);
+        logger = TestBed.inject(Logger);
+
+        selfTestComponent = fixture.debugElement.query(By.directive(SelfTestV2Component)).componentInstance;
+
+        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
+        mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+        mockStore.overrideSelector(ConferenceSelectors.getUserProfile, userProfile);
+
+        fixture.detectChanges();
     });
 
-    it('should define pexip config on successful api call', async () => {
-        await component.getPexipConfig();
-        expect(component.selfTestPexipConfig).toBeDefined();
+    describe('equipmentWorksHandler', () => {
+        it('should navigate to judge hearing list', () => {
+            component.equipmentWorksHandler();
+
+            expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.JudgeHearingList);
+        });
     });
 
-    it('should handle api error when conference retrieval fails', async () => {
-        const error = { error: 'unable to get conference' };
-        videoWebService.getConferenceById.and.callFake(() => Promise.reject(error));
+    describe('equipmentFaultyHandler', () => {
+        it('should show equipment fault message', () => {
+            component.showEquipmentFaultMessage = false;
+            component.testInProgress = true;
 
-        await component.getConference();
+            component.equipmentFaultyHandler();
 
-        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
+            expect(component.showEquipmentFaultMessage).toBeTrue();
+            expect(component.testInProgress).toBeFalse();
+        });
     });
 
-    it('should handle api error when pexip config retrieval fails', async () => {
-        const error = { error: 'unable to get pexip config' };
-        videoWebService.getPexipConfig.and.callFake(() => Promise.reject(error));
+    describe('restartTest', () => {
+        it('should restart the test', () => {
+            component.showEquipmentFaultMessage = true;
 
-        await component.getPexipConfig();
+            component.restartTest();
 
-        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
+            expect(component.showEquipmentFaultMessage).toBeFalse();
+        });
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
+    });
+
+    afterAll(() => {
+        mockStore.resetSelectors();
     });
 });

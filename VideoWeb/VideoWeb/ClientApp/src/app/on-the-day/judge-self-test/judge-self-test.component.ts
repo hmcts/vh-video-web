@@ -1,12 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
+import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { SelfTestV2Component } from 'src/app/shared/self-test-v2/self-test-v2.component';
 
 @Component({
     standalone: false,
@@ -14,36 +13,31 @@ import { BaseSelfTestComponentDirective } from '../models/base-self-test.compone
     templateUrl: './judge-self-test.component.html'
 })
 export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
-    @ViewChild(SelfTestComponent, { static: false })
-    selfTestComponent: SelfTestComponent;
+    @ViewChild(SelfTestV2Component, { static: false })
+    selfTestComponent: SelfTestV2Component;
 
     constructor(
         private router: Router,
-        protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
-        protected errorService: ErrorService,
+        protected conferenceStore: Store<ConferenceState>,
         protected logger: Logger
     ) {
-        super(route, videoWebService, profileService, errorService, logger);
+        super(conferenceStore, logger);
     }
 
     equipmentWorksHandler() {
         this.logger.debug('[JudgeSelfTest] - Equiptment works clicked. Navigating to Judge hearing list.');
         this.router.navigateByUrl(pageUrls.JudgeHearingList);
-        this.hideSelfTest = true;
     }
 
     equipmentFaultyHandler() {
         this.showEquipmentFaultMessage = true;
         this.testInProgress = false;
-        this.hideSelfTest = true;
     }
 
     restartTest() {
         this.logger.debug('[JudgeSelfTest] - Restarting self test.');
         super.restartTest();
         this.showEquipmentFaultMessage = false;
-        this.selfTestComponent.replayVideo();
+        this.selfTestComponent.startTestCall();
     }
 }

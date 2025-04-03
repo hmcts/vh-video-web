@@ -13,5 +13,7 @@ export const getParticipantByPexipId = (pexipId: string) =>
     createSelector(getParticipants, participants => participants?.find(p => p?.pexipInfo?.uuid === pexipId));
 export const getEndpointByPexipId = (pexipId: string) =>
     createSelector(getEndpoints, endpoints => endpoints?.find(e => e?.pexipInfo?.uuid === pexipId));
+export const getSelfTestScore = createSelector(activeConferenceFeature, state => state?.selfTestScore);
+export const getUserProfile = createSelector(activeConferenceFeature, state => state?.userProfile);
 export const getAvailableRooms = createSelector(activeConferenceFeature, state => state?.availableRooms);
 export const getConsultationStatuses = createSelector(activeConferenceFeature, state => state?.consultationStatuses);
