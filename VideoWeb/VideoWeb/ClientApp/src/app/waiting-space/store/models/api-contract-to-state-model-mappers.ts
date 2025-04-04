@@ -72,7 +72,7 @@ export function mapEndpointToVHEndpoint(endpoint: VideoEndpointResponse): VHEndp
         id: endpoint.id,
         displayName: endpoint.display_name,
         status: endpoint.status,
-        defenceAdvocate: endpoint.defence_advocate_username,
+        participantsLinked: endpoint.participants_linked ?? [],
         room: endpoint.current_room ? mapRoomToVHRoom(endpoint.current_room) : null,
         interpreterLanguage: endpoint.interpreter_language
             ? mapInterpeterLanguageToVHInterpreterLanguage(endpoint.interpreter_language)

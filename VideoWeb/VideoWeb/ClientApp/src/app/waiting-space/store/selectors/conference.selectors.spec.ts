@@ -80,14 +80,14 @@ describe('Conference Selectors', () => {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5e',
                     displayName: 'Endpoint 1',
                     status: EndpointStatus.InConsultation,
-                    defenceAdvocate: 'john.doe@test.com',
+                    participantsLinked: ['john.doe@test.com'],
                     room: originalRoom
                 },
                 {
                     id: '197ced60-3cae-4214-8ba1-4465cffe4b5d',
                     displayName: 'Endpoint 2',
                     status: EndpointStatus.NotYetJoined,
-                    defenceAdvocate: null,
+                    participantsLinked: null,
                     room: null
                 }
             ],

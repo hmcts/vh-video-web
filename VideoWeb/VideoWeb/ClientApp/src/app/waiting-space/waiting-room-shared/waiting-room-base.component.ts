@@ -230,7 +230,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (hostRoles.includes(participant.role)) {
             filtered = endpoints;
         } else {
-            filtered = endpoints.filter(endpoint => endpoint.defenceAdvocate?.toLowerCase() === participant.username?.toLowerCase());
+            filtered = endpoints.filter(endpoint => endpoint.participantsLinked.includes(participant.username?.toLowerCase()));
         }
         return filtered;
     }
