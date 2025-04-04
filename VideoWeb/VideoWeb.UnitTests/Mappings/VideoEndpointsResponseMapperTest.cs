@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using VHEndpointStatus = VideoWeb.Common.Models.EndpointStatus;
@@ -7,12 +8,14 @@ namespace VideoWeb.UnitTests.Mappings;
 
 public class VideoEndpointsResponseMapperTest
 {
+    [Test]
     public void should_map_EndpointDto_to_response()
     {
         var endpoint = new EndpointsBuilder()
             .WithCurrentRoom()
             .WithStatus(VHEndpointStatus.Connected)
             .Build();
+        endpoint.ParticipantsLinked.Add("Defence Advocate");
         
         var result = VideoEndpointsResponseMapper.Map(endpoint);
         

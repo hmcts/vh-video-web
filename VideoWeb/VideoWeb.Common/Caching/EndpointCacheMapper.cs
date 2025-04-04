@@ -10,17 +10,16 @@ namespace VideoWeb.Common.Caching
     {
         public static Endpoint MapEndpointToCacheModel(EndpointResponse endpointResponse, EndpointResponseV2 endpointForHearingResponse)
         {
-            return new Endpoint
-            {
-                Id = endpointResponse.Id,
-                DisplayName = endpointResponse.DisplayName,
-                EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
-                ParticipantsLinked = endpointResponse.ParticipantsLinked?.ToList() ?? [],
-                CurrentRoom = MapRoom(endpointResponse.CurrentRoom),
-                InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map(),
-                ExternalReferenceId = endpointForHearingResponse.ExternalReferenceId,
-                ProtectFrom = endpointForHearingResponse.Screening?.ProtectedFrom ?? []
-            };
+            var model = new Endpoint();
+            model.Id = endpointResponse.Id;
+            model.DisplayName = endpointResponse.DisplayName;
+            model.EndpointStatus = (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString());
+            model.ParticipantsLinked = endpointResponse.ParticipantsLinked?.ToList() ?? [];
+            model.CurrentRoom = MapRoom(endpointResponse.CurrentRoom);
+            model.InterpreterLanguage = endpointForHearingResponse.InterpreterLanguage?.Map();
+            model.ExternalReferenceId = endpointForHearingResponse.ExternalReferenceId;
+            model.ProtectFrom = endpointForHearingResponse.Screening?.ProtectedFrom ?? [];
+            return model;
         }
         private static ConsultationRoom MapRoom(RoomResponse room)
         {

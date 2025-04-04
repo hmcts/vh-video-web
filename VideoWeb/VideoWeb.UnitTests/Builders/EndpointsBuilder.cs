@@ -1,7 +1,7 @@
 using FizzWare.NBuilder;
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.UnitTests.Builders;
 
@@ -15,6 +15,7 @@ public class EndpointsBuilder
             .With(x => x.Id = Guid.NewGuid())
             .With(x => x.EndpointStatus = EndpointStatus.Connected)
             .With(x => x.DisplayName="DisplayName")
+            .With(x => x.ParticipantsLinked = new List<string>())
             .Build();
     }
 

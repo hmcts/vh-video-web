@@ -199,8 +199,7 @@ public class ConsultationsController(
             var username = User.Identity?.Name?.Trim() ?? throw new UnauthorizedAccessException("No username found in claims");
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
             
-            if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(),
-                    request.InviteEndpoints.ToList()))
+            if (conference.AreEntitiesScreenedFromEachOther(request.InviteParticipants.ToList(), request.InviteEndpoints.ToList()))
             {
                 return BadRequest(ConsultationHasScreenedParticipantAndEndpointErrorMessage);
             }
