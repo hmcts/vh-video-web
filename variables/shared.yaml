@@ -7,7 +7,6 @@ parameters:
     default: ""
 
 variables:
-  - group: Sonar-Poc
   - name: appName
     value: VideoWeb
   - name: git_version_config_path
