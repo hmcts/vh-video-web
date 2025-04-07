@@ -82,9 +82,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[3.2.11-pr-0729-0013, )",
-        "resolved": "3.2.11-pr-0729-0013",
-        "contentHash": "0XcBYstmU6HHNYFSl/ORpXrBD3vI7kPwj/vYgXROhoCDKPS54V5SlCAk93A1UOQIJn8L4Sd3YSDWBn/N1U0DCw==",
+        "requested": "[3.2.12, )",
+        "resolved": "3.2.12",
+        "contentHash": "D8aT2GeUvt0Z/UoTIFaBVHK3zeba+Cyh1uYn3HLXT79piWyxv/DZ/an0E/ePe+k7Ow4OoWiz3JqPspcJPnjbzw==",
         "dependencies": {
           "System.Text.Json": "8.0.5"
         }
@@ -168,17 +168,17 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "3.2.5-pr-0956-0004",
-        "contentHash": "p94w9JwKq8Wtpx0awt+ugXjkzdXyOt6sNaE+3d1YaOZPxgiKatrnQmO3K+o6czXRLu2iisacljBfvsOviW2gjw==",
+        "resolved": "3.2.6",
+        "contentHash": "C6oJuaaoxmMI+V8RBLgHTyjz2mOGjNVx9Q2lCWdVI+s0DCS8zXnYmzoqnXCOwLHP5YiBZ5dTkDXdJWJlq5Nxww==",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "3.2.5-pr-0956-0004",
+          "BookingsApi.Common.DotNet6": "3.2.6",
           "System.Text.Json": "8.0.5"
         }
       },
       "BookingsApi.Common.DotNet6": {
         "type": "Transitive",
-        "resolved": "3.2.5-pr-0956-0004",
-        "contentHash": "d9AI5UXzCBfXlx1/VZy8Y+dl5f8pICHnYdv9cghGS94naLzZW0lP8lakSzEzZPfcFGVa1vpbrZbOG5vqQl3DwA==",
+        "resolved": "3.2.6",
+        "contentHash": "6U/pWQExBDvV/6qKGud1uze+JP3iXc3tob0ko84kxYlVdz9k1saqT5OHbHUEg6Nbqshw8o5/xSPmJ5Pe2lpfIw==",
         "dependencies": {
           "System.Text.Json": "8.0.5"
         }
@@ -1928,7 +1928,7 @@
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
-          "BookingsApi.Client": "[3.2.5-pr-0956-0004, )",
+          "BookingsApi.Client": "[3.2.6, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.2.2, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.1.0, )",
@@ -1945,7 +1945,7 @@
           "Scrutor": "[4.2.2, )",
           "Swashbuckle.AspNetCore": "[6.6.1, )",
           "Swashbuckle.AspNetCore.Annotations": "[6.6.1, )",
-          "VideoApi.Client": "[3.2.11-pr-0729-0013, )",
+          "VideoApi.Client": "[3.2.12, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"
@@ -1955,14 +1955,14 @@
         "type": "Project",
         "dependencies": {
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
-          "BookingsApi.Client": "[3.2.5-pr-0956-0004, )",
+          "BookingsApi.Client": "[3.2.6, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Options": "[9.0.2, )",
           "Microsoft.Identity.Client": "[4.61.3, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[3.2.11-pr-0729-0013, )"
+          "VideoApi.Client": "[3.2.12, )"
         }
       },
       "videoweb.contract": {
