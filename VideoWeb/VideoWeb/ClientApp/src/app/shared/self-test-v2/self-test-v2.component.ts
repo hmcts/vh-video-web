@@ -153,8 +153,10 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     }
 
     async startTestCall() {
-        this.userMediaStreamService.createAndPublishStream();
-        await this.setupPexipClient();
+        if (!this.didTestComplete) {
+            this.userMediaStreamService.createAndPublishStream();
+            await this.setupPexipClient();
+        }
 
         const token$ = this.apiClient.getSelfTestToken(this.selfTestParticipantId);
         const currentStream$ = this.userMediaStreamService.currentStream$.pipe(
@@ -260,9 +262,10 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         this.updateVideoElementWithStream(this.incomingStream, this.incomingVideoElement);
 
         if (!this.hasRefreshedStream) {
-            this.logger.debug(`${this.loggerPrefix} Call connected, force stream refresh`);
+            // this affects FireFox and Safari
+            this.logger.debug(`${this.loggerPrefix} Call connected, force stream refresh to trigger video to play.`);
             this.userMediaStreamService.createAndPublishStream();
-            this.hasRefreshedStream = true; // Set the flag to true
+            this.hasRefreshedStream = true;
         }
 
         this.testStarted.emit();
@@ -293,6 +296,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         if (this.validDisconnectReasons.includes(reason.reason)) {
             this.didTestComplete = true;
             this.retrieveSelfTestScore();
+            this.testCompleted.emit();
         }
     }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { skip, take, takeUntil } from 'rxjs/operators';
+import { concatMap, skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, HearingLayout, Supplier } from 'src/app/services/clients/api-client';
 import { HeartbeatService } from 'src/app/services/conference/heartbeat.service';
@@ -73,6 +73,8 @@ export class VideoCallService {
     private _displayStream: MediaStream;
     private supplier: Supplier;
     private uniqueCallTagsPerCall: boolean;
+
+    private renegotiateSubject = new Subject<boolean>();
 
     constructor(
         private logger: Logger,
@@ -182,6 +184,15 @@ export class VideoCallService {
                 self.logger.info(`${self.loggerPrefix} Renegotiate due to user media stream change`);
             }
         });
+
+        this.renegotiateSubject
+            .pipe(
+                concatMap(sendUpdate => this.performRenegotiation(sendUpdate)) // Process one renegotiation at a time,
+            )
+            .subscribe({
+                next: () => this.logger.debug(`${this.loggerPrefix} Renegotiation completed`),
+                error: err => this.logger.error(`${this.loggerPrefix} Renegotiation failed`, err)
+            });
 
         this.ldService
             .getFlag<boolean>(FEATURE_FLAGS.uniqueCallTags, true)
@@ -392,16 +403,9 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        if (this.renegotiating) {
-            this.logger.info(`${this.loggerPrefix} Renegotiating in progress, not calling renegotiateCall`);
-            return;
-        }
-        this.logger.debug(`${this.loggerPrefix} renegotiating`);
-        this.renegotiating = true;
-        this.pexipAPI.renegotiate(sendUpdate);
-        this.renegotiating = false;
-        this.justRenegotiated = true;
-        this.logger.debug(`${this.loggerPrefix} renegotiated`);
+        this.logger.debug(`${this.loggerPrefix} Queuing renegotiation request`);
+        // Queue renegotiation requests to ensure they are processed one at a time and not lost
+        this.renegotiateSubject.next(sendUpdate);
     }
 
     async selectScreenWithMicrophone() {
@@ -468,7 +472,7 @@ export class VideoCallService {
 
     stopPresentation() {
         this.logger.info(`${this.loggerPrefix} stopPresentation`);
-        this.pexipAPI.stopPresentation();
+        this.pexipAPI.present(null);
     }
 
     connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
@@ -626,5 +630,18 @@ export class VideoCallService {
 
     private getSupplierConfig(config: ClientSettingsResponse) {
         return config.supplier_configurations.find(x => x.supplier === this.supplier);
+    }
+
+    private performRenegotiation(sendUpdate: boolean): Observable<void> {
+        return new Observable<void>(observer => {
+            this.logger.debug(`${this.loggerPrefix} renegotiating`);
+            this.renegotiating = true;
+            this.pexipAPI.renegotiate(sendUpdate);
+            this.renegotiating = false;
+            this.justRenegotiated = true;
+            this.logger.debug(`${this.loggerPrefix} renegotiated`);
+            observer.next();
+            observer.complete();
+        });
     }
 }
