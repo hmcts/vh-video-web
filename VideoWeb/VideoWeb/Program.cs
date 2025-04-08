@@ -46,6 +46,7 @@ namespace VideoWeb
                     webBuilder.ConfigureLogging((hostingContext, logging) =>
                     {
                         logging.AddEventSourceLogger();
+                        logging.AddOpenTelemetry();
                         logging.AddFilter<OpenTelemetryLoggerProvider>("", LogLevel.Trace);
                     });
                     webBuilder.ConfigureAppConfiguration(configBuilder =>

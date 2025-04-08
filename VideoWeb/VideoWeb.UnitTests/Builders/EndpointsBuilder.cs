@@ -1,43 +1,43 @@
 using FizzWare.NBuilder;
 using System;
-using VideoApi.Contract.Enums;
-using VideoApi.Contract.Responses;
+using System.Collections.Generic;
+using VideoWeb.Common.Models;
 
-namespace VideoWeb.UnitTests.Builders
+namespace VideoWeb.UnitTests.Builders;
+
+public class EndpointsBuilder
 {
-    public class EndpointsBuilder
+    private readonly Endpoint _endpoint;
+
+    public EndpointsBuilder()
     {
-        private readonly EndpointResponse _endpoint;
+        _endpoint = Builder<Endpoint>.CreateNew()
+            .With(x => x.Id = Guid.NewGuid())
+            .With(x => x.EndpointStatus = EndpointStatus.Connected)
+            .With(x => x.DisplayName="DisplayName")
+            .With(x => x.ParticipantsLinked = new List<string>())
+            .Build();
+    }
 
-        public EndpointsBuilder()
-        {
-            _endpoint = Builder<EndpointResponse>.CreateNew()
-                .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Status = EndpointState.Connected)
-                .With(x=>x.DisplayName="DisplayName")
-                .Build();
-        }
+    public EndpointsBuilder WithStatus(EndpointStatus state)
+    {
+        _endpoint.EndpointStatus = state;
+        return this;
+    }
 
-        public EndpointsBuilder WithStatus(EndpointState state)
-        {
-            _endpoint.Status = state;
-            return this;
-        }
+    public EndpointsBuilder WithCurrentRoom()
+    {
+        _endpoint.CurrentRoom = new ConsultationRoom()
+        { 
+            Id = 1,
+            Label = "Room 1",
+            Locked = true
+        };
+        return this;
+    }
 
-        public EndpointsBuilder WithCurrentRoom()
-        {
-            _endpoint.CurrentRoom = new RoomResponse
-            {
-                Id = 1,
-                Label = "Room 1",
-                Locked = true
-            };
-            return this;
-        }
-
-        public EndpointResponse Build()
-        {
-            return _endpoint;
-        }
+    public Endpoint Build()
+    {
+        return _endpoint;
     }
 }
