@@ -113,7 +113,10 @@ public class ConferenceCacheMapperTests
             conference.Endpoints.Select(x => x.Id).Should().Contain(endpoint.Id);
             conference.Endpoints.Select(x => x.DisplayName).Should().Contain(endpoint.DisplayName);
             conference.Endpoints.Select(x => x.Status).Should().Contain((EndpointState)endpoint.EndpointStatus);
-            conference.Endpoints.Select(x => x.DefenceAdvocate).Should().Contain(endpoint.DefenceAdvocateUsername);
+            conference.Endpoints.ForEach(ce =>
+            {
+                ce.ParticipantsLinked.Should().BeEquivalentTo(endpoint.ParticipantsLinked);
+            });
             var hearingEndpoint = hearingResponse.Endpoints.Find(e => e.Id == endpoint.Id);
             endpoint.InterpreterLanguage.Should().BeEquivalentTo(hearingEndpoint.InterpreterLanguage.Map());
             endpoint.ExternalReferenceId.Should().Be(hearingEndpoint.ExternalReferenceId);
@@ -264,7 +267,10 @@ public class ConferenceCacheMapperTests
             DisplayName = x.DisplayName,
             Sip = x.SipAddress,
             Pin = x.Pin,
-            DefenceAdvocateId = conference.Participants.First(p => p.Username == x.DefenceAdvocate).RefId,
+            LinkedParticipantIds = conference.Participants.Where(p => p.LinkedParticipants.
+                    Any(l => l.LinkedId == x.Id))
+                .Select(p => p.RefId)
+                .ToList(),
             InterpreterLanguage = interpreterLanguage,
             ExternalReferenceId = Guid.NewGuid().ToString()
         }).ToList();
@@ -303,7 +309,7 @@ public class ConferenceCacheMapperTests
         participantB.CurrentRoom = new RoomResponse {Id = 2,Label = "Room 2", Locked = true};
         var endpoints = Builder<EndpointResponse>.CreateListOfSize(2)
             .All()
-            .With(e => e.DefenceAdvocate = participantA.Username)
+            .With(e => e.ParticipantsLinked = [participantA.Username, participantB.Username])
             .With(e => e.Id = Guid.NewGuid())
             .Build()
             .ToList();

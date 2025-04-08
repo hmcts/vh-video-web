@@ -998,13 +998,13 @@ describe('NotificationToastrService', () => {
         const expectedToastId = 2;
         const testAddEndpointResponse = new VideoEndpointResponse();
         testAddEndpointResponse.display_name = 'TestAddEndpointDisplayName';
-        testAddEndpointResponse.defence_advocate_username = 'TestAddAdvocateUserName@gmail.com';
+        testAddEndpointResponse.participants_linked = ['TestAddAdvocateUserName@gmail.com'];
         testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
         const testAddEndpoint = mapEndpointToVHEndpoint(testAddEndpointResponse);
 
         const testUpdateEndpointReponse = new VideoEndpointResponse();
         testUpdateEndpointReponse.display_name = 'TestUpdateEndpointDisplayName';
-        testUpdateEndpointReponse.defence_advocate_username = 'TestUpdateAdvocateUserName@gmail.com';
+        testUpdateEndpointReponse.participants_linked = ['TestUpdateAdvocateUserName@gmail.com'];
         testAddEndpointResponse.status = EndpointStatus.NotYetJoined;
         const testUpdateEndpoint = mapEndpointToVHEndpoint(testUpdateEndpointReponse);
 

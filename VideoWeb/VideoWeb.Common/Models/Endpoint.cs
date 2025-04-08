@@ -8,7 +8,7 @@ namespace VideoWeb.Common.Models
         public Guid Id { get; set; }
         public string DisplayName { get; set; }
         public EndpointStatus EndpointStatus { get; set; }
-        public string DefenceAdvocateUsername { get; set; }
+        public List<string> ParticipantsLinked { get; set; }
         public ConsultationRoom CurrentRoom { get; set; }
         public InterpreterLanguage InterpreterLanguage { get; set; }
         public string ExternalReferenceId { get; set; }

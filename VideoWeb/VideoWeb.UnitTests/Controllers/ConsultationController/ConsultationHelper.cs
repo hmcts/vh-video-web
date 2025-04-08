@@ -51,15 +51,15 @@ public static class ConsultationHelper
             Endpoints =
             [
                 Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
-                    .With(x => x.DefenceAdvocateUsername = "rep1@hmcts.net")
+                    .With(x => x.ParticipantsLinked = ["rep1@hmcts.net"])
                     .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                 
                 Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
-                    .With(x => x.DefenceAdvocateUsername = "john@hmcts.net")
+                    .With(x => x.ParticipantsLinked = ["john@hmcts.net"])
                     .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build(),
                 
                 Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP3")
-                    .With(x => x.DefenceAdvocateUsername = "john@hmcts.net")
+                    .With(x => x.ParticipantsLinked = ["john@hmcts.net"])
                     .With(x => x.ExternalReferenceId = Guid.NewGuid().ToString()).Build()
             ]
         };
