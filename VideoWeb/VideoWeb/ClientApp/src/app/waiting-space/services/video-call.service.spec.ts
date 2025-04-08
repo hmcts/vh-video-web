@@ -305,7 +305,7 @@ describe('VideoCallService', () => {
         await service.stopPresentation();
 
         // Assert
-        expect(pexipSpy.stopPresentation).toHaveBeenCalledTimes(1);
+        expect(pexipSpy.present).toHaveBeenCalledWith(null);
     });
 
     describe('PexipAPI onConnect', () => {
