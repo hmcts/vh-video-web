@@ -63,6 +63,8 @@ import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { RouterEffects } from './store/effects/router.effects';
 import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
+import { HearingDetailsComponent } from './hearing-details/hearing-details.component';
+import { NonHostWaitingRoomComponent } from './non-host-waiting-room/non-host-waiting-room.component';
 
 @NgModule({
     imports: [
@@ -124,7 +126,9 @@ import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
         WarnJoinHearingPopupComponent,
         ChangeHearingLayoutPopupComponent,
         HearingControlIconComponent,
-        DialOutParticipantPopupComponent
+        DialOutParticipantPopupComponent,
+        HearingDetailsComponent,
+        NonHostWaitingRoomComponent
     ],
     providers: [
         VideoCallService,
