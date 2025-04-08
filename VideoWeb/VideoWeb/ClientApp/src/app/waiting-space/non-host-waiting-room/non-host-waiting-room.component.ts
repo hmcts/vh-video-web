@@ -56,7 +56,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
-    private title = 'Participant waiting room';
+    private titleForParticipant = 'Participant waiting room';
+    private titleForJoh = 'JOH waiting room';
     private _userRole: UserRole;
 
     constructor(
@@ -171,7 +172,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     ngOnInit() {
-        this.titleService.setTitle(this.title);
+        this.setTitle();
         this.divTrapId = 'video-container';
         this.init();
     }
@@ -454,6 +455,20 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
             await this.eventService.sendMediaStatus(this.conferenceId, this.vhParticipant.id, mediaStatus);
         });
+    }
+
+    private setTitle() {
+        switch (this.userRole) {
+            case UserRole.Participant:
+                this.titleService.setTitle(this.titleForParticipant);
+                break;
+            case UserRole.Joh:
+                this.titleService.setTitle(this.titleForJoh);
+                break;
+            default:
+                this.titleService.setTitle(this.titleForParticipant);
+                break;
+        }
     }
 
     private cleanUp() {
