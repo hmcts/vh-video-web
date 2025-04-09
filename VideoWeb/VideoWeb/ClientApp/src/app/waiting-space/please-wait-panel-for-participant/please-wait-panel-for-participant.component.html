@@ -1,10 +1,8 @@
 <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
-<div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
+  <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
     <div *ngIf="!isOrHasWitnessLink && hearing.isOnTime()">
       <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.please-wait' | translate }}</h2>
-      <p class="white">
-        {{ 'participant-waiting-room.hearing-starting-at' | translate }} {{ hearing.scheduledStartTime | date: 'HH:mm' }}
-      </p>
+      <p class="white">{{ 'participant-waiting-room.hearing-starting-at' | translate }} {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
     </div>
 
     <div *ngIf="!isOrHasWitnessLink && hearing.isStarting()">

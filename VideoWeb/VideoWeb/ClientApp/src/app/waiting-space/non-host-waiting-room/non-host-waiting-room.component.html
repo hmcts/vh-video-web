@@ -1,67 +1,30 @@
 <div *ngIf="loadingData">
-    <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
-  </div>
-  
-  <div *ngIf="showVideo" class="video-background" id="video-container">
-    <div class="header-bar">
-      <div *ngIf="isParticipant">
-        <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
-          <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
-            <div class="room-title">
-              <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
-            </div>
-            <div class="room-status">
-              <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
-                (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
-              }}</span>
-            </div>
-            <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
-              {{ 'participant-waiting-room.lock-the-room' | translate }}
-            </div>
-            <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
-              {{ 'participant-waiting-room.invite-others' | translate }}
-            </div>
-          </ng-container>
-          <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
-            <div class="room-title">
-              <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-              <div
-                *ngIf="hasCaseNameOverflowed"
-                class="room-title-show-more"
-                appTooltip
-                [text]="getCaseNameAndNumber()"
-                colour="grey"
-                [isDesktopOnly]="false"
-              >
-                (show more)
-              </div>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="connected">
-            <app-private-consultation-room-controls
-              #hearingControls
-              [canToggleParticipantsPanel]="isPrivateConsultation"
-              [conferenceId]="vhConference.id"
-              [participant]="vhParticipant"
-              [isPrivateConsultation]="isPrivateConsultation"
-              [outgoingStream]="outgoingStream"
-              [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-              [showConsultationControls]="showConsultationControls"
-              [areParticipantsVisible]="!isParticipantsPanelHidden"
-              (leaveConsultation)="showLeaveConsultationModal()"
-              (lockConsultation)="setRoomLock($event)"
-              (changeDeviceToggle)="showChooseCameraDialog()"
-              (changeLanguageSelected)="showLanguageChangeModal()"
-              (togglePanel)="toggleParticipantsPanel()"
-            >
-            </app-private-consultation-room-controls>
-          </ng-container>
-        </div>
-      </div>
-      <div *ngIf="!isParticipant">
-        <div class="header-content-grid govuk-body">
+  <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
+</div>
+
+<div *ngIf="showVideo" class="video-background" id="video-container">
+  <div class="header-bar">
+    <div *ngIf="isParticipant">
+      <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
+        <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
           <div class="room-title">
-            <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
+            <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
+          </div>
+          <div class="room-status">
+            <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
+              (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
+            }}</span>
+          </div>
+          <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
+            {{ 'participant-waiting-room.lock-the-room' | translate }}
+          </div>
+          <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
+            {{ 'participant-waiting-room.invite-others' | translate }}
+          </div>
+        </ng-container>
+        <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
+          <div class="room-title">
+            <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
             <div
               *ngIf="hasCaseNameOverflowed"
               class="room-title-show-more"
@@ -73,311 +36,352 @@
               (show more)
             </div>
           </div>
+        </ng-container>
+        <ng-container *ngIf="connected">
           <app-private-consultation-room-controls
-            class="govuk-grid-width-half"
             #hearingControls
+            [canToggleParticipantsPanel]="isPrivateConsultation"
             [conferenceId]="vhConference.id"
             [participant]="vhParticipant"
             [isPrivateConsultation]="isPrivateConsultation"
-            [canToggleParticipantsPanel]="isPrivateConsultation"
             [outgoingStream]="outgoingStream"
             [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
             [showConsultationControls]="showConsultationControls"
-            [areParticipantsVisible]="areParticipantsVisible"
+            [areParticipantsVisible]="!isParticipantsPanelHidden"
             (leaveConsultation)="showLeaveConsultationModal()"
+            (lockConsultation)="setRoomLock($event)"
             (changeDeviceToggle)="showChooseCameraDialog()"
-            (togglePanel)="togglePanel($event)"
+            (changeLanguageSelected)="showLanguageChangeModal()"
+            (togglePanel)="toggleParticipantsPanel()"
           >
           </app-private-consultation-room-controls>
-        </div>
+        </ng-container>
       </div>
     </div>
-    <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': shouldHidePanel }">
-      <app-private-consultation-participants
-        [conference]="vhConference"
-        [participantEndpoints]="participantEndpoints"
-        [roomLabel]="this.vhParticipant.room?.label"
-      >
-      </app-private-consultation-participants>
+    <div *ngIf="!isParticipant">
+      <div class="header-content-grid govuk-body">
+        <div class="room-title">
+          <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
+          <div
+            *ngIf="hasCaseNameOverflowed"
+            class="room-title-show-more"
+            appTooltip
+            [text]="getCaseNameAndNumber()"
+            colour="grey"
+            [isDesktopOnly]="false"
+          >
+            (show more)
+          </div>
+        </div>
+        <app-private-consultation-room-controls
+          class="govuk-grid-width-half"
+          #hearingControls
+          [conferenceId]="vhConference.id"
+          [participant]="vhParticipant"
+          [isPrivateConsultation]="isPrivateConsultation"
+          [canToggleParticipantsPanel]="isPrivateConsultation"
+          [outgoingStream]="outgoingStream"
+          [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+          [showConsultationControls]="showConsultationControls"
+          [areParticipantsVisible]="areParticipantsVisible"
+          (leaveConsultation)="showLeaveConsultationModal()"
+          (changeDeviceToggle)="showChooseCameraDialog()"
+          (togglePanel)="togglePanel($event)"
+        >
+        </app-private-consultation-room-controls>
+      </div>
     </div>
-    <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="setTrapFocus()">
+  </div>
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': shouldHidePanel }">
+    <app-private-consultation-participants
+      [conference]="vhConference"
+      [participantEndpoints]="participantEndpoints"
+      [roomLabel]="this.vhParticipant.room?.label"
+    >
+    </app-private-consultation-participants>
+  </div>
+  <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="setTrapFocus()">
+    <video
+      appForcePlayVideo
+      id="incomingFeedPrivate"
+      [muted]="!showVideo"
+      [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
+      poster="/assets/images/empty_crest.jpg"
+    >
+      {{ 'participant-waiting-room.browser-support' | translate }}
+    </video>
+    <div
+      id="secondIncomingFeed"
+      *ngIf="presentationStream"
+      (keydown)="switchStreamWindows()"
+      (click)="switchStreamWindows()"
+      appTooltip
+      [text]="'participant-waiting-room.switch-to-main-screen' | translate"
+      colour="grey"
+    >
       <video
         appForcePlayVideo
-        id="incomingFeedPrivate"
-        [muted]="!showVideo"
-        [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
+        [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
+        height="auto"
         poster="/assets/images/empty_crest.jpg"
+        class="fill-container"
       >
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
-      <div
-        id="secondIncomingFeed"
-        *ngIf="presentationStream"
-        (keydown)="switchStreamWindows()"
-        (click)="switchStreamWindows()"
-        appTooltip
-        [text]="'participant-waiting-room.switch-to-main-screen' | translate"
-        colour="grey"
-      >
-        <video
-          appForcePlayVideo
-          [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
-          height="auto"
-          poster="/assets/images/empty_crest.jpg"
-          class="fill-container"
-        >
-          {{ 'participant-waiting-room.browser-support' | translate }}
-        </video>
-      </div>
-    </div>
-  
-    <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-      <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
     </div>
   </div>
-  
-  <div *ngIf="isParticipant && isTransferringIn">
-    <div class="video-background">
-      <div class="transferMessage">
-        <img
-          class="transferFeedImage"
-          id="transferFeedImage"
-          ngSrc="/assets/images/govuk-crest-white.svg"
-          [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
-          height="247"
-          width="300"
-        />
-        <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
-          {{ emptyString }}
-        </h2>
-        <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
-          {{ 'participant-waiting-room.browser-support' | translate }}
-        </video>
-      </div>
+
+  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+    <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
+  </div>
+</div>
+
+<div *ngIf="isParticipant && isTransferringIn">
+  <div class="video-background">
+    <div class="transferMessage">
+      <img
+        class="transferFeedImage"
+        id="transferFeedImage"
+        ngSrc="/assets/images/govuk-crest-white.svg"
+        [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
+        height="247"
+        width="300"
+      />
+      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
+        {{ emptyString }}
+      </h2>
+      <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
+        {{ 'participant-waiting-room.browser-support' | translate }}
+      </video>
     </div>
   </div>
-  
-  <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <div style="margin-bottom: 0">
-        <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
-      </div>
-  
-      <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
-  
-      <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
-        <div class="govuk-grid-column-full">
-          <div class="govuk-button-group">
-            <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
-              {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
-            </button>
-            <button
-              id="leaveHearingButton"
-              class="govuk-button govuk-button--warning"
-              *ngIf="isParticipant"
-              data-module="govuk-button"
-              type="button"
-              (click)="onLeaveHearingButtonClicked()"
-            >
-              {{ 'participant-waiting-room.leave-hearing' | translate }}
-            </button>
-          </div>
-        </div>
-        <div class="govuk-grid-column-two-thirds" style="float: right">
-          <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-            <app-participant-network-health [participant]="vhParticipant" [showDetail]="false"> </app-participant-network-health>
-          </div>
-        </div>
-      </div>
-  
-      <app-hearing-details [conference]="vhConference" [hearing]="hearing"></app-hearing-details>
+</div>
+
+<div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div style="margin-bottom: 0">
+      <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
-  
-    <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
-      
-        <div *ngIf="isParticipant">
-          <app-please-wait-panel-for-participant [hearing]="hearing" [isOrHasWitnessLink]="isOrHasWitnessLink()" [currentTime]="currentTime" [isQuickLinkParticipant]="isQuickLinkParticipant()"></app-please-wait-panel-for-participant>
-          <div *ngIf="canStartJoinConsultation">
-            <button
-              [disabled]="!connected"
-              class="govuk-button govuk-!-margin-right-3"
-              id="openStartPCButton"
-              data-module="govuk-button"
-              (click)="openStartConsultationModal()"
-            >
-              {{ 'participant-waiting-room.private-consultation.start' | translate }}
-            </button>
-      
-            <button
-              [disabled]="!connected"
-              class="govuk-button govuk-button-blue"
-              id="openJoinPCButton"
-              data-module="govuk-button"
-              (click)="openJoinConsultationModal()"
-            >
-              {{ 'participant-waiting-room.private-consultation.join' | translate }}
-            </button>
-          </div>
-          <div *ngIf="!connected" class="govuk-warning-text">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-            <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">{{ 'participant-waiting-room.warning' | translate }}</span>
-              {{ 'participant-waiting-room.please-wait-while-we-connect-you' | translate }}
-            </strong>
-          </div>
-      
-          <div *ngIf="canStartJoinConsultation">
-            <details class="govuk-details" data-module="govuk-details">
-              <summary
-                class="govuk-details__summary"
-                (keydown)="toggleAccordian()"
-                (click)="toggleAccordian()"
-                tabindex="0"
-                role="button"
-                [attr.aria-expanded]="privateConsultationAccordianExpanded"
-              >
-                <span class="govuk-details__summary-text" id="what-are-private-meetings">
-                  {{ 'participant-waiting-room.private-consultation.what-are-private-meetings' | translate }}
-                </span>
-              </summary>
-              <div class="govuk-details__text" *ngIf="privateConsultationAccordianExpanded">
-                <p class="govuk-body govuk-!-margin-bottom-0">
-                  {{ 'participant-waiting-room.private-consultation.talk-to-other-participants' | translate }}
-                </p>
-                <ul>
-                  <li>{{ 'participant-waiting-room.private-consultation.guide1' | translate }}</li>
-                  <li>{{ 'participant-waiting-room.private-consultation.guide2' | translate }}</li>
-                  <li>{{ 'participant-waiting-room.private-consultation.guide3' | translate }}</li>
-                </ul>
-                <p class="govuk-body govuk-!-margin-bottom-0">
-                  {{ 'participant-waiting-room.private-consultation.guide4' | translate }}
-                </p>
-              </div>
-            </details>
-          </div>
-      
-          <div class="govuk-!-margin-top-9">
-            <p class="govuk-body">
-              <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: (phoneNumber$ | async) } }}</strong>
-            </p>
-          </div>
-        </div>
-        <div *ngIf="!isParticipant">
-          <app-please-wait-panel-for-joh [hearing]="hearing" [currentTime]="currentTime"></app-please-wait-panel-for-joh>
-          <div>
-            <button
-              class="govuk-button govuk-button--bigblue"
-              type="button"
-              id="joinPCButton"
-              data-module="govuk-button"
-              (click)="joinJudicialConsultation()"
-              [disabled]="!connected"
-            >
-              {{ 'joh-waiting-room.enter-consultation-room' | translate }}
-              <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
-                {{ numberOfJudgeOrJOHsInConsultation }}
-              </span>
-            </button>
-          </div>
-          <div *ngIf="!connected" class="govuk-warning-text">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-            <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">{{ 'joh-waiting-room.warning' | translate }}</span>
-              {{ 'joh-waiting-room.please-wait-while-we-connect-you' | translate }}
-            </strong>
-          </div>
-          <div class="govuk-!-margin-top-9">
-            <p class="govuk-body">
-              <strong>{{ 'joh-waiting-room.video-hearing-team-contact' | translate: { phone: (phoneNumber$ | async) } }}</strong>
-            </p>
-          </div>
-        </div>
-    </div>
-    <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
-      <div *ngIf="isParticipant">
-        <app-individual-participant-status-list
-            [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
-            [conference]="vhConference"
+
+    <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
+      <div class="govuk-grid-column-full">
+        <div class="govuk-button-group">
+          <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
+            {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
+          </button>
+          <button
+            id="leaveHearingButton"
+            class="govuk-button govuk-button--warning"
+            *ngIf="isParticipant"
+            data-module="govuk-button"
+            type="button"
+            (click)="onLeaveHearingButtonClicked()"
           >
-          </app-individual-participant-status-list>
+            {{ 'participant-waiting-room.leave-hearing' | translate }}
+          </button>
+        </div>
       </div>
-      <div *ngIf="!isParticipant">
-        <app-judge-participant-status-list [conference]="vhConference"> </app-judge-participant-status-list>
+      <div class="govuk-grid-column-two-thirds" style="float: right">
+        <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+          <app-participant-network-health [participant]="vhParticipant" [showDetail]="false"> </app-participant-network-health>
+        </div>
+      </div>
+    </div>
+
+    <app-hearing-details [conference]="vhConference" [hearing]="hearing"></app-hearing-details>
+  </div>
+
+  <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
+    <div *ngIf="isParticipant">
+      <app-please-wait-panel-for-participant
+        [hearing]="hearing"
+        [isOrHasWitnessLink]="isOrHasWitnessLink()"
+        [currentTime]="currentTime"
+        [isQuickLinkParticipant]="isQuickLinkParticipant()"
+      ></app-please-wait-panel-for-participant>
+      <div *ngIf="canStartJoinConsultation">
+        <button
+          [disabled]="!connected"
+          class="govuk-button govuk-!-margin-right-3"
+          id="openStartPCButton"
+          data-module="govuk-button"
+          (click)="openStartConsultationModal()"
+        >
+          {{ 'participant-waiting-room.private-consultation.start' | translate }}
+        </button>
+
+        <button
+          [disabled]="!connected"
+          class="govuk-button govuk-button-blue"
+          id="openJoinPCButton"
+          data-module="govuk-button"
+          (click)="openJoinConsultationModal()"
+        >
+          {{ 'participant-waiting-room.private-consultation.join' | translate }}
+        </button>
+      </div>
+      <div *ngIf="!connected" class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">{{ 'participant-waiting-room.warning' | translate }}</span>
+          {{ 'participant-waiting-room.please-wait-while-we-connect-you' | translate }}
+        </strong>
+      </div>
+
+      <div *ngIf="canStartJoinConsultation">
+        <details class="govuk-details" data-module="govuk-details">
+          <summary
+            class="govuk-details__summary"
+            (keydown)="toggleAccordian()"
+            (click)="toggleAccordian()"
+            tabindex="0"
+            role="button"
+            [attr.aria-expanded]="privateConsultationAccordianExpanded"
+          >
+            <span class="govuk-details__summary-text" id="what-are-private-meetings">
+              {{ 'participant-waiting-room.private-consultation.what-are-private-meetings' | translate }}
+            </span>
+          </summary>
+          <div class="govuk-details__text" *ngIf="privateConsultationAccordianExpanded">
+            <p class="govuk-body govuk-!-margin-bottom-0">
+              {{ 'participant-waiting-room.private-consultation.talk-to-other-participants' | translate }}
+            </p>
+            <ul>
+              <li>{{ 'participant-waiting-room.private-consultation.guide1' | translate }}</li>
+              <li>{{ 'participant-waiting-room.private-consultation.guide2' | translate }}</li>
+              <li>{{ 'participant-waiting-room.private-consultation.guide3' | translate }}</li>
+            </ul>
+            <p class="govuk-body govuk-!-margin-bottom-0">
+              {{ 'participant-waiting-room.private-consultation.guide4' | translate }}
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="govuk-!-margin-top-9">
+        <p class="govuk-body">
+          <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: (phoneNumber$ | async) } }}</strong>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="!isParticipant">
+      <app-please-wait-panel-for-joh [hearing]="hearing" [currentTime]="currentTime"></app-please-wait-panel-for-joh>
+      <div>
+        <button
+          class="govuk-button govuk-button--bigblue"
+          type="button"
+          id="joinPCButton"
+          data-module="govuk-button"
+          (click)="joinJudicialConsultation()"
+          [disabled]="!connected"
+        >
+          {{ 'joh-waiting-room.enter-consultation-room' | translate }}
+          <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
+            {{ numberOfJudgeOrJOHsInConsultation }}
+          </span>
+        </button>
+      </div>
+      <div *ngIf="!connected" class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">{{ 'joh-waiting-room.warning' | translate }}</span>
+          {{ 'joh-waiting-room.please-wait-while-we-connect-you' | translate }}
+        </strong>
+      </div>
+      <div class="govuk-!-margin-top-9">
+        <p class="govuk-body">
+          <strong>{{ 'joh-waiting-room.video-hearing-team-contact' | translate: { phone: (phoneNumber$ | async) } }}</strong>
+        </p>
       </div>
     </div>
   </div>
-  
-  <app-participant-chat *ngIf="hearing && showExtraContent && instantMessagingEnabled" [hearing]="hearing"></app-participant-chat>
-  
-  <div *ngIf="isParticipant">
-    <app-select-media-devices
-      *ngIf="displayDeviceChangeModal"
-      [showAudioOnlySetting]="true"
-      (shouldClose)="onSelectMediaDeviceShouldClose()"
-      #selectMediaDevices
-    ></app-select-media-devices>
-
-    <app-start-private-consultation
-      *ngIf="displayStartPrivateConsultationModal"
-      [loggedInUser]="loggedInUser"
-      [participants]="getPrivateConsultationParticipants()"
-      [endpoints]="hearing.getEndpoints()"
-      [allowedEndpoints]="participantEndpoints"
-      (cancel)="closeStartPrivateConsultationModal()"
-      (continue)="startPrivateConsultation($event.participants, $event.endpoints)"
-    ></app-start-private-consultation>
-
-    <app-join-private-consultation
-      *ngIf="displayJoinPrivateConsultationModal"
-      [participants]="getPrivateConsultationParticipants()"
-      [endpoints]="vhConference.endpoints"
-      (cancel)="closeJoinPrivateConsultationModal()"
-      (continue)="joinPrivateConsultation($event)"
-    >
-    </app-join-private-consultation>
-
-    <app-modal id="pc-leave-modal" class="modal clear consultation">
-      <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
-    </app-modal>
-
-    <app-modal id="pc-error-modal" class="modal consultation">
-      <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
-    </app-modal>
-
-    <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
-    </app-confirm-non-host-leave-hearing-popup>
-
-    <app-audio-mix-selection
-      *ngIf="displayLanguageModal"
-      (audioLanguageSelectionChanged)="closeLanageChangeModal()"
-      (audioLanguageSelectionCancelled)="closeLanageChangeModal()"
-    ></app-audio-mix-selection>
-
-    <app-warn-join-hearing-popup
-      *ngIf="showWarning"
-      [hearingStartTime]="hearing?.scheduledStartTime"
-      (popupAnswered)="dismissWarning()"
-    ></app-warn-join-hearing-popup>
+  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
+    <div *ngIf="isParticipant">
+      <app-individual-participant-status-list
+        [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
+        [conference]="vhConference"
+      >
+      </app-individual-participant-status-list>
+    </div>
+    <div *ngIf="!isParticipant">
+      <app-judge-participant-status-list [conference]="vhConference"> </app-judge-participant-status-list>
+    </div>
   </div>
-  <div *ngIf="!isParticipant">
-    <app-select-media-devices
-      *ngIf="displayDeviceChangeModal"
-      [showAudioOnlySetting]="allowAudioOnlyToggle"
-      (shouldClose)="onSelectMediaDeviceShouldClose()"
-      #selectMediaDevices
-    ></app-select-media-devices>
+</div>
 
-    <app-modal id="pc-leave-modal" class="modal clear consultation">
-      <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
-    </app-modal>
+<app-participant-chat *ngIf="hearing && showExtraContent && instantMessagingEnabled" [hearing]="hearing"></app-participant-chat>
 
-    <app-modal id="pc-error-modal" class="modal consultation">
-      <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
-    </app-modal>
+<div *ngIf="isParticipant">
+  <app-select-media-devices
+    *ngIf="displayDeviceChangeModal"
+    [showAudioOnlySetting]="true"
+    (shouldClose)="onSelectMediaDeviceShouldClose()"
+    #selectMediaDevices
+  ></app-select-media-devices>
 
-    <app-warn-join-hearing-popup
-      *ngIf="showWarning"
-      [hearingStartTime]="hearing?.scheduledStartTime"
-      (popupAnswered)="dismissWarning()"
-    ></app-warn-join-hearing-popup>
-  </div>
+  <app-start-private-consultation
+    *ngIf="displayStartPrivateConsultationModal"
+    [loggedInUser]="loggedInUser"
+    [participants]="getPrivateConsultationParticipants()"
+    [endpoints]="hearing.getEndpoints()"
+    [allowedEndpoints]="participantEndpoints"
+    (cancel)="closeStartPrivateConsultationModal()"
+    (continue)="startPrivateConsultation($event.participants, $event.endpoints)"
+  ></app-start-private-consultation>
+
+  <app-join-private-consultation
+    *ngIf="displayJoinPrivateConsultationModal"
+    [participants]="getPrivateConsultationParticipants()"
+    [endpoints]="vhConference.endpoints"
+    (cancel)="closeJoinPrivateConsultationModal()"
+    (continue)="joinPrivateConsultation($event)"
+  >
+  </app-join-private-consultation>
+
+  <app-modal id="pc-leave-modal" class="modal clear consultation">
+    <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
+  </app-modal>
+
+  <app-modal id="pc-error-modal" class="modal consultation">
+    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+  </app-modal>
+
+  <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
+  </app-confirm-non-host-leave-hearing-popup>
+
+  <app-audio-mix-selection
+    *ngIf="displayLanguageModal"
+    (audioLanguageSelectionChanged)="closeLanageChangeModal()"
+    (audioLanguageSelectionCancelled)="closeLanageChangeModal()"
+  ></app-audio-mix-selection>
+
+  <app-warn-join-hearing-popup
+    *ngIf="showWarning"
+    [hearingStartTime]="hearing?.scheduledStartTime"
+    (popupAnswered)="dismissWarning()"
+  ></app-warn-join-hearing-popup>
+</div>
+<div *ngIf="!isParticipant">
+  <app-select-media-devices
+    *ngIf="displayDeviceChangeModal"
+    [showAudioOnlySetting]="allowAudioOnlyToggle"
+    (shouldClose)="onSelectMediaDeviceShouldClose()"
+    #selectMediaDevices
+  ></app-select-media-devices>
+
+  <app-modal id="pc-leave-modal" class="modal clear consultation">
+    <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
+  </app-modal>
+
+  <app-modal id="pc-error-modal" class="modal consultation">
+    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+  </app-modal>
+
+  <app-warn-join-hearing-popup
+    *ngIf="showWarning"
+    [hearingStartTime]="hearing?.scheduledStartTime"
+    (popupAnswered)="dismissWarning()"
+  ></app-warn-join-hearing-popup>
+</div>
