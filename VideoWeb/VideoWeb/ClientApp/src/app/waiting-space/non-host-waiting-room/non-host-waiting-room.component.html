@@ -317,14 +317,14 @@
 
 <app-participant-chat *ngIf="hearing && showExtraContent && instantMessagingEnabled" [hearing]="hearing"></app-participant-chat>
 
-<div *ngIf="isParticipant">
-  <app-select-media-devices
-    *ngIf="displayDeviceChangeModal"
-    [showAudioOnlySetting]="true"
-    (shouldClose)="onSelectMediaDeviceShouldClose()"
-    #selectMediaDevices
-  ></app-select-media-devices>
+<app-select-media-devices
+  *ngIf="displayDeviceChangeModal"
+  [showAudioOnlySetting]="true"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
+  #selectMediaDevices
+></app-select-media-devices>
 
+<div *ngIf="isParticipant">
   <app-start-private-consultation
     *ngIf="displayStartPrivateConsultationModal"
     [loggedInUser]="loggedInUser"
@@ -344,14 +344,6 @@
   >
   </app-join-private-consultation>
 
-  <app-modal id="pc-leave-modal" class="modal clear consultation">
-    <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"> </app-consultation-leave>
-  </app-modal>
-
-  <app-modal id="pc-error-modal" class="modal consultation">
-    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
-  </app-modal>
-
   <app-confirm-non-host-leave-hearing-popup *ngIf="displayLeaveHearingPopup" (popupAnswered)="leave($event)">
   </app-confirm-non-host-leave-hearing-popup>
 
@@ -360,32 +352,18 @@
     (audioLanguageSelectionChanged)="closeLanageChangeModal()"
     (audioLanguageSelectionCancelled)="closeLanageChangeModal()"
   ></app-audio-mix-selection>
-
-  <app-warn-join-hearing-popup
-    *ngIf="showWarning"
-    [hearingStartTime]="hearing?.scheduledStartTime"
-    (popupAnswered)="dismissWarning()"
-  ></app-warn-join-hearing-popup>
 </div>
-<div *ngIf="!isParticipant">
-  <app-select-media-devices
-    *ngIf="displayDeviceChangeModal"
-    [showAudioOnlySetting]="allowAudioOnlyToggle"
-    (shouldClose)="onSelectMediaDeviceShouldClose()"
-    #selectMediaDevices
-  ></app-select-media-devices>
 
-  <app-modal id="pc-leave-modal" class="modal clear consultation">
-    <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
-  </app-modal>
+<app-modal id="pc-leave-modal" class="modal clear consultation">
+  <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
+</app-modal>
 
-  <app-modal id="pc-error-modal" class="modal consultation">
-    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
-  </app-modal>
+<app-modal id="pc-error-modal" class="modal consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>
 
-  <app-warn-join-hearing-popup
-    *ngIf="showWarning"
-    [hearingStartTime]="hearing?.scheduledStartTime"
-    (popupAnswered)="dismissWarning()"
-  ></app-warn-join-hearing-popup>
-</div>
+<app-warn-join-hearing-popup
+  *ngIf="showWarning"
+  [hearingStartTime]="hearing?.scheduledStartTime"
+  (popupAnswered)="dismissWarning()"
+></app-warn-join-hearing-popup>

@@ -109,6 +109,10 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     get allowAudioOnlyToggle(): boolean {
+        if (this.isParticipant) {
+            return true;
+        }
+
         return (
             !!this.vhConference &&
             !!this.vhParticipant &&

@@ -202,6 +202,10 @@ describe('NonHostWaitingRoomComponent', () => {
     }));
 
     describe('allowAudioOnlyToggle', () => {
+        beforeEach(() => {
+            component.userRole = UserRole.Joh;
+        });
+
         it('should return true when particiant is not in a consultation and not in a hearing', () => {
             component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.Available };
             expect(component.allowAudioOnlyToggle).toBeTrue();
@@ -215,6 +219,11 @@ describe('NonHostWaitingRoomComponent', () => {
         it('should return false when particiant is in a hearing', () => {
             component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InHearing };
             expect(component.allowAudioOnlyToggle).toBeFalse();
+        });
+
+        it('should return true when user role is participant', () => {
+            component.userRole = UserRole.Participant;
+            expect(component.allowAudioOnlyToggle).toBeTrue();
         });
     });
 
