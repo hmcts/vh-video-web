@@ -19,7 +19,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { mapConferenceToVHConference } from 'src/app/waiting-space/store/models/api-contract-to-state-model-mappers';
-import { ReplaySubject, Subject, of } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subject, of } from 'rxjs';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../models/user-media-device';
 import {
@@ -48,6 +48,7 @@ describe('SelfTestV2Component', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
     let currentStreamSubject: Subject<MediaStream>;
+    let streamInitialisedSubject: Subject<boolean>;
     let cameraAndMicrophoneStream = new MediaStream();
 
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamServiceV2>;
@@ -75,9 +76,15 @@ describe('SelfTestV2Component', () => {
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
 
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(['createAndPublishStream'], ['currentStream$']);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(
+            ['createAndPublishStream'],
+            ['currentStream$', 'isStreamInitialized$']
+        );
         currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+        streamInitialisedSubject = new BehaviorSubject<boolean>(false);
+        getSpiedPropertyGetter(userMediaStreamService, 'isStreamInitialized$').and.returnValue(streamInitialisedSubject.asObservable());
+        userMediaStreamService.createAndPublishStream.and.callFake(() => streamInitialisedSubject.next(true));
 
         videoCallService = videoCallServiceSpy;
         videoCallService.makeCall.and.resolveTo();
@@ -102,6 +109,7 @@ describe('SelfTestV2Component', () => {
 
     beforeEach(async () => {
         currentStreamSubject.next();
+        streamInitialisedSubject.next(false);
 
         await TestBed.configureTestingModule({
             declarations: [

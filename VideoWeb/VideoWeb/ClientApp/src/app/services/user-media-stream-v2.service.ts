@@ -67,8 +67,10 @@ export class UserMediaStreamServiceV2 {
             this.currentStream.getTracks().forEach(track => track.stop());
         }
 
-        if (!this.audioOnly && !this.currentCamDevice && !this.currentMicDevice) {
-            this.logger.debug(`${this.loggerPrefix} No camera or microphone device selected. Not creating a stream.`);
+        if ((this.audioOnly === null || this.audioOnly === undefined) && !this.currentCamDevice && !this.currentMicDevice) {
+            this.logger.debug(
+                `${this.loggerPrefix} No camera or microphone device selected and audioOnly setting not confirmed. Not creating a stream.`
+            );
             return;
         }
 
