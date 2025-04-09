@@ -58,6 +58,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
 
     private onDestroy$ = new Subject<void>();
     private hasRefreshedStream = false;
+    private streamInitialised: boolean;
 
     private readonly loggerPrefix = '[SelfTestV2] -';
     private readonly validDisconnectReasons = ['Conference terminated by another participant', 'Test call finished'];
@@ -95,6 +96,10 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
                 this.showChangeDevicesButton = result || this.videoFilterService.doesSupportVideoFiltering();
             });
 
+        this.userMediaStreamService.isStreamInitialized$.pipe(takeUntil(this.onDestroy$)).subscribe(hasStreamInitialised => {
+            this.logger.debug(`${this.loggerPrefix} Stream initialised: ${hasStreamInitialised}`);
+            this.streamInitialised = hasStreamInitialised;
+        });
         this.setupPexipSubscribers();
 
         if (this.isIndependentTest) {
@@ -153,7 +158,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
     }
 
     async startTestCall() {
-        if (!this.didTestComplete) {
+        if (!this.streamInitialised) {
             this.userMediaStreamService.createAndPublishStream();
             await this.setupPexipClient();
         }
@@ -261,7 +266,7 @@ export class SelfTestV2Component implements OnInit, OnDestroy {
         this.testInProgress = true;
         this.updateVideoElementWithStream(this.incomingStream, this.incomingVideoElement);
 
-        if (!this.hasRefreshedStream) {
+        if (!this.hasRefreshedStream && !this.streamInitialised) {
             // this affects FireFox and Safari
             this.logger.debug(`${this.loggerPrefix} Call connected, force stream refresh to trigger video to play.`);
             this.userMediaStreamService.createAndPublishStream();

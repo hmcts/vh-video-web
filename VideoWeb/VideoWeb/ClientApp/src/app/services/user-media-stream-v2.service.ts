@@ -1,4 +1,4 @@
-import { combineLatest, Observable, of, ReplaySubject, Subject, zip } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { AudioOnlyImageService } from './audio-only-image.service';
 import { MediaStreamService } from './media-stream.service';
@@ -17,9 +17,10 @@ export class UserMediaStreamServiceV2 {
 
     private currentMicDevice: UserMediaDevice | null = null;
     private currentCamDevice: UserMediaDevice | null = null;
-    private audioOnly = false;
+    private audioOnly?: boolean;
 
     private _currentStream$: Subject<MediaStream> = new ReplaySubject<MediaStream>(1);
+    private _isStreamInitialized$ = new BehaviorSubject<boolean>(false);
 
     constructor(
         private logger: Logger,
@@ -51,6 +52,10 @@ export class UserMediaStreamServiceV2 {
         return this._currentStream$.asObservable();
     }
 
+    get isStreamInitialized$() {
+        return this._isStreamInitialized$.asObservable();
+    }
+
     /**
      * Create a new media stream with the current camera and microphone devices.
      * If the user has selected audio only, the video stream will be replaced with an image only stream.
@@ -60,6 +65,11 @@ export class UserMediaStreamServiceV2 {
         this.userMediaService.initialise();
         if (this.currentStream) {
             this.currentStream.getTracks().forEach(track => track.stop());
+        }
+
+        if (!this.audioOnly && !this.currentCamDevice && !this.currentMicDevice) {
+            this.logger.debug(`${this.loggerPrefix} No camera or microphone device selected. Not creating a stream.`);
+            return;
         }
 
         let audioStream$: Observable<MediaStream>;
@@ -104,6 +114,7 @@ export class UserMediaStreamServiceV2 {
                 tap(combinedStream => {
                     this.currentStream = combinedStream;
                     this._currentStream$.next(combinedStream);
+                    this._isStreamInitialized$.next(true);
                     this.logger.debug(`${this.loggerPrefix} New stream created and published.`, {
                         videoDevice: this.currentCamDevice?.label ?? 'No Camera Device',
                         microphoneDevice: this.currentMicDevice?.label ?? 'No Microphone Device',
@@ -119,6 +130,7 @@ export class UserMediaStreamServiceV2 {
             this.currentStream.getTracks().forEach(track => track.stop());
             this.currentStream = null;
             this._currentStream$.next(null);
+            this._isStreamInitialized$.next(false);
             this.logger.debug(`${this.loggerPrefix} current stream set to null.`);
         }
     }

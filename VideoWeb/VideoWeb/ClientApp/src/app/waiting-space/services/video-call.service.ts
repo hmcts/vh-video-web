@@ -180,13 +180,14 @@ export class VideoCallService {
             this.logMediaStreamInfo();
 
             if (currentStream) {
+                self.logger.debug(`${self.loggerPrefix} Renegotiate due to user media stream change`);
                 this.renegotiateCall();
-                self.logger.info(`${self.loggerPrefix} Renegotiate due to user media stream change`);
             }
         });
 
         this.renegotiateSubject
             .pipe(
+                takeUntil(this.hasDisconnected$),
                 concatMap(sendUpdate => this.performRenegotiation(sendUpdate)) // Process one renegotiation at a time,
             )
             .subscribe({
@@ -403,7 +404,7 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        this.logger.debug(`${this.loggerPrefix} Queuing renegotiation request`);
+        this.logger.warn(`${this.loggerPrefix} Queuing renegotiation request`);
         // Queue renegotiation requests to ensure they are processed one at a time and not lost
         this.renegotiateSubject.next(sendUpdate);
     }
@@ -422,6 +423,7 @@ export class VideoCallService {
             });
 
             this.pexipAPI.user_media_stream = mixStream;
+            this.logger.debug(`${this.loggerPrefix} Renegotiate due to selecting screen with microphone`);
             this.renegotiateCall();
             this.onVideoEvidenceSharedSubject.next();
         });
@@ -442,11 +444,9 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
 
             this.logMediaStreamInfo();
+            this.logger.debug(`${this.loggerPrefix} Renegotiate due to stopping screen with microphone`);
             this.renegotiateCall();
             this.onVideoEvidenceStoppedSubject.next();
-            this.logger.debug(
-                `${this.loggerPrefix} calling renegotiateCall new user device stream created after stopping screen share with mic`
-            );
         });
     }
 
@@ -535,7 +535,6 @@ export class VideoCallService {
             participantDisplayName,
             callType
         });
-        this.stopPresentation();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
@@ -554,6 +553,7 @@ export class VideoCallService {
             this.justRenegotiated = false;
         } else {
             if (this.pexipAPI.call_type === 'test_call') {
+                this.onConnectedSubject.next(new ConnectedCall(stream));
                 return;
             }
             this.heartbeatService.initialiseHeartbeat(this.pexipAPI);
