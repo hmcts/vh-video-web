@@ -26,6 +26,8 @@ import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { VideoCallActions } from '../actions/video-call.action';
 import { VideoCallHostActions } from '../actions/video-call-host.actions';
 import { SelfTestActions } from '../actions/self-test.actions';
+import { AuthActions } from '../actions/auth.actions';
+import { UserProfile } from '../models/user-profile';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -1694,6 +1696,28 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.selfTestScore).toEqual(selfTestScore);
+        });
+    });
+
+    describe('loadUserProfileSuccess', () => {
+        it('should update the user profile', () => {
+            const userProfile: UserProfile = {
+                roles: [Role.Individual],
+                displayName: 'Chris Green',
+                firstName: 'Chris',
+                lastName: 'Green',
+                name: 'Chris Green',
+                username: 'chris@green.com'
+            };
+
+            const result = conferenceReducer(
+                existingInitialState,
+                AuthActions.loadUserProfileSuccess({
+                    userProfile: userProfile
+                })
+            );
+
+            expect(result.userProfile).toEqual(userProfile);
         });
     });
 });

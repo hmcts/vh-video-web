@@ -16,7 +16,7 @@ export class AuthEffects {
                     map(profile => {
                         this.logger.info(`${this.loggerPrefix} Loaded user profile`, { profile });
                         return AuthActions.loadUserProfileSuccess({
-                            userprofile: {
+                            userProfile: {
                                 roles: profile.roles,
                                 firstName: profile.first_name,
                                 lastName: profile.last_name,

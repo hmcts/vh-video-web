@@ -58,7 +58,7 @@ describe('AuthEffects', () => {
             actions$ = hot('-a', { a: action });
             const expected = cold('-b', {
                 b: AuthActions.loadUserProfileSuccess({
-                    userprofile: {
+                    userProfile: {
                         roles: profile.roles,
                         firstName: profile.first_name,
                         lastName: profile.last_name,

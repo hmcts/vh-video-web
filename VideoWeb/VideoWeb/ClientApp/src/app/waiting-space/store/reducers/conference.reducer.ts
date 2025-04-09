@@ -549,7 +549,7 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference };
     }),
-    on(AuthActions.loadUserProfileSuccess, (state, { userprofile }) => ({ ...state, userprofile }))
+    on(AuthActions.loadUserProfileSuccess, (state, { userProfile }) => ({ ...state, userProfile }))
 );
 
 export const videocallControlsReducer = createReducer(initialState);
