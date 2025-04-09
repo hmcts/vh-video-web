@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PleaseWaitPanelForJohComponent } from './please-wait-panel-for-joh.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';

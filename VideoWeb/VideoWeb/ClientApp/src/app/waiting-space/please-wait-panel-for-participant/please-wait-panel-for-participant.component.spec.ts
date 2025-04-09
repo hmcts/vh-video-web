@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PleaseWaitPanelForParticipantComponent } from './please-wait-panel-for-participant.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
-import { VHConference } from '../store/models/vh-conference';
 
 describe('PleaseWaitPanelComponent', () => {
     let component: PleaseWaitPanelForParticipantComponent;
