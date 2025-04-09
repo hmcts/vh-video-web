@@ -196,69 +196,7 @@
     <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
       
         <div *ngIf="isParticipant">
-          <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
-            <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-              <div *ngIf="!isOrHasWitnessLink() && hearing.isOnTime()">
-                <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.please-wait' | translate }}</h2>
-                <p class="white">
-                  {{ 'participant-waiting-room.hearing-starting-at' | translate }} {{ hearing.scheduledStartTime | date: 'HH:mm' }}
-                </p>
-              </div>
-      
-              <div *ngIf="!isOrHasWitnessLink() && hearing.isStarting()">
-                <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.starting-title' | translate }}</h2>
-                <p class="white">{{ 'participant-waiting-room.hearing-status-messages.starting-body' | translate }}</p>
-              </div>
-      
-              <div *ngIf="!isOrHasWitnessLink() && hearing.isDelayed()">
-                <h2 class="govuk-heading-m">{{ 'participant-waiting-room.hearing-status-messages.delayed-title' | translate }}</h2>
-                <p class="govuk-body">{{ 'participant-waiting-room.hearing-status-messages.delayed-body' | translate }}</p>
-              </div>
-      
-              <div *ngIf="!isOrHasWitnessLink() && hearing.isClosed()">
-                <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.closed' | translate }}</h2>
-              </div>
-      
-              <div *ngIf="!isOrHasWitnessLink() && hearing.isPaused()" class="hearing-title-mt--20">
-                <p class="white">{{ 'participant-waiting-room.hearing-status-messages.paused' | translate }}</p>
-              </div>
-      
-              <div *ngIf="hearing.isSuspended()">
-                <h2 class="govuk-heading-m">{{ 'participant-waiting-room.hearing-status-messages.suspended-title' | translate }}</h2>
-                <p class="govuk-body">{{ 'participant-waiting-room.hearing-status-messages.suspended-body' | translate }}</p>
-              </div>
-      
-              <div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && hearing.isInSession()">
-                <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.in-session-title' | translate }}</h2>
-                <p class="white">
-                  {{ 'participant-waiting-room.hearing-status-messages.in-session-body' | translate }}
-                </p>
-              </div>
-      
-              <div *ngIf="isOrHasWitnessLink() && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
-                <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.please-wait' | translate }}</h2>
-                <p class="white">
-                  {{ 'participant-waiting-room.hearing-about-to-start' | translate }}
-                </p>
-              </div>
-            </div>
-      
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
-                <div class="govuk-panel__body govuk-!-margin-top-4">
-                  <app-analogue-clock [hearing]="hearing" [isWitness]="isOrHasWitnessLink()"></app-analogue-clock>
-                </div>
-              </div>
-              <div class="govuk-grid-column-one-half">
-                <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
-                  <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{ 'participant-waiting-room.time-now' | translate }}</p>
-                  <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
-                    <strong>{{ currentTime | date: 'HH:mm' }}</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <app-please-wait-panel-for-participant [hearing]="hearing" [isOrHasWitnessLink]="isOrHasWitnessLink()" [currentTime]="currentTime" [isQuickLinkParticipant]="isQuickLinkParticipant()"></app-please-wait-panel-for-participant>
           <div *ngIf="canStartJoinConsultation">
             <button
               [disabled]="!connected"
@@ -325,44 +263,7 @@
           </div>
         </div>
         <div *ngIf="!isParticipant">
-          <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
-            <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-              <div *ngIf="hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed()">
-                <h2 class="govuk-heading-m white">{{ 'joh-waiting-room.please-wait' | translate }}</h2>
-                <p class="white">
-                  {{ 'joh-waiting-room.hearing-starting-at' | translate: { date: hearing.scheduledStartTime | date: 'HH:mm' } }}
-                </p>
-              </div>
-      
-              <div *ngIf="hearing.isClosed()">
-                <h2 class="govuk-heading-m white">{{ 'joh-waiting-room.hearing-closed' | translate }}</h2>
-              </div>
-      
-              <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
-                <p class="white">{{ 'joh-waiting-room.hearing-paused' | translate }}</p>
-              </div>
-      
-              <div *ngIf="hearing.isSuspended()">
-                <h2 class="govuk-heading-m">{{ 'joh-waiting-room.hearing-suspended-technical-title' | translate }}</h2>
-                <p class="govuk-body">{{ 'joh-waiting-room.hearing-suspended-message' | translate }}</p>
-              </div>
-            </div>
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
-                <div class="govuk-panel__body govuk-!-margin-top-4">
-                  <app-analogue-clock [hearing]="hearing" [isJudicialOfficeHolder]="true"></app-analogue-clock>
-                </div>
-              </div>
-              <div class="govuk-grid-column-one-half">
-                <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
-                  <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{ 'joh-waiting-room.time-now' | translate }}</p>
-                  <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
-                    <strong>{{ currentTime | date: 'HH:mm' }}</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <app-please-wait-panel-for-joh [hearing]="hearing" [currentTime]="currentTime"></app-please-wait-panel-for-joh>
           <div>
             <button
               class="govuk-button govuk-button--bigblue"

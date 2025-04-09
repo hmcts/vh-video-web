@@ -261,40 +261,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         return this.translateService.instant('participant-waiting-room.is-in-session');
     }
 
-    getCurrentTimeClass() {
-        if (this.userRole === UserRole.Participant) {
-            return this.getCurrentTimeClassForParticipant();
-        }
-        return this.getCurrentTimeClassForNonParticipant();
-    }
-
-    getCurrentTimeClassForNonParticipant() {
-        if (this.hearing.isSuspended()) {
-            return 'hearing-delayed';
-        }
-        return 'hearing-on-time';
-    }
-
-    getCurrentTimeClassForParticipant() {
-        if (!this.isOrHasWitnessLink() && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
-            return 'hearing-on-time';
-        }
-        if (!this.isOrHasWitnessLink() && (this.hearing.isStarting() || this.hearing.isInSession())) {
-            return 'hearing-near-start';
-        }
-        if (!this.isOrHasWitnessLink() && this.hearing.isDelayed()) {
-            return 'hearing-delayed';
-        }
-        if (this.hearing.isSuspended()) {
-            return 'hearing-delayed';
-        }
-        if (this.isOrHasWitnessLink() && this.hearing.isInSession()) {
-            return 'hearing-near-start';
-        } else {
-            return 'hearing-on-time';
-        }
-    }
-
     shouldHidePanel() {
         if (this.userRole === UserRole.Participant) {
             return this.isParticipantsPanelHidden;
