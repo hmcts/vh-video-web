@@ -116,6 +116,30 @@ describe('UserMediaStreamServiceV2', () => {
         });
     }));
 
+    describe('createAndPublishStream - before values', () => {
+        it('should not create if audio only is null and no camera or microphone', fakeAsync(() => {
+            activeCameraDeviceSubject.next(null);
+            activeMicrophoneDeviceSubject.next(null);
+            isAudioOnlySubject.next(null);
+
+            tick();
+
+            expect(sut.currentStream).toBeNull();
+
+            expect(mediaStreamServiceSpy.getStreamForCam).not.toHaveBeenCalled();
+            expect(mediaStreamServiceSpy.getStreamForMic).not.toHaveBeenCalled();
+            expect(audioOnlyImageServiceSpy.getAudioOnlyImageStream).not.toHaveBeenCalled();
+
+            sut.currentStream$.subscribe(stream => {
+                expect(stream).toBeNull();
+            });
+
+            sut.isStreamInitialized$.subscribe(isStreamInitialized => {
+                expect(isStreamInitialized).toBeFalse();
+            });
+        }));
+    });
+
     describe('audioOnly enabled', () => {
         it('should create an audio only stream and no camera image', fakeAsync(() => {
             const audioOnlyStream = new MediaStream();
