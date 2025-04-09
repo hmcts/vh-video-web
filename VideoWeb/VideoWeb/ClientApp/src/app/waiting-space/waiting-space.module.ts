@@ -65,8 +65,7 @@ import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
 import { HearingDetailsComponent } from './hearing-details/hearing-details.component';
 import { NonHostWaitingRoomComponent } from './non-host-waiting-room/non-host-waiting-room.component';
-import { PleaseWaitPanelForParticipantComponent } from './please-wait-panel-for-participant/please-wait-panel-for-participant.component';
-import { PleaseWaitPanelForJohComponent } from './please-wait-panel-for-joh/please-wait-panel-for-joh.component';
+import { PleaseWaitPanelComponent } from './please-wait-panel/please-wait-panel.component';
 
 @NgModule({
     imports: [
@@ -131,8 +130,7 @@ import { PleaseWaitPanelForJohComponent } from './please-wait-panel-for-joh/plea
         DialOutParticipantPopupComponent,
         HearingDetailsComponent,
         NonHostWaitingRoomComponent,
-        PleaseWaitPanelForParticipantComponent,
-        PleaseWaitPanelForJohComponent
+        PleaseWaitPanelComponent
     ],
     providers: [
         VideoCallService,

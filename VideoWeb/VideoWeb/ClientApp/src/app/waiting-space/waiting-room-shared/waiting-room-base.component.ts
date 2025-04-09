@@ -537,7 +537,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.vhParticipant?.hearingRole?.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
         if (!this.vhParticipant?.linkedParticipants.length) {

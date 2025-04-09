@@ -30,10 +30,11 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
+import { PleaseWaitPanelUserRole } from '../please-wait-panel/please-wait-panel.component';
 
 export enum UserRole {
-    Participant = 'Participant',
-    Joh = 'Joh'
+    Joh = 'Joh',
+    Participant = 'Participant'
 }
 
 @Component({
@@ -130,8 +131,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
     get isQuickLinkUser(): boolean {
         return (
-            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_OBSERVER ||
-            this.vhParticipant?.hearingRole === HearingRole.QUICK_LINK_PARTICIPANT
+            this.vhParticipant?.hearingRole?.toUpperCase() === HearingRole.QUICK_LINK_OBSERVER.toUpperCase() ||
+            this.vhParticipant?.hearingRole?.toUpperCase() === HearingRole.QUICK_LINK_PARTICIPANT.toUpperCase()
         );
     }
 
@@ -153,6 +154,10 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             !this.isVictim &&
             !this.isPolice
         );
+    }
+
+    get isJoh(): boolean {
+        return this.userRole === UserRole.Joh;
     }
 
     get isParticipant(): boolean {
@@ -377,6 +382,16 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         }
         const feedbackUrl = 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/';
         window.location.assign(feedbackUrl);
+    }
+
+    mapUserRoleForPleaseWaitPanel(): PleaseWaitPanelUserRole {
+        if (this.isQuickLinkUser) {
+            return PleaseWaitPanelUserRole.QuickLink;
+        }
+        if (this.isJoh) {
+            return PleaseWaitPanelUserRole.Joh;
+        }
+        return PleaseWaitPanelUserRole.Participant;
     }
 
     private onShouldReload(): void {

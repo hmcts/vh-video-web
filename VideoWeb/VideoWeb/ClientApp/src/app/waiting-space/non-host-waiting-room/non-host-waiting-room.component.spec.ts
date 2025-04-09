@@ -54,6 +54,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { PleaseWaitPanelUserRole } from '../please-wait-panel/please-wait-panel.component';
 
 describe('NonHostWaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
@@ -728,6 +729,18 @@ describe('NonHostWaitingRoomComponent', () => {
         });
     });
 
+    describe('isJoh', () => {
+        it('should return true when user is a joh', () => {
+            component.userRole = UserRole.Joh;
+            expect(component.isJoh).toBeTrue();
+        });
+
+        it('should return false when user is a participant', () => {
+            component.userRole = UserRole.Participant;
+            expect(component.isJoh).toBeFalse();
+        });
+    });
+
     describe('isParticipant', () => {
         it('should return true when user is a participant', () => {
             component.userRole = UserRole.Participant;
@@ -780,6 +793,21 @@ describe('NonHostWaitingRoomComponent', () => {
                 };
                 const result = component.shouldHidePanel();
                 expect(result).toBeFalse();
+            });
+        });
+    });
+
+    describe('mapUserRoleForPleaseWaitPanel', () => {
+        const userRoleTestCases = [
+            { userRole: UserRole.Joh, expected: PleaseWaitPanelUserRole.Joh },
+            { userRole: UserRole.Participant, expected: PleaseWaitPanelUserRole.Participant }
+        ];
+
+        userRoleTestCases.forEach(test => {
+            it(`should map user role '${test.userRole}' to '${test.expected}'`, () => {
+                component.userRole = test.userRole;
+                const result = component.mapUserRoleForPleaseWaitPanel();
+                expect(result).toBe(test.expected);
             });
         });
     });
