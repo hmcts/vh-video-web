@@ -225,33 +225,7 @@
       <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
 
       <div *ngIf="canStartJoinConsultation">
-        <details class="govuk-details" data-module="govuk-details">
-          <summary
-            class="govuk-details__summary"
-            (keydown)="toggleAccordian()"
-            (click)="toggleAccordian()"
-            tabindex="0"
-            role="button"
-            [attr.aria-expanded]="privateConsultationAccordianExpanded"
-          >
-            <span class="govuk-details__summary-text" id="what-are-private-meetings">
-              {{ 'participant-waiting-room.private-consultation.what-are-private-meetings' | translate }}
-            </span>
-          </summary>
-          <div class="govuk-details__text" *ngIf="privateConsultationAccordianExpanded">
-            <p class="govuk-body govuk-!-margin-bottom-0">
-              {{ 'participant-waiting-room.private-consultation.talk-to-other-participants' | translate }}
-            </p>
-            <ul>
-              <li>{{ 'participant-waiting-room.private-consultation.guide1' | translate }}</li>
-              <li>{{ 'participant-waiting-room.private-consultation.guide2' | translate }}</li>
-              <li>{{ 'participant-waiting-room.private-consultation.guide3' | translate }}</li>
-            </ul>
-            <p class="govuk-body govuk-!-margin-bottom-0">
-              {{ 'participant-waiting-room.private-consultation.guide4' | translate }}
-            </p>
-          </div>
-        </details>
+        <app-private-consultation-description [isExpanded]="privateConsultationAccordianExpanded" (accordianToggled)="toggleAccordian()"></app-private-consultation-description>
       </div>
 
       <div class="govuk-!-margin-top-9">
