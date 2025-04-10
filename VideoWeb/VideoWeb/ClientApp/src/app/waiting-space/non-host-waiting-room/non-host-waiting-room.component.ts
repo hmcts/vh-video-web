@@ -55,7 +55,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     displayLanguageModal: boolean;
     displayLeaveHearingPopup = false;
 
-    private readonly loggerPrefixParticipant = '[Participant WR] -';
+    private readonly componentLoggerPrefix = '[Non-Host Waiting Room] -';
     private destroyedSubject = new Subject();
     private titleForParticipant = 'Participant waiting room';
     private titleForJoh = 'JOH waiting room';
@@ -286,7 +286,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.displayLanguageModal = true;
     }
 
-    closeLanageChangeModal() {
+    closeLanguageChangeModal() {
         this.displayLanguageModal = false;
     }
 
@@ -305,7 +305,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
-        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation', {
+        this.logger.info(`${this.componentLoggerPrefix} attempting to start a private participant consultation`, {
             conference: this.vhConference?.id,
             participant: this.vhParticipant.id
         });
@@ -321,7 +321,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     async joinPrivateConsultation(roomLabel: string) {
-        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation', {
+        this.logger.info(`${this.componentLoggerPrefix} attempting to join a private participant consultation`, {
             conference: this.vhConference?.id,
             participant: this.vhParticipant.id,
             roomLabel: roomLabel
@@ -338,7 +338,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             return;
         }
 
-        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to set room lock state', {
+        this.logger.info(`${this.componentLoggerPrefix} attempting to set room lock state`, {
             conference: this.vhConference?.id,
             participant: this.vhParticipant.id,
             roomLabel: roomLabel,
@@ -407,7 +407,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.errorCount = 0;
-        this.logger.debug('[Participant WR] - Loading participant waiting room');
+        this.logger.debug(`${this.componentLoggerPrefix} loading waiting room`);
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
@@ -450,7 +450,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     private cleanUp() {
-        this.logger.debug(`${this.loggerPrefixParticipant} Clearing intervals and subscriptions for JOH waiting room`, {
+        this.logger.debug(`${this.componentLoggerPrefix} clearing intervals and subscriptions`, {
             conference: this.vhConference?.id
         });
 

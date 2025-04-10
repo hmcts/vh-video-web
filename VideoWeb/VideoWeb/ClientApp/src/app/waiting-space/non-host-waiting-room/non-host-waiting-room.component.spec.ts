@@ -587,7 +587,7 @@ describe('NonHostWaitingRoomComponent', () => {
         it('should close language change modal', () => {
             component.displayLanguageModal = true;
 
-            component.closeLanageChangeModal();
+            component.closeLanguageChangeModal();
 
             expect(component.displayLanguageModal).toBeFalse();
         });
