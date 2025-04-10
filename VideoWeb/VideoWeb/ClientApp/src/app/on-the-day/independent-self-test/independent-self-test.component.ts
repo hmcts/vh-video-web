@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
+import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
+import { Store } from '@ngrx/store';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
 
 @Component({
     standalone: false,
@@ -18,13 +17,10 @@ export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective
 
     constructor(
         private router: Router,
-        protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
-        protected errorService: ErrorService,
+        protected conferenceStore: Store<ConferenceState>,
         protected logger: Logger
     ) {
-        super(route, videoWebService, profileService, errorService, logger);
+        super(conferenceStore, logger);
     }
 
     equipmentWorksHandler() {
@@ -33,19 +29,17 @@ export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective
         } else {
             this.router.navigateByUrl(pageUrls.ParticipantHearingList);
         }
-        this.hideSelfTest = true;
     }
 
     equipmentFaultyHandler() {
         this.showEquipmentFaultMessage = true;
         this.testInProgress = false;
-        this.hideSelfTest = true;
     }
 
     restartTest() {
         this.logger.debug('[IndependentSelfTest] - Restarting self test');
         super.restartTest();
         this.showEquipmentFaultMessage = false;
-        this.selfTestComponent.replayVideo();
+        this.selfTestComponent.startTestCall();
     }
 }

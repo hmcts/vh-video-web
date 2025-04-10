@@ -5,7 +5,8 @@ import {
     LinkType,
     ParticipantStatus,
     Role,
-    Supplier
+    Supplier,
+    TestScore
 } from 'src/app/services/clients/api-client';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
@@ -135,4 +136,9 @@ export interface VHConsultationCallStatus {
 export interface VHParticipantMediaStatus {
     isLocalAudioMuted: boolean;
     isLocalVideoMuted: boolean;
+}
+
+export interface SelfTestScore {
+    score?: TestScore;
+    passed?: boolean;
 }

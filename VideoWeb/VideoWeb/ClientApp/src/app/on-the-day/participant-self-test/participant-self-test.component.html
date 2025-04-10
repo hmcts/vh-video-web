@@ -1,40 +1,41 @@
-<div *ngIf="!conference && !participant" class="govuk-grid-column-full">
-  <p class="govuk-body-l">{{ 'participant-self-test.please-wait-to-be-connected' | translate }}</p>
-</div>
-<app-self-test
-  *ngIf="conference && participant && !hideSelfTest"
-  [conference]="conference"
-  [participant]="participant"
-  (testCompleted)="onSelfTestCompleted($event)"
-></app-self-test>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <p class="govuk-body">{{ 'participant-self-test.when-the-video-has-ended-answer-3-questions' | translate }}</p>
+    <app-self-test-v2
+      [isIndependentTest]="false"
+      (testStarted)="onTestStarted()"
+      (testCompleted)="onSelfTestCompleted()"
+    ></app-self-test-v2>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body">{{ 'participant-self-test.when-the-video-has-ended-answer-3-questions' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-6">
+      <button
+        id="continue-btn"
+        [disabled]="continueClicked"
+        [ngClass]="{ 'govuk-button--disabled': continueClicked }"
+        class="govuk-button govuk-!-margin-right-1"
+        data-module="govuk-button"
+        (click)="continueParticipantJourney()"
+        data-prevent-double-click="true"
+      >
+        {{ 'participant-self-test.continue' | translate }}
+      </button>
+      <button
+        *ngIf="selfTestCompleted"
+        id="check-equipment-btn"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="restartTest()"
+        [attr.aria-hidden]="!selfTestCompleted"
+      >
+        {{ 'participant-self-test.watch-the-video-again' | translate }}
+      </button>
+    </div>
+
+    <app-contact-us-folding></app-contact-us-folding>
   </div>
 </div>
-
-<div class="govuk-!-margin-top-6">
-  <button
-    id="continue-btn"
-    [disabled]="continueClicked"
-    [ngClass]="{ 'govuk-button--disabled': continueClicked }"
-    class="govuk-button govuk-!-margin-right-1"
-    data-module="govuk-button"
-    (click)="continueParticipantJourney()"
-    data-prevent-double-click="true"
-  >
-  {{ 'participant-self-test.continue' | translate }}
-  </button>
-
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'participant-self-test.watch-the-video-again' | translate }}
-  </button>
-</div>
-
-<app-contact-us-folding></app-contact-us-folding>
