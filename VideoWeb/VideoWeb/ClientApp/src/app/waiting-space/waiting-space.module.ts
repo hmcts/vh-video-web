@@ -67,6 +67,7 @@ import { HearingDetailsComponent } from './hearing-details/hearing-details.compo
 import { NonHostWaitingRoomComponent } from './non-host-waiting-room/non-host-waiting-room.component';
 import { PleaseWaitPanelComponent } from './please-wait-panel/please-wait-panel.component';
 import { WaitForConnectionMessageComponent } from './wait-for-connection-message/wait-for-connection-message.component';
+import { SupportContactDetailsComponent } from './support-contact-details/support-contact-details.component';
 
 @NgModule({
     imports: [
@@ -132,7 +133,8 @@ import { WaitForConnectionMessageComponent } from './wait-for-connection-message
         HearingDetailsComponent,
         NonHostWaitingRoomComponent,
         PleaseWaitPanelComponent,
-        WaitForConnectionMessageComponent
+        WaitForConnectionMessageComponent,
+        SupportContactDetailsComponent
     ],
     providers: [
         VideoCallService,

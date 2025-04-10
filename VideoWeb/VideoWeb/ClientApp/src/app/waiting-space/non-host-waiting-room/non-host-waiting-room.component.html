@@ -255,9 +255,7 @@
       </div>
 
       <div class="govuk-!-margin-top-9">
-        <p class="govuk-body">
-          <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: (phoneNumber$ | async) } }}</strong>
-        </p>
+        <app-support-contact-details [vhTeamPhoneNumber$]="phoneNumber$"></app-support-contact-details>
       </div>
     </div>
     <div *ngIf="!isParticipant">
@@ -283,9 +281,7 @@
       </div>
       <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
       <div class="govuk-!-margin-top-9">
-        <p class="govuk-body">
-          <strong>{{ 'joh-waiting-room.video-hearing-team-contact' | translate: { phone: (phoneNumber$ | async) } }}</strong>
-        </p>
+        <app-support-contact-details [vhTeamPhoneNumber$]="phoneNumber$"></app-support-contact-details>
       </div>
     </div>
   </div>
