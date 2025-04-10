@@ -92,7 +92,7 @@
       </div>
     </ng-container>
   </div>
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': shouldHidePanel }">
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': shouldHidePanel() }">
     <app-private-consultation-participants
       [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
