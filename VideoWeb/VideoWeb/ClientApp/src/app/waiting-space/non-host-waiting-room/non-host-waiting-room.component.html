@@ -237,7 +237,7 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [showAudioOnlySetting]="true"
+  [showAudioOnlySetting]="allowAudioOnlyToggle"
   (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
