@@ -140,6 +140,25 @@ describe('UserMediaStreamServiceV2', () => {
         }));
     });
 
+    describe('createAndPublishStream', () => {
+        it('should republish the same stream if device has not changed and stream is active', () => {
+            sut.currentStream = combinedStream;
+            sut['deviceChanged'] = false;
+
+            sut.createAndPublishStream();
+
+            expect(sut.currentStream).toBe(combinedStream);
+
+            expect(mediaStreamServiceSpy.getStreamForCam).not.toHaveBeenCalled();
+            expect(mediaStreamServiceSpy.getStreamForMic).not.toHaveBeenCalled();
+            expect(audioOnlyImageServiceSpy.getAudioOnlyImageStream).not.toHaveBeenCalled();
+
+            sut.currentStream$.subscribe(stream => {
+                expect(stream).toBe(combinedStream);
+            });
+        });
+    });
+
     describe('audioOnly enabled', () => {
         it('should create an audio only stream and no camera image', fakeAsync(() => {
             const audioOnlyStream = new MediaStream();

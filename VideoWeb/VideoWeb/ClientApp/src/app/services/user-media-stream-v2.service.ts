@@ -18,6 +18,7 @@ export class UserMediaStreamServiceV2 {
     private currentMicDevice: UserMediaDevice | null = null;
     private currentCamDevice: UserMediaDevice | null = null;
     private audioOnly?: boolean;
+    private deviceChanged: boolean;
 
     private _currentStream$: Subject<MediaStream> = new ReplaySubject<MediaStream>(1);
     private _isStreamInitialized$ = new BehaviorSubject<boolean>(false);
@@ -43,7 +44,7 @@ export class UserMediaStreamServiceV2 {
                 this.currentCamDevice = videoDevice;
                 this.currentMicDevice = microphoneDevice;
                 this.audioOnly = audioOnly;
-
+                this.deviceChanged = true;
                 this.createAndPublishStream();
             });
     }
@@ -69,8 +70,19 @@ export class UserMediaStreamServiceV2 {
 
         if ((this.audioOnly === null || this.audioOnly === undefined) && !this.currentCamDevice && !this.currentMicDevice) {
             this.logger.debug(
-                `${this.loggerPrefix} No camera or microphone device selected and audioOnly setting not confirmed. Not creating a stream.`
+                `${this.loggerPrefix} No camera or microphone device selected and audioOnly setting not confirmed. Not creating a stream.`,
+                {
+                    audioOnly: this.audioOnly ?? 'No Audio Only Setting',
+                    currentMicDevice: this.currentMicDevice?.label ?? 'No Microphone Device',
+                    currentCamDevice: this.currentCamDevice?.label ?? 'No Camera Device'
+                }
             );
+            return;
+        }
+
+        if (!this.deviceChanged && this.currentStream.active) {
+            this.logger.debug(`${this.loggerPrefix} No device change detected. Republishing existing stream.`);
+            this._currentStream$.next(this.currentStream);
             return;
         }
 
@@ -117,6 +129,7 @@ export class UserMediaStreamServiceV2 {
                     this.currentStream = combinedStream;
                     this._currentStream$.next(combinedStream);
                     this._isStreamInitialized$.next(true);
+                    this.deviceChanged = false;
                     this.logger.debug(`${this.loggerPrefix} New stream created and published.`, {
                         videoDevice: this.currentCamDevice?.label ?? 'No Camera Device',
                         microphoneDevice: this.currentMicDevice?.label ?? 'No Microphone Device',
