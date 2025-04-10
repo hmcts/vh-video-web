@@ -1,34 +1,34 @@
 import { Component, Input } from '@angular/core';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 
-export enum PleaseWaitPanelUserRole {
+export enum WaitForHearingPanelUserRole {
     Joh = 'Joh',
     Participant = 'Participant',
     QuickLink = 'QuickLink'
 }
 
 @Component({
-    selector: 'app-please-wait-panel',
+    selector: 'app-wait-for-hearing-panel',
     standalone: false,
-    templateUrl: './please-wait-panel.component.html',
+    templateUrl: './wait-for-hearing-panel.component.html',
     styleUrls: ['../waiting-room-global-styles.scss']
 })
-export class PleaseWaitPanelComponent {
+export class WaitForHearingPanelComponent {
     @Input() hearing: VHHearing;
     @Input() currentTime: Date;
-    @Input() userRole: PleaseWaitPanelUserRole;
+    @Input() userRole: WaitForHearingPanelUserRole;
     @Input() isWitnessOrHasWitnessLink: boolean;
 
     get isJoh() {
-        return this.userRole === PleaseWaitPanelUserRole.Joh;
+        return this.userRole === WaitForHearingPanelUserRole.Joh;
     }
 
     get isParticipant() {
-        return this.userRole === PleaseWaitPanelUserRole.Participant;
+        return this.userRole === WaitForHearingPanelUserRole.Participant;
     }
 
     get isQuickLink() {
-        return this.userRole === PleaseWaitPanelUserRole.QuickLink;
+        return this.userRole === WaitForHearingPanelUserRole.QuickLink;
     }
 
     getCurrentTimeClass() {

@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PleaseWaitPanelComponent, PleaseWaitPanelUserRole } from './please-wait-panel.component';
+import { WaitForHearingPanelComponent, WaitForHearingPanelUserRole } from './wait-for-hearing-panel.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 
-describe('PleaseWaitPanelComponent', () => {
-    let component: PleaseWaitPanelComponent;
-    let fixture: ComponentFixture<PleaseWaitPanelComponent>;
+describe('WaitForHearingPanelComponent', () => {
+    let component: WaitForHearingPanelComponent;
+    let fixture: ComponentFixture<WaitForHearingPanelComponent>;
 
     function createTestHearing() {
         const conferenceResponse = new ConferenceTestData().getConferenceDetailNow();
@@ -16,10 +16,10 @@ describe('PleaseWaitPanelComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [PleaseWaitPanelComponent]
+            declarations: [WaitForHearingPanelComponent]
         }).compileComponents();
 
-        fixture = TestBed.createComponent(PleaseWaitPanelComponent);
+        fixture = TestBed.createComponent(WaitForHearingPanelComponent);
         component = fixture.componentInstance;
         component.hearing = createTestHearing();
         fixture.detectChanges();
@@ -32,7 +32,7 @@ describe('PleaseWaitPanelComponent', () => {
     describe('getCurrentTimeClass', () => {
         describe('is a participant, not a witness or witness link', () => {
             beforeEach(() => {
-                component.userRole = PleaseWaitPanelUserRole.Participant;
+                component.userRole = WaitForHearingPanelUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = false;
             });
             it('should return hearing-on-time when conference is onTime', () => {
@@ -83,7 +83,7 @@ describe('PleaseWaitPanelComponent', () => {
 
         describe('is a participant, is a witness or has a witness link', () => {
             beforeEach(() => {
-                component.userRole = PleaseWaitPanelUserRole.Participant;
+                component.userRole = WaitForHearingPanelUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = true;
             });
 
@@ -106,7 +106,7 @@ describe('PleaseWaitPanelComponent', () => {
 
         describe('is a joh', () => {
             beforeEach(() => {
-                component.userRole = PleaseWaitPanelUserRole.Joh;
+                component.userRole = WaitForHearingPanelUserRole.Joh;
             });
 
             it('should return hearing-delayed when conference is suspended', () => {

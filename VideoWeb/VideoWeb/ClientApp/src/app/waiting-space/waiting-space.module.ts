@@ -65,7 +65,7 @@ import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
 import { HearingDetailsComponent } from './hearing-details/hearing-details.component';
 import { NonHostWaitingRoomComponent } from './non-host-waiting-room/non-host-waiting-room.component';
-import { PleaseWaitPanelComponent } from './please-wait-panel/please-wait-panel.component';
+import { WaitForHearingPanelComponent } from './wait-for-hearing-panel/wait-for-hearing-panel.component';
 import { WaitForConnectionMessageComponent } from './wait-for-connection-message/wait-for-connection-message.component';
 import { SupportContactDetailsComponent } from './support-contact-details/support-contact-details.component';
 
@@ -132,7 +132,7 @@ import { SupportContactDetailsComponent } from './support-contact-details/suppor
         DialOutParticipantPopupComponent,
         HearingDetailsComponent,
         NonHostWaitingRoomComponent,
-        PleaseWaitPanelComponent,
+        WaitForHearingPanelComponent,
         WaitForConnectionMessageComponent,
         SupportContactDetailsComponent
     ],

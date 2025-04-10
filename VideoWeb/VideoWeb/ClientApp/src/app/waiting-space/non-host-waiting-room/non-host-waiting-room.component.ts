@@ -30,7 +30,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
-import { PleaseWaitPanelUserRole } from '../please-wait-panel/please-wait-panel.component';
+import { WaitForHearingPanelUserRole } from '../wait-for-hearing-panel/wait-for-hearing-panel.component';
 
 export enum UserRole {
     Joh = 'Joh',
@@ -388,14 +388,14 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         window.location.assign(feedbackUrl);
     }
 
-    mapUserRoleForPleaseWaitPanel(): PleaseWaitPanelUserRole {
+    mapUserRoleForPleaseWaitPanel(): WaitForHearingPanelUserRole {
         if (this.isQuickLinkUser) {
-            return PleaseWaitPanelUserRole.QuickLink;
+            return WaitForHearingPanelUserRole.QuickLink;
         }
         if (this.isJoh) {
-            return PleaseWaitPanelUserRole.Joh;
+            return WaitForHearingPanelUserRole.Joh;
         }
-        return PleaseWaitPanelUserRole.Participant;
+        return WaitForHearingPanelUserRole.Participant;
     }
 
     private onShouldReload(): void {

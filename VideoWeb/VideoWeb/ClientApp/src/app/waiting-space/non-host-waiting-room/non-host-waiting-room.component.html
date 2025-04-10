@@ -194,13 +194,13 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
-    <div *ngIf="isParticipant">
-      <app-please-wait-panel
+    <app-wait-for-hearing-panel
         [hearing]="hearing"
         [currentTime]="currentTime"
         [userRole]="mapUserRoleForPleaseWaitPanel()"
-        [isWitnessOrHasWitnessLink]="isOrHasWitnessLink()"
-      ></app-please-wait-panel>
+        [isWitnessOrHasWitnessLink]="isOrHasWitnessLink()">
+    </app-wait-for-hearing-panel>
+    <div *ngIf="isParticipant">
       <div *ngIf="canStartJoinConsultation">
         <button
           [disabled]="!connected"
@@ -259,11 +259,6 @@
       </div>
     </div>
     <div *ngIf="!isParticipant">
-      <app-please-wait-panel
-        [hearing]="hearing"
-        [currentTime]="currentTime"
-        [userRole]="mapUserRoleForPleaseWaitPanel()"
-      ></app-please-wait-panel>
       <div>
         <button
           class="govuk-button govuk-button--bigblue"

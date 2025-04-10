@@ -54,7 +54,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { PleaseWaitPanelUserRole } from '../please-wait-panel/please-wait-panel.component';
+import { WaitForHearingPanelUserRole } from '../wait-for-hearing-panel/wait-for-hearing-panel.component';
 
 describe('NonHostWaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
@@ -808,8 +808,8 @@ describe('NonHostWaitingRoomComponent', () => {
 
     describe('mapUserRoleForPleaseWaitPanel', () => {
         const userRoleTestCases = [
-            { userRole: UserRole.Joh, expected: PleaseWaitPanelUserRole.Joh },
-            { userRole: UserRole.Participant, expected: PleaseWaitPanelUserRole.Participant }
+            { userRole: UserRole.Joh, expected: WaitForHearingPanelUserRole.Joh },
+            { userRole: UserRole.Participant, expected: WaitForHearingPanelUserRole.Participant }
         ];
 
         userRoleTestCases.forEach(test => {

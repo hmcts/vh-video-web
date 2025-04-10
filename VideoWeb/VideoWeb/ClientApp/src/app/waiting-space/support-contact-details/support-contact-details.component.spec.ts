@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SupportContactDetailsComponent } from './support-contact-details.component';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 describe('SupportContactDetailsComponent', () => {
     let component: SupportContactDetailsComponent;
@@ -8,7 +8,7 @@ describe('SupportContactDetailsComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SupportContactDetailsComponent]
+            declarations: [SupportContactDetailsComponent, TranslatePipeMock]
         }).compileComponents();
 
         fixture = TestBed.createComponent(SupportContactDetailsComponent);
