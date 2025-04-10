@@ -222,13 +222,7 @@
           {{ 'participant-waiting-room.private-consultation.join' | translate }}
         </button>
       </div>
-      <div *ngIf="!connected" class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">{{ 'participant-waiting-room.warning' | translate }}</span>
-          {{ 'participant-waiting-room.please-wait-while-we-connect-you' | translate }}
-        </strong>
-      </div>
+      <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
 
       <div *ngIf="canStartJoinConsultation">
         <details class="govuk-details" data-module="govuk-details">
@@ -287,13 +281,7 @@
           </span>
         </button>
       </div>
-      <div *ngIf="!connected" class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">{{ 'joh-waiting-room.warning' | translate }}</span>
-          {{ 'joh-waiting-room.please-wait-while-we-connect-you' | translate }}
-        </strong>
-      </div>
+      <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
       <div class="govuk-!-margin-top-9">
         <p class="govuk-body">
           <strong>{{ 'joh-waiting-room.video-hearing-team-contact' | translate: { phone: (phoneNumber$ | async) } }}</strong>
