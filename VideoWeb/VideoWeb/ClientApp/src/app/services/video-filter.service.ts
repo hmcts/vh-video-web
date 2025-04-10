@@ -40,7 +40,7 @@ export class VideoFilterService {
         private deviceTypeService: DeviceTypeService
     ) {
         this.configService.getClientSettings().subscribe(settings => {
-            this._enableVideoFilters = settings.enable_video_filters;
+            this._enableVideoFilters = true;
             if (settings.blur_radius) {
                 this.logger.debug(`${this.loggerPrefix} Loaded blur radius from config - ${settings.blur_radius}px`);
                 this.blurRadius = settings.blur_radius;
