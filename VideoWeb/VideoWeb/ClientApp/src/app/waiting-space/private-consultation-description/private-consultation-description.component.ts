@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     styleUrl: './private-consultation-description.component.scss'
 })
 export class PrivateConsultationDescriptionComponent {
-    @Input() isExpanded: boolean = false;
+    @Input() isExpanded = false;
     @Output() accordianToggled = new EventEmitter<void>();
 
     toggleAccordian() {

@@ -762,50 +762,6 @@ describe('NonHostWaitingRoomComponent', () => {
         });
     });
 
-    describe('shouldHidePanel', () => {
-        describe('user is a participant', () => {
-            beforeEach(() => {
-                component.userRole = UserRole.Participant;
-            });
-
-            it('should return true when isParticipantsPanelHidden is true', () => {
-                component.isParticipantsPanelHidden = true;
-                const result = component.shouldHidePanel();
-                expect(result).toBeTrue();
-            });
-
-            it('should return true when isParticipantsPanelHidden is false', () => {
-                component.isParticipantsPanelHidden = false;
-                const result = component.shouldHidePanel();
-                expect(result).toBeFalse();
-            });
-        });
-
-        describe('user is not a participant', () => {
-            beforeEach(() => {
-                component.userRole = UserRole.Joh;
-            });
-
-            it('should return true when Participants property is false for panelStates', () => {
-                component.panelStates = {
-                    Participants: false,
-                    Chat: false
-                };
-                const result = component.shouldHidePanel();
-                expect(result).toBeTrue();
-            });
-
-            it('should return true when Participants property is true for panelStates', () => {
-                component.panelStates = {
-                    Participants: true,
-                    Chat: false
-                };
-                const result = component.shouldHidePanel();
-                expect(result).toBeFalse();
-            });
-        });
-    });
-
     describe('mapUserRoleForPleaseWaitPanel', () => {
         const userRoleTestCases = [
             { userRole: UserRole.Joh, expected: WaitForHearingPanelUserRole.Joh },
@@ -815,7 +771,7 @@ describe('NonHostWaitingRoomComponent', () => {
         userRoleTestCases.forEach(test => {
             it(`should map user role '${test.userRole}' to '${test.expected}'`, () => {
                 component.userRole = test.userRole;
-                const result = component.mapUserRoleForPleaseWaitPanel();
+                const result = component.mapWaitForHearingPanelUserRole();
                 expect(result).toBe(test.expected);
             });
         });

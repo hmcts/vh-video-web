@@ -4,64 +4,26 @@
 
 <div *ngIf="showVideo" class="video-background" id="video-container">
   <div class="header-bar">
-    <ng-container *ngIf="isParticipant">
-      <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
-        <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
-          <div class="room-title">
-            <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
-          </div>
-          <div class="room-status">
-            <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
-              (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
-            }}</span>
-          </div>
-          <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
-            {{ 'participant-waiting-room.lock-the-room' | translate }}
-          </div>
-          <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
-            {{ 'participant-waiting-room.invite-others' | translate }}
-          </div>
-        </ng-container>
-        <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
-          <div class="room-title">
-            <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-            <div
-              *ngIf="hasCaseNameOverflowed"
-              class="room-title-show-more"
-              appTooltip
-              [text]="getCaseNameAndNumber()"
-              colour="grey"
-              [isDesktopOnly]="false"
-            >
-              (show more)
-            </div>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="connected">
-          <app-private-consultation-room-controls
-            #hearingControls
-            [canToggleParticipantsPanel]="isPrivateConsultation"
-            [conferenceId]="vhConference.id"
-            [participant]="vhParticipant"
-            [isPrivateConsultation]="isPrivateConsultation"
-            [outgoingStream]="outgoingStream"
-            [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-            [showConsultationControls]="showConsultationControls"
-            [areParticipantsVisible]="!isParticipantsPanelHidden"
-            (leaveConsultation)="showLeaveConsultationModal()"
-            (lockConsultation)="setRoomLock($event)"
-            (changeDeviceToggle)="showChooseCameraDialog()"
-            (changeLanguageSelected)="showLanguageChangeModal()"
-            (togglePanel)="toggleParticipantsPanel()"
-          >
-          </app-private-consultation-room-controls>
-        </ng-container>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="!isParticipant">
-      <div class="header-content-grid govuk-body">
+    <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
+      <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
         <div class="room-title">
-          <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
+          <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
+        </div>
+        <div class="room-status">
+          <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
+            (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
+          }}</span>
+        </div>
+        <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
+          {{ 'participant-waiting-room.lock-the-room' | translate }}
+        </div>
+        <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
+          {{ 'participant-waiting-room.invite-others' | translate }}
+        </div>
+      </ng-container>
+      <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
+        <div class="room-title">
+          <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
           <div
             *ngIf="hasCaseNameOverflowed"
             class="room-title-show-more"
@@ -73,26 +35,29 @@
             (show more)
           </div>
         </div>
+      </ng-container>
+      <ng-container *ngIf="connected">
         <app-private-consultation-room-controls
-          class="govuk-grid-width-half"
           #hearingControls
+          [canToggleParticipantsPanel]="isPrivateConsultation"
           [conferenceId]="vhConference.id"
           [participant]="vhParticipant"
           [isPrivateConsultation]="isPrivateConsultation"
-          [canToggleParticipantsPanel]="isPrivateConsultation"
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
           [showConsultationControls]="showConsultationControls"
-          [areParticipantsVisible]="areParticipantsVisible"
+          [areParticipantsVisible]="!isParticipantsPanelHidden"
           (leaveConsultation)="showLeaveConsultationModal()"
+          (lockConsultation)="setRoomLock($event)"
           (changeDeviceToggle)="showChooseCameraDialog()"
-          (togglePanel)="togglePanel($event)"
+          (changeLanguageSelected)="showLanguageChangeModal()"
+          (togglePanel)="toggleParticipantsPanel()"
         >
         </app-private-consultation-room-controls>
-      </div>
-    </ng-container>
+      </ng-container>
+    </div>
   </div>
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': shouldHidePanel() }">
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
       [conference]="vhConference"
       [participantEndpoints]="participantEndpoints"
@@ -197,7 +162,7 @@
     <app-wait-for-hearing-panel
         [hearing]="hearing"
         [currentTime]="currentTime"
-        [userRole]="mapUserRoleForPleaseWaitPanel()"
+        [userRole]="mapWaitForHearingPanelUserRole()"
         [isWitnessOrHasWitnessLink]="isOrHasWitnessLink()">
     </app-wait-for-hearing-panel>
     <ng-container *ngIf="isParticipant">

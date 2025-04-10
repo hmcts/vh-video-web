@@ -270,13 +270,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         return this.translateService.instant('participant-waiting-room.is-in-session');
     }
 
-    shouldHidePanel() {
-        if (this.userRole === UserRole.Participant) {
-            return this.isParticipantsPanelHidden;
-        }
-        return !this.panelStates['Participants'];
-    }
-
     getRoomName(): string {
         return this.consultationService.consultationNameToString(this.vhParticipant?.room?.label, false);
     }
@@ -388,7 +381,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         window.location.assign(feedbackUrl);
     }
 
-    mapUserRoleForPleaseWaitPanel(): WaitForHearingPanelUserRole {
+    mapWaitForHearingPanelUserRole(): WaitForHearingPanelUserRole {
         if (this.isQuickLinkUser) {
             return WaitForHearingPanelUserRole.QuickLink;
         }
