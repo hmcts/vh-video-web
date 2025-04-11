@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { NonHostWaitingRoomComponent, UserRole } from './non-host-waiting-room.component';
+import { NonHostWaitingRoomComponent } from './non-host-waiting-room.component';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -54,7 +54,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { WaitForHearingPanelUserRole } from '../wait-for-hearing-panel/wait-for-hearing-panel.component';
+import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 
 describe('NonHostWaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
@@ -187,7 +187,7 @@ describe('NonHostWaitingRoomComponent', () => {
         }).compileComponents();
 
         component = TestBed.inject(NonHostWaitingRoomComponent);
-        component.userRole = UserRole.Participant;
+        component.userRole = NonHostUserRole.Participant;
 
         mockStore = TestBed.inject(MockStore);
         mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
@@ -203,7 +203,7 @@ describe('NonHostWaitingRoomComponent', () => {
 
     describe('allowAudioOnlyToggle', () => {
         beforeEach(() => {
-            component.userRole = UserRole.Joh;
+            component.userRole = NonHostUserRole.Joh;
         });
 
         it('should return true when particiant is not in a consultation and not in a hearing', () => {
@@ -222,7 +222,7 @@ describe('NonHostWaitingRoomComponent', () => {
         });
 
         it('should return true when user role is participant', () => {
-            component.userRole = UserRole.Participant;
+            component.userRole = NonHostUserRole.Participant;
             expect(component.allowAudioOnlyToggle).toBeTrue();
         });
     });
@@ -444,7 +444,7 @@ describe('NonHostWaitingRoomComponent', () => {
     describe('getConferenceStatusText', () => {
         describe('user is a participant', () => {
             beforeEach(() => {
-                component.userRole = UserRole.Participant;
+                component.userRole = NonHostUserRole.Participant;
             });
 
             const getConferenceStatusTextTestCases = [
@@ -494,7 +494,7 @@ describe('NonHostWaitingRoomComponent', () => {
 
         describe('user is not a participant', () => {
             beforeEach(() => {
-                component.userRole = UserRole.Joh;
+                component.userRole = NonHostUserRole.Joh;
             });
 
             const getConferenceStatusTextTestCases = [
@@ -718,62 +718,27 @@ describe('NonHostWaitingRoomComponent', () => {
         }));
     });
 
-    describe('set userRole', () => {
-        it('should accept UserRole.Participant', () => {
-            expect(() => {
-                component.userRole = UserRole.Participant;
-            }).not.toThrow();
-        });
-
-        it('should accept UserRole.Joh', () => {
-            expect(() => {
-                component.userRole = UserRole.Joh;
-            }).not.toThrow();
-        });
-
-        it('should throw error for invalid userRole', () => {
-            expect(() => {
-                component.userRole = 'InvalidRole' as UserRole;
-            }).toThrowError('Invalid userRole: InvalidRole');
-        });
-    });
-
     describe('isJoh', () => {
         it('should return true when user is a joh', () => {
-            component.userRole = UserRole.Joh;
+            component.userRole = NonHostUserRole.Joh;
             expect(component.isJoh).toBeTrue();
         });
 
         it('should return false when user is a participant', () => {
-            component.userRole = UserRole.Participant;
+            component.userRole = NonHostUserRole.Participant;
             expect(component.isJoh).toBeFalse();
         });
     });
 
     describe('isParticipant', () => {
         it('should return true when user is a participant', () => {
-            component.userRole = UserRole.Participant;
+            component.userRole = NonHostUserRole.Participant;
             expect(component.isParticipant).toBeTrue();
         });
 
         it('should return false when user is a joh', () => {
-            component.userRole = UserRole.Joh;
+            component.userRole = NonHostUserRole.Joh;
             expect(component.isParticipant).toBeFalse();
-        });
-    });
-
-    describe('mapUserRoleForPleaseWaitPanel', () => {
-        const userRoleTestCases = [
-            { userRole: UserRole.Joh, expected: WaitForHearingPanelUserRole.Joh },
-            { userRole: UserRole.Participant, expected: WaitForHearingPanelUserRole.Participant }
-        ];
-
-        userRoleTestCases.forEach(test => {
-            it(`should map user role '${test.userRole}' to '${test.expected}'`, () => {
-                component.userRole = test.userRole;
-                const result = component.mapWaitForHearingPanelUserRole();
-                expect(result).toBe(test.expected);
-            });
         });
     });
 });

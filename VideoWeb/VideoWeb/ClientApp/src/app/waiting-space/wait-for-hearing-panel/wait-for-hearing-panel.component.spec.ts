@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WaitForHearingPanelComponent, WaitForHearingPanelUserRole } from './wait-for-hearing-panel.component';
+import { WaitForHearingPanelComponent } from './wait-for-hearing-panel.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
+import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 
 describe('WaitForHearingPanelComponent', () => {
     let component: WaitForHearingPanelComponent;
@@ -32,7 +33,7 @@ describe('WaitForHearingPanelComponent', () => {
     describe('getCurrentTimeClass', () => {
         describe('is a participant, not a witness or witness link', () => {
             beforeEach(() => {
-                component.userRole = WaitForHearingPanelUserRole.Participant;
+                component.userRole = NonHostUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = false;
             });
             it('should return hearing-on-time when conference is onTime', () => {
@@ -83,7 +84,7 @@ describe('WaitForHearingPanelComponent', () => {
 
         describe('is a participant, is a witness or has a witness link', () => {
             beforeEach(() => {
-                component.userRole = WaitForHearingPanelUserRole.Participant;
+                component.userRole = NonHostUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = true;
             });
 
@@ -106,7 +107,7 @@ describe('WaitForHearingPanelComponent', () => {
 
         describe('is a joh', () => {
             beforeEach(() => {
-                component.userRole = WaitForHearingPanelUserRole.Joh;
+                component.userRole = NonHostUserRole.Joh;
             });
 
             it('should return hearing-delayed when conference is suspended', () => {

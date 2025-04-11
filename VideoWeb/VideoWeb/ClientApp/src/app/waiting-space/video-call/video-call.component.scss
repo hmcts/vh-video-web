@@ -1,3 +1,5 @@
+@import 'abstracts';
+
 .header-content-grid-with-lock {
   display: grid;
   grid-template-columns: 1fr rem(100px) auto auto;

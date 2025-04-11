@@ -30,12 +30,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
-import { WaitForHearingPanelUserRole } from '../wait-for-hearing-panel/wait-for-hearing-panel.component';
-
-export enum UserRole {
-    Joh = 'Joh',
-    Participant = 'Participant'
-}
+import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 
 @Component({
     standalone: false,
@@ -44,6 +39,8 @@ export enum UserRole {
     styleUrls: ['../waiting-room-global-styles.scss', './non-host-waiting-room.component.scss']
 })
 export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    @Input() userRole: NonHostUserRole;
+
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
@@ -58,7 +55,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     private destroyedSubject = new Subject();
     private titleForParticipant = 'Participant waiting room';
     private titleForJoh = 'JOH waiting room';
-    private _userRole: UserRole;
 
     constructor(
         protected route: ActivatedRoute,
@@ -160,23 +156,11 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     get isJoh(): boolean {
-        return this.userRole === UserRole.Joh;
+        return this.userRole === NonHostUserRole.Joh;
     }
 
     get isParticipant(): boolean {
-        return this.userRole === UserRole.Participant;
-    }
-
-    get userRole(): UserRole {
-        return this._userRole;
-    }
-
-    @Input()
-    set userRole(value: UserRole) {
-        if (!Object.values(UserRole).includes(value)) {
-            throw new Error(`Invalid userRole: ${value}`);
-        }
-        this._userRole = value;
+        return this.userRole === NonHostUserRole.Participant;
     }
 
     ngOnInit() {
@@ -231,7 +215,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     getConferenceStatusText(): string {
-        if (this.userRole === UserRole.Participant) {
+        if (this.userRole === NonHostUserRole.Participant) {
             return this.getConferenceStatusTextForParticipant();
         }
         return this.getConferenceStatusTextForNonParticipant();
@@ -380,16 +364,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         window.location.assign(feedbackUrl);
     }
 
-    mapWaitForHearingPanelUserRole(): WaitForHearingPanelUserRole {
-        if (this.isQuickLinkUser) {
-            return WaitForHearingPanelUserRole.QuickLink;
-        }
-        if (this.isJoh) {
-            return WaitForHearingPanelUserRole.Joh;
-        }
-        return WaitForHearingPanelUserRole.Participant;
-    }
-
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -436,10 +410,10 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
     private setTitle() {
         switch (this.userRole) {
-            case UserRole.Participant:
+            case NonHostUserRole.Participant:
                 this.titleService.setTitle(this.titleForParticipant);
                 break;
-            case UserRole.Joh:
+            case NonHostUserRole.Joh:
                 this.titleService.setTitle(this.titleForJoh);
                 break;
             default:

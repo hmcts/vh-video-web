@@ -1,11 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
-
-export enum WaitForHearingPanelUserRole {
-    Joh = 'Joh',
-    Participant = 'Participant',
-    QuickLink = 'QuickLink'
-}
+import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 
 @Component({
     selector: 'app-wait-for-hearing-panel',
@@ -16,19 +11,16 @@ export enum WaitForHearingPanelUserRole {
 export class WaitForHearingPanelComponent {
     @Input() hearing: VHHearing;
     @Input() currentTime: Date;
-    @Input() userRole: WaitForHearingPanelUserRole;
+    @Input() userRole: NonHostUserRole;
     @Input() isWitnessOrHasWitnessLink: boolean;
+    @Input() isQuickLinkUser: boolean;
 
     get isJoh() {
-        return this.userRole === WaitForHearingPanelUserRole.Joh;
+        return this.userRole === NonHostUserRole.Joh;
     }
 
     get isParticipant() {
-        return this.userRole === WaitForHearingPanelUserRole.Participant;
-    }
-
-    get isQuickLink() {
-        return this.userRole === WaitForHearingPanelUserRole.QuickLink;
+        return this.userRole === NonHostUserRole.Participant;
     }
 
     getCurrentTimeClass() {
