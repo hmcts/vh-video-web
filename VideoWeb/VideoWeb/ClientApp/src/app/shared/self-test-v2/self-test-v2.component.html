@@ -1,0 +1,72 @@
+<div>
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">
+    {{ 'self-test.testing-equipment' | translate }}
+  </h1>
+</div>
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div *ngIf="displayConnecting" class="govuk-grid-column-full">
+    <p class="govuk-body-l">{{ 'self-test.to-be-connected' | translate }}</p>
+  </div>
+  <div class="govuk-grid-column-full">
+    <video
+      *ngIf="incomingStream?.active"
+      #incomingVideo
+      appForcePlayVideo
+      id="incomingFeedPrivate"
+      [srcObject]="incomingStream"
+      poster="/assets/images/empty_crest_please_wait.jpg"
+      disablepictureinpicture
+      width="65%"
+      height="auto"
+    >
+      {{ 'self-test.browser-not-support' | translate }}
+    </video>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="self-view-container">
+    <div>
+      <video
+        *ngIf="displayFeed && outgoingStream?.active"
+        #selfViewVideo
+        appForcePlayVideo
+        [muted]="true"
+        id="outgoingStream"
+        [srcObject]="outgoingStream"
+        disablepictureinpicture
+        width="100%"
+        height="auto"
+        class="selfie-view"
+      >
+        {{ 'self-test.browser-not-support' | translate }}
+      </video>
+    </div>
+
+    <div>
+      <app-mic-visualiser
+        *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
+        [stream]="preferredMicrophoneStream"
+        [incomingStream]="preferredMicrophoneStream"
+      ></app-mic-visualiser>
+    </div>
+  </div>
+</div>
+
+<app-select-media-devices *ngIf="displayDeviceChangeModal" (shouldClose)="hideChangeDevices()"></app-select-media-devices>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+    <div class="govuk-button-group">
+      <button
+        *ngIf="showChangeDevicesButton"
+        type="submit"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="displayChangeDevices()"
+      >
+        {{ 'self-test.change-camera-mic' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

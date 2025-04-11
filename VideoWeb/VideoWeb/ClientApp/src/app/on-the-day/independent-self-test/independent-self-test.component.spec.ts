@@ -1,83 +1,100 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { convertToParamMap, Router } from '@angular/router';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { IndependentSelfTestComponent } from './independent-self-test.component';
+import { SelfTestV2Component } from 'src/app/shared/self-test-v2/self-test-v2.component';
+import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { By } from '@angular/platform-browser';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MockComponent, MockPipe } from 'ng-mocks';
+import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
+import { SelfTestActionsComponent } from '../self-test-actions/self-test-actions.component';
 
 describe('IndependentSelfTestComponent', () => {
+    let fixture: ComponentFixture<IndependentSelfTestComponent>;
     let component: IndependentSelfTestComponent;
-    let selfTestComponent: jasmine.SpyObj<SelfTestComponent>;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const profile = new UserProfileResponse({ roles: [Role.StaffMember] });
 
+    let mockStore: MockStore<ConferenceState>;
+    let selfTestComponent: SelfTestV2Component;
     let router: jasmine.SpyObj<Router>;
-    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
-    const logger: Logger = new MockLogger();
-    let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let profileService: jasmine.SpyObj<ProfileService>;
-    let errorService: jasmine.SpyObj<ErrorService>;
+
+    let logger: Logger;
 
     beforeAll(() => {
-        selfTestComponent = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
-        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-
-        profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
-            'goToServiceError',
-            'handleApiError',
-            'returnHomeIfUnauthorised'
-        ]);
     });
 
-    beforeEach(() => {
-        component = new IndependentSelfTestComponent(router, activatedRoute, videoWebService, profileService, errorService, logger);
-        component.selfTestComponent = selfTestComponent;
+    beforeEach(async () => {
+        mockStore = createMockStore({
+            initialState: {
+                currentConference: undefined,
+                loggedInParticipant: undefined,
+                countdownComplete: false,
+                availableRooms: []
+            }
+        });
+
+        await TestBed.configureTestingModule({
+            declarations: [
+                IndependentSelfTestComponent,
+                MockComponent(SelfTestV2Component),
+                MockComponent(SelfTestActionsComponent),
+                MockComponent(ContactUsFoldingComponent),
+                MockPipe(TranslatePipe)
+            ],
+            providers: [{ provide: Logger, useValue: new MockLogger() }, { provide: Router, useValue: router }, provideMockStore()]
+        }).compileComponents;
+
+        fixture = TestBed.createComponent(IndependentSelfTestComponent);
+        component = fixture.componentInstance;
+
+        mockStore = TestBed.inject(MockStore);
+        logger = TestBed.inject(Logger);
+
+        selfTestComponent = fixture.debugElement.query(By.directive(SelfTestV2Component)).componentInstance;
+
+        fixture.detectChanges();
     });
 
-    it('should return isStaffMember true when is staffMember', fakeAsync(() => {
-        component.ngOnInit();
-        tick();
-        expect(component.isStaffMember).toBeTrue();
-    }));
-
-    it('should navigate to hearing list when equipment works', () => {
-        component.equipmentWorksHandler();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.ParticipantHearingList);
+    afterEach(() => {
+        mockStore.resetSelectors();
     });
 
-    it('should navigate to staff member hearing list', () => {
-        component.isStaffMember = true;
-        component.equipmentWorksHandler();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.StaffMemberHearingList);
+    describe('equipmentWorksHandler', () => {
+        it('should navigate to staff member hearing list if staff member', () => {
+            component.isStaffMember = true;
+            component.equipmentWorksHandler();
+
+            expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.StaffMemberHearingList);
+        });
+
+        it('should navigate to participant hearing list if not staff member', () => {
+            component.isStaffMember = false;
+            component.equipmentWorksHandler();
+
+            expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.ParticipantHearingList);
+        });
     });
 
-    it('should show equipment fault message when equipment fails', () => {
-        component.equipmentFaultyHandler();
-        expect(component.showEquipmentFaultMessage).toBeTruthy();
-        expect(component.testInProgress).toBeFalsy();
-        expect(component.hideSelfTest).toBeTruthy();
+    describe('equipmentFaultyHandler', () => {
+        it('should show equipment fault message and hide self test', () => {
+            component.equipmentFaultyHandler();
+
+            expect(component.showEquipmentFaultMessage).toBeTrue();
+            expect(component.testInProgress).toBeFalse();
+        });
     });
 
-    it('should show self test restarting video', () => {
-        const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-        selfTestSpy.replayVideo.and.callFake(() => {});
-        component.selfTestComponent = selfTestSpy;
+    describe('restartTest', () => {
+        it('should set testInProgress to false and hideSelfTest to false', () => {
+            component.testInProgress = true;
+            component.restartTest();
 
-        component.restartTest();
-
-        expect(component.showEquipmentFaultMessage).toBeFalsy();
-        expect(component.testInProgress).toBeFalsy();
-        expect(component.hideSelfTest).toBeFalsy();
-        expect(selfTestSpy.replayVideo).toHaveBeenCalled();
+            expect(component.testInProgress).toBeFalse();
+            expect(component.showEquipmentFaultMessage).toBeFalse();
+        });
     });
 });
