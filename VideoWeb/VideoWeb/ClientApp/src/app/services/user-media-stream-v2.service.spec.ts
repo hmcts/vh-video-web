@@ -8,6 +8,8 @@ import { AudioOnlyImageService } from './audio-only-image.service';
 import { MediaStreamService } from './media-stream.service';
 import { of, ReplaySubject } from 'rxjs';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { VideoFilterService } from './video-filter.service';
+import { BackgroundFilter } from './models/background-filter';
 
 describe('UserMediaStreamServiceV2', () => {
     const mediaStreamBuilder = (device: UserMediaDevice) => {
@@ -42,10 +44,12 @@ describe('UserMediaStreamServiceV2', () => {
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
     let audioOnlyImageServiceSpy: jasmine.SpyObj<AudioOnlyImageService>;
+    let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
 
     let activeCameraDeviceSubject: ReplaySubject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: ReplaySubject<UserMediaDevice>;
     let isAudioOnlySubject: ReplaySubject<boolean>;
+    let filterChangedSubject: ReplaySubject<BackgroundFilter>;
 
     let sut: UserMediaStreamServiceV2;
 
@@ -73,6 +77,7 @@ describe('UserMediaStreamServiceV2', () => {
             ['initialise'],
             ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']
         );
+        filterChangedSubject = new ReplaySubject<BackgroundFilter>(1);
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(
@@ -91,7 +96,16 @@ describe('UserMediaStreamServiceV2', () => {
         audioOnlyImageServiceSpy = jasmine.createSpyObj<AudioOnlyImageService>(['getAudioOnlyImageStream']);
         audioOnlyImageServiceSpy.getAudioOnlyImageStream.and.returnValue(of(audioOnlyImageStream));
 
-        sut = new UserMediaStreamServiceV2(loggerSpy, userMediaServiceSpy, mediaStreamServiceSpy, audioOnlyImageServiceSpy);
+        videoFilterServiceSpy = jasmine.createSpyObj<VideoFilterService>([], ['onFilterChanged$']);
+        getSpiedPropertyGetter(videoFilterServiceSpy, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
+
+        sut = new UserMediaStreamServiceV2(
+            loggerSpy,
+            userMediaServiceSpy,
+            mediaStreamServiceSpy,
+            audioOnlyImageServiceSpy,
+            videoFilterServiceSpy
+        );
     });
 
     it('should capture media devices, audio only state and create a stream', fakeAsync(() => {
@@ -157,6 +171,20 @@ describe('UserMediaStreamServiceV2', () => {
                 expect(stream).toBe(combinedStream);
             });
         });
+    });
+
+    describe('onFilterChanged$ handler', () => {
+        it('should republish the same stream if device has not changed and stream is active', fakeAsync(() => {
+            const createAndPublishSpy = spyOn(sut, 'createAndPublishStream');
+            sut['deviceChanged'] = false;
+
+            filterChangedSubject.next(BackgroundFilter.blur);
+
+            tick();
+            expect(mediaStreamServiceSpy.getStreamForCam).not.toHaveBeenCalled();
+
+            expect(createAndPublishSpy).toHaveBeenCalledWith();
+        }));
     });
 
     describe('audioOnly enabled', () => {
