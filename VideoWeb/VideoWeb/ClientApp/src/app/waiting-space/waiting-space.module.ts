@@ -69,6 +69,7 @@ import { WaitForHearingPanelComponent } from './wait-for-hearing-panel/wait-for-
 import { WaitForConnectionMessageComponent } from './wait-for-connection-message/wait-for-connection-message.component';
 import { SupportContactDetailsComponent } from './support-contact-details/support-contact-details.component';
 import { PrivateConsultationDescriptionComponent } from './private-consultation-description/private-consultation-description.component';
+import { VideoCallComponent } from './video-call/video-call.component';
 
 @NgModule({
     imports: [
@@ -136,7 +137,8 @@ import { PrivateConsultationDescriptionComponent } from './private-consultation-
         WaitForHearingPanelComponent,
         WaitForConnectionMessageComponent,
         SupportContactDetailsComponent,
-        PrivateConsultationDescriptionComponent
+        PrivateConsultationDescriptionComponent,
+        VideoCallComponent
     ],
     providers: [
         VideoCallService,

@@ -1,0 +1,98 @@
+<div class="video-background">
+    <div class="header-bar">
+      <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
+        <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
+          <div class="room-title">
+            <h1 #roomTitleLabel class="room-title-label">{{ roomName }}</h1>
+          </div>
+          <div class="room-status">
+            <span class="lock-badge" [class]="this.vhParticipant?.room?.locked ? 'locked' : 'unlocked'">{{
+              (this.vhParticipant?.room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
+            }}</span>
+          </div>
+          <div *ngIf="!this.vhParticipant?.room?.locked" class="room-status-desc">
+            {{ 'participant-waiting-room.lock-the-room' | translate }}
+          </div>
+          <div *ngIf="this.vhParticipant?.room?.locked" class="room-status-desc">
+            {{ 'participant-waiting-room.invite-others' | translate }}
+          </div>
+        </ng-container>
+        <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
+          <div class="room-title">
+            <h1 #roomTitleLabel class="room-title-label">{{ caseNameAndNumber }}</h1>
+            <div
+              *ngIf="hasCaseNameOverflowed"
+              class="room-title-show-more"
+              appTooltip
+              [text]="caseNameAndNumber"
+              colour="grey"
+              [isDesktopOnly]="false"
+            >
+              (show more)
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="connected">
+          <app-private-consultation-room-controls
+            #hearingControls
+            [canToggleParticipantsPanel]="isPrivateConsultation"
+            [conferenceId]="vhConference.id"
+            [participant]="vhParticipant"
+            [isPrivateConsultation]="isPrivateConsultation"
+            [outgoingStream]="outgoingStream"
+            [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+            [showConsultationControls]="showConsultationControls"
+            [areParticipantsVisible]="!isParticipantsPanelHidden"
+            (leaveConsultation)="leaveConsultationClicked()"
+            (lockConsultation)="lockConsultationClicked($event)"
+            (changeDeviceToggle)="changeDeviceToggleClicked()"
+            (changeLanguageSelected)="changeLanguageSelected()"
+            (togglePanel)="participantsPanelToggled()"
+          >
+          </app-private-consultation-room-controls>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
+      <app-private-consultation-participants
+        [conference]="vhConference"
+        [participantEndpoints]="participantEndpoints"
+        [roomLabel]="this.vhParticipant.room?.label"
+      >
+      </app-private-consultation-participants>
+    </div>
+    <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="videoWrapperReady()">
+      <video
+        appForcePlayVideo
+        id="incomingFeedPrivate"
+        [muted]="!showVideo"
+        [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
+        poster="/assets/images/empty_crest.jpg"
+      >
+        {{ 'participant-waiting-room.browser-support' | translate }}
+      </video>
+      <div
+        id="secondIncomingFeed"
+        *ngIf="presentationStream"
+        (keydown)="secondIncomingFeedClicked()"
+        (click)="secondIncomingFeedClicked()"
+        appTooltip
+        [text]="'participant-waiting-room.switch-to-main-screen' | translate"
+        colour="grey"
+      >
+        <video
+          appForcePlayVideo
+          [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
+          height="auto"
+          poster="/assets/images/empty_crest.jpg"
+          class="fill-container"
+        >
+          {{ 'participant-waiting-room.browser-support' | translate }}
+        </video>
+      </div>
+    </div>
+  
+    <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+      <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
+    </div>
+  </div>
