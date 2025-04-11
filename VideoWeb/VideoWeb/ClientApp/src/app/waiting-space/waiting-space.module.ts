@@ -70,6 +70,7 @@ import { WaitForConnectionMessageComponent } from './wait-for-connection-message
 import { SupportContactDetailsComponent } from './support-contact-details/support-contact-details.component';
 import { PrivateConsultationDescriptionComponent } from './private-consultation-description/private-consultation-description.component';
 import { VideoCallComponent } from './video-call/video-call.component';
+import { TransferMessageComponent } from './transfer-message/transfer-message.component';
 
 @NgModule({
     imports: [
@@ -138,7 +139,8 @@ import { VideoCallComponent } from './video-call/video-call.component';
         WaitForConnectionMessageComponent,
         SupportContactDetailsComponent,
         PrivateConsultationDescriptionComponent,
-        VideoCallComponent
+        VideoCallComponent,
+        TransferMessageComponent
     ],
     providers: [
         VideoCallService,

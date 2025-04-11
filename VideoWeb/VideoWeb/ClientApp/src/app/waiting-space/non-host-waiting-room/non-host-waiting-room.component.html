@@ -32,26 +32,7 @@
   (feedToggle)="switchStreamWindows()">
 </app-video-call>
 
-<div *ngIf="isParticipant && isTransferringIn">
-  <div class="video-background">
-    <div class="transferMessage">
-      <img
-        class="transferFeedImage"
-        id="transferFeedImage"
-        ngSrc="/assets/images/govuk-crest-white.svg"
-        [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
-        height="247"
-        width="300"
-      />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
-        {{ emptyString }}
-      </h2>
-      <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
-        {{ 'participant-waiting-room.browser-support' | translate }}
-      </video>
-    </div>
-  </div>
-</div>
+<app-transfer-message *ngIf="isParticipant && isTransferringIn" [outgoingStream]="outgoingStream"></app-transfer-message>
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">

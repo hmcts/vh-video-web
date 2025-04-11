@@ -27,6 +27,7 @@ export class VideoCallComponent {
     @Input() callStream: MediaStream | URL;
     @Input() roomName: string;
     @Input() caseNameAndNumber: string;
+
     @Output() ready = new EventEmitter<void>();
     @Output() leaveConsultation = new EventEmitter<void>();
     @Output() consultationLockToggle = new EventEmitter<boolean>();

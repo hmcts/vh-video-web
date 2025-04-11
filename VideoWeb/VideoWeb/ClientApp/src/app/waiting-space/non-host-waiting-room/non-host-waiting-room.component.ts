@@ -50,7 +50,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
 
-    emptyString = ''; // Web:S6850 - Empty string is used to clear the value of the input field
     showWarning = false;
     displayLanguageModal: boolean;
     displayLeaveHearingPopup = false;
