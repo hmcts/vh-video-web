@@ -1,0 +1,51 @@
+.header-content-grid-with-lock {
+  display: grid;
+  grid-template-columns: 1fr rem(100px) auto auto;
+  width: 100%;
+}
+
+.header-content-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  width: 100%;
+}
+
+.room-status {
+  margin-top: 7px;
+  margin-left: 10px;
+  white-space: nowrap;
+  @include responds-to(small) {
+    margin-left: 20px;
+  }
+}
+
+.room-status-desc {
+  color: lightgray;
+  margin-top: 10px;
+  font-size: rem(16px);
+  margin-left: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: none;
+  @media screen and (min-width: $breakpoint-small) {
+    display: inline-flex;
+  }
+}
+
+.lock-badge {
+  padding: 3px 8px 3px 8px;
+  border: 0px solid lightgray;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: rem(10px);
+  @media screen and (min-width: $breakpoint-small) {
+    font-size: rem(14px);
+  }
+}
+
+.lock-badge.locked,
+.lock-badge.unlocked {
+  background: lightgray;
+  color: #0b0c0d;
+}

@@ -6,7 +6,7 @@ import { VHHearing } from 'src/app/shared/models/hearing.vh';
     selector: 'app-video-call',
     standalone: false,
     templateUrl: './video-call.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', '../non-host-waiting-room/non-host-waiting-room.component.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './video-call.component.scss']
 })
 export class VideoCallComponent {
     @Input() isJohRoom: boolean;

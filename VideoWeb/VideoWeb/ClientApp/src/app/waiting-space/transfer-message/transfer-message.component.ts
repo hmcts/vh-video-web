@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
     selector: 'app-transfer-message',
     standalone: false,
     templateUrl: './transfer-message.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', '../non-host-waiting-room/non-host-waiting-room.component.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './transfer-message.component.scss']
 })
 export class TransferMessageComponent {
     @Input() outgoingStream: MediaStream | URL;
