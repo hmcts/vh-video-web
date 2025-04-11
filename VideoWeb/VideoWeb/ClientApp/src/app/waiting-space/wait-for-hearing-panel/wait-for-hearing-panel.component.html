@@ -1,6 +1,6 @@
 <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
   <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-    <div *ngIf="(!isWitnessOrHasWitnessLink && !isJoh) && hearing.isOnTime()">
+    <div *ngIf="!isWitnessOrHasWitnessLink && !isJoh && hearing.isOnTime()">
       <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.please-wait' | translate }}</h2>
       <p class="white">{{ 'participant-waiting-room.hearing-starting-at' | translate }} {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
     </div>
@@ -11,21 +11,21 @@
       </p>
     </div>
 
-    <div *ngIf="(!isWitnessOrHasWitnessLink && !isJoh) && hearing.isStarting()">
+    <div *ngIf="!isWitnessOrHasWitnessLink && !isJoh && hearing.isStarting()">
       <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.starting-title' | translate }}</h2>
       <p class="white">{{ 'participant-waiting-room.hearing-status-messages.starting-body' | translate }}</p>
     </div>
 
-    <div *ngIf="(!isWitnessOrHasWitnessLink && !isJoh) && hearing.isDelayed()">
+    <div *ngIf="!isWitnessOrHasWitnessLink && !isJoh && hearing.isDelayed()">
       <h2 class="govuk-heading-m">{{ 'participant-waiting-room.hearing-status-messages.delayed-title' | translate }}</h2>
       <p class="govuk-body">{{ 'participant-waiting-room.hearing-status-messages.delayed-body' | translate }}</p>
     </div>
 
-    <div *ngIf="(!isWitnessOrHasWitnessLink && !isJoh) && hearing.isClosed()">
+    <div *ngIf="!isWitnessOrHasWitnessLink && !isJoh && hearing.isClosed()">
       <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.closed' | translate }}</h2>
     </div>
 
-    <div *ngIf="(!isWitnessOrHasWitnessLink && !isJoh) && hearing.isPaused()" class="hearing-title-mt--20">
+    <div *ngIf="!isWitnessOrHasWitnessLink && !isJoh && hearing.isPaused()" class="hearing-title-mt--20">
       <p class="white">{{ 'participant-waiting-room.hearing-status-messages.paused' | translate }}</p>
     </div>
 
@@ -52,7 +52,11 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <div class="govuk-panel__body govuk-!-margin-top-4">
-        <app-analogue-clock [hearing]="hearing" [isJudicialOfficeHolder]="isJoh" [isWitness]="isWitnessOrHasWitnessLink"></app-analogue-clock>
+        <app-analogue-clock
+          [hearing]="hearing"
+          [isJudicialOfficeHolder]="isJoh"
+          [isWitness]="isWitnessOrHasWitnessLink"
+        ></app-analogue-clock>
       </div>
     </div>
     <div class="govuk-grid-column-one-half">

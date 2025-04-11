@@ -2,8 +2,8 @@
   <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
 </div>
 
-<app-video-call 
-  *ngIf="showVideo" 
+<app-video-call
+  *ngIf="showVideo"
   id="video-container"
   [isJohRoom]="isJohRoom"
   [canToggleParticipantsPanel]="isPrivateConsultation"
@@ -31,7 +31,8 @@
   (deviceToggle)="showChooseCameraDialog()"
   (languageChange)="showLanguageChangeModal()"
   (participantsPanelToggle)="toggleParticipantsPanel()"
-  (feedToggle)="switchStreamWindows()">
+  (feedToggle)="switchStreamWindows()"
+>
 </app-video-call>
 
 <app-transfer-message *ngIf="isParticipant && isTransferringIn" [outgoingStream]="outgoingStream"></app-transfer-message>
@@ -74,10 +75,11 @@
 
   <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
     <app-wait-for-hearing-panel
-        [hearing]="hearing"
-        [currentTime]="currentTime"
-        [userRole]="mapWaitForHearingPanelUserRole()"
-        [isWitnessOrHasWitnessLink]="isOrHasWitnessLink()">
+      [hearing]="hearing"
+      [currentTime]="currentTime"
+      [userRole]="mapWaitForHearingPanelUserRole()"
+      [isWitnessOrHasWitnessLink]="isOrHasWitnessLink()"
+    >
     </app-wait-for-hearing-panel>
     <ng-container *ngIf="isParticipant">
       <div *ngIf="canStartJoinConsultation">
@@ -104,7 +106,10 @@
       <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
 
       <div *ngIf="canStartJoinConsultation">
-        <app-private-consultation-description [isExpanded]="privateConsultationAccordianExpanded" (accordianToggled)="toggleAccordian()"></app-private-consultation-description>
+        <app-private-consultation-description
+          [isExpanded]="privateConsultationAccordianExpanded"
+          (accordianToggled)="toggleAccordian()"
+        ></app-private-consultation-description>
       </div>
 
       <div class="govuk-!-margin-top-9">
