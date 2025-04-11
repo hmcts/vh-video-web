@@ -4,103 +4,34 @@
 <div>
   <!-- contains the in-hearing participant list and incoming video -->
   <div class="govuk-grid-row" *ngIf="showVideo">
-    <div id="video-container" appHookElement [readyElm]="'videoContainer'" (readyEvent)="setTrapFocus()">
-      <div class="hearing-video">
-        <div class="video-background">
-          <div class="header-bar">
-            <div class="header-content-grid govuk-body">
-              <div class="room-title">
-                <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-                <button
-                  tabindex="0"
-                  *ngIf="hasCaseNameOverflowed"
-                  class="room-title-show-more"
-                  appTooltip
-                  [text]="getCaseNameAndNumber()"
-                  colour="grey"
-                  [isDesktopOnly]="false"
-                >
-                  (show more)
-                </button>
-              </div>
-              <app-private-consultation-room-controls
-                #hearingControls
-                [conferenceId]="vhConference.id"
-                [participant]="vhParticipant"
-                [isPrivateConsultation]="isPrivateConsultation"
-                [outgoingStream]="outgoingStream"
-                [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-                [showConsultationControls]="showConsultationControls"
-                [unreadMessageCount]="unreadMessageCount"
-                [isChatVisible]="isChatVisible"
-                [areParticipantsVisible]="areParticipantsVisible"
-                (leaveConsultation)="leaveConsultation()"
-                (togglePanel)="togglePanel($event)"
-                (changeDeviceToggle)="showChooseCameraDialog()"
-              >
-                [conference]="conference">
-              </app-private-consultation-room-controls>
-            </div>
-          </div>
-
-          <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
-            <app-private-consultation-participants
-              *ngIf="isPrivateConsultation"
-              [conference]="vhConference"
-              [participantEndpoints]="participantEndpoints"
-              [roomLabel]="this.vhParticipant.room?.label"
-            >
-            </app-private-consultation-participants>
-            <app-participants-panel *ngIf="!isPrivateConsultation"></app-participants-panel>
-          </div>
-          <div *ngIf="hearing && !isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Chat'] }">
-            <app-chat-panel
-              *ngIf="defineIsIMEnabled()"
-              [hearing]="hearing"
-              (unreadCount)="unreadMessageCounterUpdate($event)"
-              [showChat]="panelStates['Chat']"
-            >
-            </app-chat-panel>
-          </div>
-
-          <div class="video-wrapper">
-            <video
-              appForcePlayVideo
-              [muted]="!showVideo"
-              id="incomingFeedJudgePrivate"
-              [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
-              height="auto"
-              class="incomingFeedPrivate"
-            >
-              {{ 'judge-waiting-room.browser-support-message' | translate }}
-            </video>
-            <div
-              id="secondIncomingFeed"
-              *ngIf="presentationStream"
-              (keydown.enter)="switchStreamWindows()"
-              (keydown.space)="switchStreamWindows()"
-              (click)="switchStreamWindows()"
-              appTooltip
-              [text]="'judge-waiting-room.switch-to-main-screen' | translate"
-              colour="grey"
-            >
-              <video
-                appForcePlayVideo
-                [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
-                height="auto"
-                poster="/assets/images/empty_crest.jpg"
-                class="fill-container"
-              >
-                {{ 'judge-waiting-room.browser-support-message' | translate }}
-              </video>
-            </div>
-          </div>
-          <div class="hearing-monitor-container" *ngIf="isSupportedBrowserForNetworkHealth">
-            <app-participant-network-alert [participant]="vhParticipant"></app-participant-network-alert>
-          </div>
-        </div>
-      </div>
-    </div>
+    <app-video-call
+      id="video-container"
+      [canToggleParticipantsPanel]="true"
+      [isPrivateConsultation]="isPrivateConsultation"
+      [vhParticipant]="vhParticipant"
+      [hasCaseNameOverflowed]="hasCaseNameOverflowed"
+      [vhConference]="vhConference"
+      [connected]="connected"
+      [outgoingStream]="outgoingStream"
+      [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+      [showConsultationControls]="showConsultationControls"
+      [isParticipantsPanelHidden]="!areParticipantsVisible"
+      [hearing]="hearing"
+      [participantEndpoints]="participantEndpoints"
+      [showVideo]="showVideo"
+      [presentationStream]="presentationStream"
+      [streamInMain]="streamInMain"
+      [callStream]="callStream"
+      [caseNameAndNumber]="getCaseNameAndNumber()"
+      [isParticipantsPanelEnabled]="true"
+      [isChatVisible]="isChatVisible && defineIsIMEnabled()"
+      (ready)="setTrapFocus()"
+      (leaveConsultation)="showLeaveConsultationModal()"
+      (deviceToggle)="showChooseCameraDialog()"
+      (participantsPanelToggle)="togglePanel($event)"
+      (feedToggle)="switchStreamWindows()"
+      (unreadCountUpdate)="unreadMessageCounterUpdate($event)">
+    </app-video-call>
   </div>
   <div *ngIf="!loadingData && vhConference" [ngClass]="{ 'no-mass': showVideo }">
     <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">

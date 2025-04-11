@@ -10,6 +10,7 @@ import { VHHearing } from 'src/app/shared/models/hearing.vh';
 })
 export class VideoCallComponent {
     @Input() isJohRoom: boolean;
+    @Input() canToggleParticipantsPanel: boolean;
     @Input() isPrivateConsultation: boolean;
     @Input() vhParticipant: VHParticipant;
     @Input() hasCaseNameOverflowed: boolean;
@@ -27,14 +28,17 @@ export class VideoCallComponent {
     @Input() callStream: MediaStream | URL;
     @Input() roomName: string;
     @Input() caseNameAndNumber: string;
+    @Input() isParticipantsPanelEnabled: boolean;
+    @Input() isChatVisible: boolean;
 
     @Output() ready = new EventEmitter<void>();
     @Output() leaveConsultation = new EventEmitter<void>();
     @Output() consultationLockToggle = new EventEmitter<boolean>();
     @Output() deviceToggle = new EventEmitter<void>();
     @Output() languageChange = new EventEmitter<void>();
-    @Output() participantsPanelToggle = new EventEmitter<void>();
+    @Output() participantsPanelToggle = new EventEmitter<string>();
     @Output() feedToggle = new EventEmitter<void>();
+    @Output() unreadCountUpdate = new EventEmitter<number>();
 
     videoWrapperReady() {
         this.ready.emit();
@@ -56,11 +60,15 @@ export class VideoCallComponent {
         this.languageChange.emit();
     }
 
-    participantsPanelToggled() {
-        this.participantsPanelToggle.emit();
+    participantsPanelToggled(panelName: string) {
+        this.participantsPanelToggle.emit(panelName);
     }
 
     secondIncomingFeedClicked() {
         this.feedToggle.emit();
+    }
+
+    unreadCountUpdated(count: number) {
+        this.unreadCountUpdate.emit(count);
     }
 }

@@ -35,7 +35,7 @@
         <ng-container *ngIf="connected">
           <app-private-consultation-room-controls
             #hearingControls
-            [canToggleParticipantsPanel]="isPrivateConsultation"
+            [canToggleParticipantsPanel]="canToggleParticipantsPanel"
             [conferenceId]="vhConference.id"
             [participant]="vhParticipant"
             [isPrivateConsultation]="isPrivateConsultation"
@@ -43,23 +43,34 @@
             [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
             [showConsultationControls]="showConsultationControls"
             [areParticipantsVisible]="!isParticipantsPanelHidden"
+            [isChatVisible]="isChatVisible"
             (leaveConsultation)="leaveConsultationClicked()"
             (lockConsultation)="lockConsultationClicked($event)"
             (changeDeviceToggle)="changeDeviceToggleClicked()"
             (changeLanguageSelected)="changeLanguageSelected()"
-            (togglePanel)="participantsPanelToggled()"
+            (togglePanel)="participantsPanelToggled($event)"
           >
           </app-private-consultation-room-controls>
         </ng-container>
       </div>
     </div>
-    <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
+    <div *ngIf="hearing && isParticipantsPanelEnabled" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
       <app-private-consultation-participants
+        *ngIf="isPrivateConsultation"
         [conference]="vhConference"
         [participantEndpoints]="participantEndpoints"
         [roomLabel]="this.vhParticipant.room?.label"
       >
       </app-private-consultation-participants>
+      <app-participants-panel *ngIf="!isPrivateConsultation"></app-participants-panel>
+    </div>
+    <div *ngIf="hearing && !isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !isChatVisible }">
+      <app-chat-panel
+        [hearing]="hearing"
+        (unreadCount)="unreadCountUpdated($event)"
+        [showChat]="isChatVisible"
+      >
+      </app-chat-panel>
     </div>
     <div class="video-wrapper" appHookElement [readyElm]="'videoContainer'" (readyEvent)="videoWrapperReady()">
       <video
