@@ -9,6 +9,7 @@ import { VHHearing } from 'src/app/shared/models/hearing.vh';
     styleUrls: ['../waiting-room-global-styles.scss', './video-call.component.scss']
 })
 export class VideoCallComponent {
+    @Input() isJudge: boolean;
     @Input() isJohRoom: boolean;
     @Input() canToggleParticipantsPanel: boolean;
     @Input() isPrivateConsultation: boolean;

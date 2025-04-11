@@ -1,7 +1,7 @@
 <div class="video-background">
   <div class="header-bar">
-    <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
-      <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
+    <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation && !isJudge ? 'header-content-grid-with-lock' : 'header-content-grid'">
+      <ng-container *ngIf="!isJohRoom && isPrivateConsultation && !isJudge">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ roomName }}</h1>
         </div>
@@ -17,7 +17,7 @@
           {{ 'participant-waiting-room.invite-others' | translate }}
         </div>
       </ng-container>
-      <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
+      <ng-container *ngIf="isJohRoom || !isPrivateConsultation || isJudge">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ caseNameAndNumber }}</h1>
           <div

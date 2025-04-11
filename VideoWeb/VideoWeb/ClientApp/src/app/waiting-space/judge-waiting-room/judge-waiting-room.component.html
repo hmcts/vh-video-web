@@ -6,6 +6,7 @@
   <div class="govuk-grid-row" *ngIf="showVideo">
     <app-video-call
       id="video-container"
+      [isJudge]="true"
       [canToggleParticipantsPanel]="true"
       [isPrivateConsultation]="isPrivateConsultation"
       [vhParticipant]="vhParticipant"
