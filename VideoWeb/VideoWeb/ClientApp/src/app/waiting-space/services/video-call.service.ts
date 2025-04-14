@@ -404,7 +404,7 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        this.logger.warn(`${this.loggerPrefix} Queuing renegotiation request`);
+        this.logger.info(`${this.loggerPrefix} Queuing renegotiation request`);
         // Queue renegotiation requests to ensure they are processed one at a time and not lost
         this.renegotiateSubject.next(sendUpdate);
     }
