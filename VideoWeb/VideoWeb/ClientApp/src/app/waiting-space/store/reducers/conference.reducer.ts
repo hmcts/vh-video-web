@@ -296,7 +296,6 @@ export const conferenceReducer = createReducer(
     }),
     on(ConferenceActions.createPexipParticipant, ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
         const conference = getCurrentConference(state, null);
-        console.log(conference);
         if (!conference) {
             return state;
         }
