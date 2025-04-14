@@ -44,6 +44,9 @@ export const initialState: ConferenceState = {
 
 function getCurrentConference(state: ConferenceState, conferenceId: string): VHConference {
     const conference = state.currentConference;
+    if (!conferenceId) {
+        return conference;
+    }
     if (!conference || conference.id !== conferenceId) {
         return null;
     }
@@ -292,7 +295,11 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: { ...conference, endpoints: updatedList } };
     }),
     on(ConferenceActions.createPexipParticipant, ConferenceActions.upsertPexipParticipant, (state, { participant }) => {
-        const conference = state.currentConference;
+        const conference = getCurrentConference(state, null);
+        console.log(conference);
+        if (!conference) {
+            return state;
+        }
         const participants = conference.participants.map(p =>
             participant.pexipDisplayName?.includes(p.id) ? { ...p, pexipInfo: participant } : p
         );
@@ -310,7 +317,10 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant, loggedInParticipant };
     }),
     on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
-        const conference = state.currentConference;
+        const conference = getCurrentConference(state, null);
+        if (!conference) {
+            return state;
+        }
         const participants = conference.participants.map(p => (p.pexipInfo?.uuid === pexipUUID ? { ...p, pexipInfo: null } : p));
         const endpoints = conference.endpoints.map(e => (e.pexipInfo?.uuid === pexipUUID ? { ...e, pexipInfo: null } : e));
 
@@ -442,7 +452,10 @@ export const conferenceReducer = createReducer(
         loggedInParticipant: participant
     })),
     on(ConferenceActions.updateAudioMix, (state, { participant, interpreterLanguage, mainCourt }) => {
-        const conference = state.currentConference;
+        const conference = getCurrentConference(state, null);
+        if (!conference) {
+            return state;
+        }
         if (!conference) {
             return state;
         }

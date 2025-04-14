@@ -329,7 +329,7 @@ export class VideoCallEffects {
         this.actions$.pipe(
             ofType(ConferenceActions.countdownComplete),
             concatLatestFrom(() => [this.store.select(ConferenceSelectors.getLoggedInParticipant)]),
-            filter(([_action, loggedInParticipant]) => loggedInParticipant.status === ParticipantStatus.InHearing),
+            filter(([_action, loggedInParticipant]) => !!loggedInParticipant && loggedInParticipant.status === ParticipantStatus.InHearing),
             switchMap(([action, participant]) => {
                 this.logger.debug(`${this.loggerPrefix} Publishing media status on countdown complete`);
                 return [
@@ -356,6 +356,7 @@ export class VideoCallEffects {
                 this.store.select(ConferenceSelectors.getLoggedInParticipant).pipe(
                     filter(
                         participant =>
+                            !!participant?.pexipInfo &&
                             (participant.role === Role.Judge || participant.role === Role.StaffMember) &&
                             participant.pexipInfo.role === 'chair' &&
                             participant.status === ParticipantStatus.InHearing
@@ -378,6 +379,7 @@ export class VideoCallEffects {
                 this.store.select(ConferenceSelectors.getLoggedInParticipant).pipe(
                     filter(
                         participant =>
+                            !!participant?.pexipInfo &&
                             (participant.role === Role.Judge || participant.role === Role.StaffMember) &&
                             participant.pexipInfo.role === 'chair' &&
                             participant.status === ParticipantStatus.InHearing

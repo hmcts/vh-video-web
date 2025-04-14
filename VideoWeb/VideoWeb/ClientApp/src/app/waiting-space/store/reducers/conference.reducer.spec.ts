@@ -973,6 +973,7 @@ describe('Conference Reducer', () => {
     describe('upsertPexipParticipant action', () => {
         it('should add pexip info to the participant', () => {
             existingInitialState = { ...existingInitialState, loggedInParticipant: conferenceTestData.participants[0] };
+            console.log(existingInitialState);
 
             const pexipParticipant = {
                 isRemoteMuted: false,
