@@ -3,7 +3,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable, of } from 'rxjs';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ApiClient, HearingLayout, Role, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, ConferenceStatus, HearingLayout, Role, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoCallService } from '../../services/video-call.service';
@@ -349,6 +349,7 @@ describe('VideoCallHostEffects', () => {
                 // Arrange
                 spyOn(mockConferenceStore, 'dispatch');
                 const conference = conferenceTestData.getConferenceDetailNow();
+                conference.status = ConferenceStatus.InSession;
                 const vhConference = mapConferenceToVHConference(conference);
                 const participant = vhConference.participants.find(x => x.role === Role.Individual);
 
@@ -388,6 +389,7 @@ describe('VideoCallHostEffects', () => {
                 // Arrange
                 spyOn(mockConferenceStore, 'dispatch');
                 const conference = conferenceTestData.getConferenceDetailNow();
+                conference.status = ConferenceStatus.InSession;
                 const vhConference = mapConferenceToVHConference(conference);
                 const participant = vhConference.participants.find(x => x.role === Role.Individual);
 
