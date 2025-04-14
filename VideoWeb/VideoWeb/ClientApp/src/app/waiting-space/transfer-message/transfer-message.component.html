@@ -4,15 +4,15 @@
       class="transferFeedImage"
       id="transferFeedImage"
       ngSrc="/assets/images/govuk-crest-white.svg"
-      [attr.alt]="'participant-waiting-room.witness-transferring-warning-img' | translate"
+      [attr.alt]="'waiting-room.witness-transferring-warning-img' | translate"
       height="247"
       width="300"
     />
-    <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
+    <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'waiting-room.hearing-ready' | translate">
       {{ emptyString }}
     </h2>
     <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
-      {{ 'participant-waiting-room.browser-support' | translate }}
+      {{ 'waiting-room.browser-support' | translate }}
     </video>
   </div>
 </div>

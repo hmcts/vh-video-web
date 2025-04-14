@@ -1,5 +1,5 @@
 <div *ngIf="loadingData">
-  <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
+  <p class="govuk-body">{{ 'waiting-room.loading-please-wait' | translate }}</p>
 </div>
 
 <app-video-call
@@ -40,7 +40,7 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
+      <h1 class="govuk-heading-xl">{{ 'waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
@@ -49,7 +49,7 @@
       <div class="govuk-grid-column-full">
         <div class="govuk-button-group">
           <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
-            {{ 'participant-waiting-room.choose-camera-and-microphone' | translate }}
+            {{ 'waiting-room.choose-camera-and-microphone' | translate }}
           </button>
           <button
             id="leaveHearingButton"
@@ -59,7 +59,7 @@
             type="button"
             (click)="onLeaveHearingButtonClicked()"
           >
-            {{ 'participant-waiting-room.leave-hearing' | translate }}
+            {{ 'waiting-room.leave-hearing' | translate }}
           </button>
         </div>
       </div>
@@ -91,7 +91,7 @@
           data-module="govuk-button"
           (click)="openStartConsultationModal()"
         >
-          {{ 'participant-waiting-room.private-consultation.start' | translate }}
+          {{ 'waiting-room.private-consultation.start' | translate }}
         </button>
 
         <button
@@ -101,7 +101,7 @@
           data-module="govuk-button"
           (click)="openJoinConsultationModal()"
         >
-          {{ 'participant-waiting-room.private-consultation.join' | translate }}
+          {{ 'waiting-room.private-consultation.join' | translate }}
         </button>
       </div>
       <app-wait-for-connection-message *ngIf="!connected"></app-wait-for-connection-message>
@@ -127,7 +127,7 @@
           (click)="joinJudicialConsultation()"
           [disabled]="!connected"
         >
-          {{ 'joh-waiting-room.enter-consultation-room' | translate }}
+          {{ 'waiting-room.enter-consultation-room' | translate }}
           <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
             {{ numberOfJudgeOrJOHsInConsultation }}
           </span>
@@ -142,7 +142,7 @@
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
     <div *ngIf="isParticipant">
       <app-individual-participant-status-list
-        [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
+        [attr.aria-label]="'waiting-room.individual-participant-status-list-label' | translate"
         [conference]="vhConference"
       >
       </app-individual-participant-status-list>

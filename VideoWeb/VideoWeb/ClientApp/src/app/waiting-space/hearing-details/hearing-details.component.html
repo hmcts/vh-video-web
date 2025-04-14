@@ -1,8 +1,8 @@
-<table class="govuk-table vh-fullwidth" [attr.aria-label]="'judge-waiting-room.details-of-the-hearing' | translate">
+<table class="govuk-table vh-fullwidth" [attr.aria-label]="'waiting-room.details-of-the-hearing' | translate">
   <thead class="govuk-table__head no-mass">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">{{ 'judge-waiting-room.hearing' | translate }}</th>
-      <th scope="col" class="govuk-table__header">{{ 'judge-waiting-room.date' | translate }}</th>
+      <th scope="col" class="govuk-table__header">{{ 'waiting-room.hearing' | translate }}</th>
+      <th scope="col" class="govuk-table__header">{{ 'waiting-room.date' | translate }}</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
@@ -11,14 +11,14 @@
         <strong><app-truncatable-text [text]="conference.caseName" [maxLimit]="40"></app-truncatable-text></strong>
         ({{ 'case-type.' + stringToTranslateId(conference.caseType) | translate }})
         <br />
-        <span>{{ 'judge-waiting-room.case-number' | translate }}</span
+        <span>{{ 'waiting-room.case-number' | translate }}</span
         >:
         <strong><app-truncatable-text [text]="conference.caseNumber" [maxLimit]="40"></app-truncatable-text></strong>
       </td>
       <td class="govuk-table__cell hearing-details-col2-width">
         {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
         <span class="govuk-!-font-weight-bold">
-          {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'judge-waiting-room.to' | translate }}
+          {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'waiting-room.to' | translate }}
           {{ hearing.scheduledEndTime | date: 'HH:mm' }}
         </span>
       </td>

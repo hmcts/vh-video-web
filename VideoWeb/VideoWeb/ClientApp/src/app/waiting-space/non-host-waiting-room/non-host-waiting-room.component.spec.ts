@@ -469,32 +469,32 @@ describe('NonHostWaitingRoomComponent', () => {
                 {
                     conference: testData.getConferenceDetailNow(),
                     status: ConferenceStatus.NotStarted,
-                    expected: 'participant-waiting-room.is-about-to-begin'
+                    expected: 'waiting-room.is-about-to-begin'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.NotStarted,
-                    expected: 'participant-waiting-room.is-delayed'
+                    expected: 'waiting-room.is-delayed'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.InSession,
-                    expected: 'participant-waiting-room.is-in-session'
+                    expected: 'waiting-room.is-in-session'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Paused,
-                    expected: 'participant-waiting-room.is-paused'
+                    expected: 'waiting-room.is-paused'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Suspended,
-                    expected: 'participant-waiting-room.is-suspended'
+                    expected: 'waiting-room.is-suspended'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Closed,
-                    expected: 'participant-waiting-room.is-closed'
+                    expected: 'waiting-room.is-closed'
                 }
             ];
 
@@ -519,22 +519,22 @@ describe('NonHostWaitingRoomComponent', () => {
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Suspended,
-                    expected: 'joh-waiting-room.is-suspended'
+                    expected: 'waiting-room.is-suspended'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Paused,
-                    expected: 'joh-waiting-room.is-paused'
+                    expected: 'waiting-room.is-paused'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.Closed,
-                    expected: 'joh-waiting-room.is-closed'
+                    expected: 'waiting-room.is-closed'
                 },
                 {
                     conference: testData.getConferenceDetailPast(),
                     status: ConferenceStatus.InSession,
-                    expected: 'joh-waiting-room.is-in-session'
+                    expected: 'waiting-room.is-in-session'
                 }
             ];
 

@@ -1,5 +1,5 @@
 <div *ngIf="loadingData">
-  <p class="govuk-body">{{ 'judge-waiting-room.loading-please-wait' | translate }}</p>
+  <p class="govuk-body">{{ 'waiting-room.loading-please-wait' | translate }}</p>
 </div>
 <div>
   <!-- contains the in-hearing participant list and incoming video -->
@@ -38,7 +38,7 @@
     <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
         <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button" (click)="showChooseCameraDialog()">
-          {{ 'judge-waiting-room.choose-camera-and-microphone' | translate }}
+          {{ 'waiting-room.choose-camera-and-microphone' | translate }}
         </button>
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -61,41 +61,41 @@
 
       <app-select-hearing-layout *ngIf="canShowHearingLayoutSelection" [conference]="vhConference"></app-select-hearing-layout>
 
-      <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{ 'judge-waiting-room.is-everyone-connected' | translate }}</h2>
+      <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{ 'waiting-room.is-everyone-connected' | translate }}</h2>
 
       <p
         class="govuk-body govuk-!-margin-bottom-3"
         *ngIf="isNotStarted()"
-        [innerHTML]="'judge-waiting-room.hearing-messages.not-started' | translate: { phone: (phoneNumber$ | async) }"
+        [innerHTML]="'waiting-room.hearing-messages.not-started' | translate: { phone: (phoneNumber$ | async) }"
       ></p>
 
       <p
         class="govuk-body govuk-!-margin-bottom-3"
         *ngIf="hearingPaused()"
-        [innerHTML]="'judge-waiting-room.hearing-messages.paused' | translate: { phone: (phoneNumber$ | async) }"
+        [innerHTML]="'waiting-room.hearing-messages.paused' | translate: { phone: (phoneNumber$ | async) }"
       ></p>
 
       <p
         class="govuk-body govuk-!-margin-bottom-3"
         *ngIf="hearingSuspended()"
-        [innerHTML]="'judge-waiting-room.hearing-messages.suspended' | translate: { phone: (phoneNumber$ | async) }"
+        [innerHTML]="'waiting-room.hearing-messages.suspended' | translate: { phone: (phoneNumber$ | async) }"
       ></p>
 
       <p
         class="govuk-body govuk-!-margin-bottom-3"
         *ngIf="isHearingInSession()"
-        [innerHTML]="'judge-waiting-room.hearing-messages.in-session' | translate"
+        [innerHTML]="'waiting-room.hearing-messages.in-session' | translate"
       ></p>
 
       <div *ngIf="hearing.isClosed()">
-        <p class="govuk-body govuk-!-margin-bottom-3" [innerHTML]="'judge-waiting-room.hearing-messages.closed' | translate"></p>
+        <p class="govuk-body govuk-!-margin-bottom-3" [innerHTML]="'waiting-room.hearing-messages.closed' | translate"></p>
         <div class="govuk-warning-text">
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <strong class="govuk-warning-text__text">
             <span id="hearing-consultation-closing-time" class="govuk-warning-text__assistive">{{
-              'judge-waiting-room.hearing-messages.warning' | translate
+              'waiting-room.hearing-messages.warning' | translate
             }}</span>
-            {{ 'judge-waiting-room.hearing-messages.consultation-room-will-close-at' | translate }}
+            {{ 'waiting-room.hearing-messages.consultation-room-will-close-at' | translate }}
             {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}
           </strong>
         </div>
@@ -111,7 +111,7 @@
           />
         </span>
         <strong class="govuk-!-padding-1">
-          {{ 'judge-waiting-room.hearing-is-being-recorded.' + vhConference.audioRecordingRequired | translate }}
+          {{ 'waiting-room.hearing-is-being-recorded.' + vhConference.audioRecordingRequired | translate }}
         </strong>
       </p>
 
@@ -123,7 +123,7 @@
           class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
           (click)="displayConfirmStartPopup()"
         >
-          {{ 'judge-waiting-room.buttons.start-video-hearing' | translate }}
+          {{ 'waiting-room.buttons.start-video-hearing' | translate }}
         </button>
 
         <button
@@ -133,7 +133,7 @@
           class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
           (click)="displayConfirmStartPopup()"
         >
-          {{ 'judge-waiting-room.buttons.resume-video-hearing' | translate }}
+          {{ 'waiting-room.buttons.resume-video-hearing' | translate }}
         </button>
         <button
           [disabled]="!isParticipantInCorrectWaitingRoomState()"
@@ -143,7 +143,7 @@
           class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
           (click)="joinHearingClicked()"
         >
-          {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
+          {{ 'waiting-room.buttons.join-hearing' | translate }}
         </button>
         <button
           class="govuk-button govuk-button--bigblue vh-btn-text"
@@ -153,7 +153,7 @@
           (click)="joinJudicialConsultation()"
           [disabled]="!isParticipantInCorrectWaitingRoomState()"
         >
-          {{ 'judge-waiting-room.buttons.enter-consultation-room' | translate }}
+          {{ 'waiting-room.buttons.enter-consultation-room' | translate }}
           <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
             {{ numberOfJudgeOrJOHsInConsultation }}
           </span>
@@ -162,8 +162,8 @@
       <div *ngIf="!isParticipantInCorrectWaitingRoomState()" class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">{{ 'judge-waiting-room.warning' | translate }}</span>
-          {{ 'judge-waiting-room.please-wait-while-we-connect-you' | translate }}
+          <span class="govuk-warning-text__assistive">{{ 'waiting-room.hearing-messages.warning' | translate }}</span>
+          {{ 'waiting-room.please-wait-while-we-connect-you' | translate }}
         </strong>
       </div>
     </div>

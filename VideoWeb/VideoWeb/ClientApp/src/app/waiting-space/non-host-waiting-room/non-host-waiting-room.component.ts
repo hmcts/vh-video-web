@@ -225,32 +225,32 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             return '';
         } else if (this.hearing.isSuspended()) {
-            return this.translateService.instant('joh-waiting-room.is-suspended');
+            return this.translateService.instant('waiting-room.is-suspended');
         } else if (this.hearing.isPaused()) {
-            return this.translateService.instant('joh-waiting-room.is-paused');
+            return this.translateService.instant('waiting-room.is-paused');
         } else if (this.hearing.isClosed()) {
-            return this.translateService.instant('joh-waiting-room.is-closed');
+            return this.translateService.instant('waiting-room.is-closed');
         }
-        return this.translateService.instant('joh-waiting-room.is-in-session');
+        return this.translateService.instant('waiting-room.is-in-session');
     }
 
     getConferenceStatusTextForParticipant(): string {
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (this.hearing.isStarting()) {
-                return this.translateService.instant('participant-waiting-room.is-about-to-begin');
+                return this.translateService.instant('waiting-room.is-about-to-begin');
             } else if (this.hearing.isDelayed()) {
-                return this.translateService.instant('participant-waiting-room.is-delayed');
+                return this.translateService.instant('waiting-room.is-delayed');
             } else {
                 return '';
             }
         } else if (this.hearing.isSuspended()) {
-            return this.translateService.instant('participant-waiting-room.is-suspended');
+            return this.translateService.instant('waiting-room.is-suspended');
         } else if (this.hearing.isPaused()) {
-            return this.translateService.instant('participant-waiting-room.is-paused');
+            return this.translateService.instant('waiting-room.is-paused');
         } else if (this.hearing.isClosed()) {
-            return this.translateService.instant('participant-waiting-room.is-closed');
+            return this.translateService.instant('waiting-room.is-closed');
         }
-        return this.translateService.instant('participant-waiting-room.is-in-session');
+        return this.translateService.instant('waiting-room.is-in-session');
     }
 
     getRoomName(): string {
