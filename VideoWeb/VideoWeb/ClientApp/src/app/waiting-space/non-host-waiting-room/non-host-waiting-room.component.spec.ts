@@ -195,11 +195,28 @@ describe('NonHostWaitingRoomComponent', () => {
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
     });
 
-    it('should create', fakeAsync(() => {
-        component.ngOnInit();
-        tick();
-        expect(component).toBeTruthy();
-    }));
+    describe('ngOnInit', () => {
+        it('should create as participant', fakeAsync(() => {
+            component.userRole = NonHostUserRole.Participant;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+
+        it('should create as joh', fakeAsync(() => {
+            component.userRole = NonHostUserRole.Joh;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+
+        it('should create as other user role', fakeAsync(() => {
+            component.userRole = 'OtherRole' as NonHostUserRole;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+    });
 
     describe('allowAudioOnlyToggle', () => {
         beforeEach(() => {

@@ -19,4 +19,12 @@ describe('PrivateConsultationDescriptionComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    describe('toggleAccordian', () => {
+        it('should emit event', () => {
+            spyOn(component.accordianToggled, 'emit');
+            component.toggleAccordian();
+            expect(component.accordianToggled.emit).toHaveBeenCalled();
+        });
+    });
 });

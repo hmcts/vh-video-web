@@ -121,4 +121,28 @@ describe('WaitForHearingPanelComponent', () => {
             });
         });
     });
+
+    describe('isJoh', () => {
+        it('should return true when user role is joh', () => {
+            component.userRole = NonHostUserRole.Joh;
+            expect(component.isJoh).toBe(true);
+        });
+
+        it('should return false when user role is not joh', () => {
+            component.userRole = NonHostUserRole.Participant;
+            expect(component.isJoh).toBe(false);
+        });
+    });
+
+    describe('isParticipant', () => {
+        it('should return true when user role is participant', () => {
+            component.userRole = NonHostUserRole.Participant;
+            expect(component.isParticipant).toBe(true);
+        });
+
+        it('should return false when user role is not participant', () => {
+            component.userRole = NonHostUserRole.Joh;
+            expect(component.isParticipant).toBe(false);
+        });
+    });
 });
