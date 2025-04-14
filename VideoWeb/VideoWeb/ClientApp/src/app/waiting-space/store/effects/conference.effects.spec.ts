@@ -9,6 +9,7 @@ import {
     ApiClient,
     ConferenceStatus,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantStatus,
     Role,
     UpdateParticipantDisplayNameRequest
@@ -29,6 +30,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 import { audioRecordingServiceSpy } from 'src/app/testing/mocks/mock-audio-recording.service';
 import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 
 describe('ConferenceEffects', () => {
     let actions$: Observable<any>;
@@ -41,10 +43,16 @@ describe('ConferenceEffects', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let pexipClientSpy: jasmine.SpyObj<PexipClient>;
     let eventsService: jasmine.SpyObj<EventsService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamServiceV2>;
 
     beforeEach(() => {
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
-        apiClient = jasmine.createSpyObj('ApiClient', ['getConferenceById', 'nonHostLeaveHearing', 'updateParticipantDisplayName']);
+        apiClient = jasmine.createSpyObj('ApiClient', [
+            'getConferenceById',
+            'nonHostLeaveHearing',
+            'updateParticipantDisplayName',
+            'getCurrentParticipant'
+        ]);
         supplierClientService = jasmine.createSpyObj('SupplierClientService', ['loadSupplierScript']);
         pexipClientSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call_tag: 'test-call-tag' });
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
@@ -55,6 +63,7 @@ describe('ConferenceEffects', () => {
             }
         );
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['sendTransferRequest']);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>('UserMediaStreamServiceV2', ['closeCurrentStream']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -67,6 +76,8 @@ describe('ConferenceEffects', () => {
                 { provide: SupplierClientService, useValue: supplierClientService },
                 { provide: VideoCallService, useValue: videoCallServiceSpy },
                 { provide: ErrorService, useValue: errorServiceSpy },
+                { provide: UserMediaStreamServiceV2, useValue: userMediaStreamService },
+
                 { provide: EventsService, useValue: eventsService },
                 { provide: AudioRecordingService, useValue: audioRecordingServiceSpy }
             ]
@@ -116,6 +127,32 @@ describe('ConferenceEffects', () => {
             const expected = cold('-b', { b: ConferenceActions.loadConferenceFailure({ error }) });
             expect(effects.loadConference$).toBeObservable(expected);
             expect(apiClient.getConferenceById).toHaveBeenCalledWith(conferenceId);
+        });
+    });
+
+    describe('loadLoggedInParticipantOnConferenceLoadSuccess$', () => {
+        it('should disptach the loadLoggedInParticipant when a conference has loaded successfully', () => {
+            // arrange
+            const conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());
+            const loggedInParticipant = conference.participants[0];
+            apiClient.getCurrentParticipant.and.returnValue(
+                of(
+                    new LoggedParticipantResponse({
+                        participant_id: loggedInParticipant.id,
+                        display_name: loggedInParticipant.displayName,
+                        role: loggedInParticipant.role
+                    })
+                )
+            );
+
+            // act
+            const action = ConferenceActions.loadConferenceSuccess({ conference });
+            actions$ = hot('-a', { a: action });
+
+            // assert
+            const expectedAction = ConferenceActions.loadLoggedInParticipant({ participantId: loggedInParticipant.id });
+            const expected = cold('-b', { b: expectedAction });
+            expect(effects.loadLoggedInParticipantOnConferenceLoadSuccess$).toBeObservable(expected);
         });
     });
 
@@ -198,6 +235,22 @@ describe('ConferenceEffects', () => {
                 judge.id,
                 new UpdateParticipantDisplayNameRequest({ display_name: displayName })
             );
+        });
+    });
+
+    describe('releaseMediaStreamOnLeaveConference$', () => {
+        it('should call closeCurrentStream when leave conference action is dispatched', () => {
+            // arrange
+            const conference = new ConferenceTestData().getConferenceDetailNow();
+            const action = ConferenceActions.leaveConference({ conferenceId: conference.id });
+
+            actions$ = hot('-a', { a: action });
+
+            // act
+            effects.releaseMediaStreamOnLeaveConference$.subscribe(() => {
+                // assert
+                expect(userMediaStreamService.closeCurrentStream).toHaveBeenCalled();
+            });
         });
     });
 

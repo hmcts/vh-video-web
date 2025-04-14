@@ -100,10 +100,6 @@ $govuk-suppressed-warnings: ('govuk-typography-scale-14');
   margin-top: -30px;
 }
 
-.mb-2 {
-  margin-bottom: 2px;
-}
-
 #master-container.fullscreen {
   @include govuk-width-container(9999px);
   margin-left: 10px !important;

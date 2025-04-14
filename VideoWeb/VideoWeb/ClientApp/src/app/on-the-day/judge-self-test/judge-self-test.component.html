@@ -1,48 +1,42 @@
-<div *ngIf="!conference && !participant" class="govuk-grid-column-full">
-  <p class="govuk-body-l">{{ 'judge-self-test.please-wait-to-be-connected' | translate }}</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-self-test-v2 (testCompleted)="onSelfTestCompleted()" (testStarted)="onTestStarted()"></app-self-test-v2>
+
+    <div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+      <app-self-test-actions
+        (equipmentWorked)="equipmentWorksHandler()"
+        (equipmentBroken)="equipmentFaultyHandler()"
+      ></app-self-test-actions>
+    </div>
+
+    <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+      <h1 class="govuk-heading-xl">{{ 'judge-self-test.problems-with-your-equipment' | translate }}</h1>
+      <p class="govuk-body govuk-!-margin-top-7">
+        {{ 'judge-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span
+        >{{ 'judge-self-test.please-call-afternumber' | translate }}
+      </p>
+
+      <p class="govuk-body">
+        {{ 'judge-self-test.we-will-tell-the-participants-their-hearing-may-be-delayed' | translate }}
+      </p>
+    </div>
+
+    <div>
+      <button
+        *ngIf="showEquipmentFaultMessage"
+        id="continue-btn"
+        class="govuk-button govuk-!-margin-right-4"
+        data-module="govuk-button"
+        (click)="equipmentWorksHandler()"
+      >
+        {{ 'judge-self-test.continue' | translate }}
+      </button>
+
+      <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="restartTest()">
+        {{ 'judge-self-test.check-equipment-again' | translate }}
+      </button>
+    </div>
+
+    <app-contact-us-folding></app-contact-us-folding>
+  </div>
 </div>
-<app-self-test
-  *ngIf="conference && participant && !hideSelfTest"
-  [conference]="conference"
-  [participant]="participant"
-  (testCompleted)="onSelfTestCompleted($event)"
-  (testStarted)="onTestStarted()"
-></app-self-test>
-
-<div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <app-self-test-actions (equipmentWorked)="equipmentWorksHandler()" (equipmentBroken)="equipmentFaultyHandler()"></app-self-test-actions>
-</div>
-
-<div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <h1 class="govuk-heading-xl">{{ 'judge-self-test.problems-with-your-equipment' | translate }}</h1>
-  <p class="govuk-body govuk-!-margin-top-7">
-    {{ 'judge-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span>{{ 'judge-self-test.please-call-afternumber' | translate }}
-  </p>
-
-  <p class="govuk-body">
-    {{ 'judge-self-test.we-will-tell-the-participants-their-hearing-may-be-delayed' | translate }}
-  </p>
-</div>
-
-<div>
-  <button
-    *ngIf="showEquipmentFaultMessage"
-    id="continue-btn"
-    class="govuk-button govuk-!-margin-right-4"
-    data-module="govuk-button"
-    (click)="equipmentWorksHandler()"
-  >
-  {{ 'judge-self-test.continue' | translate }}
-  </button>
-
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'judge-self-test.check-equipment-again' | translate }}
-  </button>
-</div>
-
-<app-contact-us-folding></app-contact-us-folding>

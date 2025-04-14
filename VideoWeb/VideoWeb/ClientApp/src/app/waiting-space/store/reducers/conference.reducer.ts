@@ -7,11 +7,15 @@ import {
     VHPexipConference,
     VHPexipParticipant,
     VHRoom,
-    VHConsultationCallStatus
+    VHConsultationCallStatus,
+    SelfTestScore
 } from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { VideoCallActions } from '../actions/video-call.action';
 import { VideoCallHostActions } from '../actions/video-call-host.actions';
+import { SelfTestActions } from '../actions/self-test.actions';
+import { UserProfile } from '../models/user-profile';
+import { AuthActions } from '../actions/auth.actions';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -19,16 +23,19 @@ export interface ConferenceState {
     currentConference: VHConference | undefined;
     pexipConference?: VHPexipConference;
     loggedInParticipant?: VHParticipant;
+    userProfile?: UserProfile;
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
     countdownComplete?: boolean;
     consultationStatuses?: VHConsultationCallStatus[];
+    selfTestScore?: SelfTestScore;
 }
 
 export const initialState: ConferenceState = {
     currentConference: undefined,
     pexipConference: undefined,
     loggedInParticipant: undefined,
+    userProfile: undefined,
     availableRooms: [],
     wowzaParticipant: undefined,
     countdownComplete: undefined,
@@ -127,6 +134,8 @@ export const conferenceReducer = createReducer(
         const updatedConference: VHConference = { ...conference, countdownComplete: true };
         return { ...state, currentConference: updatedConference };
     }),
+    // self test
+    on(SelfTestActions.retrieveSelfTestScoreSuccess, (state, { score }) => ({ ...state, selfTestScore: score })),
     on(ConferenceActions.updateParticipantStatus, (state, { conferenceId, participantId, status }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {
@@ -539,7 +548,8 @@ export const conferenceReducer = createReducer(
         const updatedParticipants = state.currentConference.participants.map(p => ({ ...p, transferDirection: undefined }));
         const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference };
-    })
+    }),
+    on(AuthActions.loadUserProfileSuccess, (state, { userProfile }) => ({ ...state, userProfile }))
 );
 
 export const videocallControlsReducer = createReducer(initialState);
