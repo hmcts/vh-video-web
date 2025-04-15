@@ -13,8 +13,7 @@ export const FEATURE_FLAGS = {
     instantMessaging: 'instant-messaging',
     enableDebugLogs: 'enable-debug-logs',
     uniqueCallTags: 'unique-call-tag',
-    pexipV36: 'pexip-v36',
-    useSleepServiceV2: 'sleep-service-v2'
+    pexipV36: 'pexip-v36'
 };
 
 @Injectable({
