@@ -38,12 +38,12 @@ import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
-import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
 import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
+import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -62,7 +62,7 @@ describe('AppComponent', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
-    let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+    let noSleepServiceSpy: jasmine.SpyObj<NoSleepServiceV2>;
     let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
     let dynatraceServiceSpy: jasmine.SpyObj<DynatraceService>;
 
@@ -121,7 +121,7 @@ describe('AppComponent', () => {
 
     beforeEach(waitForAsync(() => {
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['configureConnection']);
-        noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
+        noSleepServiceSpy = jasmine.createSpyObj<NoSleepServiceV2>(['enable']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -158,7 +158,7 @@ describe('AppComponent', () => {
                     provide: ActivatedRoute,
                     useValue: activatedRouteMock
                 },
-                { provide: NoSleepService, useValue: noSleepServiceSpy }
+                { provide: NoSleepServiceV2, useValue: noSleepServiceSpy }
             ],
             declarations: [
                 AppComponent,
