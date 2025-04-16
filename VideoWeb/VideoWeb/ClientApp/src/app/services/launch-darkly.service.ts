@@ -12,7 +12,8 @@ export const FEATURE_FLAGS = {
     dialOutParticipant: 'dial-out-participant',
     instantMessaging: 'instant-messaging',
     enableDebugLogs: 'enable-debug-logs',
-    uniqueCallTags: 'unique-call-tag'
+    uniqueCallTags: 'unique-call-tag',
+    pexipV36: 'pexip-v36'
 };
 
 @Injectable({

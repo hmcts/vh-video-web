@@ -171,7 +171,8 @@ export class ConferenceEffects {
                     this.store.select(ConferenceSelectors.getPexipConference)
                 ]),
                 filter(
-                    ([_, _conference, loggedInParticipant, pexipConference]) =>
+                    ([_, conference, loggedInParticipant, pexipConference]) =>
+                        !!conference &&
                         loggedInParticipant.status === ParticipantStatus.InHearing &&
                         !pexipConference.guestsMuted &&
                         loggedInParticipant.pexipInfo?.role === 'chair'
@@ -211,6 +212,7 @@ export class ConferenceEffects {
                 ]),
                 filter(
                     ([_, conference, loggedInParticipant, pexipConference]) =>
+                        !!conference &&
                         loggedInParticipant.status === ParticipantStatus.InHearing &&
                         loggedInParticipant.pexipInfo?.role === 'chair' &&
                         pexipConference.guestsMuted &&

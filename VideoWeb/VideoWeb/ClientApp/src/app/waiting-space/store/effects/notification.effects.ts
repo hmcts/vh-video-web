@@ -27,6 +27,8 @@ export class NotificationEffects {
                 ]),
                 filter(
                     ([action, activeConference, loggedInParticipant]) =>
+                        !!activeConference &&
+                        !!loggedInParticipant &&
                         action.conferenceId === activeConference.id &&
                         action.status === ConferenceStatus.InSession &&
                         (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember)
