@@ -220,7 +220,7 @@ export class VideoCallService {
     }
 
     async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
-        if (this.pexipAPI && this.pexipAPI.call) {
+        if (this.pexipAPI?.call) {
             this.logger.warn(`${this.loggerPrefix} A call is already active. Disconnecting the current call before making a new one.`);
             this.disconnectFromCall();
         }
