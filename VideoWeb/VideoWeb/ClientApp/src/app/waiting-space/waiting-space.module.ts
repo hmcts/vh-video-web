@@ -62,6 +62,14 @@ import { RouterEffects } from './store/effects/router.effects';
 import { ConsultationEffects } from './store/effects/consultation.effects';
 import { VideoCallHostEffects } from './store/effects/video-call-host.effects';
 import { SelfTestEffects } from './store/effects/self-test.effects';
+import { HearingDetailsComponent } from './hearing-details/hearing-details.component';
+import { NonHostWaitingRoomComponent } from './non-host-waiting-room/non-host-waiting-room.component';
+import { WaitForHearingPanelComponent } from './wait-for-hearing-panel/wait-for-hearing-panel.component';
+import { WaitForConnectionMessageComponent } from './wait-for-connection-message/wait-for-connection-message.component';
+import { SupportContactDetailsComponent } from './support-contact-details/support-contact-details.component';
+import { PrivateConsultationDescriptionComponent } from './private-consultation-description/private-consultation-description.component';
+import { VideoCallComponent } from './video-call/video-call.component';
+import { TransferMessageComponent } from './transfer-message/transfer-message.component';
 
 @NgModule({
     imports: [
@@ -123,7 +131,15 @@ import { SelfTestEffects } from './store/effects/self-test.effects';
         WarnJoinHearingPopupComponent,
         ChangeHearingLayoutPopupComponent,
         HearingControlIconComponent,
-        DialOutParticipantPopupComponent
+        DialOutParticipantPopupComponent,
+        HearingDetailsComponent,
+        NonHostWaitingRoomComponent,
+        WaitForHearingPanelComponent,
+        WaitForConnectionMessageComponent,
+        SupportContactDetailsComponent,
+        PrivateConsultationDescriptionComponent,
+        VideoCallComponent,
+        TransferMessageComponent
     ],
     providers: [
         VideoCallService,

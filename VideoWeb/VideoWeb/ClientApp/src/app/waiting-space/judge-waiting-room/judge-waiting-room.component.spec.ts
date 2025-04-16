@@ -250,11 +250,11 @@ describe('JudgeWaitingRoom', () => {
 
     describe('getConferenceStatusText', () => {
         const getConferenceStatusTextTestCases = [
-            { status: ConferenceStatus.NotStarted, expected: 'judge-waiting-room.start-this-hearing' },
-            { status: ConferenceStatus.InSession, expected: 'judge-waiting-room.hearing-is-in-session' },
-            { status: ConferenceStatus.Paused, expected: 'judge-waiting-room.hearing-paused' },
-            { status: ConferenceStatus.Suspended, expected: 'judge-waiting-room.hearing-suspended' },
-            { status: ConferenceStatus.Closed, expected: 'judge-waiting-room.hearing-is-closed' }
+            { status: ConferenceStatus.NotStarted, expected: 'waiting-room.start-this-hearing' },
+            { status: ConferenceStatus.InSession, expected: 'waiting-room.hearing-is-in-session' },
+            { status: ConferenceStatus.Paused, expected: 'waiting-room.hearing-paused' },
+            { status: ConferenceStatus.Suspended, expected: 'waiting-room.hearing-suspended' },
+            { status: ConferenceStatus.Closed, expected: 'waiting-room.hearing-is-closed' }
         ];
 
         getConferenceStatusTextTestCases.forEach(test => {

@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room/participant-waiting-room.component';
+import { NonHostWaitingRoomComponent } from './non-host-waiting-room.component';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -54,13 +54,14 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 
-describe('ParticipantWaitingRoomComponent', () => {
+describe('NonHostWaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
     let conference: VHConference;
     let loggedInParticipant: VHParticipant;
 
-    let component: ParticipantWaitingRoomComponent;
+    let component: NonHostWaitingRoomComponent;
     let mockStore: MockStore<ConferenceState>;
     let activatedRoute: ActivatedRoute;
 
@@ -154,14 +155,14 @@ describe('ParticipantWaitingRoomComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [
-                ParticipantWaitingRoomComponent,
+                NonHostWaitingRoomComponent,
                 MockComponent(ModalComponent),
                 MockComponent(ConsultationLeaveComponent),
                 MockComponent(ConsultationErrorComponent),
                 MockComponent(ConsultationLeaveComponent)
             ],
             providers: [
-                ParticipantWaitingRoomComponent,
+                NonHostWaitingRoomComponent,
                 { provide: ActivatedRoute, useValue: activatedRoute },
                 { provide: VideoWebService, useValue: videoWebService },
                 { provide: EventsService, useValue: mockEventsService },
@@ -185,7 +186,8 @@ describe('ParticipantWaitingRoomComponent', () => {
             ]
         }).compileComponents();
 
-        component = TestBed.inject(ParticipantWaitingRoomComponent);
+        component = TestBed.inject(NonHostWaitingRoomComponent);
+        component.userRole = NonHostUserRole.Participant;
 
         mockStore = TestBed.inject(MockStore);
         mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
@@ -193,13 +195,34 @@ describe('ParticipantWaitingRoomComponent', () => {
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
     });
 
-    it('should create', fakeAsync(() => {
-        component.ngOnInit();
-        tick();
-        expect(component).toBeTruthy();
-    }));
+    describe('ngOnInit', () => {
+        it('should create as participant', fakeAsync(() => {
+            component.userRole = NonHostUserRole.Participant;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+
+        it('should create as joh', fakeAsync(() => {
+            component.userRole = NonHostUserRole.Joh;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+
+        it('should create as other user role', fakeAsync(() => {
+            component.userRole = 'OtherRole' as NonHostUserRole;
+            component.ngOnInit();
+            tick();
+            expect(component).toBeTruthy();
+        }));
+    });
 
     describe('allowAudioOnlyToggle', () => {
+        beforeEach(() => {
+            component.userRole = NonHostUserRole.Joh;
+        });
+
         it('should return true when particiant is not in a consultation and not in a hearing', () => {
             component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.Available };
             expect(component.allowAudioOnlyToggle).toBeTrue();
@@ -213,6 +236,11 @@ describe('ParticipantWaitingRoomComponent', () => {
         it('should return false when particiant is in a hearing', () => {
             component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InHearing };
             expect(component.allowAudioOnlyToggle).toBeFalse();
+        });
+
+        it('should return true when user role is participant', () => {
+            component.userRole = NonHostUserRole.Participant;
+            expect(component.allowAudioOnlyToggle).toBeTrue();
         });
     });
 
@@ -431,182 +459,154 @@ describe('ParticipantWaitingRoomComponent', () => {
     });
 
     describe('getConferenceStatusText', () => {
-        const getConferenceStatusTextTestCases = [
-            { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-            {
-                conference: testData.getConferenceDetailNow(),
-                status: ConferenceStatus.NotStarted,
-                expected: 'participant-waiting-room.is-about-to-begin'
-            },
-            {
-                conference: testData.getConferenceDetailPast(),
-                status: ConferenceStatus.NotStarted,
-                expected: 'participant-waiting-room.is-delayed'
-            },
-            {
-                conference: testData.getConferenceDetailPast(),
-                status: ConferenceStatus.InSession,
-                expected: 'participant-waiting-room.is-in-session'
-            },
-            {
-                conference: testData.getConferenceDetailPast(),
-                status: ConferenceStatus.Paused,
-                expected: 'participant-waiting-room.is-paused'
-            },
-            {
-                conference: testData.getConferenceDetailPast(),
-                status: ConferenceStatus.Suspended,
-                expected: 'participant-waiting-room.is-suspended'
-            },
-            {
-                conference: testData.getConferenceDetailPast(),
-                status: ConferenceStatus.Closed,
-                expected: 'participant-waiting-room.is-closed'
-            }
-        ];
+        describe('user is a participant', () => {
+            beforeEach(() => {
+                component.userRole = NonHostUserRole.Participant;
+            });
 
-        getConferenceStatusTextTestCases.forEach(test => {
-            it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
-                const conf = mapConferenceToVHConference(test.conference);
-                component.hearing = new VHHearing(conf);
-                component.hearing.getConference().status = test.status;
-                mockTranslationService.instant.calls.reset();
-                expect(component.getConferenceStatusText()).toBe(test.expected);
+            const getConferenceStatusTextTestCases = [
+                { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
+                {
+                    conference: testData.getConferenceDetailNow(),
+                    status: ConferenceStatus.NotStarted,
+                    expected: 'waiting-room.is-about-to-begin'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.NotStarted,
+                    expected: 'waiting-room.is-delayed'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.InSession,
+                    expected: 'waiting-room.is-in-session'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Paused,
+                    expected: 'waiting-room.is-paused'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Suspended,
+                    expected: 'waiting-room.is-suspended'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Closed,
+                    expected: 'waiting-room.is-closed'
+                }
+            ];
+
+            getConferenceStatusTextTestCases.forEach(test => {
+                it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
+                    const conf = mapConferenceToVHConference(test.conference);
+                    component.hearing = new VHHearing(conf);
+                    component.hearing.getConference().status = test.status;
+                    mockTranslationService.instant.calls.reset();
+                    expect(component.getConferenceStatusText()).toBe(test.expected);
+                });
+            });
+        });
+
+        describe('user is not a participant', () => {
+            beforeEach(() => {
+                component.userRole = NonHostUserRole.Joh;
+            });
+
+            const getConferenceStatusTextTestCases = [
+                { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Suspended,
+                    expected: 'waiting-room.is-suspended'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Paused,
+                    expected: 'waiting-room.is-paused'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.Closed,
+                    expected: 'waiting-room.is-closed'
+                },
+                {
+                    conference: testData.getConferenceDetailPast(),
+                    status: ConferenceStatus.InSession,
+                    expected: 'waiting-room.is-in-session'
+                }
+            ];
+
+            getConferenceStatusTextTestCases.forEach(test => {
+                it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
+                    const conf = mapConferenceToVHConference(test.conference);
+                    component.hearing = new VHHearing(conf);
+                    component.hearing.getConference().status = test.status;
+                    mockTranslationService.instant.calls.reset();
+                    expect(component.getConferenceStatusText()).toBe(test.expected);
+                });
             });
         });
     });
 
-    describe('getCurrentTimeClass', () => {
-        describe('not a witness or witness link', () => {
-            beforeEach(() => {
-                spyOn(component, 'isOrHasWitnessLink').and.returnValue(false);
-            });
-            it('should return hearing-on-time when conference is onTime', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
-            });
+    describe('getRoomName', () => {
+        it('should return the room name', () => {
+            component.vhParticipant = { ...loggedInParticipant, room: { label: 'Room1' } as VHRoom };
 
-            it('should return hearing-on-time when conference is paused', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(false);
-                spyOn(component.hearing, 'isPaused').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
-            });
+            component.getRoomName();
 
-            it('should return hearing-on-time when conference is closed', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(false);
-                spyOn(component.hearing, 'isPaused').and.returnValue(false);
-                spyOn(component.hearing, 'isClosed').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
-            });
+            expect(mockConsultationService.consultationNameToString).toHaveBeenCalledWith('Room1', false);
+        });
+    });
 
-            it('should return hearing-near-start when conference is due to begin', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(false);
-                spyOn(component.hearing, 'isPaused').and.returnValue(false);
-                spyOn(component.hearing, 'isClosed').and.returnValue(false);
-                spyOn(component.hearing, 'isStarting').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-near-start');
-            });
+    describe('modals', () => {
+        it('should display the start consultation modal', () => {
+            component.displayStartPrivateConsultationModal = false;
 
-            it('should return hearing-neart-start when conference is inSession', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(false);
-                spyOn(component.hearing, 'isPaused').and.returnValue(false);
-                spyOn(component.hearing, 'isClosed').and.returnValue(false);
-                spyOn(component.hearing, 'isStarting').and.returnValue(false);
-                spyOn(component.hearing, 'isInSession').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-near-start');
-            });
+            component.openStartConsultationModal();
 
-            it('should return hearing-delayed when conference is delayed', () => {
-                spyOn(component.hearing, 'isOnTime').and.returnValue(false);
-                spyOn(component.hearing, 'isPaused').and.returnValue(false);
-                spyOn(component.hearing, 'isClosed').and.returnValue(false);
-                spyOn(component.hearing, 'isStarting').and.returnValue(false);
-                spyOn(component.hearing, 'isInSession').and.returnValue(false);
-                spyOn(component.hearing, 'isDelayed').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-delayed');
-            });
+            expect(component.displayStartPrivateConsultationModal).toBeTrue();
         });
 
-        describe('is a witness or has a witness link', () => {
-            beforeEach(() => {
-                spyOn(component, 'isOrHasWitnessLink').and.returnValue(true);
-            });
+        it('should close the start consultation modal', () => {
+            component.displayStartPrivateConsultationModal = true;
 
-            it('should return hearing-delayed when conference is suspended', () => {
-                spyOn(component.hearing, 'isSuspended').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-delayed');
-            });
+            component.closeStartPrivateConsultationModal();
 
-            it('should return hearing-near-start when conference is InSession', () => {
-                spyOn(component.hearing, 'isSuspended').and.returnValue(false);
-                spyOn(component.hearing, 'isInSession').and.returnValue(true);
-                expect(component.getCurrentTimeClass()).toBe('hearing-near-start');
-            });
-
-            it('should return hearing-on-time when is not in session', () => {
-                spyOn(component.hearing, 'isInSession').and.returnValue(false);
-                expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
-            });
+            expect(component.displayStartPrivateConsultationModal).toBeFalse();
         });
 
-        describe('getRoomName', () => {
-            it('should return the room name', () => {
-                component.vhParticipant = { ...loggedInParticipant, room: { label: 'Room1' } as VHRoom };
+        it('should display join consultation modal', () => {
+            component.displayJoinPrivateConsultationModal = false;
 
-                component.getRoomName();
+            component.openJoinConsultationModal();
 
-                expect(mockConsultationService.consultationNameToString).toHaveBeenCalledWith('Room1', false);
-            });
+            expect(component.displayJoinPrivateConsultationModal).toBeTrue();
         });
 
-        describe('modals', () => {
-            it('should display the start consultation modal', () => {
-                component.displayStartPrivateConsultationModal = false;
+        it('should close the join consultation modal', () => {
+            component.displayJoinPrivateConsultationModal = true;
 
-                component.openStartConsultationModal();
+            component.closeJoinPrivateConsultationModal();
 
-                expect(component.displayStartPrivateConsultationModal).toBeTrue();
-            });
+            expect(component.displayJoinPrivateConsultationModal).toBeFalse();
+        });
 
-            it('should close the start consultation modal', () => {
-                component.displayStartPrivateConsultationModal = true;
+        it('should show language change modal', () => {
+            component.displayLanguageModal = false;
 
-                component.closeStartPrivateConsultationModal();
+            component.showLanguageChangeModal();
 
-                expect(component.displayStartPrivateConsultationModal).toBeFalse();
-            });
+            expect(component.displayLanguageModal).toBeTrue();
+        });
 
-            it('should display join consultation modal', () => {
-                component.displayJoinPrivateConsultationModal = false;
+        it('should close language change modal', () => {
+            component.displayLanguageModal = true;
 
-                component.openJoinConsultationModal();
+            component.closeLanguageChangeModal();
 
-                expect(component.displayJoinPrivateConsultationModal).toBeTrue();
-            });
-
-            it('should close the join consultation modal', () => {
-                component.displayJoinPrivateConsultationModal = true;
-
-                component.closeJoinPrivateConsultationModal();
-
-                expect(component.displayJoinPrivateConsultationModal).toBeFalse();
-            });
-
-            it('should show language change modal', () => {
-                component.displayLanguageModal = false;
-
-                component.showLanguageChangeModal();
-
-                expect(component.displayLanguageModal).toBeTrue();
-            });
-
-            it('should close language change modal', () => {
-                component.displayLanguageModal = true;
-
-                component.closeLanageChangeModal();
-
-                expect(component.displayLanguageModal).toBeFalse();
-            });
+            expect(component.displayLanguageModal).toBeFalse();
         });
     });
 
@@ -733,5 +733,29 @@ describe('ParticipantWaitingRoomComponent', () => {
                 new ParticipantMediaStatus(false, true)
             );
         }));
+    });
+
+    describe('isJoh', () => {
+        it('should return true when user is a joh', () => {
+            component.userRole = NonHostUserRole.Joh;
+            expect(component.isJoh).toBeTrue();
+        });
+
+        it('should return false when user is a participant', () => {
+            component.userRole = NonHostUserRole.Participant;
+            expect(component.isJoh).toBeFalse();
+        });
+    });
+
+    describe('isParticipant', () => {
+        it('should return true when user is a participant', () => {
+            component.userRole = NonHostUserRole.Participant;
+            expect(component.isParticipant).toBeTrue();
+        });
+
+        it('should return false when user is a joh', () => {
+            component.userRole = NonHostUserRole.Joh;
+            expect(component.isParticipant).toBeFalse();
+        });
     });
 });

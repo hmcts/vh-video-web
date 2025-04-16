@@ -127,15 +127,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     getConferenceStatusText() {
         switch (this.vhConference.status) {
             case ConferenceStatus.NotStarted:
-                return this.translateService.instant('judge-waiting-room.start-this-hearing');
+                return this.translateService.instant('waiting-room.start-this-hearing');
             case ConferenceStatus.Suspended:
-                return this.translateService.instant('judge-waiting-room.hearing-suspended');
+                return this.translateService.instant('waiting-room.hearing-suspended');
             case ConferenceStatus.Paused:
-                return this.translateService.instant('judge-waiting-room.hearing-paused');
+                return this.translateService.instant('waiting-room.hearing-paused');
             case ConferenceStatus.Closed:
-                return this.translateService.instant('judge-waiting-room.hearing-is-closed');
+                return this.translateService.instant('waiting-room.hearing-is-closed');
             default:
-                return this.translateService.instant('judge-waiting-room.hearing-is-in-session');
+                return this.translateService.instant('waiting-room.hearing-is-in-session');
         }
     }
 
