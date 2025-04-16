@@ -14,7 +14,6 @@ export class NoSleepServiceV2 {
     constructor(private logger: Logger) {}
 
     enable() {
-        console.log(`${this.loggerPrefix} no sleep status: ${this.noSleep.isEnabled}`);
         if (!this.noSleep.isEnabled) {
             this.logger.debug(`${this.loggerPrefix} enabling no sleep`);
             this.noSleep.enable();
