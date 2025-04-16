@@ -220,6 +220,11 @@ export class VideoCallService {
     }
 
     async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
+        if (this.pexipAPI?.call) {
+            this.logger.warn(`${this.loggerPrefix} A call is already active. Disconnecting the current call before making a new one.`);
+            this.disconnectFromCall();
+        }
+
         if (this.uniqueCallTagsPerCall) {
             this.logger.debug(
                 `${this.loggerPrefix} unique call tags per call is enabled, generating new call tag (ignore the one from setup)`
@@ -252,13 +257,14 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.logger.debug(`${this.loggerPrefix} Disconnecting from Pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
             this.userMediaStreamService.closeCurrentStream();
+            this.pexipAPI = null; // Reset the Pexip API instance
         } else {
-            throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
+            this.logger.warn(`${this.loggerPrefix} No active Pexip client to disconnect.`);
         }
     }
 

@@ -88,7 +88,7 @@ export class UserMediaStreamServiceV2 {
             return;
         }
 
-        if (!this.deviceChanged && this.currentStream.active) {
+        if (!this.deviceChanged && this.currentStream?.active) {
             this.logger.debug(`${this.loggerPrefix} No device change detected. Republishing existing stream.`);
             this._currentStream$.next(this.currentStream);
             return;
