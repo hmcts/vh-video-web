@@ -8579,6 +8579,7 @@ export class EndpointResponse implements IEndpointResponse {
     current_room?: RoomResponse;
     conference_role?: ConferenceRole;
     participants_linked?: string[] | undefined;
+    defence_advocate?: string | undefined;
 
     constructor(data?: IEndpointResponse) {
         if (data) {
@@ -8601,6 +8602,7 @@ export class EndpointResponse implements IEndpointResponse {
                 this.participants_linked = [] as any;
                 for (let item of _data['participants_linked']) this.participants_linked!.push(item);
             }
+            this.defence_advocate = _data['defence_advocate'];
         }
     }
 
@@ -8624,6 +8626,7 @@ export class EndpointResponse implements IEndpointResponse {
             data['participants_linked'] = [];
             for (let item of this.participants_linked) data['participants_linked'].push(item);
         }
+        data['defence_advocate'] = this.defence_advocate;
         return data;
     }
 }
@@ -8637,6 +8640,7 @@ export interface IEndpointResponse {
     current_room?: RoomResponse;
     conference_role?: ConferenceRole;
     participants_linked?: string[] | undefined;
+    defence_advocate?: string | undefined;
 }
 
 export class ParticipantHeartbeatResponse implements IParticipantHeartbeatResponse {
