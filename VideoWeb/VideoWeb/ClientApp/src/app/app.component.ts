@@ -17,13 +17,13 @@ import { SecurityServiceProvider } from './security/authentication/security-prov
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
-import { NoSleepService } from './services/no-sleep.service';
 import { HideComponentsService } from './waiting-space/services/hide-components.service';
 import { ConfigService } from './services/api/config.service';
 import { PARTICIPANT_ROLES } from './shared/user-roles';
 import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
+import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
 
 @Component({
     standalone: false,
@@ -70,7 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private eventService: PublicEventsService,
         private securityServiceProviderService: SecurityServiceProvider,
         private location: Location,
-        private noSleepService: NoSleepService,
+        private noSleepService: NoSleepServiceV2,
         private logger: Logger,
         private hideBackgroundService: HideComponentsService,
         private readonly eventhubService: EventsHubService,

@@ -26,9 +26,9 @@ import { SecurityServiceProvider } from './security/authentication/security-prov
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
-import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
+import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
 
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -38,7 +38,7 @@ describe('AppComponent - Testbed', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
     let publicEventsServiceSpy: jasmine.SpyObj<PublicEventsService>;
-    let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+    let noSleepServiceSpy: jasmine.SpyObj<NoSleepServiceV2>;
     let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
 
     const clientSettings = new ClientSettingsResponse({
@@ -59,7 +59,7 @@ describe('AppComponent - Testbed', () => {
     beforeEach(() => {
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['configureConnection']);
 
-        noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
+        noSleepServiceSpy = jasmine.createSpyObj<NoSleepServiceV2>(['enable']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
 
@@ -105,7 +105,7 @@ describe('AppComponent - Testbed', () => {
                 { provide: PublicEventsService, useValue: publicEventsServiceSpy },
                 { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
                 { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
-                { provide: NoSleepService, useValue: noSleepServiceSpy },
+                { provide: NoSleepServiceV2, useValue: noSleepServiceSpy },
                 { provide: EventsHubService, useValue: eventsHubServiceSpy }
             ]
         });
