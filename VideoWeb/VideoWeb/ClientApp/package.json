@@ -115,7 +115,7 @@
     "karma-jasmine-html-reporter": "^2.0.0",
     "karma-junit-reporter": "^2.0.1",
     "ng-bullet": "^1.0.3",
-    "ng-mocks": "^14.13.2",
+    "ng-mocks": "^14.13.4",
     "nswag": "^14.2.0",
     "prettier": "^3.3.3",
     "puppeteer": "^23.11.1",
