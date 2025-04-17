@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration.KeyPerFile;
 using Microsoft.Extensions.FileProviders;
 using OpenTelemetry.Logs;
@@ -11,7 +12,7 @@ namespace VideoWeb
 {
     internal static class Program
     {
-        public static void Main(string[] args)
+         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
         }
@@ -24,7 +25,6 @@ namespace VideoWeb
                 "vh-video-api",
                 "vh-video-web"
             };
-
             
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
@@ -43,12 +43,7 @@ namespace VideoWeb
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureLogging((hostingContext, logging) =>
-                    {
-                        logging.AddEventSourceLogger();
-                        logging.AddOpenTelemetry();
-                        logging.AddFilter<OpenTelemetryLoggerProvider>("", LogLevel.Trace);
-                    });
+                    webBuilder.ConfigureOpenTelemetryLogging();
                     webBuilder.ConfigureAppConfiguration(configBuilder =>
                     {
                         foreach (var keyVault in keyVaults)
@@ -62,7 +57,24 @@ namespace VideoWeb
                     });
                 });
         }
-        
+
+        private static void ConfigureOpenTelemetryLogging(this IWebHostBuilder webBuilder)
+        {
+            webBuilder.ConfigureLogging((hostingContext, logging) =>
+            {
+                logging.AddEventSourceLogger();
+                logging.AddOpenTelemetry(options =>
+                {
+                    options.IncludeFormattedMessage = true;
+                    options.ParseStateValues = true;
+                    options.IncludeScopes = true;
+                    options.AddConsoleExporter();
+                    options.AddAzureMonitorLogExporter(o => o.ConnectionString =
+                        hostingContext.Configuration["ApplicationInsights:ConnectionString"]);
+                });
+            });
+        }
+
         private static KeyPerFileConfigurationSource GetKeyPerFileSource(string filePath)
         {
             return new KeyPerFileConfigurationSource

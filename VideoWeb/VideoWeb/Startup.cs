@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using OpenTelemetry.Instrumentation.Http;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using VideoWeb.Common;
@@ -34,7 +35,6 @@ namespace VideoWeb
         {
             var envName = Configuration["AzureAd:PostLogoutRedirectUri"]; 
             var sdkKey = Configuration["LaunchDarkly:SdkKey"];
-            var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
             var featureToggles = new FeatureToggles(sdkKey, envName);
             services.AddSingleton<IFeatureToggles>(featureToggles);
 
@@ -57,23 +57,22 @@ namespace VideoWeb
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 504));
                 });
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+            
+            //Configure OpenTelemetry Metrics and Tracing
+            var instrumentationKey = Configuration["ApplicationInsights:ConnectionString"];
             services.AddOpenTelemetry()
-                .ConfigureResource(r =>
-                {
-                    r.AddService("vh-video-web")
-                        .AddTelemetrySdk()
-                        .AddAttributes(new Dictionary<string, object>
-                            { ["service.instance.id"] = Environment.MachineName });
-                })
-                .UseAzureMonitor(options => options.ConnectionString = instrumentationKey) 
-                .WithMetrics()
-                .WithTracing(tracerProvider =>
-                {
-                    tracerProvider
-                        .AddSource("SupplierCallbackEvent")
-                        .AddAspNetCoreInstrumentation(options => options.RecordException = true)
-                        .AddHttpClientInstrumentation();
-                });
+                .ConfigureResource(r => r.AddService("vh-video-web")
+                    .AddTelemetrySdk()
+                    .AddAttributes(new Dictionary<string, object> { ["service.instance.id"] = Environment.MachineName }))
+                .WithMetrics(metricsProvider => metricsProvider
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddAzureMonitorMetricExporter(o => o.ConnectionString = instrumentationKey))
+                .WithTracing(tracerProvider => tracerProvider
+                    .AddSource("SupplierCallbackEvent")
+                    .AddAspNetCoreInstrumentation(options => options.RecordException = true)
+                    .AddHttpClientInstrumentation()
+                    .AddAzureMonitorTraceExporter(o => o.ConnectionString = instrumentationKey));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
