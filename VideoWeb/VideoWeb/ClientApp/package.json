@@ -6,7 +6,6 @@
     "start": "ng serve -c development --port 4201",
     "build": "ng build -c development",
     "build-prod": "ng build --configuration production",
-    "build:ssr": "ng run VideoWeb:server:dev",
     "test": "ng test --code-coverage",
     "test-once": "ng test --watch=false --code-coverage",
     "test-once-ci": "ng test --browsers=ChromeHeadlessNoPrompt --watch=false --code-coverage",
@@ -22,7 +21,8 @@
     "prettify-api-client": "run-script-os",
     "prettify-api-client:nix": "npx prettier --write 'src/app/services/clients/api-client.ts'",
     "prettify-api-client:default": "npx prettier --write \"src\\app\\services\\clients\\api-client.ts\"",
-    "update-api-client": "nswag run /runtime:Net60 && npm run prettify-fix"
+    "update-api-client": "nswag run /runtime:Net60 && npm run prettify-fix",
+    "serve:ssr:VideoWeb": "node dist/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -63,6 +63,7 @@
     "aspnet-prerendering": "^3.0.1",
     "chart.js": "^4.4.2",
     "core-js": "^3.8.2",
+    "express": "^4.18.2",
     "govuk-frontend": "^5.8.0",
     "guid-typescript": "^1.0.9",
     "launchdarkly-js-client-sdk": "^3.5.0",
@@ -91,6 +92,7 @@
     "@ngrx/schematics": "^19.1.0",
     "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",
+    "@types/express": "^4.17.17",
     "@types/jasmine": "^4.3.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^22.0.0",
