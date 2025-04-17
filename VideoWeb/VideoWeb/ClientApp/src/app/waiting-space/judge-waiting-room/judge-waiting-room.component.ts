@@ -3,8 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -53,7 +52,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     constructor(
         protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -77,7 +75,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     ) {
         super(
             route,
-            videoWebService,
             eventService,
             logger,
             errorService,
@@ -114,10 +111,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.init();
         }
         this.divTrapId = 'video-container';
-    }
-
-    isStaffMember(): boolean {
-        return this.loggedInUser.role === Role.StaffMember;
     }
 
     ngOnDestroy(): void {

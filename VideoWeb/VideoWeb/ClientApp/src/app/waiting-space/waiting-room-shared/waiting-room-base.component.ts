@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConsultationAnswer, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -108,7 +107,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     protected constructor(
         protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -200,6 +198,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         return (
             this.vhParticipant?.status === ParticipantStatus.InHearing || this.vhParticipant?.status === ParticipantStatus.InConsultation
         );
+    }
+
+    get isStaffMember(): boolean {
+        return this.vhParticipant?.role === Role.StaffMember;
     }
 
     ngAfterContentChecked(): void {

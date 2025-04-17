@@ -1,8 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -45,9 +44,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     hearingStartingAnnounced: boolean;
 
     isParticipantsPanelHidden = false;
-    hearingVenueIsScottish$: Observable<boolean>;
 
-    showWarning = false;
+    showJoinHearingWarning = false;
     displayLanguageModal: boolean;
     displayLeaveHearingPopup = false;
 
@@ -58,7 +56,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
     constructor(
         protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -82,7 +79,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     ) {
         super(
             route,
-            videoWebService,
             eventService,
             logger,
             errorService,
@@ -346,8 +342,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         ModalTrapFocus.trap('video-container');
     }
 
-    dismissWarning() {
-        this.showWarning = false;
+    dismissJoinHearingWarning() {
+        this.showJoinHearingWarning = false;
         this.setUpSubscribers();
     }
 
@@ -383,10 +379,9 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.logger.debug(`${this.componentLoggerPrefix} loading waiting room`);
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
-        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference();
         if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
-            this.showWarning = true;
+            this.showJoinHearingWarning = true;
         } else {
             this.setUpSubscribers();
         }

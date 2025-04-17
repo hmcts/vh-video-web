@@ -1,6 +1,5 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -34,7 +33,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
 
     constructor(
         protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -55,7 +53,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
     ) {
         super(
             route,
-            videoWebService,
             eventService,
             logger,
             errorService,

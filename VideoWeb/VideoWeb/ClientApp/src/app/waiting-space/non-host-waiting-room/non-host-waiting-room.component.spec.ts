@@ -33,8 +33,7 @@ import {
     roomClosingToastrService,
     router,
     titleService,
-    videoCallService,
-    videoWebService
+    videoCallService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ConferenceStatus, LinkType, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
@@ -42,7 +41,6 @@ import { mapConferenceToVHConference } from '../store/models/api-contract-to-sta
 import { MockComponent } from 'ng-mocks';
 import { TranslateService } from '@ngx-translate/core';
 import { Title } from 'chart.js';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ConsultationErrorComponent } from '../consultation-modals/consultation-error/consultation-error.component';
@@ -164,7 +162,6 @@ describe('NonHostWaitingRoomComponent', () => {
             providers: [
                 NonHostWaitingRoomComponent,
                 { provide: ActivatedRoute, useValue: activatedRoute },
-                { provide: VideoWebService, useValue: videoWebService },
                 { provide: EventsService, useValue: mockEventsService },
                 { provide: Logger, useValue: mockLogger },
                 { provide: ErrorService, useValue: mockErrorService },
@@ -687,13 +684,13 @@ describe('NonHostWaitingRoomComponent', () => {
         });
     });
 
-    describe('dismissWarning', () => {
-        it('should hide warning', fakeAsync(() => {
-            component.showWarning = true;
-            component.dismissWarning();
+    describe('dismissJoinHearingWarning', () => {
+        it('should hide joing hearing warning', fakeAsync(() => {
+            component.showJoinHearingWarning = true;
+            component.dismissJoinHearingWarning();
             tick();
 
-            expect(component.showWarning).toBeFalse();
+            expect(component.showJoinHearingWarning).toBeFalse();
         }));
     });
 

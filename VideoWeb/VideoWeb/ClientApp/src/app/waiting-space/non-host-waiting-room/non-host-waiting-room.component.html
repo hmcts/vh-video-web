@@ -165,7 +165,7 @@
 <ng-container *ngIf="isParticipant">
   <app-start-private-consultation
     *ngIf="displayStartPrivateConsultationModal"
-    [loggedInUser]="loggedInUser"
+    [loggedInUser]="getLoggedParticipant()"
     [participants]="getPrivateConsultationParticipants()"
     [endpoints]="hearing.getEndpoints()"
     [allowedEndpoints]="participantEndpoints"
@@ -201,7 +201,7 @@
 </app-modal>
 
 <app-warn-join-hearing-popup
-  *ngIf="showWarning"
+  *ngIf="showJoinHearingWarning"
   [hearingStartTime]="hearing?.scheduledStartTime"
-  (popupAnswered)="dismissWarning()"
+  (popupAnswered)="dismissJoinHearingWarning()"
 ></app-warn-join-hearing-popup>

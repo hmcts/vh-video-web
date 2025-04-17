@@ -20,8 +20,7 @@ import {
     consultationInvitiationService,
     titleService,
     launchDarklyService,
-    initAllWRDependencies,
-    videoWebService
+    initAllWRDependencies
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
@@ -29,7 +28,6 @@ import { ConferenceStatus, LoggedParticipantResponse, ParticipantStatus, Role } 
 import { ClockService } from 'src/app/services/clock.service';
 import { Title } from 'chart.js';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -165,7 +163,6 @@ describe('JudgeWaitingRoom', () => {
             providers: [
                 JudgeWaitingRoomComponent,
                 { provide: ActivatedRoute, useValue: activatedRoute },
-                { provide: VideoWebService, useValue: videoWebService },
                 { provide: EventsService, useValue: mockEventsService },
                 { provide: Logger, useValue: mockLogger },
                 { provide: ErrorService, useValue: mockErrorService },
@@ -231,20 +228,6 @@ describe('JudgeWaitingRoom', () => {
             spyOn(component.hearing, 'isInSession').and.returnValue(false);
 
             expect(component.canShowHearingLayoutSelection).toBeTrue();
-        });
-    });
-
-    describe('isStaffMember', () => {
-        it('should be true if the use is a staff member', () => {
-            component.loggedInUser = new LoggedParticipantResponse({ role: Role.StaffMember });
-
-            expect(component.isStaffMember()).toBeTrue();
-        });
-
-        it('should be false if the use is not a staff member', () => {
-            component.loggedInUser = new LoggedParticipantResponse({ role: Role.Judge });
-
-            expect(component.isStaffMember()).toBeFalse();
         });
     });
 
@@ -490,7 +473,6 @@ describe('JudgeWaitingRoom', () => {
         it('should display leave consultation popup when in a consultation', async () => {
             const button = document.createElement('button');
             button.id = 'consultation-leave-button';
-            spyOn(document, 'getElementById').and.returnValue(button);
             component.isPrivateConsultation = true;
 
             await component.leaveConsultation();

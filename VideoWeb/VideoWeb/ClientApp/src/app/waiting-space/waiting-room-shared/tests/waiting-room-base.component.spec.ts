@@ -83,6 +83,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { HearingRole } from '../../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ElementRef } from '@angular/core';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
 
 describe('WaitingRoomBaseDirective', () => {
     const testData = new ConferenceTestData();
@@ -1865,6 +1866,13 @@ describe('WaitingRoomBaseDirective', () => {
             expect(findParticipantSpy).not.toHaveBeenCalled();
             expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
             expect(invitation.activeToast).toBeNull();
+        });
+    });
+
+    describe('isStaffMember', () => {
+        it('should call helper', () => {
+            const result = component.isStaffMember;
+            expect(result).toEqual(ParticipantHelper.isStaffMember(component.vhParticipant));
         });
     });
 });

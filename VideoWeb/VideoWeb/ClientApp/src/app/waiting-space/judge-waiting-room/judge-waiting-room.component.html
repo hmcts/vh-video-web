@@ -57,7 +57,7 @@
         {{ getConferenceStatusText() }}
       </h1>
 
-      <app-feedback-banner *ngIf="hearing.isClosed() && !isStaffMember()"></app-feedback-banner>
+      <app-feedback-banner *ngIf="hearing.isClosed() && !isStaffMember"></app-feedback-banner>
 
       <app-select-hearing-layout *ngIf="canShowHearingLayoutSelection" [conference]="vhConference"></app-select-hearing-layout>
 
