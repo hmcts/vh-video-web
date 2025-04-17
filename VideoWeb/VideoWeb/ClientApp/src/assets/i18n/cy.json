@@ -511,6 +511,7 @@
     "please-wait": "Arhoswch os gwelwch yn dda",
     "hearing-starting-at": "Mae eich gwrandawiad fideo wedi'i restru i ddechrau am {{date}}",
     "loading-please-wait": "Loading please wait...",
+    "hearing-ready": "Byddwch yn barod <br/> Byddwch yn ymuno â'r gwrandawiad mewn ychydig o eiliadau",
     "your-video-hearing": "Eich gwrandawiad fideo:",
     "choose-camera-and-microphone": "Dewis camera a microffon",
     "leave-hearing": "Gadael y gwrandawiad",
@@ -578,7 +579,11 @@
       "resume-video-hearing": "Parhau â'r gwrandawiad fideo",
       "join-hearing": "Ymuno â'r gwrandawiad "
     },
-    "start-this-hearing": "Dechrau'r gwrandawiad hwn"
+    "start-this-hearing": "Dechrau'r gwrandawiad hwn",
+    "hearing-suspended": "Gwrandawiad wedi'i ohirio",
+    "hearing-paused": "Gwrandawiad wedi'i atal dros dro",
+    "hearing-is-closed": "Mae’r gwrandawiad wedi cau",
+    "hearing-is-in-session": "Mae'r gwrandawiad wedi dechrau"
   },
   "individual-participant-status-list": {
     "crest-icon-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",

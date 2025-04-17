@@ -13,7 +13,6 @@
   [vhConference]="vhConference"
   [connected]="connected"
   [outgoingStream]="outgoingStream"
-  [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
   [showConsultationControls]="showConsultationControls"
   [isParticipantsPanelHidden]="isParticipantsPanelHidden"
   [hearing]="hearing"
@@ -35,7 +34,7 @@
 >
 </app-video-call>
 
-<app-transfer-message *ngIf="isParticipant && isTransferringIn" [outgoingStream]="outgoingStream"></app-transfer-message>
+<app-transfer-message *ngIf="isTransferringIn" [outgoingStream]="outgoingStream"></app-transfer-message>
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">

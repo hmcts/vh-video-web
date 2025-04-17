@@ -39,6 +39,7 @@ import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -186,12 +187,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get isSupportedBrowserForNetworkHealth(): boolean {
-        if (!this.deviceTypeService.isSupportedBrowser()) {
-            return false;
-        }
-        const unsupportedBrowsers = ['MS-Edge'];
-        const browser = this.deviceTypeService.getBrowserName();
-        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
+        return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
     }
 
     get isParticipantInConference(): boolean {
@@ -201,7 +197,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get isStaffMember(): boolean {
-        return this.vhParticipant?.role === Role.StaffMember;
+        return ParticipantHelper.isStaffMember(this.vhParticipant);
     }
 
     ngAfterContentChecked(): void {

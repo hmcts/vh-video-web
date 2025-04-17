@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 @Component({
     selector: 'app-video-call',
@@ -18,7 +19,6 @@ export class VideoCallComponent {
     @Input() vhConference: VHConference;
     @Input() connected: boolean;
     @Input() outgoingStream: MediaStream | URL;
-    @Input() isSupportedBrowserForNetworkHealth: boolean;
     @Input() showConsultationControls: boolean;
     @Input() isParticipantsPanelHidden: boolean;
     @Input() hearing: VHHearing;
@@ -40,6 +40,12 @@ export class VideoCallComponent {
     @Output() participantsPanelToggle = new EventEmitter<string>();
     @Output() feedToggle = new EventEmitter<void>();
     @Output() unreadCountUpdate = new EventEmitter<number>();
+
+    constructor(protected deviceTypeService: DeviceTypeService) {}
+
+    get isSupportedBrowserForNetworkHealth(): boolean {
+        return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
+    }
 
     videoWrapperReady() {
         this.ready.emit();

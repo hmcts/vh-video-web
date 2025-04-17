@@ -1,14 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VideoCallComponent } from './video-call.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 describe('VideoCallComponent', () => {
     let component: VideoCallComponent;
     let fixture: ComponentFixture<VideoCallComponent>;
+    const mockDeviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
+        'getBrowserName',
+        'getBrowserVersion',
+        'isSupportedBrowser',
+        'isIpad',
+        'isIphone',
+        'isTablet',
+        'isSupportedBrowserForNetworkHealth'
+    ]);
 
     beforeEach(async () => {
+        mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(true);
+
         await TestBed.configureTestingModule({
-            declarations: [VideoCallComponent, TranslatePipeMock]
+            declarations: [VideoCallComponent, TranslatePipeMock],
+            providers: [{ provide: DeviceTypeService, useValue: mockDeviceTypeService }]
         }).compileComponents();
 
         fixture = TestBed.createComponent(VideoCallComponent);
@@ -91,6 +104,18 @@ describe('VideoCallComponent', () => {
             const count = 2;
             component.unreadCountUpdated(count);
             expect(component.unreadCountUpdate.emit).toHaveBeenCalledWith(count);
+        });
+    });
+
+    describe('isSupportedBrowserForNetworkHealth', () => {
+        const testCases = [true, false];
+
+        testCases.forEach(test => {
+            it(`should return ${test} when device type service returns ${test}`, () => {
+                mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(test);
+                const result = component.isSupportedBrowserForNetworkHealth;
+                expect(result).toBe(test);
+            });
         });
     });
 });

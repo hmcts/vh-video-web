@@ -1339,39 +1339,13 @@ describe('WaitingRoomBaseDirective', () => {
     });
 
     describe('isSupportedBrowserForNetworkHealth', () => {
-        describe('VH Supports Web Browser', () => {
-            beforeEach(() => {
-                mockDeviceTypeService.isSupportedBrowser.and.returnValue(true);
-            });
+        const testCases = [true, false];
 
-            it('should return false when network health is not supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('MS-Edge');
-
+        testCases.forEach(test => {
+            it(`should return ${test} when device type service returns ${test}`, () => {
+                mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(test);
                 const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeFalse();
-            });
-
-            it('should return true when network health is supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('Chrome');
-
-                const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeTrue();
-            });
-        });
-
-        describe('VH Does not Support Web Browser', () => {
-            beforeEach(() => {
-                mockDeviceTypeService.isSupportedBrowser.and.returnValue(false);
-            });
-
-            it('should return false when network health is not supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('MS Edge');
-
-                const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeFalse();
+                expect(result).toBe(test);
             });
         });
     });
@@ -1870,9 +1844,14 @@ describe('WaitingRoomBaseDirective', () => {
     });
 
     describe('isStaffMember', () => {
-        it('should call helper', () => {
-            const result = component.isStaffMember;
-            expect(result).toEqual(ParticipantHelper.isStaffMember(component.vhParticipant));
+        const testCases = [true, false];
+
+        testCases.forEach(test => {
+            it(`should return ${test} when helper returns ${test}`, () => {
+                spyOn(ParticipantHelper, 'isStaffMember').and.returnValue(test);
+                const result = component.isStaffMember;
+                expect(result).toBe(test);
+            });
         });
     });
 });

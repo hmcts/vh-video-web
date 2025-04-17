@@ -213,6 +213,17 @@ describe('NonHostWaitingRoomComponent', () => {
             tick();
             expect(component).toBeTruthy();
         }));
+
+        const joinHearingWarningTestCases = [true, false];
+
+        joinHearingWarningTestCases.forEach(test => {
+            it(`should set showJoinHearingWarning to ${test} when isHandheldIOSDevice returns ${test}`, fakeAsync(() => {
+                mockDeviceTypeService.isHandheldIOSDevice.and.returnValue(test);
+                component.ngOnInit();
+                tick();
+                expect(component.showJoinHearingWarning).toBe(test);
+            }));
+        });
     });
 
     describe('allowAudioOnlyToggle', () => {

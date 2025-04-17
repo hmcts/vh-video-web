@@ -446,6 +446,7 @@
     "please-wait": "Please wait",
     "hearing-starting-at": "Your video hearing is scheduled to begin at {{date}}",
     "loading-please-wait": "Loading please wait...",
+    "hearing-ready": "Please get ready <br/> You'll join the hearing in a few seconds",
     "your-video-hearing": "Your video hearing",
     "choose-camera-and-microphone": "Choose camera and microphone",
     "leave-hearing": "Leave Hearing",
@@ -513,7 +514,11 @@
       "enter-consultation-room": "Enter consultation room",
       "join-hearing": "Join the hearing"
     },
-    "start-this-hearing": "Start this hearing"
+    "start-this-hearing": "Start this hearing",
+    "hearing-suspended": "Hearing suspended",
+    "hearing-paused": "Hearing paused",
+    "hearing-is-closed": "Hearing is closed",
+    "hearing-is-in-session": "Hearing is in session"
   },
   "invite-participant": {
     "invite-this-person": "Invite this person to the meeting"

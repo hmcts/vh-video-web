@@ -117,7 +117,9 @@ export function initAllWRDependencies() {
         'isSupportedBrowser',
         'isIpad',
         'isIphone',
-        'isTablet'
+        'isTablet',
+        'isSupportedBrowserForNetworkHealth',
+        'isHandheldIOSDevice'
     ]);
 
     consultationService = consultationServiceSpyFactory();

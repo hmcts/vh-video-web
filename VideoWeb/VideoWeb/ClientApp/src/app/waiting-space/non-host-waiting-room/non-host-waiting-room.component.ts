@@ -380,7 +380,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference();
-        if (this.deviceTypeService.isIphone() || this.deviceTypeService.isIpad()) {
+        if (this.deviceTypeService.isHandheldIOSDevice()) {
             this.showJoinHearingWarning = true;
         } else {
             this.setUpSubscribers();
