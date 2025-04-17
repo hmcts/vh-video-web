@@ -24,6 +24,7 @@ using VideoWeb.Mappings;
 using VideoWeb.Middleware;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers;
 
@@ -49,7 +50,7 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForHostAsync(
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForHost");
+        logger.LogGetConferencesForHost();
 
         var username = User.Identity!.Name;
         var hearings =
@@ -61,9 +62,7 @@ public class ConferencesController(
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
 
         if (conferences.Count != hearings.Count)
-            logger.LogError(
-                "Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}",
-                hearings.Count, conferences.Count, username);
+            logger.LogHearingConferenceMismatch(hearings.Count, conferences.Count, username);
 
         var response = hearings
             .Where(h => conferences.Any(c => c.HearingId == h.Id))
@@ -86,7 +85,7 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForStaffMemberAsync(
         [FromQuery] IEnumerable<string> hearingVenueNames, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForStaffMember");
+        logger.LogGetConferencesForStaffMember();
 
         var hearingsForToday =
             await bookingApiClient.GetHearingsForTodayByVenueV2Async(hearingVenueNames, cancellationToken);
@@ -97,9 +96,7 @@ public class ConferencesController(
             conferences = await videoApiClient.GetConferencesByHearingRefIdsAsync(request, cancellationToken);
         
         if (conferences.Count != hearingsForToday.Count)
-            logger.LogError(
-                "Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for venue(s) {Venues}",
-                hearingsForToday.Count, conferences.Count, hearingVenueNames);
+            logger.LogVenueHearingConferenceMismatch(hearingsForToday.Count, conferences.Count, hearingVenueNames);
         var response = hearingsForToday
             .Where(h => conferences.Any(c => c.HearingId == h.Id))
             .Select(hearing =>
@@ -120,7 +117,7 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForIndividualResponse>>> GetConferencesForIndividual(
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForIndividual");
+        logger.LogGetConferencesForIndividual();
 
         var username = User.Identity!.Name;
         if (IsQuickLinkUser())
@@ -157,7 +154,7 @@ public class ConferencesController(
     public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync(
         [FromQuery] VhoConferenceFilterQuery query, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferencesForVhOfficer");
+        logger.LogGetConferencesForVhOfficer();
         const string filterMissingMessage = "Please provide a filter for hearing venue names or allocated CSOs";
         if (query == null)
         {
@@ -218,7 +215,7 @@ public class ConferencesController(
     {
         if (conferenceId == Guid.Empty)
         {
-            logger.LogWarning("Unable to get conference when id is not provided");
+            logger.LogConferenceIdNotProvided();
             ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
             
             return BadRequest(ModelState);
@@ -228,9 +225,7 @@ public class ConferencesController(
         
         if (!conference.IsWaitingRoomOpen)
         {
-            logger.LogInformation(
-                "Unauthorised to view conference details {ConferenceId} because user is not Officer " +
-                "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
+            logger.LogUnauthorizedConferenceAccess(conferenceId);
             
             return Unauthorized();
         }
@@ -269,13 +264,13 @@ public class ConferencesController(
     [SwaggerOperation(OperationId = "GetConferenceById")]
     public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetConferenceById");
+        logger.LogGetConferenceById();
         
         var userProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
         
         if (conferenceId == Guid.Empty)
         {
-            logger.LogWarning("Unable to get conference when id is not provided");
+            logger.LogConferenceIdNotProvided();
             ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
             return BadRequest(ModelState);
         }
@@ -287,7 +282,7 @@ public class ConferencesController(
             conference = await conferenceService.GetConference(conferenceId, cancellationToken);
             if (conference == null)
             {
-                logger.LogWarning("Conference details with id: {ConferenceId} not found", conferenceId);
+                logger.LogConferenceNotFound(conferenceId);
                 return NoContent();
             }
         }
@@ -300,9 +295,7 @@ public class ConferencesController(
         if (!userProfile.Roles.Contains(Role.StaffMember) &&
             (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
         {
-            logger.LogInformation(
-                "Unauthorised to view conference details {ConferenceId} because user is neither a VH Officer " +
-                "nor a participant of the conference, or the conference has been closed for over 30 minutes", conferenceId);
+            logger.LogUnauthorizedConferenceAccess(conferenceId);
             return Unauthorized();
         }
         

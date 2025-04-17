@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Models;
 using VideoWeb.Services;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers
 {
@@ -30,7 +31,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetVenues")]
         public async Task<ActionResult<IList<HearingVenueResponse>>> GetVenues(CancellationToken cancellationToken)
         {
-            logger.LogDebug("GetVenues");
+            logger.LogGetVenues();
 
             var response = await referenceDataService.GetHearingVenuesForTodayAsync(cancellationToken);
             return Ok(response);

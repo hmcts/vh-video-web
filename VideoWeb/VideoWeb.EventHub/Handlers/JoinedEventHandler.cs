@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
@@ -31,8 +32,7 @@ namespace VideoWeb.EventHub.Handlers
                 state = ParticipantState.InConsultation;
             }
 
-            Logger.LogTrace("Participant {ParticipantId} joined conference {ConferenceId} with status {ParticipantStatus}",
-                callbackEvent.ParticipantId, callbackEvent.ConferenceId, newStatus);
+            Logger.LogRoomTransferToAdminGroup(callbackEvent.ParticipantId, callbackEvent.ConferenceId, newStatus.ToString());
             await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason);
         }
     }

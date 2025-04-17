@@ -1,10 +1,12 @@
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Helpers;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Middleware;
 
@@ -27,16 +29,16 @@ public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ILoggingDataEx
         
         using (logger.BeginScope(properties))
         {
-            logger.LogDebug("Starting request");
+            logger.LogStartingRequest();
             var sw = Stopwatch.StartNew();
             var action = await next();
             if (action.Exception != null)
             {
                 var ex = action.Exception;
-                logger.LogError(ex, "An error occurred: {Message}", ex.Message);
+                logger.LogRequestError(ex, ex.Message);
             }
             
-            logger.LogDebug("Handled request in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+            logger.LogHandledRequest(sw.ElapsedMilliseconds);
         }
     }
 }

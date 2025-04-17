@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Common;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Middleware;
 
@@ -39,7 +40,7 @@ public class CheckParticipantCanAccessConferenceAttribute(
         if (conference == null)
         {
             var message404 = $"Conference with id:'{conferenceId}' not found.";
-            logger.LogWarning("{Name} - {Message404}", GetType().Name, message404);
+            logger.LogConferenceNotFound(GetType().Name, conferenceId);
             context.ModelState.AddModelError("CheckParticipantCanAccessConference", message404);
             context.Result = new NotFoundObjectResult(context.ModelState);
             return;
@@ -52,7 +53,7 @@ public class CheckParticipantCanAccessConferenceAttribute(
         if (!isAllowed)
         {
             var message401 = "User does not belong to this conference.";
-            logger.LogWarning("{Name} - {Message401}", GetType().Name, message401);
+            logger.LogUnauthorizedAccess(GetType().Name);
             context.ModelState.AddModelError("CheckParticipantCanAccessConference", message401);
             context.Result = new UnauthorizedObjectResult(context.ModelState);
             return;

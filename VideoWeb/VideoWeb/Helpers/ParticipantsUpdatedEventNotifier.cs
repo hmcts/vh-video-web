@@ -8,6 +8,7 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Helpers
 {
@@ -23,8 +24,8 @@ namespace VideoWeb.Helpers
             {
                 await hubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantsUpdatedMessage(conference.Id, updatedParticipants);
-                logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
-                    participant.Role);
+                logger.LogUserRole(participant.Username,
+                    participant.Role.ToString());
             }
         
             await hubContext.Clients.Group(VideoWeb.EventHub.Hub.EventHub.VhOfficersGroupName)

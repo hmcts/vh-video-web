@@ -18,6 +18,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers;
 
@@ -76,11 +77,11 @@ public class ConsultationsController(
         {
             if (participant != null)
             {
-                logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
+                logger.LogLeaveConsultationError(e, participant.Username);
             }
             else
             {
-                logger.LogError(e, "Invalid participant");
+                logger.LogInvalidParticipant(e);
             }
             
             return StatusCode(e.StatusCode, e.Response);
@@ -149,15 +150,14 @@ public class ConsultationsController(
     {
         try
         {
-            logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
-                request.ConferenceId, request.ParticipantId, request.RoomLabel);
+            logger.LogAttemptingToJoinPrivateConsultation(request.ConferenceId, request.ParticipantId, request.RoomLabel);
             var authenticatedUsername = User.Identity?.Name?.ToLower().Trim();
             var conference = await conferenceService.GetConference(request.ConferenceId, cancellationToken);
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
             
             if (participant == null)
             {
-                logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                logger.LogParticipantNotFoundForConsultation(request.ConferenceId, request.ParticipantId, request.RoomLabel);
                 return NotFound("Couldn't find participant.");
             }
             
@@ -212,7 +212,7 @@ public class ConsultationsController(
             var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null)
             {
-                logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
+                logger.LogParticipantNotFound(request.RequestedBy, username);
                 return NotFound();
             }
             
@@ -236,7 +236,7 @@ public class ConsultationsController(
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "Start consultation error Conference");
+            logger.LogStartConsultationError(e);
             return StatusCode(e.StatusCode);
         }
     }
@@ -261,7 +261,7 @@ public class ConsultationsController(
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "Could not update the lock state of the consultation room");
+            logger.LogLockConsultationRoomError(e);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
@@ -327,7 +327,7 @@ public class ConsultationsController(
         {
             // As endpoints cannot be linked participants just use and Empty GUID
             await consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
-            logger.LogError(e, "Join endpoint to consultation error");
+            logger.LogJoinEndpointToConsultationError(e);
             return StatusCode(e.StatusCode);
         }
         

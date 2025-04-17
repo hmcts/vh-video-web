@@ -8,6 +8,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Logging;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Services;
 
@@ -48,14 +49,14 @@ public class HearingLayoutService(
     
     public async Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Attempting to change layout for {ConferenceId} to {NewLayout} by participant with the ID {ChangedById}", conferenceId, newLayout, changedById);
+        logger.LogAttemptingToChangeLayout(conferenceId, newLayout.ToString(), changedById);
         
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
 
         var hearingLayout = await GetHearingLayoutFromCache(conferenceId, cancellationToken);
         var oldLayout = hearingLayout ?? conference.GetRecommendedLayout();
         
-        logger.LogDebug("Got old layout {OldLayout} for {ConferenceId} requested by participant with the ID {ChangedById}", oldLayout, newLayout, changedById);
+        logger.LogGotOldLayout(oldLayout.ToString(), conferenceId, changedById);
         
         await SetHearingLayoutInCache(conferenceId, newLayout, cancellationToken);
 
@@ -63,14 +64,12 @@ public class HearingLayoutService(
             .Where(participant => participant.IsHost())
             .Select(participant => participant.Username.ToLowerInvariant()).ToList();
         
-        logger.LogTrace("Sending message to {Hosts} for layout change in {ConferenceId} requested by participant with the ID {ChangedById}", hosts.ToArray(), conferenceId, changedById);
+        logger.LogSendingMessageToHosts(hosts.ToArray(), conferenceId, changedById);
         
         await hubContext.Clients
             .Groups(hosts)
             .HearingLayoutChanged(conferenceId, changedById, newLayout, oldLayout);
         
-        logger.LogTrace(
-            "Hearing layout changed for {ConferenceId} from {OldLayout} to {NewLayout} by participant with the ID {ChangedById}",
-            conferenceId, oldLayout, newLayout, changedById);
+        logger.LogHearingLayoutChanged(conferenceId, oldLayout.ToString(), newLayout.ToString(), changedById);
     }
 }

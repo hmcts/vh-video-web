@@ -14,6 +14,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
@@ -88,7 +89,7 @@ public class VideoEventsController(
         catch (VideoApiException e)
         {
             activity?.SetStatus(ActivityStatusCode.Error, e.Message);
-            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId, e.StatusCode);
+            logger.LogConferenceError(e,new Guid(request.ConferenceId), e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
@@ -102,8 +103,7 @@ public class VideoEventsController(
         
         request = request.UpdateEventTypeForVideoApi();
         
-        logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-            request.ConferenceId, request.EventType);
+        logger.LogRaisingVideoEvent(request.ConferenceId, request.EventType.ToString());
         
         return videoApiClient.RaiseVideoEventAsync(request);
     }

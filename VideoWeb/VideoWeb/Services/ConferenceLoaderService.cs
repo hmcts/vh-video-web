@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Services;
 
@@ -31,23 +32,23 @@ public class ConferenceLoaderService(ICacheLock cacheLock,
             {
                 try
                 {
-                    logger.LogInformation("Populating Conference Cache");
+                    logger.LogPopulatingConferenceCache();
                     await conferenceService.PopulateConferenceCacheForToday(stoppingToken);
                 }
                 finally
                 {
                     await cacheLock.ReleaseLockAsync(LockKey);
-                    logger.LogInformation("Lock released");
+                    logger.LogLockReleased();
                 }
             }
             else
             {
-                logger.LogInformation("Another VideoWeb instance is already processing the job");
+                logger.LogAnotherInstanceProcessing();
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occurred while executing PopulateConferenceCacheForToday");
+            logger.LogErrorPopulatingConferenceCache(ex);
         }
     }
 }

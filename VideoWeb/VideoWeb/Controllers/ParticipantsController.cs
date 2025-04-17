@@ -12,6 +12,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -147,14 +148,14 @@ public class ParticipantsController(
     {
         if (conferenceId == Guid.Empty)
         {
-            logger.LogWarning("Unable to get conference when id is not provided");
+            logger.LogConferenceIdNotProvided();
             ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
             return BadRequest(ModelState);
         }
 
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
 
-        logger.LogTrace("Retrieving booking participants for hearing {HearingId}", conference.HearingId);
+        logger.LogRetrievingBookingParticipants(conference.HearingId);
 
         var hostsInHearingsToday = await videoApiClient.GetHostsInHearingsTodayAsync(cancellationToken);
         var response = ParticipantStatusResponseForVhoMapper.Map(conference, hostsInHearingsToday);
@@ -257,7 +258,7 @@ public class ParticipantsController(
             return BadRequest(ModelState);
         }
 
-        logger.LogDebug("Attempting to assign {StaffMember} to conference {ConferenceId}", username, conferenceId);
+        logger.LogAssignStaffMemberToConference(username, conferenceId);
 
         var staffMemberProfile = ClaimsPrincipalToUserProfileResponseMapper.Map(User);
 

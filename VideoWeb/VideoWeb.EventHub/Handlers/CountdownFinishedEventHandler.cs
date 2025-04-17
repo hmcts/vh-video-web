@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Logging;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
@@ -19,7 +20,7 @@ namespace VideoWeb.EventHub.Handlers
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .CountdownFinished(SourceConference.Id);
-                Logger.LogTrace("Conference Countdown finished: Conference Id: {SourceConferenceId}", SourceConference.Id);
+                Logger.LogConferenceCountdownFinished(SourceConference.Id);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)

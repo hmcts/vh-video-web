@@ -12,6 +12,7 @@ using System.Text.Json;
 using VideoWeb.Common;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Contract.Request;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers.InternalEventControllers;
 
@@ -32,7 +33,7 @@ public class InternalEventParticipantController(
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ParticipantsUpdated(Guid conferenceId, UpdateConferenceParticipantsRequest request)
     {
-        logger.LogDebug("ParticipantsUpdated called. ConferenceId: {ConferenceId}, Request {Serialize}", conferenceId, JsonSerializer.Serialize(request));
+        logger.LogParticipantsUpdatedCalled(conferenceId, JsonSerializer.Serialize(request));
         
         try
         {
@@ -45,13 +46,12 @@ public class InternalEventParticipantController(
             var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
             
             await participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
-            logger.LogDebug("ParticipantsUpdated finished. ConferenceId: {ConferenceId}", conferenceId);
+            logger.LogParticipantsUpdatedFinished(conferenceId);
             return NoContent();
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
-                e.StatusCode);
+            logger.LogConferenceError(e, conferenceId, e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
@@ -62,21 +62,20 @@ public class InternalEventParticipantController(
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> EndpointsUpdated(Guid conferenceId, UpdateConferenceEndpointsRequest request)
     {
-        logger.LogDebug("EndpointsUpdated called. ConferenceId: {ConferenceId}, Request {Payload}", conferenceId, JsonSerializer.Serialize(request));
+        logger.LogEndpointsUpdatedCalled(conferenceId, JsonSerializer.Serialize(request));
         
         try
         {
             var conference = await conferenceService.ForceGetConference(conferenceId);
-            logger.LogTrace("Initial conference details: {@Conference}", conference);
+            logger.LogRaisingVideoEvent(conference);
             
             await endpointsUpdatedEventNotifier.PushEndpointsUpdatedEvent(conference, request);
-            logger.LogDebug("EndpointsUpdated finished. ConferenceId: {ConferenceId}", conferenceId);
+            logger.LogEndpointsUpdatedFinished(conferenceId);
             return NoContent();
         }
         catch (VideoApiException e)
         {
-            logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
-                e.StatusCode);
+            logger.LogConferenceError(e, conferenceId, e.StatusCode);
             return StatusCode(e.StatusCode, e.Response);
         }
     }
@@ -87,8 +86,7 @@ public class InternalEventParticipantController(
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string endpoint)
     {
-        logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}",
-            conferenceId, participant, endpoint);
+        logger.LogUnlinkedParticipantFromEndpoint(conferenceId, participant, endpoint);
         await endpointsUpdatedEventNotifier.PushUnlinkedParticipantFromEndpoint(conferenceId, participant, endpoint);
         return NoContent();
     }
@@ -99,8 +97,7 @@ public class InternalEventParticipantController(
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> PushLinkedNewParticipantToEndpoint(Guid conferenceId, string participant, string endpoint)
     {
-        logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}",
-            conferenceId, participant, endpoint);
+        logger.LogUnlinkedParticipantFromEndpoint(conferenceId, participant, endpoint);
         await endpointsUpdatedEventNotifier.PushLinkedNewParticipantToEndpoint(conferenceId, participant, endpoint);
         return NoContent();
     }
@@ -111,8 +108,7 @@ public class InternalEventParticipantController(
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> PushCloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string participant, string endpoint)
     {
-        logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}",
-            conferenceId, participant, endpoint);
+        logger.LogUnlinkedParticipantFromEndpoint(conferenceId, participant, endpoint);
         await endpointsUpdatedEventNotifier.PushCloseConsultationBetweenEndpointAndParticipant(conferenceId, participant, endpoint);
         return NoContent();
     }
