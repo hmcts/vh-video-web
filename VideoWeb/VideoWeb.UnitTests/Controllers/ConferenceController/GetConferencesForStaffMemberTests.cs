@@ -36,6 +36,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetHearingsForTodayByVenueV2Async(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<HearingDetailsResponseV2>{Mock.Of<HearingDetailsResponseV2>()});
+
+            _mocker.Mock<ILogger<ConferencesController>>()
+                .Setup(x => x.IsEnabled(LogLevel.Error))
+                .Returns(true);
+            _mocker.Mock<ILogger<ConferencesController>>()
+                .Setup(x => x.IsEnabled(LogLevel.Warning))
+                .Returns(true);
+            _mocker.Mock<ILogger<ConferencesController>>()
+                .Setup(x => x.IsEnabled(LogLevel.Information))
+                .Returns(true);
+            _mocker.Mock<ILogger<ConferencesController>>()
+                .Setup(x => x.IsEnabled(LogLevel.Debug))
+                .Returns(true);
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
