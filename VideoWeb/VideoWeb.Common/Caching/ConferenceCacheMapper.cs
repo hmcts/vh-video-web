@@ -51,7 +51,7 @@ public static class ConferenceCacheMapper
         
         var conference = new Conference();
         conference.Id = conferenceResponse.Id;
-        conference.HearingId = conferenceResponse.HearingId;
+        conference.HearingId = hearingDetailsResponse.Id;
         conference.Participants = participants;
         conference.HearingVenueName = hearingDetailsResponse.HearingVenueName;
         conference.Endpoints = endpoints;
@@ -62,10 +62,10 @@ public static class ConferenceCacheMapper
         conference.CaseName = caseInformation.Name;
         conference.CaseNumber = caseInformation.Number;
         conference.CaseType = hearingDetailsResponse.ServiceName.Trim();
-        conference.ScheduledDateTime = conferenceResponse.ScheduledDateTime;
-        conference.ScheduledDuration = conferenceResponse.ScheduledDuration;
+        conference.ScheduledDateTime = hearingDetailsResponse.ScheduledDateTime;
+        conference.ScheduledDuration = hearingDetailsResponse.ScheduledDuration;
         conference.ClosedDateTime = conferenceResponse.ClosedDateTime;
-        conference.AudioRecordingRequired = conferenceResponse.AudioRecordingRequired;
+        conference.AudioRecordingRequired = hearingDetailsResponse.AudioRecordingRequired;
         conference.IsScottish = hearingDetailsResponse.IsHearingVenueScottish;
         conference.IngestUrl = conferenceResponse.IngestUrl;
         conference.MeetingRoom = meetingRoom;

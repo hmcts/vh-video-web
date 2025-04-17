@@ -13,13 +13,14 @@ namespace VideoWeb.Controllers.InternalEventControllers;
 [ApiController]
 [Route("internalevent")]
 [Authorize(AuthenticationSchemes = "InternalEvent")]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class InternalEventController(
     IConferenceService conferenceService,
     IHearingCancelledEventNotifier hearingCancelledEventNotifier,
     IHearingDetailsUpdatedEventNotifier hearingDetailsUpdatedEventNotifier)
     : ControllerBase
 {
-    
+
     [HttpPost("HearingCancelled")]
     [SwaggerOperation(OperationId = "HearingCancelled")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -31,7 +32,7 @@ public class InternalEventController(
         await hearingCancelledEventNotifier.PushHearingCancelledEvent(conference);
         return NoContent();
     }
-    
+
     [HttpPost("HearingDetailsUpdated")]
     [SwaggerOperation(OperationId = "HearingDetailsUpdated")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
