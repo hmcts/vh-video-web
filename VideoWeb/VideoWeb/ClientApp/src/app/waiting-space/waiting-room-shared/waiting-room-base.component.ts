@@ -67,7 +67,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     connected: boolean;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
-    streamInMain = false;
 
     showVideo: boolean;
     isTransferringIn: boolean;
@@ -819,10 +818,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         // focusing on the button
         const elm = document.getElementById(this.CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT);
         elm?.focus();
-    }
-
-    switchStreamWindows(): void {
-        this.streamInMain = !this.streamInMain;
     }
 
     videoClosedExt() {

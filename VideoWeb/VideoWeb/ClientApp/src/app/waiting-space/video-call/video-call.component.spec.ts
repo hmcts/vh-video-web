@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VideoCallComponent } from './video-call.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
 
 describe('VideoCallComponent', () => {
     let component: VideoCallComponent;
@@ -81,20 +82,23 @@ describe('VideoCallComponent', () => {
         });
     });
 
-    describe('participantsPanelToggled', () => {
+    describe('panelToggled', () => {
         it('should emit event', () => {
-            spyOn(component.participantsPanelToggle, 'emit');
+            spyOn(component.panelToggle, 'emit');
             const panelName = 'PanelName';
-            component.participantsPanelToggled(panelName);
-            expect(component.participantsPanelToggle.emit).toHaveBeenCalledWith(panelName);
+            component.panelToggled(panelName);
+            expect(component.panelToggle.emit).toHaveBeenCalledWith(panelName);
         });
     });
 
-    describe('secondIncomingFeedClicked', () => {
-        it('should emit event', () => {
-            spyOn(component.feedToggle, 'emit');
-            component.secondIncomingFeedClicked();
-            expect(component.feedToggle.emit).toHaveBeenCalled();
+    describe('switchStreamWindows', () => {
+        it('should toggle streamInMain', () => {
+            component.streamInMain = false;
+            component.switchStreamWindows();
+            expect(component.streamInMain).toBeTrue();
+
+            component.switchStreamWindows();
+            expect(component.streamInMain).toBeFalse();
         });
     });
 
@@ -114,6 +118,30 @@ describe('VideoCallComponent', () => {
             it(`should return ${test} when device type service returns ${test}`, () => {
                 mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(test);
                 const result = component.isSupportedBrowserForNetworkHealth;
+                expect(result).toBe(test);
+            });
+        });
+    });
+
+    describe('isJohRoom', () => {
+        const testCases = [true, false];
+
+        testCases.forEach(test => {
+            it(`should return ${test} when helper returns ${test}`, () => {
+                spyOn(ParticipantHelper, 'isInJohRoom').and.returnValue(test);
+                const result = component.isJohRoom;
+                expect(result).toBe(test);
+            });
+        });
+    });
+
+    describe('userIsHost', () => {
+        const testCases = [true, false];
+
+        testCases.forEach(test => {
+            it(`should return ${test} when helper returns ${test}`, () => {
+                spyOn(ParticipantHelper, 'isHost').and.returnValue(test);
+                const result = component.userIsHost;
                 expect(result).toBe(test);
             });
         });

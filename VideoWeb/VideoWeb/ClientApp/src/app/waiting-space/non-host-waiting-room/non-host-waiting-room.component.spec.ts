@@ -252,20 +252,6 @@ describe('NonHostWaitingRoomComponent', () => {
         });
     });
 
-    describe('isJohRoom', () => {
-        it('should return true when the room is a joh room', () => {
-            component.vhParticipant = { ...loggedInParticipant, room: { label: 'JudgeJOHConsultationRoom1' } as VHRoom };
-
-            expect(component.isJohRoom).toBeTrue();
-        });
-
-        it('should return false when the room is not a joh room', () => {
-            component.vhParticipant = { ...loggedInParticipant, room: { label: 'ConsultationRoom1' } as VHRoom };
-
-            expect(component.isJohRoom).toBeFalse();
-        });
-    });
-
     describe('check participant role', () => {
         describe('isObserver', () => {
             it('should return true when the participant is an observer', () => {

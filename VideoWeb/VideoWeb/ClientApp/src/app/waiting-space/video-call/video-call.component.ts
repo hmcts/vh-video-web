@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
 
 @Component({
     selector: 'app-video-call',
@@ -10,8 +11,6 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
     styleUrls: ['../waiting-room-global-styles.scss', './video-call.component.scss']
 })
 export class VideoCallComponent {
-    @Input() isJudge: boolean;
-    @Input() isJohRoom: boolean;
     @Input() canToggleParticipantsPanel: boolean;
     @Input() isPrivateConsultation: boolean;
     @Input() vhParticipant: VHParticipant;
@@ -25,7 +24,6 @@ export class VideoCallComponent {
     @Input() participantEndpoints: VHEndpoint[] = [];
     @Input() showVideo: boolean;
     @Input() presentationStream: MediaStream | URL;
-    @Input() streamInMain: boolean;
     @Input() callStream: MediaStream | URL;
     @Input() roomName: string;
     @Input() caseNameAndNumber: string;
@@ -37,14 +35,23 @@ export class VideoCallComponent {
     @Output() consultationLockToggle = new EventEmitter<boolean>();
     @Output() deviceToggle = new EventEmitter<void>();
     @Output() languageChange = new EventEmitter<void>();
-    @Output() participantsPanelToggle = new EventEmitter<string>();
-    @Output() feedToggle = new EventEmitter<void>();
+    @Output() panelToggle = new EventEmitter<string>();
     @Output() unreadCountUpdate = new EventEmitter<number>();
+
+    streamInMain = false;
 
     constructor(protected deviceTypeService: DeviceTypeService) {}
 
     get isSupportedBrowserForNetworkHealth(): boolean {
         return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
+    }
+
+    get isJohRoom(): boolean {
+        return ParticipantHelper.isInJohRoom(this.vhParticipant);
+    }
+
+    get userIsHost(): boolean {
+        return ParticipantHelper.isHost(this.vhParticipant);
     }
 
     videoWrapperReady() {
@@ -67,15 +74,15 @@ export class VideoCallComponent {
         this.languageChange.emit();
     }
 
-    participantsPanelToggled(panelName: string) {
-        this.participantsPanelToggle.emit(panelName);
-    }
-
-    secondIncomingFeedClicked() {
-        this.feedToggle.emit();
+    panelToggled(panelName: string) {
+        this.panelToggle.emit(panelName);
     }
 
     unreadCountUpdated(count: number) {
         this.unreadCountUpdate.emit(count);
+    }
+
+    switchStreamWindows() {
+        this.streamInMain = !this.streamInMain;
     }
 }

@@ -1,7 +1,7 @@
 <div class="video-background">
   <div class="header-bar">
-    <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation && !isJudge ? 'header-content-grid-with-lock' : 'header-content-grid'">
-      <ng-container *ngIf="!isJohRoom && isPrivateConsultation && !isJudge">
+    <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation && !userIsHost ? 'header-content-grid-with-lock' : 'header-content-grid'">
+      <ng-container *ngIf="!isJohRoom && isPrivateConsultation && !userIsHost">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ roomName }}</h1>
         </div>
@@ -17,7 +17,7 @@
           {{ 'waiting-room.invite-others' | translate }}
         </div>
       </ng-container>
-      <ng-container *ngIf="isJohRoom || !isPrivateConsultation || isJudge">
+      <ng-container *ngIf="isJohRoom || !isPrivateConsultation || userIsHost">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ caseNameAndNumber }}</h1>
           <div
@@ -48,7 +48,7 @@
           (lockConsultation)="lockConsultationClicked($event)"
           (changeDeviceToggle)="changeDeviceToggleClicked()"
           (changeLanguageSelected)="changeLanguageSelected()"
-          (togglePanel)="participantsPanelToggled($event)"
+          (togglePanel)="panelToggled($event)"
         >
         </app-private-consultation-room-controls>
       </ng-container>
@@ -80,8 +80,8 @@
     <div
       id="secondIncomingFeed"
       *ngIf="presentationStream"
-      (keydown)="secondIncomingFeedClicked()"
-      (click)="secondIncomingFeedClicked()"
+      (keydown)="switchStreamWindows()"
+      (click)="switchStreamWindows()"
       appTooltip
       [text]="'waiting-room.switch-to-main-screen' | translate"
       colour="grey"

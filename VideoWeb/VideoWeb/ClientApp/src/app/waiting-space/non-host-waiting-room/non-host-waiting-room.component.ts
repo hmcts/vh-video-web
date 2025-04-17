@@ -112,10 +112,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         );
     }
 
-    get isJohRoom(): boolean {
-        return this.vhParticipant?.room?.label.startsWith('JudgeJOH');
-    }
-
     get isObserver(): boolean {
         return this.vhParticipant?.hearingRole === HearingRole.OBSERVER;
     }

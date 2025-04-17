@@ -5,7 +5,6 @@
 <app-video-call
   *ngIf="showVideo"
   id="video-container"
-  [isJohRoom]="isJohRoom"
   [canToggleParticipantsPanel]="isPrivateConsultation"
   [isPrivateConsultation]="isPrivateConsultation"
   [vhParticipant]="vhParticipant"
@@ -19,7 +18,6 @@
   [participantEndpoints]="participantEndpoints"
   [showVideo]="showVideo"
   [presentationStream]="presentationStream"
-  [streamInMain]="streamInMain"
   [callStream]="callStream"
   [roomName]="getRoomName()"
   [caseNameAndNumber]="getCaseNameAndNumber()"
@@ -29,8 +27,7 @@
   (consultationLockToggle)="setRoomLock($event)"
   (deviceToggle)="showChooseCameraDialog()"
   (languageChange)="showLanguageChangeModal()"
-  (participantsPanelToggle)="toggleParticipantsPanel()"
-  (feedToggle)="switchStreamWindows()"
+  (panelToggle)="toggleParticipantsPanel()"
 >
 </app-video-call>
 

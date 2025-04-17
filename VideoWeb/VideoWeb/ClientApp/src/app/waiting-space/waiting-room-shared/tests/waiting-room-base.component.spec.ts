@@ -1188,17 +1188,6 @@ describe('WaitingRoomBaseDirective', () => {
                 expect(component.presentationStream).toBe(null);
                 expect(videoCallService.stopPresentation).toHaveBeenCalled();
             });
-
-            it('should switch stream windows', () => {
-                // ToTrue
-                component.streamInMain = false;
-                component.switchStreamWindows();
-                expect(component.streamInMain).toBeTrue();
-
-                // ToFalse
-                component.switchStreamWindows();
-                expect(component.streamInMain).toBeFalse();
-            });
         });
 
         describe('handleCallSetup', () => {

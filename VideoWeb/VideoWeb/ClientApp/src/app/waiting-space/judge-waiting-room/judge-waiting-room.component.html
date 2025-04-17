@@ -6,7 +6,6 @@
   <div class="govuk-grid-row" *ngIf="showVideo">
     <app-video-call
       id="video-container"
-      [isJudge]="true"
       [canToggleParticipantsPanel]="true"
       [isPrivateConsultation]="isPrivateConsultation"
       [vhParticipant]="vhParticipant"
@@ -20,7 +19,6 @@
       [participantEndpoints]="participantEndpoints"
       [showVideo]="showVideo"
       [presentationStream]="presentationStream"
-      [streamInMain]="streamInMain"
       [callStream]="callStream"
       [caseNameAndNumber]="getCaseNameAndNumber()"
       [isParticipantsPanelEnabled]="true"
@@ -28,8 +26,7 @@
       (ready)="setTrapFocus()"
       (leaveConsultation)="showLeaveConsultationModal()"
       (deviceToggle)="showChooseCameraDialog()"
-      (participantsPanelToggle)="togglePanel($event)"
-      (feedToggle)="switchStreamWindows()"
+      (panelToggle)="togglePanel($event)"
       (unreadCountUpdate)="unreadMessageCounterUpdate($event)">
     </app-video-call>
   </div>
