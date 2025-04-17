@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ConferenceForIndividualResponse } from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
