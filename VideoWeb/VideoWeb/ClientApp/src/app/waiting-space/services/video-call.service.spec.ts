@@ -72,32 +72,36 @@ describe('VideoCallService', () => {
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
-        pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
-            'connect',
-            'makeCall',
-            'muteAudio',
-            'muteVideo',
-            'disconnect',
-            'setBuzz',
-            'clearBuzz',
-            'setParticipantMute',
-            'setMuteAllGuests',
-            'clearAllBuzz',
-            'setParticipantSpotlight',
-            'disconnectCall',
-            'addCall',
-            'present',
-            'getPresentation',
-            'stopPresentation',
-            'renegotiate',
-            'dialOut',
-            'disconnectParticipant',
-            'setParticipantText',
-            'transformLayout',
-            'setParticipantText',
-            'setSendToAudioMixes',
-            'setReceiveFromAudioMix'
-        ]);
+        pexipSpy = jasmine.createSpyObj<PexipClient>(
+            'PexipClient',
+            [
+                'connect',
+                'makeCall',
+                'muteAudio',
+                'muteVideo',
+                'disconnect',
+                'setBuzz',
+                'clearBuzz',
+                'setParticipantMute',
+                'setMuteAllGuests',
+                'clearAllBuzz',
+                'setParticipantSpotlight',
+                'disconnectCall',
+                'addCall',
+                'present',
+                'getPresentation',
+                'stopPresentation',
+                'renegotiate',
+                'dialOut',
+                'disconnectParticipant',
+                'setParticipantText',
+                'transformLayout',
+                'setParticipantText',
+                'setSendToAudioMixes',
+                'setReceiveFromAudioMix'
+            ],
+            ['call']
+        );
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
 
@@ -171,7 +175,7 @@ describe('VideoCallService', () => {
 
     it('should not disconnect from pexip when api has not been initialised', () => {
         service.pexipAPI = null;
-        expect(() => service.disconnectFromCall()).toThrowError('[VideoCallService] - Pexip Client has not been initialised.');
+        expect(() => service.disconnectFromCall()).not.toThrowError('[VideoCallService] - Pexip Client has not been initialised.');
     });
 
     it('should call pexip with call details', async () => {
@@ -211,6 +215,24 @@ describe('VideoCallService', () => {
 
         await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, '12345');
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+    });
+
+    it('should diconnected from call before making a new call is call exist on Pexip Client', async () => {
+        const node = 'node124';
+        const conferenceAlias = 'WR173674fff';
+        const participantDisplayName = 'T1;John Doe';
+        const maxBandwidth = 767;
+
+        const callSpy = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], ['stream']);
+        getSpiedPropertyGetter(pexipSpy, 'call').and.returnValue(callSpy);
+        const disconnectFromCallSpy = spyOn(service, 'disconnectFromCall').and.callFake(() => {
+            service.pexipAPI = pexipSpy;
+        });
+
+        service.pexipAPI = pexipSpy;
+
+        await service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
+        expect(disconnectFromCallSpy).toHaveBeenCalled();
     });
 
     it('should init the call tag', () => {
