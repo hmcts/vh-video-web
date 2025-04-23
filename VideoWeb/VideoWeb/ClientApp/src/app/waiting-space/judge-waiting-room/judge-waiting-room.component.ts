@@ -363,7 +363,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private onWowzaDisconnected() {
-        if (this.vhConference.audioRecordingRequired && this.vhConference.status === ConferenceStatus.InSession && !this.recordingPaused) {
+        if (
+            this.vhConference.countdownComplete &&
+            this.vhConference.audioRecordingRequired &&
+            this.vhConference.status === ConferenceStatus.InSession &&
+            !this.recordingPaused
+        ) {
             if (this.audioRecordingService.restartActioned) {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             } else {
