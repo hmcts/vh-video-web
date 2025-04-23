@@ -16,8 +16,8 @@
   outline: none;
   cursor: pointer;
   transition: 0.3s;
-  @include govuk-font(19, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
+  @include govuk-font(19, $weight: 'regular', $line-height: 1.11111);
 }
 
 .tab button:hover {
