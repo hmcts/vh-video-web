@@ -1,18 +1,19 @@
-@import 'govuk-frontend/dist/govuk/base';
+@use 'govuk-frontend/dist/govuk/base' as *;
 
 :host {
-  font-size: 0.9em;
-  position: relative;
-  overflow: hidden;
-  padding: 20px !important;
-  width: 180px !important;
-  border-radius: 2px;
-  display: flex;
-  flex-direction: column;
-  font-family: 'GDS Transport', arial, sans-serif;
 
-  background: govuk-colour('white');
-  color: govuk-colour('black');
+
+    font-size: 0.9em;
+    position: relative;
+    overflow: hidden;
+    padding: 20px !important;
+    width: 180px !important;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'GDS Transport', arial, sans-serif;
+    background: govuk-colour('white');
+    color: govuk-colour('black');
 }
 
 .content {

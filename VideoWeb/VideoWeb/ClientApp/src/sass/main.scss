@@ -1,2 +1,2 @@
-@import 'abstracts';
-@import 'vendor-modifications';
+@use 'abstracts' as *;
+@use 'vendor-modifications' as *;
