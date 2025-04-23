@@ -4,14 +4,17 @@
   </div>
 
   <div class="govuk-grid-column-three-quarters">
-    <label class="govuk-label" for="venue-allocation-list-label"> {{ 'venue-list.selection-default-text' | translate
+    <label  
+      id="venue-allocation-list-label"
+      class="govuk-label" 
+      for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
       }}</label>
     <ng-select 
       id="venue-allocation-list" 
       class="selection-list" 
       [attr.aria-autocomplete]="'list'"
-      [labelForId]="'venue-allocation-list-label'" 
-      [attr.aria-label]="'venue-list.allocation-list-label' | translate"
+      [labelForId]="'venue-allocation-list-label-for'" 
+      [attr.aria-labelledby]="'venue-allocation-list-label'"
       [items]="venues" 
       [multiple]="true" 
       bindLabel="name" 
@@ -24,12 +27,13 @@
       [selectOnTab]="true"
     >
       <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-        <input 
-          id="venue-{{ index }}" 
-          type="checkbox" 
-          [ngModel]="item$.selected"
-          [attr.aria-label]="'venue-list.label' | translate: { name: item.name}" 
-        />
+        <span 
+          class="custom-checkbox" 
+          [class.checked]="item$.selected" 
+          [attr.aria-label]="'venue-list.label' | translate: { name: item.name}"
+          role="checkbox" 
+          [attr.aria-checked]="item$.selected">
+        </span>
         {{ item.name }}
       </ng-template>
     </ng-select>

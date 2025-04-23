@@ -8,3 +8,15 @@
 .ng-select.custom ::ng-deep .ng-placeholder {
   color: govuk-colour('black');
 }
+
+.custom-checkbox {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.custom-checkbox.checked {
+  background-color: #000;
+}
