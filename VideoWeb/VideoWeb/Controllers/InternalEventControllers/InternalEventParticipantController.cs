@@ -20,6 +20,7 @@ namespace VideoWeb.Controllers.InternalEventControllers;
 [ApiController]
 [Route("internalevent")]
 [Authorize(AuthenticationSchemes = "InternalEvent")]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class InternalEventParticipantController(
     IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
     IConferenceService conferenceService,
