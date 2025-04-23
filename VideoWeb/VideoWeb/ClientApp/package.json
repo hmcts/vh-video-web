@@ -73,6 +73,7 @@
     "ngx-clipboard": "^16.0.0",
     "ngx-device-detector": "^9.0.0",
     "ngx-toastr": "^19.0.0",
+    "no-sleep-app": "^1.1.2",
     "rxjs": "^6.6.6",
     "tslib": "^2.1.0",
     "webrtc-adapter": "^9.0.1",
