@@ -17,6 +17,7 @@ import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe'
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VenueListComponentDirective } from '../venue-list.component';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('VHOfficerVenueListComponent', () => {
     let component: VhOfficerVenueListComponent;
@@ -26,6 +27,7 @@ describe('VHOfficerVenueListComponent', () => {
     const logger: Logger = new MockLogger();
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -74,6 +76,7 @@ describe('VHOfficerVenueListComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getActiveConferences']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -88,7 +91,8 @@ describe('VHOfficerVenueListComponent', () => {
             vhoQueryService,
             logger,
             launchDarklyServiceSpy,
-            profileServiceSpy
+            profileServiceSpy,
+            translateServiceSpy
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));

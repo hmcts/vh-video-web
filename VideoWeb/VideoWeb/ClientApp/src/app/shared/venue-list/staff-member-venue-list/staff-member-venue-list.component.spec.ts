@@ -15,6 +15,7 @@ import { By } from '@angular/platform-browser';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('StaffMemerVenueListComponent', () => {
     let component: StaffMemberVenueListComponent;
@@ -24,6 +25,7 @@ describe('StaffMemerVenueListComponent', () => {
     const logger: Logger = new MockLogger();
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
@@ -50,6 +52,7 @@ describe('StaffMemerVenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -64,7 +67,8 @@ describe('StaffMemerVenueListComponent', () => {
             vhoQueryService,
             logger,
             launchDarklyServiceSpy,
-            profileServiceSpy
+            profileServiceSpy,
+            translateServiceSpy
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
