@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
@@ -18,6 +19,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             _eventHandler = new CountdownFinishedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
+            conference.CountdownComplete = false;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {
@@ -32,6 +34,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.CountdownFinished(conference.Id),
                 Times.Exactly(participantCount));
+
+            conference.CountdownComplete.Should().BeTrue();
         }
     }
 }

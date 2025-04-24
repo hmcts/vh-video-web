@@ -349,6 +349,7 @@ public class StartConsultationTest
     public async Task Does_Not_Update_Cache_When_JOH_Consultation_Room_Is_Locked()
     {
         var controller = GetControllerWithContextForRole(AppRoles.JudgeRole);
+        controller.WaitForLockRoomTime = 1;
         var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
         var expectedKeyName = $"johConsultationRoomLockedStatus_{request.ConferenceId}";
         _mocker.Mock<IDistributedJohConsultationRoomLockCache>().Setup(x => x.IsJohRoomLocked(expectedKeyName, It.IsAny<CancellationToken>()))

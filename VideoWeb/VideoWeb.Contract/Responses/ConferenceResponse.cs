@@ -45,6 +45,11 @@ namespace VideoWeb.Contract.Responses
         public ConferenceStatus Status { get; set; }
         
         /// <summary>
+        /// Has the countdown completed
+        /// </summary>
+        public bool CountdownCompleted { get; set; }
+        
+        /// <summary>
         /// The participant meeting room uri
         /// </summary>
         public string ParticipantUri { get; set; }

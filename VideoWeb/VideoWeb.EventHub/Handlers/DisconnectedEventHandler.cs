@@ -17,7 +17,8 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected, callbackEvent.Reason);
+            return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected,
+                callbackEvent.Reason, callbackEvent);
         }
     }
 }

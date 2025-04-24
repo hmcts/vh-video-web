@@ -19,7 +19,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantStatusMessage(ParticipantState.NotSignedIn, ParticipantStatus.NotSignedIn, callbackEvent.Reason);
+            return PublishParticipantStatusMessage(ParticipantState.NotSignedIn, ParticipantStatus.NotSignedIn, callbackEvent.Reason, null);
         }
     }
 }
