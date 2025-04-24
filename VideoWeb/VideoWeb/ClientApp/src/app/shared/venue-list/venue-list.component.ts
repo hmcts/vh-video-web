@@ -159,5 +159,16 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         });
     }
 
+    onDropdownOpen(): void {
+        setTimeout(() => {
+          const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
+          if (listbox) {
+            listbox.setAttribute('aria-label', 'Venue selection list');
+            listbox.setAttribute('title', 'Venue selection list');
+          }
+        });
+      }
+
+
     abstract goToHearingList();
 }

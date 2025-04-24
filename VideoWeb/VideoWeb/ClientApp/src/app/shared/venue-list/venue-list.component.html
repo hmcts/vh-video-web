@@ -9,34 +9,46 @@
       class="govuk-label" 
       for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
       }}</label>
-    <ng-select 
-      id="venue-allocation-list" 
-      class="selection-list" 
-      [attr.aria-autocomplete]="'list'"
-      [labelForId]="'venue-allocation-list-label-for'" 
-      [attr.aria-labelledby]="'venue-allocation-list-label'"
-      [items]="venues" 
-      [multiple]="true" 
-      bindLabel="name" 
-      bindValue="name"
-      [placeholder]="'venue-list.selection-default-text' | translate" 
-      [(ngModel)]="selectedVenues"
-      [closeOnSelect]="false" 
-      (change)="updateVenueSelection()" 
-      [clearSearchOnAdd]="true" 
-      [selectOnTab]="true"
-    >
-      <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-        <span 
-          class="custom-checkbox" 
-          [class.checked]="item$.selected" 
-          [attr.aria-label]="'venue-list.label' | translate: { name: item.name}"
-          role="checkbox" 
-          [attr.aria-checked]="item$.selected">
-        </span>
-        {{ item.name }}
-      </ng-template>
-    </ng-select>
+      <div role="region" aria-labelledby="venue-allocation-list-label">
+        <ng-select 
+          id="venue-allocation-list" 
+          class="selection-list" 
+          [attr.aria-autocomplete]="'list'"
+          [labelForId]="'venue-allocation-list-label-for'" 
+          [items]="venues" 
+          [multiple]="true" 
+          bindLabel="name" 
+          bindValue="name"
+          [placeholder]="'venue-list.selection-default-text' | translate" 
+          [(ngModel)]="selectedVenues"
+          [closeOnSelect]="false" 
+          (change)="updateVenueSelection()" 
+          [clearSearchOnAdd]="true" 
+          [selectOnTab]="true"
+          (open)="onDropdownOpen()"
+        >
+          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+            <span 
+              class="custom-checkbox" 
+              [class.checked]="item$.selected" 
+              [attr.aria-label]="'venue-list.label' | translate: { name: item.name}"
+              [attr.aria-checked]="item$.selected"
+              aria-hidden="true"
+            >
+            </span>
+            {{ item.name }}
+          </ng-template>
+          <ng-template ng-dropdown-panel>
+            <div 
+              role="listbox" 
+              class="ng-dropdown-panel-items scroll-host" 
+              aria-label="Venue selection list"
+              title="Venue selection list"
+            >
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
   </div>
   <div id="cso-list" *ngIf="showVhoSpecificContent">
     <div class="govuk-grid-column-full">
