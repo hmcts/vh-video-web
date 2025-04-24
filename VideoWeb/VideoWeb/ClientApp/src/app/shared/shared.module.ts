@@ -116,9 +116,11 @@ export function getSettings(configService: ConfigService) {
         HttpClientModule,
         SharedRoutingModule,
         ToastrModule.forRoot({
+            preventDuplicates: true,
             toastComponent: VhToastComponent
         }),
         ToastrModule.forRoot({
+            preventDuplicates: true,
             toastComponent: RoomClosingToastComponent
         }),
         TranslateModule,
