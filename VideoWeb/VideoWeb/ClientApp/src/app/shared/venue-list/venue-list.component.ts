@@ -89,21 +89,12 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
                 listbox.setAttribute('aria-label', 'Venue selection list');
                 listbox.setAttribute('title', 'Venue selection list');
                 listbox.setAttribute('tabindex', '0');
-                // listbox.setAttribute('role', 'option');
             }
 
-            // ✅ remove role="listbox" from the nested div
             const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
             if (nestedDiv) {
-                // nestedDiv.removeAttribute('role');
                 nestedDiv.setAttribute('role', 'group');
             }
-
-            // ✅ Make sure each item has role="option"
-            const options = document.querySelectorAll('.ng-option'); // or however your options render
-            options.forEach(option => {
-                option.setAttribute('role', 'option');
-            });
         });
     }
 
