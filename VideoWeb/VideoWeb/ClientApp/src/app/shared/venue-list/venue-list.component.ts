@@ -165,6 +165,7 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
           if (listbox) {
             listbox.setAttribute('aria-label', 'Venue selection list');
             listbox.setAttribute('title', 'Venue selection list');
+            listbox.setAttribute('tabindex', '0');
           }
         });
       }
