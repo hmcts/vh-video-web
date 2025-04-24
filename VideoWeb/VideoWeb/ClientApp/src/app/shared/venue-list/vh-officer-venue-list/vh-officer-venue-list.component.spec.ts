@@ -250,6 +250,7 @@ describe('VHOfficerVenueListComponent', () => {
                     { provide: VhoQueryService, useValue: vhoQueryService },
                     { provide: Logger, useValue: logger },
                     { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy },
+                    { provide: TranslateService, useValue: translateServiceSpy },
                     { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             });
