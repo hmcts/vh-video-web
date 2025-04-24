@@ -82,6 +82,31 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         this.onDestroy$.complete();
     }
 
+    onDropdownOpen(): void {
+        setTimeout(() => {
+            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
+            if (listbox) {
+                listbox.setAttribute('aria-label', 'Venue selection list');
+                listbox.setAttribute('title', 'Venue selection list');
+                listbox.setAttribute('tabindex', '0');
+                // listbox.setAttribute('role', 'option');
+            }
+
+            // ✅ remove role="listbox" from the nested div
+            const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
+            if (nestedDiv) {
+                // nestedDiv.removeAttribute('role');
+                nestedDiv.setAttribute('role', 'group');
+            }
+
+            // ✅ Make sure each item has role="option"
+            const options = document.querySelectorAll('.ng-option'); // or however your options render
+            options.forEach(option => {
+                option.setAttribute('role', 'option');
+            });
+        });
+    }
+
     updateVenueSelection() {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
@@ -158,18 +183,6 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
             input?.removeAttribute('aria-placeholder');
         });
     }
-
-    onDropdownOpen(): void {
-        setTimeout(() => {
-          const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
-          if (listbox) {
-            listbox.setAttribute('aria-label', 'Venue selection list');
-            listbox.setAttribute('title', 'Venue selection list');
-            listbox.setAttribute('tabindex', '0');
-          }
-        });
-      }
-
 
     abstract goToHearingList();
 }
