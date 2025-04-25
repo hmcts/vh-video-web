@@ -42,6 +42,12 @@ namespace VideoWeb.Common.Models
         public string TelephoneConferenceId { get; set; }
         public string TelephoneConferenceNumbers { get; set; }
         public Supplier Supplier { get; set; }
+        /// <summary>
+        /// This is the time stamp of the last event that was sent for a change to the conference (not for participants)
+        /// </summary>
+        public DateTime? LastEventTime { get; set; }
+
+        public bool CountdownComplete { get; set; }
         
         /// <summary>
         /// The username of the allocated CSO
@@ -157,23 +163,28 @@ namespace VideoWeb.Common.Models
             return Participants.Find(p => p.Id == id);
         }
 
-        public void UpdateParticipantStatus(Participant participant, ParticipantStatus status)
+        public void UpdateParticipantStatus(Participant participant, ParticipantStatus status, DateTime? lastEventTime)
         {
             var participantToUpdate = Participants.Find(p => p.Id == participant.Id);
             if (participantToUpdate == null) return;
             participantToUpdate.ParticipantStatus = status;
-            
+            if (lastEventTime.HasValue)
+            {
+                participantToUpdate.LastEventTime = lastEventTime.Value;
+            }
+
             if(participantToUpdate.CurrentRoom != null && status == ParticipantStatus.Disconnected)
             {
                 RemoveParticipantFromConsultationRoom(participantToUpdate, participantToUpdate.CurrentRoom.Label);
             }
         }
         
-        public void UpdateEndpointStatus(Endpoint endpoint, EndpointStatus status)
+        public void UpdateEndpointStatus(Endpoint endpoint, EndpointStatus status, DateTime lastEventTime)
         {
             var endpointToUpdate = Endpoints.Find(p => p.Id == endpoint.Id);
             if (endpointToUpdate == null) return;
             endpointToUpdate.EndpointStatus = status;
+            endpointToUpdate.LastEventTime = lastEventTime;
         }
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
@@ -297,9 +308,14 @@ namespace VideoWeb.Common.Models
             return consultationRoom;
         }
 
-        public void UpdateConferenceStatus(ConferenceStatus newState)
+        public void UpdateConferenceStatus(ConferenceStatus newState, DateTime eventTimestamp)
         {
             CurrentStatus = newState;
+            LastEventTime = eventTimestamp;
+            if(newState is ConferenceStatus.Closed or ConferenceStatus.Paused or ConferenceStatus.Suspended)
+            {
+                CountdownComplete = false;
+            }
         }
 
         public void UpdateClosedDateTime(DateTime? newClosedDateTime)

@@ -21,6 +21,7 @@ export function mapConferenceToVHConference(conference: ConferenceResponse): VHC
         id: conference.id,
         scheduledDateTime: conference.scheduled_date_time,
         endDateTime: conference.closed_date_time,
+        countdownComplete: conference.countdown_completed,
         duration: conference.scheduled_duration,
         caseNumber: conference.case_number,
         caseName: conference.case_name,

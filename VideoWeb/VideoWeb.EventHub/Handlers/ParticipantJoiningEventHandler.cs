@@ -16,7 +16,8 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantStatusMessage(ParticipantState.Joining, ParticipantStatus.Joining, callbackEvent.Reason);
+            return PublishParticipantStatusMessage(ParticipantState.Joining, ParticipantStatus.Joining,
+                callbackEvent.Reason, callbackEvent);
         }
     }
 }
