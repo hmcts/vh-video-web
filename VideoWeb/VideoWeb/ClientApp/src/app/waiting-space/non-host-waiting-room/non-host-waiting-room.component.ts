@@ -43,8 +43,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
-    isParticipantsPanelHidden = false;
-
     showJoinHearingWarning = false;
     displayLanguageModal: boolean;
     displayLeaveHearingPopup = false;
@@ -159,10 +157,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.setTitle();
         this.divTrapId = 'video-container';
         this.init();
-    }
-
-    toggleParticipantsPanel() {
-        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
     ngOnDestroy(): void {

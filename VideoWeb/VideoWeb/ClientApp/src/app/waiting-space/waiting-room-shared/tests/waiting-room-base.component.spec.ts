@@ -285,54 +285,6 @@ describe('WaitingRoomBaseDirective', () => {
         });
     });
 
-    describe('togglePanel', () => {
-        const participantPanelName = 'Participants';
-        const chatPanelName = 'Chat';
-
-        it('should toggle panel from false to true', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = false;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(participantPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(true);
-            expect(component.panelStates.Chat).toBe(false);
-
-            expect(component.areParticipantsVisible).toBeTrue();
-        });
-
-        it('should toggle panel from false to true and reset any existing true to false', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = true;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(participantPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(false);
-            expect(component.panelStates.Chat).toBe(false);
-            expect(component.areParticipantsVisible).toBeFalse();
-        });
-
-        it('should toggle panel and chat panel should be visible', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = true;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(chatPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(false);
-            expect(component.panelStates.Chat).toBe(true);
-            expect(component.areParticipantsVisible).toBeFalse();
-        });
-    });
-
     describe('isParticipantInCorrectWaitingRoomState', () => {
         it('should return true when participant is connected, available and is not linked to a room', () => {
             component.connected = true;

@@ -42,19 +42,19 @@
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
           [showConsultationControls]="showConsultationControls"
-          [areParticipantsVisible]="!isParticipantsPanelHidden"
+          [areParticipantsVisible]="areParticipantsVisible"
           [isChatVisible]="isChatVisible"
           (leaveConsultation)="leaveConsultationClicked()"
           (lockConsultation)="lockConsultationClicked($event)"
           (changeDeviceToggle)="changeDeviceToggleClicked()"
           (changeLanguageSelected)="changeLanguageSelected()"
-          (togglePanel)="panelToggled($event)"
+          (togglePanel)="togglePanel($event)"
         >
         </app-private-consultation-room-controls>
       </ng-container>
     </div>
   </div>
-  <div *ngIf="hearing && isParticipantsPanelEnabled" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
+  <div *ngIf="hearing && isParticipantsPanelEnabled" class="panel-wrapper" [ngClass]="{ 'hide-panel': !areParticipantsVisible }">
     <app-private-consultation-participants
       *ngIf="isPrivateConsultation"
       [conference]="vhConference"

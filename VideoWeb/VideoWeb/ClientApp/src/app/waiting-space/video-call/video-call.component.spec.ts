@@ -82,15 +82,6 @@ describe('VideoCallComponent', () => {
         });
     });
 
-    describe('panelToggled', () => {
-        it('should emit event', () => {
-            spyOn(component.panelToggle, 'emit');
-            const panelName = 'PanelName';
-            component.panelToggled(panelName);
-            expect(component.panelToggle.emit).toHaveBeenCalledWith(panelName);
-        });
-    });
-
     describe('switchStreamWindows', () => {
         it('should toggle streamInMain', () => {
             component.streamInMain = false;
@@ -144,6 +135,86 @@ describe('VideoCallComponent', () => {
                 const result = component.userIsHost;
                 expect(result).toBe(test);
             });
+        });
+    });
+
+    describe('togglePanel', () => {
+        const participantPanelName = 'Participants';
+        const chatPanelName = 'Chat';
+
+        it('should toggle panel from false to true', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = false;
+            component.panelStates[chatPanelName] = false;
+
+            // Act
+            component.togglePanel(participantPanelName);
+
+            // Assert
+            expect(component.panelStates.Participants).toBe(true);
+            expect(component.panelStates.Chat).toBe(false);
+
+            expect(component.areParticipantsVisible).toBeTrue();
+        });
+
+        it('should toggle panel from false to true and reset any existing true to false', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = true;
+            component.panelStates[chatPanelName] = false;
+
+            // Act
+            component.togglePanel(participantPanelName);
+
+            // Assert
+            expect(component.panelStates.Participants).toBe(false);
+            expect(component.panelStates.Chat).toBe(false);
+            expect(component.areParticipantsVisible).toBeFalse();
+        });
+
+        it('should toggle panel and chat panel should be visible', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = true;
+            component.panelStates[chatPanelName] = false;
+
+            // Act
+            component.togglePanel(chatPanelName);
+
+            // Assert
+            expect(component.panelStates.Participants).toBe(false);
+            expect(component.panelStates.Chat).toBe(true);
+            expect(component.areParticipantsVisible).toBeFalse();
+        });
+    });
+
+    describe('isChatVisible', () => {
+        it('should return true when chat panel is visible and IM is enabled', () => {
+            component.panelStates['Chat'] = true;
+            component.isIMEnabled = true;
+            expect(component.isChatVisible).toBeTrue();
+        });
+
+        it('should return false when chat panel is not visible', () => {
+            component.panelStates['Chat'] = false;
+            component.isIMEnabled = true;
+            expect(component.isChatVisible).toBeFalse();
+        });
+
+        it('should return false when IM is not enabled', () => {
+            component.panelStates['Chat'] = true;
+            component.isIMEnabled = false;
+            expect(component.isChatVisible).toBeFalse();
+        });
+    });
+
+    describe('areParticipantsVisible', () => {
+        it('should return true when participants panel is visible', () => {
+            component.panelStates['Participants'] = true;
+            expect(component.areParticipantsVisible).toBeTrue();
+        });
+
+        it('should return false when participants panel is not visible', () => {
+            component.panelStates['Participants'] = false;
+            expect(component.areParticipantsVisible).toBeFalse();
         });
     });
 });

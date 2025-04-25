@@ -13,7 +13,6 @@
   [connected]="connected"
   [outgoingStream]="outgoingStream"
   [showConsultationControls]="showConsultationControls"
-  [isParticipantsPanelHidden]="isParticipantsPanelHidden"
   [hearing]="hearing"
   [participantEndpoints]="participantEndpoints"
   [showVideo]="showVideo"
@@ -27,7 +26,6 @@
   (consultationLockToggle)="setRoomLock($event)"
   (deviceToggle)="showChooseCameraDialog()"
   (languageChange)="showLanguageChangeModal()"
-  (panelToggle)="toggleParticipantsPanel()"
 >
 </app-video-call>
 

@@ -14,7 +14,6 @@
       [connected]="connected"
       [outgoingStream]="outgoingStream"
       [showConsultationControls]="showConsultationControls"
-      [isParticipantsPanelHidden]="!areParticipantsVisible"
       [hearing]="hearing"
       [participantEndpoints]="participantEndpoints"
       [showVideo]="showVideo"
@@ -22,12 +21,12 @@
       [callStream]="callStream"
       [caseNameAndNumber]="getCaseNameAndNumber()"
       [isParticipantsPanelEnabled]="true"
-      [isChatVisible]="isChatVisible && defineIsIMEnabled()"
       (ready)="setTrapFocus()"
       (leaveConsultation)="showLeaveConsultationModal()"
       (deviceToggle)="showChooseCameraDialog()"
       (panelToggle)="togglePanel($event)"
-      (unreadCountUpdate)="unreadMessageCounterUpdate($event)">
+      (unreadCountUpdate)="unreadMessageCounterUpdate($event)"
+      [isIMEnabled]="defineIsIMEnabled()">
     </app-video-call>
   </div>
   <div *ngIf="!loadingData && vhConference" [ngClass]="{ 'no-mass': showVideo }">

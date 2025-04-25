@@ -82,12 +82,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     divTrapId: string;
 
-    panelTypes = ['Participants', 'Chat'];
-    panelStates = {
-        Participants: true,
-        Chat: false
-    };
-
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: ReturnType<typeof setTimeout> | number;
 
@@ -177,14 +171,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         ).length;
     }
 
-    get isChatVisible() {
-        return this.panelStates['Chat'];
-    }
-
-    get areParticipantsVisible() {
-        return this.panelStates['Participants'];
-    }
-
     get isSupportedBrowserForNetworkHealth(): boolean {
         return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
     }
@@ -254,17 +240,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     stringToTranslateId(str: string) {
         return convertStringToTranslationId(str);
-    }
-
-    togglePanel(panelName: string) {
-        const newState = !this.panelStates[panelName];
-        if (newState) {
-            this.panelTypes.forEach(pt => {
-                this.panelStates[pt] = false;
-            });
-        }
-
-        this.panelStates[panelName] = newState;
     }
 
     getCaseNameAndNumber() {

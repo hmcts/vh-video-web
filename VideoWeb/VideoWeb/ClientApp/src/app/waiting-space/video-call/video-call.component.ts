@@ -19,7 +19,6 @@ export class VideoCallComponent {
     @Input() connected: boolean;
     @Input() outgoingStream: MediaStream | URL;
     @Input() showConsultationControls: boolean;
-    @Input() isParticipantsPanelHidden: boolean;
     @Input() hearing: VHHearing;
     @Input() participantEndpoints: VHEndpoint[] = [];
     @Input() showVideo: boolean;
@@ -28,17 +27,21 @@ export class VideoCallComponent {
     @Input() roomName: string;
     @Input() caseNameAndNumber: string;
     @Input() isParticipantsPanelEnabled: boolean;
-    @Input() isChatVisible: boolean;
+    @Input() isIMEnabled: boolean;
 
     @Output() ready = new EventEmitter<void>();
     @Output() leaveConsultation = new EventEmitter<void>();
     @Output() consultationLockToggle = new EventEmitter<boolean>();
     @Output() deviceToggle = new EventEmitter<void>();
     @Output() languageChange = new EventEmitter<void>();
-    @Output() panelToggle = new EventEmitter<string>();
     @Output() unreadCountUpdate = new EventEmitter<number>();
 
     streamInMain = false;
+    panelTypes = ['Participants', 'Chat'];
+    panelStates = {
+        Participants: true,
+        Chat: false
+    };
 
     constructor(protected deviceTypeService: DeviceTypeService) {}
 
@@ -52,6 +55,14 @@ export class VideoCallComponent {
 
     get userIsHost(): boolean {
         return ParticipantHelper.isHost(this.vhParticipant);
+    }
+
+    get isChatVisible() {
+        return this.panelStates['Chat'] && this.isIMEnabled;
+    }
+
+    get areParticipantsVisible() {
+        return this.panelStates['Participants'];
     }
 
     videoWrapperReady() {
@@ -74,15 +85,22 @@ export class VideoCallComponent {
         this.languageChange.emit();
     }
 
-    panelToggled(panelName: string) {
-        this.panelToggle.emit(panelName);
-    }
-
     unreadCountUpdated(count: number) {
         this.unreadCountUpdate.emit(count);
     }
 
     switchStreamWindows() {
         this.streamInMain = !this.streamInMain;
+    }
+
+    togglePanel(panelName: string) {
+        const newState = !this.panelStates[panelName];
+        if (newState) {
+            this.panelTypes.forEach(pt => {
+                this.panelStates[pt] = false;
+            });
+        }
+
+        this.panelStates[panelName] = newState;
     }
 }

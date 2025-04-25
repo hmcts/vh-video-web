@@ -319,14 +319,6 @@ describe('NonHostWaitingRoomComponent', () => {
         });
     });
 
-    describe('toggleParticipantsPanel', () => {
-        it('should toggle the participants panel', () => {
-            component.isParticipantsPanelHidden = false;
-            component.toggleParticipantsPanel();
-            expect(component.isParticipantsPanelHidden).toBeTrue();
-        });
-    });
-
     describe('subscribeToClock', () => {
         beforeEach(() => {
             component.subscribeToClock();
