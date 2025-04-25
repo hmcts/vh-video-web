@@ -9,7 +9,7 @@
       class="govuk-label" 
       for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
       }}</label>
-      <div role="region" aria-labelledby="venue-allocation-list-label">
+      <section role="region" aria-labelledby="venue-allocation-list-label">
         <ng-select 
           id="venue-allocation-list" 
           class="selection-list" 
@@ -39,7 +39,7 @@
             {{ item.name }}
           </ng-template>
         </ng-select>
-      </div>
+      </section>
   </div>
   <div id="cso-list" *ngIf="showVhoSpecificContent">
     <div class="govuk-grid-column-full">
