@@ -28,14 +28,6 @@
           (open)="onDropdownOpen()"
         >
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            <span 
-              class="custom-checkbox" 
-              [class.checked]="item$.selected" 
-              [attr.aria-label]="'venue-list.label' | translate: { name: item.name}"
-              [attr.aria-checked]="item$.selected"
-              aria-hidden="true"
-            >
-            </span>
             {{ item.name }}
           </ng-template>
         </ng-select>
