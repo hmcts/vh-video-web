@@ -10,13 +10,14 @@ namespace VideoWeb.EventHub.Handlers
         ILogger<EventHandlerBase> logger)
         : EventHandlerBase(hubContext, conferenceService, logger)
     {
+        private readonly IConferenceService _conferenceService = conferenceService;
 
         public override EventType EventType => EventType.CountdownFinished;
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             SourceConference.CountdownComplete = true;
-            await conferenceService.UpdateConferenceAsync(SourceConference);
+            await _conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
