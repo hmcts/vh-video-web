@@ -29,6 +29,10 @@ namespace VideoWeb.Common.Models
         public List<LinkedParticipant> LinkedParticipants { get; set; }
         public string ExternalReferenceId { get; set; }
         public List<string> ProtectFrom { get; set; } = [];
+        /// <summary>
+        /// This is the time stamp of the last event that was sent for a change to the participant
+        /// </summary>
+        public DateTime? LastEventTime { get; set; }
 
         public bool IsJudge()
         {

@@ -17,7 +17,7 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var conferenceState = ConferenceStatus.Closed;
-            return PublishConferenceStatusMessage(conferenceState);
+            return PublishConferenceStatusMessage(conferenceState, callbackEvent);
         }
     }
 }

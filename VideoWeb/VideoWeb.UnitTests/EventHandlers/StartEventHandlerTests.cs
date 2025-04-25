@@ -36,5 +36,29 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Times.Exactly(participantCount));
             TestConference.CurrentStatus.Should().Be(ConferenceStatus.InSession);
         }
+        
+        [Test]
+        public async Task Should_still_process_when_last_time_stamp_is_newer_than_event_timestamp()
+        {
+            _eventHandler = new StartEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
+
+            var conference = TestConference;
+            conference.LastEventTime = DateTime.UtcNow.AddSeconds(1);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Start,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                TimeStampUtc = DateTime.UtcNow.AddSeconds(-1)
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.InSession),
+                Times.Exactly(participantCount));
+            TestConference.CurrentStatus.Should().Be(ConferenceStatus.InSession);
+        }
     }
 }
