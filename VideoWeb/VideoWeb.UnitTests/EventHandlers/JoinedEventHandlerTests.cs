@@ -50,6 +50,40 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Times.Once);
             TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Available);
         }
+        
+        [Test]
+        public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins_despite_being_older_event()
+        {
+            MemoryCache.Remove(TestConference.Id);
+
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object,
+                LoggerMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            participantForEvent.LastEventTime = DateTime.UtcNow.AddMilliseconds(1);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Joined,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TimeStampUtc = DateTime.UtcNow.AddMilliseconds(-1)
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
+                    _eventHandler.SourceParticipant.Username, conference.Id,
+                    ParticipantState.Available, callbackEvent.Reason), Times.Exactly(participantCount));
+
+            ConferenceServiceMock.Verify(x => x.GetConference(TestConference.Id, It.IsAny<CancellationToken>()),
+                Times.Once);
+            TestConference.Participants.Find(x=> x.Id == participantForEvent.Id).ParticipantStatus.Should().Be(ParticipantStatus.Available);
+        }
 
         [Test]
         public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()

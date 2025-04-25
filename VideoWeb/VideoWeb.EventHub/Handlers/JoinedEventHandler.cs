@@ -33,7 +33,7 @@ namespace VideoWeb.EventHub.Handlers
 
             Logger.LogTrace("Participant {ParticipantId} joined conference {ConferenceId} with status {ParticipantStatus}",
                 callbackEvent.ParticipantId, callbackEvent.ConferenceId, newStatus);
-            await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason);
+            await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason, callbackEvent);
         }
     }
 }

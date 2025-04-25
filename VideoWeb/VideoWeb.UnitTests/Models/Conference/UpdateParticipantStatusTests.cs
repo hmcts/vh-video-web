@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -15,12 +16,14 @@ public class UpdateParticipantStatusTests
             .Build();
         var participant = conference.Participants.Find(x => !x.IsHost());
         participant.ParticipantStatus = ParticipantStatus.Disconnected;
+        var eventTimeStamp = DateTime.UtcNow;
         
         // Act
-        conference.UpdateParticipantStatus(participant, ParticipantStatus.Available);
+        conference.UpdateParticipantStatus(participant, ParticipantStatus.Available, eventTimeStamp);
         
         // Assert
         participant.ParticipantStatus.Should().Be(ParticipantStatus.Available);
+        participant.LastEventTime.Should().Be(eventTimeStamp);
     }
     
     [Test(Description = "Refreshing in a consultation room should set the room to null when a disconnect event is sent")]
@@ -31,6 +34,7 @@ public class UpdateParticipantStatusTests
             .Build();
         var participant = conference.Participants.Find(x => !x.IsHost());
         participant.ParticipantStatus = ParticipantStatus.InConsultation;
+        var eventTimeStamp = DateTime.UtcNow;
         participant.CurrentRoom = new ConsultationRoom()
         {
             Label = "Room1",
@@ -39,10 +43,11 @@ public class UpdateParticipantStatusTests
         };
         
         // Act
-        conference.UpdateParticipantStatus(participant, ParticipantStatus.Disconnected);
+        conference.UpdateParticipantStatus(participant, ParticipantStatus.Disconnected, eventTimeStamp);
         
         // Assert
         participant.ParticipantStatus.Should().Be(ParticipantStatus.Disconnected);
         participant.CurrentRoom.Should().BeNull();
+        participant.LastEventTime.Should().Be(eventTimeStamp);
     }
 }
