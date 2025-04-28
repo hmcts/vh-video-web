@@ -60,6 +60,10 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
                 .Returns("o**** f*****");
 
+            LoggerMock.Setup(x => x.IsEnabled(LogLevel.Error)).Returns(true);
+            LoggerMock.Setup(x => x.IsEnabled(LogLevel.Warning)).Returns(true);
+            LoggerMock.Setup(x => x.IsEnabled(LogLevel.Information)).Returns(true);
+
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, 
                 AppRoleServiceMock.Object, 
                 VideoApiClientMock.Object,

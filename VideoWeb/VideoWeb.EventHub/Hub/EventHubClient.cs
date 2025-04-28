@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
@@ -42,7 +43,7 @@ public class EventHub(
         // Cache user profile in the redis cache
         await userProfileService.CacheUserProfileAsync(Context.User);
         var userName = GetObfuscatedUsernameAsync(Context.User.Identity!.Name);
-        logger.LogTrace("Connected to event hub server-side: {Username}", userName);
+        logger.LogConnectedToEventHub(userName);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
@@ -53,12 +54,11 @@ public class EventHub(
 
         if (exception == null)
         {
-            logger.LogInformation("Disconnected from chat hub server-side: {Username}", obfuscatedUsername);
+            logger.LogDisconnectedFromEventHub(obfuscatedUsername);
         }
         else
         {
-            logger.LogError(exception,
-                "There was an error when disconnecting from chat hub server-side: {Username}", obfuscatedUsername);
+            logger.LogErrorDisconnectingFromChatHub(exception, obfuscatedUsername);
         }
 
         var isAdmin = IsSenderAdmin();
@@ -91,7 +91,7 @@ public class EventHub(
     {
         try
         {
-            logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
+            logger.LogAttemptingToSendMessage(conferenceId);
             var conference = await conferenceService.GetConference(conferenceId);
             var imRules = new InstantMessageRules(userProfileService);
             var from = Context.User.Identity!.Name!.ToLower();
@@ -115,11 +115,11 @@ public class EventHub(
             await SendToParticipant(sendMessageDto);
             if (!isTargetAdmin)
             {
-                logger.LogDebug("Admin has responded, notifying admin channel");
+                logger.LogAdminResponded();
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to);
             }
 
-            logger.LogDebug("Pushing message to Video API history {MessageUuid}", sendMessageDto.MessageUuid);
+            logger.LogPushingMessageToHistory(sendMessageDto.MessageUuid);
             await videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
@@ -129,7 +129,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when sending message to {To}, in conference {ConferenceId}", to, conferenceId);
+            logger.LogErrorSendingMessage(ex,to, conferenceId);
         }
     }
 
@@ -167,7 +167,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when sending heartbeat");
+            logger.LogErrorSendingHeartbeat(ex);
         }
     }
 
@@ -181,16 +181,13 @@ public class EventHub(
             var transferringEndpoint = conference.Endpoints.SingleOrDefault(x => x.Id == participantId);
             if (transferringParticipant == null && transferringEndpoint == null)
             {
-                logger.LogDebug("Participant/Endpoint {ParticipantId} does not exist in {ConferenceId}", participantId,
-                    conferenceId);
+                logger.LogParticipantOrEndpointNotFound(participantId, conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, participantId);
             }
 
             await Clients.Group(VhOfficersGroupName)
                 .HearingTransfer(conferenceId, participantId, transferDirection);
-            logger.LogTrace(
-                "Participant Transfer: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} | Direction: {Direction}",
-                participantId, conferenceId, transferDirection);
+            logger.LogParticipantTransfer(participantId, conferenceId, transferDirection.ToString());
 
             foreach (var participant in conference.Participants)
             {
@@ -200,7 +197,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when transferring participant");
+            logger.LogErrorTransferringParticipant(ex);
         }
     }
 
@@ -213,8 +210,7 @@ public class EventHub(
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
-                logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
-                    conferenceId);
+                logger.LogParticipantDoesNotExistInConference(participantId, conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
             }
 
@@ -230,14 +226,12 @@ public class EventHub(
                     .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
             }
 
-            logger.LogTrace(
-                "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
-                participantId, conferenceId);
+            logger.LogParticipantDeviceStatusUpdated(participantId, conferenceId);
 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured when updating participant device status");
+            logger.LogErrorUpdatingDeviceStatus(ex);
         }
     }
 
@@ -266,9 +260,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
-                "Error occured when updating participant {ParticipantId} in conference {ConferenceId} remote mute status to {IsRemoteMuted}",
-                participantId, conferenceId, isRemoteMuted);
+            logger.LogErrorUpdatingParticipantRemoteMuteStatus(ex, participantId, conferenceId, isRemoteMuted);
         }
     }
 
@@ -285,9 +277,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
-                "Error occured when updating participant {ParticipantId} in conference {ConferenceId} hand status to {IsHandRaised}",
-                participantId, conferenceId, isRaised);
+            logger.LogErrorUpdatingParticipantHandStatus(ex, participantId, conferenceId, isRaised);
         }
     }
 
@@ -308,8 +298,7 @@ public class EventHub(
             if (participant == null)
             {
 
-                logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}",
-                    participantId, conferenceId);
+                logger.LogParticipantDoesNotExistInConference(participantId, conferenceId);
                 throw new ParticipantNotFoundException(conferenceId, participantId);
             }
 
@@ -319,9 +308,7 @@ public class EventHub(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
-                "Error occured when updating participant {ParticipantId} in conference {ConferenceId} local mute status to {Muted}",
-                participantId, conferenceId, muted);
+            logger.LogErrorUpdatingParticipantLocalMuteStatus(ex, participantId, conferenceId, muted);
         }
     }
 
@@ -480,7 +467,7 @@ public class EventHub(
             x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
         var username = userProfileService.GetObfuscatedUsername(participant.Username);
-        logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
+        logger.LogSendingMessageToGroup(dto.MessageUuid, username);
 
         var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
@@ -492,7 +479,7 @@ public class EventHub(
     private async Task SendToAdmin(SendMessageDto dto, string fromId)
     {
         var groupName = dto.Conference.Id.ToString();
-        logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
+        logger.LogSendingMessageToGroup(dto.MessageUuid, groupName);
         var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
         await Clients.Group(groupName)
             .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,

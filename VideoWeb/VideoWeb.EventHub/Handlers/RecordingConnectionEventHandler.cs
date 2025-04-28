@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Logging;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
@@ -20,7 +21,7 @@ namespace VideoWeb.EventHub.Handlers
 
             var participantId = callbackEvent.ParticipantId;
 
-            Logger.LogTrace("Recording Connection Failed: Conference Id: {ConferenceId} - Participant id: {ParticipantId}", conferenceId, participantId);
+            Logger.LogRecordingConnectionFailed(conferenceId, participantId);
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RecordingConnectionFailed(conferenceId, participantId);
