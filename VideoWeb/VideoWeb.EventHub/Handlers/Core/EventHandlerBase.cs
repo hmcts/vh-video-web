@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
@@ -35,8 +36,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceTelephoneParticipant = SourceConference.TelephoneParticipants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
-            Logger.LogTrace("Handling Event: {EventType} for conferenceId {ConferenceId} with reason {Reason}",
-                callbackEvent.EventType, callbackEvent.ConferenceId, callbackEvent.Reason);
+            Logger.LogHandlingEvent(callbackEvent.EventType.ToString(), callbackEvent.ConferenceId, callbackEvent.Reason);
 
             await PublishStatusAsync(callbackEvent);
         }
@@ -61,18 +61,13 @@ namespace VideoWeb.EventHub.Handlers.Core
                 await HubContext.Clients.Group(username)
                     .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
                         participantState, reason);
-                Logger.LogTrace(
-                    "Informing {Username} in conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
-                    username, SourceConference.Id, SourceParticipant.Id,
-                    SourceParticipant.Role, participantState);
+                Logger.LogInformingParticipantStatus(username, SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role.ToString(), participantState.ToString());
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id,
                     participantState, reason);
-            Logger.LogTrace(
-                "Informing Admin for conference {ConferenceId} Participant Status: Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {ParticipantState}",
-                SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role, participantState);
+            Logger.LogInformingAdminParticipantStatus(SourceConference.Id, SourceParticipant.Id, SourceParticipant.Role.ToString(), participantState.ToString());
         }
 
         /// <summary>
@@ -91,9 +86,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant()).ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
-                Logger.LogTrace(
-                    "Conference Status: Conference Id: {SourceConferenceId} | Participant Id: {ParticipantId} | Role: {ParticipantRole} | Participant State: {HearingEventStatus}",
-                    SourceConference.Id, participant.Id, participant.Role, hearingEventStatus);
+                Logger.LogConferenceStatus(SourceConference.Id, participant.Id, participant.Role.ToString(), hearingEventStatus.ToString());
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
@@ -113,8 +106,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .EndpointStatusMessage(SourceEndpoint.Id, SourceConference.Id, endpointState);
-            Logger.LogTrace("Endpoint Status: Endpoint Id: {SourceEndpointId} | Endpoint State: {EndpointState}",
-                SourceEndpoint.Id, endpointState);
+            Logger.LogEndpointStatus(SourceEndpoint.Id, endpointState.ToString());
         }
 
         protected async Task PublishRoomTransferMessage(RoomTransfer roomTransfer)
@@ -122,15 +114,14 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant()).RoomTransfer(roomTransfer);
-                Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
-                    participant.Role);
+                Logger.LogRoomTransferToGroup(participant.Username, participant.Role.ToString());
             }
 
             await UpdateConsultationRoom(roomTransfer);
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
-            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
+            Logger.LogRoomTransferToAdminGroup(Hub.EventHub.VhOfficersGroupName);
         }
 
         private async Task UpdateConsultationRoom(RoomTransfer roomTransfer)

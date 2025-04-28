@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Common;
 
@@ -21,7 +22,7 @@ public class VhApiLoggingDelegatingHandler(ILogger<VhApiLoggingDelegatingHandler
         {
             var requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
             activity?.SetTag("http.request.body", requestBody);
-            logger.LogInformation("Request to {RequestUri}: {RequestBody}", request.RequestUri, requestBody);
+            logger.LogRequestDetails(request.RequestUri.AbsoluteUri, requestBody);
         }
         
         var response = await base.SendAsync(request, cancellationToken);
