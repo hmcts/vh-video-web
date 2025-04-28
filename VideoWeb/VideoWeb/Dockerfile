@@ -11,16 +11,18 @@ RUN npm ci --ignore-scripts && npm run build-prod
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY VideoWeb .
+COPY VideoWeb/VideoWeb.csproj VideoWeb/
+COPY nuget.config .
 RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
-WORKDIR "/src/VideoWeb"
+COPY VideoWeb .
+WORKDIR src/VideoWeb
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "VideoWeb.csproj" -c Release -o /app/publish
 
 FROM base AS final
-RUN apt-get update && apt-get install -y curl && apt-get clean
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=client /app/dist/browser/ /app/ClientApp/dist/
