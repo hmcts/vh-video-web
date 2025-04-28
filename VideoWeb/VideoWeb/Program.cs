@@ -12,10 +12,8 @@ namespace VideoWeb;
 
 internal static class Program
 {
-    public static void Main(string[] args)
-    {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+    public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
+    
 
     private static IHostBuilder CreateWebHostBuilder(string[] args)
     {

@@ -24,7 +24,7 @@ WORKDIR "/src/VideoWeb"
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "VideoWeb.csproj" -c Release -o /app/publish -p:PublishRunWebpack=false
+RUN dotnet publish "VideoWeb.csproj" -c Release -o /app/publish 
 
 FROM base AS final
 RUN apt-get update && apt-get install -y curl && apt-get clean
