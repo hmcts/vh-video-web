@@ -11,6 +11,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
@@ -52,7 +53,7 @@ public class ConferenceManagementController(
 
         await conferenceManagementService.StartOrResumeVideoHearingAsync(conferenceId, User.Identity!.Name,
             request.Layout, cancellationToken);
-        logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
+        logger.LogStartOrResumeConference(conferenceId);
         return Accepted();
     }
 
@@ -71,17 +72,16 @@ public class ConferenceManagementController(
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Getting the layout for {ConferenceId}", conferenceId);
+        logger.LogGettingLayout(conferenceId);
         var layout = await hearingLayoutService.GetCurrentLayout(conferenceId, cancellationToken);
 
         if (!layout.HasValue)
         {
-            logger.LogWarning("Layout didn't have a value returning NotFound. This was for {ConferenceId}",
-                conferenceId);
+            logger.LogLayoutNotFound(conferenceId);
             return NotFound();
         }
 
-        logger.LogTrace("Got Layout ({Layout}) for {ConferenceId}", layout.Value, conferenceId);
+        logger.LogParticipantDismissed(layout.Value.ToString(), conferenceId);
         return Ok(layout);
     }
 
@@ -102,21 +102,19 @@ public class ConferenceManagementController(
     public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout,
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("Attempting to update layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
+        logger.LogUpdateLayout(layout.ToString(), conferenceId);
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.GetParticipant(User.Identity!.Name);
 
         if (participant == null)
         {
-            logger.LogWarning(
-                "Could not update layout to {Layout} for hearing as participant with the name {Username} was not found in conference {ConferenceId}",
-                layout, User.Identity.Name, conferenceId);
+            logger.LogParticipantNotFound(layout.ToString(), User.Identity.Name, conferenceId);
             return NotFound(nameof(participant));
         }
 
         await hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout, cancellationToken);
 
-        logger.LogInformation("Updated layout to {Layout} for conference {ConferenceId}", layout, conferenceId);
+        logger.LogLayoutUpdated(layout.ToString(), conferenceId);
         return Ok();
     }
 
@@ -136,7 +134,7 @@ public class ConferenceManagementController(
     public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId,
         CancellationToken cancellationToken)
     {
-        logger.LogDebug("Attempting get recommended layout  for conference {ConferenceId}", conferenceId);
+        logger.LogGetRecommendedLayout(conferenceId);
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         return Ok(conference.GetRecommendedLayout());
     }
@@ -159,7 +157,7 @@ public class ConferenceManagementController(
         }
 
         await videoApiClient.PauseVideoHearingAsync(conferenceId, cancellationToken);
-        logger.LogDebug("Sent request to pause conference {Conference}", conferenceId);
+        logger.LogPauseConference(conferenceId);
         return Accepted();
     }
 
@@ -181,7 +179,7 @@ public class ConferenceManagementController(
         }
 
         await videoApiClient.SuspendHearingAsync(conferenceId, cancellationToken);
-        logger.LogDebug("Sent request to suspend conference {Conference}", conferenceId);
+        logger.LogSuspendConference(conferenceId);
         return Accepted();
     }
 
@@ -203,7 +201,7 @@ public class ConferenceManagementController(
         }
 
         await videoApiClient.EndVideoHearingAsync(conferenceId, cancellationToken);
-        logger.LogDebug("Sent request to end conference {Conference}", conferenceId);
+        logger.LogEndConference(conferenceId);
         return Accepted();
     }
 
@@ -326,7 +324,7 @@ public class ConferenceManagementController(
             return Task.FromResult<IActionResult>(null);
         }
         
-        logger.LogWarning("{JudgeRole} or {StaffMember} may control hearings", AppRoles.JudgeRole, AppRoles.StaffMember);
+        logger.LogParticipantDismissed(AppRoles.JudgeRole, AppRoles.StaffMember);
         return Task.FromResult<IActionResult>(Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}."));
     }
     
@@ -348,7 +346,7 @@ public class ConferenceManagementController(
             return null;
         }
         
-        logger.LogWarning("Participant/Endpoint {ParticipantId} is not a callable participant in {ConferenceId}", participantId, conference.Id);
+        logger.LogParticipantNotCallable(participantId, conference.Id);
         return Unauthorized("Participant/Endpoint is not callable");
     }
     
@@ -424,8 +422,7 @@ public class ConferenceManagementController(
 
     private async Task AddDismissTaskAsync(Conference conference, Guid participantId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
-            participantId, conference.Id);
+        logger.LogParticipantDismissed(participantId, conference.Id);
 
         
         var participant = conference.GetParticipant(participantId);

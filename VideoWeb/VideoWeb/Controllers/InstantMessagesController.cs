@@ -17,6 +17,7 @@ using VideoWeb.Common;
 using VideoWeb.Extensions;
 using VideoWeb.Mappings;
 using VideoWeb.Middleware;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers;
 
@@ -46,7 +47,7 @@ public class InstantMessagesController(
     public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId,
         Guid participantId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetMessages for {ConferenceId}", conferenceId);
+        logger.LogGetMessagesForConference(conferenceId);
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Single(x => x.Id == participantId);
 
@@ -77,7 +78,7 @@ public class InstantMessagesController(
     [Authorize(AppRoles.VhOfficerRole)]
     public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetMessages for {ConferenceId}", conferenceId);
+        logger.LogGetMessagesForConference(conferenceId);
         var messages = await videoApiClient.GetInstantMessageHistoryAsync(conferenceId, cancellationToken);
         if (messages.IsNullOrEmpty())
         {
@@ -104,7 +105,7 @@ public class InstantMessagesController(
     [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, Guid participantId, CancellationToken cancellationToken)
     {
-        logger.LogDebug("GetMessages for {Conference}", conferenceId);
+        logger.LogGetMessagesForConference(conferenceId);
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
         var participant = conference.Participants.Single(x => x.Id == participantId);
 

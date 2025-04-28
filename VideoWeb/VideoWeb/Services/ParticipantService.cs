@@ -8,6 +8,7 @@ using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
@@ -75,7 +76,7 @@ public class ParticipantService(
         
         conference.AddParticipant(ParticipantCacheMapper.Map(response));
         
-        logger.LogTrace("Updating conference in cache: {Conference}", JsonSerializer.Serialize(conference));
+        logger.LogUpdatingConferenceInCache(JsonSerializer.Serialize(conference));
         
         await conferenceService.UpdateConferenceAsync(conference);
         await participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
