@@ -210,7 +210,7 @@ describe('VenueListComponent', () => {
             });
         }));
 
-        describe('onDropdownOpen', () => {
+        describe('onVenueListDropdownOpen', () => {
             it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
@@ -219,7 +219,7 @@ describe('VenueListComponent', () => {
                 document.body.appendChild(listbox);
 
                 // Act
-                component.onDropdownOpen();
+                component.onVenueListDropdownOpen();
                 tick();
 
                 // Assert
@@ -238,7 +238,7 @@ describe('VenueListComponent', () => {
                 document.body.appendChild(nestedDiv);
 
                 // Act
-                component.onDropdownOpen();
+                component.onVenueListDropdownOpen();
                 tick();
 
                 // Assert
@@ -248,6 +248,46 @@ describe('VenueListComponent', () => {
                 document.body.removeChild(nestedDiv);
             }));
         });
+
+        describe('onCsoListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onCsoListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Cso officer list');
+                expect(listbox.getAttribute('title')).toBe('Cso officer list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+
+            it('should set role attribute to "group" on nested divs', fakeAsync(() => {
+                // Arrange
+                const nestedDiv = document.createElement('div');
+                nestedDiv.classList.add('ng-dropdown-panel-items');
+                document.body.appendChild(nestedDiv);
+
+                // Act
+                component.onCsoListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(nestedDiv.getAttribute('role')).toBe('group');
+
+                // Cleanup
+                document.body.removeChild(nestedDiv);
+            }));
+        });
+
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
             input.setAttribute('aria-placeholder', 'Choose lists');
