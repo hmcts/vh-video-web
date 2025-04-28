@@ -23,5 +23,5 @@ FROM base AS final
 RUN apt-get update && apt-get install -y curl && apt-get clean
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=client /app/dist/ /app/ClientApp/dist/
+COPY --from=client /app/dist/browser/ /app/ClientApp/dist/
 ENTRYPOINT ["dotnet", "VideoWeb.dll"]
