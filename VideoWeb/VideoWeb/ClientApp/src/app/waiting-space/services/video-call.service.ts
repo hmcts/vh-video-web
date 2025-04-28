@@ -410,6 +410,10 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
+        if (this.pexipAPI.state.toLowerCase() !== 'active') {
+            this.logger.info(`${this.loggerPrefix} Not renegotiating as the call is not active`);
+            return;
+        }
         this.logger.info(`${this.loggerPrefix} Queuing renegotiation request`);
         // Queue renegotiation requests to ensure they are processed one at a time and not lost
         this.renegotiateSubject.next(sendUpdate);

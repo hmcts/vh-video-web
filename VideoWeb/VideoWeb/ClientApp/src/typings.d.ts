@@ -118,6 +118,7 @@ declare interface PexipClient {
     protocol: string;
     turn_server: TurnServer;
     role: PexipRole;
+    state: string;
 
     /**
      * The WebRTC incoming full-frame rate presentation stream has been set up successfully.
