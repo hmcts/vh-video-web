@@ -85,12 +85,12 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
     }
 
     onVenueListDropdownOpen(): void {
-        const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');       
+        const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
         this.setAriaLabel(ariaLabel);
     }
 
     onCsoListDropdownOpen(): void {
-        const ariaLabel = this.translateService.instant('venue-list.cso-selection-list-label');          
+        const ariaLabel = this.translateService.instant('venue-list.cso-selection-list-label');
         this.setAriaLabel(ariaLabel);
     }
 
