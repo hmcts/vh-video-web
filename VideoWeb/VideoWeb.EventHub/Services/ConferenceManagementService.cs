@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
@@ -129,7 +130,7 @@ public class ConferenceManagementService(
             TransferType = TransferType.Dismiss
         }, cancellationToken);
 
-        logger.LogTrace("Participant left conference: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}", participant.Id, conferenceId);
+        logger.LogParticipantLeftConference(participant.Id, conferenceId);
         foreach (var conferenceParticipant in conference.Participants.Where(x=> !x.IsStaffMember()))
         {
             await hubContext.Clients.Group(conferenceParticipant.Username.ToLowerInvariant())
