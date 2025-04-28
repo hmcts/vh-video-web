@@ -100,11 +100,15 @@ export const conferenceReducer = createReducer(
             const existingEndpoint = state.currentConference?.endpoints.find(ce => ce.id === e.id);
             return { ...e, pexipInfo: existingEndpoint?.pexipInfo, transferDirection: undefined } as VHEndpoint;
         });
-        const updatedConference: VHConference = { ...conference, participants: updatedParticipants, endpoints: updatedEndpoints };
+        const updatedConference: VHConference = {
+            ...conference,
+            participants: updatedParticipants,
+            endpoints: updatedEndpoints,
+            countdownComplete: conference.countdownComplete
+        };
         const availableRooms = distinctRoomLabels(conference.participants.map(p => p.room));
-        const countdownComplete = updatedConference.status === ConferenceStatus.InSession ? true : state.countdownComplete;
         const loggedInParticipant = updateLoggedInParticipant(state, updatedConference.participants).loggedInParticipant;
-        return { ...state, currentConference: updatedConference, availableRooms: availableRooms, countdownComplete, loggedInParticipant };
+        return { ...state, currentConference: updatedConference, availableRooms: availableRooms, loggedInParticipant };
     }),
     on(ConferenceActions.leaveConference, _ => ({ ...initialState })),
     on(ConferenceActions.updateActiveConferenceStatus, (state, { conferenceId, status }) => {

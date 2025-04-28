@@ -16,7 +16,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishConferenceStatusMessage(ConferenceStatus.InSession);
+            return PublishConferenceStatusMessage(ConferenceStatus.InSession, callbackEvent);
         }
     }
 }

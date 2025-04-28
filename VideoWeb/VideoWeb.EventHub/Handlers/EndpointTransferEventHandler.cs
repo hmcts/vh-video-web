@@ -22,7 +22,7 @@ namespace VideoWeb.EventHub.Handlers
         {
             var endpointStatus = DeriveEndpointStatusForTransferEvent(callbackEvent);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
-            await PublishEndpointStatusMessage(endpointStatus.state, endpointStatus.newStatus);
+            await PublishEndpointStatusMessage(endpointStatus.state, endpointStatus.newStatus, callbackEvent);
         }
 
         private static (EndpointState state, EndpointStatus newStatus) DeriveEndpointStatusForTransferEvent(CallbackEvent callbackEvent)
