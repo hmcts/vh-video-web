@@ -33,7 +33,7 @@ namespace VideoWeb.EventHub.Handlers
             }
 
             Logger.LogRoomTransferToAdminGroup(callbackEvent.ParticipantId, callbackEvent.ConferenceId, newStatus.ToString());
-            await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason);
+            await PublishParticipantStatusMessage(state, newStatus, callbackEvent.Reason, callbackEvent);
         }
     }
 }
