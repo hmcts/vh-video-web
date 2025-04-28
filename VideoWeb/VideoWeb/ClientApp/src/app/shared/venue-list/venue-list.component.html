@@ -25,7 +25,7 @@
           (change)="updateVenueSelection()" 
           [clearSearchOnAdd]="true" 
           [selectOnTab]="true"
-          (open)="onDropdownOpen()"
+          (open)="onVenueListDropdownOpen()"
         >
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
             {{ item.name }}
@@ -43,7 +43,8 @@
       <ng-select id="cso-allocation-list" class="selection-list" [labelForId]="'cso-allocation-list-label'"
         [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true" bindLabel="full_name" bindValue="id"
         [placeholder]="'venue-list.cso-selection-default-text' | translate" [(ngModel)]="selectedCsos"
-        [closeOnSelect]="false" (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+        [closeOnSelect]="false" (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
+        (open)="onCsoListDropdownOpen()">
         <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
           {{ item.full_name }}
         </ng-template>

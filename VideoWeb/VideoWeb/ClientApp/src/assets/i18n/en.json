@@ -1134,7 +1134,8 @@
     "selection-button-text": "View hearings",
     "label": "Venue name {{name}}",
     "allocation-list-label": "Venue allocation list",
-    "cso-selection-default-text": "Choose an officer or officers"
+    "cso-selection-default-text": "Choose an officer or officers",
+    "cso-selection-list-label": "Cso officer list"
   },
   "accessibility": {
     "crest-img-alt": "HMCTS logo crest image",

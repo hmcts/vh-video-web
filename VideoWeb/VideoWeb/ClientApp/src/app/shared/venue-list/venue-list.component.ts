@@ -84,21 +84,14 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         this.onDestroy$.complete();
     }
 
-    onDropdownOpen(): void {
-        setTimeout(() => {
-            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
-            const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
-            if (listbox) {
-                listbox.setAttribute('aria-label', ariaLabel);
-                listbox.setAttribute('title', ariaLabel);
-                listbox.setAttribute('tabindex', '0');
-            }
+    onVenueListDropdownOpen(): void {
+        const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');       
+        this.setAriaLabel(ariaLabel);
+    }
 
-            const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
-            if (nestedDiv) {
-                nestedDiv.setAttribute('role', 'group');
-            }
-        });
+    onCsoListDropdownOpen(): void {
+        const ariaLabel = this.translateService.instant('venue-list.cso-selection-list-label');          
+        this.setAriaLabel(ariaLabel);
     }
 
     updateVenueSelection() {
@@ -153,6 +146,22 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
         return loggedInCso;
+    }
+
+    private setAriaLabel(ariaLabel: string) {
+        setTimeout(() => {
+            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
+            if (listbox) {
+                listbox.setAttribute('aria-label', ariaLabel);
+                listbox.setAttribute('title', ariaLabel);
+                listbox.setAttribute('tabindex', '0');
+            }
+
+            const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
+            if (nestedDiv) {
+                nestedDiv.setAttribute('role', 'group');
+            }
+        });
     }
 
     private setupSubscribers() {
