@@ -4,7 +4,7 @@ using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Handlers;
 
-public class TelephoneJoinedEventHandler(
+public class TelephoneDisconnectedEventHandler(
     IHubContext<Hub.EventHub, IEventHubClient> hubContext,
     IConferenceService conferenceService,
     ILogger<EventHandlerBase> logger)
@@ -12,12 +12,12 @@ public class TelephoneJoinedEventHandler(
 {
     private readonly IConferenceService _conferenceService = conferenceService;
 
-    public override EventType EventType => EventType.TelephoneJoined;
+    public override EventType EventType => EventType.TelephoneDisconnected;
 
     protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
     {
         ValidateTelephoneParticipantEventReceivedAfterLastUpdate(callbackEvent);
-        SourceConference.AddTelephoneParticipant(callbackEvent.ParticipantId, callbackEvent.PhoneNumber);
+        SourceConference.RemoveTelephoneParticipant(callbackEvent.ParticipantId);
         await _conferenceService.UpdateConferenceAsync(SourceConference);
     }
 }

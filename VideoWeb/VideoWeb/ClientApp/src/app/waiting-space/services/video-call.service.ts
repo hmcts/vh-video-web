@@ -525,7 +525,7 @@ export class VideoCallService {
     }
 
     logMediaStreamInfo() {
-        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI.user_media_stream ? 'stream set' : 'stream not set');
+        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI?.user_media_stream ? 'stream set' : 'stream not set');
     }
 
     private makePexipCall(

@@ -21,6 +21,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         public Participant SourceParticipant { get; set; }
         protected Conference SourceConference { get; set; }
         protected Endpoint SourceEndpoint { get; set; }
+        protected TelephoneParticipant SourceTelephoneParticipant { get; set; }
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext = hubContext;
         protected readonly ILogger<EventHandlerBase> Logger = logger;
 
@@ -31,6 +32,8 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
             SourceEndpoint = SourceConference.Endpoints
+                .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
+            SourceTelephoneParticipant = SourceConference.TelephoneParticipants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             Logger.LogHandlingEvent(callbackEvent.EventType.ToString(), callbackEvent.ConferenceId, callbackEvent.Reason);
@@ -45,11 +48,13 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <param name="participantState">Participant status event to publish</param>
         /// <param name="newStatus">the new status to publish</param>
         /// <param name="reason">reason for the disconnect</param>
+        /// <param name="callbackEvent">the callback event payload</param>
         /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState,
-            ParticipantStatus newStatus, string reason)
+            ParticipantStatus newStatus, string reason, CallbackEvent callbackEvent)
         {
-            SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus);
+            ValidateParticipantEventReceivedAfterLastUpdate(callbackEvent);
+            SourceConference.UpdateParticipantStatus(SourceParticipant, newStatus, callbackEvent?.TimeStampUtc);
             await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var username in SourceConference.Participants.Select(x => x.Username.ToLowerInvariant()))
             {
@@ -69,10 +74,12 @@ namespace VideoWeb.EventHub.Handlers.Core
         ///     Publish a hearing event to all participants in conference to those connected to the HubContext
         /// </summary>
         /// <param name="hearingEventStatus">Hearing status event to publish</param>
+        /// <param name="callbackEvent">the callback event payload</param>
         /// <returns></returns>
-        protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
+        protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus, CallbackEvent callbackEvent)
         {
-            SourceConference.UpdateConferenceStatus(hearingEventStatus);
+            ValidateConferenceEventReceivedAfterLastUpdate(callbackEvent);
+            SourceConference.UpdateConferenceStatus(hearingEventStatus, callbackEvent.TimeStampUtc);
             if (hearingEventStatus == ConferenceStatus.Closed)
                 SourceConference.UpdateClosedDateTime(DateTime.UtcNow);
             await conferenceService.UpdateConferenceAsync(SourceConference);
@@ -86,9 +93,10 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
         }
 
-        protected async Task PublishEndpointStatusMessage(EndpointState endpointState, EndpointStatus newStatus)
+        protected async Task PublishEndpointStatusMessage(EndpointState endpointState, EndpointStatus newStatus, CallbackEvent callbackEvent)
         {
-            SourceConference.UpdateEndpointStatus(SourceEndpoint, newStatus);
+            ValidateJvsEventReceivedAfterLastUpdate(callbackEvent);
+            SourceConference.UpdateEndpointStatus(SourceEndpoint, newStatus, callbackEvent.TimeStampUtc);
             await conferenceService.UpdateConferenceAsync(SourceConference);
             foreach (var participant in SourceConference.Participants)
             {
@@ -162,5 +170,42 @@ namespace VideoWeb.EventHub.Handlers.Core
         private static bool IsToConsultationRoom(string toRoom) => toRoom.Contains("consultation", StringComparison.CurrentCultureIgnoreCase);
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
+
+        private void ValidateConferenceEventReceivedAfterLastUpdate(CallbackEvent callbackEvent)
+        {
+            var eventReceivedAfterLastUpdate = SourceConference.LastEventTime > callbackEvent.TimeStampUtc;
+            if (!eventReceivedAfterLastUpdate) return;
+            var innerException = new InvalidOperationException(
+                $"Conference {SourceConference.Id} has already been updated since this event {callbackEvent.EventType} with the time {callbackEvent.TimeStampUtc:O}. Current Status: {SourceConference.CurrentStatus} - Last Updated At: {SourceConference.LastEventTime.GetValueOrDefault():O}");
+            Logger.LogError(new UnexpectedEventOrderException(callbackEvent, innerException), "Unexpected event order for conference");
+        }
+
+        private void ValidateParticipantEventReceivedAfterLastUpdate(CallbackEvent callbackEvent)
+        {
+            var eventReceivedAfterLastUpdate = SourceParticipant?.LastEventTime > callbackEvent?.TimeStampUtc;
+            if (!eventReceivedAfterLastUpdate) return;
+            var innerException = new InvalidOperationException(
+                $"Participant {SourceParticipant.Id} has already been updated since this event {callbackEvent.EventType} with the time {callbackEvent.TimeStampUtc:O}. Current Status: {SourceParticipant.ParticipantStatus} - Last Updated At: {SourceParticipant.LastEventTime.GetValueOrDefault():O}");
+            Logger.LogError(new UnexpectedEventOrderException(callbackEvent, innerException), "Unexpected event order for participant");
+        }
+
+        private void ValidateJvsEventReceivedAfterLastUpdate(CallbackEvent callbackEvent)
+        {
+            var eventReceivedAfterLastUpdate = SourceEndpoint.LastEventTime > callbackEvent.TimeStampUtc;
+            if(!eventReceivedAfterLastUpdate) return;
+            var innerException = new InvalidOperationException(
+                $"Endpoint {SourceEndpoint.Id} has already been updated since this event {callbackEvent.EventType} with the time {callbackEvent.TimeStampUtc:O}. Current Status: {SourceEndpoint.EndpointStatus} - Last Updated At: {SourceEndpoint.LastEventTime.GetValueOrDefault():O}");
+            Logger.LogError(new UnexpectedEventOrderException(callbackEvent, innerException), "Unexpected event order for endpoint");
+        }
+        
+        protected void ValidateTelephoneParticipantEventReceivedAfterLastUpdate(CallbackEvent callbackEvent)
+        {
+            // Telephone participants are added dynamically so we have to use the null operator
+            var eventReceivedAfterLastUpdate = SourceTelephoneParticipant?.LastEventTime > callbackEvent.TimeStampUtc;
+            if(!eventReceivedAfterLastUpdate) return;
+            var innerException = new InvalidOperationException(
+                $"TelephoneParticipant {SourceTelephoneParticipant.Id} has already been updated since this event {callbackEvent.EventType} with the time {callbackEvent.TimeStampUtc:O}. Current Status: {SourceTelephoneParticipant.Connected} - Last Updated At: {SourceTelephoneParticipant.LastEventTime.GetValueOrDefault():O}");
+            Logger.LogError(new UnexpectedEventOrderException(callbackEvent, innerException), "Unexpected event order for telephone participant");
+        }
     }
 }

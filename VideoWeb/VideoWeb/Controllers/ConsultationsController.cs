@@ -34,6 +34,9 @@ public class ConsultationsController(
     IDistributedJohConsultationRoomLockCache distributedJohConsultationRoomLockCache)
     : ControllerBase
 {
+#pragma warning disable S1104
+    public int WaitForLockRoomTime = 3000;
+#pragma warning restore S1104
     public const string ConsultationHasScreenedParticipantErrorMessage =
         "Participant is not allowed to join the consultation room with a participant they are screened from";
     
@@ -342,7 +345,7 @@ public class ConsultationsController(
         
         if (isLocked)
         {
-            Thread.Sleep(3000);
+            Thread.Sleep(WaitForLockRoomTime);
         }
         else
         {

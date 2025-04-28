@@ -8834,6 +8834,8 @@ export class ConferenceResponse implements IConferenceResponse {
     /** The case name */
     case_name?: string | undefined;
     status?: ConferenceStatus;
+    /** Has the countdown completed */
+    countdown_completed?: boolean;
     /** The participant meeting room uri */
     participant_uri?: string | undefined;
     /** The pexip node to connect to */
@@ -8881,6 +8883,7 @@ export class ConferenceResponse implements IConferenceResponse {
             this.case_number = _data['case_number'];
             this.case_name = _data['case_name'];
             this.status = _data['status'];
+            this.countdown_completed = _data['countdown_completed'];
             this.participant_uri = _data['participant_uri'];
             this.pexip_node_uri = _data['pexip_node_uri'];
             this.pexip_self_test_node_uri = _data['pexip_self_test_node_uri'];
@@ -8921,6 +8924,7 @@ export class ConferenceResponse implements IConferenceResponse {
         data['case_number'] = this.case_number;
         data['case_name'] = this.case_name;
         data['status'] = this.status;
+        data['countdown_completed'] = this.countdown_completed;
         data['participant_uri'] = this.participant_uri;
         data['pexip_node_uri'] = this.pexip_node_uri;
         data['pexip_self_test_node_uri'] = this.pexip_self_test_node_uri;
@@ -8961,6 +8965,8 @@ export interface IConferenceResponse {
     /** The case name */
     case_name?: string | undefined;
     status?: ConferenceStatus;
+    /** Has the countdown completed */
+    countdown_completed?: boolean;
     /** The participant meeting room uri */
     participant_uri?: string | undefined;
     /** The pexip node to connect to */

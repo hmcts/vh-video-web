@@ -20,6 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             _eventHandler = new CloseEventHandler(EventHubContextMock.Object, ConferenceServiceMock.Object, LoggerMock.Object);
 
             var conference = TestConference;
+            conference.CountdownComplete = true;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {
@@ -36,6 +37,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Closed),
                 Times.Exactly(participantCount));
             TestConference.ClosedDateTime.Should().BeOnOrAfter(currentDateTime);
+            TestConference.CountdownComplete.Should().BeFalse();
         }
     }
 }

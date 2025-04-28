@@ -36,7 +36,7 @@ public class ConferenceResponseMapperTests
         };
         
         
-        var expectedConferenceStatus = ConferenceStatus.Suspended;
+        var expectedConferenceStatus = ConferenceStatus.InSession;
         
         var meetingRoomResponse = Builder<MeetingRoomResponse>.CreateNew().Build();
         var meetingRoom = new ConferenceMeetingRoom()
@@ -48,10 +48,11 @@ public class ConferenceResponseMapperTests
         
         
         var conference = Builder<Conference>.CreateNew()
-            .With(x => x.CurrentStatus = ConferenceStatus.Suspended)
+            .With(x => x.CurrentStatus = ConferenceStatus.InSession)
             .With(x => x.Participants = participants)
             .With(x => x.MeetingRoom = meetingRoom)
             .With(x => x.IsScottish = true)
+            .With(x=> x.CountdownComplete = true)
             .Build();
         
         var response = ConferenceResponseMapper.Map(conference);
@@ -63,6 +64,7 @@ public class ConferenceResponseMapperTests
         response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
         response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
         response.Status.Should().Be(expectedConferenceStatus);
+        response.CountdownCompleted.Should().BeTrue();
         response.HearingVenueIsScottish.Should().Be(conference.IsScottish);
         
         var participantsResponse = response.Participants;

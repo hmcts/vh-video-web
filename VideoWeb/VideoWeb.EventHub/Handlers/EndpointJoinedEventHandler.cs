@@ -17,7 +17,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishEndpointStatusMessage(EndpointState.Connected, EndpointStatus.Connected);
+            return PublishEndpointStatusMessage(EndpointState.Connected, EndpointStatus.Connected, callbackEvent);
         }
     }
 }
