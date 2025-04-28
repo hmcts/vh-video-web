@@ -51,7 +51,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     recordingPaused: boolean;
     recordingButtonDisabled = false;
     wowzaConnected = false;
-    countdownComplete: boolean = false;
+    countdownComplete = false;
 
     private conferenceStatus: ConferenceStatus;
 
