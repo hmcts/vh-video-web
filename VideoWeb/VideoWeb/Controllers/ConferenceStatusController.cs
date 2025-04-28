@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
@@ -38,12 +39,12 @@ public class ConferenceStatusController(
     {
         var videoControlStatuses = SetConferenceVideoControlStatusesRequestMapper.Map(setVideoControlStatusesRequest);
 
-        logger.LogDebug("Setting the video control statuses for {ConferenceId}", conferenceId);
-        logger.LogTrace("Updating conference videoControlStatuses in cache: {Serialize}", JsonSerializer.Serialize(videoControlStatuses));
+        logger.LogSettingVideoControlStatuses(conferenceId);
+        logger.LogUpdatingVideoControlStatusesInCache(JsonSerializer.Serialize(videoControlStatuses));
 
         await conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses, cancellationToken);
 
-        logger.LogTrace("Set video control statuses ({@VideoControlStatuses}) for {ConferenceId}", videoControlStatuses, conferenceId);
+        logger.LogSetVideoControlStatuses(videoControlStatuses, conferenceId);
         return Accepted();
     }
 
@@ -59,19 +60,18 @@ public class ConferenceStatusController(
     [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
     {
-        logger.LogDebug("Getting the video control statuses for {ConferenceId}", conferenceId);
+        logger.LogGettingVideoControlStatuses(conferenceId);
         var videoControlStatuses =
             await conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
 
         if (videoControlStatuses == null)
         {
-            logger.LogWarning("video control statuses with id: {ConferenceId} not found", conferenceId);
+            logger.LogVideoControlStatusesNotFound(conferenceId);
 
             return Ok(new ConferenceVideoControlStatuses());
         }
 
-        logger.LogTrace("Got video control statuses ({@VideoControlStatuses}) for {ConferenceId}", videoControlStatuses,
-            conferenceId);
+        logger.LogGotVideoControlStatuses(videoControlStatuses, conferenceId);
         return Ok(videoControlStatuses);
     }
 }
