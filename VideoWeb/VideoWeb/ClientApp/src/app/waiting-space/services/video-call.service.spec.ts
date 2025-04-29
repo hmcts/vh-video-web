@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -45,6 +45,7 @@ describe('VideoCallService', () => {
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
     let mockStore: MockStore<ConferenceState>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let isAudioOnlySubject: ReplaySubject<boolean>;
 
     beforeEach(fakeAsync(() => {
         const initialState = initialConferenceState;
@@ -52,12 +53,14 @@ describe('VideoCallService', () => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.uniqueCallTags, true).and.returnValue(of(true));
         mockStore = createMockStore({ initialState });
 
-        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'selectScreenToShare',
-            'initialise',
-            'checkCameraAndMicrophonePresence',
-            'updateStartWithAudioMuted'
-        ]);
+        userMediaService = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['selectScreenToShare', 'initialise', 'checkCameraAndMicrophonePresence', 'updateStartWithAudioMuted'],
+            ['isAudioOnly$']
+        );
+
+        isAudioOnlySubject = new ReplaySubject<boolean>(1);
+        getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamServiceV2>(
             ['createAndPublishStream', 'closeCurrentStream'],
@@ -417,6 +420,30 @@ describe('VideoCallService', () => {
             discardPeriodicTasks();
             expect(service['renegotiateCall']).toHaveBeenCalled();
         }));
+
+        describe('handleAudioOnlyChange', () => {
+            it('should update pexip client video props to false when audioOnly is true', fakeAsync(() => {
+                service.pexipAPI = pexipSpy;
+                spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
+
+                isAudioOnlySubject.next(true);
+                flush(); // Ensure all asynchronous operations are completed
+                discardPeriodicTasks();
+
+                expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(true);
+            }));
+
+            it('should update pexip client video props to null when audioOnly is false', fakeAsync(() => {
+                service.pexipAPI = pexipSpy;
+                spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
+
+                isAudioOnlySubject.next(false);
+                flush(); // Ensure all asynchronous operations are completed
+                discardPeriodicTasks();
+
+                expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(false);
+            }));
+        });
     });
 
     describe('handleConferenceUpdate', () => {

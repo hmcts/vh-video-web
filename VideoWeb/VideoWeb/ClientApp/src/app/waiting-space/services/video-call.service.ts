@@ -175,6 +175,10 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
+        this.userMediaService.isAudioOnly$
+            .pipe(takeUntil(this.hasDisconnected$))
+            .subscribe(isAudioOnly => this.handleAudioOnlyChange(isAudioOnly));
+
         this.userMediaStreamService.currentStream$.pipe(skip(1), takeUntil(this.hasDisconnected$)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.logMediaStreamInfo();
@@ -201,6 +205,12 @@ export class VideoCallService {
             .subscribe(uniqueCallTags => {
                 this.uniqueCallTagsPerCall = uniqueCallTags;
             });
+    }
+
+    handleAudioOnlyChange(isAudioOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Audio only setting changed`, { isAudioOnly });
+        this.pexipAPI.video_source = isAudioOnly ? false : null;
+        this.pexipAPI.recv_video = !isAudioOnly;
     }
 
     initTurnServer() {
