@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush, tick } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
