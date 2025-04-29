@@ -27,7 +27,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="conference-list" attr.aria-label="{{ 'hearing-list-table.description' | translate }}">
-        <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
+        <app-vho-hearing-list #conferenceList tabindex="0" [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
         </app-vho-hearing-list>
     </div>
     <div *ngIf="selectedHearing" class="selected-menu-content" [ngSwitch]="selectedMenu">
