@@ -211,7 +211,7 @@ describe('VenueListComponent', () => {
         }));
 
         describe('onVenueListDropdownOpen', () => {
-            it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
+            fit('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
                 listbox.classList.add('ng-dropdown-panel-items');
@@ -250,7 +250,7 @@ describe('VenueListComponent', () => {
         });
 
         describe('onCsoListDropdownOpen', () => {
-            it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
+            fit('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
                 listbox.classList.add('ng-dropdown-panel-items');
