@@ -106,6 +106,8 @@ describe('VenueListComponent', () => {
             switch (key) {
                 case 'venue-list.allocation-list-label':
                     return 'Venue selection list';
+                case 'venue-list.cso-selection-list-label':
+                    return 'Cso officer list';
             }
         });
         component.csos = csos;
@@ -211,7 +213,7 @@ describe('VenueListComponent', () => {
         }));
 
         describe('onVenueListDropdownOpen', () => {
-            fit('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
+            it('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
                 listbox.classList.add('ng-dropdown-panel-items');
@@ -250,7 +252,7 @@ describe('VenueListComponent', () => {
         });
 
         describe('onCsoListDropdownOpen', () => {
-            fit('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
+            it('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
                 listbox.classList.add('ng-dropdown-panel-items');

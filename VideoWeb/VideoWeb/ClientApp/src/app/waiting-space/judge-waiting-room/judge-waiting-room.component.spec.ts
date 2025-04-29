@@ -490,7 +490,6 @@ describe('JudgeWaitingRoom', () => {
         it('should display leave consultation popup when in a consultation', async () => {
             const button = document.createElement('button');
             button.id = 'consultation-leave-button';
-            spyOn(document, 'getElementById').and.returnValue(button);
             component.isPrivateConsultation = true;
 
             await component.leaveConsultation();
