@@ -1104,7 +1104,8 @@
     "join-by-link-text": "Joined by Video Hearing link"
   },
   "copy-quick-link": {
-    "tooltip-copied": "Join by Video Hearing link details copied to clipboard"
+    "tooltip-copied": "Join by Video Hearing link details copied to clipboard",
+    "display-text": "Copy join by Video Hearing link details to clipboard"
   },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",
