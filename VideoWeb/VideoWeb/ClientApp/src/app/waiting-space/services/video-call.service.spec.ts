@@ -422,7 +422,7 @@ describe('VideoCallService', () => {
             expect(service['renegotiateCall']).toHaveBeenCalled();
         }));
 
-        fdescribe('handleAudioOnlyChange', () => {
+        describe('handleAudioOnlyChange', () => {
             describe('audioOnly true', () => {
                 it('should toggle video on pexip client if client does not match user toggle', fakeAsync(() => {
                     const dispatchSpy = spyOn(mockStore, 'dispatch');
