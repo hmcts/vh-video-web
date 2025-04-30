@@ -18,6 +18,7 @@ import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { mapPexipConferenceToVhPexipConference } from '../store/models/api-contract-to-state-model-mappers';
+import { VideoCallActions } from '../store/actions/video-call.action';
 
 const supplier = Supplier.Vodafone;
 const config = new ClientSettingsResponse({
@@ -421,28 +422,53 @@ describe('VideoCallService', () => {
             expect(service['renegotiateCall']).toHaveBeenCalled();
         }));
 
-        describe('handleAudioOnlyChange', () => {
-            it('should update pexip client video props to false when audioOnly is true', fakeAsync(() => {
-                service.pexipAPI = pexipSpy;
-                spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
+        fdescribe('handleAudioOnlyChange', () => {
+            describe('audioOnly true', () => {
+                it('should toggle video on pexip client if client does not match user toggle', fakeAsync(() => {
+                    const dispatchSpy = spyOn(mockStore, 'dispatch');
+                    service.pexipAPI = pexipSpy;
+                    spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
 
-                isAudioOnlySubject.next(true);
-                flush(); // Ensure all asynchronous operations are completed
-                discardPeriodicTasks();
+                    const callSpy = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], { mutedVideo: false });
+                    getSpiedPropertyGetter(pexipSpy, 'call').and.returnValue(callSpy);
 
-                expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(true);
-            }));
+                    isAudioOnlySubject.next(true);
+                    flush(); // Ensure all asynchronous operations are completed
+                    discardPeriodicTasks();
 
-            it('should update pexip client video props to null when audioOnly is false', fakeAsync(() => {
-                service.pexipAPI = pexipSpy;
-                spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
+                    expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(true);
+                    expect(dispatchSpy).toHaveBeenCalledWith(VideoCallActions.toggleOutgoingVideo());
+                }));
 
-                isAudioOnlySubject.next(false);
-                flush(); // Ensure all asynchronous operations are completed
-                discardPeriodicTasks();
+                it('should not toggle video on pexip client if client does match user toggle', fakeAsync(() => {
+                    const dispatchSpy = spyOn(mockStore, 'dispatch');
+                    service.pexipAPI = pexipSpy;
+                    spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
 
-                expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(false);
-            }));
+                    const callSpy = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], { mutedVideo: true });
+                    getSpiedPropertyGetter(pexipSpy, 'call').and.returnValue(callSpy);
+
+                    isAudioOnlySubject.next(true);
+                    flush(); // Ensure all asynchronous operations are completed
+                    discardPeriodicTasks();
+
+                    expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(true);
+                    expect(dispatchSpy).not.toHaveBeenCalledWith(VideoCallActions.toggleOutgoingVideo());
+                }));
+            });
+
+            describe('audioOnly false', () => {
+                it('should update pexip client video props to null when audioOnly is false', fakeAsync(() => {
+                    service.pexipAPI = pexipSpy;
+                    spyOn<any>(service, 'handleAudioOnlyChange').and.callThrough();
+
+                    isAudioOnlySubject.next(false);
+                    flush(); // Ensure all asynchronous operations are completed
+                    discardPeriodicTasks();
+
+                    expect(service['handleAudioOnlyChange']).toHaveBeenCalledWith(false);
+                }));
+            });
         });
     });
 

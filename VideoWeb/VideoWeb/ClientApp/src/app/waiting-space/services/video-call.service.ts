@@ -33,6 +33,7 @@ import {
 } from '../store/models/api-contract-to-state-model-mappers';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VideoCallActions } from '../store/actions/video-call.action';
 
 @Injectable()
 export class VideoCallService {
@@ -209,8 +210,9 @@ export class VideoCallService {
 
     handleAudioOnlyChange(isAudioOnly: boolean) {
         this.logger.debug(`${this.loggerPrefix} Audio only setting changed`, { isAudioOnly });
-        this.pexipAPI.video_source = isAudioOnly ? false : null;
-        this.pexipAPI.recv_video = !isAudioOnly;
+        if (this.pexipAPI?.call?.mutedVideo !== isAudioOnly) {
+            this.store.dispatch(VideoCallActions.toggleOutgoingVideo());
+        }
     }
 
     initTurnServer() {
