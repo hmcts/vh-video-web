@@ -18,6 +18,9 @@
       [ngClass]="(backLinkDetails$ | async)?.className"
     >
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
+      <ng-container *appFeatureFlag="featureFlags.serviceUpdateBanner">
+        <app-service-down-banner></app-service-down-banner>
+      </ng-container>
       <app-back-navigation
         *ngIf="backLinkDetails$ | async as backLinkDetails"
         [linkText]="backLinkDetails.text"
