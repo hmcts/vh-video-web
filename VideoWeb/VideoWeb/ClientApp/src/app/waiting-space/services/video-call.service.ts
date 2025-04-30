@@ -118,7 +118,6 @@ export class VideoCallService {
         this.userMediaStreamService.createAndPublishStream();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
-        this.logMediaStreamInfo();
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -274,7 +273,6 @@ export class VideoCallService {
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
             this.userMediaStreamService.closeCurrentStream();
-            this.pexipAPI = null; // Reset the Pexip API instance
         } else {
             this.logger.warn(`${this.loggerPrefix} No active Pexip client to disconnect.`);
         }
