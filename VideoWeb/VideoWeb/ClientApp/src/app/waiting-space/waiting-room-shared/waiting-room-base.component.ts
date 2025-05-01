@@ -40,6 +40,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -87,6 +88,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     loggedInUser: LoggedParticipantResponse;
     contactDetails = vhContactDetails;
+    subscriptions: Subscription[] = [];
 
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
@@ -117,7 +119,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        protected videoCallEventsService: VideoCallEventsService
     ) {
         this.launchDarklyService
             .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)

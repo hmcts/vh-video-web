@@ -29,6 +29,8 @@ import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { Subscription } from 'rxjs';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 @Component({
     standalone: false,
@@ -47,6 +49,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioErrorRetryToast: VhToastComponent;
 
     participants: ParticipantUpdated[] = [];
+    subscrptions: Subscription[] = [];
 
     private readonly loggerPrefixJudge = '[Judge WR] -';
 
@@ -71,6 +74,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>,
+        protected videoCallEventsService: VideoCallEventsService,
         private readonly audioRecordingService: AudioRecordingService
     ) {
         super(
@@ -91,7 +95,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             hideComponentsService,
             focusService,
             launchDarklyService,
-            store
+            store,
+            videoCallEventsService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
@@ -333,6 +338,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.verifyAudioRecordingStream();
                 }
             });
+
+        this.startVideoCallEventSubscribers();
     }
 
     private onShouldReload(): void {
@@ -346,6 +353,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     private cleanUp() {
         this.executeWaitingRoomCleanup();
         this.audioRecordingService.cleanupSubscriptions();
+        this.stopVideoCallEventSubscribers();
     }
 
     private onWowzaConnected() {
@@ -396,4 +404,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.logger.warn(`${this.loggerPrefixJudge} can not reconnect to Wowza agent as not in a hearing`);
         }
     };
+
+    private startVideoCallEventSubscribers() {
+        this.subscriptions.push(
+            this.videoCallEventsService.onVideoWrapperReady().subscribe(() => this.setTrapFocus()),
+            this.videoCallEventsService.onLeaveConsultation().subscribe(() => this.showLeaveConsultationModal()),
+            this.videoCallEventsService.onChangeDevice().subscribe(() => this.showChooseCameraDialog()),
+            this.videoCallEventsService.onUnreadCountUpdated().subscribe(count => this.unreadMessageCounterUpdate(count))
+        );
+    }
+
+    private stopVideoCallEventSubscribers() {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
+    }
 }

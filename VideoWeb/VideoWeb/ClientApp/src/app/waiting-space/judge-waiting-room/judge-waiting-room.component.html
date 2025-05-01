@@ -21,10 +21,6 @@
       [callStream]="callStream"
       [caseNameAndNumber]="getCaseNameAndNumber()"
       [isParticipantsPanelEnabled]="true"
-      (ready)="setTrapFocus()"
-      (leaveConsultation)="showLeaveConsultationModal()"
-      (deviceToggle)="showChooseCameraDialog()"
-      (unreadCountUpdate)="unreadMessageCounterUpdate($event)"
       [isIMEnabled]="defineIsIMEnabled()">
     </app-video-call>
   </div>

@@ -3,6 +3,7 @@ import { VideoCallComponent } from './video-call.component';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 describe('VideoCallComponent', () => {
     let component: VideoCallComponent;
@@ -16,13 +17,30 @@ describe('VideoCallComponent', () => {
         'isTablet',
         'isSupportedBrowserForNetworkHealth'
     ]);
+    const mockVideoCallEventsService = jasmine.createSpyObj('VideoCallEventsService', [
+        'onVideoWrapperReady',
+        'onLeaveConsultation',
+        'onLockConsultationToggled',
+        'onChangeDevice',
+        'onChangeLanguageSelected',
+        'onUnreadCountUpdated',
+        'triggerVideoWrapperReady',
+        'leaveConsultation',
+        'toggleLockConsultation',
+        'changeDevice',
+        'changeLanguage',
+        'updateUnreadCount'
+    ]);
 
     beforeEach(async () => {
         mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(true);
 
         await TestBed.configureTestingModule({
             declarations: [VideoCallComponent, TranslatePipeMock],
-            providers: [{ provide: DeviceTypeService, useValue: mockDeviceTypeService }]
+            providers: [
+                { provide: DeviceTypeService, useValue: mockDeviceTypeService },
+                { provide: VideoCallEventsService, useValue: mockVideoCallEventsService }
+            ]
         }).compileComponents();
 
         fixture = TestBed.createComponent(VideoCallComponent);
@@ -35,50 +53,41 @@ describe('VideoCallComponent', () => {
     });
 
     describe('videoWrapperReady', () => {
-        it('should emit event', () => {
-            spyOn(component.ready, 'emit');
+        it('should call service', () => {
             component.videoWrapperReady();
-            expect(component.ready.emit).toHaveBeenCalled();
+            expect(mockVideoCallEventsService.triggerVideoWrapperReady).toHaveBeenCalled();
         });
     });
 
     describe('leaveConsultationClicked', () => {
-        it('should emit event', () => {
-            spyOn(component.leaveConsultation, 'emit');
+        it('should call service', () => {
             component.leaveConsultationClicked();
-            expect(component.leaveConsultation.emit).toHaveBeenCalled();
+            expect(mockVideoCallEventsService.leaveConsultation).toHaveBeenCalled();
         });
     });
 
     describe('lockConsultationClicked', () => {
-        it('should emit event of true', () => {
-            spyOn(component.consultationLockToggle, 'emit');
-            const value = true;
-            component.lockConsultationClicked(value);
-            expect(component.consultationLockToggle.emit).toHaveBeenCalledWith(value);
-        });
+        const testCases = [true, false];
 
-        it('should emit event of false', () => {
-            spyOn(component.consultationLockToggle, 'emit');
-            const value = false;
-            component.lockConsultationClicked(value);
-            expect(component.consultationLockToggle.emit).toHaveBeenCalledWith(value);
+        testCases.forEach(test => {
+            it(`should call service with value of ${test}`, () => {
+                component.lockConsultationClicked(test);
+                expect(mockVideoCallEventsService.toggleLockConsultation).toHaveBeenCalledWith(test);
+            });
         });
     });
 
     describe('changeDeviceToggleClicked', () => {
-        it('should emit event', () => {
-            spyOn(component.deviceToggle, 'emit');
+        it('should call service', () => {
             component.changeDeviceToggleClicked();
-            expect(component.deviceToggle.emit).toHaveBeenCalled();
+            expect(mockVideoCallEventsService.changeDevice).toHaveBeenCalled();
         });
     });
 
     describe('changeLanguageSelected', () => {
-        it('should emit event', () => {
-            spyOn(component.languageChange, 'emit');
+        it('should call service', () => {
             component.changeLanguageSelected();
-            expect(component.languageChange.emit).toHaveBeenCalled();
+            expect(mockVideoCallEventsService.changeLanguage).toHaveBeenCalled();
         });
     });
 
@@ -94,11 +103,10 @@ describe('VideoCallComponent', () => {
     });
 
     describe('unreadCountUpdated', () => {
-        it('should emit event', () => {
-            spyOn(component.unreadCountUpdate, 'emit');
+        it('should call service', () => {
             const count = 2;
             component.unreadCountUpdated(count);
-            expect(component.unreadCountUpdate.emit).toHaveBeenCalledWith(count);
+            expect(mockVideoCallEventsService.updateUnreadCount).toHaveBeenCalledWith(count);
         });
     });
 

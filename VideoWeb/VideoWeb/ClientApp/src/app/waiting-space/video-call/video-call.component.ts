@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { VHConference, VHEndpoint, VHParticipant } from '../store/models/vh-conference';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 @Component({
     selector: 'app-video-call',
@@ -29,13 +30,6 @@ export class VideoCallComponent {
     @Input() isParticipantsPanelEnabled: boolean;
     @Input() isIMEnabled: boolean;
 
-    @Output() ready = new EventEmitter<void>();
-    @Output() leaveConsultation = new EventEmitter<void>();
-    @Output() consultationLockToggle = new EventEmitter<boolean>();
-    @Output() deviceToggle = new EventEmitter<void>();
-    @Output() languageChange = new EventEmitter<void>();
-    @Output() unreadCountUpdate = new EventEmitter<number>();
-
     streamInMain = false;
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -43,7 +37,10 @@ export class VideoCallComponent {
         Chat: false
     };
 
-    constructor(protected deviceTypeService: DeviceTypeService) {}
+    constructor(
+        protected deviceTypeService: DeviceTypeService,
+        protected videoCallEventsService: VideoCallEventsService
+    ) {}
 
     get isSupportedBrowserForNetworkHealth(): boolean {
         return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
@@ -66,27 +63,27 @@ export class VideoCallComponent {
     }
 
     videoWrapperReady() {
-        this.ready.emit();
+        this.videoCallEventsService.triggerVideoWrapperReady();
     }
 
     leaveConsultationClicked() {
-        this.leaveConsultation.emit();
+        this.videoCallEventsService.leaveConsultation();
     }
 
     lockConsultationClicked(lock: boolean) {
-        this.consultationLockToggle.emit(lock);
+        this.videoCallEventsService.toggleLockConsultation(lock);
     }
 
     changeDeviceToggleClicked() {
-        this.deviceToggle.emit();
+        this.videoCallEventsService.changeDevice();
     }
 
     changeLanguageSelected() {
-        this.languageChange.emit();
+        this.videoCallEventsService.changeLanguage();
     }
 
     unreadCountUpdated(count: number) {
-        this.unreadCountUpdate.emit(count);
+        this.videoCallEventsService.updateUnreadCount(count);
     }
 
     switchStreamWindows() {

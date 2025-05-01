@@ -33,6 +33,7 @@ import {
 } from '../../store/models/api-contract-to-state-model-mappers';
 import * as ConferenceSelectors from '../../store/selectors/conference.selectors';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VideoCallEventsService } from '../../services/video-call-events.service';
 
 const conferenceTestData = new ConferenceTestData();
 
@@ -87,6 +88,8 @@ export let mockConferenceStore: MockStore<ConferenceState>;
 
 export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
+
+export let videoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
 
 export function initAllWRDependencies() {
     mockConferenceStore = createMockStore({
@@ -167,4 +170,25 @@ export function initAllWRDependencies() {
 
     focusService = jasmine.createSpyObj<FocusService>(['storeFocus', 'restoreFocus']);
     launchDarklyService = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+
+    videoCallEventsService = jasmine.createSpyObj<VideoCallEventsService>('VideoCallEventsService', [
+        'onVideoWrapperReady',
+        'onLeaveConsultation',
+        'onLockConsultationToggled',
+        'onChangeDevice',
+        'onChangeLanguageSelected',
+        'onUnreadCountUpdated',
+        'triggerVideoWrapperReady',
+        'leaveConsultation',
+        'toggleLockConsultation',
+        'changeDevice',
+        'changeLanguage',
+        'updateUnreadCount'
+    ]);
+    videoCallEventsService.onVideoWrapperReady.and.returnValue(of());
+    videoCallEventsService.onLeaveConsultation.and.returnValue(of());
+    videoCallEventsService.onLockConsultationToggled.and.returnValue(of());
+    videoCallEventsService.onChangeDevice.and.returnValue(of());
+    videoCallEventsService.onChangeLanguageSelected.and.returnValue(of());
+    videoCallEventsService.onUnreadCountUpdated.and.returnValue(of());
 }

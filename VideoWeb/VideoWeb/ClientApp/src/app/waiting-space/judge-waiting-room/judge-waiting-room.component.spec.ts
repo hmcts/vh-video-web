@@ -1,7 +1,7 @@
 import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
-import { of, Subject } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VHConference, VHParticipant } from '../store/models/vh-conference';
@@ -20,7 +20,8 @@ import {
     consultationInvitiationService,
     titleService,
     launchDarklyService,
-    initAllWRDependencies
+    initAllWRDependencies,
+    videoCallEventsService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
@@ -57,6 +58,7 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { getAudioRestartActionedMock } from 'src/app/testing/mocks/mock-events-service';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 describe('JudgeWaitingRoom', () => {
     const testData = new ConferenceTestData();
@@ -88,6 +90,11 @@ describe('JudgeWaitingRoom', () => {
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
+    let mockVideoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
+    const onVideoWrapperReadySubject = new Subject<void>();
+    const onLeaveConsultationSubject = new Subject<void>();
+    const onChangeDeviceSubject = new Subject<void>();
+    const onUpdateUnreadCountSubject = new Subject<number>();
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -126,6 +133,11 @@ describe('JudgeWaitingRoom', () => {
         mockLaunchDarklyService = launchDarklyService;
         mockTranslationService = translateServiceSpy;
         mockAudioRecordingService = audioRecordingServiceSpy;
+        mockVideoCallEventsService = videoCallEventsService;
+        mockVideoCallEventsService.onVideoWrapperReady.and.returnValue(onVideoWrapperReadySubject.asObservable());
+        mockVideoCallEventsService.onLeaveConsultation.and.returnValue(onLeaveConsultationSubject.asObservable());
+        mockVideoCallEventsService.onChangeDevice.and.returnValue(onChangeDeviceSubject.asObservable());
+        mockVideoCallEventsService.onUnreadCountUpdated.and.returnValue(onUpdateUnreadCountSubject.asObservable());
     });
 
     beforeEach(async () => {
@@ -180,6 +192,7 @@ describe('JudgeWaitingRoom', () => {
                 { provide: TranslateService, useValue: mockTranslationService },
                 { provide: AudioRecordingService, useValue: mockAudioRecordingService },
                 { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
+                { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
         }).compileComponents();
@@ -207,6 +220,38 @@ describe('JudgeWaitingRoom', () => {
             component.ngOnInit();
 
             expect(component.init).toHaveBeenCalled();
+        });
+
+        it('should start subscribers', () => {
+            spyOn(component, 'setTrapFocus').and.callThrough();
+            spyOn(component, 'showLeaveConsultationModal').and.callThrough();
+            spyOn(component, 'showChooseCameraDialog').and.callThrough();
+            spyOn(component, 'unreadMessageCounterUpdate').and.callThrough();
+            const unreadCount = 5;
+
+            component.ngOnInit();
+            onVideoWrapperReadySubject.next();
+            onLeaveConsultationSubject.next();
+            onChangeDeviceSubject.next();
+            onUpdateUnreadCountSubject.next(unreadCount);
+
+            expect(component.setTrapFocus).toHaveBeenCalled();
+            expect(component.showLeaveConsultationModal).toHaveBeenCalled();
+            expect(component.showChooseCameraDialog).toHaveBeenCalled();
+            expect(component.unreadMessageCounterUpdate).toHaveBeenCalledWith(unreadCount);
+        });
+    });
+
+    describe('ngOnDestroy', () => {
+        it('should unsubscribe', () => {
+            const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+            const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+            component.subscriptions = [mockSubscription1, mockSubscription2];
+
+            component.ngOnDestroy();
+
+            expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
+            expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
         });
     });
 

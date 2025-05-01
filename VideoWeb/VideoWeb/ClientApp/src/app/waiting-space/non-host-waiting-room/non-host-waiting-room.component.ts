@@ -30,6 +30,7 @@ import { Store } from '@ngrx/store';
 import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
 import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 @Component({
     standalone: false,
@@ -73,7 +74,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        protected videoCallEventsService: VideoCallEventsService
     ) {
         super(
             route,
@@ -93,7 +95,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             hideComponentsService,
             focusService,
             launchDarklyService,
-            store
+            store,
+            videoCallEventsService
         );
     }
 
@@ -382,6 +385,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.startEventHubSubscribers();
         this.connectToPexip();
         this.registerMediaStatusPublisher();
+        this.startVideoCallEventSubscribers();
     }
 
     private registerMediaStatusPublisher() {
@@ -416,5 +420,20 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+        this.stopVideoCallEventSubscribers();
+    }
+
+    private startVideoCallEventSubscribers() {
+        this.subscriptions.push(
+            this.videoCallEventsService.onVideoWrapperReady().subscribe(() => this.setTrapFocus()),
+            this.videoCallEventsService.onLeaveConsultation().subscribe(() => this.showLeaveConsultationModal()),
+            this.videoCallEventsService.onLockConsultationToggled().subscribe(lock => this.setRoomLock(lock)),
+            this.videoCallEventsService.onChangeDevice().subscribe(() => this.showChooseCameraDialog()),
+            this.videoCallEventsService.onChangeLanguageSelected().subscribe(count => this.showLanguageChangeModal())
+        );
+    }
+
+    private stopVideoCallEventSubscribers() {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 }

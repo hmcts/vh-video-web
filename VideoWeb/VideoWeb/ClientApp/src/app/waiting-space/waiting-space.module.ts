@@ -70,6 +70,7 @@ import { SupportContactDetailsComponent } from './support-contact-details/suppor
 import { PrivateConsultationDescriptionComponent } from './private-consultation-description/private-consultation-description.component';
 import { VideoCallComponent } from './video-call/video-call.component';
 import { TransferMessageComponent } from './transfer-message/transfer-message.component';
+import { VideoCallEventsService } from './services/video-call-events.service';
 
 @NgModule({
     imports: [
@@ -147,6 +148,7 @@ import { TransferMessageComponent } from './transfer-message/transfer-message.co
         NotificationToastrService,
         RoomClosingToastrService,
         LoggedUserResolveService,
+        VideoCallEventsService,
         provideStore({
             router: routerReducer
         }),

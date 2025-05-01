@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import { NonHostWaitingRoomComponent } from './non-host-waiting-room.component';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -33,6 +33,7 @@ import {
     roomClosingToastrService,
     router,
     titleService,
+    videoCallEventsService,
     videoCallService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ConferenceStatus, LinkType, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -53,6 +54,7 @@ import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 describe('NonHostWaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
@@ -85,6 +87,12 @@ describe('NonHostWaitingRoomComponent', () => {
     let shouldReloadSubject: Subject<void>;
     let isAudioOnlySubject: Subject<boolean>;
     let mockUserMediaService: jasmine.SpyObj<UserMediaService>;
+    let mockVideoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
+    const onVideoWrapperReadySubject = new Subject<void>();
+    const onLeaveConsultationSubject = new Subject<void>();
+    const onLockConsultationSubject = new Subject<boolean>();
+    const onChangeDeviceSubject = new Subject<void>();
+    const onChangeLanguageSubject = new Subject<void>();
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -125,6 +133,12 @@ describe('NonHostWaitingRoomComponent', () => {
         mockUserMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(mockUserMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        mockVideoCallEventsService = videoCallEventsService;
+        mockVideoCallEventsService.onVideoWrapperReady.and.returnValue(onVideoWrapperReadySubject.asObservable());
+        mockVideoCallEventsService.onLeaveConsultation.and.returnValue(onLeaveConsultationSubject.asObservable());
+        mockVideoCallEventsService.onLockConsultationToggled.and.returnValue(onLockConsultationSubject.asObservable());
+        mockVideoCallEventsService.onChangeDevice.and.returnValue(onChangeDeviceSubject.asObservable());
+        mockVideoCallEventsService.onChangeLanguageSelected.and.returnValue(onChangeLanguageSubject.asObservable());
     });
 
     beforeEach(async () => {
@@ -179,6 +193,7 @@ describe('NonHostWaitingRoomComponent', () => {
                 { provide: TranslateService, useValue: mockTranslationService },
                 { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
                 { provide: UserMediaService, useValue: mockUserMediaService },
+                { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
         }).compileComponents();
@@ -223,6 +238,28 @@ describe('NonHostWaitingRoomComponent', () => {
                 tick();
                 expect(component.showJoinHearingWarning).toBe(test);
             }));
+        });
+
+        it('should start subscribers', () => {
+            spyOn(component, 'setTrapFocus').and.callThrough();
+            spyOn(component, 'showLeaveConsultationModal').and.callThrough();
+            spyOn(component, 'setRoomLock').and.callThrough();
+            spyOn(component, 'showChooseCameraDialog').and.callThrough();
+            spyOn(component, 'showLanguageChangeModal').and.callThrough();
+            const roomLocked = true;
+
+            component.ngOnInit();
+            onVideoWrapperReadySubject.next();
+            onLeaveConsultationSubject.next();
+            onLockConsultationSubject.next(roomLocked);
+            onChangeDeviceSubject.next();
+            onChangeLanguageSubject.next();
+
+            expect(component.setTrapFocus).toHaveBeenCalled();
+            expect(component.showLeaveConsultationModal).toHaveBeenCalled();
+            expect(component.setRoomLock).toHaveBeenCalledWith(roomLocked);
+            expect(component.showChooseCameraDialog).toHaveBeenCalled();
+            expect(component.showLanguageChangeModal).toHaveBeenCalled();
         });
     });
 
@@ -694,6 +731,10 @@ describe('NonHostWaitingRoomComponent', () => {
     describe('cleanUp', () => {
         it('should clean up on destroy', () => {
             spyOn(mockStore, 'dispatch');
+            const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+            const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+            component.subscriptions = [mockSubscription1, mockSubscription2];
+
             component.ngOnDestroy();
 
             expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
@@ -702,6 +743,8 @@ describe('NonHostWaitingRoomComponent', () => {
                     conferenceId: conference.id
                 })
             );
+            expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
+            expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
         });
     });
 

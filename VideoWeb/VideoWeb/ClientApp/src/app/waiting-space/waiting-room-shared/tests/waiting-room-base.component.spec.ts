@@ -47,7 +47,8 @@ import {
     router,
     titleService,
     videoCallService,
-    videoWebService
+    videoWebService,
+    videoCallEventsService
 } from './waiting-room-base-setup';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
@@ -84,6 +85,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ElementRef } from '@angular/core';
 import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../../services/video-call-events.service';
 
 describe('WaitingRoomBaseDirective', () => {
     const testData = new ConferenceTestData();
@@ -111,6 +113,7 @@ describe('WaitingRoomBaseDirective', () => {
     let mockConsultationInvitiationService = consultationInvitiationService;
     let mockTitleService = titleService;
     let mockLaunchDarklyService = launchDarklyService;
+    const mockVideoCallEventsService = videoCallEventsService;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -182,6 +185,7 @@ describe('WaitingRoomBaseDirective', () => {
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
                 { provide: Title, useValue: mockTitleService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
+                { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
         }).compileComponents();
