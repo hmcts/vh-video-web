@@ -209,7 +209,7 @@ export class VideoCallService {
 
     handleAudioOnlyChange(isAudioOnly: boolean) {
         this.logger.debug(`${this.loggerPrefix} Audio only setting changed`, { isAudioOnly });
-        if (this.pexipAPI?.call?.mutedVideo !== isAudioOnly) {
+        if (!!this.pexipAPI?.call && this.pexipAPI?.call?.mutedVideo !== isAudioOnly) {
             this.store.dispatch(VideoCallActions.toggleOutgoingVideo());
         }
     }
