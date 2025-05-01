@@ -1,4 +1,4 @@
-@import 'functions';
+@use './functions' as *;
 
 $breakpoints: (
   smallest: 0px,

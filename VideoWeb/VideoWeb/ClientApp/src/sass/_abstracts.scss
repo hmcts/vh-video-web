@@ -1,4 +1,4 @@
-@import 'abstracts/variables';
-@import 'abstracts/functions';
-@import 'abstracts/breakpoints';
-@import 'abstracts/mixins';
+@forward 'abstracts/variables';
+@forward 'abstracts/functions';
+@forward 'abstracts/breakpoints';
+@forward 'abstracts/mixins';

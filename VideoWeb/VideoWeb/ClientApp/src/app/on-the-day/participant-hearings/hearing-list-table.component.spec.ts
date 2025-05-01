@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
