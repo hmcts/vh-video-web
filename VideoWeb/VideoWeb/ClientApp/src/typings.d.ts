@@ -103,6 +103,7 @@ declare interface PexipDialOutParams {
 
 declare interface PexipClient {
     video_source: string | boolean;
+    recv_video: boolean;
     audio_source: string | boolean;
     h264_enabled: boolean;
     mutedAudio: boolean;
