@@ -16,53 +16,59 @@
       },
       "architect": {
         "build": {
-            "builder": "@angular-devkit/build-angular:browser",
+            "builder": "@angular-devkit/build-angular:application",
             "options": {
-            "progress": true,
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/assets",
-              "src/scripts",
-              {
-                "glob": "*",
-                "input": "node_modules/govuk-frontend/dist/govuk/assets/fonts",
-                "output": "assets/fonts/"
+              "progress": true,
+              "outputPath": "dist",
+              "index": "src/index.html",
+              "polyfills": [
+                "src/polyfills.ts"
+              ],
+              "tsConfig": "src/tsconfig.app.json",
+              "assets": [
+                "src/assets",
+                "src/scripts",
+                {
+                  "glob": "*",
+                  "input": "node_modules/govuk-frontend/dist/govuk/assets/fonts",
+                  "output": "assets/fonts/"
+                },
+                {
+                  "glob": "*",
+                  "input": "node_modules/govuk-frontend/dist/govuk/assets/images",
+                  "output": "assets/images/"
+                }
+              ],
+              "styles": [
+                "src/styles.scss",
+                "node_modules/ngx-toastr/toastr.css"
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": [
+                  ".",
+                  "src/sass"
+                ]
               },
-              {
-                "glob": "*",
-                "input": "node_modules/govuk-frontend/dist/govuk/assets/images",
-                "output": "assets/images/"
-              }
-            ],
-            "styles": ["src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
-            "stylePreprocessorOptions": {
-              "includePaths": ["src/sass"]
+              "scripts": [
+                "node_modules/chart.js/dist/chart.umd.js",
+                "node_modules/@mediapipe/camera_utils/camera_utils.js",
+                "node_modules/@mediapipe/control_utils/control_utils.js",
+                "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
+                "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+              ],
+              "allowedCommonJsDependencies": [
+                "guid-typescript",
+                "sdp",
+                "@mediapipe/camera_utils",
+                "@mediapipe/selfie_segmentation",
+                "moment"
+              ],
+              "extractLicenses": false,
+              "sourceMap": true,
+              "optimization": false,
+              "namedChunks": true,
+              "browser": "src/main.ts"
             },
-            "scripts": [
-              "node_modules/chart.js/dist/chart.umd.js",
-              "node_modules/@mediapipe/camera_utils/camera_utils.js",
-              "node_modules/@mediapipe/control_utils/control_utils.js",
-              "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
-              "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
-            ],
-            "allowedCommonJsDependencies": [
-              "guid-typescript",
-              "sdp",
-              "@mediapipe/camera_utils",
-              "@mediapipe/selfie_segmentation",
-              "moment"
-            ],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
-          },
           "configurations": {
             "development": {},
             "production": {
@@ -76,9 +82,7 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "extractLicenses": true
             }
           },
           "defaultConfiguration": ""
@@ -142,35 +146,6 @@
               }
             ]
           }
-        },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "outputPath": "dist-server",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.server.json",
-            "sourceMap": true,
-            "optimization": false,
-            "buildOptimizer": false
-          },
-          "configurations": {
-            "dev": {
-              "optimization": true,
-              "outputHashing": "all",
-              "namedChunks": false,
-              "extractLicenses": true,
-              "buildOptimizer": true
-            },
-            "production": {
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "buildOptimizer": true
-            }
-          },
-          "defaultConfiguration": ""
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

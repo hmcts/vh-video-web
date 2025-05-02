@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService, ToastPackage, Toast } from 'ngx-toastr';
 import { Observable, Subject } from 'rxjs';

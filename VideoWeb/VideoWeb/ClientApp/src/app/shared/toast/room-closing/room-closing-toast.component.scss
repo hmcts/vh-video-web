@@ -1,4 +1,4 @@
-@import 'govuk-frontend/dist/govuk/base';
+@use 'govuk-frontend/dist/govuk/base' as *;
 
 :host {
   font-size: 0.9em;
@@ -10,7 +10,6 @@
   display: flex;
   flex-direction: column;
   font-family: 'GDS Transport', arial, sans-serif;
-
   background: govuk-colour('white');
   color: govuk-colour('black');
 }

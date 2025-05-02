@@ -1,4 +1,4 @@
-@import 'abstracts';
+@use 'abstracts' as *;
 
 .consultation-modal {
   display: block;
