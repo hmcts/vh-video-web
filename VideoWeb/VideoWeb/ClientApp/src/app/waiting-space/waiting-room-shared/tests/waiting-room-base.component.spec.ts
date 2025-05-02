@@ -45,7 +45,6 @@ import {
     participantsLinked,
     roomClosingToastrService,
     router,
-    titleService,
     videoCallService,
     videoWebService,
     videoCallEventsService
@@ -57,7 +56,6 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { Title } from '@angular/platform-browser';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
@@ -111,7 +109,6 @@ describe('WaitingRoomBaseDirective', () => {
     let mockClockService;
     const clockSubject = new Subject<Date>();
     let mockConsultationInvitiationService = consultationInvitiationService;
-    let mockTitleService = titleService;
     let mockLaunchDarklyService = launchDarklyService;
     const mockVideoCallEventsService = videoCallEventsService;
 
@@ -137,7 +134,6 @@ describe('WaitingRoomBaseDirective', () => {
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
         mockConsultationInvitiationService = consultationInvitiationService;
-        mockTitleService = titleService;
         mockLaunchDarklyService = launchDarklyService;
     });
 
@@ -183,7 +179,6 @@ describe('WaitingRoomBaseDirective', () => {
                 { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
-                { provide: Title, useValue: mockTitleService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
                 { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()

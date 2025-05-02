@@ -21,7 +21,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { Title } from '@angular/platform-browser';
+import { ConferenceActions } from '../store/actions/conference.actions';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -50,8 +50,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
 
     private readonly componentLoggerPrefix = '[Non-Host Waiting Room] -';
     private destroyedSubject = new Subject();
-    private titleForParticipant = 'Participant waiting room';
-    private titleForJoh = 'JOH waiting room';
 
     constructor(
         protected route: ActivatedRoute,
@@ -70,7 +68,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
         protected userMediaService: UserMediaService,
-        protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
@@ -91,7 +88,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            titleService,
             hideComponentsService,
             focusService,
             launchDarklyService,
@@ -398,17 +394,7 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     private setTitle() {
-        switch (this.userRole) {
-            case NonHostUserRole.Participant:
-                this.titleService.setTitle(this.titleForParticipant);
-                break;
-            case NonHostUserRole.Joh:
-                this.titleService.setTitle(this.titleForJoh);
-                break;
-            default:
-                this.titleService.setTitle(this.titleForParticipant);
-                break;
-        }
+        this.store.dispatch(ConferenceActions.enterWaitingRoomAsNonHost({ userRole: this.userRole }));
     }
 
     private cleanUp() {

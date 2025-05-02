@@ -18,7 +18,6 @@ import {
     roomClosingToastrService,
     router,
     consultationInvitiationService,
-    titleService,
     launchDarklyService,
     initAllWRDependencies,
     videoCallEventsService
@@ -27,7 +26,6 @@ import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { ConferenceStatus, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
-import { Title } from 'chart.js';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -84,7 +82,6 @@ describe('JudgeWaitingRoom', () => {
     let mockClockService: jasmine.SpyObj<ClockService>;
     const clockSubject = new Subject<Date>();
     let mockConsultationInvitiationService = consultationInvitiationService;
-    let mockTitleService = titleService;
     let mockLaunchDarklyService: jasmine.SpyObj<LaunchDarklyService>;
     let mockAudioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
@@ -129,7 +126,6 @@ describe('JudgeWaitingRoom', () => {
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
         mockConsultationInvitiationService = consultationInvitiationService;
-        mockTitleService = titleService;
         mockLaunchDarklyService = launchDarklyService;
         mockTranslationService = translateServiceSpy;
         mockAudioRecordingService = audioRecordingServiceSpy;
@@ -187,7 +183,6 @@ describe('JudgeWaitingRoom', () => {
                 { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
-                { provide: Title, useValue: mockTitleService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
                 { provide: TranslateService, useValue: mockTranslationService },
                 { provide: AudioRecordingService, useValue: mockAudioRecordingService },

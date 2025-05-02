@@ -28,7 +28,6 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
@@ -115,7 +114,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,

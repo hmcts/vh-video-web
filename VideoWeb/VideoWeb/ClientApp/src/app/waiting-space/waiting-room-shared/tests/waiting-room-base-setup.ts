@@ -21,7 +21,6 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../../store/reducers/conference.reducer';
@@ -80,7 +79,6 @@ export const jwToken = new TokenResponse({
     expires_on: '06/10/2020 01:13:00',
     token: 'eyJhbGciOiJIUzUxMuIsInR5cCI6IkpXRCJ9.eyJ1bmlxdWVfbmFtZSI6IjA0NjllNGQzLTUzZGYtNGExYS04N2E5LTA4OGI0MmExMTQxMiIsIm5iZiI6MTU5MTcyMjcyMCwiZXhwIjoxNTkxNzUxNjQwLCJpYXQiOjE1OTE3MjI3ODAsImlzcyI6ImhtY3RzLnZpZGVvLmhlYXJpbmdzLnNlcnZpY2UifO.USebpA7R7GUiPwF-uSuAd7Sx-bveOFi8LNE3oV7SLxdxASTlq7MfwhgYJhaC69OQAhWcrV7wSdcZ2OS-ZHkSUg'
 });
-export let titleService: jasmine.SpyObj<Title>;
 export let focusService: jasmine.SpyObj<FocusService>;
 export let launchDarklyService: jasmine.SpyObj<LaunchDarklyService>;
 
@@ -165,8 +163,6 @@ export function initAllWRDependencies() {
         'rejectInvitation',
         'linkedParticipantRejectedInvitation'
     ]);
-
-    titleService = jasmine.createSpyObj<Title>(['setTitle']);
 
     focusService = jasmine.createSpyObj<FocusService>(['storeFocus', 'restoreFocus']);
     launchDarklyService = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);

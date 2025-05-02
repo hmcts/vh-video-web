@@ -14,6 +14,7 @@ import { ConferenceState } from '../reducers/conference.reducer';
 import { Role } from 'src/app/services/clients/api-client';
 
 import { selectConferenceId } from '../selectors/router.selectors';
+import { NonHostUserRole } from '../../waiting-room-shared/models/non-host-user-role';
 
 describe('RouterEffects', () => {
     let actions$: Observable<any>;
@@ -137,6 +138,34 @@ describe('RouterEffects', () => {
 
             effects.trackConferenceNavigation$.subscribe(action => {
                 expect(action).toEqual(ConferenceActions.loadConference({ conferenceId: 'conference1' }));
+                done();
+            });
+        });
+    });
+
+    describe('setWaitingRoomPageTitle$', () => {
+        it('should set title when entering as a Participant', done => {
+            actions$ = of(
+                ConferenceActions.enterWaitingRoomAsNonHost({
+                    userRole: NonHostUserRole.Participant
+                })
+            );
+
+            effects.setWaitingRoomPageTitle$.subscribe(() => {
+                expect(titleService.setTitle).toHaveBeenCalledWith('Participant waiting room');
+                done();
+            });
+        });
+
+        it('should set title when entering as a JOH', done => {
+            actions$ = of(
+                ConferenceActions.enterWaitingRoomAsNonHost({
+                    userRole: NonHostUserRole.Joh
+                })
+            );
+
+            effects.setWaitingRoomPageTitle$.subscribe(() => {
+                expect(titleService.setTitle).toHaveBeenCalledWith('JOH waiting room');
                 done();
             });
         });

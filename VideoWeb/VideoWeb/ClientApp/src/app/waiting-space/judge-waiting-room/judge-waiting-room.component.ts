@@ -19,7 +19,6 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -69,7 +68,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private readonly unloadDetectorService: UnloadDetectorService,
-        protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected launchDarklyService: LaunchDarklyService,
@@ -91,7 +89,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            titleService,
             hideComponentsService,
             focusService,
             launchDarklyService,

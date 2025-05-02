@@ -32,7 +32,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    titleService,
     videoCallEventsService,
     videoCallService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -41,7 +40,6 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { MockComponent } from 'ng-mocks';
 import { TranslateService } from '@ngx-translate/core';
-import { Title } from 'chart.js';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ConsultationErrorComponent } from '../consultation-modals/consultation-error/consultation-error.component';
@@ -80,7 +78,6 @@ describe('NonHostWaitingRoomComponent', () => {
     let mockClockService: jasmine.SpyObj<ClockService>;
     const clockSubject = new Subject<Date>();
     let mockConsultationInvitiationService = consultationInvitiationService;
-    let mockTitleService = titleService;
     let mockLaunchDarklyService: jasmine.SpyObj<LaunchDarklyService>;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
@@ -127,7 +124,6 @@ describe('NonHostWaitingRoomComponent', () => {
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
         mockConsultationInvitiationService = consultationInvitiationService;
-        mockTitleService = titleService;
         mockLaunchDarklyService = launchDarklyService;
         mockTranslationService = translateServiceSpy;
         mockUserMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
@@ -188,7 +184,6 @@ describe('NonHostWaitingRoomComponent', () => {
                 { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
-                { provide: Title, useValue: mockTitleService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
                 { provide: TranslateService, useValue: mockTranslationService },
                 { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
@@ -208,26 +203,18 @@ describe('NonHostWaitingRoomComponent', () => {
     });
 
     describe('ngOnInit', () => {
-        it('should create as participant', fakeAsync(() => {
-            component.userRole = NonHostUserRole.Participant;
-            component.ngOnInit();
-            tick();
-            expect(component).toBeTruthy();
-        }));
+        const userRoleTestCases = [NonHostUserRole.Participant, NonHostUserRole.Joh, 'OtherRole' as NonHostUserRole];
 
-        it('should create as joh', fakeAsync(() => {
-            component.userRole = NonHostUserRole.Joh;
-            component.ngOnInit();
-            tick();
-            expect(component).toBeTruthy();
-        }));
-
-        it('should create as other user role', fakeAsync(() => {
-            component.userRole = 'OtherRole' as NonHostUserRole;
-            component.ngOnInit();
-            tick();
-            expect(component).toBeTruthy();
-        }));
+        userRoleTestCases.forEach(userRole => {
+            it(`should init as ${userRole}`, fakeAsync(() => {
+                spyOn(mockStore, 'dispatch');
+                component.userRole = userRole;
+                component.ngOnInit();
+                tick();
+                expect(component).toBeTruthy();
+                expect(mockStore.dispatch).toHaveBeenCalledWith(ConferenceActions.enterWaitingRoomAsNonHost({ userRole: userRole }));
+            }));
+        });
 
         const joinHearingWarningTestCases = [true, false];
 
