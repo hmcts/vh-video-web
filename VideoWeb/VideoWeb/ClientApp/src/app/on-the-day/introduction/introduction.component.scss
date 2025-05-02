@@ -1,4 +1,4 @@
-@import 'govuk-frontend/dist/govuk/base';
+@use 'govuk-frontend/dist/govuk/base' as *;
 $crest-image-width: 180px;
 $crest-column-padding: 15px;
 

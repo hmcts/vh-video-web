@@ -27,7 +27,7 @@ stages:
         steps:
           - checkout: self
             fetchTags: true
-        
+
           - task: gitversion/setup@3.0.3
             displayName: Install GitVersion
             inputs:

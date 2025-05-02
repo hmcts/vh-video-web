@@ -1,11 +1,16 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../out-tsc/app",
-    "types": ["node"],
-    "noUnusedLocals": true
-  },
-  "files": ["main.ts", "polyfills.ts"],
-  "include": ["*.d.ts"],
-  "exclude": ["src/test.ts", "**/*.spec.ts"]
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../out-tsc/app",
+        "types": [
+            "node"
+        ],
+        "noUnusedLocals": true
+    },
+    "files": [
+        "main.ts",
+        "polyfills.ts"
+    ],
+    "include": ["*.d.ts"],
+    "exclude": ["src/test.ts", "**/*.spec.ts"]
 }
