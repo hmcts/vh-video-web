@@ -565,7 +565,12 @@ describe('JudgeWaitingRoom', () => {
 
             describe('onWowzaDisconnected', () => {
                 it('should display audio alert if wowza listener is disconnected', fakeAsync(() => {
-                    component.vhConference = { ...conference, status: ConferenceStatus.InSession, audioRecordingRequired: true };
+                    component.vhConference = {
+                        ...conference,
+                        status: ConferenceStatus.InSession,
+                        audioRecordingRequired: true,
+                        countdownComplete: true
+                    };
 
                     getWowzaAgentConnectionStateSubject.next(false);
                     tick();
@@ -575,7 +580,12 @@ describe('JudgeWaitingRoom', () => {
 
                 it('should not display audio alert if wowza listener is disconnected, but conference is not in session', fakeAsync(() => {
                     component.audioErrorRetryToast = null;
-                    component.vhConference = { ...conference, status: ConferenceStatus.Paused, audioRecordingRequired: true };
+                    component.vhConference = {
+                        ...conference,
+                        status: ConferenceStatus.Paused,
+                        audioRecordingRequired: true,
+                        countdownComplete: false
+                    };
 
                     getWowzaAgentConnectionStateSubject.next(false);
                     tick();

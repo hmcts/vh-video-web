@@ -1,7 +1,7 @@
-@import 'govuk-frontend/dist/govuk/base';
+@use 'govuk-frontend/dist/govuk/base' as *;
 .im-participant-list {
-  @include govuk-grid-column(one-third);
   overflow-y: auto;
   height: 70vh;
   max-height: 100vh;
+  @include govuk-grid-column(one-third);
 }

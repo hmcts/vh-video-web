@@ -23,7 +23,7 @@ namespace VideoWeb.EventHub.Handlers
             if (SourceParticipant.ParticipantStatus == ParticipantStatus.InHearing ||
                 SourceParticipant.ParticipantStatus == ParticipantStatus.InConsultation || anotherDeviceDetected)
                 return PublishParticipantStatusMessage(ParticipantState.Disconnected, ParticipantStatus.Disconnected,
-                    callbackEvent.Reason);
+                    callbackEvent.Reason, callbackEvent);
 
             return Task.CompletedTask;
         }

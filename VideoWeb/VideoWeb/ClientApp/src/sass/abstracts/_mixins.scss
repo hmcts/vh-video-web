@@ -1,5 +1,5 @@
-@import 'functions';
-@import 'breakpoints';
+@use './functions' as *;
+@use './breakpoints' as *;
 
 @mixin responds-to($name) {
   @if not map-has-key($breakpoints, $name) {

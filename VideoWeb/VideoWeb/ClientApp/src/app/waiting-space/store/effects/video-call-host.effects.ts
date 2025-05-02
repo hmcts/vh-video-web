@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { ApiClient, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, ConferenceStatus, StartOrResumeVideoHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { ConferenceState } from '../reducers/conference.reducer';
@@ -315,14 +315,16 @@ export class VideoCallHostEffects {
                 );
             }),
             delay(10000),
+            concatLatestFrom(() => this.store.select(ConferenceSelectors.getActiveConference)), // Re-fetch the conference state to make sure it's still in session
+            filter(([_, conference]) => conference.status === ConferenceStatus.InSession),
             switchMap(([action, conference]) =>
-                this.apiClient.callParticipant(conference.id, action.participantId).pipe(
+                this.apiClient.callParticipant(conference.id, action[0].participantId).pipe(
                     map(() => VideoCallHostActions.admitParticipantSuccess()),
                     catchError(error =>
                         of(
                             VideoCallHostActions.admitParticipantFailure({
                                 error,
-                                participantId: action.participantId,
+                                participantId: action[0].participantId,
                                 conferenceId: conference.id
                             })
                         )

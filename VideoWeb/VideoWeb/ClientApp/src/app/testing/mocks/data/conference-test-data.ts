@@ -1,6 +1,6 @@
 import { builder } from '@testpossessed/ts-data-builder';
 import { Guid } from 'guid-typescript';
-import * as moment from 'moment';
+import moment from 'moment';
 import {
     ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,

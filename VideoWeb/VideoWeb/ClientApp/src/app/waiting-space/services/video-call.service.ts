@@ -33,6 +33,7 @@ import {
 } from '../store/models/api-contract-to-state-model-mappers';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VideoCallActions } from '../store/actions/video-call.action';
 
 @Injectable()
 export class VideoCallService {
@@ -117,7 +118,6 @@ export class VideoCallService {
         this.userMediaStreamService.createAndPublishStream();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
-        this.logMediaStreamInfo();
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -175,6 +175,10 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
+        this.userMediaService.isAudioOnly$
+            .pipe(takeUntil(this.hasDisconnected$))
+            .subscribe(isAudioOnly => this.handleAudioOnlyChange(isAudioOnly));
+
         this.userMediaStreamService.currentStream$.pipe(skip(1), takeUntil(this.hasDisconnected$)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.logMediaStreamInfo();
@@ -203,6 +207,13 @@ export class VideoCallService {
             });
     }
 
+    handleAudioOnlyChange(isAudioOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Audio only setting changed`, { isAudioOnly });
+        if (!!this.pexipAPI?.call && this.pexipAPI?.call?.mutedVideo !== isAudioOnly) {
+            this.store.dispatch(VideoCallActions.toggleOutgoingVideo());
+        }
+    }
+
     initTurnServer() {
         const config = this.configService.getConfig();
         const supplierConfig = this.getSupplierConfig(config);
@@ -220,6 +231,11 @@ export class VideoCallService {
     }
 
     async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, conferenceId: string) {
+        if (this.pexipAPI?.call) {
+            this.logger.warn(`${this.loggerPrefix} A call is already active. Disconnecting the current call before making a new one.`);
+            this.disconnectFromCall();
+        }
+
         if (this.uniqueCallTagsPerCall) {
             this.logger.debug(
                 `${this.loggerPrefix} unique call tags per call is enabled, generating new call tag (ignore the one from setup)`
@@ -252,13 +268,13 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.logger.debug(`${this.loggerPrefix} Disconnecting from Pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
             this.userMediaStreamService.closeCurrentStream();
         } else {
-            throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
+            this.logger.warn(`${this.loggerPrefix} No active Pexip client to disconnect.`);
         }
     }
 
@@ -404,6 +420,10 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
+        if (this.pexipAPI.state.toLowerCase() !== 'active') {
+            this.logger.info(`${this.loggerPrefix} Not renegotiating as the call is not active`);
+            return;
+        }
         this.logger.info(`${this.loggerPrefix} Queuing renegotiation request`);
         // Queue renegotiation requests to ensure they are processed one at a time and not lost
         this.renegotiateSubject.next(sendUpdate);
@@ -519,7 +539,7 @@ export class VideoCallService {
     }
 
     logMediaStreamInfo() {
-        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI.user_media_stream ? 'stream set' : 'stream not set');
+        this.logger.debug(`${this.loggerPrefix} set user media stream`, this.pexipAPI?.user_media_stream ? 'stream set' : 'stream not set');
     }
 
     private makePexipCall(

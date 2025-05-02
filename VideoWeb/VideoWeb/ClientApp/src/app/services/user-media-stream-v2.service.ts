@@ -6,6 +6,7 @@ import { UserMediaService } from './user-media.service';
 import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Logger } from './logging/logger-base';
+import { VideoFilterService } from './video-filter.service';
 
 @Injectable({
     providedIn: 'root'
@@ -27,11 +28,18 @@ export class UserMediaStreamServiceV2 {
         private logger: Logger,
         private userMediaService: UserMediaService,
         private mediaStreamService: MediaStreamService,
-        private audioOnlyImageService: AudioOnlyImageService
+        private audioOnlyImageService: AudioOnlyImageService,
+        private videoFilterService: VideoFilterService
     ) {
         const activeVideoDevice$ = this.userMediaService.activeVideoDevice$;
         const activeMicrophoneDevice$ = this.userMediaService.activeMicrophoneDevice$;
         const isAudioOnly$ = this.userMediaService.isAudioOnly$;
+
+        this.videoFilterService.onFilterChanged$.pipe(distinctUntilChanged()).subscribe(newFilter => {
+            this.logger.debug(`${this.loggerPrefix} Video filter changed to ${newFilter}`);
+            this.deviceChanged = true;
+            this.createAndPublishStream();
+        });
 
         combineLatest([activeVideoDevice$, activeMicrophoneDevice$, isAudioOnly$])
             .pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)))
@@ -80,7 +88,7 @@ export class UserMediaStreamServiceV2 {
             return;
         }
 
-        if (!this.deviceChanged && this.currentStream.active) {
+        if (!this.deviceChanged && this.currentStream?.active) {
             this.logger.debug(`${this.loggerPrefix} No device change detected. Republishing existing stream.`);
             this._currentStream$.next(this.currentStream);
             return;

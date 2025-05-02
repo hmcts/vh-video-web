@@ -1,10 +1,10 @@
-@import 'govuk-frontend/dist/govuk/base';
+@use 'govuk-frontend/dist/govuk/base' as *;
 
 .sub-layout-grid {
-  @include govuk-font($size: 16);
   display: grid;
   grid-template-columns: 150px auto;
   grid-template-rows: 100px;
+  @include govuk-font($size: 16);
 }
 
 .f16 {

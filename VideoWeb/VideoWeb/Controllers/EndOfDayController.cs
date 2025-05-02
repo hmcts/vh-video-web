@@ -11,6 +11,7 @@ using VideoWeb.Common;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers.Sorting;
 using VideoWeb.Mappings;
+using VideoWeb.Common.Logging;
 
 namespace VideoWeb.Controllers;
 
@@ -37,7 +38,7 @@ public class EndOfDayController(
     public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetActiveConferences(CancellationToken cancellationToken)
 
     {
-        logger.LogDebug("Getting all active conferences");
+        logger.LogGettingActiveConferences();
         try
         {
             var activeConferences = await videoApiClient.GetActiveConferencesAsync(cancellationToken);
@@ -55,7 +56,7 @@ public class EndOfDayController(
                 return Ok(new List<ConferenceForVhOfficerResponse>());
             }
 
-            logger.LogError(e, "Unable to get active conferences");
+            logger.LogUnableToGetActiveConferences(e);
             return StatusCode(e.StatusCode, e.Response);
         }
     }

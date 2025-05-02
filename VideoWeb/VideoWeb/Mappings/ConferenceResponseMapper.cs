@@ -31,6 +31,7 @@ public static class ConferenceResponseMapper
             AllocatedCso = conference.AllocatedCso,
             AllocatedCsoId = conference.AllocatedCsoId,
             AllocatedCsoUsername = conference.AllocatedCsoUsername,
+            CountdownCompleted = conference.CountdownComplete
         };
         
         if (conference.MeetingRoom != null)

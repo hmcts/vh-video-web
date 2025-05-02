@@ -1,4 +1,4 @@
-@import 'abstracts';
+@use 'abstracts' as *;
 
 .header-content-grid-with-lock {
   display: grid;
