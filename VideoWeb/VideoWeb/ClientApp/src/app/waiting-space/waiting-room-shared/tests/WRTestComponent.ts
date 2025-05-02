@@ -5,7 +5,6 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
@@ -40,7 +39,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
@@ -60,7 +58,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             deviceTypeService,
             router,
             consultationService,
-            notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
             clockService,

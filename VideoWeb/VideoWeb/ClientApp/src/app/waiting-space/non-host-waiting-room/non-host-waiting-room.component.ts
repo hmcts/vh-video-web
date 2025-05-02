@@ -10,7 +10,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HearingRole } from '../models/hearing-role-model';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -42,7 +41,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     @Input() userRole: NonHostUserRole;
 
     currentTime: Date;
-    hearingStartingAnnounced: boolean;
 
     showJoinHearingWarning = false;
     displayLanguageModal: boolean;
@@ -60,7 +58,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
@@ -83,7 +80,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             deviceTypeService,
             router,
             consultationService,
-            notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
             clockService,
@@ -169,7 +165,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             .subscribe(time => {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
-                this.checkIfHearingIsStarting();
                 this.showRoomClosingToast(time);
             });
     }
@@ -182,21 +177,10 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         }
     }
 
-    checkIfHearingIsStarting(): void {
-        if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
-            this.announceHearingIsAboutToStart();
-        }
-    }
-
     checkIfHearingIsClosed(): void {
         if (this.hearing.isPastClosedTime()) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         }
-    }
-
-    async announceHearingIsAboutToStart(): Promise<void> {
-        await this.notificationSoundsService.playHearingAlertSound();
-        this.hearingStartingAnnounced = true;
     }
 
     getConferenceStatusText(): string {
@@ -367,7 +351,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         this.errorCount = 0;
         this.logger.debug(`${this.componentLoggerPrefix} loading waiting room`);
         this.connected = false;
-        this.notificationSoundsService.initHearingAlertSound();
         this.getConference();
         if (this.deviceTypeService.isHandheldIOSDevice()) {
             this.showJoinHearingWarning = true;

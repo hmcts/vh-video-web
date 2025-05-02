@@ -14,7 +14,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { CallError, ParticipantUpdated } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -61,7 +60,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
@@ -84,7 +82,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             deviceTypeService,
             router,
             consultationService,
-            notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
             clockService,
@@ -96,7 +93,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             videoCallEventsService
         );
         this.displayConfirmStartHearingPopup = false;
-        this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
     get canShowHearingLayoutSelection() {

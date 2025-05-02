@@ -24,7 +24,6 @@ import {
 } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -50,7 +49,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     maxBandwidth = null;
     audioOnly: boolean;
-    hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
     loadingData: boolean;
     errorCount: number;
@@ -109,7 +107,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
@@ -754,7 +751,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(time => {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
-                this.checkIfHearingIsStarting();
                 this.showRoomClosingToast(time);
             });
     }
@@ -772,17 +768,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             this.logger.info(`${this.loggerPrefix} Hearing is closed, returning to home page`);
             this.router.navigate([pageUrls.Home]);
         }
-    }
-
-    checkIfHearingIsStarting(): void {
-        if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
-            this.announceHearingIsAboutToStart();
-        }
-    }
-
-    announceHearingIsAboutToStart(): void {
-        this.hearingStartingAnnounced = true;
-        this.notificationSoundsService.playHearingAlertSound();
     }
 
     closeAllPCModals(): void {

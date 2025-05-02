@@ -13,7 +13,6 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -28,7 +27,6 @@ import {
     eventsService,
     initAllWRDependencies,
     launchDarklyService,
-    notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
     router,
@@ -69,7 +67,6 @@ describe('NonHostWaitingRoomComponent', () => {
     let mockEventsService: jasmine.SpyObj<EventsService>;
     let mockErrorService: jasmine.SpyObj<ErrorService>;
     let mockConsultationService: jasmine.SpyObj<ConsultationService>;
-    let mockNotificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
     let mockNotificationToastrService: jasmine.SpyObj<NotificationToastrService>;
     let mockDeviceTypeService: jasmine.SpyObj<DeviceTypeService>;
     let mockRoomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
@@ -116,7 +113,6 @@ describe('NonHostWaitingRoomComponent', () => {
         mockEventsService = eventsService;
         mockErrorService = errorService;
         mockConsultationService = consultationService;
-        mockNotificationSoundsService = notificationSoundsService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
         mockRoomClosingToastrService = roomClosingToastrService;
@@ -177,7 +173,6 @@ describe('NonHostWaitingRoomComponent', () => {
                 { provide: ErrorService, useValue: mockErrorService },
                 { provide: VideoCallService, useValue: mockVideoCallService },
                 { provide: ConsultationService, useValue: mockConsultationService },
-                { provide: NotificationSoundsService, useValue: mockNotificationSoundsService },
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
@@ -347,19 +342,6 @@ describe('NonHostWaitingRoomComponent', () => {
         beforeEach(() => {
             component.subscribeToClock();
         });
-
-        it('should announce hearing is about to start', fakeAsync(() => {
-            component.hearingStartingAnnounced = false;
-            mockNotificationSoundsService.playHearingAlertSound.calls.reset();
-            spyOn(component.hearing, 'isStarting').and.returnValue(true);
-
-            clockSubject.next(new Date());
-            tick();
-
-            expect(component.currentTime).toBeDefined();
-            expect(component.hearingStartingAnnounced).toBeTrue();
-            expect(mockNotificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        }));
 
         it('should navigate user back to the home page when hearing is closed for an extended period', fakeAsync(() => {
             spyOn(component.hearing, 'isPastClosedTime').and.returnValue(true);

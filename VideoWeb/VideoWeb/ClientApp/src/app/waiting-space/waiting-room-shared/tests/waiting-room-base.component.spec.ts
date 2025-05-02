@@ -40,7 +40,6 @@ import {
     eventsService,
     initAllWRDependencies,
     launchDarklyService,
-    notificationSoundsService,
     notificationToastrService,
     participantsLinked,
     roomClosingToastrService,
@@ -50,7 +49,6 @@ import {
     videoCallEventsService
 } from './waiting-room-base-setup';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
@@ -101,7 +99,6 @@ describe('WaitingRoomBaseDirective', () => {
     let mockEventsService = eventsService;
     let mockErrorService = errorService;
     let mockConsultationService = consultationService;
-    let mockNotificationSoundsService = notificationSoundsService;
     let mockNotificationToastrService = notificationToastrService;
     let mockDeviceTypeService = deviceTypeService;
     let mockRoomClosingToastrService = roomClosingToastrService;
@@ -126,7 +123,6 @@ describe('WaitingRoomBaseDirective', () => {
         mockEventsService = eventsService;
         mockErrorService = errorService;
         mockConsultationService = consultationService;
-        mockNotificationSoundsService = notificationSoundsService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
         mockRoomClosingToastrService = roomClosingToastrService;
@@ -172,7 +168,6 @@ describe('WaitingRoomBaseDirective', () => {
                 { provide: ErrorService, useValue: mockErrorService },
                 { provide: VideoCallService, useValue: mockVideoCallService },
                 { provide: ConsultationService, useValue: mockConsultationService },
-                { provide: NotificationSoundsService, useValue: mockNotificationSoundsService },
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
@@ -1505,19 +1500,6 @@ describe('WaitingRoomBaseDirective', () => {
         beforeEach(() => {
             component.subscribeToClock();
         });
-
-        it('should announce hearing is about to start', fakeAsync(() => {
-            component.hearingStartingAnnounced = false;
-            mockNotificationSoundsService.playHearingAlertSound.calls.reset();
-            spyOn(component.hearing, 'isStarting').and.returnValue(true);
-
-            clockSubject.next(new Date());
-            tick();
-
-            expect(component.currentTime).toBeDefined();
-            expect(component.hearingStartingAnnounced).toBeTrue();
-            expect(mockNotificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        }));
 
         it('should navigate user back to the home page when hearing is closed for an extended period', fakeAsync(() => {
             spyOn(component.hearing, 'isPastClosedTime').and.returnValue(true);

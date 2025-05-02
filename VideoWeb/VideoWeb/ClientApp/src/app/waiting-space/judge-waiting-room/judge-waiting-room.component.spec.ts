@@ -12,7 +12,6 @@ import {
     eventsService,
     errorService,
     consultationService,
-    notificationSoundsService,
     notificationToastrService,
     deviceTypeService,
     roomClosingToastrService,
@@ -33,7 +32,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -73,7 +71,6 @@ describe('JudgeWaitingRoom', () => {
     let mockEventsService: jasmine.SpyObj<EventsService>;
     let mockErrorService: jasmine.SpyObj<ErrorService>;
     let mockConsultationService: jasmine.SpyObj<ConsultationService>;
-    let mockNotificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
     let mockNotificationToastrService: jasmine.SpyObj<NotificationToastrService>;
     let mockDeviceTypeService: jasmine.SpyObj<DeviceTypeService>;
     let mockRoomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
@@ -118,7 +115,6 @@ describe('JudgeWaitingRoom', () => {
         mockEventsService = eventsService;
         mockErrorService = errorService;
         mockConsultationService = consultationService;
-        mockNotificationSoundsService = notificationSoundsService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
         mockRoomClosingToastrService = roomClosingToastrService;
@@ -176,7 +172,6 @@ describe('JudgeWaitingRoom', () => {
                 { provide: ErrorService, useValue: mockErrorService },
                 { provide: VideoCallService, useValue: mockVideoCallService },
                 { provide: ConsultationService, useValue: mockConsultationService },
-                { provide: NotificationSoundsService, useValue: mockNotificationSoundsService },
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
