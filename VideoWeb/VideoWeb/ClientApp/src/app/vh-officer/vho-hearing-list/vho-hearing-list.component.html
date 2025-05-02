@@ -4,8 +4,7 @@
   </div>
 </div>
 <div id="conference-list" class="govuk-!-padding-3">
-  <div
-    role="button"
+  <button
     tabindex="0"
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
@@ -64,5 +63,5 @@
       </div>
     </div>
     <div [ngClass]="{ 'line-down': true }"><hr /></div>
-  </div>
+  </button>
 </div>
