@@ -163,11 +163,13 @@
     </div>
   </div>
 
-  <app-participant-chat
-    *ngIf="defineIsIMEnabled() && !isAdminConsultation && !showVideo && instantMessagingEnabled"
-    [hearing]="hearing"
-    [alwaysOn]="hearing.isInSession()"
-  ></app-participant-chat>
+  <ng-container *appFeatureFlag="featureFlags.instantMessaging">
+    <app-participant-chat
+      *ngIf="defineIsIMEnabled() && !isAdminConsultation && !showVideo"
+      [hearing]="hearing"
+      [alwaysOn]="hearing.isInSession()"
+    ></app-participant-chat>
+  </ng-container>
   <app-select-media-devices
     *ngIf="displayDeviceChangeModal"
     (shouldClose)="onSelectMediaDeviceShouldClose()"

@@ -26,7 +26,6 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
-import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VHParticipant } from '../store/models/vh-conference';
 import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
 import { VideoCallEventsService } from '../services/video-call-events.service';
@@ -67,7 +66,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         protected userMediaService: UserMediaService,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>,
         protected videoCallEventsService: VideoCallEventsService
     ) {
@@ -86,7 +84,6 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             consultationInvitiationService,
             hideComponentsService,
             focusService,
-            launchDarklyService,
             store,
             videoCallEventsService
         );

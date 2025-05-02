@@ -23,7 +23,6 @@ import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
-import { LaunchDarklyService } from '../../services/launch-darkly.service';
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { getCountdownComplete } from '../store/selectors/conference.selectors';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
@@ -68,7 +67,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private readonly unloadDetectorService: UnloadDetectorService,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>,
         protected videoCallEventsService: VideoCallEventsService,
         private readonly audioRecordingService: AudioRecordingService
@@ -88,7 +86,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             consultationInvitiationService,
             hideComponentsService,
             focusService,
-            launchDarklyService,
             store,
             videoCallEventsService
         );

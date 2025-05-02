@@ -34,7 +34,7 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ParticipantHelper } from 'src/app/shared/participant-helper';
@@ -44,8 +44,6 @@ import { VideoCallEventsService } from '../services/video-call-events.service';
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
-
-    instantMessagingEnabled = false;
 
     maxBandwidth = null;
     audioOnly: boolean;
@@ -77,6 +75,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     conferenceStartedBy: string;
     phoneNumber$: Observable<string>;
     hasCaseNameOverflowed = false;
+    featureFlags = FEATURE_FLAGS;
 
     divTrapId: string;
 
@@ -113,17 +112,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected consultationInvitiationService: ConsultationInvitationService,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected launchDarklyService: LaunchDarklyService,
         protected store: Store<ConferenceState>,
         protected videoCallEventsService: VideoCallEventsService
     ) {
-        this.launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(flag => {
-                this.instantMessagingEnabled = flag;
-            });
-
         this.store
             .select(ConferenceSelectors.getAvailableRooms)
             .pipe(takeUntil(this.onDestroy$))
