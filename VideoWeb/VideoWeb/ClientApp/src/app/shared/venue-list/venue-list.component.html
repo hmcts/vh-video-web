@@ -28,7 +28,11 @@
           (open)="onDropdownOpen()"
         >
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            {{ item.name }}
+            <div role="listbox" aria-label="Venue List" class="no-padding">
+              <div class="ng-option ng-option-marked no-padding" role="option" aria-selected="false" id="abd5d5c02778-0" aria-setsize="415" aria-posinset="1">
+              {{ item.name }}
+              </div>
+            </div>
           </ng-template>
         </ng-select>
       </section>

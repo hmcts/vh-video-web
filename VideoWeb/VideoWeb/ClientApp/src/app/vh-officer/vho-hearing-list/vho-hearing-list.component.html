@@ -1,13 +1,12 @@
-<div *ngIf="noConferences" id="no-conferences-message" class="govuk-grid-column-full govuk-!-margin-3" style="align-content: center">
-  <div class="no-conferences-message">
-    <h3 class="govuk-heading-m">{{ 'judge-hearing-list.you-have-no-video-hearings' | translate }}</h3>
-  </div>
-</div>
 <section role="region" aria-labelledby="conference-list-heading">
   <h2 id="conference-list-heading" class="govuk-visually-hidden">Conference List</h2>
-  <div id="conference-list" class="govuk-!-padding-3">
-    <div
-      onkeydown=""
+  <ng-container *ngIf="noConferences">
+    <h3 id="no-conferences-message" class="govuk-heading-m govuk-!-margin-3">
+      {{ 'judge-hearing-list.you-have-no-video-hearings' | translate }}
+    </h3>
+  </ng-container>
+  <ng-container *ngIf="!noConferences">
+    <article
       class="vhList govuk-!-padding-top-2"
       [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
       *ngFor="let conference of conferences; trackBy: trackConference"
@@ -15,56 +14,49 @@
       (click)="selectConference(conference)"
       id="{{ conference.id }}-summary"
     >
-      <div>
-        <span class="copyTooltip" id="{{ conference.id }}-copyTooltip">
-          <fa-icon icon="link" class="copy-links-wrapper" aria-hidden="true"></fa-icon>
-          <span class="copyTooltipText" id="{{ conference.id }}-copyTooltipText">
-            <div><app-copy-id [conference]="conference"></app-copy-id></div>
-            <div><app-copy-quick-link [conferenceId]="conference.id" [hearingId]="conference.hearingRefId"></app-copy-quick-link></div>
-            <div *ngIf="conference.isJoinByPhone">
-              <app-copy-telephone-id
-                [telephoneId]="conference.telephoneConferenceId"
-                [telephoneNumbers]="conference.telephoneConferenceNumbers"
-              ></app-copy-telephone-id>
-            </div>
-          </span>
+      <span class="copyTooltip" id="{{ conference.id }}-copyTooltip">
+        <fa-icon icon="link" class="copy-links-wrapper" aria-hidden="true"></fa-icon>
+        <span class="copyTooltipText" id="{{ conference.id }}-copyTooltipText">
+          <app-copy-id [conference]="conference"></app-copy-id>
+          <app-copy-quick-link [conferenceId]="conference.id" [hearingId]="conference.hearingRefId"></app-copy-quick-link>
+          <ng-container *ngIf="conference.isJoinByPhone">
+            <app-copy-telephone-id
+              [telephoneId]="conference.telephoneConferenceId"
+              [telephoneNumbers]="conference.telephoneConferenceNumbers"
+            ></app-copy-telephone-id>
+          </ng-container>
         </span>
-      </div>
-      <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
+      </span>
+      <time id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</time>
       <ng-container *ngIf="conference.startedDateTime">
-        <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
-        <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">
-          {{ conference.startedDateTime | date: 'HH:mm' }}
-        </div>
+        <span id="{{ conference.id }}-started">started</span>
+        <time id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</time>
       </ng-container>
       <ng-container *ngIf="conference.endedDateTime">
-        <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
-        <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
+        <span id="{{ conference.id }}-ended">ended</span>
+        <time id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</time>
       </ng-container>
-      <div class="title listItemBig" id="{{ conference.id }}-case-name">
+      <h3 id="{{ conference.id }}-case-name">
         <app-truncatable-text [text]="conference.caseName"></app-truncatable-text>
-      </div>
-      <div class="listed listItemGrey" id="{{ conference.id }}-duration">{{ getDuration(conference) }}</div>
-      <div class="ref listItemGreySmall max-lines" id="{{ conference.id }}-case-number">
+      </h3>
+      <p id="{{ conference.id }}-duration">{{ getDuration(conference) }}</p>
+      <p id="{{ conference.id }}-case-number">
         <app-truncatable-text [text]="conference.caseNumber"></app-truncatable-text>
-      </div>
-
-      <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
-      <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
-      <div class="cso listItem" id="{{ conference.id }}-cso">Allocated To: {{ conference.allocatedCso }}</div>
-      <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
-      <div *appFeatureFlag="featureFlags.instantMessaging" class="message">
+      </p>
+      <p id="{{ conference.id }}-judge">{{ conference.judgeName }}</p>
+      <p id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</p>
+      <p id="{{ conference.id }}-cso">Allocated To: {{ conference.allocatedCso }}</p>
+      <app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks>
+      <ng-container *appFeatureFlag="featureFlags.instantMessaging">
         <app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages>
-      </div>
-      <div id="{{ conference.id }}-hearing-status" [ngClass]="{ 'status-down': true }">
-        <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
-      </div>
-      <div class="vh-top-padding" [ngClass]="{ 'pIcons-down': true }">
-        <div *ngFor="let participant of getParticipantsForConference(conference)" class="vh-pIcons">
-          <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
-        </div>
-      </div>
-      <div [ngClass]="{ 'line-down': true }"><hr /></div>
-    </div>
-  </div>
+      </ng-container>
+      <app-hearing-status id="{{ conference.id }}-hearing-status" [hearing]="mapToHearing(conference)"></app-hearing-status>
+      <section>
+        <ng-container *ngFor="let participant of getParticipantsForConference(conference)">
+          <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"></app-participant-network-status>
+        </ng-container>
+      </section>
+      <hr />
+    </article>
+  </ng-container>
 </section>
