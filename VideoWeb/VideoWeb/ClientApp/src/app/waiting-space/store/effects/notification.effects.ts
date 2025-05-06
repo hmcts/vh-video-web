@@ -14,6 +14,7 @@ import { NotificationSoundsService } from '../../services/notification-sounds.se
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallActions } from '../actions/video-call.action';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VHEndpoint, VHParticipant } from '../models/vh-conference';
 
 @Injectable()
 export class NotificationEffects {
@@ -200,24 +201,48 @@ export class NotificationEffects {
     );
 
     endpointsUpdated$ = createEffect(
-        () =>
-            this.actions$.pipe(
+        () => {
+            this.store
+                .select(ConferenceSelectors.getEndpoints)
+                .pipe(
+                    filter(x => !!x),
+                    first()
+                )
+                .subscribe(endpoints => {
+                    this.previousEndpoints = [...endpoints];
+                    this.logger.debug(`${this.loggerPrefix} Initialized previous endpoints:`, { endpoints });
+                });
+
+            return this.actions$.pipe(
                 ofType(ConferenceActions.updateExistingEndpoints),
                 concatLatestFrom(() => [
                     this.store.select(ConferenceSelectors.getActiveConference),
                     this.store.select(ConferenceSelectors.getLoggedInParticipant)
                 ]),
-                tap(([action, activeConference, loggedInParticipant]) => {
-                    if (activeConference.id !== action.conferenceId) {
-                        return;
-                    }
-
-                    const videoOn = this.isVideoOn(loggedInParticipant.status);
+                filter(
+                    ([action, conference, loggedInParticipant]) =>
+                        !!loggedInParticipant && !!conference && conference.id === action.conferenceId
+                ),
+                tap(([action, _activeConference, loggedInParticipant]) => {
+                    // for endpoints that have ids matched in previous endpoints, compare the name, external ref id and protectedFrom
+                    // if any of them are different, show the notification
                     action.endpoints.forEach(endpoint => {
-                        this.toastNotificationService.showEndpointUpdated(endpoint, videoOn);
+                        const previousEndpoint = this.previousEndpoints.find(prev => prev.id === endpoint.id);
+                        if (previousEndpoint) {
+                            if (
+                                previousEndpoint.displayName !== endpoint.displayName ||
+                                previousEndpoint.externalReferenceId !== endpoint.externalReferenceId ||
+                                previousEndpoint.participantsLinked.length !== endpoint.participantsLinked.length ||
+                                previousEndpoint.protectedFrom?.length !== endpoint.protectedFrom?.length
+                            ) {
+                                this.toastNotificationService.showEndpointUpdated(endpoint, this.isVideoOn(loggedInParticipant.status));
+                                this.previousEndpoints = [...this.previousEndpoints.filter(prev => prev.id !== endpoint.id), endpoint];
+                            }
+                        }
                     });
                 })
-            ),
+            );
+        },
         { dispatch: false }
     );
 
@@ -326,7 +351,8 @@ export class NotificationEffects {
         { dispatch: false }
     );
 
-    previousParticipants = [];
+    previousParticipants: VHParticipant[] = [];
+    previousEndpoints: VHEndpoint[] = [];
     private readonly loggerPrefix = '[NotificationEffects] -';
 
     constructor(

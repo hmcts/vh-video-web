@@ -256,33 +256,42 @@ describe('NotificationEffects', () => {
                 { id: '1232323', displayName: 'DispName1' } as VHEndpoint,
                 { id: '2356789', displayName: 'DispName2' } as VHEndpoint
             ];
+
+            const updatedEndpoints = [
+                { id: '1232323', displayName: 'DispName1 Updated' } as VHEndpoint,
+                { id: '2356789', displayName: 'DispName2 Updated' } as VHEndpoint
+            ];
+            const action = ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints: updatedEndpoints });
+            const loggedInParticipant = { status: ParticipantStatus.InHearing, role: Role.Individual } as VHParticipant;
+            const activeConference = { id: conferenceId } as VHConference;
+
+            effects.previousEndpoints = endpoints;
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, endpoints);
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.endpointsUpdated$.subscribe(() => {
+                expect(toastNotificationService.showEndpointUpdated).toHaveBeenCalledWith(updatedEndpoints[0], true);
+                expect(toastNotificationService.showEndpointUpdated).toHaveBeenCalledWith(updatedEndpoints[1], true);
+            });
+        });
+
+        it('should not call showEndpointUpdated when endpoints have not changed', () => {
+            const conferenceId = '1234567';
+            const endpoints = [
+                { id: '1232323', displayName: 'DispName1', participantsLinked: [] } as VHEndpoint,
+                { id: '2356789', displayName: 'DispName2', participantsLinked: [] } as VHEndpoint
+            ];
+            effects.previousEndpoints = endpoints;
             const action = ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints });
             const loggedInParticipant = { status: ParticipantStatus.InHearing, role: Role.Individual } as VHParticipant;
             const activeConference = { id: conferenceId } as VHConference;
 
             mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
             mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
-
-            actions$ = hot('-a-', { a: action });
-
-            effects.endpointsUpdated$.subscribe(() => {
-                expect(toastNotificationService.showEndpointUpdated).toHaveBeenCalledWith(endpoints[0], true);
-                expect(toastNotificationService.showEndpointUpdated).toHaveBeenCalledWith(endpoints[1], true);
-            });
-        });
-
-        it('should not call showEndpointUpdated when conference id does not match', () => {
-            const conferenceId = '1234567';
-            const endpoints = [
-                { id: '1232323', displayName: 'DispName1' } as VHEndpoint,
-                { id: '2356789', displayName: 'DispName2' } as VHEndpoint
-            ];
-            const action = ConferenceActions.updateExistingEndpoints({ conferenceId, endpoints });
-            const loggedInParticipant = { status: ParticipantStatus.InHearing, role: Role.Individual } as VHParticipant;
-            const activeConference = { id: '123' } as VHConference;
-
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, activeConference);
-            mockConferenceStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getEndpoints, endpoints);
 
             actions$ = hot('-a-', { a: action });
 
