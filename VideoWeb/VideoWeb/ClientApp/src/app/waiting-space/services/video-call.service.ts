@@ -33,6 +33,7 @@ import {
 } from '../store/models/api-contract-to-state-model-mappers';
 import { UserMediaStreamServiceV2 } from 'src/app/services/user-media-stream-v2.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { VideoCallActions } from '../store/actions/video-call.action';
 
 @Injectable()
 export class VideoCallService {
@@ -117,7 +118,6 @@ export class VideoCallService {
         this.userMediaStreamService.createAndPublishStream();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
-        this.logMediaStreamInfo();
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -175,6 +175,10 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
+        this.userMediaService.isAudioOnly$
+            .pipe(takeUntil(this.hasDisconnected$))
+            .subscribe(isAudioOnly => this.handleAudioOnlyChange(isAudioOnly));
+
         this.userMediaStreamService.currentStream$.pipe(skip(1), takeUntil(this.hasDisconnected$)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.logMediaStreamInfo();
@@ -201,6 +205,13 @@ export class VideoCallService {
             .subscribe(uniqueCallTags => {
                 this.uniqueCallTagsPerCall = uniqueCallTags;
             });
+    }
+
+    handleAudioOnlyChange(isAudioOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Audio only setting changed`, { isAudioOnly });
+        if (!!this.pexipAPI?.call && this.pexipAPI?.call?.mutedVideo !== isAudioOnly) {
+            this.store.dispatch(VideoCallActions.toggleOutgoingVideo());
+        }
     }
 
     initTurnServer() {
@@ -262,7 +273,6 @@ export class VideoCallService {
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
             this.userMediaStreamService.closeCurrentStream();
-            this.pexipAPI = null; // Reset the Pexip API instance
         } else {
             this.logger.warn(`${this.loggerPrefix} No active Pexip client to disconnect.`);
         }
