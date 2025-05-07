@@ -14,7 +14,7 @@ import { ConferenceState } from '../reducers/conference.reducer';
 import { Role } from 'src/app/services/clients/api-client';
 
 import { selectConferenceId } from '../selectors/router.selectors';
-import { NonHostUserRole } from '../../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from '../../waiting-room-shared/models/waiting-room-user-role';
 
 describe('RouterEffects', () => {
     let actions$: Observable<any>;
@@ -147,7 +147,7 @@ describe('RouterEffects', () => {
         it('should set title when entering as a Participant', done => {
             actions$ = of(
                 ConferenceActions.enterWaitingRoomAsNonHost({
-                    userRole: NonHostUserRole.Participant
+                    userRole: WaitingRoomUserRole.Participant
                 })
             );
 
@@ -160,7 +160,7 @@ describe('RouterEffects', () => {
         it('should set title when entering as a JOH', done => {
             actions$ = of(
                 ConferenceActions.enterWaitingRoomAsNonHost({
-                    userRole: NonHostUserRole.Joh
+                    userRole: WaitingRoomUserRole.Joh
                 })
             );
 

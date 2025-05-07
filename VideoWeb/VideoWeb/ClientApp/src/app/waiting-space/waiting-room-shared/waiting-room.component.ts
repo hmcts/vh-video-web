@@ -16,7 +16,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -27,25 +27,37 @@ import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { VHParticipant } from '../store/models/vh-conference';
-import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from './models/waiting-room-user-role';
 import { VideoCallEventsService } from '../services/video-call-events.service';
+import { AudioRecordingService } from 'src/app/services/audio-recording.service';
+import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { CallError } from '../models/video-call-models';
+import { getCountdownComplete } from '../store/selectors/conference.selectors';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 @Component({
     standalone: false,
-    selector: 'app-non-host-waiting-room',
-    templateUrl: './non-host-waiting-room.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', './non-host-waiting-room.component.scss']
+    selector: 'app-waiting-room',
+    templateUrl: './waiting-room.component.html',
+    styleUrls: ['../waiting-room-global-styles.scss', './waiting-room.component.scss']
 })
-export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    @Input() userRole: NonHostUserRole;
+export class WaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    @Input() userRole: WaitingRoomUserRole;
+    UserRole = WaitingRoomUserRole;
 
     currentTime: Date;
 
     showJoinHearingWarning = false;
     displayLanguageModal: boolean;
     displayLeaveHearingPopup = false;
+    displayConfirmStartHearingPopup: boolean;
+    displayJoinHearingPopup: boolean;
+    audioErrorRetryToast: VhToastComponent;
+    continueWithNoRecording = false;
+    recordingPaused: boolean;
+    unreadMessageCount = 0;
 
-    private readonly componentLoggerPrefix = '[Non-Host Waiting Room] -';
+    private readonly componentLoggerPrefix = '[Waiting Room] -';
     private destroyedSubject = new Subject();
 
     constructor(
@@ -67,7 +79,8 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected store: Store<ConferenceState>,
-        protected videoCallEventsService: VideoCallEventsService
+        protected videoCallEventsService: VideoCallEventsService,
+        private readonly audioRecordingService: AudioRecordingService
     ) {
         super(
             route,
@@ -138,11 +151,20 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     get isJoh(): boolean {
-        return this.userRole === NonHostUserRole.Joh;
+        return this.userRole === WaitingRoomUserRole.Joh;
     }
 
     get isParticipant(): boolean {
-        return this.userRole === NonHostUserRole.Participant;
+        return this.userRole === WaitingRoomUserRole.Participant;
+    }
+
+    get canShowHearingLayoutSelection() {
+        return !this.hearing.isClosed() && !this.hearing.isInSession();
+    }
+
+    videoClosedExt() {
+        this.audioErrorRetryToast?.remove();
+        this.audioErrorRetryToast = null;
     }
 
     ngOnInit() {
@@ -181,13 +203,12 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
     }
 
     getConferenceStatusText(): string {
-        if (this.userRole === NonHostUserRole.Participant) {
+        if (this.userRole === WaitingRoomUserRole.Participant) {
             return this.getConferenceStatusTextForParticipant();
+        } else if (this.userRole === WaitingRoomUserRole.Judge) {
+            return this.getConferenceStatusTextForJudge();
         }
-        return this.getConferenceStatusTextForNonParticipant();
-    }
 
-    getConferenceStatusTextForNonParticipant(): string {
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             return '';
         } else if (this.hearing.isSuspended()) {
@@ -217,6 +238,21 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             return this.translateService.instant('waiting-room.is-closed');
         }
         return this.translateService.instant('waiting-room.is-in-session');
+    }
+
+    getConferenceStatusTextForJudge() {
+        switch (this.vhConference.status) {
+            case ConferenceStatus.NotStarted:
+                return this.translateService.instant('waiting-room.start-this-hearing');
+            case ConferenceStatus.Suspended:
+                return this.translateService.instant('waiting-room.hearing-suspended');
+            case ConferenceStatus.Paused:
+                return this.translateService.instant('waiting-room.hearing-paused');
+            case ConferenceStatus.Closed:
+                return this.translateService.instant('waiting-room.hearing-is-closed');
+            default:
+                return this.translateService.instant('waiting-room.hearing-is-in-session');
+        }
     }
 
     getRoomName(): string {
@@ -330,16 +366,14 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         window.location.assign(feedbackUrl);
     }
 
-    private onShouldReload(): void {
-        window.location.reload();
-    }
-
-    private onShouldUnload(): void {
-        this.cleanUp();
-    }
-
-    private init() {
+    init() {
         this.divTrapId = 'video-container';
+
+        if (this.userRole === WaitingRoomUserRole.Judge) {
+            this.initForJudge();
+            return;
+        }
+
         this.destroyedSubject = new Subject();
 
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
@@ -354,6 +388,197 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
         } else {
             this.setUpSubscribers();
         }
+    }
+
+    initForJudge() {
+        if (!this.vhConference || !this.vhParticipant) {
+            return;
+        }
+
+        this.errorCount = 0;
+        this.logger.debug(`${this.componentLoggerPrefix} Loading judge waiting room`);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
+
+        try {
+            this.logger.debug(`${this.componentLoggerPrefix} Defined default devices in cache`);
+            this.connected = false;
+            this.getConference();
+            this.subscribeToClock();
+            this.startEventHubSubscribers();
+            this.connectToPexip();
+        } catch (error) {
+            this.logger.error(`${this.componentLoggerPrefix} Failed to initialise the judge waiting room`, error);
+            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        }
+
+        this.eventService
+            .getAudioRestartActioned()
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(conferenceId => conferenceId === this.vhConference.id)
+            )
+            .subscribe(() => {
+                if (this.audioErrorRetryToast) {
+                    this.logger.warn(`${this.componentLoggerPrefix} Audio restart actioned by another host`);
+                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
+                }
+            });
+
+        this.audioRecordingService
+            .getAudioRecordingPauseState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((recordingPaused: boolean) => (this.recordingPaused = recordingPaused));
+
+        this.audioRecordingService
+            .getWowzaAgentConnectionState()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe((stateIsConnected: boolean) => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
+
+        this.store
+            .select(getCountdownComplete)
+            .pipe(
+                takeUntil(this.onDestroy$),
+                filter(complete => complete)
+            )
+            .subscribe(complete => {
+                if (complete) {
+                    this.logger.debug(`${this.componentLoggerPrefix} Hearing countdown complete`);
+                    this.verifyAudioRecordingStream();
+                }
+            });
+
+        this.startVideoCallEventSubscribers();
+    }
+
+    unreadMessageCounterUpdate(count: number) {
+        this.unreadMessageCount = count;
+    }
+
+    defineIsIMEnabled(): boolean {
+        if (!this.hearing) {
+            return false;
+        }
+        if (this.vhParticipant.status === ParticipantStatus.InConsultation) {
+            return false;
+        }
+        if (this.deviceTypeService.isIpad()) {
+            return !this.showVideo;
+        }
+        return true;
+    }
+
+    hearingSuspended(): boolean {
+        return this.vhConference.status === ConferenceStatus.Suspended;
+    }
+
+    isNotStarted(): boolean {
+        return this.hearing.isNotStarted();
+    }
+
+    isPaused(): boolean {
+        return this.hearing.isPaused() || this.hearing.isSuspended();
+    }
+
+    hearingPaused(): boolean {
+        return this.vhConference.status === ConferenceStatus.Paused;
+    }
+
+    isHearingInSession(): boolean {
+        return this.vhConference.status === ConferenceStatus.InSession;
+    }
+
+    displayConfirmStartPopup() {
+        this.logger.debug(`${this.componentLoggerPrefix} Display start hearing confirmation popup`, {
+            conference: this.conferenceId,
+            status: this.vhConference.status
+        });
+        this.focusService.storeFocus();
+        this.displayConfirmStartHearingPopup = true;
+    }
+
+    joinHearingClicked() {
+        this.displayJoinPopup();
+    }
+
+    displayJoinPopup() {
+        this.displayJoinHearingPopup = true;
+    }
+
+    onStartConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.componentLoggerPrefix} Judge responded to start hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.vhConference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayConfirmStartHearingPopup = false;
+        if (actionConfirmed) {
+            this.startHearing();
+        } else {
+            this.focusService.restoreFocus();
+        }
+    }
+
+    startHearing() {
+        this.audioRecordingService.restartActioned = false;
+        this.logger.debug(`${this.componentLoggerPrefix} Judge clicked start/resume hearing`, {
+            conference: this.conferenceId,
+            status: this.vhConference.status
+        });
+
+        this.store.dispatch(VideoCallHostActions.startHearing({ conferenceId: this.conferenceId }));
+    }
+
+    onJoinConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.componentLoggerPrefix} Judge responded to join hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.vhConference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayJoinHearingPopup = false;
+        if (actionConfirmed) {
+            this.joinHearingInSession();
+        }
+    }
+
+    joinHearingInSession() {
+        this.store.dispatch(VideoCallHostActions.joinHearing({ conferenceId: this.vhConference.id, participantId: this.vhParticipant.id }));
+    }
+
+    audioRestartCallback(continueWithNoRecording: boolean) {
+        this.continueWithNoRecording = continueWithNoRecording;
+        this.audioErrorRetryToast = null;
+    }
+
+    verifyAudioRecordingStream() {
+        /// If audio recording is required,
+        // has not been confirmed by user, to continue without recording,
+        // video is open,
+        // the alert isn't open already,
+        // Recording is not paused
+        // and the audio streaming agent cannot be validated, then show the alert
+        if (
+            this.vhConference.audioRecordingRequired &&
+            !this.continueWithNoRecording &&
+            this.showVideo &&
+            !this.audioErrorRetryToast &&
+            !this.recordingPaused &&
+            !this.audioRecordingService.wowzaAgent?.isAudioOnlyCall
+        ) {
+            this.logWowzaAlert();
+            this.showAudioRecordingRestartAlert();
+        }
+    }
+
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
     }
 
     private setUpSubscribers() {
@@ -395,11 +620,68 @@ export class NonHostWaitingRoomComponent extends WaitingRoomBaseDirective implem
             this.videoCallEventsService.onLeaveConsultation().subscribe(() => this.showLeaveConsultationModal()),
             this.videoCallEventsService.onLockConsultationToggled().subscribe(lock => this.setRoomLock(lock)),
             this.videoCallEventsService.onChangeDevice().subscribe(() => this.showChooseCameraDialog()),
-            this.videoCallEventsService.onChangeLanguageSelected().subscribe(count => this.showLanguageChangeModal())
+            this.videoCallEventsService.onChangeLanguageSelected().subscribe(count => this.showLanguageChangeModal()),
+            this.videoCallEventsService.onUnreadCountUpdated().subscribe(count => this.unreadMessageCounterUpdate(count))
         );
     }
 
     private stopVideoCallEventSubscribers() {
         this.subscriptions.forEach(sub => sub.unsubscribe());
     }
+
+    // copied from judge waiting room
+
+    private onWowzaConnected() {
+        if (this.audioRecordingService.restartActioned) {
+            this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
+        }
+        this.continueWithNoRecording = false;
+    }
+
+    private onWowzaDisconnected() {
+        if (
+            this.vhConference.countdownComplete &&
+            this.vhConference.audioRecordingRequired &&
+            this.vhConference.status === ConferenceStatus.InSession &&
+            !this.recordingPaused
+        ) {
+            if (this.audioRecordingService.restartActioned) {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            } else {
+                this.logWowzaAlert();
+                this.showAudioRecordingRestartAlert();
+            }
+        }
+    }
+
+    private logWowzaAlert() {
+        this.logger.warn(
+            `${this.componentLoggerPrefix} not recording when expected, streaming agent could not establish connection: show alert`,
+            {
+                agent: this.audioRecordingService.wowzaAgent,
+                showVideo: this.showVideo,
+                continueWithNoRecording: this.continueWithNoRecording,
+                audioErrorRetryToast: this.audioErrorRetryToast
+            }
+        );
+    }
+
+    private showAudioRecordingRestartAlert() {
+        if (this.audioErrorRetryToast) {
+            return;
+        }
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectWowzaAgent);
+    }
+
+    private reconnectWowzaAgent = (): void => {
+        // Confirm in a hearing and not a consultation
+        if (this.vhConference.status === ConferenceStatus.InSession && !this.isPrivateConsultation) {
+            this.audioRecordingService.cleanupDialOutConnections();
+            this.audioRecordingService.reconnectToWowza(() => {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            });
+        } else {
+            this.logger.warn(`${this.componentLoggerPrefix} can not reconnect to Wowza agent as not in a hearing`);
+        }
+    };
 }

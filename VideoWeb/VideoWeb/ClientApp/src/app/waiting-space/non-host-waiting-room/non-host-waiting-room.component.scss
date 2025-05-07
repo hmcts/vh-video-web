@@ -1,9 +1,0 @@
-@import 'govuk-frontend/dist/govuk/base';
-@import 'abstracts';
-
-.govuk-button-blue {
-  background: govuk-colour('blue');
-}
-.govuk-button-blue:hover {
-  background: govuk-colour('dark-blue');
-}

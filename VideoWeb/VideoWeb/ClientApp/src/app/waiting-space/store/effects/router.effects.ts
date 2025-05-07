@@ -8,7 +8,7 @@ import { ConferenceActions } from '../actions/conference.actions';
 import { Title } from '@angular/platform-browser';
 import { concatLatestFrom } from '@ngrx/operators';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
-import { NonHostUserRole } from '../../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from '../../waiting-room-shared/models/waiting-room-user-role';
 
 @Injectable()
 export class RouterEffects {
@@ -56,7 +56,7 @@ export class RouterEffects {
                 ofType(ConferenceActions.enterWaitingRoomAsNonHost),
                 tap(({ userRole }) => {
                     let title = 'Participant waiting room';
-                    if (userRole === NonHostUserRole.Joh) {
+                    if (userRole === WaitingRoomUserRole.Joh) {
                         title = 'JOH waiting room';
                     }
                     this.titleService.setTitle(title);

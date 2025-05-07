@@ -17,7 +17,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { TransferDirection } from '../../../services/models/hearing-transfer';
-import { NonHostUserRole } from '../../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from '../../waiting-room-shared/models/waiting-room-user-role';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export const ConferenceActions = createActionGroup({
@@ -110,6 +110,6 @@ export const ConferenceActions = createActionGroup({
         'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),
 
         'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>(),
-        'Enter Waiting Room As NonHost': props<{ userRole: NonHostUserRole }>()
+        'Enter Waiting Room As NonHost': props<{ userRole: WaitingRoomUserRole }>()
     }
 });

@@ -3,7 +3,7 @@ import { WaitForHearingPanelComponent } from './wait-for-hearing-panel.component
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
-import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from '../waiting-room-shared/models/waiting-room-user-role';
 
 describe('WaitForHearingPanelComponent', () => {
     let component: WaitForHearingPanelComponent;
@@ -33,7 +33,7 @@ describe('WaitForHearingPanelComponent', () => {
     describe('getCurrentTimeClass', () => {
         describe('is a participant, not a witness or witness link', () => {
             beforeEach(() => {
-                component.userRole = NonHostUserRole.Participant;
+                component.userRole = WaitingRoomUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = false;
             });
             it('should return hearing-on-time when conference is onTime', () => {
@@ -84,7 +84,7 @@ describe('WaitForHearingPanelComponent', () => {
 
         describe('is a participant, is a witness or has a witness link', () => {
             beforeEach(() => {
-                component.userRole = NonHostUserRole.Participant;
+                component.userRole = WaitingRoomUserRole.Participant;
                 component.isWitnessOrHasWitnessLink = true;
             });
 
@@ -107,7 +107,7 @@ describe('WaitForHearingPanelComponent', () => {
 
         describe('is a joh', () => {
             beforeEach(() => {
-                component.userRole = NonHostUserRole.Joh;
+                component.userRole = WaitingRoomUserRole.Joh;
             });
 
             it('should return hearing-delayed when conference is suspended', () => {
@@ -124,24 +124,24 @@ describe('WaitForHearingPanelComponent', () => {
 
     describe('isJoh', () => {
         it('should return true when user role is joh', () => {
-            component.userRole = NonHostUserRole.Joh;
+            component.userRole = WaitingRoomUserRole.Joh;
             expect(component.isJoh).toBe(true);
         });
 
         it('should return false when user role is not joh', () => {
-            component.userRole = NonHostUserRole.Participant;
+            component.userRole = WaitingRoomUserRole.Participant;
             expect(component.isJoh).toBe(false);
         });
     });
 
     describe('isParticipant', () => {
         it('should return true when user role is participant', () => {
-            component.userRole = NonHostUserRole.Participant;
+            component.userRole = WaitingRoomUserRole.Participant;
             expect(component.isParticipant).toBe(true);
         });
 
         it('should return false when user role is not participant', () => {
-            component.userRole = NonHostUserRole.Joh;
+            component.userRole = WaitingRoomUserRole.Joh;
             expect(component.isParticipant).toBe(false);
         });
     });

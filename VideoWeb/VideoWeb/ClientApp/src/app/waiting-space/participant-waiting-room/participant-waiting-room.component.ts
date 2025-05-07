@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-role';
+import { WaitingRoomUserRole } from '../waiting-room-shared/models/waiting-room-user-role';
 
 @Component({
     standalone: false,
@@ -7,5 +7,5 @@ import { NonHostUserRole } from '../waiting-room-shared/models/non-host-user-rol
     templateUrl: './participant-waiting-room.component.html'
 })
 export class ParticipantWaitingRoomComponent {
-    UserRole = NonHostUserRole;
+    UserRole = WaitingRoomUserRole;
 }
