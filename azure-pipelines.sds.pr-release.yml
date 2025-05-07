@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: VIH-0000-Test-Adding-Json
       endpoint: hmcts
 
 trigger: none
