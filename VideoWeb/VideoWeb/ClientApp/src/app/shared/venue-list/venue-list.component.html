@@ -9,7 +9,7 @@
       class="govuk-label" 
       for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
       }}</label>
-      <section aria-labelledby="venue-allocation-list-label" role="region">
+      <div aria-labelledby="venue-allocation-list-label" role="listbox">
         <ng-select 
           id="venue-allocation-list" 
           class="selection-list" 
@@ -28,14 +28,10 @@
           (open)="onDropdownOpen()"
         >
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            <div role="listbox" aria-label="Venue List" class="no-padding">
-              <div class="ng-option ng-option-marked no-padding" role="option" aria-selected="false" id="abd5d5c02778-0" aria-setsize="415" aria-posinset="1">
-              {{ item.name }}
-              </div>
-            </div>
+            {{ item.name }}
           </ng-template>
         </ng-select>
-      </section>
+      </div>
   </div>
   <div id="cso-list" *ngIf="showVhoSpecificContent">
     <div class="govuk-grid-column-full">
