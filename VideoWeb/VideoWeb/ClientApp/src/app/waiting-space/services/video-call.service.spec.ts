@@ -32,7 +32,7 @@ const config = new ClientSettingsResponse({
     ]
 });
 
-fdescribe('VideoCallService', () => {
+describe('VideoCallService', () => {
     let service: VideoCallService;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;

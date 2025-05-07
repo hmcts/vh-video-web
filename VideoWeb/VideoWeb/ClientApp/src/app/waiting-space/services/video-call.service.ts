@@ -426,7 +426,6 @@ export class VideoCallService {
         }
 
         if (this.pexipAPI.state.toLowerCase() !== 'connected') {
-            debugger;
             this.logger.info(`${this.loggerPrefix} Not renegotiating as the call is not active`);
             return;
         }
