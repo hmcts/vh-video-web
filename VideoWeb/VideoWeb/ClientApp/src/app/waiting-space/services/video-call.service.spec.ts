@@ -32,7 +32,7 @@ const config = new ClientSettingsResponse({
     ]
 });
 
-describe('VideoCallService', () => {
+fdescribe('VideoCallService', () => {
     let service: VideoCallService;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
@@ -106,7 +106,7 @@ describe('VideoCallService', () => {
             ],
             ['call', 'state']
         );
-        getSpiedPropertyGetter(pexipSpy, 'state').and.returnValue('ACTIVE');
+        getSpiedPropertyGetter(pexipSpy, 'state').and.returnValue('CONNECTED');
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
 

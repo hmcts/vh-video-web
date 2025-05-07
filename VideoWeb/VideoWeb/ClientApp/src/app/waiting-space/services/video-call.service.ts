@@ -420,7 +420,13 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        if (this.pexipAPI.state.toLowerCase() !== 'active') {
+        if (this.renegotiating) {
+            this.logger.debug(`${this.loggerPrefix} Not renegotiating as a renegotiation is already in progress`);
+            return;
+        }
+
+        if (this.pexipAPI.state.toLowerCase() !== 'connected') {
+            debugger;
             this.logger.info(`${this.loggerPrefix} Not renegotiating as the call is not active`);
             return;
         }
