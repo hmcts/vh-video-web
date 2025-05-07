@@ -4,34 +4,22 @@
   </div>
 
   <div class="govuk-grid-column-three-quarters">
-    <label  
-      id="venue-allocation-list-label"
-      class="govuk-label" 
-      for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
+    <label id="venue-allocation-list-label" class="govuk-label" for="venue-allocation-list-label-for"> {{
+      'venue-list.selection-default-text' | translate
       }}</label>
-      <div aria-labelledby="venue-allocation-list-label" role="listbox">
-        <ng-select 
-          id="venue-allocation-list" 
-          class="selection-list" 
-          [attr.aria-autocomplete]="'list'"
-          [labelForId]="'venue-allocation-list-label-for'" 
-          [items]="venues" 
-          [multiple]="true" 
-          bindLabel="name" 
-          bindValue="name"
-          [placeholder]="'venue-list.selection-default-text' | translate" 
-          [(ngModel)]="selectedVenues"
-          [closeOnSelect]="false" 
-          (change)="updateVenueSelection()" 
-          [clearSearchOnAdd]="true" 
-          [selectOnTab]="true"
-          (open)="onDropdownOpen()"
-        >
+    <section aria-labelledby="venue-allocation-list-label" role="region">
+      <ng-select id="venue-allocation-list" class="selection-list" [attr.aria-autocomplete]="'list'"
+        [labelForId]="'venue-allocation-list-label-for'" [items]="venues" [multiple]="true" bindLabel="name"
+        bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues"
+        [closeOnSelect]="false" (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
+        (open)="onDropdownOpen()">
+        <div role="listbox">
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
             {{ item.name }}
           </ng-template>
-        </ng-select>
-      </div>
+        </div>
+      </ng-select>
+    </section>
   </div>
   <div id="cso-list" *ngIf="showVhoSpecificContent">
     <div class="govuk-grid-column-full">
