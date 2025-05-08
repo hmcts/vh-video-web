@@ -13,11 +13,11 @@
         bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues"
         [closeOnSelect]="false" (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
         (open)="onDropdownOpen()">
-      <span role="listbox" id="venue-listbox" aria-label="Venue list">
+      <div role="listbox" id="venue-listbox" aria-label="Venue list">
         <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
           {{ item.name }}
         </ng-template>
-      </span>
+      </div>
       </ng-select>
     </section>
   </div>
