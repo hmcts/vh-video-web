@@ -1,0 +1,14 @@
+@import 'govuk-frontend/dist/govuk/base';
+
+// create a variable for the colour
+$serviceBannerColour: govuk-colour('red');
+
+.govuk-notification-banner--warning {
+  border-color: $serviceBannerColour;
+
+  background-color: $serviceBannerColour;
+
+  .govuk-notification-banner__link {
+    @include govuk-link-style-success;
+  }
+}
