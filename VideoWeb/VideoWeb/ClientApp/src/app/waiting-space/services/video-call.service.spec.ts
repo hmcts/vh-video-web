@@ -106,7 +106,7 @@ describe('VideoCallService', () => {
             ],
             ['call', 'state']
         );
-        getSpiedPropertyGetter(pexipSpy, 'state').and.returnValue('ACTIVE');
+        getSpiedPropertyGetter(pexipSpy, 'state').and.returnValue('CONNECTED');
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
 
@@ -276,6 +276,14 @@ describe('VideoCallService', () => {
             service.renegotiateCall();
 
             expect(pexipSpy.renegotiate).toHaveBeenCalled();
+        });
+
+        it('should not call renegotiate when renegotiation is already in progress', () => {
+            service.pexipAPI = pexipSpy;
+            service['renegotiating'] = true;
+
+            service.renegotiateCall();
+            expect(pexipSpy.renegotiate).not.toHaveBeenCalled();
         });
 
         it('should not call renegotiate when pexip client is not initialised', () => {
