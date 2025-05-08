@@ -1,5 +1,5 @@
 import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { WaitingRoomComponent } from './waiting-room.component';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { createMockStore, MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -715,26 +715,6 @@ describe('WaitingRoomComponent', () => {
             });
         });
 
-        describe('cleanUp', () => {
-            it('should clean up on destroy', () => {
-                spyOn(mockStore, 'dispatch');
-                const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-                const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-                component.subscriptions = [mockSubscription1, mockSubscription2];
-
-                component.ngOnDestroy();
-
-                expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
-                expect(mockStore.dispatch).toHaveBeenCalledWith(
-                    ConferenceActions.leaveConference({
-                        conferenceId: conference.id
-                    })
-                );
-                expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
-                expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
-            });
-        });
-
         describe('userMediaService.isAutioOnly$ changed', () => {
             it('should publish the media status when audio toggle changes', fakeAsync(() => {
                 component.ngOnInit();
@@ -783,19 +763,6 @@ describe('WaitingRoomComponent', () => {
                 expect(component.showLeaveConsultationModal).toHaveBeenCalled();
                 expect(component.showChooseCameraDialog).toHaveBeenCalled();
                 expect(component.unreadMessageCounterUpdate).toHaveBeenCalledWith(unreadCount);
-            });
-        });
-
-        describe('ngOnDestroy', () => {
-            it('should unsubscribe', () => {
-                const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-                const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-                component.subscriptions = [mockSubscription1, mockSubscription2];
-
-                component.ngOnDestroy();
-
-                expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
-                expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
             });
         });
 
@@ -1208,6 +1175,21 @@ describe('WaitingRoomComponent', () => {
                 expect(component.continueWithNoRecording).toBeTrue();
                 expect(component.audioErrorRetryToast).toBeNull();
             });
+        });
+    });
+
+    describe('cleanUp', () => {
+        it('should clean up on destroy', () => {
+            spyOn(mockStore, 'dispatch');
+
+            component.ngOnDestroy();
+
+            expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
+            expect(mockStore.dispatch).toHaveBeenCalledWith(
+                ConferenceActions.leaveConference({
+                    conferenceId: conference.id
+                })
+            );
         });
     });
 

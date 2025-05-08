@@ -615,22 +615,38 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-        this.stopVideoCallEventSubscribers();
     }
 
     private startVideoCallEventSubscribers() {
-        this.subscriptions.push(
-            this.videoCallEventsService.onVideoWrapperReady().subscribe(() => this.setTrapFocus()),
-            this.videoCallEventsService.onLeaveConsultation().subscribe(() => this.showLeaveConsultationModal()),
-            this.videoCallEventsService.onLockConsultationToggled().subscribe(lock => this.setRoomLock(lock)),
-            this.videoCallEventsService.onChangeDevice().subscribe(() => this.showChooseCameraDialog()),
-            this.videoCallEventsService.onChangeLanguageSelected().subscribe(count => this.showLanguageChangeModal()),
-            this.videoCallEventsService.onUnreadCountUpdated().subscribe(count => this.unreadMessageCounterUpdate(count))
-        );
-    }
+        this.videoCallEventsService
+            .onVideoWrapperReady()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => this.setTrapFocus());
 
-    private stopVideoCallEventSubscribers() {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.videoCallEventsService
+            .onLeaveConsultation()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => this.showLeaveConsultationModal());
+
+        this.videoCallEventsService
+            .onLockConsultationToggled()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(lock => this.setRoomLock(lock));
+
+        this.videoCallEventsService
+            .onChangeDevice()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => this.showChooseCameraDialog());
+
+        this.videoCallEventsService
+            .onChangeLanguageSelected()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => this.showLanguageChangeModal());
+
+        this.videoCallEventsService
+            .onUnreadCountUpdated()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(count => this.unreadMessageCounterUpdate(count));
     }
 
     private onWowzaConnected() {
