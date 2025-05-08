@@ -135,6 +135,19 @@ export class NotificationEffects {
         { dispatch: false }
     );
 
+    // create an effect to populate the previousParticipants array when LoadConferenceSuccess is dispatched
+    resetParticipantList$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.loadConferenceSuccess),
+                tap(action => {
+                    this.previousParticipants = [...action.conference.participants];
+                    this.previousEndpoints = [...action.conference.endpoints];
+                })
+            ),
+        { dispatch: false }
+    );
+
     participantAdded$ = createEffect(
         () => {
             // Initialize previousParticipants with current store value

@@ -761,4 +761,23 @@ describe('NotificationEffects', () => {
             expect(result).toBeTrue();
         });
     });
+
+    describe('resetParticipantList$', () => {
+        it('should update the participants and endpoints list when conference has loaded', () => {
+            const action = ConferenceActions.loadConferenceSuccess({
+                conference: {
+                    ...vhConference,
+                    participants: [...vhConference.participants],
+                    endpoints: [...vhConference.endpoints]
+                }
+            });
+
+            actions$ = hot('-a-', { a: action });
+
+            effects.resetParticipantList$.subscribe(() => {
+                expect(effects.previousParticipants).toEqual(vhConference.participants);
+                expect(effects.previousEndpoints).toEqual(vhConference.endpoints);
+            });
+        });
+    });
 });
