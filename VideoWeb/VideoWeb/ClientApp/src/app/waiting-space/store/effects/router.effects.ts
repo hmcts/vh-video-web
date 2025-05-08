@@ -53,13 +53,19 @@ export class RouterEffects {
     setWaitingRoomPageTitle$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(ConferenceActions.enterWaitingRoomAsNonHost),
+                ofType(ConferenceActions.enterWaitingRoom),
                 tap(({ userRole }) => {
-                    let title = 'Participant waiting room';
-                    if (userRole === WaitingRoomUserRole.Joh) {
-                        title = 'JOH waiting room';
+                    switch (userRole) {
+                        case WaitingRoomUserRole.Joh:
+                            this.titleService.setTitle('JOH waiting room');
+                            break;
+                        case WaitingRoomUserRole.Participant:
+                            this.titleService.setTitle('Participant waiting room');
+                            break;
+                        default:
+                            this.titleService.setTitle('Video Hearings - Waiting room');
+                            break;
                     }
-                    this.titleService.setTitle(title);
                 })
             ),
         { dispatch: false }

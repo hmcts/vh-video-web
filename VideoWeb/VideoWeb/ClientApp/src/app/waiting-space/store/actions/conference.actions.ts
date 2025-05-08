@@ -110,6 +110,6 @@ export const ConferenceActions = createActionGroup({
         'Update Participant Display Name Success': props<{ participantId: string; displayName: string; conferenceId: string }>(),
 
         'Update Audio Mix': props<{ participant: VHParticipant; mainCourt: boolean; interpreterLanguage: VHInterpreterLanguage }>(),
-        'Enter Waiting Room As NonHost': props<{ userRole: WaitingRoomUserRole }>()
+        'Enter Waiting Room': props<{ userRole: WaitingRoomUserRole }>()
     }
 });

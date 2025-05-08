@@ -39,7 +39,7 @@ import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
     standalone: false,
     selector: 'app-waiting-room',
     templateUrl: './waiting-room.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', './waiting-room.component.scss']
+    styleUrls: ['./waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class WaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     @Input() userRole: WaitingRoomUserRole;
@@ -148,6 +148,10 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             !this.isVictim &&
             !this.isPolice
         );
+    }
+
+    get isJudge(): boolean {
+        return this.userRole === WaitingRoomUserRole.Judge;
     }
 
     get isJoh(): boolean {
@@ -599,7 +603,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
     }
 
     private setTitle() {
-        this.store.dispatch(ConferenceActions.enterWaitingRoomAsNonHost({ userRole: this.userRole }));
+        this.store.dispatch(ConferenceActions.enterWaitingRoom({ userRole: this.userRole }));
     }
 
     private cleanUp() {
@@ -628,8 +632,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
     private stopVideoCallEventSubscribers() {
         this.subscriptions.forEach(sub => sub.unsubscribe());
     }
-
-    // copied from judge waiting room
 
     private onWowzaConnected() {
         if (this.audioRecordingService.restartActioned) {

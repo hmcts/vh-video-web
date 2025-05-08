@@ -144,9 +144,22 @@ describe('RouterEffects', () => {
     });
 
     describe('setWaitingRoomPageTitle$', () => {
+        it('should set title when entering as a Judge', done => {
+            actions$ = of(
+                ConferenceActions.enterWaitingRoom({
+                    userRole: WaitingRoomUserRole.Judge
+                })
+            );
+
+            effects.setWaitingRoomPageTitle$.subscribe(() => {
+                expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - Waiting room');
+                done();
+            });
+        });
+
         it('should set title when entering as a Participant', done => {
             actions$ = of(
-                ConferenceActions.enterWaitingRoomAsNonHost({
+                ConferenceActions.enterWaitingRoom({
                     userRole: WaitingRoomUserRole.Participant
                 })
             );
@@ -159,7 +172,7 @@ describe('RouterEffects', () => {
 
         it('should set title when entering as a JOH', done => {
             actions$ = of(
-                ConferenceActions.enterWaitingRoomAsNonHost({
+                ConferenceActions.enterWaitingRoom({
                     userRole: WaitingRoomUserRole.Joh
                 })
             );

@@ -224,7 +224,7 @@ describe('WaitingRoomComponent', () => {
                 component.ngOnInit();
                 tick();
                 expect(component).toBeTruthy();
-                expect(mockStore.dispatch).toHaveBeenCalledWith(ConferenceActions.enterWaitingRoomAsNonHost({ userRole: userRole }));
+                expect(mockStore.dispatch).toHaveBeenCalledWith(ConferenceActions.enterWaitingRoom({ userRole: userRole }));
             }));
         });
 
@@ -748,6 +748,18 @@ describe('WaitingRoomComponent', () => {
                 new ParticipantMediaStatus(false, true)
             );
         }));
+    });
+
+    describe('isJudge', () => {
+        it('should return true when user is a judge', () => {
+            component.userRole = WaitingRoomUserRole.Judge;
+            expect(component.isJudge).toBeTrue();
+        });
+
+        it('should return false when user is a participant', () => {
+            component.userRole = WaitingRoomUserRole.Participant;
+            expect(component.isJudge).toBeFalse();
+        });
     });
 
     describe('isJoh', () => {
