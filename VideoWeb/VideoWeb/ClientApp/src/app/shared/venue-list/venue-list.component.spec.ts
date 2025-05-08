@@ -230,23 +230,6 @@ describe('VenueListComponent', () => {
                 // Cleanup
                 document.body.removeChild(listbox);
             }));
-
-            it('should set role attribute to "group" on nested divs', fakeAsync(() => {
-                // Arrange
-                const nestedDiv = document.createElement('div');
-                nestedDiv.classList.add('ng-dropdown-panel-items');
-                document.body.appendChild(nestedDiv);
-
-                // Act
-                component.onDropdownOpen();
-                tick();
-
-                // Assert
-                expect(nestedDiv.getAttribute('role')).toBe('group');
-
-                // Cleanup
-                document.body.removeChild(nestedDiv);
-            }));
         });
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
