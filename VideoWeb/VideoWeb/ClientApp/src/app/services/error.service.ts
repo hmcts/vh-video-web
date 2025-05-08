@@ -79,12 +79,14 @@ export class ErrorService {
     }
 
     goToServiceError(title: string, body: string = null, showReconnect = true) {
+        this.logger.warn('[ErrorService] - Going to service error page.', { title });
         this.connectionStatusService.checkNow();
         this.saveToSession(title, body, showReconnect);
         this.router.navigate([pageUrls.ServiceError]);
     }
 
     goToMediaDeviceError(errorType: string) {
+        this.logger.warn('[ErrorService] - Going to media device error page.');
         this.saveDeviceToSession(errorType);
         this.router.navigate([pageUrls.ErrorCameraMicrophone]);
     }
