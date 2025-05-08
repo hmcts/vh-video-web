@@ -24,6 +24,7 @@ import { EventsHubService } from './services/events-hub.service';
 import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
 import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
+import { FEATURE_FLAGS } from './services/launch-darkly.service';
 
 @Component({
     standalone: false,
@@ -51,6 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
     hideNonVideoComponents$ = new Observable<boolean>();
 
     isBannerVisible = true;
+
+    featureFlags = FEATURE_FLAGS;
 
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();

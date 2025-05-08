@@ -103,6 +103,7 @@ import { FeatureFlagDirective } from './directives/feature-flag.directive';
 import { DialOutNumberComponent } from './dial-out-number/dial-out-number.component';
 import { DesktopOnlyDirective } from './directives/desktop-only.directive';
 import { SelfTestV2Component } from './self-test-v2/self-test-v2.component';
+import { ServiceDownBannerComponent } from './service-down-banner/service-down-banner.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -168,7 +169,8 @@ export function getSettings(configService: ConfigService) {
         RandomPipe,
         TruncatableTextComponent,
         DialOutNumberComponent,
-        CookiesComponent
+        CookiesComponent,
+        ServiceDownBannerComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -190,6 +192,7 @@ export function getSettings(configService: ConfigService) {
     exports: [
         HeaderComponent,
         FooterComponent,
+        ServiceDownBannerComponent,
         ContactUsComponent,
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,

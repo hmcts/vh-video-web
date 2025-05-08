@@ -13,7 +13,9 @@ export const FEATURE_FLAGS = {
     instantMessaging: 'instant-messaging',
     enableDebugLogs: 'enable-debug-logs',
     uniqueCallTags: 'unique-call-tag',
-    pexipV36: 'pexip-v36'
+    pexipV36: 'pexip-v36',
+    serviceUpdateBanner: 'service-update-notification-banner',
+    serviceUpdateText: 'service-update-notification-text'
 };
 
 @Injectable({
