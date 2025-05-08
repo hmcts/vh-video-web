@@ -51,7 +51,7 @@ namespace VideoWeb.Common.Models
 
         public bool IsWitness()
         {
-            return HearingRole.Trim().Equals("witness", StringComparison.CurrentCultureIgnoreCase);
+            return HearingRole?.Trim().Equals("witness", StringComparison.CurrentCultureIgnoreCase) ?? false;
         }
 
         public bool IsQuickLinkUser()
@@ -62,7 +62,7 @@ namespace VideoWeb.Common.Models
         public bool IsObserver()
         {
             return Role == Role.QuickLinkObserver ||
-                   HearingRole.Trim().Equals("observer", StringComparison.CurrentCultureIgnoreCase);
+                   (HearingRole?.Trim().Equals("observer", StringComparison.CurrentCultureIgnoreCase) ?? false);
         }
 
         public bool IsCallable()
