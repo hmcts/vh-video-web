@@ -401,7 +401,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
 
         this.errorCount = 0;
         this.logger.debug(`${this.componentLoggerPrefix} Loading judge waiting room`);
-        this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.onDestroy$)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
@@ -415,8 +414,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             this.connectToPexip();
         } catch (error) {
             this.logger.error(`${this.componentLoggerPrefix} Failed to initialise the judge waiting room`, error);
-            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+            this.errorService.handlePexipError(new CallError(error.name), this.vhConference.id);
         }
 
         this.eventService

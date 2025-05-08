@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -82,9 +82,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: ReturnType<typeof setTimeout> | number;
 
-    loggedInUser: LoggedParticipantResponse;
     contactDetails = vhContactDetails;
-    subscriptions: Subscription[] = [];
 
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
