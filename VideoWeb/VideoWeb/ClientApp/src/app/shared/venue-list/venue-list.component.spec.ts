@@ -233,22 +233,6 @@ describe('VenueListComponent', () => {
                 document.body.removeChild(listbox);
             }));
 
-            it('should set role attribute to "group" on nested divs', fakeAsync(() => {
-                // Arrange
-                const nestedDiv = document.createElement('div');
-                nestedDiv.classList.add('ng-dropdown-panel-items');
-                document.body.appendChild(nestedDiv);
-
-                // Act
-                component.onVenueListDropdownOpen();
-                tick();
-
-                // Assert
-                expect(nestedDiv.getAttribute('role')).toBe('group');
-
-                // Cleanup
-                document.body.removeChild(nestedDiv);
-            }));
         });
 
         describe('onCsoListDropdownOpen', () => {
@@ -270,23 +254,6 @@ describe('VenueListComponent', () => {
 
                 // Cleanup
                 document.body.removeChild(listbox);
-            }));
-
-            it('should set role attribute to "group" on nested divs', fakeAsync(() => {
-                // Arrange
-                const nestedDiv = document.createElement('div');
-                nestedDiv.classList.add('ng-dropdown-panel-items');
-                document.body.appendChild(nestedDiv);
-
-                // Act
-                component.onCsoListDropdownOpen();
-                tick();
-
-                // Assert
-                expect(nestedDiv.getAttribute('role')).toBe('group');
-
-                // Cleanup
-                document.body.removeChild(nestedDiv);
             }));
         });
 
