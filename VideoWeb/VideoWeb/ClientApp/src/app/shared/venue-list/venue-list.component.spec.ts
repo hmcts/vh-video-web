@@ -232,7 +232,6 @@ describe('VenueListComponent', () => {
                 // Cleanup
                 document.body.removeChild(listbox);
             }));
-
         });
 
         describe('onCsoListDropdownOpen', () => {
