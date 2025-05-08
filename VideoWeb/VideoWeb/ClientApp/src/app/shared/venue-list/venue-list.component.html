@@ -7,17 +7,17 @@
     <label id="venue-allocation-list-label" class="govuk-label" for="venue-allocation-list-label-for"> {{
       'venue-list.selection-default-text' | translate
       }}</label>
-    <section aria-labelledby="venue-allocation-list-label" role="region">
+    <section aria-labelledby="venue-allocation-list-label">
       <ng-select id="venue-allocation-list" class="selection-list" [attr.aria-autocomplete]="'list'"
         [labelForId]="'venue-allocation-list-label-for'" [items]="venues" [multiple]="true" bindLabel="name"
         bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues"
         [closeOnSelect]="false" (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
         (open)="onDropdownOpen()">
-      <div role="listbox" id="venue-listbox" aria-label="Venue list">
-        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-          {{ item.name }}
-        </ng-template>
-      </div>
+      <select id="venue-listbox" aria-label="Venue list" multiple [(ngModel)]="selectedVenues" (change)="updateVenueSelection()">
+        <option *ngFor="let venue of venues" [value]="venue.name">
+          {{ venue.name }}
+        </option>
+      </select>
       </ng-select>
     </section>
   </div>
