@@ -214,575 +214,541 @@ describe('WaitingRoomComponent', () => {
         spyOn(ModalTrapFocus, 'trap').and.callFake(() => {});
     });
 
-    describe('ngOnInit', () => {
-        const userRoleTestCases = [WaitingRoomUserRole.Participant, WaitingRoomUserRole.Joh, 'OtherRole' as WaitingRoomUserRole];
+    describe('non-host tests', () => {
+        describe('ngOnInit', () => {
+            const userRoleTestCases = [WaitingRoomUserRole.Participant, WaitingRoomUserRole.Joh, 'OtherRole' as WaitingRoomUserRole];
 
-        userRoleTestCases.forEach(userRole => {
-            it(`should init as ${userRole}`, fakeAsync(() => {
-                spyOn(mockStore, 'dispatch');
-                component.userRole = userRole;
+            userRoleTestCases.forEach(userRole => {
+                it(`should init as ${userRole}`, fakeAsync(() => {
+                    spyOn(mockStore, 'dispatch');
+                    component.userRole = userRole;
+                    component.ngOnInit();
+                    tick();
+                    expect(component).toBeTruthy();
+                    expect(mockStore.dispatch).toHaveBeenCalledWith(ConferenceActions.enterWaitingRoom({ userRole: userRole }));
+                }));
+            });
+
+            const joinHearingWarningTestCases = [true, false];
+
+            joinHearingWarningTestCases.forEach(test => {
+                it(`should set showJoinHearingWarning to ${test} when isHandheldIOSDevice returns ${test}`, fakeAsync(() => {
+                    mockDeviceTypeService.isHandheldIOSDevice.and.returnValue(test);
+                    component.ngOnInit();
+                    tick();
+                    expect(component.showJoinHearingWarning).toBe(test);
+                }));
+            });
+
+            it('should start subscribers', () => {
+                spyOn(component, 'setTrapFocus').and.callThrough();
+                spyOn(component, 'showLeaveConsultationModal').and.callThrough();
+                spyOn(component, 'setRoomLock').and.callThrough();
+                spyOn(component, 'showChooseCameraDialog').and.callThrough();
+                spyOn(component, 'showLanguageChangeModal').and.callThrough();
+                const roomLocked = true;
+
                 component.ngOnInit();
-                tick();
-                expect(component).toBeTruthy();
-                expect(mockStore.dispatch).toHaveBeenCalledWith(ConferenceActions.enterWaitingRoom({ userRole: userRole }));
-            }));
-        });
+                onVideoWrapperReadySubject.next();
+                onLeaveConsultationSubject.next();
+                onLockConsultationSubject.next(roomLocked);
+                onChangeDeviceSubject.next();
+                onChangeLanguageSubject.next();
 
-        const joinHearingWarningTestCases = [true, false];
-
-        joinHearingWarningTestCases.forEach(test => {
-            it(`should set showJoinHearingWarning to ${test} when isHandheldIOSDevice returns ${test}`, fakeAsync(() => {
-                mockDeviceTypeService.isHandheldIOSDevice.and.returnValue(test);
-                component.ngOnInit();
-                tick();
-                expect(component.showJoinHearingWarning).toBe(test);
-            }));
-        });
-
-        it('should start subscribers', () => {
-            spyOn(component, 'setTrapFocus').and.callThrough();
-            spyOn(component, 'showLeaveConsultationModal').and.callThrough();
-            spyOn(component, 'setRoomLock').and.callThrough();
-            spyOn(component, 'showChooseCameraDialog').and.callThrough();
-            spyOn(component, 'showLanguageChangeModal').and.callThrough();
-            const roomLocked = true;
-
-            component.ngOnInit();
-            onVideoWrapperReadySubject.next();
-            onLeaveConsultationSubject.next();
-            onLockConsultationSubject.next(roomLocked);
-            onChangeDeviceSubject.next();
-            onChangeLanguageSubject.next();
-
-            expect(component.setTrapFocus).toHaveBeenCalled();
-            expect(component.showLeaveConsultationModal).toHaveBeenCalled();
-            expect(component.setRoomLock).toHaveBeenCalledWith(roomLocked);
-            expect(component.showChooseCameraDialog).toHaveBeenCalled();
-            expect(component.showLanguageChangeModal).toHaveBeenCalled();
-        });
-    });
-
-    describe('allowAudioOnlyToggle', () => {
-        beforeEach(() => {
-            component.userRole = WaitingRoomUserRole.Joh;
-        });
-
-        it('should return true when particiant is not in a consultation and not in a hearing', () => {
-            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.Available };
-            expect(component.allowAudioOnlyToggle).toBeTrue();
-        });
-
-        it('should return false when particiant is in a consultation', () => {
-            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InConsultation };
-            expect(component.allowAudioOnlyToggle).toBeFalse();
-        });
-
-        it('should return false when particiant is in a hearing', () => {
-            component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InHearing };
-            expect(component.allowAudioOnlyToggle).toBeFalse();
-        });
-
-        it('should return true when user role is participant', () => {
-            component.userRole = WaitingRoomUserRole.Participant;
-            expect(component.allowAudioOnlyToggle).toBeTrue();
-        });
-    });
-
-    describe('check participant role', () => {
-        describe('isObserver', () => {
-            it('should return true when the participant is an observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.OBSERVER };
-                expect(component.isObserver).toBeTrue();
-            });
-
-            it('should return false when the participant is not an observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
-                expect(component.isObserver).toBeFalse();
+                expect(component.setTrapFocus).toHaveBeenCalled();
+                expect(component.showLeaveConsultationModal).toHaveBeenCalled();
+                expect(component.setRoomLock).toHaveBeenCalledWith(roomLocked);
+                expect(component.showChooseCameraDialog).toHaveBeenCalled();
+                expect(component.showLanguageChangeModal).toHaveBeenCalled();
             });
         });
 
-        describe('isQuickLinkObserver', () => {
-            it('should return true when the participant is a quick link observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, role: Role.QuickLinkObserver };
-                expect(component.isQuickLinkObserver).toBeTrue();
-            });
-
-            it('should return false when the participant is not a quick link observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, role: Role.Individual };
-                expect(component.isQuickLinkObserver).toBeFalse();
-            });
-        });
-
-        describe('isQuickLinkParticipant', () => {
-            it('should return true when the participant is a quick link observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.QUICK_LINK_OBSERVER };
-                expect(component.isQuickLinkUser).toBeTrue();
-            });
-
-            it('should return true when the participant is a quick link observer', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.QUICK_LINK_PARTICIPANT };
-                expect(component.isQuickLinkUser).toBeTrue();
-            });
-
-            it('should return false when the participant is not a quick link participant', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
-                expect(component.isQuickLinkUser).toBeFalse();
-            });
-        });
-
-        describe('isVictim', () => {
-            it('should return true when the participant is a victim', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.VICTIM };
-                expect(component.isVictim).toBeTrue();
-            });
-
-            it('should return false when the participant is not a victim', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
-                expect(component.isVictim).toBeFalse();
-            });
-        });
-
-        describe('isPolice', () => {
-            it('should return true when the participant is police', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.POLICE };
-                expect(component.isPolice).toBeTrue();
-            });
-
-            it('should return false when the participant is not police', () => {
-                component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
-                expect(component.isPolice).toBeFalse();
-            });
-        });
-    });
-
-    describe('subscribeToClock', () => {
-        beforeEach(() => {
-            component.subscribeToClock();
-        });
-
-        it('should navigate user back to the home page when hearing is closed for an extended period', fakeAsync(() => {
-            spyOn(component.hearing, 'isPastClosedTime').and.returnValue(true);
-
-            clockSubject.next(new Date());
-            tick();
-
-            expect(mockRouter.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
-        }));
-
-        it('should show room closing mesage when participant is in a private consultation', fakeAsync(() => {
-            component.isPrivateConsultation = true;
-
-            const date = new Date();
-            clockSubject.next(date);
-            tick();
-
-            expect(mockRoomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
-        }));
-
-        it('should clear toasts', fakeAsync(() => {
-            component.isPrivateConsultation = false;
-
-            clockSubject.next(new Date());
-            tick();
-
-            expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
-        }));
-    });
-
-    describe('canStartJoinConsultation', () => {
-        afterEach(() => {
-            component.vhParticipant = loggedInParticipant;
-        });
-
-        it('should return true if the participant is a representative', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.REPRESENTATIVE,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeTrue();
-        });
-
-        it('should return false if the participant is a witness', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.WITNESS,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeFalse();
-        });
-
-        it('should return false if the participant is an observer', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.OBSERVER,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeFalse();
-        });
-
-        it('should return false if the participant is a individual with interpreter', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.LITIGANT_IN_PERSON,
-                linkedParticipants: [{ linkedType: LinkType.Interpreter }]
-            };
-            expect(component.canStartJoinConsultation).toBeFalse();
-        });
-
-        it('should return false if the participant is a QL observer', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                role: Role.QuickLinkObserver,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeFalse();
-        });
-
-        it('should return true if the participant is a QL participant', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                role: Role.QuickLinkParticipant,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeTrue();
-        });
-
-        it('should return false if the participant is a victim', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.VICTIM,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeFalsy();
-        });
-
-        it('should return false if the participant is police', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                hearingRole: HearingRole.POLICE,
-                linkedParticipants: []
-            };
-            expect(component.canStartJoinConsultation).toBeFalsy();
-        });
-    });
-
-    describe('getConferenceStatusText', () => {
-        describe('user is a participant', () => {
-            beforeEach(() => {
-                component.userRole = WaitingRoomUserRole.Participant;
-            });
-
-            const getConferenceStatusTextTestCases = [
-                { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-                {
-                    conference: testData.getConferenceDetailNow(),
-                    status: ConferenceStatus.NotStarted,
-                    expected: 'waiting-room.is-about-to-begin'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.NotStarted,
-                    expected: 'waiting-room.is-delayed'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.InSession,
-                    expected: 'waiting-room.is-in-session'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Paused,
-                    expected: 'waiting-room.is-paused'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Suspended,
-                    expected: 'waiting-room.is-suspended'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Closed,
-                    expected: 'waiting-room.is-closed'
-                }
-            ];
-
-            getConferenceStatusTextTestCases.forEach(test => {
-                it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
-                    const conf = mapConferenceToVHConference(test.conference);
-                    component.hearing = new VHHearing(conf);
-                    component.hearing.getConference().status = test.status;
-                    mockTranslationService.instant.calls.reset();
-                    expect(component.getConferenceStatusText()).toBe(test.expected);
-                });
-            });
-        });
-
-        describe('user is not a participant', () => {
+        describe('allowAudioOnlyToggle', () => {
             beforeEach(() => {
                 component.userRole = WaitingRoomUserRole.Joh;
             });
 
-            const getConferenceStatusTextTestCases = [
-                { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Suspended,
-                    expected: 'waiting-room.is-suspended'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Paused,
-                    expected: 'waiting-room.is-paused'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.Closed,
-                    expected: 'waiting-room.is-closed'
-                },
-                {
-                    conference: testData.getConferenceDetailPast(),
-                    status: ConferenceStatus.InSession,
-                    expected: 'waiting-room.is-in-session'
-                }
-            ];
+            it('should return true when particiant is not in a consultation and not in a hearing', () => {
+                component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.Available };
+                expect(component.allowAudioOnlyToggle).toBeTrue();
+            });
 
-            getConferenceStatusTextTestCases.forEach(test => {
-                it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
-                    const conf = mapConferenceToVHConference(test.conference);
-                    component.hearing = new VHHearing(conf);
-                    component.hearing.getConference().status = test.status;
-                    mockTranslationService.instant.calls.reset();
-                    expect(component.getConferenceStatusText()).toBe(test.expected);
+            it('should return false when particiant is in a consultation', () => {
+                component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InConsultation };
+                expect(component.allowAudioOnlyToggle).toBeFalse();
+            });
+
+            it('should return false when particiant is in a hearing', () => {
+                component.vhParticipant = { ...loggedInParticipant, status: ParticipantStatus.InHearing };
+                expect(component.allowAudioOnlyToggle).toBeFalse();
+            });
+
+            it('should return true when user role is participant', () => {
+                component.userRole = WaitingRoomUserRole.Participant;
+                expect(component.allowAudioOnlyToggle).toBeTrue();
+            });
+        });
+
+        describe('check participant role', () => {
+            describe('isObserver', () => {
+                it('should return true when the participant is an observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.OBSERVER };
+                    expect(component.isObserver).toBeTrue();
+                });
+
+                it('should return false when the participant is not an observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
+                    expect(component.isObserver).toBeFalse();
+                });
+            });
+
+            describe('isQuickLinkObserver', () => {
+                it('should return true when the participant is a quick link observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, role: Role.QuickLinkObserver };
+                    expect(component.isQuickLinkObserver).toBeTrue();
+                });
+
+                it('should return false when the participant is not a quick link observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, role: Role.Individual };
+                    expect(component.isQuickLinkObserver).toBeFalse();
+                });
+            });
+
+            describe('isQuickLinkParticipant', () => {
+                it('should return true when the participant is a quick link observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.QUICK_LINK_OBSERVER };
+                    expect(component.isQuickLinkUser).toBeTrue();
+                });
+
+                it('should return true when the participant is a quick link observer', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.QUICK_LINK_PARTICIPANT };
+                    expect(component.isQuickLinkUser).toBeTrue();
+                });
+
+                it('should return false when the participant is not a quick link participant', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
+                    expect(component.isQuickLinkUser).toBeFalse();
+                });
+            });
+
+            describe('isVictim', () => {
+                it('should return true when the participant is a victim', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.VICTIM };
+                    expect(component.isVictim).toBeTrue();
+                });
+
+                it('should return false when the participant is not a victim', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
+                    expect(component.isVictim).toBeFalse();
+                });
+            });
+
+            describe('isPolice', () => {
+                it('should return true when the participant is police', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.POLICE };
+                    expect(component.isPolice).toBeTrue();
+                });
+
+                it('should return false when the participant is not police', () => {
+                    component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.APPELLANT };
+                    expect(component.isPolice).toBeFalse();
                 });
             });
         });
-    });
 
-    describe('getRoomName', () => {
-        it('should return the room name', () => {
-            component.vhParticipant = { ...loggedInParticipant, room: { label: 'Room1' } as VHRoom };
+        describe('subscribeToClock', () => {
+            beforeEach(() => {
+                component.subscribeToClock();
+            });
 
-            component.getRoomName();
+            it('should navigate user back to the home page when hearing is closed for an extended period', fakeAsync(() => {
+                spyOn(component.hearing, 'isPastClosedTime').and.returnValue(true);
 
-            expect(mockConsultationService.consultationNameToString).toHaveBeenCalledWith('Room1', false);
-        });
-    });
+                clockSubject.next(new Date());
+                tick();
 
-    describe('modals', () => {
-        it('should display the start consultation modal', () => {
-            component.displayStartPrivateConsultationModal = false;
+                expect(mockRouter.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
+            }));
 
-            component.openStartConsultationModal();
+            it('should show room closing mesage when participant is in a private consultation', fakeAsync(() => {
+                component.isPrivateConsultation = true;
 
-            expect(component.displayStartPrivateConsultationModal).toBeTrue();
-        });
+                const date = new Date();
+                clockSubject.next(date);
+                tick();
 
-        it('should close the start consultation modal', () => {
-            component.displayStartPrivateConsultationModal = true;
+                expect(mockRoomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
+            }));
 
-            component.closeStartPrivateConsultationModal();
+            it('should clear toasts', fakeAsync(() => {
+                component.isPrivateConsultation = false;
 
-            expect(component.displayStartPrivateConsultationModal).toBeFalse();
-        });
+                clockSubject.next(new Date());
+                tick();
 
-        it('should display join consultation modal', () => {
-            component.displayJoinPrivateConsultationModal = false;
-
-            component.openJoinConsultationModal();
-
-            expect(component.displayJoinPrivateConsultationModal).toBeTrue();
+                expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
+            }));
         });
 
-        it('should close the join consultation modal', () => {
-            component.displayJoinPrivateConsultationModal = true;
+        describe('canStartJoinConsultation', () => {
+            afterEach(() => {
+                component.vhParticipant = loggedInParticipant;
+            });
 
-            component.closeJoinPrivateConsultationModal();
+            it('should return true if the participant is a representative', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.REPRESENTATIVE,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeTrue();
+            });
 
-            expect(component.displayJoinPrivateConsultationModal).toBeFalse();
+            it('should return false if the participant is a witness', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.WITNESS,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalse();
+            });
+
+            it('should return false if the participant is an observer', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.OBSERVER,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalse();
+            });
+
+            it('should return false if the participant is a individual with interpreter', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.LITIGANT_IN_PERSON,
+                    linkedParticipants: [{ linkedType: LinkType.Interpreter }]
+                };
+                expect(component.canStartJoinConsultation).toBeFalse();
+            });
+
+            it('should return false if the participant is a QL observer', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    role: Role.QuickLinkObserver,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalse();
+            });
+
+            it('should return true if the participant is a QL participant', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    role: Role.QuickLinkParticipant,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeTrue();
+            });
+
+            it('should return false if the participant is a victim', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.VICTIM,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalsy();
+            });
+
+            it('should return false if the participant is police', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.POLICE,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalsy();
+            });
         });
 
-        it('should show language change modal', () => {
-            component.displayLanguageModal = false;
+        describe('getConferenceStatusText', () => {
+            describe('user is a participant', () => {
+                beforeEach(() => {
+                    component.userRole = WaitingRoomUserRole.Participant;
+                });
 
-            component.showLanguageChangeModal();
+                const getConferenceStatusTextTestCases = [
+                    { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
+                    {
+                        conference: testData.getConferenceDetailNow(),
+                        status: ConferenceStatus.NotStarted,
+                        expected: 'waiting-room.is-about-to-begin'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.NotStarted,
+                        expected: 'waiting-room.is-delayed'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.InSession,
+                        expected: 'waiting-room.is-in-session'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Paused,
+                        expected: 'waiting-room.is-paused'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Suspended,
+                        expected: 'waiting-room.is-suspended'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Closed,
+                        expected: 'waiting-room.is-closed'
+                    }
+                ];
 
-            expect(component.displayLanguageModal).toBeTrue();
+                getConferenceStatusTextTestCases.forEach(test => {
+                    it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
+                        const conf = mapConferenceToVHConference(test.conference);
+                        component.hearing = new VHHearing(conf);
+                        component.hearing.getConference().status = test.status;
+                        mockTranslationService.instant.calls.reset();
+                        expect(component.getConferenceStatusText()).toBe(test.expected);
+                    });
+                });
+            });
+
+            describe('user is not a participant', () => {
+                beforeEach(() => {
+                    component.userRole = WaitingRoomUserRole.Joh;
+                });
+
+                const getConferenceStatusTextTestCases = [
+                    { conference: testData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Suspended,
+                        expected: 'waiting-room.is-suspended'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Paused,
+                        expected: 'waiting-room.is-paused'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.Closed,
+                        expected: 'waiting-room.is-closed'
+                    },
+                    {
+                        conference: testData.getConferenceDetailPast(),
+                        status: ConferenceStatus.InSession,
+                        expected: 'waiting-room.is-in-session'
+                    }
+                ];
+
+                getConferenceStatusTextTestCases.forEach(test => {
+                    it(`should return hearing status '${test.status}' text '${test.expected}'`, () => {
+                        const conf = mapConferenceToVHConference(test.conference);
+                        component.hearing = new VHHearing(conf);
+                        component.hearing.getConference().status = test.status;
+                        mockTranslationService.instant.calls.reset();
+                        expect(component.getConferenceStatusText()).toBe(test.expected);
+                    });
+                });
+            });
         });
 
-        it('should close language change modal', () => {
-            component.displayLanguageModal = true;
+        describe('getRoomName', () => {
+            it('should return the room name', () => {
+                component.vhParticipant = { ...loggedInParticipant, room: { label: 'Room1' } as VHRoom };
 
-            component.closeLanguageChangeModal();
+                component.getRoomName();
 
-            expect(component.displayLanguageModal).toBeFalse();
-        });
-    });
-
-    describe('setRoomLock', () => {
-        beforeEach(() => {
-            mockConsultationService.lockConsultation.calls.reset();
-        });
-        afterEach(() => {
-            component.vhParticipant = loggedInParticipant;
-        });
-        it('should set the room lock', () => {
-            component.vhParticipant = {
-                ...loggedInParticipant,
-                room: { label: 'Room1', locked: false } as VHRoom
-            };
-
-            component.setRoomLock(true);
-
-            expect(mockConsultationService.lockConsultation).toHaveBeenCalledWith(conference.id, 'Room1', true);
+                expect(mockConsultationService.consultationNameToString).toHaveBeenCalledWith('Room1', false);
+            });
         });
 
-        it('should do nothing if participant is not in a room', () => {
-            component.vhParticipant = { ...loggedInParticipant, room: null };
+        describe('modals', () => {
+            it('should display the start consultation modal', () => {
+                component.displayStartPrivateConsultationModal = false;
 
-            component.setRoomLock(true);
+                component.openStartConsultationModal();
 
-            expect(mockConsultationService.lockConsultation).not.toHaveBeenCalled();
-        });
-    });
+                expect(component.displayStartPrivateConsultationModal).toBeTrue();
+            });
 
-    describe('startPrivateConsultation', () => {
-        beforeEach(() => {
-            mockConsultationService.createParticipantConsultationRoom.calls.reset();
-        });
+            it('should close the start consultation modal', () => {
+                component.displayStartPrivateConsultationModal = true;
 
-        it('should start a private consultation', async () => {
-            const particiant = conference.participants.find(x => x.role === Role.Representative);
-            const endpoint = conference.endpoints[0];
+                component.closeStartPrivateConsultationModal();
 
-            await component.startPrivateConsultation([particiant.id], [endpoint.id]);
+                expect(component.displayStartPrivateConsultationModal).toBeFalse();
+            });
 
-            expect(mockConsultationService.createParticipantConsultationRoom).toHaveBeenCalledWith(
-                conference.id,
-                loggedInParticipant.id,
-                [particiant.id],
-                [endpoint.id]
-            );
-            expect(component.privateConsultationAccordianExpanded).toBeFalse();
-        });
-    });
+            it('should display join consultation modal', () => {
+                component.displayJoinPrivateConsultationModal = false;
 
-    describe('joinPrivateConsultation', () => {
-        beforeEach(() => {
-            mockConsultationService.joinPrivateConsultationRoom.calls.reset();
-        });
+                component.openJoinConsultationModal();
 
-        it('should join a private consultation', async () => {
-            await component.joinPrivateConsultation('Room1');
+                expect(component.displayJoinPrivateConsultationModal).toBeTrue();
+            });
 
-            expect(mockConsultationService.joinPrivateConsultationRoom).toHaveBeenCalledWith(
-                conference.id,
-                loggedInParticipant.id,
-                'Room1'
-            );
-            expect(component.privateConsultationAccordianExpanded).toBeFalse();
-            expect(component.hasTriedToLeaveConsultation).toBeFalse();
-            expect(component.displayJoinPrivateConsultationModal).toBeFalse();
-        });
-    });
+            it('should close the join consultation modal', () => {
+                component.displayJoinPrivateConsultationModal = true;
 
-    describe('toggleAccordian', () => {
-        it('should toggle the accordian', () => {
-            component.privateConsultationAccordianExpanded = false;
+                component.closeJoinPrivateConsultationModal();
 
-            component.toggleAccordian();
+                expect(component.displayJoinPrivateConsultationModal).toBeFalse();
+            });
 
-            expect(component.privateConsultationAccordianExpanded).toBeTrue();
-        });
-    });
+            it('should show language change modal', () => {
+                component.displayLanguageModal = false;
 
-    describe('dismissJoinHearingWarning', () => {
-        it('should hide joing hearing warning', fakeAsync(() => {
-            component.showJoinHearingWarning = true;
-            component.dismissJoinHearingWarning();
-            tick();
+                component.showLanguageChangeModal();
 
-            expect(component.showJoinHearingWarning).toBeFalse();
-        }));
-    });
+                expect(component.displayLanguageModal).toBeTrue();
+            });
 
-    describe('onLeaveHearingButtonClicked', () => {
-        it('should display leave hearing popup', () => {
-            component.displayLeaveHearingPopup = false;
-            component.onLeaveHearingButtonClicked();
-            expect(component.displayLeaveHearingPopup).toBeTrue();
-        });
-    });
+            it('should close language change modal', () => {
+                component.displayLanguageModal = true;
 
-    describe('cleanUp', () => {
-        it('should clean up on destroy', () => {
-            spyOn(mockStore, 'dispatch');
-            const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-            const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-            component.subscriptions = [mockSubscription1, mockSubscription2];
+                component.closeLanguageChangeModal();
 
-            component.ngOnDestroy();
-
-            expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
-            expect(mockStore.dispatch).toHaveBeenCalledWith(
-                ConferenceActions.leaveConference({
-                    conferenceId: conference.id
-                })
-            );
-            expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
-            expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
-        });
-    });
-
-    describe('userMediaService.isAutioOnly$ changed', () => {
-        it('should publish the media status when audio toggle changes', fakeAsync(() => {
-            component.ngOnInit();
-            tick();
-            isAudioOnlySubject.next(true);
-            tick();
-            expect(component.audioOnly).toBeTrue();
-
-            expect(mockEventsService.sendMediaStatus).toHaveBeenCalledWith(
-                conference.id,
-                loggedInParticipant.id,
-                new ParticipantMediaStatus(false, true)
-            );
-        }));
-    });
-
-    describe('isJudge', () => {
-        it('should return true when user is a judge', () => {
-            component.userRole = WaitingRoomUserRole.Judge;
-            expect(component.isJudge).toBeTrue();
+                expect(component.displayLanguageModal).toBeFalse();
+            });
         });
 
-        it('should return false when user is a participant', () => {
-            component.userRole = WaitingRoomUserRole.Participant;
-            expect(component.isJudge).toBeFalse();
-        });
-    });
+        describe('setRoomLock', () => {
+            beforeEach(() => {
+                mockConsultationService.lockConsultation.calls.reset();
+            });
+            afterEach(() => {
+                component.vhParticipant = loggedInParticipant;
+            });
+            it('should set the room lock', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    room: { label: 'Room1', locked: false } as VHRoom
+                };
 
-    describe('isJoh', () => {
-        it('should return true when user is a joh', () => {
-            component.userRole = WaitingRoomUserRole.Joh;
-            expect(component.isJoh).toBeTrue();
+                component.setRoomLock(true);
+
+                expect(mockConsultationService.lockConsultation).toHaveBeenCalledWith(conference.id, 'Room1', true);
+            });
+
+            it('should do nothing if participant is not in a room', () => {
+                component.vhParticipant = { ...loggedInParticipant, room: null };
+
+                component.setRoomLock(true);
+
+                expect(mockConsultationService.lockConsultation).not.toHaveBeenCalled();
+            });
         });
 
-        it('should return false when user is a participant', () => {
-            component.userRole = WaitingRoomUserRole.Participant;
-            expect(component.isJoh).toBeFalse();
-        });
-    });
+        describe('startPrivateConsultation', () => {
+            beforeEach(() => {
+                mockConsultationService.createParticipantConsultationRoom.calls.reset();
+            });
 
-    describe('isParticipant', () => {
-        it('should return true when user is a participant', () => {
-            component.userRole = WaitingRoomUserRole.Participant;
-            expect(component.isParticipant).toBeTrue();
+            it('should start a private consultation', async () => {
+                const particiant = conference.participants.find(x => x.role === Role.Representative);
+                const endpoint = conference.endpoints[0];
+
+                await component.startPrivateConsultation([particiant.id], [endpoint.id]);
+
+                expect(mockConsultationService.createParticipantConsultationRoom).toHaveBeenCalledWith(
+                    conference.id,
+                    loggedInParticipant.id,
+                    [particiant.id],
+                    [endpoint.id]
+                );
+                expect(component.privateConsultationAccordianExpanded).toBeFalse();
+            });
         });
 
-        it('should return false when user is a joh', () => {
-            component.userRole = WaitingRoomUserRole.Joh;
-            expect(component.isParticipant).toBeFalse();
+        describe('joinPrivateConsultation', () => {
+            beforeEach(() => {
+                mockConsultationService.joinPrivateConsultationRoom.calls.reset();
+            });
+
+            it('should join a private consultation', async () => {
+                await component.joinPrivateConsultation('Room1');
+
+                expect(mockConsultationService.joinPrivateConsultationRoom).toHaveBeenCalledWith(
+                    conference.id,
+                    loggedInParticipant.id,
+                    'Room1'
+                );
+                expect(component.privateConsultationAccordianExpanded).toBeFalse();
+                expect(component.hasTriedToLeaveConsultation).toBeFalse();
+                expect(component.displayJoinPrivateConsultationModal).toBeFalse();
+            });
+        });
+
+        describe('toggleAccordian', () => {
+            it('should toggle the accordian', () => {
+                component.privateConsultationAccordianExpanded = false;
+
+                component.toggleAccordian();
+
+                expect(component.privateConsultationAccordianExpanded).toBeTrue();
+            });
+        });
+
+        describe('dismissJoinHearingWarning', () => {
+            it('should hide joing hearing warning', fakeAsync(() => {
+                component.showJoinHearingWarning = true;
+                component.dismissJoinHearingWarning();
+                tick();
+
+                expect(component.showJoinHearingWarning).toBeFalse();
+            }));
+        });
+
+        describe('onLeaveHearingButtonClicked', () => {
+            it('should display leave hearing popup', () => {
+                component.displayLeaveHearingPopup = false;
+                component.onLeaveHearingButtonClicked();
+                expect(component.displayLeaveHearingPopup).toBeTrue();
+            });
+        });
+
+        describe('cleanUp', () => {
+            it('should clean up on destroy', () => {
+                spyOn(mockStore, 'dispatch');
+                const mockSubscription1 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+                const mockSubscription2 = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+                component.subscriptions = [mockSubscription1, mockSubscription2];
+
+                component.ngOnDestroy();
+
+                expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
+                expect(mockStore.dispatch).toHaveBeenCalledWith(
+                    ConferenceActions.leaveConference({
+                        conferenceId: conference.id
+                    })
+                );
+                expect(mockSubscription1.unsubscribe).toHaveBeenCalled();
+                expect(mockSubscription2.unsubscribe).toHaveBeenCalled();
+            });
+        });
+
+        describe('userMediaService.isAutioOnly$ changed', () => {
+            it('should publish the media status when audio toggle changes', fakeAsync(() => {
+                component.ngOnInit();
+                tick();
+                isAudioOnlySubject.next(true);
+                tick();
+                expect(component.audioOnly).toBeTrue();
+
+                expect(mockEventsService.sendMediaStatus).toHaveBeenCalledWith(
+                    conference.id,
+                    loggedInParticipant.id,
+                    new ParticipantMediaStatus(false, true)
+                );
+            }));
         });
     });
 
@@ -1242,6 +1208,42 @@ describe('WaitingRoomComponent', () => {
                 expect(component.continueWithNoRecording).toBeTrue();
                 expect(component.audioErrorRetryToast).toBeNull();
             });
+        });
+    });
+
+    describe('isJudge', () => {
+        it('should return true when user is a judge', () => {
+            component.userRole = WaitingRoomUserRole.Judge;
+            expect(component.isJudge).toBeTrue();
+        });
+
+        it('should return false when user is a participant', () => {
+            component.userRole = WaitingRoomUserRole.Participant;
+            expect(component.isJudge).toBeFalse();
+        });
+    });
+
+    describe('isJoh', () => {
+        it('should return true when user is a joh', () => {
+            component.userRole = WaitingRoomUserRole.Joh;
+            expect(component.isJoh).toBeTrue();
+        });
+
+        it('should return false when user is a participant', () => {
+            component.userRole = WaitingRoomUserRole.Participant;
+            expect(component.isJoh).toBeFalse();
+        });
+    });
+
+    describe('isParticipant', () => {
+        it('should return true when user is a participant', () => {
+            component.userRole = WaitingRoomUserRole.Participant;
+            expect(component.isParticipant).toBeTrue();
+        });
+
+        it('should return false when user is a joh', () => {
+            component.userRole = WaitingRoomUserRole.Joh;
+            expect(component.isParticipant).toBeFalse();
         });
     });
 });
