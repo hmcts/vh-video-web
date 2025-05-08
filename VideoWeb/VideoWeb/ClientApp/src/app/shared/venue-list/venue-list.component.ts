@@ -86,6 +86,12 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
 
     onDropdownOpen(): void {
         setTimeout(() => {
+            
+            const listbox1 = document.querySelector('.ng-dropdown-panel.ng-select-multiple.ng-select-bottom');
+            if (listbox1) {
+                listbox1.removeAttribute('role');
+            }
+            
             const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
             const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
             if (listbox) {
@@ -94,10 +100,10 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
                 listbox.setAttribute('tabindex', '0');
             }
 
-            const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
-            if (nestedDiv) {
-                nestedDiv.setAttribute('role', 'group');
-            }
+            // const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
+            // if (nestedDiv) {
+            //     nestedDiv.setAttribute('role', 'listbox');
+            // }
         });
     }
 
