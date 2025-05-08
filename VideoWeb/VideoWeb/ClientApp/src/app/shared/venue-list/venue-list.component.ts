@@ -98,11 +98,6 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
                 listbox.setAttribute('title', ariaLabel);
                 listbox.setAttribute('tabindex', '0');
             }
-
-            // const nestedDiv = document.querySelector('.ng-dropdown-panel-items');
-            // if (nestedDiv) {
-            //     nestedDiv.setAttribute('role', 'listbox');
-            // }
         });
     }
 
