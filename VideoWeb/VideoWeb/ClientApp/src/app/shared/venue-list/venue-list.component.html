@@ -4,34 +4,22 @@
   </div>
 
   <div class="govuk-grid-column-three-quarters">
-    <label  
-      id="venue-allocation-list-label"
-      class="govuk-label" 
-      for="venue-allocation-list-label-for"> {{ 'venue-list.selection-default-text' | translate
+    <label id="venue-allocation-list-label" class="govuk-label" for="venue-allocation-list-label-for"> {{
+      'venue-list.selection-default-text' | translate
       }}</label>
-      <section aria-labelledby="venue-allocation-list-label">
-        <ng-select 
-          id="venue-allocation-list" 
-          class="selection-list" 
-          [attr.aria-autocomplete]="'list'"
-          [labelForId]="'venue-allocation-list-label-for'" 
-          [items]="venues" 
-          [multiple]="true" 
-          bindLabel="name" 
-          bindValue="name"
-          [placeholder]="'venue-list.selection-default-text' | translate" 
-          [(ngModel)]="selectedVenues"
-          [closeOnSelect]="false" 
-          (change)="updateVenueSelection()" 
-          [clearSearchOnAdd]="true" 
-          [selectOnTab]="true"
-          (open)="onVenueListDropdownOpen()"
-        >
-          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            {{ item.name }}
-          </ng-template>
-        </ng-select>
-      </section>
+    <section aria-labelledby="venue-allocation-list-label">
+      <ng-select id="venue-allocation-list" class="selection-list" [attr.aria-autocomplete]="'list'"
+        [labelForId]="'venue-allocation-list-label-for'" [items]="venues" [multiple]="true" bindLabel="name"
+        bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues"
+        [closeOnSelect]="false" (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
+        (open)="onVenueListDropdownOpen()">
+      <select id="venue-listbox" aria-label="Venue list" multiple [(ngModel)]="selectedVenues" (change)="updateVenueSelection()">
+        <option *ngFor="let venue of venues" [value]="venue.name">
+          {{ venue.name }}
+        </option>
+      </select>
+      </ng-select>
+    </section>
   </div>
   <div id="cso-list" *ngIf="showVhoSpecificContent">
     <div class="govuk-grid-column-full">
@@ -45,9 +33,11 @@
         [placeholder]="'venue-list.cso-selection-default-text' | translate" [(ngModel)]="selectedCsos"
         [closeOnSelect]="false" (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
         (open)="onCsoListDropdownOpen()">
-        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-          {{ item.full_name }}
-        </ng-template>
+        <select id="cso-listbox" aria-label="CSO list" multiple [(ngModel)]="selectedCsos" (change)="updateCsoSelection()">
+          <option *ngFor="let cso of csos" [value]="cso.id">
+            {{ cso.full_name }}
+          </option>
+        </select>
       </ng-select>
     </div>
   </div>
