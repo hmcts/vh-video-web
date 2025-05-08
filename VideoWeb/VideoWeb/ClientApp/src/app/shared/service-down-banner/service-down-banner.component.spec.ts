@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ServiceDownBannerComponent } from './service-down-banner.component';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
+import { MockPipe } from 'ng-mocks';
+import { TranslatePipe } from '@ngx-translate/core';
 
 describe('ServiceDownBannerComponent', () => {
     let component: ServiceDownBannerComponent;
@@ -16,7 +18,7 @@ describe('ServiceDownBannerComponent', () => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.serviceUpdateText).and.returnValue(of(serviceUpdateText));
 
         await TestBed.configureTestingModule({
-            declarations: [ServiceDownBannerComponent],
+            declarations: [ServiceDownBannerComponent, MockPipe(TranslatePipe)],
             providers: [
                 {
                     provide: LaunchDarklyService,
