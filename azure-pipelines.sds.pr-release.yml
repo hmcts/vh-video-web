@@ -39,7 +39,9 @@ stages:
               useConfigFile: true
               configFilePath: ${{ variables.git_version_config_path }}
 
-  
+  #####################################################
+  # CI Build Checks. ##################################
+  - stage: CI_Build
     displayName: CI Build
     variables:
       - template: variables/shared.yaml
@@ -54,7 +56,7 @@ stages:
               chartPath: ${{ variables.chartPath }}
               chartValuesPath: ${{ variables.chartPath }}
 
-      - job: UnitAndIntegrationTests
+     
         displayName: 'Unit and Integration Tests'
         steps:
           - checkout: self
