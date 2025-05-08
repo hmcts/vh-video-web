@@ -73,12 +73,12 @@ export function getLocale() {
         environment.production
             ? []
             : StoreDevtoolsModule.instrument({
-                  maxAge: 25, // Keeps last 25 states
+                  maxAge: 40,
                   logOnly: environment.production, // Disable extension logging in production
 
                   autoPause: true, // Auto-pause when DevTools isn't open
                   trace: true, // Enables tracing for debugging
-                  traceLimit: 25,
+                  traceLimit: 40,
                   serialize: true // Ensures state serialization,
               }),
         EffectsModule.forRoot([])
