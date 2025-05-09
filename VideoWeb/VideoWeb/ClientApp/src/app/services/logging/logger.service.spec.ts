@@ -17,7 +17,7 @@ describe('LoggerService', () => {
     let mockConferenceStore: MockStore<ConferenceState>;
 
     beforeEach(() => {
-        let testConference = mapConferenceToVHConference(conference);
+        const testConference = mapConferenceToVHConference(conference);
         mockConferenceStore = createMockStore({
             initialState: { currentConference: testConference, availableRooms: [] }
         });
