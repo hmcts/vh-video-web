@@ -39,6 +39,10 @@ export class DeviceTypeService {
         return this.deviceDetectorService.os.toLowerCase() === OS.ANDROID.toLowerCase();
     }
 
+    isHandheldIOSDevice(): boolean {
+        return this.isIphone() || this.isIpad();
+    }
+
     isSupportedBrowser(): boolean {
         const supportedBrowsers = [
             browsers.Firefox,
@@ -55,6 +59,15 @@ export class DeviceTypeService {
             return supportedIOSBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
         }
         return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
+    }
+
+    isSupportedBrowserForNetworkHealth(): boolean {
+        if (!this.isSupportedBrowser()) {
+            return false;
+        }
+        const unsupportedBrowsers = ['MS-Edge'];
+        const browser = this.getBrowserName();
+        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
     getBrowserName(): string {

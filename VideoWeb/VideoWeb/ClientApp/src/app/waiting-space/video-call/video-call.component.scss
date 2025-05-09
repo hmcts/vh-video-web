@@ -1,24 +1,15 @@
-@use 'govuk-frontend/dist/govuk/base' as *;
 @use 'abstracts' as *;
 
-#outgoingFeedVideoTransfer {
-  bottom: 10px;
-  width: 259px;
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
-  -moz-transform: rotateY(180deg); /* Firefox */
+.header-content-grid-with-lock {
+  display: grid;
+  grid-template-columns: 1fr rem(100px) auto auto;
+  width: 100%;
 }
 
-.transferFeedImage {
-  height: 123.5px;
-  width: 150px;
-}
-
-.govuk-button-blue {
-  background: govuk-colour('blue');
-}
-.govuk-button-blue:hover {
-  background: govuk-colour('dark-blue');
+.header-content-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  width: 100%;
 }
 
 .room-status {
@@ -59,16 +50,4 @@
 .lock-badge.unlocked {
   background: lightgray;
   color: #0b0c0d;
-}
-
-.header-content-grid {
-  display: grid;
-  grid-template-columns: auto auto;
-  width: 100%;
-}
-
-.header-content-grid-with-lock {
-  display: grid;
-  grid-template-columns: 1fr rem(100px) auto auto;
-  width: 100%;
 }

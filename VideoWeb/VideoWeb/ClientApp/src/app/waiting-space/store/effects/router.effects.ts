@@ -8,6 +8,7 @@ import { ConferenceActions } from '../actions/conference.actions';
 import { Title } from '@angular/platform-browser';
 import { concatLatestFrom } from '@ngrx/operators';
 import * as ConferenceSelectors from '../selectors/conference.selectors';
+import { WaitingRoomUserRole } from '../../waiting-room-shared/models/waiting-room-user-role';
 
 @Injectable()
 export class RouterEffects {
@@ -44,6 +45,27 @@ export class RouterEffects {
                         title = 'Video Hearings - Hearing Room';
                     }
                     this.titleService.setTitle(title);
+                })
+            ),
+        { dispatch: false }
+    );
+
+    setWaitingRoomPageTitle$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ConferenceActions.enterWaitingRoom),
+                tap(({ userRole }) => {
+                    switch (userRole) {
+                        case WaitingRoomUserRole.Joh:
+                            this.titleService.setTitle('JOH waiting room');
+                            break;
+                        case WaitingRoomUserRole.Participant:
+                            this.titleService.setTitle('Participant waiting room');
+                            break;
+                        default:
+                            this.titleService.setTitle('Video Hearings - Waiting room');
+                            break;
+                    }
                 })
             ),
         { dispatch: false }
