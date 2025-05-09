@@ -1598,6 +1598,9 @@
     "close-button-aria-label": "Cau Naidlen Cyfranogwr Deialu Allan",
     "close-button": "Cau"
   },
+  "service-banner": {
+    "title": "Hysbysiad Rhyddhau"
+  },
   "interpreter-language": {
     "american-sign-language-(asl)": "Iaith Arwyddion America (ASL)",
     "british-sign-language-(bsl)": "Iaith Arwyddion Prydain (BSL)",
