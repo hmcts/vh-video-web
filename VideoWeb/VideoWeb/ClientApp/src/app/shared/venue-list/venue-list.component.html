@@ -3,60 +3,65 @@
     <h1 class="govuk-heading-m">{{'venue-list.title' | translate}}</h1>
   </div>
 
+  <div class="govuk-grid-column-three-quarters">
+    <label id="venue-allocation-list-label" class="govuk-label" for="venue-allocation-list-label-for"> {{
+      'venue-list.selection-default-text' | translate
+      }}</label>
+    <section aria-labelledby="venue-allocation-list-label">
+      <ng-select id="venue-allocation-list" class="selection-list" [attr.aria-autocomplete]="'list'"
+        [labelForId]="'venue-allocation-list-label-for'" [items]="venues" [multiple]="true" bindLabel="name"
+        bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues"
+        [closeOnSelect]="false" (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true"
+        (open)="onDropdownOpen()">
+      <select id="venue-listbox" aria-label="Venue list" multiple [(ngModel)]="selectedVenues" (change)="updateVenueSelection()">
+        <option *ngFor="let venue of venues" [value]="venue.name">
+          {{ venue.name }}
+        </option>
+      </select>
+      </ng-select>
+    </section>
+  </div>
+  <div id="cso-list" *ngIf="showVhoSpecificContent">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body">OR</p>
+    </div>
     <div class="govuk-grid-column-three-quarters">
-        <label class="govuk-label" for="venue-allocation-list-label"> {{ 'venue-list.selection-default-text' | translate }}</label>
-        <ng-select id="venue-allocation-list" class="selection-list" [attr.aria-autocomplete]="'list'"
-                   [labelForId]="'venue-allocation-list-label'"
-                   [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
-                   bindLabel="name" bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate"
-                   [(ngModel)]="selectedVenues" [closeOnSelect]="false"
-                   (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
-            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected"
-                       [attr.aria-label]="'venue-list.label' | translate: { name: item.name}" />
-                {{ item.name }}
-            </ng-template>
-        </ng-select>
+      <label class="govuk-label" for="cso-allocation-list-label"> {{ 'venue-list.cso-selection-default-text' | translate
+        }}</label>
+      <ng-select id="cso-allocation-list" class="selection-list" [labelForId]="'cso-allocation-list-label'"
+        [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true" bindLabel="full_name" bindValue="id"
+        [placeholder]="'venue-list.cso-selection-default-text' | translate" [(ngModel)]="selectedCsos"
+        [closeOnSelect]="false" (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected"
+            [attr.aria-label]="'CSO '+ item.first_name" />
+          {{ item.full_name }}
+        </ng-template>
+      </ng-select>
     </div>
-    <div id="cso-list" *ngIf="showVhoSpecificContent">
-        <div class="govuk-grid-column-full">
-            <p class="govuk-body">OR</p>
-        </div>
-        <div class="govuk-grid-column-three-quarters">
-            <label class="govuk-label" for="cso-allocation-list-label"> {{ 'venue-list.cso-selection-default-text' | translate }}</label>
-            <ng-select id="cso-allocation-list" class="selection-list" [labelForId]="'cso-allocation-list-label'"
-                       [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
-                       bindLabel="full_name" bindValue="id" [placeholder]="'venue-list.cso-selection-default-text' | translate"
-                       [(ngModel)]="selectedCsos" [closeOnSelect]="false"
-                       (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
-                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                    <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected" [attr.aria-label]="'CSO '+ item.first_name" />
-                    {{ item.full_name }}
-                </ng-template>
-            </ng-select>
-        </div>
-    </div>
+  </div>
 
-    <div *ngIf="isAdministrator && activeSessionsFeatureFlag" id="end-of-day-list" >
-        <div class="govuk-grid-column-full">
-            <p class="govuk-body">OR</p>
-        </div>
-        <div class="govuk-grid-column-three-quarters">
-            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input" id="active-sessions" name="active-sessions" type="checkbox" (change)="updateActiveSessionSelection()" [checked]="activeSessions">
-                  <label class="govuk-label govuk-checkboxes__label" for="active-sessions">
-                    Active sessions
-                  </label>
-                </div>
-              </div>
-        </div>
+  <div *ngIf="isAdministrator && activeSessionsFeatureFlag" id="end-of-day-list">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body">OR</p>
     </div>
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="active-sessions" name="active-sessions" type="checkbox"
+            (change)="updateActiveSessionSelection()" [checked]="activeSessions">
+          <label class="govuk-label govuk-checkboxes__label" for="active-sessions">
+            Active sessions
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="govuk-grid-column-one-quarter">
     <input type="button" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"
       id="select-venue-allocation-btn" class="govuk-button" />
   </div>
-    <div class="govuk-grid-column-full" *ngIf="errorMessage">
-        <p class="govuk-error-message">{{ errorMessage }}</p>
-    </div>
+  <div class="govuk-grid-column-full" *ngIf="errorMessage">
+    <p class="govuk-error-message">{{ errorMessage }}</p>
+  </div>
 </div>

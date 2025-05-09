@@ -13,6 +13,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     get showVhoSpecificContent() {
@@ -28,6 +29,7 @@ describe('VenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
     const logger: Logger = new MockLogger();
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
@@ -79,6 +81,7 @@ describe('VenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -93,11 +96,18 @@ describe('VenueListComponent', () => {
             vhoQueryService,
             logger,
             launchDarklyServiceSpy,
-            profileServiceSpy
+            profileServiceSpy,
+            translateServiceSpy
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.activeSessionFilter, jasmine.any(Boolean)).and.returnValue(of(true));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
+        translateServiceSpy.instant.and.callFake((key: string) => {
+            switch (key) {
+                case 'venue-list.allocation-list-label':
+                    return 'Venue selection list';
+            }
+        });
         component.csos = csos;
         venueSessionStorage.clear();
         csoSessionStorage.clear();
@@ -200,6 +210,27 @@ describe('VenueListComponent', () => {
             });
         }));
 
+        describe('onDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Venue selection list');
+                expect(listbox.getAttribute('title')).toBe('Venue selection list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
             input.setAttribute('aria-placeholder', 'Choose lists');

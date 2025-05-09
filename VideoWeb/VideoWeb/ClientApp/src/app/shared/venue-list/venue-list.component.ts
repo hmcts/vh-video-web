@@ -12,6 +12,7 @@ import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit, OnDestroy, AfterViewInit {
@@ -42,7 +43,8 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
         protected ldService: LaunchDarklyService,
-        protected profileService: ProfileService
+        protected profileService: ProfileService,
+        protected translateService: TranslateService
     ) {
         this.selectedVenues = [];
         this.selectedCsos = [];
@@ -80,6 +82,23 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
     ngOnDestroy(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
+    }
+
+    onDropdownOpen(): void {
+        setTimeout(() => {
+            const listbox1 = document.querySelector('.ng-dropdown-panel.ng-select-multiple.ng-select-bottom');
+            if (listbox1) {
+                listbox1.removeAttribute('role');
+            }
+
+            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
+            const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
+            if (listbox) {
+                listbox.setAttribute('aria-label', ariaLabel);
+                listbox.setAttribute('title', ariaLabel);
+                listbox.setAttribute('tabindex', '0');
+            }
+        });
     }
 
     updateVenueSelection() {

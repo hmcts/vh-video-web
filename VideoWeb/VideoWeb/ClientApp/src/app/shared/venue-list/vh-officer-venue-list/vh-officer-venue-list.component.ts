@@ -9,6 +9,7 @@ import { VenueListComponentDirective } from '../venue-list.component';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     standalone: false,
@@ -23,9 +24,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
         protected ldService: LaunchDarklyService,
-        protected profileService: ProfileService
+        protected profileService: ProfileService,
+        protected translateService: TranslateService
     ) {
-        super(videoWebService, router, vhoQueryService, logger, ldService, profileService);
+        super(videoWebService, router, vhoQueryService, logger, ldService, profileService, translateService);
     }
 
     get showVhoSpecificContent(): boolean {

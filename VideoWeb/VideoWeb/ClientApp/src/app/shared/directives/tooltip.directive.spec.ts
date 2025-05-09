@@ -270,7 +270,6 @@ describe('TooltipDirective', () => {
 
                 // Then
                 expect(directive._tooltipElements).toBeDefined();
-                expect(directive._tooltipElements.length).toBeGreaterThanOrEqual(0);
                 expect(directive._tooltipElements[0]).toBeUndefined();
                 expect(directive._tooltipElements[0]?.parentNode).toBeUndefined();
                 expect(directive._tooltipElements[0]?.innerHTML).toBeUndefined();
