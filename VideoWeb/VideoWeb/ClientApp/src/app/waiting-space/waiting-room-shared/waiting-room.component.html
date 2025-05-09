@@ -166,7 +166,7 @@
     
       <ng-container *appFeatureFlag="featureFlags.instantMessaging">
         <app-participant-chat
-          *ngIf="defineIsIMEnabled() && !isAdminConsultation && !showVideo"
+          *ngIf="defineIsIMEnabled() && !showVideo"
           [hearing]="hearing"
           [alwaysOn]="hearing.isInSession()"
         ></app-participant-chat>

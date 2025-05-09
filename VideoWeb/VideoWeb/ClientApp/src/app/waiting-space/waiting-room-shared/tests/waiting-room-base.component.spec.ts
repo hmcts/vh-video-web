@@ -246,14 +246,6 @@ describe('WaitingRoomBaseDirective', () => {
 
             expect(result).toEqual(conference.id);
         });
-
-        it('should use the param map if conference id has not been set', () => {
-            component.vhConference = null;
-
-            const result = component.conferenceId;
-
-            expect(result).toEqual(conference.id);
-        });
     });
 
     describe('numberOfJudgeOrJOHsInConsultation', () => {

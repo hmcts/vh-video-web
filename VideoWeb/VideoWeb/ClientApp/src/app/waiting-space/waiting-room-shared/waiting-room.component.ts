@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -61,7 +61,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
     private destroyedSubject = new Subject();
 
     constructor(
-        protected route: ActivatedRoute,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -83,7 +82,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         private readonly audioRecordingService: AudioRecordingService
     ) {
         super(
-            route,
             eventService,
             logger,
             errorService,

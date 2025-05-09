@@ -1,5 +1,5 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -67,7 +67,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     showVideo: boolean;
     isTransferringIn: boolean;
     isPrivateConsultation: boolean;
-    isAdminConsultation: boolean;
     showConsultationControls: boolean;
     displayDeviceChangeModal: boolean;
     displayStartPrivateConsultationModal: boolean;
@@ -96,7 +95,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
 
     protected constructor(
-        protected route: ActivatedRoute,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -117,7 +115,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .select(ConferenceSelectors.getAvailableRooms)
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(rooms => (this.conferenceRooms = rooms));
-        this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
         this.showConsultationControls = false;
@@ -143,10 +140,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get conferenceId(): string {
-        if (this.vhConference?.id) {
-            return this.vhConference.id;
-        }
-        return this.route.snapshot.paramMap.get('conferenceId');
+        return this.vhConference?.id;
     }
 
     get numberOfJudgeOrJOHsInConsultation(): number {
@@ -643,7 +637,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             this.displayDeviceChangeModal = false;
             this.setShowVideo(true);
             this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
+            this.showConsultationControls = true;
 
             return true;
         }

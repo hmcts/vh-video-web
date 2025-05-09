@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -30,7 +30,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
     @ViewChild('leaveButton', { static: true }) leaveButton: ElementRef;
 
     constructor(
-        protected route: ActivatedRoute,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -48,7 +47,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected videoCallEventsService: VideoCallEventsService
     ) {
         super(
-            route,
             eventService,
             logger,
             errorService,
