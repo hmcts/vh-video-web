@@ -4588,8 +4588,3 @@ PexRTCStatistics.prototype.getStats = function () {
         incoming: { audio: self.audio_in.getStats(), video: self.video_in.getStats(), presentation: self.preso_in.getStats() }
     };
 };
-
-//For debug purposes
-currentPexrtc = function () {
-    return 'vodafone';
-};

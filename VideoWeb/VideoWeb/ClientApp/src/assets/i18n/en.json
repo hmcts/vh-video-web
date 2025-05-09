@@ -1604,6 +1604,9 @@
     "close-button-aria-label": "Close Dial Out Participant Popup",
     "close-button": "Close"
   },
+  "service-banner": {
+    "title": "Release Notification"
+  },
   "interpreter-language": {
     "american-sign-language-(asl)": "American Sign Language (ASL)",
     "british-sign-language-(bsl)": "British Sign Language (BSL)",
