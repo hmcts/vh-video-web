@@ -133,7 +133,7 @@ export abstract class WRParticipantStatusListDirective implements OnChanges {
     }
 
     isWitness(participant: VHParticipant): boolean {
-        return participant.hearingRole === HearingRole.WITNESS;
+        return participant.hearingRole === HearingRole.WITNESS || participant.hearingRole === HearingRole.EXPERT;
     }
 
     hasInterpreterLink(participant: VHParticipant) {

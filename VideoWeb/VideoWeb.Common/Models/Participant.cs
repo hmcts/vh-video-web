@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VideoWeb.Common.Models
 {
     public class Participant
     {
+        private readonly string[] witnessRoles = { "witness", "expert" };
         public Participant()
         {
             LinkedParticipants = new List<LinkedParticipant>();
@@ -51,12 +53,12 @@ namespace VideoWeb.Common.Models
 
         public bool IsWitness()
         {
-            return HearingRole?.Trim().Equals("witness", StringComparison.CurrentCultureIgnoreCase) ?? false;
+            return HearingRole != null && witnessRoles.Contains(HearingRole.Trim(), StringComparer.CurrentCultureIgnoreCase);
         }
 
         public bool IsQuickLinkUser()
         {
-            return Role == Role.QuickLinkObserver || Role == Role.QuickLinkParticipant;
+            return Role is Role.QuickLinkObserver or Role.QuickLinkParticipant;
         }
         
         public bool IsObserver()

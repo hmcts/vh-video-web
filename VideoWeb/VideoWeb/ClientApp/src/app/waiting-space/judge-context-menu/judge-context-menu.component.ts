@@ -34,7 +34,7 @@ export class JudgeContextMenuComponent implements OnInit {
     }
 
     get isWitness(): boolean {
-        return this.participant.hearingRole === HearingRole.WITNESS;
+        return this.participant.hearingRole === HearingRole.WITNESS || this.participant.hearingRole === HearingRole.EXPERT;
     }
 
     get isPanelMember(): boolean {
