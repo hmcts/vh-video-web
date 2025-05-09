@@ -1529,6 +1529,18 @@ describe('WaitingRoomBaseDirective', () => {
             expect(component.showVideo).toBeTrue();
         });
 
+        it('should show video when participant is an expert and status is in hearing', () => {
+            spyOn(component, 'isOrHasWitnessLink').and.returnValue(true);
+            component.vhParticipant = {
+                hearingRole: HearingRole.EXPERT,
+                status: ParticipantStatus.InHearing
+            } as VHParticipant;
+
+            component.updateShowVideo();
+
+            expect(component.showVideo).toBeTrue();
+        });
+
         it('should show video when participant is a QL participant and status is in hearing', () => {
             spyOn(component, 'isOrHasWitnessLink').and.returnValue(false);
             component.vhParticipant = {
@@ -1704,6 +1716,12 @@ describe('WaitingRoomBaseDirective', () => {
 
         it('should return true if participant is a witness', () => {
             component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.WITNESS };
+            const result = component.isOrHasWitnessLink();
+            expect(result).toBeTrue();
+        });
+
+        it('should return true if participant is an expert', () => {
+            component.vhParticipant = { ...loggedInParticipant, hearingRole: HearingRole.EXPERT };
             const result = component.isOrHasWitnessLink();
             expect(result).toBeTrue();
         });

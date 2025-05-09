@@ -124,10 +124,22 @@ describe('ConsultationRules', () => {
         });
 
         describe('without screening', () => {
-            it('should return true if user is not judical, and participant is not allowed to be invited', () => {
+            it('should return true if user is not judical (Witness), and participant is not allowed to be invited', () => {
                 // Arrange
                 loggedInUser.role = Role.Individual;
                 targetParticipant.hearingRole = HearingRole.WITNESS;
+
+                // Act
+                const result = consultationRules.participantHasInviteRestrictions(targetParticipant, currentRoom, loggedInUser);
+
+                // Assert
+                expect(result).toBeTrue();
+            });
+
+            it('should return true if user is not judical (Expert), and participant is not allowed to be invited', () => {
+                // Arrange
+                loggedInUser.role = Role.Individual;
+                targetParticipant.hearingRole = HearingRole.EXPERT;
 
                 // Act
                 const result = consultationRules.participantHasInviteRestrictions(targetParticipant, currentRoom, loggedInUser);

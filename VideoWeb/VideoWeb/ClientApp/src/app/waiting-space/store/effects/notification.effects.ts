@@ -82,6 +82,7 @@ export class NotificationEffects {
                         !!loggedInParticipant &&
                         action.conferenceId === activeConference?.id &&
                         loggedInParticipant?.hearingRole !== HearingRole.WITNESS &&
+                        loggedInParticipant?.hearingRole !== HearingRole.EXPERT &&
                         (loggedInParticipant?.role === Role.Individual || loggedInParticipant?.role === Role.Representative)
                 ),
                 tap(([action, activeConference, loggedInParticipant]) => {
@@ -90,7 +91,9 @@ export class NotificationEffects {
                         const linkedParticipants = activeConference.participants.filter(p =>
                             loggedInParticipant.linkedParticipants.map(lp => lp.linkedId).includes(p.id)
                         );
-                        hasWitnessLink = linkedParticipants.some(p => p.hearingRole === HearingRole.WITNESS);
+                        hasWitnessLink = linkedParticipants.some(
+                            p => p.hearingRole === HearingRole.WITNESS || p.hearingRole === HearingRole.EXPERT
+                        );
                     }
 
                     const isQuickLinkUser =

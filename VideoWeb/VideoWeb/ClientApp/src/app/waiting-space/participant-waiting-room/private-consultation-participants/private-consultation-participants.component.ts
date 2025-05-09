@@ -96,7 +96,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     getConsultationParticipants(): ParticipantListItem[] {
         let participants = this.nonJudgeParticipants.filter(x => x.hearingRole !== HearingRole.INTERPRETER);
         if (this.isPrivateConsultation()) {
-            participants = participants.filter(x => x.hearingRole !== HearingRole.WITNESS);
+            participants = participants.filter(x => x.hearingRole !== HearingRole.WITNESS && x.hearingRole !== HearingRole.EXPERT);
         }
 
         return participants.map(c => this.mapResponseToListItem(c));

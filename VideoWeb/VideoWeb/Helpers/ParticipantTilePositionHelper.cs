@@ -21,6 +21,7 @@ namespace VideoWeb.Helpers
         {
             var prefix = "";
             var heartbeatMode = NoHeartbeat;
+            var hearingRole = participant.HearingRole?.ToLower().Trim();
             if (participant.Role == Role.Judge)
             {
                 prefix = "JUDGE";
@@ -31,7 +32,8 @@ namespace VideoWeb.Helpers
                 prefix = "CLERK";
                 heartbeatMode = Heartbeat;
             }
-            else if (participant.HearingRole?.ToLower().Trim() == "witness" || participant.Role == Role.QuickLinkObserver || participant.Role == Role.QuickLinkParticipant)
+            else if (hearingRole == "witness" || hearingRole == "expert" ||
+                     participant.Role == Role.QuickLinkObserver || participant.Role == Role.QuickLinkParticipant)
             {
                 prefix = "WITNESS";
             }

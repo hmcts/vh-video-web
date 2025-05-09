@@ -540,6 +540,9 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
+        if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.EXPERT.toUpperCase()) {
+            return true;
+        }
         if (!this.vhParticipant?.linkedParticipants.length) {
             return false;
         }

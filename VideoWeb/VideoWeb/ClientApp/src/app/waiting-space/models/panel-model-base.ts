@@ -78,7 +78,7 @@ export abstract class PanelModel {
     }
 
     get isWitness(): boolean {
-        return this.hearingRole === HearingRole.WITNESS;
+        return this.hearingRole === HearingRole.WITNESS || this.hearingRole === HearingRole.EXPERT;
     }
 
     get isQuickLinkUser(): boolean {
