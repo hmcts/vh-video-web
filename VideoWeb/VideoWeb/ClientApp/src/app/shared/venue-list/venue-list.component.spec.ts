@@ -106,6 +106,8 @@ describe('VenueListComponent', () => {
             switch (key) {
                 case 'venue-list.allocation-list-label':
                     return 'Venue selection list';
+                case 'venue-list.cso-selection-list-label':
+                    return 'Cso officer list';
             }
         });
         component.csos = csos;
@@ -210,8 +212,8 @@ describe('VenueListComponent', () => {
             });
         }));
 
-        describe('onDropdownOpen', () => {
-            it('should set aria-label, title, and tabindex attributes on the listbox', fakeAsync(() => {
+        describe('onVenueListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
                 // Arrange
                 const listbox = document.createElement('div');
                 listbox.classList.add('ng-dropdown-panel-items');
@@ -219,7 +221,7 @@ describe('VenueListComponent', () => {
                 document.body.appendChild(listbox);
 
                 // Act
-                component.onDropdownOpen();
+                component.onVenueListDropdownOpen();
                 tick();
 
                 // Assert
@@ -231,6 +233,73 @@ describe('VenueListComponent', () => {
                 document.body.removeChild(listbox);
             }));
         });
+
+        describe('onCsoListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onCsoListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Cso officer list');
+                expect(listbox.getAttribute('title')).toBe('Cso officer list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
+
+        describe('onVenueListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onVenueListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Venue selection list');
+                expect(listbox.getAttribute('title')).toBe('Venue selection list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
+
+        describe('onCsoListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onCsoListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Cso officer list');
+                expect(listbox.getAttribute('title')).toBe('Cso officer list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
+
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
             input.setAttribute('aria-placeholder', 'Choose lists');

@@ -84,21 +84,15 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         this.onDestroy$.complete();
     }
 
-    onDropdownOpen(): void {
-        setTimeout(() => {
-            const listbox1 = document.querySelector('.ng-dropdown-panel.ng-select-multiple.ng-select-bottom');
-            if (listbox1) {
-                listbox1.removeAttribute('role');
-            }
+    onVenueListDropdownOpen(): void {
+        const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
+        this.setAriaLabel(ariaLabel);
+    }
 
-            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
-            const ariaLabel = this.translateService.instant('venue-list.allocation-list-label');
-            if (listbox) {
-                listbox.setAttribute('aria-label', ariaLabel);
-                listbox.setAttribute('title', ariaLabel);
-                listbox.setAttribute('tabindex', '0');
-            }
-        });
+    onCsoListDropdownOpen(): void {
+        const key = 'venue-list.cso-selection-list-label'; // copied directly from en.json
+        const ariaLabel = this.translateService.instant(key);
+        this.setAriaLabel(ariaLabel);
     }
 
     updateVenueSelection() {
@@ -153,6 +147,22 @@ export abstract class VenueListComponentDirective implements OnInit, OnDestroy, 
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
         return loggedInCso;
+    }
+
+    private setAriaLabel(ariaLabel: string) {
+        setTimeout(() => {
+            const listbox1 = document.querySelector('.ng-dropdown-panel.ng-select-multiple.ng-select-bottom');
+            if (listbox1) {
+                listbox1.removeAttribute('role');
+            }
+
+            const listbox = document.querySelector('.ng-dropdown-panel-items[role="listbox"]');
+            if (listbox) {
+                listbox.setAttribute('aria-label', ariaLabel);
+                listbox.setAttribute('title', ariaLabel);
+                listbox.setAttribute('tabindex', '0');
+            }
+        });
     }
 
     private setupSubscribers() {
