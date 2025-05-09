@@ -14,6 +14,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     get showVhoSpecificContent() {
@@ -256,6 +257,51 @@ describe('VenueListComponent', () => {
             }));
         });
 
+        describe('onVenueListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the venue listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onVenueListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Venue selection list');
+                expect(listbox.getAttribute('title')).toBe('Venue selection list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
+
+        describe('onCsoListDropdownOpen', () => {
+            it('should set aria-label, title, and tabindex attributes on the Cso listbox', fakeAsync(() => {
+                // Arrange
+                const listbox = document.createElement('div');
+                listbox.classList.add('ng-dropdown-panel-items');
+                listbox.setAttribute('role', 'listbox');
+                document.body.appendChild(listbox);
+
+                // Act
+                component.onCsoListDropdownOpen();
+                tick();
+
+                // Assert
+                expect(listbox.getAttribute('aria-label')).toBe('Cso officer list');
+                expect(listbox.getAttribute('title')).toBe('Cso officer list');
+                expect(listbox.getAttribute('tabindex')).toBe('0');
+
+                // Cleanup
+                document.body.removeChild(listbox);
+            }));
+        });
+
+        
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
             input.setAttribute('aria-placeholder', 'Choose lists');
