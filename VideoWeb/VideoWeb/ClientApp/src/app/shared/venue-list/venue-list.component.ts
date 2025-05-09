@@ -13,7 +13,6 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { TranslateService } from '@ngx-translate/core';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit, OnDestroy, AfterViewInit {

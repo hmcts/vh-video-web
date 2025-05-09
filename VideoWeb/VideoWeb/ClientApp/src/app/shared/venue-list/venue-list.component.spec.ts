@@ -14,7 +14,6 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { TranslateService } from '@ngx-translate/core';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     get showVhoSpecificContent() {
@@ -301,7 +300,6 @@ describe('VenueListComponent', () => {
             }));
         });
 
-        
         function createListElement(): HTMLInputElement {
             const input = document.createElement('input');
             input.setAttribute('aria-placeholder', 'Choose lists');
