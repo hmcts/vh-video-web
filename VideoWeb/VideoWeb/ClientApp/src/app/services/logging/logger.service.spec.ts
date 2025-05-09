@@ -1,126 +1,56 @@
-import { fakeAsync, flush } from '@angular/core/testing';
 import { LoggerService } from './logger.service';
 import { LogAdapter } from './log-adapter';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { of } from 'rxjs';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
+import { createMockStore, MockStore } from '@ngrx/store/testing';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { mapConferenceToVHConference } from 'src/app/waiting-space/store/models/api-contract-to-state-model-mappers';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 describe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
     let service: LoggerService;
-    let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
-    let activatedRouteFirstChildSpy: jasmine.SpyObj<ActivatedRoute>;
-    let routerSpy: jasmine.SpyObj<Router>;
-    let eventsSubject: Subject<Event>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
+    const conference = new ConferenceTestData().getConferenceDetailNow();
+    let mockConferenceStore: MockStore<ConferenceState>;
+
     beforeEach(() => {
-        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], ['events']);
-        eventsSubject = new Subject<Event>();
-        getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
+        let testConference = mapConferenceToVHConference(conference);
+        mockConferenceStore = createMockStore({
+            initialState: { currentConference: testConference, availableRooms: [] }
+        });
+
+        mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, testConference);
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.enableDebugLogs, false).and.returnValue(of(false));
 
-        activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
-        activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
-
-        getSpiedPropertyGetter(activatedRouteSpy, 'firstChild').and.returnValue(activatedRouteFirstChildSpy);
-
         logAdapter = jasmine.createSpyObj<LogAdapter>(['debug', 'trackException', 'trackEvent', 'info']);
 
-        service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy, launchDarklyServiceSpy);
+        service = new LoggerService([logAdapter], mockConferenceStore, launchDarklyServiceSpy);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should set the conference ID to what it is in the param map', fakeAsync(() => {
-        // Arrange
-        const conferenceId = 'conference-id';
-        const routeSnapshot = new ActivatedRouteSnapshot();
-        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshot);
-        spyOnProperty(routeSnapshot, 'paramMap', 'get').and.returnValue(
-            convertToParamMap({
-                conferenceId: conferenceId
-            })
-        );
+    describe('no conference id', () => {
+        it('should handle no conference in the store', () => {
+            // Arrange
+            mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, undefined);
 
-        // Act
-        eventsSubject.next(new NavigationEnd(null, null, null));
-        flush();
+            // Act
+            mockConferenceStore.refreshState();
 
-        // Assert
-        expect(service.currentConferenceId).toEqual(conferenceId);
-    }));
-
-    it('should update the conference ID to what it is in the param map when a second nav end happens', fakeAsync(() => {
-        // Arrange
-        const oldConferenceId = 'old-conference-id';
-        const newConferenceId = 'conference-id';
-        const routeSnapshot = new ActivatedRouteSnapshot();
-        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshot);
-        const paramMapSpy = spyOnProperty(routeSnapshot, 'paramMap', 'get');
-        paramMapSpy.and.returnValue(
-            convertToParamMap({
-                conferenceId: oldConferenceId
-            })
-        );
-
-        eventsSubject.next(new NavigationEnd(null, null, null));
-        flush();
-
-        paramMapSpy.and.returnValue(
-            convertToParamMap({
-                conferenceId: newConferenceId
-            })
-        );
-
-        // Act
-        eventsSubject.next(new NavigationEnd(null, null, null));
-        flush();
-
-        // Assert
-        expect(service.currentConferenceId).toEqual(newConferenceId);
-    }));
-
-    it('set conference id conference id to null if it is not in the param map', fakeAsync(() => {
-        // Arrange
-        const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
-            'ActivatedRouteSnapshot',
-            ['toString'],
-            ['firstChild', 'paramMap']
-        );
-        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
-        getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(convertToParamMap({}));
-
-        // Act
-        eventsSubject.next(new NavigationEnd(null, null, null));
-        flush();
-
-        // Assert
-        expect(service.currentConferenceId).toEqual(null);
-    }));
+            // Assert
+            expect(service.currentConferenceId).toBeNull();
+        });
+    });
 
     describe('logging methods', () => {
-        const conferenceId = 'conference-id';
-        beforeEach(fakeAsync(() => {
-            const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
-                'ActivatedRouteSnapshot',
-                ['toString'],
-                ['firstChild', 'paramMap']
-            );
-            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
-            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(
-                convertToParamMap({
-                    conferenceId: conferenceId
-                })
-            );
-            eventsSubject.next(new NavigationEnd(null, null, null));
-            flush();
-        }));
+        const conferenceId = conference.id;
 
         it('should log events to all adapters', () => {
             // Arrange
@@ -236,7 +166,6 @@ describe('LoggerService', () => {
     it('should log pexRtcInfo', () => {
         // Arrange
         const conferenceId = 'conference-id';
-        const properties = {};
 
         service.currentConferenceId = conferenceId;
 

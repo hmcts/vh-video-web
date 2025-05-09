@@ -1,10 +1,11 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
 import { environment } from 'src/environments/environment';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../launch-darkly.service';
+import { ConferenceState } from 'src/app/waiting-space/store/reducers/conference.reducer';
+import { Store } from '@ngrx/store';
+import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 
 export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 
@@ -20,22 +21,15 @@ export class LoggerService implements Logger {
 
     constructor(
         @Inject(LOG_ADAPTER) private adapters: LogAdapter[],
-        router: Router,
-        activatedRoute: ActivatedRoute,
+        conferenceStore: Store<ConferenceState>,
         ldService: LaunchDarklyService
     ) {
         ldService.getFlag<boolean>(FEATURE_FLAGS.enableDebugLogs, false).subscribe(enableDebugLogs => {
             this.enableDebugLogs = enableDebugLogs;
         });
-        router.events
-            .pipe(
-                filter(x => x instanceof NavigationEnd),
-                map(() => activatedRoute.snapshot),
-                map(this.getConferenceIdFromRoute)
-            )
-            .subscribe(paramMap => {
-                this.currentConferenceId = paramMap?.get('conferenceId') ?? null;
-            });
+        conferenceStore.select(ConferenceSelectors.getActiveConference).subscribe(conference => {
+            this.currentConferenceId = conference?.id ?? null;
+        });
         this.higherLevelLogsOnly = environment.production;
     }
     addUserIdToLogger(userId: string) {
@@ -85,13 +79,5 @@ export class LoggerService implements Logger {
     event(event: string, properties?: any) {
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackEvent(event, properties));
-    }
-
-    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
-        while (route && !route.paramMap?.has('conferenceId')) {
-            route = route?.firstChild;
-        }
-
-        return route?.paramMap;
     }
 }
