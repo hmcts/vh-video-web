@@ -1372,7 +1372,8 @@
     "selection-button-text": "Gweld gwrandawiadau",
     "label": "Enw'r lleoliad {{name}}",
     "allocation-list-label": "Rhestr lleoliadau",
-    "cso-selection-default-text": "Dewiswch swyddog neu swyddogion"
+    "cso-selection-default-text": "Dewiswch swyddog neu swyddogion",
+    "cso-selection-list-label": "Cso rhestr swyddogion"
   },
   "app": {
     "skip-to-main-content": "Ymlaen i'r prif gynnwys"

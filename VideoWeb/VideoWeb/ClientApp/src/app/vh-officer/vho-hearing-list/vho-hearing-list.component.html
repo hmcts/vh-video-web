@@ -4,8 +4,8 @@
   </div>
 </div>
 <div id="conference-list" class="govuk-!-padding-3">
-  <div
-    onkeydown=""
+  <button
+    tabindex="0"
     class="vhList govuk-!-padding-top-2"
     [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
     *ngFor="let conference of conferences; trackBy: trackConference"
@@ -17,14 +17,14 @@
       <span class="copyTooltip" id="{{ conference.id }}-copyTooltip">
         <fa-icon icon="link" class="copy-links-wrapper" aria-hidden="true"></fa-icon>
         <span class="copyTooltipText" id="{{ conference.id }}-copyTooltipText">
-          <div><app-copy-id [conference]="conference"></app-copy-id></div>
-          <div><app-copy-quick-link [conferenceId]="conference.id" [hearingId]="conference.hearingRefId"></app-copy-quick-link></div>
-          <div *ngIf="conference.isJoinByPhone">
+          <app-copy-id [conference]="conference"></app-copy-id>
+          <app-copy-quick-link [conferenceId]="conference.id" [hearingId]="conference.hearingRefId"></app-copy-quick-link>
+          <ng-container *ngIf="conference.isJoinByPhone">
             <app-copy-telephone-id
               [telephoneId]="conference.telephoneConferenceId"
               [telephoneNumbers]="conference.telephoneConferenceNumbers"
             ></app-copy-telephone-id>
-          </div>
+          </ng-container>
         </span>
       </span>
     </div>
@@ -63,5 +63,5 @@
       </div>
     </div>
     <div [ngClass]="{ 'line-down': true }"><hr /></div>
-  </div>
+  </button>
 </div>

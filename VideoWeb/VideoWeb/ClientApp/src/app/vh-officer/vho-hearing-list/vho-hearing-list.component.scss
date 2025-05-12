@@ -21,6 +21,7 @@
 .selected-conference {
   background: govuk-colour('light-grey');
   border-left: 12px solid govuk-colour('black');
+  width: 105%;
 }
 
 .report-conference {
@@ -151,6 +152,7 @@
   margin: -15px -15px 5px -15px;
   padding: 15px 15px 0px 15px;
   cursor: pointer;
+  width: 100%;
 }
 .selected {
   background-color: govuk-colour('light-grey');
@@ -331,4 +333,8 @@
 
 .copy-links-wrapper {
   z-index: 2;
+}
+
+#conference-list {
+  width: 100%;
 }
