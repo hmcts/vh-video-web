@@ -1,10 +1,9 @@
 import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, combineLatest, of } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConsultationAnswer, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -25,11 +24,9 @@ import {
 } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { Title } from '@angular/platform-browser';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { convertStringToTranslationId } from 'src/app/shared/translation-id-converter';
@@ -37,20 +34,19 @@ import { ConferenceState } from '../store/reducers/conference.reducer';
 import { Store } from '@ngrx/store';
 import { VHConference, VHEndpoint, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
-import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../services/video-call-events.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
-    instantMessagingEnabled = false;
-
     maxBandwidth = null;
     audioOnly: boolean;
-    hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
     loadingData: boolean;
     errorCount: number;
@@ -67,12 +63,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     connected: boolean;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
-    streamInMain = false;
 
     showVideo: boolean;
     isTransferringIn: boolean;
     isPrivateConsultation: boolean;
-    isAdminConsultation: boolean;
     showConsultationControls: boolean;
     displayDeviceChangeModal: boolean;
     displayStartPrivateConsultationModal: boolean;
@@ -80,19 +74,13 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     conferenceStartedBy: string;
     phoneNumber$: Observable<string>;
     hasCaseNameOverflowed = false;
+    featureFlags = FEATURE_FLAGS;
 
     divTrapId: string;
-
-    panelTypes = ['Participants', 'Chat'];
-    panelStates = {
-        Participants: true,
-        Chat: false
-    };
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: ReturnType<typeof setTimeout> | number;
 
-    loggedInUser: LoggedParticipantResponse;
     contactDetails = vhContactDetails;
 
     countdownComplete: boolean;
@@ -107,8 +95,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
 
     protected constructor(
-        protected route: ActivatedRoute,
-        protected videoWebService: VideoWebService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected errorService: ErrorService,
@@ -116,29 +102,19 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
-        protected launchDarklyService: LaunchDarklyService,
-        protected store: Store<ConferenceState>
+        protected store: Store<ConferenceState>,
+        protected videoCallEventsService: VideoCallEventsService
     ) {
-        this.launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.instantMessaging, false)
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(flag => {
-                this.instantMessagingEnabled = flag;
-            });
-
         this.store
             .select(ConferenceSelectors.getAvailableRooms)
             .pipe(takeUntil(this.onDestroy$))
             .subscribe(rooms => (this.conferenceRooms = rooms));
-        this.isAdminConsultation = false;
         this.loadingData = true;
         this.setShowVideo(false);
         this.showConsultationControls = false;
@@ -164,10 +140,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     get conferenceId(): string {
-        if (this.vhConference?.id) {
-            return this.vhConference.id;
-        }
-        return this.route.snapshot.paramMap.get('conferenceId');
+        return this.vhConference?.id;
     }
 
     get numberOfJudgeOrJOHsInConsultation(): number {
@@ -179,27 +152,18 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         ).length;
     }
 
-    get isChatVisible() {
-        return this.panelStates['Chat'];
-    }
-
-    get areParticipantsVisible() {
-        return this.panelStates['Participants'];
-    }
-
     get isSupportedBrowserForNetworkHealth(): boolean {
-        if (!this.deviceTypeService.isSupportedBrowser()) {
-            return false;
-        }
-        const unsupportedBrowsers = ['MS-Edge'];
-        const browser = this.deviceTypeService.getBrowserName();
-        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
+        return this.deviceTypeService.isSupportedBrowserForNetworkHealth();
     }
 
     get isParticipantInConference(): boolean {
         return (
             this.vhParticipant?.status === ParticipantStatus.InHearing || this.vhParticipant?.status === ParticipantStatus.InConsultation
         );
+    }
+
+    get isStaffMember(): boolean {
+        return ParticipantHelper.isStaffMember(this.vhParticipant);
     }
 
     ngAfterContentChecked(): void {
@@ -257,17 +221,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     stringToTranslateId(str: string) {
         return convertStringToTranslationId(str);
-    }
-
-    togglePanel(panelName: string) {
-        const newState = !this.panelStates[panelName];
-        if (newState) {
-            this.panelTypes.forEach(pt => {
-                this.panelStates[pt] = false;
-            });
-        }
-
-        this.panelStates[panelName] = newState;
     }
 
     getCaseNameAndNumber() {
@@ -537,7 +490,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.vhParticipant?.hearingRole.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.vhParticipant?.hearingRole?.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
         if (!this.vhParticipant?.linkedParticipants.length) {
@@ -684,7 +637,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             this.displayDeviceChangeModal = false;
             this.setShowVideo(true);
             this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
+            this.showConsultationControls = true;
 
             return true;
         }
@@ -781,7 +734,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(time => {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
-                this.checkIfHearingIsStarting();
                 this.showRoomClosingToast(time);
             });
     }
@@ -801,17 +753,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
-    checkIfHearingIsStarting(): void {
-        if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
-            this.announceHearingIsAboutToStart();
-        }
-    }
-
-    announceHearingIsAboutToStart(): void {
-        this.hearingStartingAnnounced = true;
-        this.notificationSoundsService.playHearingAlertSound();
-    }
-
     closeAllPCModals(): void {
         this.consultationService.clearModals();
     }
@@ -821,10 +762,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         // focusing on the button
         const elm = document.getElementById(this.CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT);
         elm?.focus();
-    }
-
-    switchStreamWindows(): void {
-        this.streamInMain = !this.streamInMain;
     }
 
     videoClosedExt() {
