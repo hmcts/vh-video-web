@@ -7,6 +7,7 @@ namespace VideoWeb.Common.Models
     public class Participant
     {
         private readonly string[] witnessRoles = { "witness", "expert" };
+        
         public Participant()
         {
             LinkedParticipants = new List<LinkedParticipant>();
