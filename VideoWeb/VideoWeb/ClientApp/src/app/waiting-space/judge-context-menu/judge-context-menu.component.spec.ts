@@ -138,6 +138,11 @@ describe('JudgeContextMenuComponent', () => {
             expect(component.isWitness).toBeTruthy();
         });
 
+        it('should return true when hearing role is expert', () => {
+            component.participant.hearingRole = HearingRole.EXPERT;
+            expect(component.isWitness).toBeTruthy();
+        });
+
         it('should return false when hearing role is not witness', () => {
             component.participant.hearingRole = HearingRole.APPELLANT;
             expect(component.isWitness).toBeFalsy();

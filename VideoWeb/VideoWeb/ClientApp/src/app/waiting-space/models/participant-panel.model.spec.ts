@@ -104,7 +104,7 @@ describe('ParticipantPanelModel', () => {
         });
 
         describe('isWitness', () => {
-            const validHearingRoles = [HearingRole.WITNESS];
+            const validHearingRoles = [HearingRole.WITNESS, HearingRole.EXPERT];
 
             Object.keys(HearingRole).forEach(hearingRoleString => {
                 const testHearingRole = HearingRole[hearingRoleString];

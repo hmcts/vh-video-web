@@ -413,6 +413,15 @@ describe('WaitingRoomComponent', () => {
                 expect(component.canStartJoinConsultation).toBeFalse();
             });
 
+            it('should return false if the participant is an expert', () => {
+                component.vhParticipant = {
+                    ...loggedInParticipant,
+                    hearingRole: HearingRole.EXPERT,
+                    linkedParticipants: []
+                };
+                expect(component.canStartJoinConsultation).toBeFalse();
+            });
+
             it('should return false if the participant is an observer', () => {
                 component.vhParticipant = {
                     ...loggedInParticipant,
