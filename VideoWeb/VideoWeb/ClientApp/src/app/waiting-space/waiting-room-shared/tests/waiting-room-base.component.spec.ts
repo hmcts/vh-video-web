@@ -40,23 +40,20 @@ import {
     eventsService,
     initAllWRDependencies,
     launchDarklyService,
-    notificationSoundsService,
     notificationToastrService,
     participantsLinked,
     roomClosingToastrService,
     router,
-    titleService,
     videoCallService,
-    videoWebService
+    videoWebService,
+    videoCallEventsService
 } from './waiting-room-base-setup';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { Title } from '@angular/platform-browser';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
@@ -83,6 +80,8 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { HearingRole } from '../../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ElementRef } from '@angular/core';
+import { ParticipantHelper } from 'src/app/shared/participant-helper';
+import { VideoCallEventsService } from '../../services/video-call-events.service';
 
 describe('WaitingRoomBaseDirective', () => {
     const testData = new ConferenceTestData();
@@ -100,7 +99,6 @@ describe('WaitingRoomBaseDirective', () => {
     let mockEventsService = eventsService;
     let mockErrorService = errorService;
     let mockConsultationService = consultationService;
-    let mockNotificationSoundsService = notificationSoundsService;
     let mockNotificationToastrService = notificationToastrService;
     let mockDeviceTypeService = deviceTypeService;
     let mockRoomClosingToastrService = roomClosingToastrService;
@@ -108,8 +106,8 @@ describe('WaitingRoomBaseDirective', () => {
     let mockClockService;
     const clockSubject = new Subject<Date>();
     let mockConsultationInvitiationService = consultationInvitiationService;
-    let mockTitleService = titleService;
     let mockLaunchDarklyService = launchDarklyService;
+    const mockVideoCallEventsService = videoCallEventsService;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -125,7 +123,6 @@ describe('WaitingRoomBaseDirective', () => {
         mockEventsService = eventsService;
         mockErrorService = errorService;
         mockConsultationService = consultationService;
-        mockNotificationSoundsService = notificationSoundsService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
         mockRoomClosingToastrService = roomClosingToastrService;
@@ -133,7 +130,6 @@ describe('WaitingRoomBaseDirective', () => {
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
         mockConsultationInvitiationService = consultationInvitiationService;
-        mockTitleService = titleService;
         mockLaunchDarklyService = launchDarklyService;
     });
 
@@ -172,15 +168,14 @@ describe('WaitingRoomBaseDirective', () => {
                 { provide: ErrorService, useValue: mockErrorService },
                 { provide: VideoCallService, useValue: mockVideoCallService },
                 { provide: ConsultationService, useValue: mockConsultationService },
-                { provide: NotificationSoundsService, useValue: mockNotificationSoundsService },
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
                 { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
-                { provide: Title, useValue: mockTitleService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
+                { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
         }).compileComponents();
@@ -251,14 +246,6 @@ describe('WaitingRoomBaseDirective', () => {
 
             expect(result).toEqual(conference.id);
         });
-
-        it('should use the param map if conference id has not been set', () => {
-            component.vhConference = null;
-
-            const result = component.conferenceId;
-
-            expect(result).toEqual(conference.id);
-        });
     });
 
     describe('numberOfJudgeOrJOHsInConsultation', () => {
@@ -281,54 +268,6 @@ describe('WaitingRoomBaseDirective', () => {
             const result = component.numberOfJudgeOrJOHsInConsultation;
 
             expect(result).toBe(1);
-        });
-    });
-
-    describe('togglePanel', () => {
-        const participantPanelName = 'Participants';
-        const chatPanelName = 'Chat';
-
-        it('should toggle panel from false to true', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = false;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(participantPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(true);
-            expect(component.panelStates.Chat).toBe(false);
-
-            expect(component.areParticipantsVisible).toBeTrue();
-        });
-
-        it('should toggle panel from false to true and reset any existing true to false', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = true;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(participantPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(false);
-            expect(component.panelStates.Chat).toBe(false);
-            expect(component.areParticipantsVisible).toBeFalse();
-        });
-
-        it('should toggle panel and chat panel should be visible', () => {
-            // Arrange
-            component.panelStates[participantPanelName] = true;
-            component.panelStates[chatPanelName] = false;
-
-            // Act
-            component.togglePanel(chatPanelName);
-
-            // Assert
-            expect(component.panelStates.Participants).toBe(false);
-            expect(component.panelStates.Chat).toBe(true);
-            expect(component.areParticipantsVisible).toBeFalse();
         });
     });
 
@@ -1187,17 +1126,6 @@ describe('WaitingRoomBaseDirective', () => {
                 expect(component.presentationStream).toBe(null);
                 expect(videoCallService.stopPresentation).toHaveBeenCalled();
             });
-
-            it('should switch stream windows', () => {
-                // ToTrue
-                component.streamInMain = false;
-                component.switchStreamWindows();
-                expect(component.streamInMain).toBeTrue();
-
-                // ToFalse
-                component.switchStreamWindows();
-                expect(component.streamInMain).toBeFalse();
-            });
         });
 
         describe('handleCallSetup', () => {
@@ -1338,39 +1266,13 @@ describe('WaitingRoomBaseDirective', () => {
     });
 
     describe('isSupportedBrowserForNetworkHealth', () => {
-        describe('VH Supports Web Browser', () => {
-            beforeEach(() => {
-                mockDeviceTypeService.isSupportedBrowser.and.returnValue(true);
-            });
+        const testCases = [true, false];
 
-            it('should return false when network health is not supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('MS-Edge');
-
+        testCases.forEach(test => {
+            it(`should return ${test} when device type service returns ${test}`, () => {
+                mockDeviceTypeService.isSupportedBrowserForNetworkHealth.and.returnValue(test);
                 const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeFalse();
-            });
-
-            it('should return true when network health is supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('Chrome');
-
-                const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeTrue();
-            });
-        });
-
-        describe('VH Does not Support Web Browser', () => {
-            beforeEach(() => {
-                mockDeviceTypeService.isSupportedBrowser.and.returnValue(false);
-            });
-
-            it('should return false when network health is not supported', () => {
-                mockDeviceTypeService.getBrowserName.and.returnValue('MS Edge');
-
-                const result = component.isSupportedBrowserForNetworkHealth;
-
-                expect(result).toBeFalse();
+                expect(result).toBe(test);
             });
         });
     });
@@ -1602,19 +1504,6 @@ describe('WaitingRoomBaseDirective', () => {
         beforeEach(() => {
             component.subscribeToClock();
         });
-
-        it('should announce hearing is about to start', fakeAsync(() => {
-            component.hearingStartingAnnounced = false;
-            mockNotificationSoundsService.playHearingAlertSound.calls.reset();
-            spyOn(component.hearing, 'isStarting').and.returnValue(true);
-
-            clockSubject.next(new Date());
-            tick();
-
-            expect(component.currentTime).toBeDefined();
-            expect(component.hearingStartingAnnounced).toBeTrue();
-            expect(mockNotificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        }));
 
         it('should navigate user back to the home page when hearing is closed for an extended period', fakeAsync(() => {
             spyOn(component.hearing, 'isPastClosedTime').and.returnValue(true);
@@ -1883,6 +1772,18 @@ describe('WaitingRoomBaseDirective', () => {
             expect(findParticipantSpy).not.toHaveBeenCalled();
             expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
             expect(invitation.activeToast).toBeNull();
+        });
+    });
+
+    describe('isStaffMember', () => {
+        const testCases = [true, false];
+
+        testCases.forEach(test => {
+            it(`should return ${test} when helper returns ${test}`, () => {
+                spyOn(ParticipantHelper, 'isStaffMember').and.returnValue(test);
+                const result = component.isStaffMember;
+                expect(result).toBe(test);
+            });
         });
     });
 });

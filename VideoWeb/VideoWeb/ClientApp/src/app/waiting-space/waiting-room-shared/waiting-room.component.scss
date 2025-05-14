@@ -1,0 +1,36 @@
+@import 'govuk-frontend/dist/govuk/base';
+@import 'abstracts';
+
+.govuk-button-blue {
+  background: govuk-colour('blue');
+}
+.govuk-button-blue:hover {
+  background: govuk-colour('dark-blue');
+}
+
+.right-align-text {
+  text-align: right;
+}
+
+.audio-icon {
+  height: 24px;
+  padding-top: 1px;
+}
+
+.vh-left {
+  margin-left: 1px;
+}
+
+.hearing-monitor-container {
+  margin-bottom: 25px;
+}
+
+.vh-btn-text {
+  font-size: 24px;
+}
+
+@media only screen and (max-width: 1024px) {
+  .vh-btn-text {
+    font-size: 18px !important;
+  }
+}

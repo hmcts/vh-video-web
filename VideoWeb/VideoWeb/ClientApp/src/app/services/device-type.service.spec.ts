@@ -1,4 +1,4 @@
-import { DeviceDetectorService } from 'ngx-device-detector';
+import { DeviceDetectorService, OS } from 'ngx-device-detector';
 import { browsers } from '../shared/browser.constants';
 import { DeviceTypeService } from './device-type.service';
 
@@ -180,6 +180,55 @@ describe('DeviceType', () => {
             deviceDetectorService.browser = test.browser;
             deviceDetectorService.device = 'iPhone';
             expect(service.isSupportedBrowser()).toBe(test.expected);
+        });
+    });
+
+    describe('isSupportedBrowserForNetworkHealth', () => {
+        beforeEach(() => {
+            deviceDetectorService.isDesktop.and.returnValue(true);
+            deviceDetectorService.os = OS.IOS;
+        });
+
+        describe('VH supports web browser', () => {
+            it('should return false when network health is not supported', () => {
+                deviceDetectorService.browser = browsers.MSEdge;
+                const result = service.isSupportedBrowserForNetworkHealth();
+                expect(result).toBeFalse();
+            });
+
+            it('should return true when network health is supported', () => {
+                deviceDetectorService.browser = browsers.Chrome;
+                const result = service.isSupportedBrowserForNetworkHealth();
+                expect(result).toBeTrue();
+            });
+        });
+
+        describe('VH does not support web browser', () => {
+            it('should return false when network health is not supported', () => {
+                deviceDetectorService.browser = 'Unsupported browser';
+                const result = service.isSupportedBrowserForNetworkHealth();
+                expect(result).toBeFalse();
+            });
+        });
+    });
+
+    describe('isHandheldIOSDevice', () => {
+        it('should return true when device is iPhone', () => {
+            deviceDetectorService.isMobile.and.returnValue(true);
+            deviceDetectorService.os = OS.IOS;
+            expect(service.isHandheldIOSDevice()).toBeTrue();
+        });
+
+        it('should return true when device is iPad', () => {
+            deviceDetectorService.isTablet.and.returnValue(true);
+            deviceDetectorService.os = OS.IOS;
+            expect(service.isHandheldIOSDevice()).toBeTrue();
+        });
+
+        it('should return false when device is not iPhone or iPad', () => {
+            deviceDetectorService.isMobile.and.returnValue(false);
+            deviceDetectorService.isTablet.and.returnValue(false);
+            expect(service.isHandheldIOSDevice()).toBeFalse();
         });
     });
 });
