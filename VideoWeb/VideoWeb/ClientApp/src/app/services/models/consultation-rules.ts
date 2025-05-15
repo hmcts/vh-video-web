@@ -37,6 +37,7 @@ export class ConsultationRules {
             switch (participant.hearingRole) {
                 case HearingRole.WINGER:
                 case HearingRole.WITNESS:
+                case HearingRole.EXPERT:
                 case HearingRole.OBSERVER:
                 case HearingRole.JUDGE:
                 case HearingRole.STAFF_MEMBER:

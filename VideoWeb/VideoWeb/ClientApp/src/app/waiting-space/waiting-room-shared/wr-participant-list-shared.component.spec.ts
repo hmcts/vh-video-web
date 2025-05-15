@@ -122,6 +122,12 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.isWitness(pat)).toBeTruthy();
     });
 
+    it('should return true when participant hearing role is Expert', () => {
+        const pat = jasmine.createSpyObj<VHParticipant>('VHParticipant', ['hearingRole']);
+        pat.hearingRole = HearingRole.EXPERT;
+        expect(component.isWitness(pat)).toBeTruthy();
+    });
+
     const participantAvailableTestCases = [
         { status: ParticipantStatus.Available, expected: true },
         { status: ParticipantStatus.Disconnected, expected: false },

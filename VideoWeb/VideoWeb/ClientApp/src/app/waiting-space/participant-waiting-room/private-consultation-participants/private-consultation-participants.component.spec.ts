@@ -264,6 +264,16 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getConsultationParticipants().length).toBe(1);
     });
 
+    it('should not get expert', () => {
+        component.roomLabel = 'participantconsultationroom134';
+        const participants = new ConferenceTestData().getListOfParticipants().map(x => mapParticipantToVHParticipant(x));
+        const expert = participants[0];
+        expert.hearingRole = HearingRole.EXPERT;
+        const representative = participants[1];
+        component.nonJudgeParticipants = [expert, representative];
+        expect(component.getConsultationParticipants().length).toBe(1);
+    });
+
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
         component.conference.participants = [
