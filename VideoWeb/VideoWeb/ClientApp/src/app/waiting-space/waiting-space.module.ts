@@ -71,6 +71,7 @@ import { PrivateConsultationDescriptionComponent } from './private-consultation-
 import { VideoCallComponent } from './video-call/video-call.component';
 import { TransferMessageComponent } from './transfer-message/transfer-message.component';
 import { VideoCallEventsService } from './services/video-call-events.service';
+import { AudioRecordingEffects } from './store/effects/audio-recording.effects';
 
 @NgModule({
     imports: [
@@ -82,6 +83,7 @@ import { VideoCallEventsService } from './services/video-call-events.service';
         EffectsModule.forFeature([
             ConferenceEffects,
             VideoCallEffects,
+            AudioRecordingEffects,
             VideoCallHostEffects,
             ReferenceDataEffects,
             NotificationEffects,

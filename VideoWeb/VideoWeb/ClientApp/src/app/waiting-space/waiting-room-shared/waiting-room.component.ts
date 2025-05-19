@@ -32,7 +32,7 @@ import { VideoCallEventsService } from '../services/video-call-events.service';
 import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 import { CallError } from '../models/video-call-models';
-import { getCountdownComplete } from '../store/selectors/conference.selectors';
+import { getCountdownComplete, getAudioRecordingState } from '../store/selectors/conference.selectors';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 @Component({
@@ -428,15 +428,21 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
                 }
             });
 
-        this.audioRecordingService
-            .getAudioRecordingPauseState()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((recordingPaused: boolean) => (this.recordingPaused = recordingPaused));
+        this.store
+            .select(getAudioRecordingState)
+            .pipe(
+                filter(audioRecordingState => !!audioRecordingState),
+                takeUntil(this.onDestroy$)
+            )
+            .subscribe(audioRecordingState => {
+                this.recordingPaused = audioRecordingState.recordingPaused;
+                this.continueWithNoRecording = audioRecordingState.continueWithoutRecording;
+            });
 
-        this.audioRecordingService
-            .getWowzaAgentConnectionState()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((stateIsConnected: boolean) => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
+        // this.audioRecordingService
+        //     .getWowzaAgentConnectionState()
+        //     .pipe(takeUntil(this.onDestroy$))
+        //     .subscribe((stateIsConnected: boolean) => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
 
         this.store
             .select(getCountdownComplete)
@@ -523,7 +529,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
     }
 
     startHearing() {
-        this.audioRecordingService.restartActioned = false;
         this.logger.debug(`${this.componentLoggerPrefix} Judge clicked start/resume hearing`, {
             conference: this.conferenceId,
             status: this.vhConference.status
@@ -645,28 +650,28 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             .subscribe(count => this.unreadMessageCounterUpdate(count));
     }
 
-    private onWowzaConnected() {
-        if (this.audioRecordingService.restartActioned) {
-            this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
-        }
-        this.continueWithNoRecording = false;
-    }
+    // private onWowzaConnected() {
+    //     if (this.audioRecordingService.restartActioned) {
+    //         this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
+    //     }
+    //     this.continueWithNoRecording = false;
+    // }
 
-    private onWowzaDisconnected() {
-        if (
-            this.vhConference.countdownComplete &&
-            this.vhConference.audioRecordingRequired &&
-            this.vhConference.status === ConferenceStatus.InSession &&
-            !this.recordingPaused
-        ) {
-            if (this.audioRecordingService.restartActioned) {
-                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-            } else {
-                this.logWowzaAlert();
-                this.showAudioRecordingRestartAlert();
-            }
-        }
-    }
+    // private onWowzaDisconnected() {
+    //     if (
+    //         this.vhConference.countdownComplete &&
+    //         this.vhConference.audioRecordingRequired &&
+    //         this.vhConference.status === ConferenceStatus.InSession &&
+    //         !this.recordingPaused
+    //     ) {
+    //         if (this.audioRecordingService.restartActioned) {
+    //             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+    //         } else {
+    //             this.logWowzaAlert();
+    //             this.showAudioRecordingRestartAlert();
+    //         }
+    //     }
+    // }
 
     private logWowzaAlert() {
         this.logger.warn(

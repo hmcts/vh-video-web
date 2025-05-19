@@ -8,7 +8,8 @@ import {
     VHPexipParticipant,
     VHRoom,
     VHConsultationCallStatus,
-    SelfTestScore
+    SelfTestScore,
+    AudioRecordingState
 } from '../models/vh-conference';
 import { ConferenceStatus, EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { VideoCallActions } from '../actions/video-call.action';
@@ -16,6 +17,7 @@ import { VideoCallHostActions } from '../actions/video-call-host.actions';
 import { SelfTestActions } from '../actions/self-test.actions';
 import { UserProfile } from '../models/user-profile';
 import { AuthActions } from '../actions/auth.actions';
+import { AudioRecordingActions } from '../actions/audio-recording.actions';
 
 export const conferenceFeatureKey = 'active-conference';
 
@@ -26,6 +28,7 @@ export interface ConferenceState {
     userProfile?: UserProfile;
     availableRooms: VHRoom[];
     wowzaParticipant?: VHPexipParticipant;
+    audioRecordingState?: AudioRecordingState;
     countdownComplete?: boolean;
     consultationStatuses?: VHConsultationCallStatus[];
     selfTestScore?: SelfTestScore;
@@ -118,9 +121,18 @@ export const conferenceReducer = createReducer(
         }
 
         let updatedParticipants = conference.participants;
+        let wowzaParticipant = state.wowzaParticipant;
+        let audioRecordingState = state.audioRecordingState;
         if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
             // reset the transfer direction for all participants
             updatedParticipants = conference.participants.map(p => ({ ...p, transferDirection: undefined }));
+            wowzaParticipant = null;
+            audioRecordingState = {
+                ...state.audioRecordingState,
+                wowzaConnected: false,
+                recordingPaused: false,
+                restartInProgress: false
+            };
         }
 
         const updatedConference: VHConference = {
@@ -129,7 +141,7 @@ export const conferenceReducer = createReducer(
             countdownComplete: null,
             participants: updatedParticipants
         };
-        return { ...state, currentConference: updatedConference };
+        return { ...state, currentConference: updatedConference, wowzaParticipant, audioRecordingState };
     }),
     on(ConferenceActions.upsertPexipConference, (state, { pexipConference: conference }) => ({ ...state, pexipConference: conference })),
     on(ConferenceActions.countdownComplete, (state, { conferenceId }) => {
@@ -312,12 +324,24 @@ export const conferenceReducer = createReducer(
         );
 
         let wowzaParticipant = state.wowzaParticipant;
+        let audioRecordingState = state.audioRecordingState;
         if (participant.pexipDisplayName?.toLowerCase().includes('wowza')) {
             wowzaParticipant = participant;
+            audioRecordingState = {
+                ...state.audioRecordingState,
+                wowzaConnected: wowzaParticipant.isAudioOnlyCall,
+                restartInProgress: false
+            };
         }
 
         const loggedInParticipant = updateLoggedInParticipant(state, participants).loggedInParticipant;
-        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant, loggedInParticipant };
+        return {
+            ...state,
+            currentConference: { ...conference, participants, endpoints },
+            wowzaParticipant,
+            loggedInParticipant,
+            audioRecordingState
+        };
     }),
     on(ConferenceActions.deletePexipParticipant, (state, { pexipUUID }) => {
         const conference = getCurrentConference(state, null);
@@ -328,12 +352,23 @@ export const conferenceReducer = createReducer(
         const endpoints = conference.endpoints.map(e => (e.pexipInfo?.uuid === pexipUUID ? { ...e, pexipInfo: null } : e));
 
         let wowzaParticipant = state.wowzaParticipant;
+        let audioRecordingState = state.audioRecordingState;
         if (wowzaParticipant?.uuid === pexipUUID) {
             wowzaParticipant = null;
+            audioRecordingState = {
+                ...state.audioRecordingState,
+                wowzaConnected: false
+            };
         }
 
         const loggedInParticipant = updateLoggedInParticipant(state, participants).loggedInParticipant;
-        return { ...state, currentConference: { ...conference, participants, endpoints }, wowzaParticipant, loggedInParticipant };
+        return {
+            ...state,
+            currentConference: { ...conference, participants, endpoints },
+            wowzaParticipant,
+            loggedInParticipant,
+            audioRecordingState
+        };
     }),
     on(ConferenceActions.updateRoom, (state, { room }) => {
         let updatedRoomList = state.availableRooms;
@@ -559,13 +594,63 @@ export const conferenceReducer = createReducer(
         return { ...state, currentConference: updatedConference, loggedInParticipant };
     }),
     // Video Call Host Controls
+    on(VideoCallHostActions.startHearing, (state, { conferenceId }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+        const audioRecordingState = state.audioRecordingState;
+        return {
+            ...state,
+            audioRecordingState: { ...audioRecordingState, restartInProgress: false }
+        };
+    }),
     on(VideoCallHostActions.admitParticipantFailure, state => {
         // set participant transfer direction to none
         const updatedParticipants = state.currentConference.participants.map(p => ({ ...p, transferDirection: undefined }));
         const updatedConference: VHConference = { ...state.currentConference, participants: updatedParticipants };
         return { ...state, currentConference: updatedConference };
     }),
-    on(AuthActions.loadUserProfileSuccess, (state, { userProfile }) => ({ ...state, userProfile }))
+    on(AuthActions.loadUserProfileSuccess, (state, { userProfile }) => ({ ...state, userProfile })),
+    // Audio Recording Actions
+    on(AudioRecordingActions.pauseAudioRecordingSuccess, (state, { conferenceId }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+        return {
+            ...state,
+            audioRecordingState: { ...state.audioRecordingState, recordingPaused: true, restartInProgress: false }
+        };
+    }),
+    on(AudioRecordingActions.resumeAudioRecording, AudioRecordingActions.audioRecordingRestarted, (state, { conferenceId }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+        const preferences = state.audioRecordingState;
+        return { ...state, audioRecordingState: { ...preferences, restartInProgress: true } };
+    }),
+    on(
+        AudioRecordingActions.resumeAudioRecordingSuccess,
+        AudioRecordingActions.audioRecordingRestartedSuccess,
+        (state, { conferenceId }) => {
+            const conference = getCurrentConference(state, conferenceId);
+            if (!conference) {
+                return state;
+            }
+            const preferences = state.audioRecordingState;
+            return { ...state, audioRecordingState: { ...preferences, restartInProgress: false, recordingPaused: false } };
+        }
+    ),
+    on(AudioRecordingActions.continueHearingWithoutAudioRecording, (state, { conferenceId, continueWithouRecording }) => {
+        const conference = getCurrentConference(state, conferenceId);
+        if (!conference) {
+            return state;
+        }
+        const preferences = state.audioRecordingState;
+        return { ...state, audioRecordingState: { ...preferences, continueWithouRecording } };
+    })
 );
 
 export const videocallControlsReducer = createReducer(initialState);
