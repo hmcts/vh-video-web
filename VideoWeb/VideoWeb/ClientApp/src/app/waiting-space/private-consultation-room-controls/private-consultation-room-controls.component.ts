@@ -51,7 +51,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     recordingPaused: boolean;
     recordingButtonDisabled = false;
     wowzaConnected = false;
-    countdownComplete = false;
+    enableMuteButton = false;
 
     private conferenceStatus: ConferenceStatus;
 
@@ -76,7 +76,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(conference => {
                 this.conferenceStatus = conference.status;
-                this.countdownComplete = conference.countdownComplete;
+                this.enableMuteButton = conference.countdownComplete || this.isPrivateConsultation;
             });
 
         ldService

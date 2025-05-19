@@ -27,8 +27,8 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
     let mockStore: MockStore<ConferenceState>;
-    const gloalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
-    const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
+    const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
@@ -57,7 +57,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         } as VHPexipParticipant;
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
-        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, gloalConference);
+        mockStore.overrideSelector(ConferenceSelectors.getActiveConference, globalConference);
 
         translateService.instant.calls.reset();
 
@@ -85,7 +85,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             notificationToastrServiceSpy
         );
         component.participant = globalParticipant;
-        component.conferenceId = gloalConference.id;
+        component.conferenceId = globalConference.id;
         component.setupVideoCallSubscribers();
 
         videoCallService.startScreenShare.calls.reset();
@@ -113,6 +113,34 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
             expect(result).toBe(expected);
         });
+    });
+
+    describe('enableMuteButton', () => {
+        it('should be true when countdown is complete', fakeAsync(() => {
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, {
+                ...globalConference,
+                caseName: 'updated',
+                countdownComplete: true
+            });
+            mockStore.refreshState();
+
+            flush();
+            expect(component.enableMuteButton).toBeTrue();
+        }));
+
+        it('should be true when in private consultation', fakeAsync(() => {
+            mockStore.overrideSelector(ConferenceSelectors.getActiveConference, {
+                ...globalConference,
+                caseName: 'updated',
+                countdownComplete: false
+            });
+            component.isPrivateConsultation = true;
+
+            mockStore.refreshState();
+
+            flush();
+            expect(component.enableMuteButton).toBeTrue();
+        }));
     });
 
     describe('joinHearingFromConsultation', () => {

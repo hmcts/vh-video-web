@@ -126,7 +126,7 @@
         <button
           id="toggle-audio-mute-img"
           *ngIf="!remoteMuted || isJudge"
-          [disabled]="!countdownComplete"
+          [disabled]="!enableMuteButton"
           (click)="toggleMute()"
           (keydown.enter)="toggleMute()"
           tabindex="0"
@@ -586,7 +586,7 @@
         class="icon-button"
         id="toggle-audio-mute-img-desktop"
         *ngIf="(!remoteMuted || isHost) && hasAMicrophone"
-        [disabled]="!countdownComplete"
+        [disabled]="!enableMuteButton"
         appTooltip
         colour="grey"
         [text]="
