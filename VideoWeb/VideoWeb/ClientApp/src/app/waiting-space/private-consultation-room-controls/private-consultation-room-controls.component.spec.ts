@@ -24,7 +24,7 @@ import * as ConferenceSelectors from '../../waiting-space/store/selectors/confer
 import { JoinConsultationDecider } from './models/join-consultation-decider';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 
-fdescribe('PrivateConsultationRoomControlsComponent', () => {
+describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
     let mockStore: MockStore<ConferenceState>;
     const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
@@ -115,7 +115,7 @@ fdescribe('PrivateConsultationRoomControlsComponent', () => {
         });
     });
 
-    fdescribe('enableMuteButton', () => {
+    describe('enableMuteButton', () => {
         it('should be true when countdown is complete', fakeAsync(() => {
             mockStore.overrideSelector(ConferenceSelectors.getActiveConference, {
                 ...globalConference,
