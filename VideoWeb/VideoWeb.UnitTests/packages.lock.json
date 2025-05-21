@@ -1928,7 +1928,7 @@
           "AspNetCore.HealthChecks.Redis": "[8.0.1, )",
           "AspNetCore.HealthChecks.Uris": "[8.0.1, )",
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
-          "BookingsApi.Client": "[3.2.6, )",
+          "BookingsApi.Client": "[3.2.11-pr-0964-0003, )",
           "Castle.Core": "[5.1.1, )",
           "FluentValidation.AspNetCore": "[11.2.2, )",
           "MicroElements.Swashbuckle.FluentValidation": "[6.1.0, )",
