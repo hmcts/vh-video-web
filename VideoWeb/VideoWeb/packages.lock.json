@@ -37,11 +37,11 @@
       },
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[3.2.11-pr-0964-0003, )",
-        "resolved": "3.2.11-pr-0964-0003",
-        "contentHash": "m8tnT5ZHwzRL/NhnEwtNbYC1EOjpx5sF5UkmaHM+1pRKLg8uDtw3jOTSn8FJGwKTK5qDQZGaokBpSmMU/1DVXA==",
+        "requested": "[3.2.11, )",
+        "resolved": "3.2.11",
+        "contentHash": "8h3/g8nnA+v9juestWI40jTmbTOoBOLUqXa5ReXdr10GS9nC+MYyxIoWoqxmhWyyR6Td/BYRgurQK5lueDmGrA==",
         "dependencies": {
-          "BookingsApi.Common.DotNet6": "3.2.11-pr-0964-0003",
+          "BookingsApi.Common.DotNet6": "3.2.11",
           "System.Text.Json": "8.0.5"
         }
       },
@@ -211,9 +211,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[3.2.21-pr-0740-0019, )",
-        "resolved": "3.2.21-pr-0740-0019",
-        "contentHash": "PTWW2EXEdRDSTbCCwE4QbKozx336JDLjsaV91fHHFdFywYXrmGy0A3wRJ6M8MDXObZlzbSDQBkGRVkC2eg0nlA==",
+        "requested": "[3.2.21, )",
+        "resolved": "3.2.21",
+        "contentHash": "Yx3DvphU0ydyxAL37KkHJHtg4CDuPxF1QVIfH8G/nkvQB4YJtXeg4CJW0f1bHTDq1p4POOQv/aAnnHQjeUkJLQ==",
         "dependencies": {
           "System.Text.Json": "8.0.5"
         }
@@ -259,8 +259,8 @@
       },
       "BookingsApi.Common.DotNet6": {
         "type": "Transitive",
-        "resolved": "3.2.11-pr-0964-0003",
-        "contentHash": "YI28BkwXJItD6mwieuQgV6Qe8eg/JpHI4+nY0LzyiSWo/HiH5fh8f5V8iIDC8Cl1+Ujvty7AtKg3jjPeUns3Ug==",
+        "resolved": "3.2.11",
+        "contentHash": "3spVPaFgQ0oAN/VNxiHHD9xUU0DJyGg9tgQyCkmlJx+l9Z/NtSWbHcWSUrKu9ZLPH0ooW+0lQXfJWJ5upRMxjg==",
         "dependencies": {
           "System.Text.Json": "8.0.5"
         }
@@ -864,14 +864,14 @@
         "type": "Project",
         "dependencies": {
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
-          "BookingsApi.Client": "[3.2.11-pr-0964-0003, )",
+          "BookingsApi.Client": "[3.2.11, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Options": "[8.0.2, )",
           "Microsoft.Identity.Client": "[4.61.3, )",
           "StackExchange.Redis": "[2.8.0, )",
           "System.IdentityModel.Tokens.Jwt": "[7.5.2, )",
-          "VideoApi.Client": "[3.2.21-pr-0740-0019, )"
+          "VideoApi.Client": "[3.2.21, )"
         }
       },
       "videoweb.contract": {
