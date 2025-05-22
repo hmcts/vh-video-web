@@ -129,7 +129,7 @@ export const conferenceReducer = createReducer(
             wowzaParticipant = null;
             audioRecordingState = {
                 ...state.audioRecordingState,
-                wowzaConnected: false,
+                wowzaConnectedAsAudioOnly: false,
                 recordingPaused: false,
                 restartInProgress: false
             };
@@ -329,7 +329,7 @@ export const conferenceReducer = createReducer(
             wowzaParticipant = participant;
             audioRecordingState = {
                 ...state.audioRecordingState,
-                wowzaConnected: wowzaParticipant.isAudioOnlyCall,
+                wowzaConnectedAsAudioOnly: wowzaParticipant.isAudioOnlyCall,
                 restartInProgress: false
             };
         }
@@ -357,7 +357,7 @@ export const conferenceReducer = createReducer(
             wowzaParticipant = null;
             audioRecordingState = {
                 ...state.audioRecordingState,
-                wowzaConnected: false
+                wowzaConnectedAsAudioOnly: false
             };
         }
 
@@ -491,9 +491,6 @@ export const conferenceReducer = createReducer(
     })),
     on(ConferenceActions.updateAudioMix, (state, { participant, interpreterLanguage, mainCourt }) => {
         const conference = getCurrentConference(state, null);
-        if (!conference) {
-            return state;
-        }
         if (!conference) {
             return state;
         }

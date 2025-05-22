@@ -33,12 +33,17 @@ export class AudioRecordingEffects {
                     conference.audioRecordingRequired &&
                     !audioRecordingState.continueWithoutRecording &&
                     !audioRecordingState.restartNotificationDisplayed &&
-                    !audioRecordingState.wowzaConnected
+                    !audioRecordingState.wowzaConnectedAsAudioOnly
                 ) {
                     this.logger.warn(
                         `${this.loggerPrefix} not recording when expected, streaming agent could not establish connection: show alert`,
                         {
-                            agent: this.audioRecordingService.wowzaAgent
+                            participantRole: loggedInParticipant.role,
+                            participantStatus: loggedInParticipant.status,
+                            audioRequired: conference.audioRecordingRequired,
+                            continueWithoutRecording: audioRecordingState.continueWithoutRecording,
+                            restartNotificationDisplayed: audioRecordingState.restartNotificationDisplayed,
+                            wowzaConnectedAsAudioOnly: audioRecordingState.wowzaConnectedAsAudioOnly
                         }
                     );
                     return [AudioRecordingActions.audioRecordingVerificationFailed({ conferenceId: conference.id })];
@@ -56,6 +61,8 @@ export class AudioRecordingEffects {
                 concatLatestFrom(() => [this.store.select(getActiveConference), this.store.select(getLoggedInParticipant)]),
                 filter(
                     ([action, conference, loggedInParticipant]) =>
+                        !!conference &&
+                        !!loggedInParticipant &&
                         action.conferenceId === conference.id &&
                         conference.countdownComplete &&
                         loggedInParticipant.status === ParticipantStatus.InHearing &&
@@ -79,11 +86,9 @@ export class AudioRecordingEffects {
         () =>
             this.actions$.pipe(
                 ofType(AudioRecordingActions.audioRecordingRestarted),
-                concatLatestFrom(() => [this.store.select(getActiveConference), this.store.select(getLoggedInParticipant)]),
-                filter(
-                    ([action, conference, _loggedInParticipant]) => this.restartToastNotification && action.conferenceId === conference.id
-                ),
-                tap(([_action, _conference, _loggedInParticipant]) => {
+                concatLatestFrom(() => [this.store.select(getActiveConference)]),
+                filter(([action, conference]) => this.restartToastNotification && action.conferenceId === conference.id),
+                tap(([_action, _conference]) => {
                     this.logger.info(`${this.loggerPrefix} Audio recording restarted, clearing notification`);
                     this.restartToastNotification?.remove();
                     this.restartToastNotification = null;
@@ -96,14 +101,20 @@ export class AudioRecordingEffects {
         () =>
             this.actions$.pipe(
                 ofType(AudioRecordingActions.pauseAudioRecording),
-                concatLatestFrom(() => [this.store.select(getAudioRecordingState), this.store.select(getActiveConference)]),
-                filter(
-                    ([action, audioRecording, conference]) =>
+                concatLatestFrom(() => [
+                    this.store.select(getAudioRecordingState),
+                    this.store.select(getActiveConference),
+                    this.store.select(getLoggedInParticipant)
+                ]),
+                filter(([action, audioRecording, conference, loggedInParticipant]) => {
+                    return (
+                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember) &&
                         action.conferenceId === conference.id &&
                         !audioRecording.recordingPaused &&
-                        audioRecording.wowzaConnected &&
+                        audioRecording.wowzaConnectedAsAudioOnly &&
                         conference.countdownComplete
-                ),
+                    );
+                }),
                 tap(_ =>
                     from(this.audioRecordingService.stopRecording()).pipe(
                         map(() => {
@@ -184,7 +195,7 @@ export class AudioRecordingEffects {
                         action.conferenceId === conference.id &&
                         conference.status === ConferenceStatus.InSession &&
                         audioRecording.recordingPaused &&
-                        !audioRecording.wowzaConnected
+                        !audioRecording.wowzaConnectedAsAudioOnly
                 ),
                 tap(() => this.audioRecordingService.reconnectToWowza())
             ),

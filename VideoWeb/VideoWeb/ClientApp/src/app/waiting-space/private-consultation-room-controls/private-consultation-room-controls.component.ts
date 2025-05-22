@@ -82,7 +82,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             )
             .subscribe(audioRecordingState => {
                 this.recordingPaused = audioRecordingState.recordingPaused;
-                this.wowzaConnected = audioRecordingState.wowzaConnected;
+                this.wowzaConnected = audioRecordingState.wowzaConnectedAsAudioOnly;
             });
 
         ldService

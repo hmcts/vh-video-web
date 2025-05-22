@@ -38,9 +38,6 @@ export const mockWowzaAgent: VHPexipParticipant = {
     callTag: 'callTag'
 };
 
-export const getWowzaAgentConnectionState$ = new Subject<boolean>();
-export const getAudioRecordingPauseState$ = new Subject<boolean>();
-
 export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>(
     'AudioRecordingService',
     ['stopRecording', 'reconnectToWowza', 'cleanupDialOutConnections', 'cleanupSubscriptions'],
