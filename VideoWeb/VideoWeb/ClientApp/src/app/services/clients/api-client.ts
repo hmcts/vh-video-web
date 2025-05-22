@@ -7446,7 +7446,8 @@ export interface ITestCallScoreResponse {
 }
 
 export enum Supplier {
-    Vodafone = 'Vodafone'
+    Vodafone = 'Vodafone',
+    Stub = 'Stub'
 }
 
 export enum ConferenceStatus {
