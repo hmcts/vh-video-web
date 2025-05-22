@@ -13,15 +13,14 @@ import { AudioRecordingService } from 'src/app/services/audio-recording.service'
 import { EventsService } from 'src/app/services/events.service';
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { AudioRecordingEffects } from './audio-recording.effects';
-import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { getActiveConference, getAudioRecordingState, getLoggedInParticipant } from '../selectors/conference.selectors';
 import { ConferenceActions } from '../actions/conference.actions';
 import { cold, hot } from 'jasmine-marbles';
 import { AudioRecordingActions } from '../actions/audio-recording.actions';
-import { ActiveToast } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
-fdescribe('AudioRecordingEffects', () => {
+describe('AudioRecordingEffects', () => {
     const testData = new ConferenceTestData();
     let vhConference: VHConference;
     let judge: VHParticipant;
@@ -335,6 +334,121 @@ fdescribe('AudioRecordingEffects', () => {
             effects.displayResumeSuccessRecordingNotification$.subscribe(() => {
                 expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
                 expect(effects.restartSuccessToastNotification).toBeDefined();
+            });
+        });
+    });
+
+    describe('restartAudioRecording$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+            audioRecordingService.cleanupDialOutConnections.calls.reset();
+            audioRecordingService.reconnectToWowza.calls.reset();
+            eventsService.sendAudioRestartActioned.calls.reset();
+        });
+
+        it('should reconnect to Wowza and send audio restarted event', () => {
+            vhConference.countdownComplete = true;
+            vhConference.status = ConferenceStatus.InSession;
+            judge.status = ParticipantStatus.InHearing;
+
+            const audioRecordingState = {
+                continueWithoutRecording: false,
+                restartNotificationDisplayed: false,
+                wowzaConnectedAsAudioOnly: false,
+                recordingPaused: true,
+                restartInProgress: false
+            } as AudioRecordingState;
+
+            mockConferenceStore.overrideSelector(getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(getLoggedInParticipant, judge);
+            mockConferenceStore.overrideSelector(getAudioRecordingState, audioRecordingState);
+            const dispatchSpy = spyOn(mockConferenceStore, 'dispatch').and.callThrough();
+
+            // Act
+            const action = AudioRecordingActions.restartAudioRecording({
+                conferenceId: vhConference.id
+            });
+            actions$ = of(action);
+
+            // Assert
+            effects.restartAudioRecording$.subscribe(() => {
+                expect(audioRecordingService.cleanupDialOutConnections).toHaveBeenCalled();
+                expect(audioRecordingService.reconnectToWowza).toHaveBeenCalled();
+                expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
+                expect(dispatchSpy).toHaveBeenCalledWith(AudioRecordingActions.audioRecordingRestarted({ conferenceId: vhConference.id }));
+            });
+        });
+    });
+
+    describe('resumeAudioRecording$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+            audioRecordingService.reconnectToWowza.calls.reset();
+        });
+
+        it('should reconnect to wowza when resume action has been dispatched', () => {
+            vhConference.countdownComplete = true;
+            vhConference.status = ConferenceStatus.InSession;
+            judge.status = ParticipantStatus.InHearing;
+
+            const audioRecordingState = {
+                continueWithoutRecording: false,
+                restartNotificationDisplayed: false,
+                wowzaConnectedAsAudioOnly: false,
+                recordingPaused: true,
+                restartInProgress: false
+            } as AudioRecordingState;
+
+            mockConferenceStore.overrideSelector(getActiveConference, vhConference);
+            mockConferenceStore.overrideSelector(getLoggedInParticipant, judge);
+            mockConferenceStore.overrideSelector(getAudioRecordingState, audioRecordingState);
+
+            // Act
+            const action = AudioRecordingActions.resumeAudioRecording({
+                conferenceId: vhConference.id
+            });
+            actions$ = of(action);
+
+            // Assert
+            effects.resumeAudioRecording$.subscribe(() => {
+                expect(audioRecordingService.reconnectToWowza).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('clearAudioNotificationsOnTransferToWaitingRoom$', () => {
+        beforeEach(() => {
+            mockConferenceStore.resetSelectors();
+        });
+
+        it('should clear all notifications when transferred to the waiting room', () => {
+            // Arrange
+
+            mockConferenceStore.overrideSelector(getLoggedInParticipant, judge);
+
+            const restartToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            effects.restartToastNotification = restartToast;
+            const restartFailureToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            effects.restartFailureToastNotification = restartFailureToast;
+            const restartSuccessToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            effects.restartSuccessToastNotification = restartSuccessToast;
+
+            const action = ConferenceActions.updateParticipantRoom({
+                fromRoom: 'HearingRoom',
+                toRoom: 'WaitingRoom',
+                participantId: judge.id
+            });
+
+            actions$ = of(action);
+
+            // Act
+            effects.clearAudioNotificationsOnTransferToWaitingRoom$.subscribe(() => {
+                expect(restartToast.remove).toHaveBeenCalled();
+                expect(restartFailureToast.remove).toHaveBeenCalled();
+                expect(restartSuccessToast.remove).toHaveBeenCalled();
+                expect(effects.restartToastNotification).toBeNull();
+                expect(effects.restartFailureToastNotification).toBeNull();
+                expect(effects.restartSuccessToastNotification).toBeNull();
             });
         });
     });

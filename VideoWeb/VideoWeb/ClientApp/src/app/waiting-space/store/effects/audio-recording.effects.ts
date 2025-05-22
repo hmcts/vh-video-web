@@ -106,15 +106,14 @@ export class AudioRecordingEffects {
                     this.store.select(getActiveConference),
                     this.store.select(getLoggedInParticipant)
                 ]),
-                filter(([action, audioRecording, conference, loggedInParticipant]) => {
-                    return (
+                filter(
+                    ([action, audioRecording, conference, loggedInParticipant]) =>
                         (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember) &&
                         action.conferenceId === conference.id &&
                         !audioRecording.recordingPaused &&
                         audioRecording.wowzaConnectedAsAudioOnly &&
                         conference.countdownComplete
-                    );
-                }),
+                ),
                 tap(_ =>
                     from(this.audioRecordingService.stopRecording()).pipe(
                         map(() => {
@@ -169,8 +168,12 @@ export class AudioRecordingEffects {
                 ofType(AudioRecordingActions.restartAudioRecording),
                 concatLatestFrom(() => [this.store.select(getActiveConference), this.store.select(getLoggedInParticipant)]),
                 filter(
-                    ([action, conference, _loggedInParticipant]) =>
-                        action.conferenceId === conference.id && conference.status === ConferenceStatus.InSession
+                    ([action, conference, loggedInParticipant]) =>
+                        !!loggedInParticipant &&
+                        !!conference &&
+                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember) &&
+                        action.conferenceId === conference.id &&
+                        conference.status === ConferenceStatus.InSession
                 ),
                 tap(([_action, conference, loggedInParticipant]) => {
                     this.audioRecordingService.cleanupDialOutConnections();
@@ -189,9 +192,16 @@ export class AudioRecordingEffects {
         () =>
             this.actions$.pipe(
                 ofType(AudioRecordingActions.resumeAudioRecording),
-                concatLatestFrom(() => [this.store.select(getAudioRecordingState), this.store.select(getActiveConference)]),
+                concatLatestFrom(() => [
+                    this.store.select(getAudioRecordingState),
+                    this.store.select(getActiveConference),
+                    this.store.select(getLoggedInParticipant)
+                ]),
                 filter(
-                    ([action, audioRecording, conference]) =>
+                    ([action, audioRecording, conference, loggedInParticipant]) =>
+                        !!loggedInParticipant &&
+                        !!conference &&
+                        (loggedInParticipant.role === Role.Judge || loggedInParticipant.role === Role.StaffMember) &&
                         action.conferenceId === conference.id &&
                         conference.status === ConferenceStatus.InSession &&
                         audioRecording.recordingPaused &&
@@ -206,10 +216,9 @@ export class AudioRecordingEffects {
         () =>
             this.actions$.pipe(
                 ofType(ConferenceActions.updateParticipantRoom),
-                concatLatestFrom(() => [this.store.select(getActiveConference), this.store.select(getLoggedInParticipant)]),
+                concatLatestFrom(() => [this.store.select(getLoggedInParticipant)]),
                 filter(
-                    ([action, conference, loggedInParticipant]) =>
-                        action.participantId === loggedInParticipant.id && action.toRoom === 'WaitingRoom'
+                    ([action, loggedInParticipant]) => action.participantId === loggedInParticipant.id && action.toRoom === 'WaitingRoom'
                 ),
                 tap(() => {
                     this.logger.info(`${this.loggerPrefix} Audio recording transfer to waiting room, clearing notifications`);

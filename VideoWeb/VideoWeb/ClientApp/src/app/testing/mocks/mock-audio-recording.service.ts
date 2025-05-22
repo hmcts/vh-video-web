@@ -1,5 +1,3 @@
-import { Subject } from 'rxjs';
-
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { VHConference, VHPexipParticipant } from '../../waiting-space/store/models/vh-conference';
 
