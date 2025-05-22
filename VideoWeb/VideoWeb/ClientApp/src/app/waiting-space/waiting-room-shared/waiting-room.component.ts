@@ -29,11 +29,9 @@ import { Store } from '@ngrx/store';
 import { VHParticipant } from '../store/models/vh-conference';
 import { WaitingRoomUserRole } from './models/waiting-room-user-role';
 import { VideoCallEventsService } from '../services/video-call-events.service';
-import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 import { CallError } from '../models/video-call-models';
-import { getCountdownComplete, getAudioRecordingState } from '../store/selectors/conference.selectors';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { getAudioRecordingState } from '../store/selectors/conference.selectors';
 
 @Component({
     standalone: false,
@@ -52,8 +50,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
     displayLeaveHearingPopup = false;
     displayConfirmStartHearingPopup: boolean;
     displayJoinHearingPopup: boolean;
-    audioErrorRetryToast: VhToastComponent;
-    continueWithNoRecording = false;
+
     recordingPaused: boolean;
     unreadMessageCount = 0;
 
@@ -78,8 +75,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected store: Store<ConferenceState>,
-        protected videoCallEventsService: VideoCallEventsService,
-        private readonly audioRecordingService: AudioRecordingService
+        protected videoCallEventsService: VideoCallEventsService
     ) {
         super(
             eventService,
@@ -162,11 +158,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
 
     get canShowHearingLayoutSelection() {
         return !this.hearing.isClosed() && !this.hearing.isInSession();
-    }
-
-    videoClosedExt() {
-        this.audioErrorRetryToast?.remove();
-        this.audioErrorRetryToast = null;
     }
 
     ngOnInit() {
@@ -376,8 +367,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             return;
         }
 
-        this.destroyedSubject = new Subject();
-
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
@@ -415,19 +404,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             this.errorService.handlePexipError(new CallError(error.name), this.vhConference.id);
         }
 
-        this.eventService
-            .getAudioRestartActioned()
-            .pipe(
-                takeUntil(this.onDestroy$),
-                filter(conferenceId => conferenceId === this.vhConference.id)
-            )
-            .subscribe(() => {
-                if (this.audioErrorRetryToast) {
-                    this.logger.warn(`${this.componentLoggerPrefix} Audio restart actioned by another host`);
-                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
-                }
-            });
-
         this.store
             .select(getAudioRecordingState)
             .pipe(
@@ -436,25 +412,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             )
             .subscribe(audioRecordingState => {
                 this.recordingPaused = audioRecordingState.recordingPaused;
-                this.continueWithNoRecording = audioRecordingState.continueWithoutRecording;
-            });
-
-        // this.audioRecordingService
-        //     .getWowzaAgentConnectionState()
-        //     .pipe(takeUntil(this.onDestroy$))
-        //     .subscribe((stateIsConnected: boolean) => (stateIsConnected ? this.onWowzaConnected() : this.onWowzaDisconnected()));
-
-        this.store
-            .select(getCountdownComplete)
-            .pipe(
-                takeUntil(this.onDestroy$),
-                filter(complete => complete)
-            )
-            .subscribe(complete => {
-                if (complete) {
-                    this.logger.debug(`${this.componentLoggerPrefix} Hearing countdown complete`);
-                    this.verifyAudioRecordingStream();
-                }
             });
 
         this.startVideoCallEventSubscribers();
@@ -553,31 +510,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         this.store.dispatch(VideoCallHostActions.joinHearing({ conferenceId: this.vhConference.id, participantId: this.vhParticipant.id }));
     }
 
-    audioRestartCallback(continueWithNoRecording: boolean) {
-        this.continueWithNoRecording = continueWithNoRecording;
-        this.audioErrorRetryToast = null;
-    }
-
-    verifyAudioRecordingStream() {
-        /// If audio recording is required,
-        // has not been confirmed by user, to continue without recording,
-        // video is open,
-        // the alert isn't open already,
-        // Recording is not paused
-        // and the audio streaming agent cannot be validated, then show the alert
-        if (
-            this.vhConference.audioRecordingRequired &&
-            !this.continueWithNoRecording &&
-            this.showVideo &&
-            !this.audioErrorRetryToast &&
-            !this.recordingPaused &&
-            !this.audioRecordingService.wowzaAgent?.isAudioOnlyCall
-        ) {
-            this.logWowzaAlert();
-            this.showAudioRecordingRestartAlert();
-        }
-    }
-
     private onShouldReload(): void {
         window.location.reload();
     }
@@ -649,58 +581,4 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(count => this.unreadMessageCounterUpdate(count));
     }
-
-    // private onWowzaConnected() {
-    //     if (this.audioRecordingService.restartActioned) {
-    //         this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
-    //     }
-    //     this.continueWithNoRecording = false;
-    // }
-
-    // private onWowzaDisconnected() {
-    //     if (
-    //         this.vhConference.countdownComplete &&
-    //         this.vhConference.audioRecordingRequired &&
-    //         this.vhConference.status === ConferenceStatus.InSession &&
-    //         !this.recordingPaused
-    //     ) {
-    //         if (this.audioRecordingService.restartActioned) {
-    //             this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-    //         } else {
-    //             this.logWowzaAlert();
-    //             this.showAudioRecordingRestartAlert();
-    //         }
-    //     }
-    // }
-
-    private logWowzaAlert() {
-        this.logger.warn(
-            `${this.componentLoggerPrefix} not recording when expected, streaming agent could not establish connection: show alert`,
-            {
-                agent: this.audioRecordingService.wowzaAgent,
-                showVideo: this.showVideo,
-                continueWithNoRecording: this.continueWithNoRecording,
-                audioErrorRetryToast: this.audioErrorRetryToast
-            }
-        );
-    }
-
-    private showAudioRecordingRestartAlert() {
-        if (this.audioErrorRetryToast) {
-            return;
-        }
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectWowzaAgent);
-    }
-
-    private reconnectWowzaAgent = (): void => {
-        // Confirm in a hearing and not a consultation
-        if (this.vhConference.status === ConferenceStatus.InSession && !this.isPrivateConsultation) {
-            this.audioRecordingService.cleanupDialOutConnections();
-            this.audioRecordingService.reconnectToWowza(() => {
-                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-            });
-        } else {
-            this.logger.warn(`${this.componentLoggerPrefix} can not reconnect to Wowza agent as not in a hearing`);
-        }
-    };
 }

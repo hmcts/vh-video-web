@@ -148,4 +148,5 @@ export interface AudioRecordingState {
     recordingPaused: boolean;
     restartInProgress: boolean;
     wowzaConnected: boolean;
+    restartNotificationDisplayed: boolean;
 }

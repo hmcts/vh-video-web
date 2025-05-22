@@ -11,18 +11,18 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { of, Subject } from 'rxjs';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
-import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceState, initialState as initialConferenceState } from '../store/reducers/conference.reducer';
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { VHPexipParticipant } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { AudioRecordingActions } from '../store/actions/audio-recording.actions';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
@@ -81,7 +81,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             launchDarklyServiceSpy,
             focusServiceSpy,
             mockStore,
-            audioRecordingServiceSpy,
             notificationToastrServiceSpy
         );
         component.participant = globalParticipant;
@@ -326,43 +325,19 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         });
     });
 
-    describe('Pause Resume Audio Recording', () => {
-        beforeEach(() => {
-            audioRecordingServiceSpy.stopRecording.calls.reset();
-            audioRecordingServiceSpy.reconnectToWowza.calls.reset();
-            component.recordingButtonDisabled = false;
+    describe('pauseRecording', () => {
+        it('should dispatch pauseAudioRecording action', () => {
+            const dispatchSpy = spyOn(mockStore, 'dispatch');
+            component.pauseRecording();
+            expect(dispatchSpy).toHaveBeenCalledWith(AudioRecordingActions.pauseAudioRecording({ conferenceId: component.conferenceId }));
         });
+    });
 
-        describe('when recording button disabled', () => {
-            it('should not call audioRecordingService.pauseRecording', () => {
-                component.recordingButtonDisabled = true;
-                component.pauseRecording();
-                expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalledTimes(0);
-            });
-
-            it('should call audioRecordingService.resumeRecording', () => {
-                component.recordingButtonDisabled = true;
-                component.resumeRecording();
-                expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalledTimes(0);
-            });
-        });
-
-        describe('when recording button enabled', () => {
-            it('should call audioRecordingService.pauseRecording', fakeAsync(() => {
-                component.pauseRecording();
-                expect(audioRecordingServiceSpy.stopRecording).toHaveBeenCalled();
-                expect(component.recordingButtonDisabled).toBeTrue();
-                tick(5000);
-                expect(component.recordingButtonDisabled).toBeFalse();
-            }));
-
-            it('should call audioRecordingService.resumeRecording', fakeAsync(() => {
-                component.resumeRecording();
-                expect(audioRecordingServiceSpy.reconnectToWowza).toHaveBeenCalled();
-                expect(component.recordingButtonDisabled).toBeTrue();
-                tick(5000);
-                expect(component.recordingButtonDisabled).toBeFalse();
-            }));
+    describe('resumeRecording', () => {
+        it('should dispatch resumeAudioRecording action', () => {
+            const dispatchSpy = spyOn(mockStore, 'dispatch');
+            component.resumeRecording();
+            expect(dispatchSpy).toHaveBeenCalledWith(AudioRecordingActions.resumeAudioRecording({ conferenceId: component.conferenceId }));
         });
     });
 

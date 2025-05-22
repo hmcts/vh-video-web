@@ -631,25 +631,13 @@ export const conferenceReducer = createReducer(
         const preferences = state.audioRecordingState;
         return { ...state, audioRecordingState: { ...preferences, restartInProgress: true } };
     }),
-    on(
-        AudioRecordingActions.resumeAudioRecordingSuccess,
-        AudioRecordingActions.audioRecordingRestartedSuccess,
-        (state, { conferenceId }) => {
-            const conference = getCurrentConference(state, conferenceId);
-            if (!conference) {
-                return state;
-            }
-            const preferences = state.audioRecordingState;
-            return { ...state, audioRecordingState: { ...preferences, restartInProgress: false, recordingPaused: false } };
-        }
-    ),
-    on(AudioRecordingActions.continueHearingWithoutAudioRecording, (state, { conferenceId, continueWithouRecording }) => {
+    on(AudioRecordingActions.resumeAudioRecordingSuccess, (state, { conferenceId }) => {
         const conference = getCurrentConference(state, conferenceId);
         if (!conference) {
             return state;
         }
         const preferences = state.audioRecordingState;
-        return { ...state, audioRecordingState: { ...preferences, continueWithouRecording } };
+        return { ...state, audioRecordingState: { ...preferences, restartInProgress: false, recordingPaused: false } };
     })
 );
 

@@ -43,22 +43,11 @@ export const getAudioRecordingPauseState$ = new Subject<boolean>();
 
 export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>(
     'AudioRecordingService',
-    [
-        'getWowzaAgentConnectionState',
-        'getAudioRecordingPauseState',
-        'stopRecording',
-        'reconnectToWowza',
-        'cleanupDialOutConnections',
-        'cleanupSubscriptions'
-    ],
+    ['stopRecording', 'reconnectToWowza', 'cleanupDialOutConnections', 'cleanupSubscriptions'],
     {
         conference: mockConference,
         wowzaAgent: mockWowzaAgent,
         dialOutUUID: [],
-        restartActioned: false,
         loggerPrefix: '[AudioRecordingService]'
     }
 );
-
-audioRecordingServiceSpy.getWowzaAgentConnectionState.and.returnValue(getWowzaAgentConnectionState$.asObservable());
-audioRecordingServiceSpy.getAudioRecordingPauseState.and.returnValue(getAudioRecordingPauseState$.asObservable());
