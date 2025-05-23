@@ -120,10 +120,10 @@ export function getSettings(configService: ConfigService) {
             preventDuplicates: true,
             toastComponent: VhToastComponent
         }),
-        // ToastrModule.forRoot({
-        //     preventDuplicates: true,
-        //     toastComponent: RoomClosingToastComponent
-        // }),
+        ToastrModule.forRoot({
+            preventDuplicates: true,
+            toastComponent: RoomClosingToastComponent
+        }),
         TranslateModule,
         NgSelectModule,
         FontAwesomeModule
