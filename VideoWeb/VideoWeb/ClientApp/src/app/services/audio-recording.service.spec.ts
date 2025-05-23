@@ -6,6 +6,8 @@ import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recordin
 import { VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { initAllWRDependencies, mockConferenceStore } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { AudioRecordingActions } from '../waiting-space/store/actions/audio-recording.actions';
+import { fakeAsync, flush } from '@angular/core/testing';
 
 describe('AudioRecordingService', () => {
     let service: AudioRecordingService;
@@ -38,17 +40,13 @@ describe('AudioRecordingService', () => {
         eventServiceSpy = jasmine.createSpyObj('EventsService', ['sendAudioRecordingPaused', 'getAudioPaused']);
         eventServiceSpy.getAudioPaused.and.returnValue(audioStoppedMock$);
 
-        const loggerMock = jasmine.createSpyObj('Logger', ['debug']);
+        const loggerMock = jasmine.createSpyObj('Logger', ['debug', 'error']);
 
         service = new AudioRecordingService(loggerMock, videoCallServiceSpy, eventServiceSpy, mockConferenceStore);
     });
 
     afterEach(() => {
         service.cleanupSubscriptions();
-    });
-
-    it('should be created', () => {
-        expect(service).toBeTruthy();
     });
 
     describe('stopRecording', () => {
@@ -68,6 +66,47 @@ describe('AudioRecordingService', () => {
             service.cleanupSubscriptions();
             expect(onDestroySpy).toHaveBeenCalled();
             expect(onDestroyCompleteSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('reconnectToWowza', () => {
+        it('should reconnect to Wowza agent', () => {
+            service.conference = { audioRecordingIngestUrl: 'ingestUrl', id: 'conferenceId' } as any;
+            service.wowzaAgent = { uuid: 'wowzaUUID' } as any;
+            const dialOutToWowzaResponse = { status: 'success' };
+            videoCallServiceSpy.connectWowzaAgent.and.callFake((_, callback) => {
+                callback(dialOutToWowzaResponse);
+            });
+            service.reconnectToWowza();
+            expect(videoCallServiceSpy.connectWowzaAgent).toHaveBeenCalledWith('ingestUrl', jasmine.any(Function));
+        });
+
+        it('should handle failed reconnection to Wowza agent', fakeAsync(() => {
+            spyOn(mockConferenceStore, 'dispatch');
+
+            service.conference = { audioRecordingIngestUrl: 'ingestUrl', id: 'conferenceId' } as any;
+            service.wowzaAgent = { uuid: 'wowzaUUID' } as any;
+            const dialOutToWowzaResponse = { status: 'failure' };
+            videoCallServiceSpy.connectWowzaAgent.and.callFake((_, callback) => {
+                callback(dialOutToWowzaResponse);
+            });
+            service.reconnectToWowza();
+            flush();
+            expect(mockConferenceStore.dispatch).toHaveBeenCalledWith(
+                AudioRecordingActions.resumeAudioRecordingFailure({
+                    conferenceId: 'conferenceId'
+                })
+            );
+        }));
+    });
+
+    describe('cleanupDialOutConnections', () => {
+        it('should clean up dial out connections', () => {
+            service.dialOutUUID = ['uuid1', 'uuid2'];
+            service.cleanupDialOutConnections();
+            expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid1');
+            expect(videoCallServiceSpy.disconnectWowzaAgent).toHaveBeenCalledWith('uuid2');
+            expect(service.dialOutUUID).toEqual([]);
         });
     });
 

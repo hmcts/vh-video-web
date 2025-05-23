@@ -91,7 +91,18 @@ export let videoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
 
 export function initAllWRDependencies() {
     mockConferenceStore = createMockStore({
-        initialState: { currentConference: mapConferenceToVHConference(globalConference), availableRooms: [], consultationStatuses: [] }
+        initialState: {
+            currentConference: mapConferenceToVHConference(globalConference),
+            availableRooms: [],
+            consultationStatuses: [],
+            audioRecordingState: {
+                continueWithoutRecording: false,
+                recordingPaused: false,
+                restartInProgress: false,
+                restartNotificationDisplayed: false,
+                wowzaConnectedAsAudioOnly: true
+            }
+        }
     });
 
     mockConferenceStore.overrideSelector(ConferenceSelectors.getActiveConference, mapConferenceToVHConference(globalConference));
