@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Subscription } from 'rxjs';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
@@ -11,12 +11,14 @@ import { ParticipantStatusReader } from 'src/app/shared/models/participant-statu
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { SortingHelper } from 'src/app/shared/helpers/sorting-helper';
+import { EndpointDetails } from 'src/app/shared/models/endpoint-details';
 
 @Directive()
 export abstract class ParticipantStatusDirective {
     loadingData: boolean;
     hearingVenueName: string;
     participants: ParticipantContactDetails[];
+    endpoints: EndpointDetails[];
     sortedParticipants: ParticipantContactDetails[];
     eventHubSubscriptions: Subscription = new Subscription();
     conferenceId: string;
@@ -44,9 +46,36 @@ export abstract class ParticipantStatusDirective {
         this.loadingData = false;
     }
 
+    async loadEndpointData() {
+        const endpointDetails = await this.getEndpointsByConference(this.conferenceId);
+
+        this.endpoints = endpointDetails.map(x => {
+            const endpoint = new EndpointDetails(x);
+            this.setEndpointStatus(endpoint.status, endpoint);
+
+            return endpoint;
+        });
+        this.participants = this.sortParticipants();
+        this.loadingData = false;
+    }
+
     async getParticipantsByConference(conferenceId: string) {
         try {
             return await this.videoWebService.getParticipantsWithContactDetailsByConferenceId(conferenceId);
+        } catch (error) {
+            this.logger.error(
+                '[ParticipantStatus] - There was an error getting the VH Officer dashboard participant status list of names',
+                error,
+                { conference: conferenceId }
+            );
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+        }
+    }
+
+    async getEndpointsByConference(conferenceId: string) {
+        try {
+            return await this.videoWebService.getEndpointsForConference(conferenceId);
         } catch (error) {
             this.logger.error(
                 '[ParticipantStatus] - There was an error getting the VH Officer dashboard participant status list of names',
@@ -68,6 +97,13 @@ export abstract class ParticipantStatusDirective {
         } else {
             participant.statusText = this.participantStatusReader.getStatusAsText(participantStatus);
         }
+    }
+
+    setEndpointStatus(endpointStatus: EndpointStatus, endpoint: EndpointDetails) {
+        endpoint.status = endpointStatus;
+    
+        endpoint.statusText = this.participantStatusReader.getEndpointStatusAsText(endpointStatus);
+        
     }
 
     setupEventHubSubscribers() {
@@ -92,6 +128,16 @@ export abstract class ParticipantStatusDirective {
                 if (this.conferenceId === participantsUpdatedMessage.conferenceId) {
                     this.logger.debug('[WR] - Participants updated for current conference, updating list');
                     this.loadData();
+                }
+            })
+        );
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getEndpointsUpdated().subscribe(endpointUpdatedMessage => {
+                this.logger.debug('[WR] - Endpoint Updated', endpointUpdatedMessage);
+                if (this.conferenceId === endpointUpdatedMessage.conferenceId) {
+                    this.logger.debug('[WR] - Endpoints updated for current conference, updating list');
+                    this.loadEndpointData();
                 }
             })
         );

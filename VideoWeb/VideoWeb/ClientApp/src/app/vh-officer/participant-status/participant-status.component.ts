@@ -8,6 +8,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
+import { EndpointDetails } from 'src/app/shared/models/endpoint-details';
 
 @Component({
     standalone: false,
@@ -18,7 +19,9 @@ import { ParticipantStatusReader } from 'src/app/shared/models/participant-statu
 export class ParticipantStatusComponent extends ParticipantStatusDirective implements OnInit {
     @Input() conferenceId: string;
     participantBeingEdited: ParticipantContactDetails;
+    endpointBeingEdited: EndpointDetails;
     newParticipantName: string;
+    newEndpointName: string;
     editIcon = faPenToSquare;
     deleteIcon = faTrash;
     showError = false;
@@ -38,9 +41,13 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
         this.newParticipantName = null;
         this.setupEventHubSubscribers();
         this.loadData();
+        this.loadEndpointData();
     }
 
     isEditingParticipant(id: string) {
+        return this.participantBeingEdited?.id === id;
+    }
+    isEditingEndpoint(id: string) {
         return this.participantBeingEdited?.id === id;
     }
 
@@ -51,6 +58,9 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
 
     onParticipantNameChange(value: string) {
         this.newParticipantName = value;
+    }
+    onEndpointNameChange(value: string) {
+        this.newEndpointName = value;
     }
 
     /**
@@ -109,6 +119,11 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
         return (
             (participant.role === Role.QuickLinkParticipant || participant.role === Role.QuickLinkObserver) &&
             participant.status === ParticipantStatus.Disconnected
+        );
+    }
+    isEndpointDeletable(endpoint) {
+        return (
+            endpoint.status === ParticipantStatus.Disconnected
         );
     }
 }

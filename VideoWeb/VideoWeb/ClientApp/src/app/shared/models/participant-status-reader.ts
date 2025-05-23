@@ -1,4 +1,4 @@
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -17,6 +17,19 @@ export class ParticipantStatusReader {
                 return 'In hearing';
             default:
                 return status;
+        }
+    }
+
+    getEndpointStatusAsText(status: EndpointStatus): string {
+        switch (status) {
+            case EndpointStatus.Connected:
+            return 'Connected';
+            case EndpointStatus.Disconnected:
+            return 'Disconnected';
+            case EndpointStatus.InConsultation:
+            return 'In consultation';
+            default:
+            return status;
         }
     }
 

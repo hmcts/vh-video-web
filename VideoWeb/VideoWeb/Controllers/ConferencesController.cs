@@ -222,11 +222,12 @@ public class ConferencesController(
         }
         
         var conference = await conferenceService.GetConference(conferenceId, cancellationToken);
+
         
         if (!conference.IsWaitingRoomOpen)
         {
             logger.LogUnauthorizedConferenceAccess(conferenceId);
-            
+
             return Unauthorized();
         }
         

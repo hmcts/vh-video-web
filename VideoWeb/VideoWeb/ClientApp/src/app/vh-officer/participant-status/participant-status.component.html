@@ -11,74 +11,118 @@
         </span>
       </div>
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
-         <ng-container>
+        <ng-container>
           {{ participant.displayName }}
         </ng-container>
         <div id="tooltip-{{ participant.id }}" class="tooltip">
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
       </div>
-        &nbsp;
-        <a id="edit-link-{{ participant.id }}" href="javascript:void(0);" 
-            (click)="setParticipantEdit(participant)" class="govuk-body vh-ml10"
-            attr.aria-label="{{ 'participant-status.editdisplayname' | translate }}">
-            <fa-icon [icon]="editIcon" *ngIf="!isEditingParticipant(participant.id)"></fa-icon>
-        </a>
-        &nbsp;
-        <a id="delete-link-{{ participant.id }}" href="javascript:void(0);" 
-            (click)="deleteParticipant(participant)" class="govuk-body vh-ml10"
-            attr.aria-label="{{ 'participant-status.deleteparticipant' | translate }}">
-            <fa-icon [icon]="deleteIcon" *ngIf="isParticipantDeletable(participant)"></fa-icon>
-        </a>
+      &nbsp;
+      <a id="edit-link-{{ participant.id }}" href="javascript:void(0);" (click)="setParticipantEdit(participant)"
+        class="govuk-body vh-ml10" attr.aria-label="{{ 'participant-status.editdisplayname' | translate }}">
+        <fa-icon [icon]="editIcon" *ngIf="!isEditingParticipant(participant.id)"></fa-icon>
+      </a>
+      &nbsp;
+      <a id="delete-link-{{ participant.id }}" href="javascript:void(0);" (click)="deleteParticipant(participant)"
+        class="govuk-body vh-ml10" attr.aria-label="{{ 'participant-status.deleteparticipant' | translate }}">
+        <fa-icon [icon]="deleteIcon" *ngIf="isParticipantDeletable(participant)"></fa-icon>
+      </a>
     </div>
 
     <div class="govuk-grid-column-one-third">
-        <span *ngIf="isEditingParticipant(participant.id)">
-            <div [ngClass]="showError ? 'govuk-form-group--error' : 'govuk-form-group'">
-                <input
-                    type="text"
-                    id="participant-{{ participant.id }}-name"
-                    #participantInputName
-                    (blur)="onParticipantNameChange(participantInputName.value)"
-                    value="{{ newParticipantName }}"
-                    class="govuk-input govuk-input--width-20"
-                />
-            </div>
-            <div *ngIf="showError" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error</span>
-                Update display name error
-            </div>
-            <div class="vh-mt10">
-                <span>
-                  <input
-                      type="button"
-                      id="editDisplayName"
-                      (click)="saveNameUpdate(participant.id)"
-                      value="{{ 'participant-status.save' | translate }}"
-                      class="govuk-button"
-                  />
-                </span>&nbsp;
-                <span>
-                  <input
-                      type="button"
-                      id="cancelDisplayName"
-                      (click)="cancelNameUpdate()"
-                      value="{{ 'participant-status.cancel' | translate }}"
-                      class="govuk-button vh-ml10 govuk-button--secondary"
-                  />
-                </span>
-            </div>
-        </span>
+      <span *ngIf="isEditingParticipant(participant.id)">
+        <div [ngClass]="showError ? 'govuk-form-group--error' : 'govuk-form-group'">
+          <input type="text" id="participant-{{ participant.id }}-name" #participantInputName
+            (blur)="onParticipantNameChange(participantInputName.value)" value="{{ newParticipantName }}"
+            class="govuk-input govuk-input--width-20" />
+        </div>
+        <div *ngIf="showError" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error</span>
+          Update display name error
+        </div>
+        <div class="vh-mt10">
+          <span>
+            <input type="button" id="editDisplayName" (click)="saveNameUpdate(participant.id)"
+              value="{{ 'participant-status.save' | translate }}" class="govuk-button" />
+          </span>&nbsp;
+          <span>
+            <input type="button" id="cancelDisplayName" (click)="cancelNameUpdate()"
+              value="{{ 'participant-status.cancel' | translate }}"
+              class="govuk-button vh-ml10 govuk-button--secondary" />
+          </span>
+        </div>
+      </span>
     </div>
 
 
     <div class="govuk-grid-column-one-third">
-      <p
-        id="participant-status-{{ participant.id }}"
-        class="govuk-body-s govuk-!-font-weight-bold"
-        [ngClass]="getParticipantStatusClass(participant.status)"
-      >
+      <p id="participant-status-{{ participant.id }}" class="govuk-body-s govuk-!-font-weight-bold"
+        [ngClass]="getParticipantStatusClass(participant.status)">
         {{ participant.statusText }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="endpoints-status-list">
+  <div *ngFor="let endpoint of endpoints" class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third status-box-display">
+      <div class="participant-icon">
+        <span *ngIf="endpoint.isInterpreterOrInterpretee" class="vh-interpreter-icon">
+          <fa-icon icon="language"></fa-icon>
+        </span>
+      </div>
+      <div id="participant-contact-details-link-{{ endpoint.id }}" class="govuk-body-s tooltip-wrapper">
+        <ng-container>
+          {{ endpoint.displayName }}
+        </ng-container>
+        <div id="tooltip-{{ endpoint.id }}" class="tooltip">
+          <app-participant-info-tooltip [participant]="endpoint"></app-participant-info-tooltip>
+        </div>
+      </div>
+      &nbsp;
+      <a id="edit-link-{{ endpoint.id }}" href="javascript:void(0);" (click)="setParticipantEdit(endpoint)"
+        class="govuk-body vh-ml10" attr.aria-label="{{ 'participant-status.editdisplayname' | translate }}">
+        <fa-icon [icon]="editIcon" *ngIf="!isEditingEndpoint(endpoint.id)"></fa-icon>
+      </a>
+      &nbsp;
+      <a id="delete-link-{{ endpoint.id }}" href="javascript:void(0);" (click)="deleteendpoint(endpoint)"
+        class="govuk-body vh-ml10" attr.aria-label="{{ 'endpoint-status.deleteendpoint' | translate }}">
+        <fa-icon [icon]="deleteIcon" *ngIf="isEndpointDeletable(endpoint)"></fa-icon>
+      </a>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <span *ngIf="isEditingEndpoint(endpoint.id)">
+        <div [ngClass]="showError ? 'govuk-form-group--error' : 'govuk-form-group'">
+          <input type="text" id="endpoint-{{ endpoint.id }}-name" #endpointInputName
+            (blur)="onEndpointNameChange(endpointInputName.value)" value="{{ newendpointName }}"
+            class="govuk-input govuk-input--width-20" />
+        </div>
+        <div *ngIf="showError" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error</span>
+          Update display name error
+        </div>
+        <div class="vh-mt10">
+          <span>
+            <input type="button" id="editDisplayName" (click)="saveNameUpdate(endpoint.id)"
+              value="{{ 'endpoint-status.save' | translate }}" class="govuk-button" />
+          </span>&nbsp;
+          <span>
+            <input type="button" id="cancelDisplayName" (click)="cancelNameUpdate()"
+              value="{{ 'endpoint-status.cancel' | translate }}"
+              class="govuk-button vh-ml10 govuk-button--secondary" />
+          </span>
+        </div>
+      </span>
+    </div>
+
+
+    <div class="govuk-grid-column-one-third">
+      <p id="endpoint-status-{{ endpoint.id }}" class="govuk-body-s govuk-!-font-weight-bold"
+        [ngClass]="getendpointStatusClass(endpoint.status)">
+        {{ endpoint.statusText }}
       </p>
     </div>
   </div>
