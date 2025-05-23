@@ -16,7 +16,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { VHConference, VHParticipant, VHRoom } from '../store/models/vh-conference';
+import { AudioRecordingState, VHConference, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import {
