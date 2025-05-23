@@ -28,6 +28,7 @@ import { VideoCallHostActions } from '../actions/video-call-host.actions';
 import { SelfTestActions } from '../actions/self-test.actions';
 import { AuthActions } from '../actions/auth.actions';
 import { UserProfile } from '../models/user-profile';
+import { AudioRecordingActions } from '../actions/audio-recording.actions';
 
 function deepFreeze(object) {
     if (Object.isFrozen(object)) {
@@ -1718,6 +1719,230 @@ describe('Conference Reducer', () => {
             );
 
             expect(result.userProfile).toEqual(userProfile);
+        });
+    });
+
+    describe('startHearing', () => {
+        it('should ignore action for another conference', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                VideoCallHostActions.startHearing({
+                    conferenceId: 'unknown'
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeTrue();
+        });
+
+        it('should reset audio recording restart in progress to false when hearing starts', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                VideoCallHostActions.startHearing({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeFalse();
+        });
+    });
+
+    describe('pauseAudioRecordingSuccess', () => {
+        it('should ignore action for another conference', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.pauseAudioRecordingSuccess({
+                    conferenceId: 'unknown'
+                })
+            );
+
+            expect(result.audioRecordingState.recordingPaused).toBeFalse();
+            expect(result.audioRecordingState.restartInProgress).toBeTrue();
+        });
+
+        it('should set the audio recording state to paused', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.pauseAudioRecordingSuccess({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.audioRecordingState.recordingPaused).toBeTrue();
+            expect(result.audioRecordingState.restartInProgress).toBeFalse();
+        });
+    });
+
+    describe('resumeAudioRecording', () => {
+        it('should ignore action for another conference', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: false,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.resumeAudioRecording({
+                    conferenceId: 'unknown'
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeFalse();
+        });
+
+        it('should set the audio recording state to resumed', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: false,
+                    continueWithoutRecording: false,
+                    recordingPaused: true,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.resumeAudioRecording({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeTrue();
+        });
+    });
+
+    describe('audioRecordingRestarted', () => {
+        it('should ignore action for another conference', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: false,
+                    continueWithoutRecording: false,
+                    recordingPaused: false,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.audioRecordingRestarted({
+                    conferenceId: 'unknown'
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeFalse();
+        });
+
+        it('should set the audio recording state to restarted', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: false,
+                    continueWithoutRecording: false,
+                    recordingPaused: true,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.audioRecordingRestarted({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeTrue();
+        });
+    });
+
+    describe('resumeAudioRecordingSuccess', () => {
+        it('should ignore action for another conference', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: true,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.resumeAudioRecordingSuccess({
+                    conferenceId: 'unknown'
+                })
+            );
+
+            expect(result.audioRecordingState.recordingPaused).toBeTrue();
+            expect(result.audioRecordingState.restartInProgress).toBeTrue();
+        });
+
+        it('should set the audio recording state to resumed', () => {
+            const initialAudioRecordingState: ConferenceState = {
+                ...existingInitialState,
+                audioRecordingState: {
+                    restartInProgress: true,
+                    continueWithoutRecording: false,
+                    recordingPaused: true,
+                    wowzaConnectedAsAudioOnly: false,
+                    restartNotificationDisplayed: false
+                }
+            };
+            const result = conferenceReducer(
+                initialAudioRecordingState,
+                AudioRecordingActions.resumeAudioRecordingSuccess({
+                    conferenceId: conferenceTestData.id
+                })
+            );
+
+            expect(result.audioRecordingState.restartInProgress).toBeFalse();
+            expect(result.audioRecordingState.recordingPaused).toBeFalse();
         });
     });
 });
