@@ -14,7 +14,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { RoomClosingToastrService } from '../services/room-closing-toast.service';
+
 import { VideoCallService } from '../services/video-call.service';
 import { VHConference, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
@@ -28,7 +28,6 @@ import {
     initAllWRDependencies,
     launchDarklyService,
     notificationToastrService,
-    roomClosingToastrService,
     router,
     videoCallEventsService,
     videoCallService
@@ -80,7 +79,6 @@ describe('WaitingRoomComponent', () => {
     let mockConsultationService: jasmine.SpyObj<ConsultationService>;
     let mockNotificationToastrService: jasmine.SpyObj<NotificationToastrService>;
     let mockDeviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-    let mockRoomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
     let mockTranslationService = translateServiceSpy;
     let mockRouter: jasmine.SpyObj<Router>;
     let mockClockService: jasmine.SpyObj<ClockService>;
@@ -128,7 +126,7 @@ describe('WaitingRoomComponent', () => {
         mockConsultationService = consultationService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
-        mockRoomClosingToastrService = roomClosingToastrService;
+
         mockRouter = router;
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
@@ -191,7 +189,6 @@ describe('WaitingRoomComponent', () => {
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
-                { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
@@ -368,25 +365,6 @@ describe('WaitingRoomComponent', () => {
                 tick();
 
                 expect(mockRouter.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
-            }));
-
-            it('should show room closing mesage when participant is in a private consultation', fakeAsync(() => {
-                component.isPrivateConsultation = true;
-
-                const date = new Date();
-                clockSubject.next(date);
-                tick();
-
-                expect(mockRoomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
-            }));
-
-            it('should clear toasts', fakeAsync(() => {
-                component.isPrivateConsultation = false;
-
-                clockSubject.next(new Date());
-                tick();
-
-                expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
             }));
         });
 
@@ -1193,7 +1171,6 @@ describe('WaitingRoomComponent', () => {
 
             component.ngOnDestroy();
 
-            expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
             expect(mockStore.dispatch).toHaveBeenCalledWith(
                 ConferenceActions.leaveConference({
                     conferenceId: conference.id
