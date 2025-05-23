@@ -51,6 +51,7 @@ import { HearingCancelledMessage } from './models/hearing-cancelled-message';
 import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
 import { UpdatedAllocation } from '../shared/models/update-allocation-dto';
 import { VideoCallActions } from '../waiting-space/store/actions/video-call.action';
+import { AudioRecordingActions } from '../waiting-space/store/actions/audio-recording.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -349,11 +350,17 @@ export class EventsService {
 
         AudioRestartActioned: (conferenceId: string) => {
             this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
+            this.store.dispatch(AudioRecordingActions.audioRecordingRestarted({ conferenceId }));
             this.audioRestartActionedSubject.next(conferenceId);
         },
 
         AudioRecordingPaused: (conferenceId: string, state: boolean) => {
             this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
+            if (state) {
+                this.store.dispatch(AudioRecordingActions.pauseAudioRecordingSuccess({ conferenceId }));
+            } else {
+                this.store.dispatch(AudioRecordingActions.resumeAudioRecordingSuccess({ conferenceId }));
+            }
             this.audioPausedActionSubject.next(new AudioRecordingPauseStateMessage(conferenceId, state));
         },
 

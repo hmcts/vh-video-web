@@ -1,16 +1,17 @@
 import moment from 'moment';
 import { Component, OnInit } from '@angular/core';
-import { ToastrService, ToastPackage, Toast } from 'ngx-toastr';
+import { ToastrService, ToastPackage } from 'ngx-toastr';
 import { Observable, Subject } from 'rxjs';
 import { ClockService } from 'src/app/services/clock.service';
 import { map, startWith } from 'rxjs/operators';
+import { VhToastComponent } from '../vh-toast.component';
 
 @Component({
     standalone: false,
     templateUrl: './room-closing-toast.component.html',
     styleUrls: ['./room-closing-toast.component.scss']
 })
-export class RoomClosingToastComponent extends Toast implements OnInit {
+export class RoomClosingToastComponent extends VhToastComponent implements OnInit {
     alertMessage$: Observable<string>;
     msAllowedForPrivateConsultationsAfterClosing: number;
     expiryDate: Date;

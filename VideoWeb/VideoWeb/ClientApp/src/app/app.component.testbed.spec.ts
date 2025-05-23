@@ -29,6 +29,8 @@ import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helper
 import { IdpProviders } from './security/idp-providers';
 import { EventsHubService } from './services/events-hub.service';
 import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
+import { MockDirective } from 'ng-mocks';
+import { FeatureFlagDirective } from './shared/directives/feature-flag.directive';
 
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -90,7 +92,14 @@ describe('AppComponent - Testbed', () => {
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
-            declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
+            declarations: [
+                AppComponent,
+                HeaderStubComponent,
+                FooterStubComponent,
+                BetaBannerStubComponent,
+                TranslatePipeMock,
+                MockDirective(FeatureFlagDirective)
+            ],
             providers: [
                 { provide: ConfigService, useValue: configServiceSpy },
                 { provide: Logger, useClass: MockLogger },

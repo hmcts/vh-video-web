@@ -1,6 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -29,7 +29,7 @@ import { ConferenceState, initialState as initialConferenceState } from '../stor
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { take } from 'rxjs/operators';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { audioRecordingServiceSpy } from '../../testing/mocks/mock-audio-recording.service';
+
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
 import { LocalDeviceStatus, VHConference, VHParticipant, VHPexipParticipant, VHRoom } from '../store/models/vh-conference';
@@ -40,7 +40,7 @@ import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
 describe('HearingControlsBaseComponent', () => {
     let component: HearingControlsBaseComponent;
     let mockStore: MockStore<ConferenceState>;
-    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse);
+    const globalConference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailPast());
     const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
@@ -107,7 +107,6 @@ describe('HearingControlsBaseComponent', () => {
             launchDarklyServiceSpy,
             focusService,
             mockStore,
-            audioRecordingServiceSpy,
             notificationToastrServiceSpy
         );
         conference = mapConferenceToVHConference(new ConferenceTestData().getConferenceDetailNow());

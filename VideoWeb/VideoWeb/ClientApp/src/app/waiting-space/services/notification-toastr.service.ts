@@ -282,35 +282,39 @@ export class NotificationToastrService {
 
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-with-restart.title')}</span>`;
         message += `<br/>${this.translateService.instant('audio-alert-with-restart.message')}<br/>`;
+        const toastrMessage = this.translateService.instant('audio-alert-with-restart.message');
 
         const id = 'notification-toastr-audio-recording-error-restart.dismiss';
         const label = 'audio-alert-with-restart.button';
 
-        return this.generateAudioAlertToastrComponent(message, callback, id, label);
+        return this.generateAudioAlertToastrComponent(toastrMessage, message, callback, id, label);
     }
 
-    showAudioRecordingRestartSuccess(callback: Function) {
+    showAudioRecordingRestartSuccess() {
         this.logger.debug(`${this.loggerPrefix} creating 'audio recording restart success' toastr notification`);
 
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-success.title')}</span>`;
         message += `<br/>${this.translateService.instant('audio-alert-restart-success.message')}<br/>`;
 
+        const toastrMessage = this.translateService.instant('audio-alert-restart-success.message');
+
         const id = 'notification-toastr-audio-recording-error-restart-success.dismiss';
         const label = 'audio-alert-restart-success.button';
 
-        return this.generateAudioAlertToastrComponent(message, callback(false), id, label);
+        return this.generateAudioAlertToastrComponent(toastrMessage, message, null, id, label);
     }
 
-    showAudioRecordingRestartFailure(callback: Function) {
+    showAudioRecordingRestartFailure() {
         this.logger.debug(`${this.loggerPrefix} creating 'audio recording error restart failure' toastr notification`);
 
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-failure.title')}</span>`;
         message += `<br/>${this.translateService.instant('audio-alert-restart-failure.message')}<br/>`;
+        const toastrMessage = this.translateService.instant('audio-alert-restart-failure.message');
 
         const id = 'notification-toastr-audio-recording-error-restart-failure.dismiss';
         const label = 'audio-alert-restart-failure.button';
 
-        return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
+        return this.generateAudioAlertToastrComponent(toastrMessage, message, null, id, label);
     }
 
     showParticipantAdded(participant: VHParticipant, inHearing: boolean = false): VhToastComponent {
@@ -580,8 +584,8 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    private generateAudioAlertToastrComponent(message, callback, id, label) {
-        const toast = this.toastr.show('', '', {
+    private generateAudioAlertToastrComponent(toastrMessage, message, callback, id, label) {
+        const toast = this.toastr.show(toastrMessage, '', {
             tapToDismiss: false,
             toastComponent: VhToastComponent,
             disableTimeOut: true
@@ -594,7 +598,7 @@ export class NotificationToastrService {
                     id: id,
                     label: this.translateService.instant(label),
                     cssClass: 'green',
-                    action: async () => {
+                    action: () => {
                         this.toastr.remove(toast.toastId);
                         if (callback) {
                             callback();
@@ -602,9 +606,9 @@ export class NotificationToastrService {
                     }
                 }
             ],
-            concludeToast: async fn => {
+            concludeToast: () => {
                 this.toastr.remove(toast.toastId);
-                this.showAudioRecordingRestartSuccess(fn);
+                this.showAudioRecordingRestartSuccess();
             },
             onNoAction: () => {
                 this.toastr.remove(toast.toastId);

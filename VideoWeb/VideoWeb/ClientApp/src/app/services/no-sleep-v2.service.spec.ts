@@ -23,12 +23,26 @@ describe('NoSleepV2Service', () => {
         beforeEach(() => {
             noSleepAppSpy.enable.calls.reset();
         });
-        it('should enable no sleep', () => {
+        it('should enable no sleep on click', () => {
             // Arrange
             getSpiedPropertyGetter(noSleepAppSpy, 'isEnabled').and.returnValue(false);
 
             // Act
             service.enable();
+            window.dispatchEvent(new Event('click'));
+
+            // Assert
+            expect(noSleepAppSpy.enable).toHaveBeenCalled();
+            expect(logger.debug).toHaveBeenCalledWith('[NoSleepServiceV2] - enabling no sleep');
+        });
+
+        it('should enable no sleep on touch', () => {
+            // Arrange
+            getSpiedPropertyGetter(noSleepAppSpy, 'isEnabled').and.returnValue(false);
+
+            // Act
+            service.enable();
+            window.dispatchEvent(new Event('touchstart'));
 
             // Assert
             expect(noSleepAppSpy.enable).toHaveBeenCalled();

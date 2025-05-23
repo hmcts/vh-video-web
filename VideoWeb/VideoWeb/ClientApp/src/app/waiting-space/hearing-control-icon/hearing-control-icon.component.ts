@@ -7,6 +7,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     styleUrl: './hearing-control-icon.component.scss'
 })
 export class HearingControlIconComponent {
+    @Input() iconPrefix = 'fas';
+    @Input() tooltipColour = 'grey';
     @Input() iconName: string;
     @Input() iconText: string;
     @Input() showText = false;

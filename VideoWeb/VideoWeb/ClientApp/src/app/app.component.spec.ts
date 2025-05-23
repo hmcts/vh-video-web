@@ -29,7 +29,7 @@ import { Location } from '@angular/common';
 import { pageUrls } from './shared/page-url.constants';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Logger } from './services/logging/logger-base';
-import { MockComponent, ngMocks } from 'ng-mocks';
+import { MockComponent, MockDirective, ngMocks } from 'ng-mocks';
 import { BackNavigationComponent } from './shared/back-navigation/back-navigation.component';
 import { BetaBannerComponent } from './shared/beta-banner/beta-banner.component';
 import { FooterComponent } from './shared/footer/footer.component';
@@ -44,6 +44,7 @@ import { DynatraceService } from './services/api/dynatrace.service';
 import { cookies } from './shared/cookies.constants';
 import { CookieBannerComponent } from './shared/cookie-banner/cookie-banner.component';
 import { NoSleepServiceV2 } from './services/no-sleep-v2.service';
+import { FeatureFlagDirective } from './shared/directives/feature-flag.directive';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -167,7 +168,8 @@ describe('AppComponent', () => {
                 MockComponent(CookieBannerComponent),
                 MockComponent(HeaderComponent),
                 MockComponent(FooterComponent),
-                MockComponent(BetaBannerComponent)
+                MockComponent(BetaBannerComponent),
+                MockDirective(FeatureFlagDirective)
             ],
             imports: [RouterTestingModule]
         }).compileComponents();

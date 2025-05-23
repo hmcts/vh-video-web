@@ -65,13 +65,18 @@ export class RoomClosingToastrService {
     protected showToast(expiryDate: Date) {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
-        this.currentToast = this.toastr.show('', '', {
+        this.currentToast = this.toastr.show('Room closing', '', {
             disableTimeOut: true,
             tapToDismiss: false,
             toastComponent: RoomClosingToastComponent
         });
 
         const roomClosingToast = this.currentToast.toastRef.componentInstance;
+        roomClosingToast.vhToastOptions = {
+            color: 'white',
+            htmlBody: '',
+            buttons: []
+        };
         roomClosingToast.expiryDate = expiryDate;
         roomClosingToast.dismiss.subscribe(() => this.onToastClosed());
     }

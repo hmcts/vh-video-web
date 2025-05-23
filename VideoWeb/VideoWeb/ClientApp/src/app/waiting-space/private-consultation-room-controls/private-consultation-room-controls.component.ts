@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -12,13 +12,12 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { FocusService } from 'src/app/services/focus.service';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../store/reducers/conference.reducer';
-import { faCirclePause, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
-import { AudioRecordingService } from '../../services/audio-recording.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { VHConference } from '../store/models/vh-conference';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
+import { AudioRecordingActions } from '../store/actions/audio-recording.actions';
 
 @Component({
     standalone: false,
@@ -46,10 +45,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     showContextMenu = false;
     isWowzaKillButtonEnabled = false;
-    pauseIcon = faCirclePause;
-    playIcon = faPlayCircle;
     recordingPaused: boolean;
-    recordingButtonDisabled = false;
     wowzaConnected = false;
     enableMuteButton = false;
 
@@ -65,7 +61,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         ldService: LaunchDarklyService,
         protected focusService: FocusService,
         protected conferenceStore: Store<ConferenceState>,
-        protected audioRecordingService: AudioRecordingService,
         protected notificationToastrService: NotificationToastrService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, translateService, userMediaService, focusService, conferenceStore);
@@ -79,24 +74,24 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
                 this.enableMuteButton = conference.countdownComplete || this.isPrivateConsultation;
             });
 
+        this.conferenceStore
+            .select(ConferenceSelectors.getAudioRecordingState)
+            .pipe(
+                filter(audioRecordingPreference => !!audioRecordingPreference),
+                takeUntil(this.destroyedSubject)
+            )
+            .subscribe(audioRecordingState => {
+                this.recordingPaused = audioRecordingState.recordingPaused;
+                this.wowzaConnected = audioRecordingState.wowzaConnectedAsAudioOnly;
+            });
+
         ldService
             .getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false)
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(value => (this.isWowzaKillButtonEnabled = value));
 
-        this.audioRecordingService
-            .getWowzaAgentConnectionState()
-            .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(connected => {
-                this.wowzaConnected = connected;
-            });
-
         // Needed to prevent 'this' being undefined in the callback
         this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
-
-        this.audioRecordingService.getAudioRecordingPauseState().subscribe(async (audioStopped: boolean) => {
-            this.recordingPaused = audioStopped;
-        });
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -168,25 +163,11 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         return mappedLayout;
     }
 
-    async pauseRecording() {
-        if (this.recordingButtonDisabled) {
-            return;
-        }
-        this.recordingButtonDisabled = true;
-        await this.audioRecordingService.stopRecording();
-        setTimeout(() => {
-            this.recordingButtonDisabled = false;
-        }, 5000);
+    pauseRecording() {
+        this.conferenceStore.dispatch(AudioRecordingActions.pauseAudioRecording({ conferenceId: this.conferenceId }));
     }
 
-    async resumeRecording() {
-        if (this.recordingButtonDisabled) {
-            return;
-        }
-        this.recordingButtonDisabled = true;
-        await this.audioRecordingService.reconnectToWowza(null);
-        setTimeout(() => {
-            this.recordingButtonDisabled = false;
-        }, 5000);
+    resumeRecording() {
+        this.conferenceStore.dispatch(AudioRecordingActions.resumeAudioRecording({ conferenceId: this.conferenceId }));
     }
 }
