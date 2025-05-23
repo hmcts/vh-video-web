@@ -58,6 +58,13 @@ describe('WaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
     let conference: VHConference;
     let loggedInParticipant: VHParticipant;
+    const audioRecordingState: AudioRecordingState = {
+        continueWithoutRecording: false,
+        recordingPaused: false,
+        restartInProgress: false,
+        wowzaConnectedAsAudioOnly: false,
+        restartNotificationDisplayed: false
+    };
 
     let component: WaitingRoomComponent;
     let mockStore: MockStore<ConferenceState>;
@@ -200,6 +207,7 @@ describe('WaitingRoomComponent', () => {
         mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
         mockStore.overrideSelector(ConferenceSelectors.getCountdownComplete, conference.countdownComplete);
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+        mockStore.overrideSelector(ConferenceSelectors.getAudioRecordingState, audioRecordingState);
         spyOn(ModalTrapFocus, 'trap').and.callFake(() => {});
     });
 

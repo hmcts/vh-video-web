@@ -18,7 +18,7 @@ import { ConferenceState, initialState as initialConferenceState } from '../stor
 import { createMockStore, MockStore } from '@ngrx/store/testing';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { mapConferenceToVHConference } from '../store/models/api-contract-to-state-model-mappers';
-import { VHPexipParticipant } from '../store/models/vh-conference';
+import { AudioRecordingState, VHPexipParticipant } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../../waiting-space/store/selectors/conference.selectors';
 import { JoinConsultationDecider } from './models/join-consultation-decider';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
@@ -42,6 +42,14 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
+    const audioRecordingState: AudioRecordingState = {
+        continueWithoutRecording: false,
+        recordingPaused: false,
+        restartInProgress: false,
+        wowzaConnectedAsAudioOnly: false,
+        restartNotificationDisplayed: false
+    };
+
     beforeAll(() => {
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
     });
@@ -58,6 +66,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         const initialState = initialConferenceState;
         mockStore = createMockStore({ initialState });
         mockStore.overrideSelector(ConferenceSelectors.getActiveConference, globalConference);
+        mockStore.overrideSelector(ConferenceSelectors.getAudioRecordingState, audioRecordingState);
 
         translateService.instant.calls.reset();
 
@@ -94,6 +103,13 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    describe('constructor', () => {
+        it('should set the correct initial values', () => {
+            expect(component.wowzaConnected).toBe(audioRecordingState.wowzaConnectedAsAudioOnly);
+            expect(component.recordingPaused).toBe(audioRecordingState.recordingPaused);
+        });
     });
 
     describe('canJoinHearingFromConsultation', () => {
