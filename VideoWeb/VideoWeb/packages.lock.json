@@ -37,11 +37,11 @@
       },
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[3.2.12-pr-0965-0004, )",
-        "resolved": "3.2.12-pr-0965-0004",
-        "contentHash": "D3qqJ4dfhi1U66k5hdJgPsdE5JKxhtG7vUcIBSGfGqVxwBeBW2m7mdRFdL3D3d+Pb7lq5Q/sJZaDtQ4aUUn3CA==",
+        "requested": "[3.2.12, )",
+        "resolved": "3.2.12",
+        "contentHash": "/1hf/kgG1Qx31v0acHUFbgFiY14IreDbpTBDalBTycot/6+oquapEkwcI+NAxs/WyMAuIiim5UmS+Kfhj5yYdw==",
         "dependencies": {
-          "BookingsApi.Common": "3.2.12-pr-0965-0004",
+          "BookingsApi.Common": "3.2.12",
           "System.Text.Json": "8.0.5"
         }
       },
@@ -259,8 +259,8 @@
       },
       "BookingsApi.Common": {
         "type": "Transitive",
-        "resolved": "3.2.12-pr-0965-0004",
-        "contentHash": "pckrJYzR9T1b07vzR3ah/6NXTOV4Z/3QUon96bpHBK31Vrs/sDQh5PYrMozPyUr99ZJ+iyhnBMveJCLVnGovMA==",
+        "resolved": "3.2.12",
+        "contentHash": "DvCfT3IyyXw0YBvIUPofBf86cP5RNJ3d7FRL9Qrk/uebNNsiBdkTKAdqnZBbRtYTBUj7OScyefPSX/s0AV64zA==",
         "dependencies": {
           "LaunchDarkly.ServerSdk": "8.4.0",
           "Microsoft.Extensions.Caching.Abstractions": "8.0.0",
@@ -904,7 +904,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
-          "BookingsApi.Client": "[3.2.12-pr-0965-0004, )",
+          "BookingsApi.Client": "[3.2.12, )",
           "LaunchDarkly.ServerSdk": "[8.5.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[8.0.0, )",
           "Microsoft.Extensions.Options": "[8.0.2, )",

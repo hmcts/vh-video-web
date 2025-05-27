@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
-    <PackageReference Include="BookingsApi.Client" Version="3.2.12-pr-0965-0004" />
+    <PackageReference Include="BookingsApi.Client" Version="3.2.12" />
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.5.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.61.3" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="10.5.0.109200">
