@@ -1,5 +1,3 @@
-import { Subject } from 'rxjs';
-
 import { AudioRecordingService } from '../../services/audio-recording.service';
 import { VHConference, VHPexipParticipant } from '../../waiting-space/store/models/vh-conference';
 
@@ -38,27 +36,13 @@ export const mockWowzaAgent: VHPexipParticipant = {
     callTag: 'callTag'
 };
 
-export const getWowzaAgentConnectionState$ = new Subject<boolean>();
-export const getAudioRecordingPauseState$ = new Subject<boolean>();
-
 export const audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>(
     'AudioRecordingService',
-    [
-        'getWowzaAgentConnectionState',
-        'getAudioRecordingPauseState',
-        'stopRecording',
-        'reconnectToWowza',
-        'cleanupDialOutConnections',
-        'cleanupSubscriptions'
-    ],
+    ['stopRecording', 'reconnectToWowza', 'cleanupDialOutConnections', 'cleanupSubscriptions'],
     {
         conference: mockConference,
         wowzaAgent: mockWowzaAgent,
         dialOutUUID: [],
-        restartActioned: false,
         loggerPrefix: '[AudioRecordingService]'
     }
 );
-
-audioRecordingServiceSpy.getWowzaAgentConnectionState.and.returnValue(getWowzaAgentConnectionState$.asObservable());
-audioRecordingServiceSpy.getAudioRecordingPauseState.and.returnValue(getAudioRecordingPauseState$.asObservable());
