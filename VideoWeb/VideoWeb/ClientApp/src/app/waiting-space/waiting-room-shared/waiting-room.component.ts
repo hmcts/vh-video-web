@@ -17,8 +17,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ConferenceActions } from '../store/actions/conference.actions';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
@@ -69,7 +67,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        protected userMediaService: UserMediaService,
         protected hideComponentsService: HideComponentsService,
         protected focusService: FocusService,
         protected store: Store<ConferenceState>,
@@ -510,17 +507,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         this.subscribeToClock();
         this.startEventHubSubscribers();
         this.connectToPexip();
-        this.registerMediaStatusPublisher();
         this.startVideoCallEventSubscribers();
-    }
-
-    private registerMediaStatusPublisher() {
-        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
-            this.audioOnly = audioOnly;
-
-            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
-            await this.eventService.sendMediaStatus(this.conferenceId, this.vhParticipant.id, mediaStatus);
-        });
     }
 
     private setTitle() {
