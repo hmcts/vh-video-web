@@ -25,7 +25,6 @@ import {
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
@@ -103,7 +102,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected router: Router,
         protected consultationService: ConsultationService,
         protected notificationToastrService: NotificationToastrService,
-        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected hideComponentsService: HideComponentsService,
@@ -725,8 +723,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.onDestroy$.next();
         this.onDestroy$.complete();
 
-        this.roomClosingToastrService.clearToasts();
-
         this.store.dispatch(ConferenceActions.leaveConference({ conferenceId: this.vhConference?.id }));
     }
 
@@ -737,16 +733,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             .subscribe(time => {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
-                this.showRoomClosingToast(time);
             });
-    }
-
-    showRoomClosingToast(dateNow: Date) {
-        if (this.isPrivateConsultation) {
-            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, dateNow);
-        } else {
-            this.roomClosingToastrService.clearToasts();
-        }
     }
 
     checkIfHearingIsClosed(): void {

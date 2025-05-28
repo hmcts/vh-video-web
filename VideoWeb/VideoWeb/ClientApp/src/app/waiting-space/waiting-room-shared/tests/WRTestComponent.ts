@@ -8,7 +8,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
-import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { HideComponentsService } from '../../services/hide-components.service';
@@ -38,7 +37,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected router: Router,
         protected consultationService: ConsultationService,
         protected notificationToastrService: NotificationToastrService,
-        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected hideComponentsService: HideComponentsService,
@@ -55,7 +53,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             router,
             consultationService,
             notificationToastrService,
-            roomClosingToastrService,
             clockService,
             consultationInvitiationService,
             hideComponentsService,

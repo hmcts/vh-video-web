@@ -11,7 +11,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -66,7 +65,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
         protected router: Router,
         protected consultationService: ConsultationService,
         protected notificationToastrService: NotificationToastrService,
-        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
@@ -86,7 +84,6 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             router,
             consultationService,
             notificationToastrService,
-            roomClosingToastrService,
             clockService,
             consultationInvitiationService,
             hideComponentsService,
@@ -177,16 +174,7 @@ export class WaitingRoomComponent extends WaitingRoomBaseDirective implements On
             .subscribe(time => {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
-                this.showRoomClosingToast(time);
             });
-    }
-
-    showRoomClosingToast(dateNow: Date) {
-        if (this.isPrivateConsultation) {
-            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, dateNow);
-        } else {
-            this.roomClosingToastrService.clearToasts();
-        }
     }
 
     checkIfHearingIsClosed(): void {
