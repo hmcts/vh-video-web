@@ -72,6 +72,11 @@ export class RoomClosingToastrService {
         });
 
         const roomClosingToast = this.currentToast.toastRef.componentInstance;
+        roomClosingToast.vhToastOptions = {
+            color: 'white',
+            htmlBody: '',
+            buttons: []
+        };
         roomClosingToast.expiryDate = expiryDate;
         roomClosingToast.dismiss.subscribe(() => this.onToastClosed());
     }

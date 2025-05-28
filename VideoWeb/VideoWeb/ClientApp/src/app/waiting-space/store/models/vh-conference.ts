@@ -142,3 +142,11 @@ export interface SelfTestScore {
     score?: TestScore;
     passed?: boolean;
 }
+
+export interface AudioRecordingState {
+    continueWithoutRecording: boolean;
+    recordingPaused: boolean;
+    restartInProgress: boolean;
+    wowzaConnectedAsAudioOnly: boolean;
+    restartNotificationDisplayed: boolean;
+}

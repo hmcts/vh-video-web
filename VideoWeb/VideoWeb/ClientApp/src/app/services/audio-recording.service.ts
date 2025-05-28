@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { VideoCallService } from '../waiting-space/services/video-call.service';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
-import { AudioRecordingPauseStateMessage } from '../shared/models/audio-recording-pause-state-message';
 import { Store } from '@ngrx/store';
 import { ConferenceState } from '../waiting-space/store/reducers/conference.reducer';
 import * as ConferenceSelectors from '../waiting-space/store/selectors/conference.selectors';
 import { VHConference, VHPexipParticipant } from '../waiting-space/store/models/vh-conference';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { ConferenceStatus } from './clients/api-client';
+import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { AudioRecordingActions } from '../waiting-space/store/actions/audio-recording.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -17,48 +16,33 @@ import { ConferenceStatus } from './clients/api-client';
 export class AudioRecordingService {
     loggerPrefix = '[AudioRecordingService]';
     dialOutUUID = [];
-    restartActioned: boolean;
     conference: VHConference;
     wowzaAgent: VHPexipParticipant;
 
-    private readonly audioStopped$: Subject<boolean> = new Subject<boolean>();
-    private readonly wowzaAgentConnection$ = new Subject<boolean>();
     private readonly onDestroy$ = new Subject<void>();
 
     constructor(
         private readonly logger: Logger,
         private readonly videoCallService: VideoCallService,
         private readonly eventService: EventsService,
-        conferenceStore: Store<ConferenceState>
+        private readonly conferenceStore: Store<ConferenceState>
     ) {
-        conferenceStore
+        this.conferenceStore
             .select(ConferenceSelectors.getActiveConference)
-            .pipe(takeUntil(this.onDestroy$))
+            .pipe(
+                filter(conference => !!conference),
+                takeUntil(this.onDestroy$)
+            )
             .subscribe(conference => {
                 this.conference = conference;
             });
-
-        conferenceStore
+        this.conferenceStore
             .select(ConferenceSelectors.getWowzaParticipant)
             .pipe(
                 takeUntil(this.onDestroy$),
                 distinctUntilChanged((prev, curr) => prev?.uuid === curr?.uuid)
             )
             .subscribe(wowzaParticipant => this.handleWowzaParticipantAdded(wowzaParticipant));
-
-        this.eventService.getAudioPaused().subscribe(async (message: AudioRecordingPauseStateMessage) => {
-            if (this.conference.id === message.conferenceId) {
-                this.audioStopped$.next(message.pauseState);
-            }
-        });
-    }
-
-    getWowzaAgentConnectionState(): Observable<boolean> {
-        return this.wowzaAgentConnection$.asObservable();
-    }
-
-    getAudioRecordingPauseState(): Observable<boolean> {
-        return this.audioStopped$.asObservable();
     }
 
     async stopRecording() {
@@ -67,21 +51,19 @@ export class AudioRecordingService {
         this.dialOutUUID = this.dialOutUUID.filter(uuid => uuid !== this.wowzaAgent.uuid);
     }
 
-    async reconnectToWowza(callback: Function = null) {
-        this.restartActioned = true;
-        if (this.conference.status !== ConferenceStatus.InSession) {
-            return;
-        }
+    reconnectToWowza() {
+        this.logger.debug(`${this.loggerPrefix} Reconnecting to Wowza agent`);
         this.videoCallService.connectWowzaAgent(this.conference.audioRecordingIngestUrl, async dialOutToWowzaResponse => {
             if (dialOutToWowzaResponse.status === 'success') {
                 this.logger.debug(`${this.loggerPrefix} dial-out request successful`);
+                this.eventService.sendAudioRecordingPaused(this.conference.id, false);
             } else {
-                this.restartActioned = false;
-                if (callback) {
-                    callback();
-                } else {
-                    this.wowzaAgentConnection$.next(false);
-                }
+                this.logger.error(`${this.loggerPrefix} dial-out request failed`, new Error('Dial-out request failed'));
+                this.conferenceStore.dispatch(
+                    AudioRecordingActions.resumeAudioRecordingFailure({
+                        conferenceId: this.conference.id
+                    })
+                );
             }
         });
     }
@@ -108,14 +90,8 @@ export class AudioRecordingService {
     private async handleWowzaParticipantAdded(participant: VHPexipParticipant) {
         if (participant) {
             this.dialOutUUID = [...new Set([...this.dialOutUUID, participant?.uuid])];
+            this.logger.debug(`${this.loggerPrefix} Wowza agent added {uuid: ${participant.uuid}}`, { currentList: this.dialOutUUID });
         }
         this.wowzaAgent = participant;
-        if (participant?.isAudioOnlyCall) {
-            this.wowzaAgentConnection$.next(true);
-            this.restartActioned = false;
-            await this.eventService.sendAudioRecordingPaused(this.conference.id, false);
-        } else {
-            this.wowzaAgentConnection$.next(false);
-        }
     }
 }

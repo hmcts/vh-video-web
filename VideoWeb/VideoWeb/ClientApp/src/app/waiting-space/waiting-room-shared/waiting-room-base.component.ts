@@ -754,11 +754,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         elm?.focus();
     }
 
-    videoClosedExt() {
-        /// This is overriden in the child judge waiting room component
-        this.logger.debug(`${this.loggerPrefix} video closed`);
-    }
-
     protected findParticipant(participantId: string): VHParticipant {
         return this.vhConference.participants.find(x => x.id === participantId);
     }
@@ -774,9 +769,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     private setShowVideo(showVideo: boolean) {
         this.showVideo = showVideo;
         this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
-        if (showVideo === false) {
-            this.videoClosedExt();
-        }
     }
 
     private handleLinkedParticipantConsultationResponse(

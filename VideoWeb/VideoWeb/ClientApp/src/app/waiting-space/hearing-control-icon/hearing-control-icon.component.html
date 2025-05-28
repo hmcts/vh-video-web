@@ -4,13 +4,13 @@
       [id]="iconName"
       class="icon-button"
       appTooltip
-      colour="grey"
+      [colour]="tooltipColour"
       [text]="iconText"
       [attr.aria-label]="iconText"
       tabindex="0"
       (click)="$event.preventDefault(); onIconClicked()"
     >
-      <fa-icon [icon]="['fas', iconName]"></fa-icon>
+      <fa-icon [icon]="[iconPrefix, iconName]"></fa-icon>
       <ng-content></ng-content>
     </button>
   </div>

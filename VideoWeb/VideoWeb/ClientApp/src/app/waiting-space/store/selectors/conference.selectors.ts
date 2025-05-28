@@ -17,3 +17,4 @@ export const getSelfTestScore = createSelector(activeConferenceFeature, state =>
 export const getUserProfile = createSelector(activeConferenceFeature, state => state?.userProfile);
 export const getAvailableRooms = createSelector(activeConferenceFeature, state => state?.availableRooms);
 export const getConsultationStatuses = createSelector(activeConferenceFeature, state => state?.consultationStatuses);
+export const getAudioRecordingState = createSelector(activeConferenceFeature, state => state?.audioRecordingState);
