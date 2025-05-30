@@ -42,12 +42,10 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ConsultationErrorComponent } from '../consultation-modals/consultation-error/consultation-error.component';
 import { ConsultationLeaveComponent } from '../consultation-modals/consultation-leave/consultation-leave.component';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { WaitingRoomUserRole } from './models/waiting-room-user-role';
 import { VideoCallEventsService } from '../services/video-call-events.service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
@@ -86,8 +84,6 @@ describe('WaitingRoomComponent', () => {
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
-    let isAudioOnlySubject: Subject<boolean>;
-    let mockUserMediaService: jasmine.SpyObj<UserMediaService>;
     let mockVideoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
 
     const onVideoWrapperReadySubject = new Subject<void>();
@@ -131,9 +127,6 @@ describe('WaitingRoomComponent', () => {
         mockConsultationInvitiationService = consultationInvitiationService;
         mockLaunchDarklyService = launchDarklyService;
         mockTranslationService = translateServiceSpy;
-        mockUserMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
-        isAudioOnlySubject = new Subject<boolean>();
-        getSpiedPropertyGetter(mockUserMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
         mockVideoCallEventsService = videoCallEventsService;
         mockVideoCallEventsService.onVideoWrapperReady.and.returnValue(onVideoWrapperReadySubject.asObservable());
         mockVideoCallEventsService.onLeaveConsultation.and.returnValue(onLeaveConsultationSubject.asObservable());
@@ -191,7 +184,6 @@ describe('WaitingRoomComponent', () => {
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
                 { provide: TranslateService, useValue: mockTranslationService },
                 { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
-                { provide: UserMediaService, useValue: mockUserMediaService },
                 { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
@@ -697,22 +689,6 @@ describe('WaitingRoomComponent', () => {
                 component.onLeaveHearingButtonClicked();
                 expect(component.displayLeaveHearingPopup).toBeTrue();
             });
-        });
-
-        describe('userMediaService.isAutioOnly$ changed', () => {
-            it('should publish the media status when audio toggle changes', fakeAsync(() => {
-                component.ngOnInit();
-                tick();
-                isAudioOnlySubject.next(true);
-                tick();
-                expect(component.audioOnly).toBeTrue();
-
-                expect(mockEventsService.sendMediaStatus).toHaveBeenCalledWith(
-                    conference.id,
-                    loggedInParticipant.id,
-                    new ParticipantMediaStatus(false, true)
-                );
-            }));
         });
     });
 

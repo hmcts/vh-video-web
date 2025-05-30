@@ -45,7 +45,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
     maxBandwidth = null;
-    audioOnly: boolean;
     privateConsultationAccordianExpanded = false;
     loadingData: boolean;
     errorCount: number;
