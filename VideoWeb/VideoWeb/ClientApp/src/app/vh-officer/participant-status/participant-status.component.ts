@@ -121,9 +121,4 @@ export class ParticipantStatusComponent extends ParticipantStatusDirective imple
             participant.status === ParticipantStatus.Disconnected
         );
     }
-    isEndpointDeletable(endpoint) {
-        return (
-            endpoint.status === ParticipantStatus.Disconnected
-        );
-    }
 }

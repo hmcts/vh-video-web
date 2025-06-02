@@ -177,7 +177,20 @@ export abstract class ParticipantStatusDirective {
             case ParticipantStatus.Available:
                 return 'participant-available';
             default:
-                return 'participant-default-status';
+                return 'participant-default';
+        }
+    }
+
+    getEndpointStatusClass(state: EndpointStatus): string {
+        switch (state) {
+            case EndpointStatus.NotYetJoined:
+                return 'participant-not-signed-in';
+            case EndpointStatus.Disconnected:
+                return 'participant-disconnected';
+            case EndpointStatus.Connected:
+                return 'participant-available';
+            default:
+                return 'participant-default';
         }
     }
 

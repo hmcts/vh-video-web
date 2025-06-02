@@ -1,6 +1,5 @@
 <div class="participant-status-header">
   <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Participant status</span>
-</div>
 
 <div id="participant-status-list">
   <div *ngFor="let participant of participants" class="govuk-grid-row">
@@ -81,47 +80,16 @@
           <app-participant-info-tooltip [participant]="endpoint"></app-participant-info-tooltip>
         </div>
       </div>
-      &nbsp;
-      <a id="edit-link-{{ endpoint.id }}" href="javascript:void(0);" (click)="setParticipantEdit(endpoint)"
-        class="govuk-body vh-ml10" attr.aria-label="{{ 'participant-status.editdisplayname' | translate }}">
-        <fa-icon [icon]="editIcon" *ngIf="!isEditingEndpoint(endpoint.id)"></fa-icon>
-      </a>
-      &nbsp;
-      <a id="delete-link-{{ endpoint.id }}" href="javascript:void(0);" (click)="deleteendpoint(endpoint)"
-        class="govuk-body vh-ml10" attr.aria-label="{{ 'endpoint-status.deleteendpoint' | translate }}">
-        <fa-icon [icon]="deleteIcon" *ngIf="isEndpointDeletable(endpoint)"></fa-icon>
-      </a>
     </div>
 
     <div class="govuk-grid-column-one-third">
       <span *ngIf="isEditingEndpoint(endpoint.id)">
-        <div [ngClass]="showError ? 'govuk-form-group--error' : 'govuk-form-group'">
-          <input type="text" id="endpoint-{{ endpoint.id }}-name" #endpointInputName
-            (blur)="onEndpointNameChange(endpointInputName.value)" value="{{ newendpointName }}"
-            class="govuk-input govuk-input--width-20" />
-        </div>
-        <div *ngIf="showError" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error</span>
-          Update display name error
-        </div>
-        <div class="vh-mt10">
-          <span>
-            <input type="button" id="editDisplayName" (click)="saveNameUpdate(endpoint.id)"
-              value="{{ 'endpoint-status.save' | translate }}" class="govuk-button" />
-          </span>&nbsp;
-          <span>
-            <input type="button" id="cancelDisplayName" (click)="cancelNameUpdate()"
-              value="{{ 'endpoint-status.cancel' | translate }}"
-              class="govuk-button vh-ml10 govuk-button--secondary" />
-          </span>
-        </div>
+        <!-- Editing endpoint UI goes here -->
       </span>
     </div>
-
-
     <div class="govuk-grid-column-one-third">
       <p id="endpoint-status-{{ endpoint.id }}" class="govuk-body-s govuk-!-font-weight-bold"
-        [ngClass]="getendpointStatusClass(endpoint.status)">
+        [ngClass]="getEndpointStatusClass(endpoint.status)">
         {{ endpoint.statusText }}
       </p>
     </div>
