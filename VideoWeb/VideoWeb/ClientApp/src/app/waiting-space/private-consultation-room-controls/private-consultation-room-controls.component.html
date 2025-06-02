@@ -648,39 +648,25 @@
       </button>
 
       <ng-container *ngIf="isHost && recordingPaused">
-        <button
-          [disabled]="recordingButtonDisabled"
-          id="change-hearing-layout"
-          class="icon-button"
-          appTooltip
-          colour="green"
-          [text]="'private-consultation-room-controls.resume-recording' | translate"
-          [attr.aria-label]="'private-consultation-room-controls.resume-recording' | translate"
-          tabindex="0"
-          (click)="resumeRecording()"
-          (keydown.enter)="$event.preventDefault(); resumeRecording()"
-          (keydown.space)="$event.preventDefault(); resumeRecording()"
-        >
-          <fa-icon [icon]="playIcon"></fa-icon>
-        </button>
+        <app-hearing-control-icon
+          [id]="'resume-recording-button'"
+          [iconPrefix]="'far'"
+          [tooltipColour]="'green'"
+          [iconName]="'circle-play'"
+          [iconText]="'private-consultation-room-controls.resume-recording' | translate"
+          (iconClicked)="resumeRecording()"
+        ></app-hearing-control-icon>
       </ng-container>
 
       <ng-container *ngIf="isHost && !recordingPaused && wowzaConnected">
-        <button
-          [disabled]="recordingButtonDisabled"
-          id="mute-recording"
-          class="icon-button"
-          appTooltip
-          colour="red"
-          [text]="'private-consultation-room-controls.pause-recording' | translate"
-          [attr.aria-label]="'private-consultation-room-controls.pause-recording' | translate"
-          tabindex="0"
-          (click)="pauseRecording()"
-          (keydown.enter)="$event.preventDefault(); pauseRecording()"
-          (keydown.space)="$event.preventDefault(); pauseRecording()"
-        >
-          <fa-icon [icon]="pauseIcon"></fa-icon>
-        </button>
+        <app-hearing-control-icon
+          [id]="'pause-recording-button'"
+          [iconPrefix]="'far'"
+          [tooltipColour]="'red'"
+          [iconName]="'circle-pause'"
+          [iconText]="'private-consultation-room-controls.pause-recording' | translate"
+          (iconClicked)="pauseRecording()"
+        ></app-hearing-control-icon>
       </ng-container>
 
       <ng-container *ngIf="canShowLeaveButton">

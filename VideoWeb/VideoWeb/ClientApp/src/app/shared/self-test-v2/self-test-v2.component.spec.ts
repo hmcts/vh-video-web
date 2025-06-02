@@ -279,6 +279,7 @@ describe('SelfTestV2Component', () => {
 
         afterEach(() => {
             component.ngOnDestroy();
+            videoCallService.disconnectFromCall();
         });
 
         it('should connect when pexip call has setup', fakeAsync(() => {

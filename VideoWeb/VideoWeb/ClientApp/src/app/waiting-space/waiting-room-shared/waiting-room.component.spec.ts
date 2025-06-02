@@ -14,9 +14,9 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { RoomClosingToastrService } from '../services/room-closing-toast.service';
+
 import { VideoCallService } from '../services/video-call.service';
-import { VHConference, VHParticipant, VHRoom } from '../store/models/vh-conference';
+import { AudioRecordingState, VHConference, VHParticipant, VHRoom } from '../store/models/vh-conference';
 import * as ConferenceSelectors from '../store/selectors/conference.selectors';
 import { ConferenceState } from '../store/reducers/conference.reducer';
 import {
@@ -28,7 +28,6 @@ import {
     initAllWRDependencies,
     launchDarklyService,
     notificationToastrService,
-    roomClosingToastrService,
     router,
     videoCallEventsService,
     videoCallService
@@ -43,30 +42,26 @@ import { ModalComponent } from 'src/app/shared/modal/modal.component';
 import { ConsultationErrorComponent } from '../consultation-modals/consultation-error/consultation-error.component';
 import { ConsultationLeaveComponent } from '../consultation-modals/consultation-leave/consultation-leave.component';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VHHearing } from 'src/app/shared/models/hearing.vh';
 import { ConferenceActions } from '../store/actions/conference.actions';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { WaitingRoomUserRole } from './models/waiting-room-user-role';
 import { VideoCallEventsService } from '../services/video-call-events.service';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import {
-    getWowzaAgentConnectionState$,
-    getAudioRecordingPauseState$,
-    mockWowzaAgent,
-    audioRecordingServiceSpy
-} from 'src/app/testing/mocks/mock-audio-recording.service';
-import { getAudioRestartActionedMock } from 'src/app/testing/mocks/mock-events-service';
 import { VideoCallHostActions } from '../store/actions/video-call-host.actions';
-import { AudioRecordingService } from 'src/app/services/audio-recording.service';
 import { ModalTrapFocus } from 'src/app/shared/modal/modal-trap-focus';
 
 describe('WaitingRoomComponent', () => {
     const testData = new ConferenceTestData();
     let conference: VHConference;
     let loggedInParticipant: VHParticipant;
+    const audioRecordingState: AudioRecordingState = {
+        continueWithoutRecording: false,
+        recordingPaused: false,
+        restartInProgress: false,
+        wowzaConnectedAsAudioOnly: false,
+        restartNotificationDisplayed: false
+    };
 
     let component: WaitingRoomComponent;
     let mockStore: MockStore<ConferenceState>;
@@ -80,7 +75,6 @@ describe('WaitingRoomComponent', () => {
     let mockConsultationService: jasmine.SpyObj<ConsultationService>;
     let mockNotificationToastrService: jasmine.SpyObj<NotificationToastrService>;
     let mockDeviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-    let mockRoomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
     let mockTranslationService = translateServiceSpy;
     let mockRouter: jasmine.SpyObj<Router>;
     let mockClockService: jasmine.SpyObj<ClockService>;
@@ -90,10 +84,8 @@ describe('WaitingRoomComponent', () => {
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
-    let isAudioOnlySubject: Subject<boolean>;
-    let mockUserMediaService: jasmine.SpyObj<UserMediaService>;
     let mockVideoCallEventsService: jasmine.SpyObj<VideoCallEventsService>;
-    let mockAudioRecordingService: jasmine.SpyObj<AudioRecordingService>;
+
     const onVideoWrapperReadySubject = new Subject<void>();
     const onLeaveConsultationSubject = new Subject<void>();
     const onLockConsultationSubject = new Subject<boolean>();
@@ -128,17 +120,13 @@ describe('WaitingRoomComponent', () => {
         mockConsultationService = consultationService;
         mockNotificationToastrService = notificationToastrService;
         mockDeviceTypeService = deviceTypeService;
-        mockRoomClosingToastrService = roomClosingToastrService;
+
         mockRouter = router;
         mockClockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         mockClockService.getClock.and.returnValue(clockSubject.asObservable());
         mockConsultationInvitiationService = consultationInvitiationService;
         mockLaunchDarklyService = launchDarklyService;
         mockTranslationService = translateServiceSpy;
-        mockAudioRecordingService = audioRecordingServiceSpy;
-        mockUserMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
-        isAudioOnlySubject = new Subject<boolean>();
-        getSpiedPropertyGetter(mockUserMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
         mockVideoCallEventsService = videoCallEventsService;
         mockVideoCallEventsService.onVideoWrapperReady.and.returnValue(onVideoWrapperReadySubject.asObservable());
         mockVideoCallEventsService.onLeaveConsultation.and.returnValue(onLeaveConsultationSubject.asObservable());
@@ -191,14 +179,11 @@ describe('WaitingRoomComponent', () => {
                 { provide: NotificationToastrService, useValue: mockNotificationToastrService },
                 { provide: DeviceTypeService, useValue: mockDeviceTypeService },
                 { provide: Router, useValue: mockRouter },
-                { provide: RoomClosingToastrService, useValue: mockRoomClosingToastrService },
                 { provide: ClockService, useValue: mockClockService },
                 { provide: ConsultationInvitationService, useValue: mockConsultationInvitiationService },
                 { provide: LaunchDarklyService, useValue: mockLaunchDarklyService },
                 { provide: TranslateService, useValue: mockTranslationService },
-                { provide: AudioRecordingService, useValue: mockAudioRecordingService },
                 { provide: UnloadDetectorService, useValue: unloadDetectorServiceSpy },
-                { provide: UserMediaService, useValue: mockUserMediaService },
                 { provide: VideoCallEventsService, useValue: mockVideoCallEventsService },
                 provideMockStore()
             ]
@@ -211,6 +196,7 @@ describe('WaitingRoomComponent', () => {
         mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
         mockStore.overrideSelector(ConferenceSelectors.getCountdownComplete, conference.countdownComplete);
         mockStore.overrideSelector(ConferenceSelectors.getLoggedInParticipant, loggedInParticipant);
+        mockStore.overrideSelector(ConferenceSelectors.getAudioRecordingState, audioRecordingState);
         spyOn(ModalTrapFocus, 'trap').and.callFake(() => {});
     });
 
@@ -368,25 +354,6 @@ describe('WaitingRoomComponent', () => {
                 tick();
 
                 expect(mockRouter.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
-            }));
-
-            it('should show room closing mesage when participant is in a private consultation', fakeAsync(() => {
-                component.isPrivateConsultation = true;
-
-                const date = new Date();
-                clockSubject.next(date);
-                tick();
-
-                expect(mockRoomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
-            }));
-
-            it('should clear toasts', fakeAsync(() => {
-                component.isPrivateConsultation = false;
-
-                clockSubject.next(new Date());
-                tick();
-
-                expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
             }));
         });
 
@@ -723,22 +690,6 @@ describe('WaitingRoomComponent', () => {
                 expect(component.displayLeaveHearingPopup).toBeTrue();
             });
         });
-
-        describe('userMediaService.isAutioOnly$ changed', () => {
-            it('should publish the media status when audio toggle changes', fakeAsync(() => {
-                component.ngOnInit();
-                tick();
-                isAudioOnlySubject.next(true);
-                tick();
-                expect(component.audioOnly).toBeTrue();
-
-                expect(mockEventsService.sendMediaStatus).toHaveBeenCalledWith(
-                    conference.id,
-                    loggedInParticipant.id,
-                    new ParticipantMediaStatus(false, true)
-                );
-            }));
-        });
     });
 
     describe('judge tests', () => {
@@ -1016,175 +967,6 @@ describe('WaitingRoomComponent', () => {
                 expect(component.unreadMessageCount).toBe(1);
             });
         });
-
-        describe('Audio recording and alert notifications', () => {
-            beforeEach(() => {
-                component.vhConference = conference;
-
-                notificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
-                notificationToastrService.showAudioRecordingRestartSuccess.calls.reset();
-                notificationToastrService.showAudioRecordingRestartFailure.calls.reset();
-            });
-
-            describe('getAudioRestartActioned event', () => {
-                const audioActionRestartedSubject = getAudioRestartActionedMock;
-                beforeEach(() => {
-                    component.init();
-                });
-
-                afterEach(() => {
-                    component.executeWaitingRoomCleanup();
-                });
-
-                it('should close any open audio alert when audio restart actioned', fakeAsync(() => {
-                    component.audioErrorRetryToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove'], {
-                        vhToastOptions: { buttons: [], color: 'white', concludeToast: jasmine.createSpy('concludeToast') }
-                    });
-                    audioActionRestartedSubject.next(conference.id);
-                    tick();
-
-                    expect(component.audioErrorRetryToast.vhToastOptions.concludeToast).toHaveBeenCalled();
-                }));
-            });
-
-            describe('getWowzaAgentConnectionState event', () => {
-                const getWowzaAgentConnectionStateSubject = getWowzaAgentConnectionState$;
-                beforeEach(() => {
-                    component.init();
-                });
-
-                afterEach(() => {
-                    component.executeWaitingRoomCleanup();
-                });
-
-                describe('onWowzaDisconnected', () => {
-                    it('should display audio alert if wowza listener is disconnected', fakeAsync(() => {
-                        component.vhConference = {
-                            ...conference,
-                            status: ConferenceStatus.InSession,
-                            audioRecordingRequired: true,
-                            countdownComplete: true
-                        };
-
-                        getWowzaAgentConnectionStateSubject.next(false);
-                        tick();
-
-                        expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
-                    }));
-
-                    it('should not display audio alert if wowza listener is disconnected, but conference is not in session', fakeAsync(() => {
-                        component.audioErrorRetryToast = null;
-                        component.vhConference = {
-                            ...conference,
-                            status: ConferenceStatus.Paused,
-                            audioRecordingRequired: true,
-                            countdownComplete: false
-                        };
-
-                        getWowzaAgentConnectionStateSubject.next(false);
-                        tick();
-
-                        expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
-                    }));
-                });
-
-                describe('onWowzaConnected', () => {
-                    it('should show audio restart success alert when restart was actioned', fakeAsync(() => {
-                        getSpiedPropertyGetter(mockAudioRecordingService, 'restartActioned').and.returnValue(true);
-
-                        getWowzaAgentConnectionStateSubject.next(true);
-                        tick();
-
-                        expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
-                        expect(component.continueWithNoRecording).toBeFalse();
-                    }));
-                });
-
-                it('should close alert if hearing is disconnected and no longer showing the video', () => {
-                    component.audioErrorRetryToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
-                    component.videoClosedExt();
-                    expect(component.audioErrorRetryToast).toBeNull();
-                });
-            });
-
-            describe('getAudioRecordingPauseState event', () => {
-                const getAudioRecordingPauseStateSubject = getAudioRecordingPauseState$;
-                beforeEach(() => {
-                    component.init();
-                });
-
-                afterEach(() => {
-                    component.executeWaitingRoomCleanup();
-                });
-
-                it('update audio recording status', fakeAsync(() => {
-                    getAudioRecordingPauseStateSubject.next(true);
-                    tick();
-
-                    expect(component.recordingPaused).toBeTrue();
-                }));
-            });
-        });
-
-        describe('getCountdownComplete from Store', () => {
-            beforeEach(() => {
-                component.init();
-                mockNotificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
-            });
-            it('should verify audio recording stream when countdown is complete', fakeAsync(() => {
-                conference.audioRecordingRequired = true;
-                conference.countdownComplete = true;
-
-                spyOn(component, 'verifyAudioRecordingStream');
-
-                mockStore.overrideSelector(ConferenceSelectors.getActiveConference, conference);
-                mockStore.overrideSelector(ConferenceSelectors.getCountdownComplete, conference.countdownComplete);
-
-                mockStore.refreshState();
-                tick();
-
-                expect(component.verifyAudioRecordingStream).toHaveBeenCalled();
-            }));
-        });
-
-        describe('verifyAudioRecordingStream', () => {
-            beforeEach(() => {
-                mockNotificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
-            });
-            it('should log wowza alert and show audio recording restart alert when audio recording is required', () => {
-                component.vhConference = { ...conference, audioRecordingRequired: true };
-                component.continueWithNoRecording = false;
-                component.showVideo = true;
-                component.audioErrorRetryToast = null;
-                component.recordingPaused = false;
-
-                const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove'], {
-                    vhToastOptions: { buttons: [], color: 'white', concludeToast: jasmine.createSpy('concludeToast') }
-                });
-                mockNotificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
-                getSpiedPropertyGetter(mockAudioRecordingService, 'wowzaAgent').and.returnValue({
-                    ...mockWowzaAgent,
-                    isAudioOnlyCall: false
-                });
-
-                component.verifyAudioRecordingStream();
-                component.verifyAudioRecordingStream();
-
-                expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
-            });
-        });
-
-        describe('audioRestartCallback', () => {
-            it('should set continue with no recording to true', () => {
-                component.audioErrorRetryToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove'], {
-                    vhToastOptions: { buttons: [], color: 'white', concludeToast: jasmine.createSpy('concludeToast') }
-                });
-
-                component.audioRestartCallback(true);
-                expect(component.continueWithNoRecording).toBeTrue();
-                expect(component.audioErrorRetryToast).toBeNull();
-            });
-        });
     });
 
     describe('cleanUp', () => {
@@ -1193,7 +975,6 @@ describe('WaitingRoomComponent', () => {
 
             component.ngOnDestroy();
 
-            expect(mockRoomClosingToastrService.clearToasts).toHaveBeenCalled();
             expect(mockStore.dispatch).toHaveBeenCalledWith(
                 ConferenceActions.leaveConference({
                     conferenceId: conference.id
